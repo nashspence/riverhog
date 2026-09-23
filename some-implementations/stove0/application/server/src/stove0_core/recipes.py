@@ -385,7 +385,7 @@ class RecipePlanner:
         decision_sha256: str,
         recipe: RecipeDefinition,
     ) -> BranchPlan:
-        target = self.targets.contract(route.target_registration_id)
+        target = self.targets.descriptor(route.target_registration_id)
         operation = self.catalog.operation(route.operation_id)
         support = target.support_for(operation.id)
         if support.operation_contract_sha256 != operation.contract_sha256:
@@ -405,7 +405,7 @@ class RecipePlanner:
                 operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
                 result_kind=operation.result_kind,
                 target_registration_id=route.target_registration_id,
-                target_contract_sha256=target.contract_sha256,
+                target_descriptor_sha256=target.descriptor_sha256,
                 requested_target_options={**route.target_options, **compiled_options},
                 input_retrieval_policy=route.input_retrieval_policy,
                 retirement_policy="retain",
@@ -423,7 +423,7 @@ class RecipePlanner:
         parent: WorkIdentity,
         join: RecipeJoin,
     ) -> JoinDeclaration:
-        target = self.targets.contract(join.target_registration_id)
+        target = self.targets.descriptor(join.target_registration_id)
         operation = self.catalog.operation(join.operation_id)
         support = target.support_for(operation.id)
         if support.operation_contract_sha256 != operation.contract_sha256:
@@ -445,7 +445,7 @@ class RecipePlanner:
                 operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
                 result_kind="collection",
                 target_registration_id=join.target_registration_id,
-                target_contract_sha256=target.contract_sha256,
+                target_descriptor_sha256=target.descriptor_sha256,
                 requested_target_options={**join.target_options, **compiled_options},
                 input_retrieval_policy=join.input_retrieval_policy,
                 retirement_policy="retain",
@@ -461,7 +461,7 @@ class RecipePlanner:
         selection = self.target_input_selection(plan, selections)
         authority = TargetInputAuthority.from_selection(selection)
         return TargetPreflightRequest(
-            protocol=self.targets.contract(plan.target_registration_id).protocol,
+            protocol=self.targets.descriptor(plan.target_registration_id).protocol,
             operation_id=plan.operation.id,
             operation_contract_sha256=plan.operation.sha256,
             inputs=authority,

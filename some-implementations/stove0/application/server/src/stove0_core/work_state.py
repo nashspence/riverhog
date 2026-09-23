@@ -47,7 +47,7 @@ from stove0_target_protocol import (
     OutputArtifactRoleCount,
     OutputCollectionRef,
     OutputSourceEdge,
-    TargetContract,
+    TargetDescriptor,
     TargetJobRequest,
     TargetJobStatus,
     TargetPlan,
@@ -1375,7 +1375,7 @@ class Stove0WorkService:
         self,
         work_id: str,
         *,
-        target: TargetContract,
+        target: TargetDescriptor,
         plan: TargetPlan,
         expected_revision: int,
     ) -> WorkRecord:
@@ -1384,8 +1384,8 @@ class Stove0WorkService:
         if record.phase not in {"target_preflight", "queued"} or workflow is None:
             raise Stove0StateError(f"work cannot seal a target plan from {record.phase}")
         if (
-            target.contract_sha256 != workflow.target_contract_sha256
-            or plan.target_contract_sha256 != target.contract_sha256
+            target.descriptor_sha256 != workflow.target_descriptor_sha256
+            or plan.target_descriptor_sha256 != target.descriptor_sha256
             or plan.target_implementation_id != target.implementation_id
             or plan.operation_id != workflow.operation.id
             or plan.operation_contract_sha256 != workflow.operation.sha256
@@ -1394,7 +1394,7 @@ class Stove0WorkService:
         binding = TargetPlanBinding(
             protocol=target.protocol,
             target_implementation_id=target.implementation_id,
-            target_contract_sha256=target.contract_sha256,
+            target_descriptor_sha256=target.descriptor_sha256,
             operation_contract_sha256=plan.operation_contract_sha256,
             plan=plan.binding_document(),
             plan_sha256=plan.plan_sha256,

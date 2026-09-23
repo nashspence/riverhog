@@ -189,8 +189,8 @@ def test_review_preflight_seals_exact_sampler_identity_and_one_operation(
         )
         preflight = target.preflight(request)
 
-        assert target.contract().image_digest == _sha("9")
-        assert [item.operation_id for item in target.contract().operations] == [
+        assert target.descriptor().image_digest == _sha("9")
+        assert [item.operation_id for item in target.descriptor().operations] == [
             REVIEW_MATERIALIZE_OPERATION.id
         ]
         assert preflight.plan.target_options == {
@@ -221,7 +221,7 @@ def test_review_preflight_seals_exact_sampler_identity_and_one_operation(
     assert sampler_client.closed
 
 
-def test_review_process_exposes_only_target_contract(tmp_path: Path) -> None:
+def test_review_process_exposes_only_target_descriptor(tmp_path: Path) -> None:
     registration, _sampler_client = _sampler()
     target = ReviewMaterializeTargetService(
         state_root=tmp_path / "state",
@@ -437,9 +437,9 @@ def test_review_effect_deployment_has_one_fixed_effect_contract(tmp_path: Path) 
             target_options={"sampler_registration_id": "opus"},
         )
         preflight = target.preflight(request)
-        assert target.contract().protocol == "stove0-effect-target/v1"
-        assert target.contract().implementation_id == "a-review0-rclone-target/v1"
-        assert [item.operation_id for item in target.contract().operations] == [
+        assert target.descriptor().protocol == "stove0-effect-target/v1"
+        assert target.descriptor().implementation_id == "a-review0-rclone-target/v1"
+        assert [item.operation_id for item in target.descriptor().operations] == [
             REVIEW_RCLONE_DELIVER_OPERATION.id
         ]
         assert preflight.plan.protocol == "stove0-effect-target/v1"
@@ -611,14 +611,14 @@ def test_review_effect_executes_sampling_delivery_and_canonical_receipt_end_to_e
                 sha256=REVIEW_RCLONE_DELIVER_OPERATION.contract_sha256,
             ),
             target_registration_id="review-effect",
-            target_contract_sha256=preflight.target.contract_sha256,
+            target_descriptor_sha256=preflight.descriptor.descriptor_sha256,
             retirement_policy="retain",
         )
     )
     binding = TargetPlanBinding(
-        protocol=preflight.target.protocol,
-        target_implementation_id=preflight.target.implementation_id,
-        target_contract_sha256=preflight.target.contract_sha256,
+        protocol=preflight.descriptor.protocol,
+        target_implementation_id=preflight.descriptor.implementation_id,
+        target_descriptor_sha256=preflight.descriptor.descriptor_sha256,
         operation_contract_sha256=REVIEW_RCLONE_DELIVER_OPERATION.contract_sha256,
         plan=preflight.plan.binding_document(),
         plan_sha256=preflight.plan.plan_sha256,

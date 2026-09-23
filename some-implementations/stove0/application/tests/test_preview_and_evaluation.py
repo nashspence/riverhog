@@ -67,8 +67,8 @@ from stove0_target_support import (
     OperationContractPayload,
     OutputArtifactContract,
     OutputCollectionRef,
-    TargetContract,
-    TargetContractPayload,
+    TargetDescriptor,
+    TargetDescriptorPayload,
     TargetOperationSupport,
     TargetPreflightRequest,
     TargetPreflightResponse,
@@ -129,9 +129,9 @@ def _operation() -> OperationContract:
     )
 
 
-def _target(operation: OperationContract) -> TargetContract:
-    return TargetContract.seal(
-        TargetContractPayload(
+def _target(operation: OperationContract) -> TargetDescriptor:
+    return TargetDescriptor.seal(
+        TargetDescriptorPayload(
             implementation_id="fixture.target/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
@@ -186,7 +186,7 @@ class PreviewPlanning:
     def __init__(
         self,
         operation: OperationContract,
-        target: TargetContract,
+        target: TargetDescriptor,
         observer: tuple[ObserverContract, ObserverDescriptor],
     ) -> None:
         self.operation = operation
@@ -240,7 +240,7 @@ class PreviewPlanning:
                     sha256=self.operation.contract_sha256,
                 ),
                 target_registration_id="fixture-target",
-                target_contract_sha256=self.target.contract_sha256,
+                target_descriptor_sha256=self.target.descriptor_sha256,
                 retirement_policy="retain",
             ),
             observations=observations,
@@ -320,7 +320,7 @@ class NestedPreviewPlanning(PreviewPlanning):
                     sha256=self.operation.contract_sha256,
                 ),
                 target_registration_id="fixture-target",
-                target_contract_sha256=self.target.contract_sha256,
+                target_descriptor_sha256=self.target.descriptor_sha256,
                 retirement_policy="retain",
             ),
             observations=child_evidence,
@@ -424,12 +424,12 @@ class PreviewObserver:
 
 
 class PreviewTarget:
-    def __init__(self, operation: OperationContract, target: TargetContract) -> None:
+    def __init__(self, operation: OperationContract, target: TargetDescriptor) -> None:
         self.operation = operation
         self.target = target
         self.preflights = 0
 
-    def contract(self, registration_id: str) -> TargetContract:
+    def descriptor(self, registration_id: str) -> TargetDescriptor:
         assert registration_id == "fixture-target"
         return self.target
 
@@ -441,11 +441,11 @@ class PreviewTarget:
         assert registration_id == "fixture-target"
         self.preflights += 1
         return TargetPreflightResponse(
-            target=self.target,
+            descriptor=self.target,
             plan=TransformPlan.seal(
                 TransformPlanPayload(
                     target_implementation_id=self.target.implementation_id,
-                    target_contract_sha256=self.target.contract_sha256,
+                    target_descriptor_sha256=self.target.descriptor_sha256,
                     operation_id=request.operation_id,
                     operation_contract_sha256=request.operation_contract_sha256,
                     inputs=request.inputs,

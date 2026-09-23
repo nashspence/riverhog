@@ -28,7 +28,7 @@ def _error_response(request: httpx.Request) -> httpx.Response:
     [
         (
             lambda: TargetClient("https://target.invalid"),
-            lambda client: client.contract(),
+            lambda client: client.descriptor(),
             TargetProtocolError,
         ),
         (
@@ -100,7 +100,7 @@ def test_role_local_errors_do_not_claim_remote_identity(
     [
         (
             lambda: TargetClient("https://target.invalid"),
-            lambda client: client.contract(),
+            lambda client: client.descriptor(),
             TargetProtocolError,
         ),
         (

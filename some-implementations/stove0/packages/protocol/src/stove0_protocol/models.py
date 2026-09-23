@@ -638,7 +638,7 @@ class WorkflowPlanPayload(Stove0ProtocolModel):
     operation: OperationRef
     result_kind: OperationResultKind = "collection"
     target_registration_id: RegistrationId
-    target_contract_sha256: Sha256
+    target_descriptor_sha256: Sha256
     requested_target_options: dict[str, JsonValue] = Field(default_factory=dict)
     input_retrieval_policy: RetrievalPolicy = "available-only"
     retirement_policy: RetirementPolicy = "retain"
@@ -688,7 +688,7 @@ class WorkflowPlanIntent(Stove0ProtocolModel):
     operation: OperationRef
     result_kind: OperationResultKind = "collection"
     target_registration_id: RegistrationId
-    target_contract_sha256: Sha256
+    target_descriptor_sha256: Sha256
     requested_target_options: dict[str, JsonValue] = Field(default_factory=dict)
     input_retrieval_policy: RetrievalPolicy = "available-only"
     retirement_policy: RetirementPolicy = "retain"
@@ -709,7 +709,7 @@ class WorkflowPlanIntent(Stove0ProtocolModel):
             operation=plan.operation,
             result_kind=plan.result_kind,
             target_registration_id=plan.target_registration_id,
-            target_contract_sha256=plan.target_contract_sha256,
+            target_descriptor_sha256=plan.target_descriptor_sha256,
             requested_target_options=plan.requested_target_options,
             input_retrieval_policy=plan.input_retrieval_policy,
             retirement_policy=plan.retirement_policy,
@@ -730,7 +730,7 @@ class WorkflowPlanIntent(Stove0ProtocolModel):
                 operation=self.operation,
                 result_kind=self.result_kind,
                 target_registration_id=self.target_registration_id,
-                target_contract_sha256=self.target_contract_sha256,
+                target_descriptor_sha256=self.target_descriptor_sha256,
                 requested_target_options=self.requested_target_options,
                 input_retrieval_policy=self.input_retrieval_policy,
                 retirement_policy=self.retirement_policy,
@@ -752,7 +752,7 @@ class TargetPlanBinding(Stove0ProtocolModel):
 
     protocol: SemanticId
     target_implementation_id: SemanticId
-    target_contract_sha256: Sha256
+    target_descriptor_sha256: Sha256
     operation_contract_sha256: Sha256
     plan: dict[str, JsonValue]
     plan_sha256: Sha256
@@ -781,8 +781,8 @@ class ExecutionEnvelopePayload(Stove0ProtocolModel):
 
     @model_validator(mode="after")
     def bind_target(self) -> Self:
-        if self.workflow_plan.target_contract_sha256 != self.target_plan.target_contract_sha256:
-            raise ValueError("target plan differs from the workflow-selected target contract")
+        if self.workflow_plan.target_descriptor_sha256 != self.target_plan.target_descriptor_sha256:
+            raise ValueError("target plan differs from the workflow-selected target descriptor")
         if self.workflow_plan.operation.sha256 != self.target_plan.operation_contract_sha256:
             raise ValueError("target plan differs from the workflow-selected operation contract")
         return self

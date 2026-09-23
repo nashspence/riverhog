@@ -23,8 +23,8 @@ from stove0_target_protocol import (
     AcceptedTargetJob,
     OperationContract,
     SemanticIntentConformanceVectors,
-    TargetContract,
     TargetDeclaration,
+    TargetDescriptor,
     TargetJobRequest,
     TargetJobStatus,
     TargetOperationSupport,
@@ -178,7 +178,7 @@ def _validate_declaration_documents(
 class TargetConformanceResult(_TargetConformanceModel):
     format: Literal["stove0-target-conformance-result/v1"] = TARGET_CONFORMANCE_RESULT
     status: Literal["conformant", "partially-exercised", "inspected"]
-    target: TargetContract
+    descriptor: TargetDescriptor
     coverage: TargetConformanceCoverage
     operations: tuple[TargetOperationConformance, ...]
     operation_evidence: tuple[TargetOperationConformanceEvidence, ...] = ()
@@ -198,20 +198,20 @@ class TargetConformanceResult(_TargetConformanceModel):
             raise ValueError("target conformance coverage differs from its operations")
         if self.coverage.exercised != len(self.operation_evidence):
             raise ValueError("target conformance evidence differs from its coverage")
-        if len(self.operations) != len(self.target.operations):
-            raise ValueError("target conformance operations differ from its contract")
+        if len(self.operations) != len(self.descriptor.operations):
+            raise ValueError("target conformance operations differ from its descriptor")
         evidence_by_id = {item.operation_id: item for item in self.operation_evidence}
         if len(evidence_by_id) != len(self.operation_evidence):
             raise ValueError("target conformance repeats operation evidence")
         exercised = 0
-        for report, support in zip(self.operations, self.target.operations, strict=True):
+        for report, support in zip(self.operations, self.descriptor.operations, strict=True):
             if (
                 report.operation_id != support.operation_id
                 or report.operation_contract_sha256 != support.operation_contract_sha256
                 or report.result_kind != support.result_kind
                 or report.options_schema_profile_sha256 != support.options_schema.profile_sha256
             ):
-                raise ValueError("target conformance operation differs from its contract")
+                raise ValueError("target conformance operation differs from its descriptor")
             evidence = evidence_by_id.get(report.operation_id)
             if evidence is None:
                 if report.semantic_conformance != "not-exercised":
@@ -268,7 +268,7 @@ class TargetConformanceResult(_TargetConformanceModel):
                 evidence.preflight_request,
             )
             if (
-                evidence.preflight.target != self.target
+                evidence.preflight.descriptor != self.descriptor
                 or evidence.preflight.plan != accepted.declaration.plan
             ):
                 raise ValueError("target preflight evidence differs from the accepted job")
@@ -290,7 +290,7 @@ class TargetConformanceResult(_TargetConformanceModel):
 
 
 class TargetClient(Protocol):
-    def contract(self) -> TargetContract: ...
+    def descriptor(self) -> TargetDescriptor: ...
 
     def preflight(self, request: TargetPreflightRequest) -> TargetPreflightResponse: ...
 
@@ -312,13 +312,13 @@ class TargetClient(Protocol):
 def _single_operation_report(
     client: TargetClient,
     *,
-    contract: TargetContract,
+    descriptor: TargetDescriptor,
     operation: OperationContract | None = None,
     job_request: TargetJobRequest | None = None,
     semantic_vectors: SemanticIntentConformanceVectors | None = None,
 ) -> dict[str, Any]:
     operation_reports: list[dict[str, Any]] = []
-    for item in contract.operations:
+    for item in descriptor.operations:
         entry: dict[str, Any] = {
             "operation_id": item.operation_id,
             "operation_contract_sha256": item.operation_contract_sha256,
@@ -340,14 +340,14 @@ def _single_operation_report(
             )
         operation_reports.append(entry)
     report: dict[str, Any] = {
-        "status": "contract-inspected",
-        "protocol": contract.protocol,
-        "implementation_id": contract.implementation_id,
-        "implementation_version": contract.implementation_version,
-        "source_revision": contract.source_revision,
-        "image_digest": contract.image_digest,
-        "target_contract_sha256": contract.contract_sha256,
-        "transport": contract.transport,
+        "status": "descriptor-inspected",
+        "protocol": descriptor.protocol,
+        "implementation_id": descriptor.implementation_id,
+        "implementation_version": descriptor.implementation_version,
+        "source_revision": descriptor.source_revision,
+        "image_digest": descriptor.image_digest,
+        "target_descriptor_sha256": descriptor.descriptor_sha256,
+        "transport": descriptor.transport,
         "operations": operation_reports,
     }
     if job_request is None:
@@ -358,12 +358,12 @@ def _single_operation_report(
         raise ValueError("job conformance requires the matching operation contract")
     declaration = job_request.declaration
     validate_declaration_against_operation(declaration.plan, operation)
-    support = contract.support_for(declaration.plan.operation_id)
+    support = descriptor.support_for(declaration.plan.operation_id)
     if (
         support.operation_contract_sha256 != operation.contract_sha256
-        or declaration.plan.target_contract_sha256 != contract.contract_sha256
+        or declaration.plan.target_descriptor_sha256 != descriptor.descriptor_sha256
     ):
-        raise RuntimeError("job request does not bind the deployed target contract")
+        raise RuntimeError("job request does not bind the deployed target descriptor")
     _validate_declaration_documents(declaration.plan, operation, support)
     observations = declaration.controller_evidence.execution_envelope.workflow_plan.observations
 
@@ -495,22 +495,22 @@ def conformance_report(
 ) -> TargetConformanceResult:
     """Report exact coverage, claiming conformance only for all advertised operations."""
 
-    contract = client.contract()
+    descriptor = client.descriptor()
     case_by_operation = {case.operation.id: case for case in cases}
     if len(case_by_operation) != len(cases):
         raise ValueError("target conformance cases must name unique operations")
-    advertised_ids = {item.operation_id for item in contract.operations}
+    advertised_ids = {item.operation_id for item in descriptor.operations}
     if set(case_by_operation) - advertised_ids:
         raise ValueError("target conformance case names an unadvertised operation")
 
-    report = _single_operation_report(client, contract=contract)
+    report = _single_operation_report(client, descriptor=descriptor)
     evidence: list[dict[str, Any]] = []
     operation_reports = {str(item["operation_id"]): item for item in report["operations"]}
     for operation_id in sorted(case_by_operation):
         case = case_by_operation[operation_id]
         exercised = _single_operation_report(
             client,
-            contract=contract,
+            descriptor=descriptor,
             operation=case.operation,
             job_request=case.job_request,
             semantic_vectors=case.semantic_vectors,
@@ -533,7 +533,7 @@ def conformance_report(
         )
 
     exercised_count = len(evidence)
-    complete = exercised_count == len(contract.operations)
+    complete = exercised_count == len(descriptor.operations)
     report.update(
         {
             "status": (
@@ -544,11 +544,11 @@ def conformance_report(
                 else "inspected"
             ),
             "coverage": {
-                "advertised": len(contract.operations),
+                "advertised": len(descriptor.operations),
                 "exercised": exercised_count,
                 "complete": complete,
             },
-            "operations": [operation_reports[item.operation_id] for item in contract.operations],
+            "operations": [operation_reports[item.operation_id] for item in descriptor.operations],
         }
     )
     if evidence:
@@ -556,7 +556,7 @@ def conformance_report(
     return TargetConformanceResult.model_validate(
         {
             "status": report["status"],
-            "target": contract,
+            "descriptor": descriptor,
             "coverage": report["coverage"],
             "operations": report["operations"],
             "operation_evidence": report.get("operation_evidence", []),
@@ -567,7 +567,7 @@ def conformance_report(
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="stove0-target-conformance",
-        description="Check a deployed stove0 transform target's v1 contract.",
+        description="Check a deployed stove0 target descriptor and operation contracts.",
     )
     parser.add_argument("base_url")
     parser.add_argument(

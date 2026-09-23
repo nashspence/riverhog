@@ -936,7 +936,7 @@ def _target_binding(plan: TargetPlan) -> TargetPlanBinding:
     return TargetPlanBinding(
         protocol=plan.protocol,
         target_implementation_id=plan.target_implementation_id,
-        target_contract_sha256=plan.target_contract_sha256,
+        target_descriptor_sha256=plan.target_descriptor_sha256,
         operation_contract_sha256=plan.operation_contract_sha256,
         plan=plan.binding_document(),
         plan_sha256=plan.plan_sha256,

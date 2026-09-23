@@ -169,7 +169,7 @@ def _authorities(
             work=work,
             operation=OperationRef(id="fixture.copy/v1", sha256=_sha("4")),
             target_registration_id="fixture-target",
-            target_contract_sha256=_sha("5"),
+            target_descriptor_sha256=_sha("5"),
             retirement_policy=retirement_policy,
         )
     )
@@ -177,7 +177,7 @@ def _authorities(
     target_plan = TransformPlan.seal(
         TransformPlanPayload(
             target_implementation_id="fixture.target/v1",
-            target_contract_sha256=_sha("5"),
+            target_descriptor_sha256=_sha("5"),
             operation_id="fixture.copy/v1",
             operation_contract_sha256=_sha("4"),
             inputs=TargetInputAuthority.from_selection(selection),
@@ -187,7 +187,7 @@ def _authorities(
     binding = TargetPlanBinding(
         protocol=target_plan.protocol,
         target_implementation_id="fixture.target/v1",
-        target_contract_sha256=_sha("5"),
+        target_descriptor_sha256=_sha("5"),
         operation_contract_sha256=_sha("4"),
         plan=target_plan.binding_document(),
         plan_sha256=target_plan.plan_sha256,
@@ -212,14 +212,14 @@ def _effect_authorities() -> tuple[WorkIdentity, WorkflowPlan, EffectPlan, Contr
             result_kind="external-effect",
             operation=OperationRef(id="fixture.effect/v1", sha256=_sha("4")),
             target_registration_id="fixture-effect-target",
-            target_contract_sha256=_sha("5"),
+            target_descriptor_sha256=_sha("5"),
             retirement_policy="retain",
         )
     )
     target_plan = EffectPlan.seal(
         EffectPlanPayload(
             target_implementation_id="fixture.effect-target/v1",
-            target_contract_sha256=_sha("5"),
+            target_descriptor_sha256=_sha("5"),
             operation_id="fixture.effect/v1",
             operation_contract_sha256=_sha("4"),
             inputs=TargetInputAuthority.from_selection(_input_selection(work)),
@@ -229,7 +229,7 @@ def _effect_authorities() -> tuple[WorkIdentity, WorkflowPlan, EffectPlan, Contr
     binding = TargetPlanBinding(
         protocol=target_plan.protocol,
         target_implementation_id=target_plan.target_implementation_id,
-        target_contract_sha256=target_plan.target_contract_sha256,
+        target_descriptor_sha256=target_plan.target_descriptor_sha256,
         operation_contract_sha256=target_plan.operation_contract_sha256,
         plan=target_plan.binding_document(),
         plan_sha256=target_plan.plan_sha256,
@@ -559,7 +559,7 @@ def _verifying_record(
         production=production,
         output_collection=output_ref,
         execution_evidence=TargetExecutionEvidence(
-            target_contract_sha256=_sha("5"),
+            target_descriptor_sha256=_sha("5"),
             operation_contract_sha256=_sha("4"),
             plan_sha256=evidence.execution_envelope.target_plan.plan_sha256,
             execution_sha256=_sha("a"),

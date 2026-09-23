@@ -1131,7 +1131,7 @@ class WorkflowPreviewPayload(Stove0ProtocolModel):
                 if target.workflow_plan_sha256 != workflow.workflow_plan_sha256:
                     raise ValueError("preview target plan binds another branch workflow plan")
                 if (
-                    target.target_plan.target_contract_sha256 != workflow.target_contract_sha256
+                    target.target_plan.target_descriptor_sha256 != workflow.target_descriptor_sha256
                     or target.target_plan.operation_contract_sha256 != workflow.operation.sha256
                 ):
                     raise ValueError("preview target plan differs from branch workflow selection")

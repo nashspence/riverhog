@@ -355,7 +355,7 @@ def test_workflow_target_and_controller_evidence_bind_one_another() -> None:
             observations=(ContentObservationEvidence(request=request, result=observation),),
             operation=operation,
             target_registration_id="nvenc-primary",
-            target_contract_sha256=_sha("f"),
+            target_descriptor_sha256=_sha("f"),
             requested_target_options={"preset": "p7"},
             retirement_policy="retain",
         )
@@ -368,7 +368,7 @@ def test_workflow_target_and_controller_evidence_bind_one_another() -> None:
     target = TargetPlanBinding(
         protocol="stove0-transform-target/v1",
         target_implementation_id="fixture.target/v1",
-        target_contract_sha256=workflow.target_contract_sha256,
+        target_descriptor_sha256=workflow.target_descriptor_sha256,
         operation_contract_sha256=operation.sha256,
         plan=target_document,
         plan_sha256=canonical_json_sha256(target_document),
@@ -398,7 +398,7 @@ def test_workflow_target_and_controller_evidence_bind_one_another() -> None:
             claim_id="claim-1",
             fence=2,
             workflow_plan=workflow,
-            target_plan=target.model_copy(update={"target_contract_sha256": _sha("0")}),
+            target_plan=target.model_copy(update={"target_descriptor_sha256": _sha("0")}),
         )
 
 
@@ -459,7 +459,7 @@ def test_workflow_preview_and_evaluation_contracts_are_deterministic() -> None:
         workflow_intent=WorkflowPlanIntent(
             operation=operation,
             target_registration_id="fixture-target",
-            target_contract_sha256=_sha("f"),
+            target_descriptor_sha256=_sha("f"),
             retirement_policy="retain",
         ),
     )
@@ -473,7 +473,7 @@ def test_workflow_preview_and_evaluation_contracts_are_deterministic() -> None:
     target = TargetPlanBinding(
         protocol="stove0-transform-target/v1",
         target_implementation_id="fixture.target/v1",
-        target_contract_sha256=workflow.target_contract_sha256,
+        target_descriptor_sha256=workflow.target_descriptor_sha256,
         operation_contract_sha256=operation.sha256,
         plan={"format": "fixture-target-plan/v1"},
         plan_sha256=_sha("1"),
@@ -541,7 +541,7 @@ def test_workflow_preview_and_evaluation_contracts_are_deterministic() -> None:
             work=children[0],
             operation=operation,
             target_registration_id="fixture-target",
-            target_contract_sha256=_sha("f"),
+            target_descriptor_sha256=_sha("f"),
             retirement_policy="retire-after-verified-output",
         )
 

@@ -13,7 +13,7 @@ from pydantic import BaseModel, ValidationError
 from riverhog_canonical_json import parse_identity_json
 from stove0_target_protocol import (
     TARGET_HTTP_OPERATIONS,
-    TargetContract,
+    TargetDescriptor,
     TargetJobRequest,
     TargetJobStatus,
     TargetPreflightRequest,
@@ -38,7 +38,7 @@ type TargetHttpErrorCode = Literal[
     "not_found",
     "operation_contract_mismatch",
     "request_too_large",
-    "target_contract_mismatch",
+    "target_descriptor_mismatch",
     "target_failed",
     "target_protocol_mismatch",
     "target_runtime_mismatch",
@@ -56,7 +56,7 @@ _TARGET_HTTP_ERROR_STATUS: dict[str, int] = {
     "not_found": 404,
     "operation_contract_mismatch": 409,
     "request_too_large": 413,
-    "target_contract_mismatch": 409,
+    "target_descriptor_mismatch": 409,
     "target_failed": 500,
     "target_protocol_mismatch": 409,
     "target_runtime_mismatch": 409,
@@ -68,7 +68,7 @@ _TARGET_HTTP_ERROR_STATUS: dict[str, int] = {
 class TargetService(Protocol):
     """Server-side target lifecycle required by the v1 HTTP binding."""
 
-    def contract(self) -> TargetContract: ...
+    def descriptor(self) -> TargetDescriptor: ...
 
     def preflight(self, request: TargetPreflightRequest) -> TargetPreflightResponse: ...
 
@@ -119,7 +119,7 @@ class TargetHttpBinding:
             if normalized_method == "GET" and path == "/v1/target":
                 if body:
                     return _error(400, "bad_request", "GET /v1/target must not include a body")
-                return _model_response(self.target.contract())
+                return _model_response(self.target.descriptor())
             if normalized_method == "POST" and path == "/v1/preflight":
                 preflight = self._parse(body, TargetPreflightRequest)
                 return _model_response(self.target.preflight(preflight))

@@ -25,7 +25,7 @@ from stove0_target_protocol import (
     Sha256,
     TargetCallbackAccess,
     TargetCallbackAcknowledgement,
-    TargetContract,
+    TargetDescriptor,
     TargetInputPage,
     TargetJobRequest,
     TargetJobStatus,
@@ -80,8 +80,8 @@ class TargetClient:
         self.timeout = timeout
         self.token = token.strip() if token and token.strip() else None
 
-    def contract(self) -> TargetContract:
-        return self._request("GET", "/v1/target", TargetContract)
+    def descriptor(self) -> TargetDescriptor:
+        return self._request("GET", "/v1/target", TargetDescriptor)
 
     def preflight(self, request: TargetPreflightRequest) -> TargetPreflightResponse:
         response = self._request("POST", "/v1/preflight", TargetPreflightResponse, request)

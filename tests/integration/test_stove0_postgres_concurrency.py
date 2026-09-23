@@ -92,8 +92,8 @@ from stove0_target_support import (
     OutputArtifact,
     OutputArtifactContract,
     OutputCollectionRef,
-    TargetContract,
-    TargetContractPayload,
+    TargetDescriptor,
+    TargetDescriptorPayload,
     TargetExecutionEvidence,
     TargetJobDeclaration,
     TargetJobRequest,
@@ -218,7 +218,7 @@ def _work() -> WorkIdentity:
     )
 
 
-def _target_contracts() -> tuple[OperationContract, TargetContract, TransformPlan]:
+def _target_models() -> tuple[OperationContract, TargetDescriptor, TransformPlan]:
     operation = OperationContract.seal(
         OperationContractPayload(
             id="fixture.copy/v1",
@@ -246,8 +246,8 @@ def _target_contracts() -> tuple[OperationContract, TargetContract, TransformPla
             ),
         )
     )
-    target = TargetContract.seal(
-        TargetContractPayload(
+    target = TargetDescriptor.seal(
+        TargetDescriptorPayload(
             implementation_id="fixture.target/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
@@ -267,7 +267,7 @@ def _target_contracts() -> tuple[OperationContract, TargetContract, TransformPla
     plan = TransformPlan.seal(
         TransformPlanPayload(
             target_implementation_id=target.implementation_id,
-            target_contract_sha256=target.contract_sha256,
+            target_descriptor_sha256=target.descriptor_sha256,
             operation_id=operation.id,
             operation_contract_sha256=operation.contract_sha256,
             inputs=TargetInputAuthority.from_selection(
@@ -295,7 +295,7 @@ def _active_target_work(
     service: Stove0WorkService,
 ) -> tuple[WorkRecord, OperationContract, TargetJobStatus, TargetJobStatus]:
     work = _work()
-    operation, target, plan = _target_contracts()
+    operation, target, plan = _target_models()
     record = service.create_or_resume(work)
     record = service.bind_claim(
         work.work_id,
@@ -309,7 +309,7 @@ def _active_target_work(
             work=work,
             operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
-            target_contract_sha256=target.contract_sha256,
+            target_descriptor_sha256=target.descriptor_sha256,
             retirement_policy="retain",
         )
     )
@@ -436,7 +436,7 @@ def _active_target_work(
         production=production,
         output_collection=output_collection,
         execution_evidence=TargetExecutionEvidence(
-            target_contract_sha256=target.contract_sha256,
+            target_descriptor_sha256=target.descriptor_sha256,
             operation_contract_sha256=operation.contract_sha256,
             plan_sha256=plan.plan_sha256,
             execution_sha256=derivation.execution_sha256,
@@ -476,8 +476,8 @@ def _active_effect_work(
             ),
         )
     )
-    target = TargetContract.seal(
-        TargetContractPayload(
+    target = TargetDescriptor.seal(
+        TargetDescriptorPayload(
             protocol=EFFECT_TARGET_PROTOCOL,
             implementation_id="fixture.external-index-target/v1",
             implementation_version="1.0.0",
@@ -499,7 +499,7 @@ def _active_effect_work(
     plan = EffectPlan.seal(
         EffectPlanPayload(
             target_implementation_id=target.implementation_id,
-            target_contract_sha256=target.contract_sha256,
+            target_descriptor_sha256=target.descriptor_sha256,
             operation_id=operation.id,
             operation_contract_sha256=operation.contract_sha256,
             inputs=TargetInputAuthority.from_selection(
@@ -534,7 +534,7 @@ def _active_effect_work(
             result_kind="external-effect",
             operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-effect-target",
-            target_contract_sha256=target.contract_sha256,
+            target_descriptor_sha256=target.descriptor_sha256,
             retirement_policy="retain",
         )
     )
@@ -597,7 +597,7 @@ def _active_effect_work(
         progress=TargetProgress(phase="canceling", completed=0),
     )
     execution = TargetExecutionEvidence(
-        target_contract_sha256=target.contract_sha256,
+        target_descriptor_sha256=target.descriptor_sha256,
         operation_contract_sha256=operation.contract_sha256,
         plan_sha256=plan.plan_sha256,
         execution_sha256="8" * 64,
@@ -606,7 +606,7 @@ def _active_effect_work(
         ExternalEffectReceiptPayload(
             job_id=request.declaration.job_id,
             request_sha256=request.request_sha256,
-            target_contract_sha256=target.contract_sha256,
+            target_descriptor_sha256=target.descriptor_sha256,
             operation_contract_sha256=operation.contract_sha256,
             plan_sha256=plan.plan_sha256,
             execution_sha256=execution.execution_sha256,
@@ -653,7 +653,7 @@ def _branch_decision() -> BranchSetDecision:
             workflow_intent=WorkflowPlanIntent(
                 operation=OperationRef(id="fixture.branch/v1", sha256="f" * 64),
                 target_registration_id="fixture-target",
-                target_contract_sha256="1" * 64,
+                target_descriptor_sha256="1" * 64,
                 retirement_policy="retain",
             ),
         )
@@ -672,7 +672,7 @@ def _branch_decision() -> BranchSetDecision:
         workflow_intent=WorkflowPlanIntent(
             operation=OperationRef(id="fixture.join/v1", sha256="2" * 64),
             target_registration_id="fixture-target",
-            target_contract_sha256="1" * 64,
+            target_descriptor_sha256="1" * 64,
             retirement_policy="retain",
         ),
     )
@@ -1335,7 +1335,7 @@ def test_postgres_target_declarations_are_isolated_by_fenced_execution_generatio
         record.workflow_plan,
         expected_revision=rebound.revision,
     )
-    operation, target, plan = _target_contracts()
+    operation, target, plan = _target_models()
     rebound = service.seal_target_plan(
         record.work_id,
         target=target,

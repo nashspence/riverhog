@@ -26,7 +26,7 @@ def test_external_effect_result_runtime_matches_its_schema_byte_bound() -> None:
     fields = {
         "job_id": "1" * 64,
         "request_sha256": "2" * 64,
-        "target_contract_sha256": "3" * 64,
+        "target_descriptor_sha256": "3" * 64,
         "operation_contract_sha256": "4" * 64,
         "plan_sha256": "5" * 64,
         "execution_sha256": "6" * 64,
@@ -37,7 +37,7 @@ def test_external_effect_result_runtime_matches_its_schema_byte_bound() -> None:
         ExternalEffectReceiptPayload(**fields, result={"x": exact["x"] + "a"})
 
 
-def test_target_contract_models_are_importable_without_runtime_support() -> None:
+def test_operation_contract_models_are_importable_without_runtime_support() -> None:
     operation = OperationContract.seal(
         OperationContractPayload(
             id="fixture.copy/v1",
@@ -78,7 +78,7 @@ def test_target_contract_models_are_importable_without_runtime_support() -> None
     subprocess.run([sys.executable, "-c", code], check=True)
 
 
-def test_target_contract_requires_vectors_for_non_schema_only_semantics() -> None:
+def test_operation_contract_requires_vectors_for_non_schema_only_semantics() -> None:
     semantics = SemanticValidationProfile.seal(
         SemanticValidationProfilePayload(
             id="fixture.intent-semantics/v1",

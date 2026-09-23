@@ -84,8 +84,8 @@ from stove0_target_support import (
     OutputArtifact,
     OutputArtifactContract,
     OutputCollectionRef,
-    TargetContract,
-    TargetContractPayload,
+    TargetDescriptor,
+    TargetDescriptorPayload,
     TargetExecutionEvidence,
     TargetJobRequest,
     TargetJobStatus,
@@ -201,9 +201,9 @@ def _fork_join_operations() -> tuple[OperationContract, OperationContract]:
 
 def _fork_join_target(
     operations: tuple[OperationContract, OperationContract],
-) -> TargetContract:
-    return TargetContract.seal(
-        TargetContractPayload(
+) -> TargetDescriptor:
+    return TargetDescriptor.seal(
+        TargetDescriptorPayload(
             implementation_id="fixture.fork-join-target/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
@@ -223,9 +223,9 @@ def _fork_join_target(
     )
 
 
-def _target(operation: OperationContract) -> TargetContract:
-    return TargetContract.seal(
-        TargetContractPayload(
+def _target(operation: OperationContract) -> TargetDescriptor:
+    return TargetDescriptor.seal(
+        TargetDescriptorPayload(
             implementation_id="fixture.target/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
@@ -321,7 +321,7 @@ class FixturePlanning:
     def __init__(
         self,
         operation: OperationContract,
-        target: TargetContract,
+        target: TargetDescriptor,
         observer: tuple[ObserverContract, ObserverDescriptor] | None,
     ) -> None:
         self.operation = operation
@@ -391,7 +391,7 @@ class FixturePlanning:
                     sha256=self.operation.contract_sha256,
                 ),
                 target_registration_id="fixture-target",
-                target_contract_sha256=self.target.contract_sha256,
+                target_descriptor_sha256=self.target.descriptor_sha256,
                 retirement_policy="retain",
             ),
             observations=observations,
@@ -440,7 +440,7 @@ class ForkJoinPlanning:
         self,
         branch_operation: OperationContract,
         join_operation: OperationContract,
-        target: TargetContract,
+        target: TargetDescriptor,
     ) -> None:
         self.operations = {
             branch_operation.id: branch_operation,
@@ -488,7 +488,7 @@ class ForkJoinPlanning:
                         sha256=self.branch_operation.contract_sha256,
                     ),
                     target_registration_id="fixture-target",
-                    target_contract_sha256=self.target.contract_sha256,
+                    target_descriptor_sha256=self.target.descriptor_sha256,
                     retirement_policy="retain",
                 ),
             )
@@ -510,7 +510,7 @@ class ForkJoinPlanning:
                     sha256=self.join_operation.contract_sha256,
                 ),
                 target_registration_id="fixture-target",
-                target_contract_sha256=self.target.contract_sha256,
+                target_descriptor_sha256=self.target.descriptor_sha256,
                 retirement_policy="retain",
             ),
         )
@@ -594,7 +594,7 @@ class NestedPlanning(FixturePlanning):
                     sha256=self.operation.contract_sha256,
                 ),
                 target_registration_id="fixture-target",
-                target_contract_sha256=self.target.contract_sha256,
+                target_descriptor_sha256=self.target.descriptor_sha256,
                 retirement_policy="retain",
             ),
         )
@@ -780,7 +780,7 @@ class FixtureTargetCallbacks:
 
 
 def _successful_target_status(
-    target: TargetContract,
+    target: TargetDescriptor,
     operation: OperationContract,
     request: TargetJobRequest | AcceptedTargetJob,
     *,
@@ -862,7 +862,7 @@ def _successful_target_status(
             derivation_sha256=derivation.sha256,
         ),
         execution_evidence=TargetExecutionEvidence(
-            target_contract_sha256=target.contract_sha256,
+            target_descriptor_sha256=target.descriptor_sha256,
             operation_contract_sha256=operation.contract_sha256,
             plan_sha256=declaration.plan.plan_sha256,
             execution_sha256=_sha("9"),
@@ -891,13 +891,13 @@ def _target_settlement(status: TargetJobStatus) -> TargetSettlementAuthority:
 
 
 class FixtureTarget:
-    def __init__(self, operation: OperationContract, target: TargetContract) -> None:
+    def __init__(self, operation: OperationContract, target: TargetDescriptor) -> None:
         self.operation = operation
         self.target = target
         self.accepted: TargetJobRequest | None = None
         self.jobs: dict[str, TargetJobRequest] = {}
 
-    def contract(self, registration_id: str) -> TargetContract:
+    def descriptor(self, registration_id: str) -> TargetDescriptor:
         assert registration_id == "fixture-target"
         return self.target
 
@@ -910,7 +910,7 @@ class FixtureTarget:
         plan = TransformPlan.seal(
             TransformPlanPayload(
                 target_implementation_id=self.target.implementation_id,
-                target_contract_sha256=self.target.contract_sha256,
+                target_descriptor_sha256=self.target.descriptor_sha256,
                 operation_id=request.operation_id,
                 operation_contract_sha256=request.operation_contract_sha256,
                 inputs=request.inputs,
@@ -921,7 +921,7 @@ class FixtureTarget:
                 ),
             )
         )
-        return TargetPreflightResponse(target=self.target, plan=plan)
+        return TargetPreflightResponse(descriptor=self.target, plan=plan)
 
     def put_job(
         self,
@@ -1013,14 +1013,14 @@ class DriftingPreflightTarget(FixtureTarget):
                 target_options={**response.plan.target_options, "runtime-profile": "changed"},
             )
         )
-        return TargetPreflightResponse(target=self.target, plan=changed)
+        return TargetPreflightResponse(descriptor=self.target, plan=changed)
 
 
 class ForkJoinTarget(FixtureTarget):
     def __init__(
         self,
         operations: tuple[OperationContract, OperationContract],
-        target: TargetContract,
+        target: TargetDescriptor,
     ) -> None:
         super().__init__(operations[0], target)
         self.operations = {operation.id: operation for operation in operations}
@@ -1269,9 +1269,9 @@ def _workflow_preview(
                 work_id=workflow.work.work_id,
                 workflow_plan_sha256=workflow.workflow_plan_sha256,
                 target_plan=TargetPlanBinding(
-                    protocol=response.target.protocol,
-                    target_implementation_id=response.target.implementation_id,
-                    target_contract_sha256=response.target.contract_sha256,
+                    protocol=response.descriptor.protocol,
+                    target_implementation_id=response.descriptor.implementation_id,
+                    target_descriptor_sha256=response.descriptor.descriptor_sha256,
                     operation_contract_sha256=plan.operation_contract_sha256,
                     plan=plan.binding_document(),
                     plan_sha256=plan.plan_sha256,
@@ -1293,16 +1293,16 @@ def _workflow_preview(
 
 def _run(observer_enabled: bool) -> tuple[object, object, FixtureRiverhog, FixtureTarget]:
     operation = _operation()
-    target_contract = _target(operation)
+    target_descriptor = _target(operation)
     observer = _observer() if observer_enabled else None
     store = InMemoryWorkStore()
     state = Stove0WorkService(store)
     riverhog = FixtureRiverhog()
-    target = FixtureTarget(operation, target_contract)
+    target = FixtureTarget(operation, target_descriptor)
     coordinator = Stove0Coordinator(
         state,
         riverhog=riverhog,
-        planning=FixturePlanning(operation, target_contract, observer),
+        planning=FixturePlanning(operation, target_descriptor, observer),
         observers=FixtureObservers(observer),
         targets=target,
         target_callbacks=FixtureTargetCallbacks(store),
@@ -1346,9 +1346,9 @@ def _advance_child_to(
 
 def test_operator_initiation_binds_the_exact_preview_and_target_plan() -> None:
     operation = _operation()
-    target_contract = _target(operation)
-    planning = FixturePlanning(operation, target_contract, None)
-    target = FixtureTarget(operation, target_contract)
+    target_descriptor = _target(operation)
+    planning = FixturePlanning(operation, target_descriptor, None)
+    target = FixtureTarget(operation, target_descriptor)
     preview = _workflow_preview(planning, target)
     store = InMemoryWorkStore()
     coordinator = Stove0Coordinator(
@@ -1377,16 +1377,16 @@ def test_operator_initiation_binds_the_exact_preview_and_target_plan() -> None:
 
 def test_operator_initiation_fails_truthfully_when_target_preflight_changes() -> None:
     operation = _operation()
-    target_contract = _target(operation)
-    planning = FixturePlanning(operation, target_contract, None)
-    preview = _workflow_preview(planning, FixtureTarget(operation, target_contract))
+    target_descriptor = _target(operation)
+    planning = FixturePlanning(operation, target_descriptor, None)
+    preview = _workflow_preview(planning, FixtureTarget(operation, target_descriptor))
     store = InMemoryWorkStore()
     coordinator = Stove0Coordinator(
         Stove0WorkService(store),
         riverhog=FixtureRiverhog(),
         planning=planning,
         observers=FixtureObservers(None),
-        targets=DriftingPreflightTarget(operation, target_contract),
+        targets=DriftingPreflightTarget(operation, target_descriptor),
         target_callbacks=FixtureTargetCallbacks(store),
     )
     parent = coordinator.create_or_resume(_work(), preview=preview)
@@ -1406,9 +1406,9 @@ def test_operator_initiation_fails_truthfully_when_target_preflight_changes() ->
 
 def test_coordinator_executes_two_retained_branches_and_one_exact_final_join() -> None:
     operations = _fork_join_operations()
-    target_contract = _fork_join_target(operations)
-    planning = ForkJoinPlanning(*operations, target_contract)
-    target = ForkJoinTarget(operations, target_contract)
+    target_descriptor = _fork_join_target(operations)
+    planning = ForkJoinPlanning(*operations, target_descriptor)
+    target = ForkJoinTarget(operations, target_descriptor)
     store = InMemoryWorkStore()
     riverhog = FixtureRiverhog()
     coordinator = Stove0Coordinator(
@@ -1455,15 +1455,15 @@ def test_coordinator_executes_two_retained_branches_and_one_exact_final_join() -
 
 def test_coordination_settles_parent_only_after_successful_children_complete() -> None:
     operation = _operation()
-    target_contract = _target(operation)
+    target_descriptor = _target(operation)
     store = InMemoryWorkStore()
     riverhog = FixtureRiverhog()
     coordinator = Stove0Coordinator(
         Stove0WorkService(store),
         riverhog=riverhog,
-        planning=FixturePlanning(operation, target_contract, None),
+        planning=FixturePlanning(operation, target_descriptor, None),
         observers=FixtureObservers(None),
-        targets=FixtureTarget(operation, target_contract),
+        targets=FixtureTarget(operation, target_descriptor),
         target_callbacks=FixtureTargetCallbacks(store),
     )
     parent, child = _advance_child_to(coordinator, store, "settled")
@@ -1483,15 +1483,15 @@ def test_coordination_settles_parent_only_after_successful_children_complete() -
 
 def test_incomplete_post_root_binding_is_not_visible_to_coordination() -> None:
     operation = _operation()
-    target_contract = _target(operation)
+    target_descriptor = _target(operation)
     store = InMemoryWorkStore()
     riverhog = DelayedSettlementRiverhog()
     coordinator = Stove0Coordinator(
         Stove0WorkService(store),
         riverhog=riverhog,
-        planning=FixturePlanning(operation, target_contract, None),
+        planning=FixturePlanning(operation, target_descriptor, None),
         observers=FixtureObservers(None),
-        targets=FixtureTarget(operation, target_contract),
+        targets=FixtureTarget(operation, target_descriptor),
         target_callbacks=FixtureTargetCallbacks(store),
     )
     parent, child = _advance_child_to(coordinator, store, "verifying")
@@ -1520,7 +1520,7 @@ def test_retirement_grace_and_deletion_blockers_leave_work_stably_waiting() -> N
             work=work,
             operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
-            target_contract_sha256=target.contract_sha256,
+            target_descriptor_sha256=target.descriptor_sha256,
             retirement_policy="retire-after-verified-output",
         )
     )
@@ -1563,16 +1563,16 @@ def test_retirement_grace_and_deletion_blockers_leave_work_stably_waiting() -> N
 
 def test_failed_branch_waits_for_independent_sibling_then_retries_same_graph() -> None:
     operations = _fork_join_operations()
-    target_contract = _fork_join_target(operations)
+    target_descriptor = _fork_join_target(operations)
     store = InMemoryWorkStore()
     state = Stove0WorkService(store)
     riverhog = FixtureRiverhog()
     coordinator = Stove0Coordinator(
         state,
         riverhog=riverhog,
-        planning=ForkJoinPlanning(*operations, target_contract),
+        planning=ForkJoinPlanning(*operations, target_descriptor),
         observers=FixtureObservers(None),
-        targets=ForkJoinTarget(operations, target_contract),
+        targets=ForkJoinTarget(operations, target_descriptor),
         target_callbacks=FixtureTargetCallbacks(store),
     )
     parent = coordinator.create_or_resume(_work())
@@ -1635,16 +1635,16 @@ def test_failed_branch_waits_for_independent_sibling_then_retries_same_graph() -
 
 def test_nested_coordination_executes_as_normalized_work_and_seals_exact_settlements() -> None:
     operation = _operation()
-    target_contract = _target(operation)
+    target_descriptor = _target(operation)
     store = InMemoryWorkStore()
     state = Stove0WorkService(store)
     riverhog = NestedFixtureRiverhog()
     coordinator = Stove0Coordinator(
         state,
         riverhog=riverhog,
-        planning=NestedPlanning(operation, target_contract, None),
+        planning=NestedPlanning(operation, target_descriptor, None),
         observers=FixtureObservers(None),
-        targets=FixtureTarget(operation, target_contract),
+        targets=FixtureTarget(operation, target_descriptor),
         target_callbacks=FixtureTargetCallbacks(store),
     )
     root = coordinator.create_or_resume(_work())
@@ -1690,15 +1690,15 @@ def test_nested_coordination_executes_as_normalized_work_and_seals_exact_settlem
 
 def test_nested_final_join_exposes_actual_join_collection_without_relabeling_producer() -> None:
     operations = _fork_join_operations()
-    target_contract = _fork_join_target(operations)
+    target_descriptor = _fork_join_target(operations)
     store = InMemoryWorkStore()
     state = Stove0WorkService(store)
     coordinator = Stove0Coordinator(
         state,
         riverhog=NestedFixtureRiverhog(),
-        planning=NestedJoinPlanning(*operations, target_contract),
+        planning=NestedJoinPlanning(*operations, target_descriptor),
         observers=FixtureObservers(None),
-        targets=ForkJoinTarget(operations, target_contract),
+        targets=ForkJoinTarget(operations, target_descriptor),
         target_callbacks=FixtureTargetCallbacks(store),
     )
     root = coordinator.create_or_resume(_work())
@@ -1755,14 +1755,14 @@ def test_nested_final_join_exposes_actual_join_collection_without_relabeling_pro
 
 def test_parent_cancellation_propagates_through_unclaimed_nested_subtree() -> None:
     operation = _operation()
-    target_contract = _target(operation)
+    target_descriptor = _target(operation)
     store = InMemoryWorkStore()
     coordinator = Stove0Coordinator(
         Stove0WorkService(store),
         riverhog=NestedFixtureRiverhog(),
-        planning=NestedPlanning(operation, target_contract, None),
+        planning=NestedPlanning(operation, target_descriptor, None),
         observers=FixtureObservers(None),
-        targets=FixtureTarget(operation, target_contract),
+        targets=FixtureTarget(operation, target_descriptor),
         target_callbacks=FixtureTargetCallbacks(store),
     )
     root = coordinator.create_or_resume(_work())
@@ -1794,15 +1794,15 @@ def test_parent_cancellation_propagates_through_unclaimed_nested_subtree() -> No
 
 def test_interrupted_branch_remains_explicit_and_resumes_without_parent_failure() -> None:
     operation = _operation()
-    target_contract = _target(operation)
+    target_descriptor = _target(operation)
     store = InMemoryWorkStore()
     state = Stove0WorkService(store)
     coordinator = Stove0Coordinator(
         state,
         riverhog=FixtureRiverhog(),
-        planning=FixturePlanning(operation, target_contract, None),
+        planning=FixturePlanning(operation, target_descriptor, None),
         observers=FixtureObservers(None),
-        targets=FixtureTarget(operation, target_contract),
+        targets=FixtureTarget(operation, target_descriptor),
         target_callbacks=FixtureTargetCallbacks(store),
     )
     parent, child = _advance_child_to(coordinator, store, "executing")
@@ -1831,16 +1831,16 @@ def test_interrupted_branch_remains_explicit_and_resumes_without_parent_failure(
 
 def test_inapplicable_branch_converges_parent_and_releases_claims() -> None:
     operation = _operation()
-    target_contract = _target(operation)
+    target_descriptor = _target(operation)
     store = InMemoryWorkStore()
     state = Stove0WorkService(store)
     riverhog = FixtureRiverhog()
     coordinator = Stove0Coordinator(
         state,
         riverhog=riverhog,
-        planning=FixturePlanning(operation, target_contract, None),
+        planning=FixturePlanning(operation, target_descriptor, None),
         observers=FixtureObservers(None),
-        targets=FixtureTarget(operation, target_contract),
+        targets=FixtureTarget(operation, target_descriptor),
         target_callbacks=FixtureTargetCallbacks(store),
     )
     parent, child = _advance_child_to(coordinator, store, "claimed")
@@ -1862,16 +1862,16 @@ def test_inapplicable_branch_converges_parent_and_releases_claims() -> None:
 
 def test_canceled_branch_converges_parent_and_releases_claims() -> None:
     operation = _operation()
-    target_contract = _target(operation)
+    target_descriptor = _target(operation)
     store = InMemoryWorkStore()
     state = Stove0WorkService(store)
     riverhog = FixtureRiverhog()
     coordinator = Stove0Coordinator(
         state,
         riverhog=riverhog,
-        planning=FixturePlanning(operation, target_contract, None),
+        planning=FixturePlanning(operation, target_descriptor, None),
         observers=FixtureObservers(None),
-        targets=FixtureTarget(operation, target_contract),
+        targets=FixtureTarget(operation, target_descriptor),
         target_callbacks=FixtureTargetCallbacks(store),
     )
     parent, child = _advance_child_to(coordinator, store, "claimed")
@@ -1887,16 +1887,16 @@ def test_canceled_branch_converges_parent_and_releases_claims() -> None:
 
 def test_failed_join_converges_parent_instead_of_renewing_forever() -> None:
     operations = _fork_join_operations()
-    target_contract = _fork_join_target(operations)
+    target_descriptor = _fork_join_target(operations)
     store = InMemoryWorkStore()
     state = Stove0WorkService(store)
     riverhog = FixtureRiverhog()
     coordinator = Stove0Coordinator(
         state,
         riverhog=riverhog,
-        planning=ForkJoinPlanning(*operations, target_contract),
+        planning=ForkJoinPlanning(*operations, target_descriptor),
         observers=FixtureObservers(None),
-        targets=ForkJoinTarget(operations, target_contract),
+        targets=ForkJoinTarget(operations, target_descriptor),
         target_callbacks=FixtureTargetCallbacks(store),
     )
     parent = coordinator.create_or_resume(_work())
@@ -1933,15 +1933,15 @@ def test_failed_join_converges_parent_instead_of_renewing_forever() -> None:
 
 def test_coordinator_records_inapplicable_as_a_distinct_terminal_outcome() -> None:
     operation = _operation()
-    target_contract = _target(operation)
+    target_descriptor = _target(operation)
     riverhog = FixtureRiverhog()
     store = InMemoryWorkStore()
     coordinator = Stove0Coordinator(
         Stove0WorkService(store),
         riverhog=riverhog,
-        planning=InapplicablePlanning(operation, target_contract, None),
+        planning=InapplicablePlanning(operation, target_descriptor, None),
         observers=FixtureObservers(None),
-        targets=FixtureTarget(operation, target_contract),
+        targets=FixtureTarget(operation, target_descriptor),
         target_callbacks=FixtureTargetCallbacks(store),
     )
     record = coordinator.create_or_resume(_work())
@@ -1960,16 +1960,16 @@ def test_coordinator_records_inapplicable_as_a_distinct_terminal_outcome() -> No
 
 def test_coordinator_restarts_unsettled_work_under_a_new_claim_fence() -> None:
     operation = _operation()
-    target_contract = _target(operation)
+    target_descriptor = _target(operation)
     store = InMemoryWorkStore()
     state = Stove0WorkService(store)
     riverhog = FixtureRiverhog()
     coordinator = Stove0Coordinator(
         state,
         riverhog=riverhog,
-        planning=FixturePlanning(operation, target_contract, None),
+        planning=FixturePlanning(operation, target_descriptor, None),
         observers=FixtureObservers(None),
-        targets=FixtureTarget(operation, target_contract),
+        targets=FixtureTarget(operation, target_descriptor),
         target_callbacks=FixtureTargetCallbacks(store),
     )
     record = coordinator.create_or_resume(_work())
@@ -2018,16 +2018,16 @@ def test_coordinator_records_pinned_observation_evidence_before_target_execution
 
 def test_coordinator_verifies_the_current_fence_without_renewing_it() -> None:
     operation = _operation()
-    target_contract = _target(operation)
+    target_descriptor = _target(operation)
     store = InMemoryWorkStore()
     state = Stove0WorkService(store)
     riverhog = FixtureRiverhog()
     coordinator = Stove0Coordinator(
         state,
         riverhog=riverhog,
-        planning=FixturePlanning(operation, target_contract, None),
+        planning=FixturePlanning(operation, target_descriptor, None),
         observers=FixtureObservers(None),
-        targets=FixtureTarget(operation, target_contract),
+        targets=FixtureTarget(operation, target_descriptor),
         target_callbacks=FixtureTargetCallbacks(store),
     )
     _parent, record = _advance_child_to(coordinator, store, "verifying")
@@ -2043,15 +2043,15 @@ def test_coordinator_verifies_the_current_fence_without_renewing_it() -> None:
 
 def test_coordinator_retries_target_failure_under_a_fresh_claim_fence() -> None:
     operation = _operation()
-    target_contract = _target(operation)
+    target_descriptor = _target(operation)
     store = InMemoryWorkStore()
     state = Stove0WorkService(store)
     riverhog = FixtureRiverhog()
-    target = FixtureTarget(operation, target_contract)
+    target = FixtureTarget(operation, target_descriptor)
     coordinator = Stove0Coordinator(
         state,
         riverhog=riverhog,
-        planning=FixturePlanning(operation, target_contract, None),
+        planning=FixturePlanning(operation, target_descriptor, None),
         observers=FixtureObservers(None),
         targets=target,
         target_callbacks=FixtureTargetCallbacks(store),
@@ -2097,15 +2097,15 @@ def test_coordinator_retries_target_failure_under_a_fresh_claim_fence() -> None:
 
 def test_coordinator_cancels_retryable_terminal_target_failure_by_abandoning_claim() -> None:
     operation = _operation()
-    target_contract = _target(operation)
+    target_descriptor = _target(operation)
     store = InMemoryWorkStore()
     state = Stove0WorkService(store)
     riverhog = FixtureRiverhog()
-    target = FixtureTarget(operation, target_contract)
+    target = FixtureTarget(operation, target_descriptor)
     coordinator = Stove0Coordinator(
         state,
         riverhog=riverhog,
-        planning=FixturePlanning(operation, target_contract, None),
+        planning=FixturePlanning(operation, target_descriptor, None),
         observers=FixtureObservers(None),
         targets=target,
         target_callbacks=FixtureTargetCallbacks(store),
@@ -2147,15 +2147,15 @@ def test_coordinator_cancels_retryable_terminal_target_failure_by_abandoning_cla
 
 def test_coordinator_propagates_target_cancellation_without_persisting_reason() -> None:
     operation = _operation()
-    target_contract = _target(operation)
+    target_descriptor = _target(operation)
     store = InMemoryWorkStore()
     state = Stove0WorkService(store)
     riverhog = FixtureRiverhog()
-    target = FixtureTarget(operation, target_contract)
+    target = FixtureTarget(operation, target_descriptor)
     coordinator = Stove0Coordinator(
         state,
         riverhog=riverhog,
-        planning=FixturePlanning(operation, target_contract, None),
+        planning=FixturePlanning(operation, target_descriptor, None),
         observers=FixtureObservers(None),
         targets=target,
         target_callbacks=FixtureTargetCallbacks(store),
@@ -2170,15 +2170,15 @@ def test_coordinator_propagates_target_cancellation_without_persisting_reason() 
 
 def test_parent_cancellation_converges_children_before_abandoning_coordination() -> None:
     operation = _operation()
-    target_contract = _target(operation)
+    target_descriptor = _target(operation)
     store = InMemoryWorkStore()
     state = Stove0WorkService(store)
     riverhog = FixtureRiverhog()
-    target = FixtureTarget(operation, target_contract)
+    target = FixtureTarget(operation, target_descriptor)
     coordinator = Stove0Coordinator(
         state,
         riverhog=riverhog,
-        planning=FixturePlanning(operation, target_contract, None),
+        planning=FixturePlanning(operation, target_descriptor, None),
         observers=FixtureObservers(None),
         targets=target,
         target_callbacks=FixtureTargetCallbacks(store),

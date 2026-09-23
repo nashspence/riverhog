@@ -25,8 +25,8 @@ from stove0_target_protocol import (
     EffectPlan,
     EffectPlanPayload,
     OperationContract,
-    TargetContract,
     TargetDeclaration,
+    TargetDescriptor,
     TargetFailure,
     TargetInapplicable,
     TargetJobRequest,
@@ -94,7 +94,7 @@ class PersistentTargetService:
     def __init__(
         self,
         *,
-        contract: TargetContract,
+        descriptor: TargetDescriptor,
         operations: Mapping[str, OperationContract],
         state_root: Path,
         execute: JobExecutor,
@@ -102,11 +102,13 @@ class PersistentTargetService:
         maximum_workers: int = 1,
         terminal_state_retention_seconds: int = DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
     ) -> None:
-        self._contract = contract
+        self._descriptor = descriptor
         self._operations = dict(operations)
-        if set(self._operations) != {item.operation_id for item in contract.operations}:
-            raise ValueError("target operation implementations differ from the advertised contract")
-        for support in contract.operations:
+        if set(self._operations) != {item.operation_id for item in descriptor.operations}:
+            raise ValueError(
+                "target operation implementations differ from the advertised descriptor"
+            )
+        for support in descriptor.operations:
             operation = self._operations[support.operation_id]
             if (
                 operation.contract_sha256 != support.operation_contract_sha256
@@ -152,14 +154,14 @@ class PersistentTargetService:
         self._recover_interrupted()
         self.prune_terminal_state()
 
-    def contract(self) -> TargetContract:
-        return self._contract
+    def descriptor(self) -> TargetDescriptor:
+        return self._descriptor
 
     def preflight(self, request: TargetPreflightRequest) -> TargetPreflightResponse:
-        if request.protocol != self._contract.protocol:
+        if request.protocol != self._descriptor.protocol:
             raise TargetServiceError(409, "target_protocol_mismatch", "target protocol changed")
         operation = self._operation(request.operation_id)
-        support = self._contract.support_for(request.operation_id)
+        support = self._descriptor.support_for(request.operation_id)
         if (
             request.operation_contract_sha256
             not in {
@@ -176,30 +178,30 @@ class PersistentTargetService:
             "inputs": request.inputs,
             "intent": request.intent,
             "target_options": request.target_options,
-            "target_implementation_id": self._contract.implementation_id,
-            "target_contract_sha256": self._contract.contract_sha256,
+            "target_implementation_id": self._descriptor.implementation_id,
+            "target_descriptor_sha256": self._descriptor.descriptor_sha256,
             "observation_result_sha256s": tuple(
                 sorted(item.result.result_sha256 for item in request.observations)
             ),
         }
         plan = (
             EffectPlan.seal(EffectPlanPayload.model_validate(plan_fields))
-            if self._contract.protocol == EFFECT_TARGET_PROTOCOL
+            if self._descriptor.protocol == EFFECT_TARGET_PROTOCOL
             else TransformPlan.seal(TransformPlanPayload.model_validate(plan_fields))
         )
-        return TargetPreflightResponse(target=self._contract, plan=plan)
+        return TargetPreflightResponse(descriptor=self._descriptor, plan=plan)
 
     def put_job(self, request: TargetJobRequest) -> TargetJobStatus:
         job_id = request.declaration.job_id
         plan = request.declaration.plan
         if (
-            plan.target_contract_sha256 != self._contract.contract_sha256
-            or plan.target_implementation_id != self._contract.implementation_id
-            or plan.protocol != self._contract.protocol
+            plan.target_descriptor_sha256 != self._descriptor.descriptor_sha256
+            or plan.target_implementation_id != self._descriptor.implementation_id
+            or plan.protocol != self._descriptor.protocol
         ):
-            raise TargetServiceError(409, "target_contract_mismatch", "target contract changed")
+            raise TargetServiceError(409, "target_descriptor_mismatch", "target descriptor changed")
         operation = self._operation(plan.operation_id)
-        support = self._contract.support_for(plan.operation_id)
+        support = self._descriptor.support_for(plan.operation_id)
         if (
             plan.operation_contract_sha256
             not in {

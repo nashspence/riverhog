@@ -108,9 +108,11 @@ class WorkflowPreviewService:
             target_plans: list[BranchTargetPreview] = []
             for branch in decision.leaf_branches():
                 workflow = branch.workflow_plan
-                target = self.targets.contract(workflow.target_registration_id)
-                if target.contract_sha256 != workflow.target_contract_sha256:
-                    raise RuntimeError("configured target contract changed after workflow planning")
+                target = self.targets.descriptor(workflow.target_registration_id)
+                if target.descriptor_sha256 != workflow.target_descriptor_sha256:
+                    raise RuntimeError(
+                        "configured target descriptor changed after workflow planning"
+                    )
                 preflight_request = self.planning.target_preflight_request(
                     workflow,
                     documents,
@@ -129,7 +131,7 @@ class WorkflowPreviewService:
                         target_plan=TargetPlanBinding(
                             protocol=target.protocol,
                             target_implementation_id=target.implementation_id,
-                            target_contract_sha256=target.contract_sha256,
+                            target_descriptor_sha256=target.descriptor_sha256,
                             operation_contract_sha256=plan.operation_contract_sha256,
                             plan=plan.binding_document(),
                             plan_sha256=plan.plan_sha256,

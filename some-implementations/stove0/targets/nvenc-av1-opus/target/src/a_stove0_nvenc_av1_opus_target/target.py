@@ -31,8 +31,8 @@ from stove0_target_support import (
     DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
     OutputArtifact,
     PersistentTargetService,
-    TargetContract,
-    TargetContractPayload,
+    TargetDescriptor,
+    TargetDescriptorPayload,
     TargetExecutionCanceled,
     TargetExecutionInapplicable,
     TargetExecutionRuntime,
@@ -95,8 +95,8 @@ class NvencAv1OpusTargetService(PersistentTargetService):
         os.chmod(self.workspace_root, 0o700)
         self.ffmpeg = ffmpeg
         self.image_digest = image_digest
-        contract = TargetContract.seal(
-            TargetContractPayload(
+        descriptor = TargetDescriptor.seal(
+            TargetDescriptorPayload(
                 implementation_id="a-stove0-nvenc-av1-opus-target/v1",
                 implementation_version=_version(),
                 source_revision=source_revision,
@@ -110,9 +110,9 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                 ),
             )
         )
-        self.target_contract = contract
+        self.target_descriptor = descriptor
         super().__init__(
-            contract=contract,
+            descriptor=descriptor,
             operations={AV1_OPUS_ARCHIVE_OPERATION.id: AV1_OPUS_ARCHIVE_OPERATION},
             state_root=state_root,
             execute=self._execute,
@@ -288,7 +288,7 @@ class NvencAv1OpusTargetService(PersistentTargetService):
                             encode_command=effective,
                             intent=intent,
                             target_options=options,
-                            target_contract_sha256=self.target_contract.contract_sha256,
+                            target_descriptor_sha256=self.target_descriptor.descriptor_sha256,
                             plan_sha256=request.declaration.plan.plan_sha256,
                         )
                         source_artifact = self._output(
