@@ -56,6 +56,8 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ## Governing policies
 
+[Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
+
 - <a id="pa-5eb5a4dbbd"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
 - <a id="pa-5807fc73e4"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 

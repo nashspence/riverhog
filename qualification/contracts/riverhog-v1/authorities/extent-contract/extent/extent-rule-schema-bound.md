@@ -14,7 +14,7 @@ Exact externally visible contract owned by this contract element.
 ## External contract
 
 <a id="p-c0db822fc0"></a>
-[Where this policy applies](../../../policies/extent-rule-schema-bound-v1/applications.md)
+[Indexed applications](../../../policies/extent-rule-schema-bound-v1/applications.md)
 
 <a id="s-6b20b7da6a"></a>
 
@@ -27,7 +27,8 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-b74b0aafeb"></a>[extent-rule/schema-bound/v1](#p-c0db822fc0)
+[Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
+
 
 ## Evidence
 

@@ -71,6 +71,8 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"; sou
 
 ## Governing policies
 
+[Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
+
 - <a id="pa-e28bfc5496"></a>[compatibility/cli/v1](../../release/compatibility-guarantees/compatibility-cli.md#p-48a89776de)
 - <a id="pa-13c00b78e8"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 

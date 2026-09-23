@@ -14,16 +14,12 @@ Exact externally visible contract owned by this contract element.
 ## External contract
 
 <a id="p-95e9a12259"></a>
-[Where this policy applies](../../../policies/compatibility-components-v1/applications.md)
+[Indexed applications](../../../policies/compatibility-components-v1/applications.md)
 
 
 | Field | Value |
 |---|---|
 | <a id="s-20ed0aa4fc"></a>`components` | `"A supported deployment runs components from one coordinated product version."` |
-
-## Governing policies
-
-- <a id="pa-18b5e5394d"></a>[compatibility/components/v1](#p-95e9a12259)
 
 ## Evidence
 

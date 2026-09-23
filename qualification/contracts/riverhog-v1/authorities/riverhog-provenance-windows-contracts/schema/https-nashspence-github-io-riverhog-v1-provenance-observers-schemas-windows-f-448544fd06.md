@@ -81,6 +81,8 @@ Shared facts for every subject below: maximum=null; reason="independently-versio
 
 ## Governing policies
 
+[Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
+
 - <a id="pa-31ca6f4071"></a>[compatibility/components/v1](../../release/compatibility-guarantees/compatibility-components.md#p-95e9a12259)
 - <a id="pa-c7ef971e53"></a>[extent-rule/extension-contract/v1](../../extent-contract/extent/extent-rule-extension-contract.md#p-75a89f9d1c)
 

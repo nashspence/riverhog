@@ -33,19 +33,32 @@ RELATIONSHIP_EDGES_PATH = f"{ATLAS_DIRECTORY}/evidence/relationships/edges.md"
 CONFIGURATION_SETTINGS_PATH = f"{ATLAS_DIRECTORY}/evidence/configuration/settings.md"
 CONFIGURATION_FAMILIES_PATH = f"{ATLAS_DIRECTORY}/evidence/configuration/families.md"
 CONFIGURATION_DOCUMENTS_PATH = f"{ATLAS_DIRECTORY}/evidence/configuration/documents.md"
+MACHINE_ARTIFACT_TARGET = f"{ATLAS_DIRECTORY}.json?raw=1"
+EXTENT_PRINCIPLES_PATH = f"{ATLAS_DIRECTORY}/policies/extent_principles/index.md"
 
 
 def _policy_definition_elements(
     elements: Sequence[Mapping[str, object]],
+    policies: Mapping[str, object],
 ) -> dict[str, Mapping[str, object]]:
     definitions = {}
+    by_pointer: dict[str, list[Mapping[str, object]]] = defaultdict(list)
     for item in elements:
-        if item["interface"] not in {"extent", "compatibility-guarantees"}:
-            continue
-        ids = cast(Sequence[str], item["policy_ids"])
-        if len(ids) != 1 or ids[0] in definitions:
-            raise ContractAtlasError(f"policy has no unique definition dossier: {item['id']}")
-        definitions[ids[0]] = item
+        for pointer in cast(Sequence[str], item["pointers"]):
+            by_pointer[pointer].append(item)
+    for records in policies.values():
+        for policy in cast(Sequence[Mapping[str, object]], records):
+            owners = by_pointer.get(str(policy["definition_pointer"]), [])
+            if not owners:
+                continue
+            identity = str(policy["id"])
+            if len(owners) != 1 or identity in definitions:
+                raise ContractAtlasError(f"policy has no unique definition element: {identity}")
+            if identity in cast(Sequence[str], owners[0]["policy_ids"]):
+                raise ContractAtlasError(
+                    f"policy definition counts itself as an application: {identity}"
+                )
+            definitions[identity] = owners[0]
     return definitions
 
 
@@ -82,13 +95,13 @@ def _qualified_name_link(document: str, target: str, label: str, qualification: 
     name = f"[{_md(label)}]({_relative_link(document, target)})"
     if not qualification:
         return name
-    return f"**{name}** [(!)]({_relative_link(document, qualification)})"
+    return f"**{name}** [📦]({_relative_link(document, qualification)})"
 
 
 def _qualification_legend() -> list[str]:
     return [
-        "**(!)** Some guarantees for work spanning pages or chunks still lack supporting "
-        "evidence. Follow the marker for the affected guarantees and contracts. "
+        "**📦** Some guarantees for work spanning pages or chunks still lack supporting "
+        "evidence. Follow the package marker for the affected guarantees and contracts. "
         "This records an evidence gap, not an observed bug; unmarked entries imply no approval.",
         "",
     ]

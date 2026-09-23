@@ -1,10 +1,10 @@
-# Where compatibility/cli/v1 applies
+# Indexed applications of compatibility/cli/v1
 
 [Atlas](../../index.md) · [Reference navigation](../compatibility/index.md)
 
 Definition: [compatibility/cli/v1](../../authorities/release/compatibility-guarantees/compatibility-cli.md#p-48a89776de).
 
-These are the exact recorded policy applications. Each link reaches the policy application on its contract element page; a definition location is not an application or an executed test result.
+These are the indexed contract-element applications. Each link reaches the policy application on its contract element page. The definition states the policy's full scope; this index is not an exhaustive interpretation of that scope or executed evidence.
 
 | Authority | Contract element |
 |---|---|
@@ -120,7 +120,6 @@ These are the exact recorded policy applications. Each link reaches the policy a
 | `piggity` | [piggity retrieval cache status](../../authorities/piggity/cli/piggity-retrieval-cache-status.md#pa-6249452792) |
 | `piggity` | [piggity tag](../../authorities/piggity/cli/piggity-tag.md#pa-2a4f2ccfd5) |
 | `piggity` | [piggity tag list](../../authorities/piggity/cli/piggity-tag-list.md#pa-80e20c1465) |
-| `release` | [Compatibility: cli](../../authorities/release/compatibility-guarantees/compatibility-cli.md#pa-1e6d89838b) |
 | `riverhog-ftp-adapter` | [riverhog-ftp-adapter](../../authorities/riverhog-ftp-adapter/cli/riverhog-ftp-adapter.md#pa-e28bfc5496) |
 | `riverhog-ftp-adapter` | [riverhog-ftp-adapter check-config](../../authorities/riverhog-ftp-adapter/cli/riverhog-ftp-adapter-check-config.md#pa-c148700d0e) |
 | `riverhog-ftp-adapter` | [riverhog-ftp-adapter flush](../../authorities/riverhog-ftp-adapter/cli/riverhog-ftp-adapter-flush.md#pa-6fb4224b0e) |

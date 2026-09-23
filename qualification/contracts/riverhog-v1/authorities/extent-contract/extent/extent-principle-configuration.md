@@ -14,16 +14,12 @@ Exact externally visible contract owned by this contract element.
 ## External contract
 
 <a id="p-aa533611e9"></a>
-[Where this policy applies](../../../policies/extent-principle-configuration-v1/applications.md)
+[Policy scope](../../../policies/extent_principles/index.md)
 
 
 | Field | Value |
 |---|---|
 | <a id="s-f75ba69202"></a>`configuration` | `"Hardware- or environment-dependent limits that observably affect accepted work are operator-configurable and source-linked."` |
-
-## Governing policies
-
-- <a id="pa-920506e14c"></a>[extent-principle/configuration/v1](#p-aa533611e9)
 
 ## Evidence
 

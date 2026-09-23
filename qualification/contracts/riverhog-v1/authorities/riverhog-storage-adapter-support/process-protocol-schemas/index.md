@@ -6,7 +6,7 @@ Structured values exchanged by a process protocol.
 
 ## Contract elements
 
-**(!)** Some guarantees for work spanning pages or chunks still lack supporting evidence. Follow the marker for the affected guarantees and contracts. This records an evidence gap, not an observed bug; unmarked entries imply no approval.
+**📦** Some guarantees for work spanning pages or chunks still lack supporting evidence. Follow the package marker for the affected guarantees and contracts. This records an evidence gap, not an observed bug; unmarked entries imply no approval.
 
 - [AdapterDescriptor](generated-riverhog-storage-adapter-adapterdescriptor.md)
 - [CompletedObjectReceipt](generated-riverhog-storage-adapter-completedobjectreceipt.md)
@@ -26,7 +26,7 @@ Structured values exchanged by a process protocol.
 - [StorageAdapterError](generated-riverhog-storage-adapter-storageadaptererror.md)
 - [WriteCompleteRequest](generated-riverhog-storage-adapter-writecompleterequest.md)
 - [WriteSegmentListRequest](generated-riverhog-storage-adapter-writesegmentlistrequest.md)
-- **[WriteSegmentPage](generated-riverhog-storage-adapter-writesegmentpage.md)** [(!)](generated-riverhog-storage-adapter-writesegmentpage.md#evidence-gaps)
+- **[WriteSegmentPage](generated-riverhog-storage-adapter-writesegmentpage.md)** [📦](generated-riverhog-storage-adapter-writesegmentpage.md#evidence-gaps)
 - [WriteSegmentReceipt](generated-riverhog-storage-adapter-writesegmentreceipt.md)
 - [WriteSegmentRequest](generated-riverhog-storage-adapter-writesegmentrequest.md)
 - [WriteSession](generated-riverhog-storage-adapter-writesession.md)

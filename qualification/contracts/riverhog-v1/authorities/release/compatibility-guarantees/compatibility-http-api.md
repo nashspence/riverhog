@@ -14,16 +14,12 @@ Exact externally visible contract owned by this contract element.
 ## External contract
 
 <a id="p-5bc717c2c0"></a>
-[Where this policy applies](../../../policies/compatibility-http-api-v1/applications.md)
+[Indexed applications](../../../policies/compatibility-http-api-v1/applications.md)
 
 
 | Field | Value |
 |---|---|
 | <a id="s-9e2eb4b18c"></a>`http_api` | `"Published v1 HTTP and CloudEvents contracts remain backward compatible throughout v1."` |
-
-## Governing policies
-
-- <a id="pa-c4b4c3c437"></a>[compatibility/http-api/v1](#p-5bc717c2c0)
 
 ## Evidence
 

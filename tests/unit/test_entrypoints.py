@@ -62,7 +62,7 @@ def _local_links(path: Path) -> set[Path]:
     for target in MARKDOWN_LINK_RE.findall(path.read_text(encoding="utf-8")):
         if "://" in target or target.startswith("#"):
             continue
-        relative = target.split("#", 1)[0]
+        relative = target.split("#", 1)[0].split("?", 1)[0]
         if not relative:
             continue
         links.add((path.parent / relative).resolve())

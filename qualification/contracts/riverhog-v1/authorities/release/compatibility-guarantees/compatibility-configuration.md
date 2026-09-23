@@ -14,16 +14,12 @@ Exact externally visible contract owned by this contract element.
 ## External contract
 
 <a id="p-8dc08bb461"></a>
-[Where this policy applies](../../../policies/compatibility-configuration-v1/applications.md)
+[Indexed applications](../../../policies/compatibility-configuration-v1/applications.md)
 
 
 | Field | Value |
 |---|---|
 | <a id="s-43f1f247d9"></a>`configuration` | `"Accepted v1 configuration remains valid throughout v1 unless an unsafe value must be rejected."` |
-
-## Governing policies
-
-- <a id="pa-8e2b7b9b16"></a>[compatibility/configuration/v1](#p-8dc08bb461)
 
 ## Evidence
 

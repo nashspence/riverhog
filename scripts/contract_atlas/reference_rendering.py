@@ -18,7 +18,9 @@ from .navigation import (
     CONFIGURATION_DOCUMENTS_PATH,
     CONFIGURATION_FAMILIES_PATH,
     CONFIGURATION_SETTINGS_PATH,
+    EXTENT_PRINCIPLES_PATH,
     FIXTURES_PATH,
+    MACHINE_ARTIFACT_TARGET,
     QUALIFICATION_ROUTES_PATH,
     QUALIFICATIONS_PATH,
     RELATIONSHIP_EDGES_PATH,
@@ -82,9 +84,9 @@ def _policy_application_page(
     values: Sequence[Mapping[str, object]],
 ) -> bytes:
     application_note = (
-        "These are the exact recorded policy applications. Each link reaches the policy "
-        "application on its contract element page; a definition location is not an "
-        "application or an executed test result."
+        "These are the indexed contract-element applications. Each link reaches the policy "
+        "application on its contract element page. The definition states the policy's full "
+        "scope; this index is not an exhaustive interpretation of that scope or executed evidence."
     )
     lines = [
         f"Definition: {_policy_link(path, identity, definitions)}.",
@@ -101,7 +103,7 @@ def _policy_application_page(
             _policy_application_anchor(str(item["id"]), identity),
         )
         lines.append(f"| `{_md(item['authority'])}` | [{_md(item['title'])}]({target}) |")
-    return _page(f"Where {identity} applies", path, parent, lines)
+    return _page(f"Indexed applications of {identity}", path, parent, lines)
 
 
 def _render_policy_references(
@@ -113,8 +115,10 @@ def _render_policy_references(
     files = {}
     root = f"{ATLAS_DIRECTORY}/policies/index.md"
     intro = [
-        "Follow a policy to its canonical definition, or inspect the exact contract elements "
-        "where it applies. Application lists describe scope; they are not behavioral evidence.",
+        "Follow a policy to its canonical definition and scope, or inspect its indexed "
+        "contract-element applications. Definitions are not counted as applications. "
+        "An application index is not an exhaustive interpretation of a policy's scope "
+        "or behavioral evidence.",
         "",
     ]
     for category, values in policies.items():
@@ -123,14 +127,39 @@ def _render_policy_references(
         title = category.replace("_", " ").title()
         intro.append(f"- {_link(root, category_path, title)} ({len(records)})")
         category_lines = [
-            "Each definition has one primary location. The application links below identify "
-            "the contract elements governed by that definition.",
+            "Each definition has one primary location and states its own scope. "
+            "The links below list indexed applications, excluding the definition itself. "
+            "An absent index does not mean that a policy has no applications.",
             "",
-            "| Policy definition | Applies to |",
+            "| Policy definition | Scope / indexed applications |",
             "|---|---|",
         ]
+        if category_path == EXTENT_PRINCIPLES_PATH:
+            extents = cast(
+                Mapping[str, object],
+                cast(Mapping[str, object], projection["external_contract"])["extents"],
+            )
+            category_lines[:2] = [
+                "These principles govern the whole extent contract: its "
+                f"{len(cast(Mapping[str, object], extents['rules']))} rules and all "
+                f"{len(cast(Sequence[object], extents['decisions']))} recorded extent decisions. "
+                "Each decision appears on the contract element that owns it. "
+                "The principle definition is not itself an application.",
+                "",
+                "Recorded scope in the machine artifact: `/external_contract/extents`. "
+                + _link(
+                    category_path,
+                    f"{ATLAS_DIRECTORY}/policies/extent_rules/index.md",
+                    "Extent rules",
+                )
+                + " route to the elements with decisions using each rule.",
+                "",
+            ]
         for policy in records:
             identity = str(policy["id"])
+            applications = [
+                item for item in elements if identity in cast(Sequence[str], item["policy_ids"])
+            ]
             target, anchor = _policy_destination(identity, definitions)
             definition = definitions.get(identity)
             if definition is not None:
@@ -143,7 +172,7 @@ def _render_policy_references(
                         f"policy differs from its canonical definition: {identity}"
                     )
             else:
-                pointer = str(policy["source_pointer"])
+                pointer = str(policy["definition_pointer"])
                 if pointer_value(projection, pointer) != policy["meaning"]:
                     raise ContractAtlasError(f"policy differs from its owned source: {identity}")
                 files[target] = _page(
@@ -154,8 +183,16 @@ def _render_policy_references(
                         _html_anchor(anchor),
                         "This publication promise is owned directly by the policy record.",
                         "",
-                        _link(
-                            target, _policy_applications_path(identity), "Where this policy applies"
+                        *(
+                            [
+                                _link(
+                                    target,
+                                    _policy_applications_path(identity),
+                                    "Indexed applications",
+                                )
+                            ]
+                            if applications
+                            else []
                         ),
                         "",
                         "## Definition",
@@ -165,13 +202,23 @@ def _render_policy_references(
                         f"Definition location in the machine artifact: `{_md(pointer)}`.",
                     ],
                 )
-            applications = [
-                item for item in elements if identity in cast(Sequence[str], item["policy_ids"])
-            ]
+            if not applications:
+                scope = (
+                    "Whole extent contract"
+                    if category == "extent_principles"
+                    else "Scope stated in definition; no element index"
+                )
+                category_lines.append(
+                    f"| {_policy_link(category_path, identity, definitions)} | {scope} |"
+                )
+                continue
             application_path = _policy_applications_path(identity)
+            count_label = "contract element" if len(applications) == 1 else "contract elements"
             category_lines.append(
                 f"| {_policy_link(category_path, identity, definitions)} | "
-                + _link(category_path, application_path, f"{len(applications)} contract elements")
+                + _link(
+                    category_path, application_path, f"{len(applications)} indexed {count_label}"
+                )
                 + " |"
             )
             payload = _policy_application_page(
@@ -183,8 +230,8 @@ def _render_policy_references(
                 lines = [
                     f"Definition: {_policy_link(application_path, identity, definitions)}.",
                     "",
-                    "Choose an authority to inspect this policy's exact contract-element "
-                    "applications.",
+                    "Choose an authority to inspect this policy's indexed contract-element "
+                    "applications. The definition states its full scope.",
                     "",
                     "| Authority | Contract elements |",
                     "|---|---:|",
@@ -196,7 +243,9 @@ def _render_policy_references(
                         identity, definitions, child, application_path, values
                     )
                     lines.append(f"| {_link(application_path, child, owner)} | {len(values)} |")
-                payload = _page(f"Where {identity} applies", application_path, category_path, lines)
+                payload = _page(
+                    f"Indexed applications of {identity}", application_path, category_path, lines
+                )
             files[application_path] = payload
         files[category_path] = _page(title, category_path, root, category_lines)
     files[root] = _page("Governing policies", root, f"{ATLAS_DIRECTORY}/index.md", intro)
@@ -779,7 +828,7 @@ def _render_evidence_references(
             _anchor_marker("identity", "atlas_representation_sha256")
             + "The byte-exact `atlas_representation_sha256` is recorded at "
             "`/identities/atlas_representation_sha256` in the "
-            + _link(identity_path, f"{ATLAS_DIRECTORY}.json", "machine artifact")
+            + _link(identity_path, MACHINE_ARTIFACT_TARGET, "machine artifact (raw JSON)")
             + ". It cannot be embedded inside the document bytes that it identifies.",
         ],
     )

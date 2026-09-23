@@ -2,7 +2,7 @@
 
 [Atlas](../index.md) · [Reference navigation](../index.md)
 
-Follow a policy to its canonical definition, or inspect the exact contract elements where it applies. Application lists describe scope; they are not behavioral evidence.
+Follow a policy to its canonical definition and scope, or inspect its indexed contract-element applications. Definitions are not counted as applications. An application index is not an exhaustive interpretation of a policy's scope or behavioral evidence.
 
 - [Compatibility](compatibility/index.md) (9)
 - [Publication](publication/index.md) (3)

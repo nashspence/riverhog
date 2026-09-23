@@ -14,16 +14,12 @@ Exact externally visible contract owned by this contract element.
 ## External contract
 
 <a id="p-cfe2e12ee6"></a>
-[Where this policy applies](../../../policies/extent-principle-logical-totals-v1/applications.md)
+[Policy scope](../../../policies/extent_principles/index.md)
 
 
 | Field | Value |
 |---|---|
 | <a id="s-a7b7a6a331"></a>`logical_totals` | `"A finite logical total has no product-level semantic maximum unless its owning contract declares one."` |
-
-## Governing policies
-
-- <a id="pa-e412720086"></a>[extent-principle/logical-totals/v1](#p-cfe2e12ee6)
 
 ## Evidence
 

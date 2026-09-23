@@ -1,14 +1,13 @@
-# Where compatibility/http-api/v1 applies
+# Indexed applications of compatibility/http-api/v1
 
 [Atlas](../../index.md) · [Reference navigation](../compatibility/index.md)
 
 Definition: [compatibility/http-api/v1](../../authorities/release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0).
 
-These are the exact recorded policy applications. Each link reaches the policy application on its contract element page; a definition location is not an application or an executed test result.
+These are the indexed contract-element applications. Each link reaches the policy application on its contract element page. The definition states the policy's full scope; this index is not an exhaustive interpretation of that scope or executed evidence.
 
 | Authority | Contract element |
 |---|---|
-| `release` | [Compatibility: http api](../../authorities/release/compatibility-guarantees/compatibility-http-api.md#pa-c4b4c3c437) |
 | `riverhog` | [DELETE /v1/apps/{app}/keys/{key_id}/access](../../authorities/riverhog/http-operations/delete-v1-apps-app-keys-key-id-access.md#pa-eb47e0c0cf) |
 | `riverhog` | [DELETE /v1/archive/copies/{collection_id}/{destination_store}](../../authorities/riverhog/http-operations/delete-v1-archive-copies-collection-id-destination-store.md#pa-edfcb3f5aa) |
 | `riverhog` | [DELETE /v1/collections/{collection_id}/provenance/verification](../../authorities/riverhog/http-operations/delete-v1-collections-collection-id-provenance-verification.md#pa-ee77d7df4f) |

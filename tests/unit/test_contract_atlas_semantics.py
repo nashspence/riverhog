@@ -234,9 +234,36 @@ def test_policy_registry_is_contract_focused_and_application_counted() -> None:
     assert "external-contract-fact/v1" not in declared
     assert all("implementation-witness" not in identity for identity in declared)
     assert checked.root["counts"]["by_policy"]
-    assert applied == declared
+    # A definition is an owned contractual fact, not an application of itself.
+    for records in policies.values():
+        for policy in records:
+            pointer = policy["definition_pointer"]
+            assert atlas.pointer_value(checked.root["projection"], pointer) == policy["meaning"]
+            for element in elements:
+                if pointer in element["pointers"]:
+                    assert policy["id"] not in element["policy_ids"]
+    assert not any(identity.startswith("extent-principle/") for identity in applied)
+    assert (
+        not {"compatibility/archive/v1", "compatibility/recovery/v1", "compatibility/licensing/v1"}
+        & applied
+    )
+    assert checked.root["counts"]["by_policy"]["compatibility/cli/v1"] == sum(
+        item["interface"] == "cli" for item in elements
+    )
+    decisions = checked.root["projection"]["external_contract"]["extents"]["decisions"]
+    by_id = {item["id"]: item for item in decisions}
+    for rule in policies["extent_rules"]:
+        # Count actual decision owners, independently of policy_ids and the renderer.
+        expected = sum(
+            any(
+                f"extent-rule/{by_id[identity]['rule']}" == rule["id"]
+                for identity in element["extent_decision_ids"]
+            )
+            for element in elements
+        )
+        assert checked.root["counts"]["by_policy"][rule["id"]] == expected
     policy_page = checked.files["riverhog-v1/policies/index.md"].decode()
     assert "canonical definition" in policy_page
-    assert "Application lists describe scope" in policy_page
+    assert "Definitions are not counted as applications" in policy_page
     for category in policies:
         assert f"]({category}/index.md)" in policy_page

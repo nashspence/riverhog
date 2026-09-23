@@ -1,10 +1,10 @@
-# Where publication/role-retention/v1 applies
+# Indexed applications of publication/role-retention/v1
 
 [Atlas](../../index.md) · [Reference navigation](../publication/index.md)
 
 Definition: [publication/role-retention/v1](index.md#p-3e4dc2e851).
 
-These are the exact recorded policy applications. Each link reaches the policy application on its contract element page; a definition location is not an application or an executed test result.
+These are the indexed contract-element applications. Each link reaches the policy application on its contract element page. The definition states the policy's full scope; this index is not an exhaustive interpretation of that scope or executed evidence.
 
 | Authority | Contract element |
 |---|---|

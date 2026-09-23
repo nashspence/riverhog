@@ -5,7 +5,7 @@
 <a id="p-7dacd6d393"></a>
 This publication promise is owned directly by the policy record.
 
-[Where this policy applies](applications.md)
+[Indexed applications](applications.md)
 
 ## Definition
 

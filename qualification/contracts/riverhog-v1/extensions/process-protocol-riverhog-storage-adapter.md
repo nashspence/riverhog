@@ -13,9 +13,9 @@ Independently deployed process protocol owned by riverhog-storage-adapter-protoc
 - [riverhog-storage-adapter-protocol · Python](../authorities/riverhog-storage-adapter-protocol/python/index.md)
 - [riverhog-storage-adapter-support · Process Protocol](../authorities/riverhog-storage-adapter-support/process-protocol/index.md) ([exact binding](../evidence/relationships/edges.md#re-5b6ba26bb3))
 - [riverhog-storage-adapter-support · Process Protocol Operations](../authorities/riverhog-storage-adapter-support/process-protocol-operations/index.md) ([exact binding](../evidence/relationships/edges.md#re-5b6ba26bb3))
-**(!)** Some guarantees for work spanning pages or chunks still lack supporting evidence. Follow the marker for the affected guarantees and contracts. This records an evidence gap, not an observed bug; unmarked entries imply no approval.
+**📦** Some guarantees for work spanning pages or chunks still lack supporting evidence. Follow the package marker for the affected guarantees and contracts. This records an evidence gap, not an observed bug; unmarked entries imply no approval.
 
-- **[riverhog-storage-adapter-support · Process Protocol Schemas](../authorities/riverhog-storage-adapter-support/process-protocol-schemas/index.md)** [(!)](../authorities/riverhog-storage-adapter-support/process-protocol-schemas/evidence-gaps.md) ([exact binding](../evidence/relationships/edges.md#re-5b6ba26bb3))
+- **[riverhog-storage-adapter-support · Process Protocol Schemas](../authorities/riverhog-storage-adapter-support/process-protocol-schemas/index.md)** [📦](../authorities/riverhog-storage-adapter-support/process-protocol-schemas/evidence-gaps.md) ([exact binding](../evidence/relationships/edges.md#re-5b6ba26bb3))
 
 ## Checked-in nonnormative implementations
 

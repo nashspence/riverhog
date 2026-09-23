@@ -1,10 +1,10 @@
-# Where compatibility/configuration/v1 applies
+# Indexed applications of compatibility/configuration/v1
 
 [Atlas](../../index.md) · [Reference navigation](../compatibility/index.md)
 
 Definition: [compatibility/configuration/v1](../../authorities/release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461).
 
-These are the exact recorded policy applications. Each link reaches the policy application on its contract element page; a definition location is not an application or an executed test result.
+These are the indexed contract-element applications. Each link reaches the policy application on its contract element page. The definition states the policy's full scope; this index is not an exhaustive interpretation of that scope or executed evidence.
 
 | Authority | Contract element |
 |---|---|
@@ -22,7 +22,6 @@ These are the exact recorded policy applications. Each link reaches the policy a
 | `piggity` | [PIGGITY_UPLOAD_FINALIZE_POLL_SECONDS](../../authorities/piggity/configuration-environment/piggity-upload-finalize-poll-seconds.md#pa-0a254a636a) |
 | `piggity` | [PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS](../../authorities/piggity/configuration-environment/piggity-upload-finalize-timeout-seconds.md#pa-83f0b3ae69) |
 | `piggity` | [TERM](../../authorities/piggity/configuration-environment/term.md#pa-47846cc162) |
-| `release` | [Compatibility: configuration](../../authorities/release/compatibility-guarantees/compatibility-configuration.md#pa-8e2b7b9b16) |
 | `riverhog-client` | [RIVERHOG_ALLOW_INSECURE_HTTP](../../authorities/riverhog-client/configuration-environment/riverhog-allow-insecure-http.md#pa-a2ec68e706) |
 | `riverhog-client` | [RIVERHOG_BASE_URL](../../authorities/riverhog-client/configuration-environment/riverhog-base-url.md#pa-28f552d6db) |
 | `riverhog-client` | [RIVERHOG_DOWNLOAD_FILE_CONCURRENCY](../../authorities/riverhog-client/configuration-environment/riverhog-download-file-concurrency.md#pa-a58493261c) |

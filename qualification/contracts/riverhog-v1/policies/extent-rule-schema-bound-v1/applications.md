@@ -1,14 +1,13 @@
-# Where extent-rule/schema-bound/v1 applies
+# Indexed applications of extent-rule/schema-bound/v1
 
 [Atlas](../../index.md) · [Reference navigation](../extent_rules/index.md)
 
 Definition: [extent-rule/schema-bound/v1](../../authorities/extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0).
 
-These are the exact recorded policy applications. Each link reaches the policy application on its contract element page; a definition location is not an application or an executed test result.
+These are the indexed contract-element applications. Each link reaches the policy application on its contract element page. The definition states the policy's full scope; this index is not an exhaustive interpretation of that scope or executed evidence.
 
 | Authority | Contract element |
 |---|---|
-| `extent-contract` | [Extent rule: schema bound](../../authorities/extent-contract/extent/extent-rule-schema-bound.md#pa-b74b0aafeb) |
 | `gogurt` | [gogurt list](../../authorities/gogurt/cli/gogurt-list.md#pa-b9d8daac6d) |
 | `gogurt` | [gogurt listener _run](../../authorities/gogurt/cli/gogurt-listener-run.md#pa-e1d4dda27e) |
 | `gogurt` | [gogurt listener install](../../authorities/gogurt/cli/gogurt-listener-install.md#pa-29bc3b29e4) |

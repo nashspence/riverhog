@@ -94,7 +94,7 @@ def _policy_registry(projection: Mapping[str, object]) -> dict[str, object]:
             {
                 "id": f"compatibility/{key.replace('_', '-')}/v1",
                 "meaning": value,
-                "applies_to": [f"/external_contract/release/compatibility/{key}"],
+                "definition_pointer": f"/external_contract/release/compatibility/{key}",
             }
             for key, value in sorted(compatibility.items())
         ],
@@ -102,7 +102,7 @@ def _policy_registry(projection: Mapping[str, object]) -> dict[str, object]:
             {
                 "id": "publication/role-retention/v1",
                 "meaning": publication_policies["role_retention"],
-                "source_pointer": f"{publication_base}/policy/role_retention",
+                "definition_pointer": f"{publication_base}/policy/role_retention",
                 "applies_to": [
                     *distribution_pointers,
                     *image_pointers,
@@ -112,13 +112,13 @@ def _policy_registry(projection: Mapping[str, object]) -> dict[str, object]:
             {
                 "id": "publication/platform-scope/v1",
                 "meaning": publication_policies["platform_scope"],
-                "source_pointer": f"{publication_base}/policy/platform_scope",
+                "definition_pointer": f"{publication_base}/policy/platform_scope",
                 "applies_to": [*image_pointers, *installation_pointers],
             },
             {
                 "id": "publication/image-digest-scope/v1",
                 "meaning": publication_policies["image_digest_scope"],
-                "source_pointer": f"{publication_base}/policy/image_digest_scope",
+                "definition_pointer": f"{publication_base}/policy/image_digest_scope",
                 "applies_to": image_pointers,
             },
         ],
@@ -126,6 +126,9 @@ def _policy_registry(projection: Mapping[str, object]) -> dict[str, object]:
             {
                 "id": f"extent-principle/{key.replace('_', '-')}/v1",
                 "meaning": value,
+                "definition_pointer": (
+                    f"/external_contract/extents/principles/{_escape_pointer(key)}"
+                ),
                 "applies_to": ["/external_contract/extents"],
             }
             for key, value in sorted(cast(Mapping[str, object], extents["principles"]).items())
@@ -134,6 +137,7 @@ def _policy_registry(projection: Mapping[str, object]) -> dict[str, object]:
             {
                 "id": f"extent-rule/{key}",
                 "meaning": value,
+                "definition_pointer": f"/external_contract/extents/rules/{_escape_pointer(key)}",
                 "applies_to": ["/external_contract/extents/decisions"],
             }
             for key, value in sorted(cast(Mapping[str, object], extents["rules"]).items())
@@ -147,7 +151,6 @@ def _compatibility_policies(interface: str) -> list[str]:
         "configuration": "compatibility/configuration/v1",
         "configuration-environment": "compatibility/configuration/v1",
         "durable-state": "compatibility/durable-state/v1",
-        "extent": "extent-principle/logical-totals/v1",
         "http-operations": "compatibility/http-api/v1",
         "http-schemas": "compatibility/http-api/v1",
         "http-security-schemes": "compatibility/http-api/v1",
@@ -157,7 +160,6 @@ def _compatibility_policies(interface: str) -> list[str]:
         "process-protocol-schemas": "compatibility/components/v1",
         "python": "compatibility/python-api/v1",
         "artifact-verification": "compatibility/components/v1",
-        "compatibility-guarantees": "compatibility/components/v1",
         "installation-roots": "compatibility/components/v1",
         "publication-locations": "compatibility/components/v1",
         "python-distributions": "compatibility/components/v1",
@@ -166,6 +168,8 @@ def _compatibility_policies(interface: str) -> list[str]:
         "versioning-tags": "compatibility/components/v1",
         "schema": "compatibility/components/v1",
     }
+    if interface in {"extent", "compatibility-guarantees"}:
+        return []
     return [mapping[interface]]
 
 
@@ -479,7 +483,7 @@ def _release_elements(elements: list[dict[str, object]], release: Mapping[str, o
 
     compatibility = cast(Mapping[str, object], release["compatibility"])
     for policy_name in sorted(compatibility):
-        element = _add_element(
+        _add_element(
             elements,
             authority="release",
             interface="compatibility-guarantees",
@@ -488,7 +492,6 @@ def _release_elements(elements: list[dict[str, object]], release: Mapping[str, o
             detector="release-metadata",
             source_ids=["release:release.toml"],
         )
-        element["policy_ids"] = [f"compatibility/{policy_name.replace('_', '-')}/v1"]
 
 
 def _external_elements(
@@ -882,7 +885,7 @@ def _external_elements(
 
     extents = cast(Mapping[str, object], external["extents"])
     for key in sorted(cast(Mapping[str, object], extents["principles"])):
-        element = _add_element(
+        _add_element(
             elements,
             authority="extent-contract",
             interface="extent",
@@ -891,9 +894,8 @@ def _external_elements(
             detector="extent",
             source_ids=["extent:extent-contract"],
         )
-        element["policy_ids"] = [f"extent-principle/{key.replace('_', '-')}/v1"]
     for key in sorted(cast(Mapping[str, object], extents["rules"])):
-        element = _add_element(
+        _add_element(
             elements,
             authority="extent-contract",
             interface="extent",
@@ -902,7 +904,6 @@ def _external_elements(
             detector="extent",
             source_ids=["extent:extent-contract"],
         )
-        element["policy_ids"] = [f"extent-rule/{key}"]
     return elements
 
 
@@ -1235,14 +1236,16 @@ def _projection_coverage(
     noncontractual_projection: Sequence[Mapping[str, object]],
 ) -> dict[str, object]:
     pointers = [pointer for item in elements for pointer in cast(Sequence[str], item["pointers"])]
-    policy_pointers = [
-        str(policy["source_pointer"])
+    definition_pointers = [
+        str(policy["definition_pointer"])
         for values in policies.values()
         for policy in cast(Sequence[Mapping[str, object]], values)
-        if "source_pointer" in policy
     ]
-    if len(policy_pointers) != len(set(policy_pointers)):
+    if len(definition_pointers) != len(set(definition_pointers)):
         raise ContractAtlasError("policy source ownership is duplicated")
+    # A definition already owned by an element is a reference, not a second
+    # projection owner. The remaining publication definitions are policy-owned.
+    policy_pointers = [pointer for pointer in definition_pointers if pointer not in pointers]
     noncontractual_pointers = [
         pointer
         for item in noncontractual_projection

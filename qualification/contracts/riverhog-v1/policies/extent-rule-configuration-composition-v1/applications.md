@@ -1,14 +1,13 @@
-# Where extent-rule/configuration-composition/v1 applies
+# Indexed applications of extent-rule/configuration-composition/v1
 
 [Atlas](../../index.md) · [Reference navigation](../extent_rules/index.md)
 
 Definition: [extent-rule/configuration-composition/v1](../../authorities/extent-contract/extent/extent-rule-configuration-composition.md#p-dcd344e8e5).
 
-These are the exact recorded policy applications. Each link reaches the policy application on its contract element page; a definition location is not an application or an executed test result.
+These are the indexed contract-element applications. Each link reaches the policy application on its contract element page. The definition states the policy's full scope; this index is not an exhaustive interpretation of that scope or executed evidence.
 
 | Authority | Contract element |
 |---|---|
-| `extent-contract` | [Extent rule: configuration composition](../../authorities/extent-contract/extent/extent-rule-configuration-composition.md#pa-9c6ff8cf4f) |
 | `gogurt-core` | [gogurt-core:configuration:gogurt-routes-schema configuration](../../authorities/gogurt-core/configuration/gogurt-core-configuration-gogurt-routes-schema-configuration.md#pa-c6a5b8bc5d) |
 | `mango-fish` | [mango-fish:configuration:mango-fish-config configuration](../../authorities/mango-fish/configuration/mango-fish-configuration-mango-fish-config-configuration.md#pa-915f82c123) |
 | `riverhog-ftp-adapter` | [riverhog-ftp-adapter:configuration:ftp-adapter-config configuration](../../authorities/riverhog-ftp-adapter/configuration/riverhog-ftp-adapter-configuration-ftp-adapter-config-configuration.md#pa-9634b80f62) |

@@ -1,14 +1,13 @@
-# Where extent-rule/configured-capacity/v1 applies
+# Indexed applications of extent-rule/configured-capacity/v1
 
 [Atlas](../../index.md) · [Reference navigation](../extent_rules/index.md)
 
 Definition: [extent-rule/configured-capacity/v1](../../authorities/extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99).
 
-These are the exact recorded policy applications. Each link reaches the policy application on its contract element page; a definition location is not an application or an executed test result.
+These are the indexed contract-element applications. Each link reaches the policy application on its contract element page. The definition states the policy's full scope; this index is not an exhaustive interpretation of that scope or executed evidence.
 
 | Authority | Contract element |
 |---|---|
-| `extent-contract` | [Extent rule: configured capacity](../../authorities/extent-contract/extent/extent-rule-configured-capacity.md#pa-727b100384) |
 | `piggity` | [PIGGITY_UPLOAD_FILE_LOG_BYTES](../../authorities/piggity/configuration-environment/piggity-upload-file-log-bytes.md#pa-9f0fd89a14) |
 | `piggity` | [PIGGITY_UPLOAD_FINALIZE_POLL_SECONDS](../../authorities/piggity/configuration-environment/piggity-upload-finalize-poll-seconds.md#pa-7ce3c6fd5c) |
 | `piggity` | [PIGGITY_UPLOAD_FINALIZE_TIMEOUT_SECONDS](../../authorities/piggity/configuration-environment/piggity-upload-finalize-timeout-seconds.md#pa-56e7e300e5) |

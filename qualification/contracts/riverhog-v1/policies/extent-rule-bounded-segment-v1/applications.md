@@ -1,14 +1,13 @@
-# Where extent-rule/bounded-segment/v1 applies
+# Indexed applications of extent-rule/bounded-segment/v1
 
 [Atlas](../../index.md) · [Reference navigation](../extent_rules/index.md)
 
 Definition: [extent-rule/bounded-segment/v1](../../authorities/extent-contract/extent/extent-rule-bounded-segment.md#p-2b3f3f1594).
 
-These are the exact recorded policy applications. Each link reaches the policy application on its contract element page; a definition location is not an application or an executed test result.
+These are the indexed contract-element applications. Each link reaches the policy application on its contract element page. The definition states the policy's full scope; this index is not an exhaustive interpretation of that scope or executed evidence.
 
 | Authority | Contract element |
 |---|---|
-| `extent-contract` | [Extent rule: bounded segment](../../authorities/extent-contract/extent/extent-rule-bounded-segment.md#pa-4c868cde0f) |
 | `riverhog` | [schemas: AddCollectionUploadTagsRequest](../../authorities/riverhog/http-schemas/schemas-addcollectionuploadtagsrequest.md#pa-d390865946) |
 | `riverhog` | [schemas: ArtifactDispositionBatchDocument](../../authorities/riverhog/http-schemas/schemas-artifactdispositionbatchdocument.md#pa-62cf828ece) |
 | `riverhog` | [schemas: ArtifactDispositionOutputBatchDocument](../../authorities/riverhog/http-schemas/schemas-artifactdispositionoutputbatchdocument.md#pa-acf7dcbf83) |

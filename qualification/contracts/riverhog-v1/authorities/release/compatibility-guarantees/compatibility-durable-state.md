@@ -14,16 +14,12 @@ Exact externally visible contract owned by this contract element.
 ## External contract
 
 <a id="p-214a49c2de"></a>
-[Where this policy applies](../../../policies/compatibility-durable-state-v1/applications.md)
+[Indexed applications](../../../policies/compatibility-durable-state-v1/applications.md)
 
 
 | Field | Value |
 |---|---|
 | <a id="s-ac3d88d871"></a>`durable_state` | `"Every later v1 release applies each durable-state authority's declared transition rule to state created by every earlier v1 release; this does not promise downgrade support or earlier software reading later state."` |
-
-## Governing policies
-
-- <a id="pa-e5aa68bd57"></a>[compatibility/durable-state/v1](#p-214a49c2de)
 
 ## Evidence
 

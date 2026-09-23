@@ -1,10 +1,10 @@
-# Where compatibility/durable-state/v1 applies
+# Indexed applications of compatibility/durable-state/v1
 
 [Atlas](../../index.md) · [Reference navigation](../compatibility/index.md)
 
 Definition: [compatibility/durable-state/v1](../../authorities/release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de).
 
-These are the exact recorded policy applications. Each link reaches the policy application on its contract element page; a definition location is not an application or an executed test result.
+These are the indexed contract-element applications. Each link reaches the policy application on its contract element page. The definition states the policy's full scope; this index is not an exhaustive interpretation of that scope or executed evidence.
 
 | Authority | Contract element |
 |---|---|
@@ -21,7 +21,6 @@ These are the exact recorded policy applications. Each link reaches the policy a
 | `piggity-local` | [piggity-local: retrieval_job_files](../../authorities/piggity-local/durable-state/piggity-local-retrieval-job-files.md#pa-65657b7ffc) |
 | `piggity-local` | [piggity-local: retrieval_jobs](../../authorities/piggity-local/durable-state/piggity-local-retrieval-jobs.md#pa-cd09452534) |
 | `piggity-local` | [piggity-local: settings](../../authorities/piggity-local/durable-state/piggity-local-settings.md#pa-30fa3a7658) |
-| `release` | [Compatibility: durable state](../../authorities/release/compatibility-guarantees/compatibility-durable-state.md#pa-e5aa68bd57) |
 | `riverhog-catalog` | [riverhog-catalog durable-state identity](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-durable-state-identity.md#pa-665622a720) |
 | `riverhog-catalog` | [riverhog-catalog: app_key_access_grants](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-app-key-access-grants.md#pa-f421cc5d7b) |
 | `riverhog-catalog` | [riverhog-catalog: app_keys](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-app-keys.md#pa-bbe51cde6f) |

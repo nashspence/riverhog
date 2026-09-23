@@ -15,9 +15,9 @@ Checked-in references form a closed, tightly scoped, maintainer-selected, nonnor
 - [Sources and qualifications](evidence/sources.md) — source bindings, candidate tests, and unestablished obligations; no executed attestation.
 - [Configuration comparison](evidence/configuration.md) — owners, consumers, and default expressions across settings.
 - [Declared relationships](evidence/relationships.md) — exact dependency, packaging, and extension joins.
-- [Snapshot identities](evidence/identities.md) and [machine artifact](../riverhog-v1.json) — match semantic, accounting, trace, and presentation records.
+- [Snapshot identities](evidence/identities.md) and [machine artifact (raw JSON)](../riverhog-v1.json?raw=1) — match semantic, accounting, trace, and presentation records.
 
-**(!)** Some guarantees for work spanning pages or chunks still lack supporting evidence. Follow the marker for the affected guarantees and contracts. This records an evidence gap, not an observed bug; unmarked entries imply no approval.
+**📦** Some guarantees for work spanning pages or chunks still lack supporting evidence. Follow the package marker for the affected guarantees and contracts. This records an evidence gap, not an observed bug; unmarked entries imply no approval.
 
 ## Authorities and interfaces
 
@@ -91,9 +91,9 @@ Checked-in references form a closed, tightly scoped, maintainer-selected, nonnor
   - [Compatibility Guarantees](authorities/release/compatibility-guarantees/index.md) (9)
   - [Publication policies](policies/publication/index.md) — 3 policy-owned promises
 
-- **[riverhog](authorities/riverhog/index.md)** [(!)](authorities/riverhog/evidence-gaps.md) — The Riverhog service API and its maintained cross-interface operation parity.
-  - **[HTTP Operations](authorities/riverhog/http-operations/index.md)** [(!)](authorities/riverhog/http-operations/evidence-gaps.md) (109)
-  - **[HTTP Schemas](authorities/riverhog/http-schemas/index.md)** [(!)](authorities/riverhog/http-schemas/evidence-gaps.md) (253)
+- **[riverhog](authorities/riverhog/index.md)** [📦](authorities/riverhog/evidence-gaps.md) — The Riverhog service API and its maintained cross-interface operation parity.
+  - **[HTTP Operations](authorities/riverhog/http-operations/index.md)** [📦](authorities/riverhog/http-operations/evidence-gaps.md) (109)
+  - **[HTTP Schemas](authorities/riverhog/http-schemas/index.md)** [📦](authorities/riverhog/http-schemas/evidence-gaps.md) (253)
   - [HTTP Service Declaration](authorities/riverhog/http-service-declaration/index.md) (1)
   - [HTTP Security Schemes](authorities/riverhog/http-security-schemes/index.md) (1)
 
@@ -103,8 +103,8 @@ Checked-in references form a closed, tightly scoped, maintainer-selected, nonnor
 - [riverhog-application-access](authorities/riverhog-application-access/index.md) — Public Riverhog application-access contracts and canonical grant grammar.
   - [Python](authorities/riverhog-application-access/python/index.md) (47)
 
-- **[riverhog-archive-contracts](authorities/riverhog-archive-contracts/index.md)** [(!)](authorities/riverhog-archive-contracts/evidence-gaps.md) — Dependency-light immutable Riverhog archive recovery contracts.
-  - **[Schemas](authorities/riverhog-archive-contracts/schema/index.md)** [(!)](authorities/riverhog-archive-contracts/schema/evidence-gaps.md) (4)
+- **[riverhog-archive-contracts](authorities/riverhog-archive-contracts/index.md)** [📦](authorities/riverhog-archive-contracts/evidence-gaps.md) — Dependency-light immutable Riverhog archive recovery contracts.
+  - **[Schemas](authorities/riverhog-archive-contracts/schema/index.md)** [📦](authorities/riverhog-archive-contracts/schema/evidence-gaps.md) (4)
   - [Python](authorities/riverhog-archive-contracts/python/index.md) (72)
 
 - [riverhog-catalog](authorities/riverhog-catalog/index.md) — Encrypted archive management, catalog, and retrieval.
@@ -114,8 +114,8 @@ Checked-in references form a closed, tightly scoped, maintainer-selected, nonnor
   - [Configuration Environment](authorities/riverhog-client/configuration-environment/index.md) (12)
   - [Python](authorities/riverhog-client/python/index.md) (269)
 
-- **[riverhog-ftp-adapter](authorities/riverhog-ftp-adapter/index.md)** [(!)](authorities/riverhog-ftp-adapter/evidence-gaps.md) — Optional nonnormative FTP ingress reference for Riverhog.
-  - **[HTTP Operations](authorities/riverhog-ftp-adapter/http-operations/index.md)** [(!)](authorities/riverhog-ftp-adapter/http-operations/evidence-gaps.md) (5)
+- **[riverhog-ftp-adapter](authorities/riverhog-ftp-adapter/index.md)** [📦](authorities/riverhog-ftp-adapter/evidence-gaps.md) — Optional nonnormative FTP ingress reference for Riverhog.
+  - **[HTTP Operations](authorities/riverhog-ftp-adapter/http-operations/index.md)** [📦](authorities/riverhog-ftp-adapter/http-operations/evidence-gaps.md) (5)
   - [HTTP Schemas](authorities/riverhog-ftp-adapter/http-schemas/index.md) (5)
   - [HTTP Service Declaration](authorities/riverhog-ftp-adapter/http-service-declaration/index.md) (1)
   - [HTTP Security Schemes](authorities/riverhog-ftp-adapter/http-security-schemes/index.md) (1)
@@ -135,8 +135,8 @@ Checked-in references form a closed, tightly scoped, maintainer-selected, nonnor
   - [Schemas](authorities/riverhog-protocol/schema/index.md) (1)
   - [Python](authorities/riverhog-protocol/python/index.md) (323)
 
-- **[riverhog-provenance](authorities/riverhog-provenance/index.md)** [(!)](authorities/riverhog-provenance/evidence-gaps.md) — Portable Riverhog v1 per-file provenance journals and validation.
-  - **[Schemas](authorities/riverhog-provenance/schema/index.md)** [(!)](authorities/riverhog-provenance/schema/evidence-gaps.md) (7)
+- **[riverhog-provenance](authorities/riverhog-provenance/index.md)** [📦](authorities/riverhog-provenance/evidence-gaps.md) — Portable Riverhog v1 per-file provenance journals and validation.
+  - **[Schemas](authorities/riverhog-provenance/schema/index.md)** [📦](authorities/riverhog-provenance/schema/evidence-gaps.md) (7)
   - [Configuration Environment](authorities/riverhog-provenance/configuration-environment/index.md) (3)
   - [Python](authorities/riverhog-provenance/python/index.md) (105) — Defines extension: [riverhog.provenance-observers](extensions/extension-point-riverhog-provenance-observers.md).
 
@@ -189,19 +189,19 @@ Checked-in references form a closed, tightly scoped, maintainer-selected, nonnor
 - [riverhog-storage-adapter-s3-support](authorities/riverhog-storage-adapter-s3-support/index.md) — Optional nonnormative S3 support for Riverhog storage references.
   - [Python](authorities/riverhog-storage-adapter-s3-support/python/index.md) (24)
 
-- **[riverhog-storage-adapter-support](authorities/riverhog-storage-adapter-support/index.md)** [(!)](authorities/riverhog-storage-adapter-support/evidence-gaps.md) — HTTP binding and conformance support for Riverhog storage adapters.
+- **[riverhog-storage-adapter-support](authorities/riverhog-storage-adapter-support/index.md)** [📦](authorities/riverhog-storage-adapter-support/evidence-gaps.md) — HTTP binding and conformance support for Riverhog storage adapters.
   - [Process Protocol](authorities/riverhog-storage-adapter-support/process-protocol/index.md) (1)
   - [Process Protocol Operations](authorities/riverhog-storage-adapter-support/process-protocol-operations/index.md) (15)
-  - **[Process Protocol Schemas](authorities/riverhog-storage-adapter-support/process-protocol-schemas/index.md)** [(!)](authorities/riverhog-storage-adapter-support/process-protocol-schemas/evidence-gaps.md) (23)
+  - **[Process Protocol Schemas](authorities/riverhog-storage-adapter-support/process-protocol-schemas/index.md)** [📦](authorities/riverhog-storage-adapter-support/process-protocol-schemas/evidence-gaps.md) (23)
   - [CLI](authorities/riverhog-storage-adapter-support/cli/index.md) (2)
   - [Python](authorities/riverhog-storage-adapter-support/python/index.md) (45)
 
 - [state-schema](authorities/state-schema/index.md) — Forward-only relational state schema and migration contracts.
   - [Python](authorities/state-schema/python/index.md) (58)
 
-- **[stove0](authorities/stove0/index.md)** [(!)](authorities/stove0/evidence-gaps.md) — The Stove0 reference application API and its maintained cross-interface operation parity.
-  - **[HTTP Operations](authorities/stove0/http-operations/index.md)** [(!)](authorities/stove0/http-operations/evidence-gaps.md) (33)
-  - **[HTTP Schemas](authorities/stove0/http-schemas/index.md)** [(!)](authorities/stove0/http-schemas/evidence-gaps.md) (136)
+- **[stove0](authorities/stove0/index.md)** [📦](authorities/stove0/evidence-gaps.md) — The Stove0 reference application API and its maintained cross-interface operation parity.
+  - **[HTTP Operations](authorities/stove0/http-operations/index.md)** [📦](authorities/stove0/http-operations/evidence-gaps.md) (33)
+  - **[HTTP Schemas](authorities/stove0/http-schemas/index.md)** [📦](authorities/stove0/http-schemas/evidence-gaps.md) (136)
   - [HTTP Service Declaration](authorities/stove0/http-service-declaration/index.md) (1)
 
 - [stove0-api-client](authorities/stove0-api-client/index.md) — Official Python client for the stove0 v1 workflow API.

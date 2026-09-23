@@ -14,16 +14,12 @@ Exact externally visible contract owned by this contract element.
 ## External contract
 
 <a id="p-a16724dfa0"></a>
-[Where this policy applies](../../../policies/extent-principle-bounded-work-v1/applications.md)
+[Policy scope](../../../policies/extent_principles/index.md)
 
 
 | Field | Value |
 |---|---|
 | <a id="s-c57d03c1ac"></a>`bounded_work` | `"Large logical totals cross bounded pages, segments, or restartable work steps; a carrier bound does not redefine the logical total."` |
-
-## Governing policies
-
-- <a id="pa-ca06a308d1"></a>[extent-principle/bounded-work/v1](#p-a16724dfa0)
 
 ## Evidence
 

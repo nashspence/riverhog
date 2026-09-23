@@ -1,14 +1,13 @@
-# Where extent-rule/extension-contract/v1 applies
+# Indexed applications of extent-rule/extension-contract/v1
 
 [Atlas](../../index.md) · [Reference navigation](../extent_rules/index.md)
 
 Definition: [extent-rule/extension-contract/v1](../../authorities/extent-contract/extent/extent-rule-extension-contract.md#p-75a89f9d1c).
 
-These are the exact recorded policy applications. Each link reaches the policy application on its contract element page; a definition location is not an application or an executed test result.
+These are the indexed contract-element applications. Each link reaches the policy application on its contract element page. The definition states the policy's full scope; this index is not an exhaustive interpretation of that scope or executed evidence.
 
 | Authority | Contract element |
 |---|---|
-| `extent-contract` | [Extent rule: extension contract](../../authorities/extent-contract/extent/extent-rule-extension-contract.md#pa-2eda1688d1) |
 | `riverhog-provenance-linux-contracts` | [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-file-stat.json](../../authorities/riverhog-provenance-linux-contracts/schema/https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-linux-file-stat-json.md#pa-29fcc4644a) |
 | `riverhog-provenance-linux-contracts` | [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fs-flags.json](../../authorities/riverhog-provenance-linux-contracts/schema/https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-linux-fs-flags-json.md#pa-e7fe8f5019) |
 | `riverhog-provenance-linux-contracts` | [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json](../../authorities/riverhog-provenance-linux-contracts/schema/https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-linux-fsxattr-json.md#pa-1239d7bb8d) |

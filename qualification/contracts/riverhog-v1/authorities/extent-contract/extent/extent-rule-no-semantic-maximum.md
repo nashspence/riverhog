@@ -14,7 +14,7 @@ Exact externally visible contract owned by this contract element.
 ## External contract
 
 <a id="p-574724b48a"></a>
-[Where this policy applies](../../../policies/extent-rule-no-semantic-maximum-v1/applications.md)
+[Indexed applications](../../../policies/extent-rule-no-semantic-maximum-v1/applications.md)
 
 <a id="s-7ac3159837"></a>
 
@@ -30,7 +30,8 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-4fd09539fd"></a>[extent-rule/no-semantic-maximum/v1](#p-574724b48a)
+[Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
+
 
 ## Evidence
 

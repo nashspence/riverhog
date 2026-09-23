@@ -8,7 +8,7 @@ Contract elements: **76** · Extent decisions: **23**
 
 ## Interfaces
 
-**(!)** Some guarantees for work spanning pages or chunks still lack supporting evidence. Follow the marker for the affected guarantees and contracts. This records an evidence gap, not an observed bug; unmarked entries imply no approval.
+**📦** Some guarantees for work spanning pages or chunks still lack supporting evidence. Follow the package marker for the affected guarantees and contracts. This records an evidence gap, not an observed bug; unmarked entries imply no approval.
 
-- **[Schemas](schema/index.md)** [(!)](schema/evidence-gaps.md) (4)
+- **[Schemas](schema/index.md)** [📦](schema/evidence-gaps.md) (4)
 - [Python](python/index.md) (72)

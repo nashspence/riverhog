@@ -14,7 +14,7 @@ Exact externally visible contract owned by this contract element.
 ## External contract
 
 <a id="p-6b76b527cb"></a>
-[Where this policy applies](../../../policies/extent-rule-route-progression-v1/applications.md)
+[Indexed applications](../../../policies/extent-rule-route-progression-v1/applications.md)
 
 <a id="s-c35859ad2c"></a>
 
@@ -26,7 +26,8 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-bcac356772"></a>[extent-rule/route-progression/v1](#p-6b76b527cb)
+[Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
+
 
 ## Evidence
 

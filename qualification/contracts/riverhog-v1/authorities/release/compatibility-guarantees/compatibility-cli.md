@@ -14,16 +14,12 @@ Exact externally visible contract owned by this contract element.
 ## External contract
 
 <a id="p-48a89776de"></a>
-[Where this policy applies](../../../policies/compatibility-cli-v1/applications.md)
+[Indexed applications](../../../policies/compatibility-cli-v1/applications.md)
 
 
 | Field | Value |
 |---|---|
 | <a id="s-11a2acfae8"></a>`cli` | `"Command names, options, exit status, and structured output remain backward compatible throughout v1; prose output is for people."` |
-
-## Governing policies
-
-- <a id="pa-1e6d89838b"></a>[compatibility/cli/v1](#p-48a89776de)
 
 ## Evidence
 

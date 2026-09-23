@@ -14,16 +14,10 @@ Exact externally visible contract owned by this contract element.
 ## External contract
 
 <a id="p-c6988e244a"></a>
-[Where this policy applies](../../../policies/compatibility-licensing-v1/applications.md)
-
 
 | Field | Value |
 |---|---|
 | <a id="s-db30c07708"></a>`licensing` | `"Each continuing first-party Python distribution and OCI repository published in v1 retains every SPDX license alternative granted when that coordinate first shipped in v1; withdrawing a baseline grant requires a new major version."` |
-
-## Governing policies
-
-- <a id="pa-6427ef79d9"></a>[compatibility/licensing/v1](#p-c6988e244a)
 
 ## Evidence
 

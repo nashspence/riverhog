@@ -1,10 +1,10 @@
-# Where compatibility/python-api/v1 applies
+# Indexed applications of compatibility/python-api/v1
 
 [Atlas](../../index.md) · [Reference navigation](../compatibility/index.md)
 
 Definition: [compatibility/python-api/v1](../../authorities/release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5).
 
-Choose an authority to inspect this policy's exact contract-element applications.
+Choose an authority to inspect this policy's indexed contract-element applications. The definition states its full scope.
 
 | Authority | Contract elements |
 |---|---:|
@@ -19,7 +19,6 @@ Choose an authority to inspect this policy's exact contract-element applications
 | [gogurt-windows-mounted-volume](applications/gogurt-windows-mounted-volume.md) | 3 |
 | [http-api-contracts](applications/http-api-contracts.md) | 63 |
 | [lifecycle-events](applications/lifecycle-events.md) | 26 |
-| [release](applications/release.md) | 1 |
 | [riverhog-age](applications/riverhog-age.md) | 34 |
 | [riverhog-application-access](applications/riverhog-application-access.md) | 47 |
 | [riverhog-archive-contracts](applications/riverhog-archive-contracts.md) | 72 |

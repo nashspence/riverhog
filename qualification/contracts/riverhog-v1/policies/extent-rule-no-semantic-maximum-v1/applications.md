@@ -1,14 +1,13 @@
-# Where extent-rule/no-semantic-maximum/v1 applies
+# Indexed applications of extent-rule/no-semantic-maximum/v1
 
 [Atlas](../../index.md) · [Reference navigation](../extent_rules/index.md)
 
 Definition: [extent-rule/no-semantic-maximum/v1](../../authorities/extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a).
 
-These are the exact recorded policy applications. Each link reaches the policy application on its contract element page; a definition location is not an application or an executed test result.
+These are the indexed contract-element applications. Each link reaches the policy application on its contract element page. The definition states the policy's full scope; this index is not an exhaustive interpretation of that scope or executed evidence.
 
 | Authority | Contract element |
 |---|---|
-| `extent-contract` | [Extent rule: no semantic maximum](../../authorities/extent-contract/extent/extent-rule-no-semantic-maximum.md#pa-4fd09539fd) |
 | `piggity` | [piggity app key access set](../../authorities/piggity/cli/piggity-app-key-access-set.md#pa-55226477c9) |
 | `piggity` | [piggity app key create](../../authorities/piggity/cli/piggity-app-key-create.md#pa-7e4275b7ff) |
 | `piggity` | [piggity collection upload start](../../authorities/piggity/cli/piggity-collection-upload-start.md#pa-c79796e4d4) |

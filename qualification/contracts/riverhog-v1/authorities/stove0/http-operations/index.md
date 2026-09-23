@@ -6,22 +6,22 @@ Callable HTTP operations.
 
 ## Contract elements
 
-**(!)** Some guarantees for work spanning pages or chunks still lack supporting evidence. Follow the marker for the affected guarantees and contracts. This records an evidence gap, not an observed bug; unmarked entries imply no approval.
+**📦** Some guarantees for work spanning pages or chunks still lack supporting evidence. Follow the package marker for the affected guarantees and contracts. This records an evidence gap, not an observed bug; unmarked entries imply no approval.
 
 - [GET /health/live](get-health-live.md)
 - [GET /health/ready](get-health-ready.md)
 - [GET /v1/admin/scheduler](get-v1-admin-scheduler.md)
 - [GET /v1/admission-policies](get-v1-admission-policies.md)
-- **[GET /v1/admissions](get-v1-admissions.md)** [(!)](get-v1-admissions.md#evidence-gaps)
+- **[GET /v1/admissions](get-v1-admissions.md)** [📦](get-v1-admissions.md#evidence-gaps)
 - [GET /v1/admissions/{admission_id}](get-v1-admissions-admission-id.md)
-- **[GET /v1/artifact-selections/{selection_sha256}](get-v1-artifact-selections-selection-sha256.md)** [(!)](get-v1-artifact-selections-selection-sha256.md#evidence-gaps)
-- **[GET /v1/evaluations](get-v1-evaluations.md)** [(!)](get-v1-evaluations.md#evidence-gaps)
+- **[GET /v1/artifact-selections/{selection_sha256}](get-v1-artifact-selections-selection-sha256.md)** [📦](get-v1-artifact-selections-selection-sha256.md#evidence-gaps)
+- **[GET /v1/evaluations](get-v1-evaluations.md)** [📦](get-v1-evaluations.md#evidence-gaps)
 - [GET /v1/evaluations/{evaluation_id}](get-v1-evaluations-evaluation-id.md)
-- **[GET /v1/events](get-v1-events.md)** [(!)](get-v1-events.md#evidence-gaps)
+- **[GET /v1/events](get-v1-events.md)** [📦](get-v1-events.md#evidence-gaps)
 - [GET /v1/recipes](get-v1-recipes.md)
 - [GET /v1/recipes/{recipe_id}](get-v1-recipes-recipe-id.md)
-- **[GET /v1/target-executions/{job_id}/inputs](get-v1-target-executions-job-id-inputs.md)** [(!)](get-v1-target-executions-job-id-inputs.md#evidence-gaps)
-- **[GET /v1/work](get-v1-work.md)** [(!)](get-v1-work.md#evidence-gaps)
+- **[GET /v1/target-executions/{job_id}/inputs](get-v1-target-executions-job-id-inputs.md)** [📦](get-v1-target-executions-job-id-inputs.md#evidence-gaps)
+- **[GET /v1/work](get-v1-work.md)** [📦](get-v1-work.md#evidence-gaps)
 - [GET /v1/work/{work_id}](get-v1-work-work-id.md)
 - [GET /v1/work/{work_id}/coordination](get-v1-work-work-id-coordination.md)
 - [POST /v1/admin/scheduler/run](post-v1-admin-scheduler-run.md)

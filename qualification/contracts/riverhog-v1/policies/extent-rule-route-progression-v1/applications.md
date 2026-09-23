@@ -1,14 +1,13 @@
-# Where extent-rule/route-progression/v1 applies
+# Indexed applications of extent-rule/route-progression/v1
 
 [Atlas](../../index.md) · [Reference navigation](../extent_rules/index.md)
 
 Definition: [extent-rule/route-progression/v1](../../authorities/extent-contract/extent/extent-rule-route-progression.md#p-6b76b527cb).
 
-These are the exact recorded policy applications. Each link reaches the policy application on its contract element page; a definition location is not an application or an executed test result.
+These are the indexed contract-element applications. Each link reaches the policy application on its contract element page. The definition states the policy's full scope; this index is not an exhaustive interpretation of that scope or executed evidence.
 
 | Authority | Contract element |
 |---|---|
-| `extent-contract` | [Extent rule: route progression](../../authorities/extent-contract/extent/extent-rule-route-progression.md#pa-bcac356772) |
 | `riverhog` | [GET /v1/app-key-access](../../authorities/riverhog/http-operations/get-v1-app-key-access.md#pa-d36cf09b03) |
 | `riverhog` | [GET /v1/apps](../../authorities/riverhog/http-operations/get-v1-apps.md#pa-c156c5e29f) |
 | `riverhog` | [GET /v1/apps/{app}/keys](../../authorities/riverhog/http-operations/get-v1-apps-app-keys.md#pa-6c484fd5a1) |

@@ -14,16 +14,12 @@ Exact externally visible contract owned by this contract element.
 ## External contract
 
 <a id="p-e574772ba5"></a>
-[Where this policy applies](../../../policies/compatibility-python-api-v1/applications.md)
+[Indexed applications](../../../policies/compatibility-python-api-v1/applications.md)
 
 
 | Field | Value |
 |---|---|
 | <a id="s-7d6f9abc79"></a>`python_api` | `"Freeze-protected declared public-module exports, callable signatures, selected constants, enum members and values, and selected public model and dataclass structures remain backward compatible throughout v1."` |
-
-## Governing policies
-
-- <a id="pa-488965c306"></a>[compatibility/python-api/v1](#p-e574772ba5)
 
 ## Evidence
 

@@ -1,14 +1,13 @@
-# Where compatibility/components/v1 applies
+# Indexed applications of compatibility/components/v1
 
 [Atlas](../../index.md) · [Reference navigation](../compatibility/index.md)
 
 Definition: [compatibility/components/v1](../../authorities/release/compatibility-guarantees/compatibility-components.md#p-95e9a12259).
 
-These are the exact recorded policy applications. Each link reaches the policy application on its contract element page; a definition location is not an application or an executed test result.
+These are the indexed contract-element applications. Each link reaches the policy application on its contract element page. The definition states the policy's full scope; this index is not an exhaustive interpretation of that scope or executed evidence.
 
 | Authority | Contract element |
 |---|---|
-| `release` | [Compatibility: components](../../authorities/release/compatibility-guarantees/compatibility-components.md#pa-18b5e5394d) |
 | `release` | [Coordinates: documentation](../../authorities/release/publication-locations/coordinates-documentation.md#pa-d0f0651c8f) |
 | `release` | [Coordinates: source](../../authorities/release/publication-locations/coordinates-source.md#pa-3b8730128f) |
 | `release` | [Installation root: gogurt](../../authorities/release/installation-roots/installation-root-gogurt.md#pa-56135d9136) |

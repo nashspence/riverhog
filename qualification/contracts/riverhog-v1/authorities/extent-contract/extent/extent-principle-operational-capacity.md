@@ -14,16 +14,12 @@ Exact externally visible contract owned by this contract element.
 ## External contract
 
 <a id="p-fac1e46f10"></a>
-[Where this policy applies](../../../policies/extent-principle-operational-capacity-v1/applications.md)
+[Policy scope](../../../policies/extent_principles/index.md)
 
 
 | Field | Value |
 |---|---|
 | <a id="s-ab1da78674"></a>`operational_capacity` | `"Capacity policy may explicitly reject, defer, or throttle work, but must not silently truncate it or become an undocumented semantic ceiling."` |
-
-## Governing policies
-
-- <a id="pa-26b5dc19df"></a>[extent-principle/operational-capacity/v1](#p-fac1e46f10)
 
 ## Evidence
 

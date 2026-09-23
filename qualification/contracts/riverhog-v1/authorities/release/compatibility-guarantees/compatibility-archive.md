@@ -14,16 +14,10 @@ Exact externally visible contract owned by this contract element.
 ## External contract
 
 <a id="p-915b8756ae"></a>
-[Where this policy applies](../../../policies/compatibility-archive-v1/applications.md)
-
 
 | Field | Value |
 |---|---|
 | <a id="s-484612c67b"></a>`archive` | `"A valid v1 archive remains independently recoverable throughout the supported v1 lifetime. Pack construction, ingress checkpointing, and resumable-write strategies are not archive-format compatibility promises."` |
-
-## Governing policies
-
-- <a id="pa-8d5e343efb"></a>[compatibility/archive/v1](#p-915b8756ae)
 
 ## Evidence
 

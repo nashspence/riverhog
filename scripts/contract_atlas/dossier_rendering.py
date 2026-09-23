@@ -7,7 +7,7 @@ from collections import defaultdict
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from typing import cast
 
-from .discovery import _cli_binding_element, _source_index
+from .discovery import _cli_binding_element, _policy_registry, _source_index
 from .model import (
     _SCHEMA_MAPPING_KEYWORDS,
     _SCHEMA_SEQUENCE_KEYWORDS,
@@ -23,6 +23,7 @@ from .model import (
     structural_json_schema,
 )
 from .navigation import (
+    EXTENT_PRINCIPLES_PATH,
     QUALIFICATION_ROUTES_PATH,
     RELATIONSHIP_NODES_PATH,
     SOURCE_AUTHORITIES_PATH,
@@ -1722,7 +1723,9 @@ def _render_dossier(
     policy_path = f"{ATLAS_DIRECTORY}/policies/index.md"
     source_evidence_path = SOURCE_AUTHORITIES_PATH
     if policy_definitions is None:
-        policy_definitions = _policy_definition_elements(list(elements_by_id.values()))
+        policy_definitions = _policy_definition_elements(
+            list(elements_by_id.values()), _policy_registry(projection)
+        )
     pointers = cast(Sequence[str], element["pointers"])
     exact_values = [pointer_value(projection, pointer) for pointer in pointers]
     projection = primary_projection
@@ -1758,11 +1761,24 @@ def _render_dossier(
     ]
     for identity, definition in policy_definitions.items():
         if definition["id"] == element["id"]:
+            applications = any(
+                identity in cast(Sequence[str], item["policy_ids"])
+                for item in elements_by_id.values()
+            )
+            scope_path = (
+                _policy_applications_path(identity)
+                if applications
+                else EXTENT_PRINCIPLES_PATH
+                if identity.startswith("extent-principle/")
+                else None
+            )
+            scope_label = "Indexed applications" if applications else "Policy scope"
+            lines.append(_html_anchor(_policy_anchor(identity)))
+            if scope_path is None:
+                continue
             lines.extend(
                 [
-                    _html_anchor(_policy_anchor(identity)),
-                    "[Where this policy applies]("
-                    f"{_relative_link(path, _policy_applications_path(identity))})",
+                    f"[{scope_label}]({_relative_link(path, scope_path)})",
                     "",
                 ]
             )
@@ -1991,16 +2007,28 @@ def _render_dossier(
             )
         lines.append("")
 
+    extent_scope = bool(element["extent_decision_ids"]) or any(
+        identity.startswith("extent-rule/") and definition["id"] == element["id"]
+        for identity, definition in policy_definitions.items()
+    )
+    if element["policy_ids"] or extent_scope:
+        lines.extend(["## Governing policies", ""])
+        if extent_scope:
+            lines.extend(
+                [
+                    f"[Extent principles]({_relative_link(path, EXTENT_PRINCIPLES_PATH)}) "
+                    "govern all extent rules and recorded decisions.",
+                    "",
+                ]
+            )
+        lines.extend(
+            f"- {_html_anchor(_policy_application_anchor(str(element['id']), policy))}"
+            f"{_policy_link(path, policy, policy_definitions)}"
+            for policy in cast(Sequence[str], element["policy_ids"])
+        )
+        lines.append("")
     lines.extend(
         [
-            "## Governing policies",
-            "",
-            *(
-                f"- {_html_anchor(_policy_application_anchor(str(element['id']), policy))}"
-                f"{_policy_link(path, policy, policy_definitions)}"
-                for policy in cast(Sequence[str], element["policy_ids"])
-            ),
-            "",
             "## Evidence",
             "",
             "### Qualification",

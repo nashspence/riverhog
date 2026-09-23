@@ -14,16 +14,10 @@ Exact externally visible contract owned by this contract element.
 ## External contract
 
 <a id="p-04aa4508f1"></a>
-[Where this policy applies](../../../policies/compatibility-recovery-v1/applications.md)
-
 
 | Field | Value |
 |---|---|
 | <a id="s-0680f26670"></a>`recovery` | `"Every later v1 recovery release reads every valid earlier v1 archive and provenance set."` |
-
-## Governing policies
-
-- <a id="pa-d1a9500a21"></a>[compatibility/recovery/v1](#p-04aa4508f1)
 
 ## Evidence
 

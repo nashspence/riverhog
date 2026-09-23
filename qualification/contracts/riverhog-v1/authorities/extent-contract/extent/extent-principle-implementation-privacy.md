@@ -14,16 +14,12 @@ Exact externally visible contract owned by this contract element.
 ## External contract
 
 <a id="p-5f9f32ebd9"></a>
-[Where this policy applies](../../../policies/extent-principle-implementation-privacy-v1/applications.md)
+[Policy scope](../../../policies/extent_principles/index.md)
 
 
 | Field | Value |
 |---|---|
 | <a id="s-ce83c4f0c1"></a>`implementation_privacy` | `"Buffers, provider mechanics, database layout, and other non-observable implementation extents are not frozen here."` |
-
-## Governing policies
-
-- <a id="pa-42a1cd0786"></a>[extent-principle/implementation-privacy/v1](#p-5f9f32ebd9)
 
 ## Evidence
 
