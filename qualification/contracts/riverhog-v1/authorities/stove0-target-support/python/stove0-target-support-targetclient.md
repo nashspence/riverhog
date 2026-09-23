@@ -28,7 +28,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [contract](stove0-target-support-targetclient-contract.md)
+- [descriptor](stove0-target-support-targetclient-descriptor.md)
 - [preflight](stove0-target-support-targetclient-preflight.md)
 - [put_job](stove0-target-support-targetclient-put-job.md)
 - [status](stove0-target-support-targetclient-status.md)

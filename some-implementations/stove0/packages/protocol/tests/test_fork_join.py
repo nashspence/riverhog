@@ -119,7 +119,7 @@ def workflow_intent(
             sha256=digest(f"operation:{label}"),
         ),
         target_registration_id=f"target-{label}",
-        target_contract_sha256=digest(f"target-contract:{label}"),
+        target_descriptor_sha256=digest(f"target-contract:{label}"),
         requested_target_options={"option": option},
         input_retrieval_policy="available-only",
         retirement_policy=retirement,

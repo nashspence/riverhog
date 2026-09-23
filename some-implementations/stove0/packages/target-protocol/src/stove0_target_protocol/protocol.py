@@ -202,7 +202,7 @@ class TargetOperationSupport(TargetProtocolModel):
     options_schema: JsonSchemaValidationProfile
 
 
-class TargetContractPayload(TargetProtocolModel):
+class TargetDescriptorPayload(TargetProtocolModel):
     protocol: TargetProtocol = TRANSFORM_TARGET_PROTOCOL
     implementation_id: SemanticId
     implementation_version: str = Field(min_length=1, max_length=120)
@@ -229,19 +229,22 @@ class TargetContractPayload(TargetProtocolModel):
         return self
 
 
-class TargetContract(TargetContractPayload):
-    contract_sha256: Sha256
+class TargetDescriptor(TargetDescriptorPayload):
+    descriptor_sha256: Sha256
 
     @model_validator(mode="after")
     def verify_digest(self) -> Self:
-        if canonical_json_sha256(_without_digest(self, "contract_sha256")) != self.contract_sha256:
-            raise ValueError("target contract digest does not match its canonical payload")
+        if (
+            canonical_json_sha256(_without_digest(self, "descriptor_sha256"))
+            != self.descriptor_sha256
+        ):
+            raise ValueError("target descriptor digest does not match its canonical payload")
         return self
 
     @classmethod
-    def seal(cls, payload: TargetContractPayload) -> TargetContract:
+    def seal(cls, payload: TargetDescriptorPayload) -> TargetDescriptor:
         document = payload.model_dump(mode="json", by_alias=True, exclude_none=True)
-        return cls(**document, contract_sha256=canonical_json_sha256(document))
+        return cls(**document, descriptor_sha256=canonical_json_sha256(document))
 
     def support_for(self, operation_id: str) -> TargetOperationSupport:
         for support in self.operations:
@@ -292,7 +295,7 @@ class TargetInputAuthority(TargetProtocolModel):
 
     @classmethod
     def from_selection(cls, selection: ArtifactSelection) -> TargetInputAuthority:
-        """Project one Stove0-owned exact selection into the target contract."""
+        """Project one Stove0-owned exact selection into a target input declaration."""
 
         counts: dict[str, int] = {}
         for artifact in selection.artifacts:
@@ -561,7 +564,7 @@ class TargetPreflightRequest(TargetDeclaration):
 class TransformPlanPayload(TargetDeclaration):
     protocol: Literal["stove0-transform-target/v1"] = TRANSFORM_TARGET_PROTOCOL
     target_implementation_id: SemanticId
-    target_contract_sha256: Sha256
+    target_descriptor_sha256: Sha256
     observation_result_sha256s: tuple[Sha256, ...] = ()
 
     @field_validator("observation_result_sha256s")
@@ -598,7 +601,7 @@ class TransformPlan(TransformPlanPayload):
 class EffectPlanPayload(TargetDeclaration):
     protocol: Literal["stove0-effect-target/v1"] = EFFECT_TARGET_PROTOCOL
     target_implementation_id: SemanticId
-    target_contract_sha256: Sha256
+    target_descriptor_sha256: Sha256
     observation_result_sha256s: tuple[Sha256, ...] = ()
 
     @field_validator("observation_result_sha256s")
@@ -636,13 +639,13 @@ TargetPlan = Annotated[TransformPlan | EffectPlan, Field(discriminator="protocol
 
 
 class TargetPreflightResponse(TargetProtocolModel):
-    target: TargetContract
+    descriptor: TargetDescriptor
     plan: TargetPlan
 
     @model_validator(mode="after")
     def bind_protocol(self) -> Self:
-        if self.target.protocol != self.plan.protocol:
-            raise ValueError("target contract and preflight plan protocols differ")
+        if self.descriptor.protocol != self.plan.protocol:
+            raise ValueError("target descriptor and preflight plan protocols differ")
         return self
 
 
@@ -682,7 +685,7 @@ class TargetJobDeclaration(TargetProtocolModel):
         if self.plan.binding_document() != target.plan:
             raise ValueError("target job plan document differs from the sealed binding")
         if (
-            self.plan.target_contract_sha256 != workflow.target_contract_sha256
+            self.plan.target_descriptor_sha256 != workflow.target_descriptor_sha256
             or self.plan.operation_contract_sha256 != workflow.operation.sha256
             or self.plan.observation_result_sha256s
             != tuple(sorted(item.result.result_sha256 for item in workflow.observations))
@@ -773,7 +776,7 @@ class TargetInapplicable(TargetProtocolModel):
 
 
 class TargetExecutionEvidence(TargetProtocolModel):
-    target_contract_sha256: Sha256
+    target_descriptor_sha256: Sha256
     operation_contract_sha256: Sha256
     plan_sha256: Sha256
     execution_sha256: Sha256
@@ -851,7 +854,7 @@ class ExternalEffectReceiptPayload(TargetProtocolModel):
     format: Literal["stove0-external-effect-receipt/v1"] = EFFECT_RECEIPT_FORMAT
     job_id: Sha256
     request_sha256: Sha256
-    target_contract_sha256: Sha256
+    target_descriptor_sha256: Sha256
     operation_contract_sha256: Sha256
     plan_sha256: Sha256
     execution_sha256: Sha256
@@ -1007,17 +1010,17 @@ def validate_preflight_response_against_request(
     response: TargetPreflightResponse,
     request: TargetPreflightRequest,
 ) -> None:
-    support = response.target.support_for(request.operation_id)
+    support = response.descriptor.support_for(request.operation_id)
     if (
-        response.target.protocol != request.protocol
+        response.descriptor.protocol != request.protocol
         or response.plan.protocol != request.protocol
         or support.operation_contract_sha256 != request.operation_contract_sha256
     ):
         raise ValueError("target advertised a different operation contract")
     plan = response.plan
     if (
-        plan.target_implementation_id != response.target.implementation_id
-        or plan.target_contract_sha256 != response.target.contract_sha256
+        plan.target_implementation_id != response.descriptor.implementation_id
+        or plan.target_descriptor_sha256 != response.descriptor.descriptor_sha256
         or plan.operation_id != request.operation_id
         or plan.operation_contract_sha256 != request.operation_contract_sha256
         or plan.inputs != request.inputs
@@ -1029,7 +1032,7 @@ def validate_preflight_response_against_request(
             for key, value in request.target_options.items()
         )
     ):
-        raise ValueError("target preflight plan differs from the request or target contract")
+        raise ValueError("target preflight plan differs from the request or target descriptor")
 
 
 def validate_declaration_against_operation(
@@ -1075,7 +1078,7 @@ def validate_status_against_request(
         return
     evidence = status.execution_evidence
     if evidence is None or (
-        evidence.target_contract_sha256 != declaration.plan.target_contract_sha256
+        evidence.target_descriptor_sha256 != declaration.plan.target_descriptor_sha256
         or evidence.operation_contract_sha256 != operation.contract_sha256
         or evidence.plan_sha256 != declaration.plan.plan_sha256
     ):
@@ -1085,7 +1088,7 @@ def validate_status_against_request(
         if receipt is None or (
             receipt.job_id != declaration.job_id
             or receipt.request_sha256 != request.request_sha256
-            or receipt.target_contract_sha256 != declaration.plan.target_contract_sha256
+            or receipt.target_descriptor_sha256 != declaration.plan.target_descriptor_sha256
             or receipt.operation_contract_sha256 != operation.contract_sha256
             or receipt.plan_sha256 != declaration.plan.plan_sha256
             or receipt.execution_sha256 != evidence.execution_sha256
@@ -1181,8 +1184,8 @@ __all__ = [
     "Sha256",
     "TRANSFORM_TARGET_PROTOCOL",
     "TARGET_INPUT_PAGE_MAX",
-    "TargetContract",
-    "TargetContractPayload",
+    "TargetDescriptor",
+    "TargetDescriptorPayload",
     "TargetExecutionEvidence",
     "TargetFailure",
     "TargetInapplicable",

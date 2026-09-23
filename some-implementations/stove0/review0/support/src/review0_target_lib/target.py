@@ -36,8 +36,8 @@ from stove0_target_support import (
     OutputArtifact,
     PersistentTargetService,
     TargetCollectionPublication,
-    TargetContract,
-    TargetContractPayload,
+    TargetDescriptor,
+    TargetDescriptorPayload,
     TargetExecutionCanceled,
     TargetExecutionFailure,
     TargetExecutionInapplicable,
@@ -133,8 +133,8 @@ class ReviewTargetServiceBase(PersistentTargetService, ABC):
         self.image_digest = image_digest
         self.implementation_version = implementation_version
         self.operation = operation
-        contract = TargetContract.seal(
-            TargetContractPayload(
+        descriptor = TargetDescriptor.seal(
+            TargetDescriptorPayload(
                 protocol=protocol,
                 implementation_id=implementation_id,
                 implementation_version=implementation_version,
@@ -151,7 +151,7 @@ class ReviewTargetServiceBase(PersistentTargetService, ABC):
             )
         )
         super().__init__(
-            contract=contract,
+            descriptor=descriptor,
             operations={operation.id: operation},
             state_root=state_root,
             execute=self._execute,

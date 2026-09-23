@@ -13,7 +13,7 @@ Declared public imports and their selected exact structural contracts.
 - [ReviewRcloneEffectTargetService](a-review0-rclone-target-reviewrcloneeffecttargetservice.md)
   - [cancel_job](a-review0-rclone-target-reviewrcloneeffecttargetservice-cancel-job.md)
   - [close](a-review0-rclone-target-reviewrcloneeffecttargetservice-close.md)
-  - [contract](a-review0-rclone-target-reviewrcloneeffecttargetservice-contract.md)
+  - [descriptor](a-review0-rclone-target-reviewrcloneeffecttargetservice-descriptor.md)
   - [get_job](a-review0-rclone-target-reviewrcloneeffecttargetservice-get-job.md)
   - [preflight](a-review0-rclone-target-reviewrcloneeffecttargetservice-preflight.md)
   - [prune_terminal_state](a-review0-rclone-target-reviewrcloneeffecttargetservice-prune-terminal-state.md)

@@ -18,7 +18,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-target-client` | [stove0_target_client.TargetCallbackClient.seal_target_execution_production](../../../authorities/stove0-target-client/python/stove0-target-client-targetcallbackclient-seal-target-execution-production.md#pa-d80d61fc46) |
 | `stove0-target-client` | [stove0_target_client.TargetClient](../../../authorities/stove0-target-client/python/stove0-target-client-targetclient.md#pa-ae6253e9a2) |
 | `stove0-target-client` | [stove0_target_client.TargetClient.cancel](../../../authorities/stove0-target-client/python/stove0-target-client-targetclient-cancel.md#pa-40ee467fc7) |
-| `stove0-target-client` | [stove0_target_client.TargetClient.contract](../../../authorities/stove0-target-client/python/stove0-target-client-targetclient-contract.md#pa-68a5603ed4) |
+| `stove0-target-client` | [stove0_target_client.TargetClient.descriptor](../../../authorities/stove0-target-client/python/stove0-target-client-targetclient-descriptor.md#pa-9a2be28d7f) |
 | `stove0-target-client` | [stove0_target_client.TargetClient.preflight](../../../authorities/stove0-target-client/python/stove0-target-client-targetclient-preflight.md#pa-9f710b2b8b) |
 | `stove0-target-client` | [stove0_target_client.TargetClient.put_job](../../../authorities/stove0-target-client/python/stove0-target-client-targetclient-put-job.md#pa-768887fe4f) |
 | `stove0-target-client` | [stove0_target_client.TargetClient.status](../../../authorities/stove0-target-client/python/stove0-target-client-targetclient-status.md#pa-26964e0bee) |

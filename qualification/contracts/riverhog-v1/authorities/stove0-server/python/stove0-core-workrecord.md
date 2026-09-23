@@ -446,7 +446,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-91b94e3cbd"></a>`type`: `"object"`
 - <a id="s-efa420e272"></a>`additionalProperties`: `false`
-- <a id="s-8905da7323"></a>`required`: `["operation_id","operation_contract_sha256","inputs","intent","target_implementation_id","target_contract_sha256","plan_sha256"]`
+- <a id="s-8905da7323"></a>`required`: `["operation_id","operation_contract_sha256","inputs","intent","target_implementation_id","target_descriptor_sha256","plan_sha256"]`
 
 ###### Fields
 
@@ -459,7 +459,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-3da3ab3a9e"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-842a421a00"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-acb7307d90"></a>`protocol` | no | type="string"; const="stove0-effect-target/v1"; default="stove0-effect-target/v1" |  |
-| <a id="s-0db4c94306"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-da0d832950"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-a02376d72c"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-98c90479e7"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-c77b395b7f)) |  |
 
@@ -499,7 +499,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-a1d849935a"></a>`type`: `"object"`
 - <a id="s-6638f01690"></a>`additionalProperties`: `false`
-- <a id="s-29ef386386"></a>`required`: `["job_id","request_sha256","target_contract_sha256","operation_contract_sha256","plan_sha256","execution_sha256","result","receipt_sha256"]`
+- <a id="s-29ef386386"></a>`required`: `["job_id","request_sha256","target_descriptor_sha256","operation_contract_sha256","plan_sha256","execution_sha256","result","receipt_sha256"]`
 
 ###### Fields
 
@@ -513,7 +513,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-ad6ac95273"></a>`receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-a583eaa093"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-42fb133e35"></a>`result` | yes | type="object"; additionalProperties=([JsonValue](#s-c77b395b7f)); x-riverhog-encoded-bytes-max=65536; x-riverhog-extent={"policy":"contract_max","reason":"bounded-external-effect-receipt"} |  |
-| <a id="s-36a30d4761"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-9d9e0a38cf"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-3e6ca93dfb"></a>definition `JoinDeclaration`
 
@@ -749,7 +749,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-cf322565c8"></a>`type`: `"object"`
 - <a id="s-9d29e35fa0"></a>`additionalProperties`: `false`
-- <a id="s-b7be575179"></a>`required`: `["target_contract_sha256","operation_contract_sha256","plan_sha256","execution_sha256"]`
+- <a id="s-b7be575179"></a>`required`: `["target_descriptor_sha256","operation_contract_sha256","plan_sha256","execution_sha256"]`
 
 ###### Fields
 
@@ -759,7 +759,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-0b1f3d1a27"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-50d9b24b48"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-0b231df174"></a>`runtime` | no | type="object"; additionalProperties=([JsonValue](#s-c77b395b7f)) |  |
-| <a id="s-033b59ed46"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-f57838692f"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-d364a912a3"></a>definition `TargetFailure`
 
@@ -880,7 +880,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-695776791a"></a>`type`: `"object"`
 - <a id="s-65e21dfb36"></a>`additionalProperties`: `false`
-- <a id="s-3fbda92fd3"></a>`required`: `["protocol","target_implementation_id","target_contract_sha256","operation_contract_sha256","plan","plan_sha256"]`
+- <a id="s-3fbda92fd3"></a>`required`: `["protocol","target_implementation_id","target_descriptor_sha256","operation_contract_sha256","plan","plan_sha256"]`
 
 ###### Fields
 
@@ -890,7 +890,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-9000a1d381"></a>`plan` | yes | type="object"; additionalProperties=([JsonValue](#s-c77b395b7f)) |  |
 | <a id="s-048c7a078d"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-0d5ce2e8d3"></a>`protocol` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-598af4193c"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-399a203958"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-aa1ba9fed0"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
 ##### <a id="s-a38d869f0a"></a>definition `TargetProductionAuthority`
@@ -950,7 +950,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-083e18770c"></a>`type`: `"object"`
 - <a id="s-96c69d9e59"></a>`additionalProperties`: `false`
-- <a id="s-1e0cc14910"></a>`required`: `["operation_id","operation_contract_sha256","inputs","intent","target_implementation_id","target_contract_sha256","plan_sha256"]`
+- <a id="s-1e0cc14910"></a>`required`: `["operation_id","operation_contract_sha256","inputs","intent","target_implementation_id","target_descriptor_sha256","plan_sha256"]`
 
 ###### Fields
 
@@ -963,7 +963,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-6b430c2559"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-b130c7025a"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-1e06d94127"></a>`protocol` | no | type="string"; const="stove0-transform-target/v1"; default="stove0-transform-target/v1" |  |
-| <a id="s-08e90f5cb4"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-714e202967"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-feb00dfcb2"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-7dbf5de8f6"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-c77b395b7f)) |  |
 
@@ -1016,7 +1016,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-dc228d295f"></a>`type`: `"object"`
 - <a id="s-43bf5de202"></a>`additionalProperties`: `false`
-- <a id="s-beffd58c8e"></a>`required`: `["work","operation","target_registration_id","target_contract_sha256","workflow_plan_sha256"]`
+- <a id="s-beffd58c8e"></a>`required`: `["work","operation","target_registration_id","target_descriptor_sha256","workflow_plan_sha256"]`
 
 ###### Fields
 
@@ -1031,7 +1031,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-19ad7038fa"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
 | <a id="s-361ae161ca"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
 | <a id="s-9193f918e5"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
-| <a id="s-d991d624bf"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-e21dd232ff"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-2b60edd93b"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
 | <a id="s-d495f1b94b"></a>`work` | yes | [WorkIdentity](#s-0d1c76ace2) |  |
 | <a id="s-6ac17ca065"></a>`workflow_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -1040,7 +1040,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-1cca569f8e"></a>`type`: `"object"`
 - <a id="s-c4ed9f6fdf"></a>`additionalProperties`: `false`
-- <a id="s-1423f2ece7"></a>`required`: `["operation","target_registration_id","target_contract_sha256"]`
+- <a id="s-1423f2ece7"></a>`required`: `["operation","target_registration_id","target_descriptor_sha256"]`
 
 ###### Fields
 
@@ -1053,7 +1053,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-f3026e539a"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
 | <a id="s-b21b2bdd28"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
 | <a id="s-fed79d71fa"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
-| <a id="s-00c6e481d4"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c4f8f5d498"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-96fc0b81be"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
 
 ## Maintained corroboration
@@ -1090,7 +1090,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d22a63e78018a1ec5d5e93edb6333b6365cce399031b5aca8d9de6cfa7069bed -->
+<!-- exact-contract-value: dc6d0793b1d33f344f55e75c0d0989361003c83f4f796cf73536ae45019a6d46 -->
 
 ```json
 {
@@ -1877,7 +1877,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": "stove0-effect-target/v1",
               "type": "string"
             },
-            "target_contract_sha256": {
+            "target_descriptor_sha256": {
               "pattern": "^[0-9a-f]{64}$",
               "type": "string"
             },
@@ -1898,7 +1898,7 @@ The following JSON is the complete value owned at each machine-authority pointer
             "inputs",
             "intent",
             "target_implementation_id",
-            "target_contract_sha256",
+            "target_descriptor_sha256",
             "plan_sha256"
           ],
           "type": "object"
@@ -2012,7 +2012,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "reason": "bounded-external-effect-receipt"
               }
             },
-            "target_contract_sha256": {
+            "target_descriptor_sha256": {
               "pattern": "^[0-9a-f]{64}$",
               "type": "string"
             }
@@ -2020,7 +2020,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "required": [
             "job_id",
             "request_sha256",
-            "target_contract_sha256",
+            "target_descriptor_sha256",
             "operation_contract_sha256",
             "plan_sha256",
             "execution_sha256",
@@ -2506,13 +2506,13 @@ The following JSON is the complete value owned at each machine-authority pointer
               },
               "type": "object"
             },
-            "target_contract_sha256": {
+            "target_descriptor_sha256": {
               "pattern": "^[0-9a-f]{64}$",
               "type": "string"
             }
           },
           "required": [
-            "target_contract_sha256",
+            "target_descriptor_sha256",
             "operation_contract_sha256",
             "plan_sha256",
             "execution_sha256"
@@ -2853,7 +2853,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
               "type": "string"
             },
-            "target_contract_sha256": {
+            "target_descriptor_sha256": {
               "pattern": "^[0-9a-f]{64}$",
               "type": "string"
             },
@@ -2865,7 +2865,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "required": [
             "protocol",
             "target_implementation_id",
-            "target_contract_sha256",
+            "target_descriptor_sha256",
             "operation_contract_sha256",
             "plan",
             "plan_sha256"
@@ -3045,7 +3045,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": "stove0-transform-target/v1",
               "type": "string"
             },
-            "target_contract_sha256": {
+            "target_descriptor_sha256": {
               "pattern": "^[0-9a-f]{64}$",
               "type": "string"
             },
@@ -3066,7 +3066,7 @@ The following JSON is the complete value owned at each machine-authority pointer
             "inputs",
             "intent",
             "target_implementation_id",
-            "target_contract_sha256",
+            "target_descriptor_sha256",
             "plan_sha256"
           ],
           "type": "object"
@@ -3246,7 +3246,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               ],
               "type": "string"
             },
-            "target_contract_sha256": {
+            "target_descriptor_sha256": {
               "pattern": "^[0-9a-f]{64}$",
               "type": "string"
             },
@@ -3266,7 +3266,7 @@ The following JSON is the complete value owned at each machine-authority pointer
             "work",
             "operation",
             "target_registration_id",
-            "target_contract_sha256",
+            "target_descriptor_sha256",
             "workflow_plan_sha256"
           ],
           "type": "object"
@@ -3318,7 +3318,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               ],
               "type": "string"
             },
-            "target_contract_sha256": {
+            "target_descriptor_sha256": {
               "pattern": "^[0-9a-f]{64}$",
               "type": "string"
             },
@@ -3330,7 +3330,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "required": [
             "operation",
             "target_registration_id",
-            "target_contract_sha256"
+            "target_descriptor_sha256"
           ],
           "type": "object"
         }

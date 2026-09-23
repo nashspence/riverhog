@@ -13,7 +13,7 @@ Declared public imports and their selected exact structural contracts.
 - [ReviewTargetServiceBase](review0-target-lib-reviewtargetservicebase.md)
   - [cancel_job](review0-target-lib-reviewtargetservicebase-cancel-job.md)
   - [close](review0-target-lib-reviewtargetservicebase-close.md)
-  - [contract](review0-target-lib-reviewtargetservicebase-contract.md)
+  - [descriptor](review0-target-lib-reviewtargetservicebase-descriptor.md)
   - [get_job](review0-target-lib-reviewtargetservicebase-get-job.md)
   - [preflight](review0-target-lib-reviewtargetservicebase-preflight.md)
   - [prune_terminal_state](review0-target-lib-reviewtargetservicebase-prune-terminal-state.md)

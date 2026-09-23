@@ -28,12 +28,12 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
-- [contract](a-review0-rclone-target-reviewrcloneeffecttargetservice-contract.md)
 - [preflight](a-review0-rclone-target-reviewrcloneeffecttargetservice-preflight.md)
 - [put_job](a-review0-rclone-target-reviewrcloneeffecttargetservice-put-job.md)
 - [cancel_job](a-review0-rclone-target-reviewrcloneeffecttargetservice-cancel-job.md)
 - [prune_terminal_state](a-review0-rclone-target-reviewrcloneeffecttargetservice-prune-terminal-state.md)
 - [readiness](a-review0-rclone-target-reviewrcloneeffecttargetservice-readiness.md)
+- [descriptor](a-review0-rclone-target-reviewrcloneeffecttargetservice-descriptor.md)
 - [get_job](a-review0-rclone-target-reviewrcloneeffecttargetservice-get-job.md)
 - [close](a-review0-rclone-target-reviewrcloneeffecttargetservice-close.md)
 

@@ -76,8 +76,8 @@ from stove0_target_support import (
     OperationContract,
     OperationContractPayload,
     OutputArtifactContract,
-    TargetContract,
-    TargetContractPayload,
+    TargetDescriptor,
+    TargetDescriptorPayload,
     TargetOperationSupport,
 )
 
@@ -139,10 +139,10 @@ class CatalogApi:
 
 
 class Targets:
-    def __init__(self, contract: TargetContract) -> None:
+    def __init__(self, contract: TargetDescriptor) -> None:
         self._contract = contract
 
-    def contract(self, registration_id: str) -> TargetContract:
+    def descriptor(self, registration_id: str) -> TargetDescriptor:
         assert registration_id == "review-ffmpeg"
         return self._contract
 
@@ -175,8 +175,8 @@ class ArchiveTargets:
             "fixture.archive-options/v1",
             {"type": "object", "additionalProperties": False},
         )
-        self.value = TargetContract.seal(
-            TargetContractPayload(
+        self.value = TargetDescriptor.seal(
+            TargetDescriptorPayload(
                 implementation_id="fixture.archive-target/v1",
                 implementation_version="1.0.0",
                 source_revision="fixture",
@@ -191,7 +191,7 @@ class ArchiveTargets:
             )
         )
 
-    def contract(self, registration_id: str) -> TargetContract:
+    def descriptor(self, registration_id: str) -> TargetDescriptor:
         assert registration_id in {"opus", "fixture-target"}
         return self.value
 
@@ -253,8 +253,8 @@ class ConformanceTargets:
             {"type": "object"},
         )
         self.contracts = {
-            "opus": TargetContract.seal(
-                TargetContractPayload(
+            "opus": TargetDescriptor.seal(
+                TargetDescriptorPayload(
                     implementation_id="fixture.target/v1",
                     implementation_version="1.0.0",
                     source_revision="fixture",
@@ -268,8 +268,8 @@ class ConformanceTargets:
                     ),
                 )
             ),
-            "nvenc-av1-opus": TargetContract.seal(
-                TargetContractPayload(
+            "nvenc-av1-opus": TargetDescriptor.seal(
+                TargetDescriptorPayload(
                     implementation_id="fixture.av1-target/v1",
                     implementation_version="1.0.0",
                     source_revision="fixture",
@@ -285,7 +285,7 @@ class ConformanceTargets:
             ),
         }
 
-    def contract(self, registration_id: str) -> TargetContract:
+    def descriptor(self, registration_id: str) -> TargetDescriptor:
         return self.contracts[registration_id]
 
 
@@ -827,8 +827,8 @@ def test_media_observation_evidence_binds_exact_primary_sidecar_selection() -> N
 
 
 def test_review_recipe_projects_semantic_intent_and_options_before_preflight() -> None:
-    target = TargetContract.seal(
-        TargetContractPayload(
+    target = TargetDescriptor.seal(
+        TargetDescriptorPayload(
             implementation_id="riverhog.review-ffmpeg/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
@@ -1032,8 +1032,8 @@ def test_production_planner_resolves_overlapping_branches_into_one_exact_join() 
             ),
         )
     )
-    target = TargetContract.seal(
-        TargetContractPayload(
+    target = TargetDescriptor.seal(
+        TargetDescriptorPayload(
             implementation_id="fixture.target/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
@@ -1050,7 +1050,7 @@ def test_production_planner_resolves_overlapping_branches_into_one_exact_join() 
     )
 
     class ForkJoinTargets:
-        def contract(self, registration_id: str) -> TargetContract:
+        def descriptor(self, registration_id: str) -> TargetDescriptor:
             assert registration_id == "fixture-target"
             return target
 
@@ -1188,8 +1188,8 @@ class MultiArtifactCatalogApi(CatalogApi):
 
 def _retirement_planner(recipe: RecipeDefinition) -> RecipePlanner:
     operation = _retirement_operation()
-    target = TargetContract.seal(
-        TargetContractPayload(
+    target = TargetDescriptor.seal(
+        TargetDescriptorPayload(
             implementation_id="fixture.retirement-target/v1",
             implementation_version="1.0.0",
             source_revision="fixture",

@@ -11,7 +11,7 @@ Declared public imports and their selected exact structural contracts.
 - [OpusTargetService](a-stove0-opus-target-opustargetservice.md)
   - [cancel_job](a-stove0-opus-target-opustargetservice-cancel-job.md)
   - [close](a-stove0-opus-target-opustargetservice-close.md)
-  - [contract](a-stove0-opus-target-opustargetservice-contract.md)
+  - [descriptor](a-stove0-opus-target-opustargetservice-descriptor.md)
   - [get_job](a-stove0-opus-target-opustargetservice-get-job.md)
   - [preflight](a-stove0-opus-target-opustargetservice-preflight.md)
   - [prune_terminal_state](a-stove0-opus-target-opustargetservice-prune-terminal-state.md)

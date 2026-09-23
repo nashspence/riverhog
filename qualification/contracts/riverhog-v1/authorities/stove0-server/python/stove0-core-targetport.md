@@ -29,7 +29,7 @@ Exact externally visible contract owned by this contract element.
 ### Related interface records
 
 - [cancel_job](stove0-core-targetport-cancel-job.md)
-- [contract](stove0-core-targetport-contract.md)
+- [descriptor](stove0-core-targetport-descriptor.md)
 - [get_job](stove0-core-targetport-get-job.md)
 - [preflight](stove0-core-targetport-preflight.md)
 - [put_job](stove0-core-targetport-put-job.md)

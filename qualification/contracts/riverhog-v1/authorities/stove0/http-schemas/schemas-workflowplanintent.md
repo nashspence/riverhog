@@ -18,7 +18,7 @@ Work-independent fields that deterministically materialize a workflow plan.
 - <a id="s-642b2b2763"></a>`type`: `"object"`
 - <a id="s-eb3f8e8eb0"></a>`additionalProperties`: `false`
 - <a id="s-d32c77c568"></a>`description`: `"Work-independent fields that deterministically materialize a workflow plan."`
-- <a id="s-a43fe15478"></a>`required`: `["operation","target_registration_id","target_contract_sha256"]`
+- <a id="s-a43fe15478"></a>`required`: `["operation","target_registration_id","target_descriptor_sha256"]`
 - <a id="s-23c8e189de"></a>`title`: `"WorkflowPlanIntent"`
 
 ### Fields
@@ -32,7 +32,7 @@ Work-independent fields that deterministically materialize a workflow plan.
 | <a id="s-37b4b89175"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection"; title="Result Kind" |  |
 | <a id="s-e519a84612"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Retirement Grace Seconds" |  |
 | <a id="s-70ece6e07d"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Retirement Policy" |  |
-| <a id="s-299b5608b2"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Contract Sha256" |  |
+| <a id="s-8dbb70f238"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Descriptor Sha256" |  |
 | <a id="s-cabd6d9c4e"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$"; title="Target Registration Id" |  |
 
 ### Progression, limits, and lifecycle
@@ -52,7 +52,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field target_contract_sha256](#s-299b5608b2) | `length · characters · fixed` | shared above |
+| [field target_descriptor_sha256](#s-8dbb70f238) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -92,7 +92,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4a242960bc5e6c8b004dd1edcfd1c9d4e5ee9b8b9bf2b7ff9e74c71118e1de37 -->
+<!-- exact-contract-value: 52ac977b273d7a85ba91f4680c689175d5fd31a57e56001ad44012a915ee31c6 -->
 
 ```json
 {
@@ -149,9 +149,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Retirement Policy",
       "type": "string"
     },
-    "target_contract_sha256": {
+    "target_descriptor_sha256": {
       "pattern": "^[0-9a-f]{64}$",
-      "title": "Target Contract Sha256",
+      "title": "Target Descriptor Sha256",
       "type": "string"
     },
     "target_registration_id": {
@@ -163,7 +163,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "required": [
     "operation",
     "target_registration_id",
-    "target_contract_sha256"
+    "target_descriptor_sha256"
   ],
   "title": "WorkflowPlanIntent",
   "type": "object"

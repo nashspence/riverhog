@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-7920dd0aa1"></a>`kind`: `"method"`
-- <a id="s-19f2d03e2d"></a>`signature`: `"\"(self, work_id: 'str', *, target: 'TargetContract', plan: 'TargetPlan', expected_revision: 'int') -> 'WorkRecord'\""`
+- <a id="s-19f2d03e2d"></a>`signature`: `"\"(self, work_id: 'str', *, target: 'TargetDescriptor', plan: 'TargetPlan', expected_revision: 'int') -> 'WorkRecord'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a6186a0f4c6b5fccf7619f702b1972479283f2b6112a7748b162c8f0f5fcd413 -->
+<!-- exact-contract-value: 9e7d93bbf5936dea2827f2889d0fdaf2edb4d38cc5cad002c72210e4a15cf61d -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, work_id: 'str', *, target: 'TargetContract', plan: 'TargetPlan', expected_revision: 'int') -> 'WorkRecord'\""
+    "signature": "\"(self, work_id: 'str', *, target: 'TargetDescriptor', plan: 'TargetPlan', expected_revision: 'int') -> 'WorkRecord'\""
   },
   "distribution": "stove0-server",
   "module": "stove0_core",

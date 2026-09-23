@@ -99,7 +99,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-e8e30226d9"></a>`type`: `"object"`
 - <a id="s-716c9e864b"></a>`additionalProperties`: `false`
-- <a id="s-9e9a5a8ded"></a>`required`: `["operation","target_registration_id","target_contract_sha256"]`
+- <a id="s-9e9a5a8ded"></a>`required`: `["operation","target_registration_id","target_descriptor_sha256"]`
 
 ###### Fields
 
@@ -112,7 +112,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-664b25d4aa"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
 | <a id="s-9b1c8fb986"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
 | <a id="s-4b20943d92"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
-| <a id="s-bc2362b70a"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-16943e066f"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-e46608b220"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
 
 ## Maintained corroboration
@@ -150,7 +150,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a14c938ac61b53cbbedc670936912fa7e28068f934bd1578a7faef982a33b597 -->
+<!-- exact-contract-value: d0268c72d474ea5525e7cc4be17dd857e1bcc18a9a658c83a9a2db5c8115e317 -->
 
 ```json
 {
@@ -269,7 +269,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               ],
               "type": "string"
             },
-            "target_contract_sha256": {
+            "target_descriptor_sha256": {
               "pattern": "^[0-9a-f]{64}$",
               "type": "string"
             },
@@ -281,7 +281,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "required": [
             "operation",
             "target_registration_id",
-            "target_contract_sha256"
+            "target_descriptor_sha256"
           ],
           "type": "object"
         }

@@ -153,7 +153,7 @@ class TargetCollectionPublication:
             production=production,
             output_collection=output_collection,
             execution_evidence=TargetExecutionEvidence(
-                target_contract_sha256=plan.target_contract_sha256,
+                target_descriptor_sha256=plan.target_descriptor_sha256,
                 operation_contract_sha256=plan.operation_contract_sha256,
                 plan_sha256=plan.plan_sha256,
                 execution_sha256=execution_sha256,
@@ -410,7 +410,7 @@ class TargetExecutionRuntime:
         if plan.protocol != EFFECT_TARGET_PROTOCOL or operation.result_kind != "external-effect":
             raise ValueError("external-effect success requires an effect plan and operation")
         evidence = TargetExecutionEvidence(
-            target_contract_sha256=plan.target_contract_sha256,
+            target_descriptor_sha256=plan.target_descriptor_sha256,
             operation_contract_sha256=plan.operation_contract_sha256,
             plan_sha256=plan.plan_sha256,
             execution_sha256=execution_sha256,
@@ -420,7 +420,7 @@ class TargetExecutionRuntime:
             ExternalEffectReceiptPayload(
                 job_id=self.request.declaration.job_id,
                 request_sha256=self.request.request_sha256,
-                target_contract_sha256=plan.target_contract_sha256,
+                target_descriptor_sha256=plan.target_descriptor_sha256,
                 operation_contract_sha256=plan.operation_contract_sha256,
                 plan_sha256=plan.plan_sha256,
                 execution_sha256=execution_sha256,

@@ -54,7 +54,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-49a2ff0a79"></a>`type`: `"object"`
 - <a id="s-fd97dcd6bb"></a>`additionalProperties`: `false`
-- <a id="s-d661ece3e0"></a>`required`: `["protocol","target_implementation_id","target_contract_sha256","operation_contract_sha256","plan","plan_sha256"]`
+- <a id="s-d661ece3e0"></a>`required`: `["protocol","target_implementation_id","target_descriptor_sha256","operation_contract_sha256","plan","plan_sha256"]`
 
 ###### Fields
 
@@ -64,7 +64,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-4c73584ccc"></a>`plan` | yes | type="object"; additionalProperties=([JsonValue](#s-ed6eb75817)) |  |
 | <a id="s-237c3d9e5d"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-a81154d078"></a>`protocol` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-bf206e6c56"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-946f9c87be"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-8e625852cb"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
 ## Governing policies
@@ -94,7 +94,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 527c472d22455e623a28203026d44d0c6704adb812aa2a018eb7a72f5f1ff9fe -->
+<!-- exact-contract-value: e261a2d67cb4eab028fd74e3609de70297ae5461a8373da040a27db4c078b197 -->
 
 ```json
 {
@@ -124,7 +124,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
               "type": "string"
             },
-            "target_contract_sha256": {
+            "target_descriptor_sha256": {
               "pattern": "^[0-9a-f]{64}$",
               "type": "string"
             },
@@ -136,7 +136,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "required": [
             "protocol",
             "target_implementation_id",
-            "target_contract_sha256",
+            "target_descriptor_sha256",
             "operation_contract_sha256",
             "plan",
             "plan_sha256"

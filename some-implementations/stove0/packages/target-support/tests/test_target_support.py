@@ -89,8 +89,8 @@ from stove0_target_support import (
     PersistentTargetService,
     TargetCollectionPublication,
     TargetConformanceCase,
-    TargetContract,
-    TargetContractPayload,
+    TargetDescriptor,
+    TargetDescriptorPayload,
     TargetEffectCommitUncertain,
     TargetExecutionCanceled,
     TargetExecutionEvidence,
@@ -186,9 +186,9 @@ def _operation() -> OperationContract:
     )
 
 
-def _target(operation: OperationContract) -> TargetContract:
-    return TargetContract.seal(
-        TargetContractPayload(
+def _target(operation: OperationContract) -> TargetDescriptor:
+    return TargetDescriptor.seal(
+        TargetDescriptorPayload(
             implementation_id="fixture.target/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
@@ -250,12 +250,12 @@ def _work() -> WorkIdentity:
 
 def _plan(
     operation: OperationContract,
-    target: TargetContract,
+    target: TargetDescriptor,
 ) -> TransformPlan:
     return TransformPlan.seal(
         TransformPlanPayload(
             target_implementation_id=target.implementation_id,
-            target_contract_sha256=target.contract_sha256,
+            target_descriptor_sha256=target.descriptor_sha256,
             operation_id=operation.id,
             operation_contract_sha256=operation.contract_sha256,
             inputs=_input_authority(),
@@ -267,7 +267,7 @@ def _plan(
 
 def _controller_evidence(
     operation: OperationContract,
-    target: TargetContract,
+    target: TargetDescriptor,
     plan: TransformPlan,
 ) -> ControllerEvidence:
     work = _work()
@@ -276,14 +276,14 @@ def _controller_evidence(
             work=work,
             operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
-            target_contract_sha256=target.contract_sha256,
+            target_descriptor_sha256=target.descriptor_sha256,
             retirement_policy="retain",
         )
     )
     binding = TargetPlanBinding(
         protocol=target.protocol,
         target_implementation_id=target.implementation_id,
-        target_contract_sha256=target.contract_sha256,
+        target_descriptor_sha256=target.descriptor_sha256,
         operation_contract_sha256=operation.contract_sha256,
         plan=plan.binding_document(),
         plan_sha256=plan.plan_sha256,
@@ -301,7 +301,7 @@ def _controller_evidence(
 
 def _request_for(
     operation: OperationContract,
-    target: TargetContract,
+    target: TargetDescriptor,
 ) -> TargetJobRequest:
     plan = _plan(operation, target)
     evidence = _controller_evidence(operation, target, plan)
@@ -324,13 +324,13 @@ def _request_for(
     return request
 
 
-def _request() -> tuple[OperationContract, TargetContract, TargetJobRequest]:
+def _request() -> tuple[OperationContract, TargetDescriptor, TargetJobRequest]:
     operation = _operation()
     target = _target(operation)
     return operation, target, _request_for(operation, target)
 
 
-def _effect_request() -> tuple[OperationContract, TargetContract, TargetJobRequest]:
+def _effect_request() -> tuple[OperationContract, TargetDescriptor, TargetJobRequest]:
     operation = OperationContract.seal(
         OperationContractPayload(
             id="fixture.record-index/v1",
@@ -360,8 +360,8 @@ def _effect_request() -> tuple[OperationContract, TargetContract, TargetJobReque
             ),
         )
     )
-    target = TargetContract.seal(
-        TargetContractPayload(
+    target = TargetDescriptor.seal(
+        TargetDescriptorPayload(
             protocol=EFFECT_TARGET_PROTOCOL,
             implementation_id="fixture.index-target/v1",
             implementation_version="1.0.0",
@@ -383,7 +383,7 @@ def _effect_request() -> tuple[OperationContract, TargetContract, TargetJobReque
     plan = EffectPlan.seal(
         EffectPlanPayload(
             target_implementation_id=target.implementation_id,
-            target_contract_sha256=target.contract_sha256,
+            target_descriptor_sha256=target.descriptor_sha256,
             operation_id=operation.id,
             operation_contract_sha256=operation.contract_sha256,
             inputs=_input_authority(),
@@ -398,14 +398,14 @@ def _effect_request() -> tuple[OperationContract, TargetContract, TargetJobReque
             result_kind="external-effect",
             operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-index-target",
-            target_contract_sha256=target.contract_sha256,
+            target_descriptor_sha256=target.descriptor_sha256,
             retirement_policy="retain",
         )
     )
     binding = TargetPlanBinding(
         protocol=target.protocol,
         target_implementation_id=target.implementation_id,
-        target_contract_sha256=target.contract_sha256,
+        target_descriptor_sha256=target.descriptor_sha256,
         operation_contract_sha256=operation.contract_sha256,
         plan=plan.binding_document(),
         plan_sha256=plan.plan_sha256,
@@ -468,7 +468,7 @@ def test_preflight_job_identity_excludes_refreshable_capability_secret() -> None
         intent=request.declaration.plan.intent,
         target_options=request.declaration.plan.target_options,
     )
-    response = TargetPreflightResponse(target=target, plan=request.declaration.plan)
+    response = TargetPreflightResponse(descriptor=target, plan=request.declaration.plan)
     validate_preflight_response_against_request(response, preflight_request)
 
 
@@ -539,7 +539,7 @@ def _success_status(
             derivation_sha256=derivation.sha256,
         ),
         execution_evidence=TargetExecutionEvidence(
-            target_contract_sha256=request.declaration.plan.target_contract_sha256,
+            target_descriptor_sha256=request.declaration.plan.target_descriptor_sha256,
             operation_contract_sha256=operation.contract_sha256,
             plan_sha256=request.declaration.plan.plan_sha256,
             execution_sha256=_sha("9"),
@@ -550,7 +550,7 @@ def _success_status(
 
 
 def test_success_status_is_operation_checked_and_failure_cannot_publish() -> None:
-    operation, _target_contract, request = _request()
+    operation, _target_descriptor, request = _request()
     status = _success_status(operation, request)
     validate_status_against_request(status, request, operation)
 
@@ -611,7 +611,7 @@ def test_persistent_status_preserves_embedded_authority_number_types(tmp_path: P
     )
     state_root = tmp_path / "state"
     service = PersistentTargetService(
-        contract=target,
+        descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
         execute=lambda *_args: status,
@@ -636,7 +636,7 @@ def test_effect_success_is_canonical_bound_and_collection_free() -> None:
     assert first.derivation is None
     assert first.effect_receipt is not None
     assert first.effect_receipt.receipt_sha256 == second.effect_receipt.receipt_sha256  # type: ignore[union-attr]
-    assert first.effect_receipt.target_contract_sha256 == target.contract_sha256
+    assert first.effect_receipt.target_descriptor_sha256 == target.descriptor_sha256
 
     with pytest.raises(ValidationError, match="requires only execution evidence"):
         TargetJobStatus.model_validate(
@@ -650,7 +650,7 @@ def test_effect_success_is_canonical_bound_and_collection_free() -> None:
 
 
 def test_effect_execution_uses_only_generic_claimed_collection_read_custody() -> None:
-    _operation_contract, _target_contract, request = _effect_request()
+    _operation_contract, _target_descriptor, request = _effect_request()
     execution = TargetExecutionRuntime.from_request(request)
     try:
         assert isinstance(execution.runtime, ClaimedCollectionRuntime)
@@ -679,7 +679,7 @@ def test_effect_receipt_is_operation_schema_checked() -> None:
 
 
 def test_target_runtime_builds_complete_success_status() -> None:
-    operation, _target_contract, request = _request()
+    operation, _target_descriptor, request = _request()
     expected = _success_status(operation, request)
     assert expected.derivation is not None
     derivation = CollectionDerivation.from_mapping(expected.derivation)
@@ -806,7 +806,7 @@ def test_incremental_publication_releases_local_output_only_after_exact_custody(
 class FixtureTargetClient:
     def __init__(
         self,
-        target: TargetContract,
+        target: TargetDescriptor,
         request: TargetJobRequest,
         status: TargetJobStatus,
     ) -> None:
@@ -814,11 +814,11 @@ class FixtureTargetClient:
         self.request = request
         self.status_value = status
 
-    def contract(self) -> TargetContract:
+    def descriptor(self) -> TargetDescriptor:
         return self.target
 
     def preflight(self, _request: TargetPreflightRequest) -> TargetPreflightResponse:
-        return TargetPreflightResponse(target=self.target, plan=self.request.declaration.plan)
+        return TargetPreflightResponse(descriptor=self.target, plan=self.request.declaration.plan)
 
     def put_job(
         self,
@@ -849,7 +849,7 @@ def test_conformance_report_proves_preflight_and_idempotent_submission() -> None
     )
     assert report.format == "stove0-target-conformance-result/v1"
     assert report.status == "conformant"
-    assert report.target.transport == "riverhog-capability/v1"
+    assert report.descriptor.transport == "riverhog-capability/v1"
     assert report.coverage.model_dump() == {"advertised": 1, "exercised": 1, "complete": True}
     assert report.operation_evidence[0].semantic_conformance.status == "schema-only"
     assert report.operations[0].semantic_conformance == "schema-only"
@@ -858,7 +858,7 @@ def test_conformance_report_proves_preflight_and_idempotent_submission() -> None
 
     changed = report.model_dump(mode="json")
     changed["operations"][0]["result_kind"] = "external-effect"
-    with pytest.raises(ValidationError, match="differs from its contract"):
+    with pytest.raises(ValidationError, match="differs from its descriptor"):
         type(report).model_validate(changed)
 
 
@@ -898,20 +898,20 @@ def test_conformance_report_uses_protocol_owned_external_effect_result_kind() ->
     assert report.operation_evidence[0].operation.result_kind == "external-effect"
 
 
-def test_conformance_report_uses_one_exact_target_contract_snapshot() -> None:
+def test_conformance_report_uses_one_exact_target_descriptor_snapshot() -> None:
     operation, target, request = _request()
     status = _success_status(operation, request)
 
     class SnapshotClient(FixtureTargetClient):
         def __init__(self) -> None:
             super().__init__(target, request, status)
-            self.contract_calls = 0
+            self.descriptor_calls = 0
 
-        def contract(self) -> TargetContract:
-            self.contract_calls += 1
-            if self.contract_calls > 1:
-                raise AssertionError("conformance report reread its target contract")
-            return super().contract()
+        def descriptor(self) -> TargetDescriptor:
+            self.descriptor_calls += 1
+            if self.descriptor_calls > 1:
+                raise AssertionError("conformance report reread its target descriptor")
+            return super().descriptor()
 
     client = SnapshotClient()
     report = conformance_report(
@@ -919,12 +919,12 @@ def test_conformance_report_uses_one_exact_target_contract_snapshot() -> None:
         cases=(TargetConformanceCase(operation=operation, job_request=request),),
     )
 
-    assert report.target.contract_sha256 == target.contract_sha256
+    assert report.descriptor.descriptor_sha256 == target.descriptor_sha256
     assert report.coverage.model_dump() == {"advertised": 1, "exercised": 1, "complete": True}
-    assert client.contract_calls == 1
+    assert client.descriptor_calls == 1
 
 
-def test_contract_only_target_report_does_not_claim_execution_conformance() -> None:
+def test_descriptor_only_target_report_does_not_claim_execution_conformance() -> None:
     operation, target, request = _request()
     report = conformance_report(
         FixtureTargetClient(target, request, _success_status(operation, request))
@@ -944,8 +944,8 @@ def test_target_conformance_requires_every_advertised_operation() -> None:
         "fixture.multi-target-options/v1",
         {"type": "object", "additionalProperties": False},
     )
-    target = TargetContract.seal(
-        TargetContractPayload(
+    target = TargetDescriptor.seal(
+        TargetDescriptorPayload(
             implementation_id="fixture.multi-target/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
@@ -967,12 +967,12 @@ def test_target_conformance_requires_every_advertised_operation() -> None:
     }
 
     class MultiOperationClient:
-        def contract(self) -> TargetContract:
+        def descriptor(self) -> TargetDescriptor:
             return target
 
         def preflight(self, request: TargetPreflightRequest) -> TargetPreflightResponse:
             return TargetPreflightResponse(
-                target=target,
+                descriptor=target,
                 plan=requests[request.operation_id].declaration.plan,
             )
 
@@ -1064,7 +1064,7 @@ def test_target_conformance_executes_the_exact_advertised_semantic_vectors() -> 
             plan = TransformPlan.seal(
                 TransformPlanPayload(
                     target_implementation_id=target.implementation_id,
-                    target_contract_sha256=target.contract_sha256,
+                    target_descriptor_sha256=target.descriptor_sha256,
                     operation_id=received.operation_id,
                     operation_contract_sha256=received.operation_contract_sha256,
                     inputs=received.inputs,
@@ -1075,7 +1075,7 @@ def test_target_conformance_executes_the_exact_advertised_semantic_vectors() -> 
                     ),
                 )
             )
-            return TargetPreflightResponse(target=target, plan=plan)
+            return TargetPreflightResponse(descriptor=target, plan=plan)
 
         def put_job(
             self,
@@ -1233,7 +1233,7 @@ def test_target_http_operations_publish_exact_job_paths_and_empty_cancel() -> No
 class BindingTargetService:
     def __init__(
         self,
-        target: TargetContract,
+        target: TargetDescriptor,
         request: TargetJobRequest,
         status: TargetJobStatus,
     ) -> None:
@@ -1241,12 +1241,12 @@ class BindingTargetService:
         self.request = request
         self.status_value = status
 
-    def contract(self) -> TargetContract:
+    def descriptor(self) -> TargetDescriptor:
         return self.target
 
     def preflight(self, _request: TargetPreflightRequest) -> TargetPreflightResponse:
         return TargetPreflightResponse(
-            target=self.target,
+            descriptor=self.target,
             plan=self.request.declaration.plan,
         )
 
@@ -1271,7 +1271,7 @@ def test_framework_neutral_target_http_binding() -> None:
 
     contract_response = binding.handle("GET", "/v1/target")
     assert contract_response.status == 200
-    assert TargetContract.model_validate_json(contract_response.body) == target
+    assert TargetDescriptor.model_validate_json(contract_response.body) == target
 
     preflight_request = TargetPreflightRequest(
         operation_id=operation.id,
@@ -1286,7 +1286,7 @@ def test_framework_neutral_target_http_binding() -> None:
         preflight_request.model_dump_json(exclude_none=True).encode(),
     )
     assert preflight_response.status == 200
-    assert TargetPreflightResponse.model_validate_json(preflight_response.body).target == target
+    assert TargetPreflightResponse.model_validate_json(preflight_response.body).descriptor == target
     duplicate = (
         b'{"operation_id":"'
         + operation.id.encode()
@@ -1382,7 +1382,7 @@ def test_persistent_target_requires_and_executes_advertised_semantic_validation(
 
     with pytest.raises(ValueError, match="semantic validators"):
         PersistentTargetService(
-            contract=target,
+            descriptor=target,
             operations={operation.id: operation},
             state_root=tmp_path / "missing-validator",
             execute=lambda *_args: pytest.fail("target execution must not start"),
@@ -1393,7 +1393,7 @@ def test_persistent_target_requires_and_executes_advertised_semantic_validation(
             raise ValueError("fixture suffix policy rejected the intent")
 
     service = PersistentTargetService(
-        contract=target,
+        descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path / "validated",
         execute=lambda *_args: pytest.fail("target execution must not start"),
@@ -1418,7 +1418,7 @@ def test_persistent_target_service_uses_canonical_public_error_codes(tmp_path: P
     operation, target, request = _request()
     status = _success_status(operation, request)
     service = PersistentTargetService(
-        contract=target,
+        descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path / "target-state",
         execute=lambda *_args: status,
@@ -1533,7 +1533,7 @@ def test_v1_persisted_target_fixture_recovers_active_custody_without_repeating_e
         raise AssertionError("fixture recovery must not execute during restart")
 
     service = PersistentTargetService(
-        contract=target,
+        descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
         execute=execute,  # type: ignore[arg-type]
@@ -1601,7 +1601,7 @@ def test_persistent_target_prunes_only_expired_terminal_request_pairs(
         os.utime(path, (expired_mtime, expired_mtime))
 
     service = PersistentTargetService(
-        contract=target,
+        descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
         execute=lambda *_args: expired_status,
@@ -1646,7 +1646,7 @@ def test_persistent_target_resumes_exact_declaration_without_storing_authority(
         raise TargetExecutionInapplicable("unsupported-content", "fixture input")
 
     service = PersistentTargetService(
-        contract=target,
+        descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
         execute=execute,
@@ -1684,7 +1684,7 @@ def test_persistent_target_shutdown_and_operator_cancel_have_distinct_state(
         raise TargetExecutionCanceled
 
     interrupted = PersistentTargetService(
-        contract=target,
+        descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path / "interrupted",
         execute=block,
@@ -1696,7 +1696,7 @@ def test_persistent_target_shutdown_and_operator_cancel_have_distinct_state(
 
     started.clear()
     canceled = PersistentTargetService(
-        contract=target,
+        descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path / "canceled",
         execute=block,
@@ -1744,7 +1744,7 @@ def test_running_target_receives_capability_refresh_without_persisting_secrets(
         raise TargetExecutionInapplicable("fixture-inapplicable", "fixture input")
 
     service = PersistentTargetService(
-        contract=target,
+        descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
         execute=execute,
@@ -1808,7 +1808,7 @@ def test_restart_before_publication_preserves_semantic_execution_identity(
         return restarted
 
     service = PersistentTargetService(
-        contract=target,
+        descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
         execute=execute,
@@ -1851,7 +1851,7 @@ def test_persisted_publication_survives_lost_response_and_process_restart(
         return success
 
     first = PersistentTargetService(
-        contract=target,
+        descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
         execute=publish,
@@ -1877,7 +1877,7 @@ def test_persisted_publication_survives_lost_response_and_process_restart(
         raise AssertionError("published target output must not execute again")
 
     restarted = PersistentTargetService(
-        contract=target,
+        descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
         execute=unexpected_execution,
@@ -1920,7 +1920,7 @@ def test_persisted_effect_receipt_replays_without_repeating_external_effect(
         return status
 
     first = PersistentTargetService(
-        contract=target,
+        descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
         execute=execute,
@@ -1941,7 +1941,7 @@ def test_persisted_effect_receipt_replays_without_repeating_external_effect(
         raise AssertionError("a persisted external effect must not execute again")
 
     restarted = PersistentTargetService(
-        contract=target,
+        descriptor=target,
         operations={operation.id: operation},
         state_root=state_root,
         execute=repeat_forbidden,  # type: ignore[arg-type]
@@ -1974,7 +1974,7 @@ def test_uncertain_effect_commit_stays_interrupted_and_never_auto_repeats(
         raise TargetEffectCommitUncertain("fixture external commit is uncertain")
 
     service = PersistentTargetService(
-        contract=target,
+        descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path / "uncertain-effect-state",
         execute=uncertain,
@@ -2009,7 +2009,7 @@ def test_terminal_target_jobs_release_process_local_bookkeeping(tmp_path: Path) 
         raise TargetExecutionInapplicable("fixture-content", "fixture input")
 
     service = PersistentTargetService(
-        contract=target,
+        descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path / "state",
         execute=execute,
@@ -2046,7 +2046,7 @@ def test_published_success_wins_late_cancel_and_cleanup_failure(tmp_path: Path) 
         raise RuntimeError("post-publication cleanup failed")
 
     service = PersistentTargetService(
-        contract=target,
+        descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path / "state",
         execute=execute,
@@ -2121,7 +2121,7 @@ def test_target_failure_classes_remain_distinct_from_content_inapplicability(
         raise failure
 
     service = PersistentTargetService(
-        contract=target,
+        descriptor=target,
         operations={operation.id: operation},
         state_root=tmp_path / code,
         execute=execute,

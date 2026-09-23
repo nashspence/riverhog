@@ -11,7 +11,7 @@ Declared public imports and their selected exact structural contracts.
 - [NvencAv1OpusTargetService](a-stove0-nvenc-av1-opus-target-nvencav1opustargetservice.md)
   - [cancel_job](a-stove0-nvenc-av1-opus-target-nvencav1opustargetservice-cancel-job.md)
   - [close](a-stove0-nvenc-av1-opus-target-nvencav1opustargetservice-close.md)
-  - [contract](a-stove0-nvenc-av1-opus-target-nvencav1opustargetservice-contract.md)
+  - [descriptor](a-stove0-nvenc-av1-opus-target-nvencav1opustargetservice-descriptor.md)
   - [get_job](a-stove0-nvenc-av1-opus-target-nvencav1opustargetservice-get-job.md)
   - [preflight](a-stove0-nvenc-av1-opus-target-nvencav1opustargetservice-preflight.md)
   - [prune_terminal_state](a-stove0-nvenc-av1-opus-target-nvencav1opustargetservice-prune-terminal-state.md)

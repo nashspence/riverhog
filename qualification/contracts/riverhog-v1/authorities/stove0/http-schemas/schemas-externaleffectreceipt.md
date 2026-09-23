@@ -17,7 +17,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-fc576a4deb"></a>`type`: `"object"`
 - <a id="s-05116e9e9a"></a>`additionalProperties`: `false`
-- <a id="s-76e8050283"></a>`required`: `["job_id","request_sha256","target_contract_sha256","operation_contract_sha256","plan_sha256","execution_sha256","result","receipt_sha256"]`
+- <a id="s-76e8050283"></a>`required`: `["job_id","request_sha256","target_descriptor_sha256","operation_contract_sha256","plan_sha256","execution_sha256","result","receipt_sha256"]`
 - <a id="s-740cf6e4bf"></a>`title`: `"ExternalEffectReceipt"`
 
 ### Fields
@@ -32,7 +32,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-25cc4872ef"></a>`receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Receipt Sha256" |  |
 | <a id="s-b860ac21ac"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Request Sha256" |  |
 | <a id="s-fdcf8150cf"></a>`result` | yes | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Result"; x-riverhog-encoded-bytes-max=65536; x-riverhog-extent={"policy":"contract_max","reason":"bounded-external-effect-receipt"} |  |
-| <a id="s-9fa3a05b4e"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Contract Sha256" |  |
+| <a id="s-dd3b400161"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Descriptor Sha256" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -55,7 +55,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [field receipt_sha256](#s-25cc4872ef) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [field request_sha256](#s-b860ac21ac) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [field result](#s-fdcf8150cf) | `encoded-size · bytes · contract_max` | maximum=65536; reason="bounded-external-effect-receipt"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
-| [field target_contract_sha256](#s-9fa3a05b4e) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field target_descriptor_sha256](#s-dd3b400161) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Maintained corroboration
 
@@ -94,7 +94,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: edef8136e391438e427768c51a5e8111ba5f402ed15bb9e693b5434433b12365 -->
+<!-- exact-contract-value: 0f7e79f0f2ec4d740955220ddf1b2223b311d3bf7009a9bee9e5ee7069abcea2 -->
 
 ```json
 {
@@ -148,16 +148,16 @@ The following JSON is the complete value owned at each machine-authority pointer
         "reason": "bounded-external-effect-receipt"
       }
     },
-    "target_contract_sha256": {
+    "target_descriptor_sha256": {
       "pattern": "^[0-9a-f]{64}$",
-      "title": "Target Contract Sha256",
+      "title": "Target Descriptor Sha256",
       "type": "string"
     }
   },
   "required": [
     "job_id",
     "request_sha256",
-    "target_contract_sha256",
+    "target_descriptor_sha256",
     "operation_contract_sha256",
     "plan_sha256",
     "execution_sha256",

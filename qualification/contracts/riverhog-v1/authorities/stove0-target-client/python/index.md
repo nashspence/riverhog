@@ -18,7 +18,7 @@ Declared public imports and their selected exact structural contracts.
   - [seal_target_execution_production](stove0-target-client-targetcallbackclient-seal-target-execution-production.md)
 - [TargetClient](stove0-target-client-targetclient.md)
   - [cancel](stove0-target-client-targetclient-cancel.md)
-  - [contract](stove0-target-client-targetclient-contract.md)
+  - [descriptor](stove0-target-client-targetclient-descriptor.md)
   - [preflight](stove0-target-client-targetclient-preflight.md)
   - [put_job](stove0-target-client-targetclient-put-job.md)
   - [status](stove0-target-client-targetclient-status.md)

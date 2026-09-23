@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-5cae7e4762"></a>`authorities · http_operations` | `"http_binding.operations"` |
 | <a id="s-33a0a01689"></a>`authorities · semantic_acceptance` | `"semantic_acceptance"` |
 | <a id="s-6508281ade"></a>`authorities · structural_models` | `"schemas"` |
-| <a id="s-1181fd9fea"></a>`bundle_sha256` | `"62bbfc62535e0d20064da43e35f91227d08667ac3e49738dea572d10043bf7c2"` |
+| <a id="s-1181fd9fea"></a>`bundle_sha256` | `"0cbdcf41b07a6641a39b1192a4050e258cab2a9f4ee8ce7ef5e0b3c57c8de1eb"` |
 | <a id="s-a8b1495338"></a>`compatibility · contract_identity` | `"rfc8785-sha256"` |
 | <a id="s-61caf561fe"></a>`compatibility · unknown_fields` | `"reject"` |
 | <a id="s-cb84c5173d"></a>`compatibility · unknown_protocol_revision` | `"reject"` |
@@ -45,7 +45,7 @@ Exact externally visible contract owned by this contract element.
 - [generated:stove0-target: ErrorResponse](../process-protocol-schemas/generated-stove0-target-errorresponse.md)
 - [generated:stove0-target: OperationContract](../process-protocol-schemas/generated-stove0-target-operationcontract.md)
 - [generated:stove0-target: TargetConformanceResult](../process-protocol-schemas/generated-stove0-target-targetconformanceresult.md)
-- [generated:stove0-target: TargetContract](../process-protocol-schemas/generated-stove0-target-targetcontract.md)
+- [generated:stove0-target: TargetDescriptor](../process-protocol-schemas/generated-stove0-target-targetdescriptor.md)
 - [generated:stove0-target: TargetJobRequest](../process-protocol-schemas/generated-stove0-target-targetjobrequest.md)
 - [generated:stove0-target: TargetJobStatus](../process-protocol-schemas/generated-stove0-target-targetjobstatus.md)
 - [generated:stove0-target: TargetPreflightRequest](../process-protocol-schemas/generated-stove0-target-targetpreflightrequest.md)
@@ -97,10 +97,10 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/protocol_schemas/generated:stove0-target/bundle_sha256`
 
-<!-- exact-contract-value: 6d7f8e1284131a77411dafe8c0f2b15d350610f4dca92f92acc27500dedbb4d0 -->
+<!-- exact-contract-value: cf455068cffc873811c6d995933a6c2519f113ad700b92343e223a378c006085 -->
 
 ```json
-"62bbfc62535e0d20064da43e35f91227d08667ac3e49738dea572d10043bf7c2"
+"0cbdcf41b07a6641a39b1192a4050e258cab2a9f4ee8ce7ef5e0b3c57c8de1eb"
 ```
 
 ### `/external_contract/protocol_schemas/generated:stove0-target/compatibility`

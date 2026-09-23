@@ -17,7 +17,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-ee7da793c3"></a>`type`: `"object"`
 - <a id="s-fb28e95d06"></a>`additionalProperties`: `false`
-- <a id="s-6d01dc9d18"></a>`required`: `["operation_id","operation_contract_sha256","inputs","intent","target_implementation_id","target_contract_sha256","plan_sha256"]`
+- <a id="s-6d01dc9d18"></a>`required`: `["operation_id","operation_contract_sha256","inputs","intent","target_implementation_id","target_descriptor_sha256","plan_sha256"]`
 - <a id="s-47fb8e647e"></a>`title`: `"EffectPlan"`
 
 ### Fields
@@ -31,7 +31,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-e510f4e7d6"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Operation Id" |  |
 | <a id="s-1a7e01efe5"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
 | <a id="s-4b9d796104"></a>`protocol` | no | type="string"; const="stove0-effect-target/v1"; default="stove0-effect-target/v1"; title="Protocol" |  |
-| <a id="s-3801ab0d31"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Contract Sha256" |  |
+| <a id="s-a77c731373"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Descriptor Sha256" |  |
 | <a id="s-5265da247b"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Target Implementation Id" |  |
 | <a id="s-b4e9848bc5"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Target Options" |  |
 
@@ -56,7 +56,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 | <a id="s-e3020cc442"></a>[field observation_result_sha256s · items](#s-73e7c4241f) | `length · characters · fixed` | shared above |
 | [field operation_contract_sha256](#s-32963f2a0f) | `length · characters · fixed` | shared above |
 | [field plan_sha256](#s-1a7e01efe5) | `length · characters · fixed` | shared above |
-| [field target_contract_sha256](#s-3801ab0d31) | `length · characters · fixed` | shared above |
+| [field target_descriptor_sha256](#s-a77c731373) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -96,7 +96,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ff477804d70b8b67a6b1410e7f173bcfc7bf1a7f62febcb6afb86dd51a88f0a1 -->
+<!-- exact-contract-value: 7bdb41cfd6f33175b3a89d3638468dbf42ff74657f61d16e85ed288e50ca11f3 -->
 
 ```json
 {
@@ -142,9 +142,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Protocol",
       "type": "string"
     },
-    "target_contract_sha256": {
+    "target_descriptor_sha256": {
       "pattern": "^[0-9a-f]{64}$",
-      "title": "Target Contract Sha256",
+      "title": "Target Descriptor Sha256",
       "type": "string"
     },
     "target_implementation_id": {
@@ -166,7 +166,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "inputs",
     "intent",
     "target_implementation_id",
-    "target_contract_sha256",
+    "target_descriptor_sha256",
     "plan_sha256"
   ],
   "title": "EffectPlan",

@@ -11,7 +11,7 @@ Declared public imports and their selected exact structural contracts.
 - [ReviewMaterializeTargetService](a-review0-materializer-reviewmaterializetargetservice.md)
   - [cancel_job](a-review0-materializer-reviewmaterializetargetservice-cancel-job.md)
   - [close](a-review0-materializer-reviewmaterializetargetservice-close.md)
-  - [contract](a-review0-materializer-reviewmaterializetargetservice-contract.md)
+  - [descriptor](a-review0-materializer-reviewmaterializetargetservice-descriptor.md)
   - [get_job](a-review0-materializer-reviewmaterializetargetservice-get-job.md)
   - [preflight](a-review0-materializer-reviewmaterializetargetservice-preflight.md)
   - [prune_terminal_state](a-review0-materializer-reviewmaterializetargetservice-prune-terminal-state.md)

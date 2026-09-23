@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-0ad1181311"></a>`kind`: `"class"`
-- <a id="s-1040ca7098"></a>`signature`: `"\"(*, contract: 'TargetContract', operations: 'Mapping[str, OperationContract]', state_root: 'Path', execute: 'JobExecutor', intent_semantic_validators: 'Mapping[str, IntentSemanticValidator] \| None' = None, maximum_workers: 'int' = 1, terminal_state_retention_seconds: 'int' = 2592000) -> 'None'\""`
+- <a id="s-1040ca7098"></a>`signature`: `"\"(*, descriptor: 'TargetDescriptor', operations: 'Mapping[str, OperationContract]', state_root: 'Path', execute: 'JobExecutor', intent_semantic_validators: 'Mapping[str, IntentSemanticValidator] \| None' = None, maximum_workers: 'int' = 1, terminal_state_retention_seconds: 'int' = 2592000) -> 'None'\""`
 
 ## Maintained corroboration
 
@@ -33,7 +33,7 @@ Exact externally visible contract owned by this contract element.
 - [prune_terminal_state](stove0-target-support-persistenttargetservice-prune-terminal-state.md)
 - [put_job](stove0-target-support-persistenttargetservice-put-job.md)
 - [preflight](stove0-target-support-persistenttargetservice-preflight.md)
-- [contract](stove0-target-support-persistenttargetservice-contract.md)
+- [descriptor](stove0-target-support-persistenttargetservice-descriptor.md)
 - [close](stove0-target-support-persistenttargetservice-close.md)
 
 ## Governing policies
@@ -63,13 +63,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: fa90a92595e0bdaf5f5f638f9bb86c7c527d8831be98174a9ecb364a76512175 -->
+<!-- exact-contract-value: c828dd6d28cd050341df46604e458a9c922924b986dc51ac08b7378c42e269b4 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "signature": "\"(*, contract: 'TargetContract', operations: 'Mapping[str, OperationContract]', state_root: 'Path', execute: 'JobExecutor', intent_semantic_validators: 'Mapping[str, IntentSemanticValidator] | None' = None, maximum_workers: 'int' = 1, terminal_state_retention_seconds: 'int' = 2592000) -> 'None'\""
+    "signature": "\"(*, descriptor: 'TargetDescriptor', operations: 'Mapping[str, OperationContract]', state_root: 'Path', execute: 'JobExecutor', intent_semantic_validators: 'Mapping[str, IntentSemanticValidator] | None' = None, maximum_workers: 'int' = 1, terminal_state_retention_seconds: 'int' = 2592000) -> 'None'\""
   },
   "distribution": "stove0-target-support",
   "module": "stove0_target_support",

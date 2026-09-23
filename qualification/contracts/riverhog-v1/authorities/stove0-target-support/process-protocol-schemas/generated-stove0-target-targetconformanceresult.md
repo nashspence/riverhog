@@ -17,7 +17,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-83a0e7889f"></a>`type`: `"object"`
 - <a id="s-49b0e32acd"></a>`additionalProperties`: `false`
-- <a id="s-bd5c1a3619"></a>`required`: `["status","target","coverage","operations"]`
+- <a id="s-bd5c1a3619"></a>`required`: `["status","descriptor","coverage","operations"]`
 - <a id="s-166034031e"></a>`title`: `"TargetConformanceResult"`
 
 ### Fields
@@ -25,11 +25,11 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-54849ef8ea"></a>`coverage` | yes | [TargetConformanceCoverage](#s-3af4423fcb) |  |
+| <a id="s-828d809b16"></a>`descriptor` | yes | [TargetDescriptor](#s-c5f049f824) |  |
 | <a id="s-073c47c5d8"></a>`format` | no | type="string"; const="stove0-target-conformance-result/v1"; default="stove0-target-conformance-result/v1"; title="Format" |  |
 | <a id="s-cdbf79ac63"></a>`operation_evidence` | no | type="array"; default=[]; items=([TargetOperationConformanceEvidence](#s-fd16c1183e)); title="Operation Evidence" |  |
 | <a id="s-b7d24726ce"></a>`operations` | yes | type="array"; items=([TargetOperationConformance](#s-d56ff4bc3b)); title="Operations" |  |
 | <a id="s-65f3100125"></a>`status` | yes | type="string"; enum=["conformant","partially-exercised","inspected"]; title="Status" |  |
-| <a id="s-25e202ab55"></a>`target` | yes | [TargetContract](#s-3f7cbc3a29) |  |
 
 ### Definitions
 
@@ -68,7 +68,7 @@ Exact externally visible contract owned by this contract element.
 - [SemanticIntentConformanceVectors](#s-f235361316)
 - [SemanticValidationProfile](#s-ee0cfd3dd1)
 - [TargetConformanceCoverage](#s-3af4423fcb)
-- [TargetContract](#s-3f7cbc3a29)
+- [TargetDescriptor](#s-c5f049f824)
 - [TargetExecutionEvidence](#s-633d457279)
 - [TargetFailure](#s-c0bd76e74f)
 - [TargetInapplicable](#s-d1d84486e0)
@@ -317,7 +317,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-f764676ba4"></a>`type`: `"object"`
 - <a id="s-b5c3843eea"></a>`additionalProperties`: `false`
-- <a id="s-d001fac781"></a>`required`: `["operation_id","operation_contract_sha256","inputs","intent","target_implementation_id","target_contract_sha256","plan_sha256"]`
+- <a id="s-d001fac781"></a>`required`: `["operation_id","operation_contract_sha256","inputs","intent","target_implementation_id","target_descriptor_sha256","plan_sha256"]`
 - <a id="s-826861545d"></a>`title`: `"EffectPlan"`
 
 #### Fields
@@ -331,7 +331,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-40aa47ce6d"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Operation Id" |  |
 | <a id="s-80f86a6953"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
 | <a id="s-bfc362d369"></a>`protocol` | no | type="string"; const="stove0-effect-target/v1"; default="stove0-effect-target/v1"; title="Protocol" |  |
-| <a id="s-7309bc31e7"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Contract Sha256" |  |
+| <a id="s-6c8b524415"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Descriptor Sha256" |  |
 | <a id="s-ffc298b86a"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Target Implementation Id" |  |
 | <a id="s-43205d72a8"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-40b30ec575)); title="Target Options" |  |
 
@@ -374,7 +374,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-bbf720b525"></a>`type`: `"object"`
 - <a id="s-0aa2d8c7e2"></a>`additionalProperties`: `false`
-- <a id="s-a42ff90ab1"></a>`required`: `["job_id","request_sha256","target_contract_sha256","operation_contract_sha256","plan_sha256","execution_sha256","result","receipt_sha256"]`
+- <a id="s-a42ff90ab1"></a>`required`: `["job_id","request_sha256","target_descriptor_sha256","operation_contract_sha256","plan_sha256","execution_sha256","result","receipt_sha256"]`
 - <a id="s-9da40c3127"></a>`title`: `"ExternalEffectReceipt"`
 
 #### Fields
@@ -389,7 +389,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-e8b63a7207"></a>`receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Receipt Sha256" |  |
 | <a id="s-f5b5db1c49"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Request Sha256" |  |
 | <a id="s-9b803bf4d5"></a>`result` | yes | type="object"; additionalProperties=([JsonValue](#s-40b30ec575)); title="Result"; x-riverhog-encoded-bytes-max=65536; x-riverhog-extent={"policy":"contract_max","reason":"bounded-external-effect-receipt"} |  |
-| <a id="s-646dbb8b9e"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Contract Sha256" |  |
+| <a id="s-63e5c65774"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Descriptor Sha256" |  |
 
 ### <a id="s-ae1b42ecf6"></a>definition `InputArtifactContract`
 
@@ -653,31 +653,31 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-3f42e5321a"></a>`complete` | yes | type="boolean"; title="Complete" |  |
 | <a id="s-9e32bccbb8"></a>`exercised` | yes | type="integer"; minimum=0; title="Exercised" |  |
 
-### <a id="s-3f7cbc3a29"></a>definition `TargetContract`
+### <a id="s-c5f049f824"></a>definition `TargetDescriptor`
 
-- <a id="s-a3ffb9d5c8"></a>`type`: `"object"`
-- <a id="s-c795442a50"></a>`additionalProperties`: `false`
-- <a id="s-35c227a6cc"></a>`required`: `["implementation_id","implementation_version","source_revision","image_digest","operations","contract_sha256"]`
-- <a id="s-d1dd119864"></a>`title`: `"TargetContract"`
+- <a id="s-061d2681c8"></a>`type`: `"object"`
+- <a id="s-49465b7d99"></a>`additionalProperties`: `false`
+- <a id="s-252bdc217f"></a>`required`: `["implementation_id","implementation_version","source_revision","image_digest","operations","descriptor_sha256"]`
+- <a id="s-6885eec81a"></a>`title`: `"TargetDescriptor"`
 
 #### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-82534eafff"></a>`contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Contract Sha256" |  |
-| <a id="s-8748750d54"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Image Digest" |  |
-| <a id="s-df25ab58ba"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Implementation Id" |  |
-| <a id="s-dce0a87d05"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1; title="Implementation Version" |  |
-| <a id="s-1c9046d10a"></a>`operations` | yes | type="array"; items=([TargetOperationSupport](#s-bf993b5ad1)); minItems=1; title="Operations" |  |
-| <a id="s-4a34f0fbd9"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"]; default="stove0-transform-target/v1"; title="Protocol" |  |
-| <a id="s-141df9c357"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1; title="Source Revision" |  |
-| <a id="s-0897a6e39f"></a>`transport` | no | type="string"; const="riverhog-capability/v1"; default="riverhog-capability/v1"; title="Transport" |  |
+| <a id="s-3a02edaf53"></a>`descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Descriptor Sha256" |  |
+| <a id="s-b2f67fb2d5"></a>`image_digest` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Image Digest" |  |
+| <a id="s-d34dda900b"></a>`implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Implementation Id" |  |
+| <a id="s-d7907d80b6"></a>`implementation_version` | yes | type="string"; maxLength=120; minLength=1; title="Implementation Version" |  |
+| <a id="s-6689dacd70"></a>`operations` | yes | type="array"; items=([TargetOperationSupport](#s-bf993b5ad1)); minItems=1; title="Operations" |  |
+| <a id="s-4a431669d1"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"]; default="stove0-transform-target/v1"; title="Protocol" |  |
+| <a id="s-99e61d674f"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1; title="Source Revision" |  |
+| <a id="s-32470def49"></a>`transport` | no | type="string"; const="riverhog-capability/v1"; default="riverhog-capability/v1"; title="Transport" |  |
 
 ### <a id="s-633d457279"></a>definition `TargetExecutionEvidence`
 
 - <a id="s-99a8aa4cb3"></a>`type`: `"object"`
 - <a id="s-1f4efc8beb"></a>`additionalProperties`: `false`
-- <a id="s-0af54bc7ef"></a>`required`: `["target_contract_sha256","operation_contract_sha256","plan_sha256","execution_sha256"]`
+- <a id="s-0af54bc7ef"></a>`required`: `["target_descriptor_sha256","operation_contract_sha256","plan_sha256","execution_sha256"]`
 - <a id="s-1c8460f241"></a>`title`: `"TargetExecutionEvidence"`
 
 #### Fields
@@ -688,7 +688,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-6262284788"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Operation Contract Sha256" |  |
 | <a id="s-1e30ff802c"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
 | <a id="s-6112224187"></a>`runtime` | no | type="object"; additionalProperties=([JsonValue](#s-40b30ec575)); title="Runtime" |  |
-| <a id="s-654ebaa25d"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Contract Sha256" |  |
+| <a id="s-6259a60776"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Descriptor Sha256" |  |
 
 ### <a id="s-c0bd76e74f"></a>definition `TargetFailure`
 
@@ -859,7 +859,7 @@ Exact externally visible contract owned by this contract element.
 - <a id="s-1d8285e3d2"></a>`type`: `"object"`
 - <a id="s-fea44286a7"></a>`additionalProperties`: `false`
 - <a id="s-9d768cb4ff"></a>`description`: `"Opaque binding to a target-owned preflight plan.\n\nThe target protocol owns the plan schema and canonicalization algorithm. stove0\nretains the complete validated plan document and its target-issued digest, but\ndeliberately does not reinterpret or re-hash the plan with stove0's canonical\nJSON rules. This prevents two authorities from disagreeing about target plan\nidentity while preserving the full document in the execution envelope."`
-- <a id="s-967c893a9d"></a>`required`: `["protocol","target_implementation_id","target_contract_sha256","operation_contract_sha256","plan","plan_sha256"]`
+- <a id="s-967c893a9d"></a>`required`: `["protocol","target_implementation_id","target_descriptor_sha256","operation_contract_sha256","plan","plan_sha256"]`
 - <a id="s-bcbbac114b"></a>`title`: `"TargetPlanBinding"`
 
 #### Fields
@@ -870,7 +870,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-483659871f"></a>`plan` | yes | type="object"; additionalProperties=([JsonValue](#s-40b30ec575)); title="Plan" |  |
 | <a id="s-41e0eec4b4"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
 | <a id="s-1b132b92ba"></a>`protocol` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Protocol" |  |
-| <a id="s-0ddd68f83a"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Contract Sha256" |  |
+| <a id="s-d39cf64354"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Descriptor Sha256" |  |
 | <a id="s-576498355a"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Target Implementation Id" |  |
 
 ### <a id="s-53a4ad89c5"></a>definition `TargetPreflightRequest`
@@ -896,15 +896,15 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-f38e303c8c"></a>`type`: `"object"`
 - <a id="s-340415011a"></a>`additionalProperties`: `false`
-- <a id="s-b654b1db09"></a>`required`: `["target","plan"]`
+- <a id="s-b654b1db09"></a>`required`: `["descriptor","plan"]`
 - <a id="s-b87d448d36"></a>`title`: `"TargetPreflightResponse"`
 
 #### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
+| <a id="s-9c57c60684"></a>`descriptor` | yes | [TargetDescriptor](#s-c5f049f824) |  |
 | <a id="s-9bdc263ee9"></a>`plan` | yes | discriminator={"mapping":{"stove0-effect-target/v1":"#/$defs/EffectPlan","stove0-transform-target/v1":"#/$defs/TransformPlan"},"propertyName":"protocol"}; oneOf=[([TransformPlan](#s-db60c65572)); ([EffectPlan](#s-ef86be7809))]; title="Plan" |  |
-| <a id="s-0d9621304d"></a>`target` | yes | [TargetContract](#s-3f7cbc3a29) |  |
 
 ### <a id="s-1c35901519"></a>definition `TargetProductionAuthority`
 
@@ -967,7 +967,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-835d5416c0"></a>`type`: `"object"`
 - <a id="s-0fcb7df76c"></a>`additionalProperties`: `false`
-- <a id="s-ad13e87ece"></a>`required`: `["operation_id","operation_contract_sha256","inputs","intent","target_implementation_id","target_contract_sha256","plan_sha256"]`
+- <a id="s-ad13e87ece"></a>`required`: `["operation_id","operation_contract_sha256","inputs","intent","target_implementation_id","target_descriptor_sha256","plan_sha256"]`
 - <a id="s-91be2ed73d"></a>`title`: `"TransformPlan"`
 
 #### Fields
@@ -981,7 +981,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-954b1f8c76"></a>`operation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Operation Id" |  |
 | <a id="s-d9e38e912f"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
 | <a id="s-eae24a9f72"></a>`protocol` | no | type="string"; const="stove0-transform-target/v1"; default="stove0-transform-target/v1"; title="Protocol" |  |
-| <a id="s-1ea60139c8"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Contract Sha256" |  |
+| <a id="s-d96810acce"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Descriptor Sha256" |  |
 | <a id="s-d9f1d4ec30"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Target Implementation Id" |  |
 | <a id="s-64403125d5"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-40b30ec575)); title="Target Options" |  |
 
@@ -1008,7 +1008,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-657454fe06"></a>`type`: `"object"`
 - <a id="s-79b34ebbe8"></a>`additionalProperties`: `false`
-- <a id="s-db02dc8da8"></a>`required`: `["work","operation","target_registration_id","target_contract_sha256","workflow_plan_sha256"]`
+- <a id="s-db02dc8da8"></a>`required`: `["work","operation","target_registration_id","target_descriptor_sha256","workflow_plan_sha256"]`
 - <a id="s-5074620442"></a>`title`: `"WorkflowPlan"`
 
 #### Fields
@@ -1024,7 +1024,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-f92f3d622e"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection"; title="Result Kind" |  |
 | <a id="s-ebefece060"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Retirement Grace Seconds" |  |
 | <a id="s-4e517edfac"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Retirement Policy" |  |
-| <a id="s-801d28c10d"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Contract Sha256" |  |
+| <a id="s-a1f389aea5"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Descriptor Sha256" |  |
 | <a id="s-b1e2a706b7"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$"; title="Target Registration Id" |  |
 | <a id="s-2a1d55f30e"></a>`work` | yes | [WorkIdentity](#s-cf67f00f31) |  |
 | <a id="s-aef415faea"></a>`workflow_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Workflow Plan Sha256" |  |
@@ -1057,7 +1057,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [definition OutputArtifactSetIdentity · field roles](#s-220278cd96) | `cardinality · items · operational_policy` | shared above |
 | [definition SemanticIntentConformanceVector · field intent](#s-0158a31d7a) | `cardinality · entries · operational_policy` | shared above |
 | [definition SemanticIntentConformanceVectors · field vectors](#s-91e52e6fb9) | `cardinality · items · operational_policy` | shared above |
-| [definition TargetContract · field operations](#s-1c9046d10a) | `cardinality · items · operational_policy` | shared above |
+| [definition TargetDescriptor · field operations](#s-6689dacd70) | `cardinality · items · operational_policy` | shared above |
 | [definition TargetExecutionEvidence · field runtime](#s-6112224187) | `cardinality · entries · operational_policy` | shared above |
 | [definition TargetInputAuthority · field roles](#s-ea2d4c93fb) | `cardinality · items · operational_policy` | shared above |
 | [definition TargetInputRoleCount · field count](#s-209e85a56d) | `value · schema-value · operational_policy` | shared above |
@@ -1107,7 +1107,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | <a id="s-e2ed80f398"></a>[definition EffectPlan · field observation_result_sha256s · items](#s-5b72f76c58) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition EffectPlan · field operation_contract_sha256](#s-7de1128789) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition EffectPlan · field plan_sha256](#s-80f86a6953) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [definition EffectPlan · field target_contract_sha256](#s-7309bc31e7) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition EffectPlan · field target_descriptor_sha256](#s-6c8b524415) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition EvaluationBinding · field evaluation_id](#s-431d09d7ae) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition EvaluationBinding · field matrix_sha256](#s-17b04f0a6c) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition ExecutionEnvelope · field claim_id](#s-d75b747567) | `length · characters · contract_max` | maximum=160; minimum=1; reason="schema-maximum" |
@@ -1119,7 +1119,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [definition ExternalEffectReceipt · field receipt_sha256](#s-e8b63a7207) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition ExternalEffectReceipt · field request_sha256](#s-f5b5db1c49) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition ExternalEffectReceipt · field result](#s-9b803bf4d5) | `encoded-size · bytes · contract_max` | maximum=65536; reason="bounded-external-effect-receipt"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
-| [definition ExternalEffectReceipt · field target_contract_sha256](#s-646dbb8b9e) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition ExternalEffectReceipt · field target_descriptor_sha256](#s-63e5c65774) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition JoinWorkBinding · field branch_set_sha256](#s-3fd72a2def) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition JoinWorkBinding · field parent_work_id](#s-48e0669585) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition JoinWorkMemberBinding · field artifact_selection_sha256](#s-88bc1ecb63) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
@@ -1135,14 +1135,14 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [definition OutputCollectionRef · field content_identity](#s-7bc373dcee) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition OutputCollectionRef · field derivation_sha256](#s-c536e7cde3) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition RecipeRef · field sha256](#s-21ab0ccfd9) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [definition TargetContract · field contract_sha256](#s-82534eafff) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [definition TargetContract · field image_digest](#s-8748750d54) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [definition TargetContract · field implementation_version](#s-dce0a87d05) | `length · characters · contract_max` | maximum=120; minimum=1; reason="schema-maximum" |
-| [definition TargetContract · field source_revision](#s-141df9c357) | `length · characters · contract_max` | maximum=200; minimum=1; reason="schema-maximum" |
+| [definition TargetDescriptor · field descriptor_sha256](#s-3a02edaf53) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition TargetDescriptor · field image_digest](#s-b2f67fb2d5) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition TargetDescriptor · field implementation_version](#s-d7907d80b6) | `length · characters · contract_max` | maximum=120; minimum=1; reason="schema-maximum" |
+| [definition TargetDescriptor · field source_revision](#s-99e61d674f) | `length · characters · contract_max` | maximum=200; minimum=1; reason="schema-maximum" |
 | [definition TargetExecutionEvidence · field execution_sha256](#s-2cc5345db5) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition TargetExecutionEvidence · field operation_contract_sha256](#s-6262284788) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition TargetExecutionEvidence · field plan_sha256](#s-1e30ff802c) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [definition TargetExecutionEvidence · field target_contract_sha256](#s-654ebaa25d) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition TargetExecutionEvidence · field target_descriptor_sha256](#s-6259a60776) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition TargetFailure · field message](#s-07583e604a) | `length · characters · contract_max` | maximum=1000; minimum=1; reason="schema-maximum" |
 | [definition TargetInapplicable · field message](#s-d9508e393e) | `length · characters · contract_max` | maximum=1000; minimum=1; reason="schema-maximum" |
 | [definition TargetJobDeclaration · field claim_id](#s-d518182a9c) | `length · characters · contract_max` | maximum=160; minimum=1; reason="schema-maximum" |
@@ -1157,7 +1157,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [definition TargetOperationSupport · field operation_contract_sha256](#s-933c5a1e37) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition TargetPlanBinding · field operation_contract_sha256](#s-891e764597) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition TargetPlanBinding · field plan_sha256](#s-41e0eec4b4) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [definition TargetPlanBinding · field target_contract_sha256](#s-0ddd68f83a) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition TargetPlanBinding · field target_descriptor_sha256](#s-d39cf64354) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition TargetPreflightRequest · field operation_contract_sha256](#s-58b6a5935b) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition TargetProductionAuthority · field disposition_sha256](#s-6cbdb7e5a7) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition TargetProductionAuthority · field job_id](#s-173d7b1276) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
@@ -1171,9 +1171,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | <a id="s-b92ace78d4"></a>[definition TransformPlan · field observation_result_sha256s · items](#s-be4f54821b) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition TransformPlan · field operation_contract_sha256](#s-53d17c8c75) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition TransformPlan · field plan_sha256](#s-d9e38e912f) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [definition TransformPlan · field target_contract_sha256](#s-1ea60139c8) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition TransformPlan · field target_descriptor_sha256](#s-d96810acce) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition WorkIdentity · field work_id](#s-3498a29c05) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [definition WorkflowPlan · field target_contract_sha256](#s-801d28c10d) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [definition WorkflowPlan · field target_descriptor_sha256](#s-a1f389aea5) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition WorkflowPlan · field workflow_plan_sha256](#s-aef415faea) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Maintained corroboration
@@ -1213,7 +1213,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b648fc2198f50c29706334f78eeef99cc8558bdb659001953461adc59547a2df -->
+<!-- exact-contract-value: 49420089c1a1e128c714461d72e65d547b66fa038d1dd25c68c83b568795439a -->
 
 ```json
 {
@@ -1795,9 +1795,9 @@ The following JSON is the complete value owned at each machine-authority pointer
           "title": "Protocol",
           "type": "string"
         },
-        "target_contract_sha256": {
+        "target_descriptor_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Target Contract Sha256",
+          "title": "Target Descriptor Sha256",
           "type": "string"
         },
         "target_implementation_id": {
@@ -1819,7 +1819,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "inputs",
         "intent",
         "target_implementation_id",
-        "target_contract_sha256",
+        "target_descriptor_sha256",
         "plan_sha256"
       ],
       "title": "EffectPlan",
@@ -1953,16 +1953,16 @@ The following JSON is the complete value owned at each machine-authority pointer
             "reason": "bounded-external-effect-receipt"
           }
         },
-        "target_contract_sha256": {
+        "target_descriptor_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Target Contract Sha256",
+          "title": "Target Descriptor Sha256",
           "type": "string"
         }
       },
       "required": [
         "job_id",
         "request_sha256",
-        "target_contract_sha256",
+        "target_descriptor_sha256",
         "operation_contract_sha256",
         "plan_sha256",
         "execution_sha256",
@@ -2568,12 +2568,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "TargetConformanceCoverage",
       "type": "object"
     },
-    "TargetContract": {
+    "TargetDescriptor": {
       "additionalProperties": false,
       "properties": {
-        "contract_sha256": {
+        "descriptor_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Contract Sha256",
+          "title": "Descriptor Sha256",
           "type": "string"
         },
         "image_digest": {
@@ -2628,9 +2628,9 @@ The following JSON is the complete value owned at each machine-authority pointer
         "source_revision",
         "image_digest",
         "operations",
-        "contract_sha256"
+        "descriptor_sha256"
       ],
-      "title": "TargetContract",
+      "title": "TargetDescriptor",
       "type": "object"
     },
     "TargetExecutionEvidence": {
@@ -2658,14 +2658,14 @@ The following JSON is the complete value owned at each machine-authority pointer
           "title": "Runtime",
           "type": "object"
         },
-        "target_contract_sha256": {
+        "target_descriptor_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Target Contract Sha256",
+          "title": "Target Descriptor Sha256",
           "type": "string"
         }
       },
       "required": [
-        "target_contract_sha256",
+        "target_descriptor_sha256",
         "operation_contract_sha256",
         "plan_sha256",
         "execution_sha256"
@@ -3174,9 +3174,9 @@ The following JSON is the complete value owned at each machine-authority pointer
           "title": "Protocol",
           "type": "string"
         },
-        "target_contract_sha256": {
+        "target_descriptor_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Target Contract Sha256",
+          "title": "Target Descriptor Sha256",
           "type": "string"
         },
         "target_implementation_id": {
@@ -3188,7 +3188,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "required": [
         "protocol",
         "target_implementation_id",
-        "target_contract_sha256",
+        "target_descriptor_sha256",
         "operation_contract_sha256",
         "plan",
         "plan_sha256"
@@ -3256,6 +3256,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "TargetPreflightResponse": {
       "additionalProperties": false,
       "properties": {
+        "descriptor": {
+          "$ref": "#/$defs/TargetDescriptor"
+        },
         "plan": {
           "discriminator": {
             "mapping": {
@@ -3273,13 +3276,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             }
           ],
           "title": "Plan"
-        },
-        "target": {
-          "$ref": "#/$defs/TargetContract"
         }
       },
       "required": [
-        "target",
+        "descriptor",
         "plan"
       ],
       "title": "TargetPreflightResponse",
@@ -3511,9 +3511,9 @@ The following JSON is the complete value owned at each machine-authority pointer
           "title": "Protocol",
           "type": "string"
         },
-        "target_contract_sha256": {
+        "target_descriptor_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Target Contract Sha256",
+          "title": "Target Descriptor Sha256",
           "type": "string"
         },
         "target_implementation_id": {
@@ -3535,7 +3535,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "inputs",
         "intent",
         "target_implementation_id",
-        "target_contract_sha256",
+        "target_descriptor_sha256",
         "plan_sha256"
       ],
       "title": "TransformPlan",
@@ -3686,9 +3686,9 @@ The following JSON is the complete value owned at each machine-authority pointer
           "title": "Retirement Policy",
           "type": "string"
         },
-        "target_contract_sha256": {
+        "target_descriptor_sha256": {
           "pattern": "^[0-9a-f]{64}$",
-          "title": "Target Contract Sha256",
+          "title": "Target Descriptor Sha256",
           "type": "string"
         },
         "target_registration_id": {
@@ -3709,7 +3709,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "work",
         "operation",
         "target_registration_id",
-        "target_contract_sha256",
+        "target_descriptor_sha256",
         "workflow_plan_sha256"
       ],
       "title": "WorkflowPlan",
@@ -3720,6 +3720,9 @@ The following JSON is the complete value owned at each machine-authority pointer
   "properties": {
     "coverage": {
       "$ref": "#/$defs/TargetConformanceCoverage"
+    },
+    "descriptor": {
+      "$ref": "#/$defs/TargetDescriptor"
     },
     "format": {
       "const": "stove0-target-conformance-result/v1",
@@ -3750,14 +3753,11 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "title": "Status",
       "type": "string"
-    },
-    "target": {
-      "$ref": "#/$defs/TargetContract"
     }
   },
   "required": [
     "status",
-    "target",
+    "descriptor",
     "coverage",
     "operations"
   ],

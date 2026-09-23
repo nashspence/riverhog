@@ -42,7 +42,7 @@ from stove0_target_protocol import (
     OperationContract,
     OutputCollectionRef,
     TargetCallbackAccess,
-    TargetContract,
+    TargetDescriptor,
     TargetJobDeclaration,
     TargetJobRequest,
     TargetJobStatus,
@@ -176,7 +176,7 @@ class ObserverPort(Protocol):
 
 
 class TargetPort(Protocol):
-    def contract(self, registration_id: str) -> TargetContract: ...
+    def descriptor(self, registration_id: str) -> TargetDescriptor: ...
 
     def preflight(
         self,
@@ -268,8 +268,8 @@ class HttpTargetPort:
     def __init__(self, registrations: dict[str, TargetClient]) -> None:
         self._registrations = dict(registrations)
 
-    def contract(self, registration_id: str) -> TargetContract:
-        return self._client(registration_id).contract()
+    def descriptor(self, registration_id: str) -> TargetDescriptor:
+        return self._client(registration_id).descriptor()
 
     def preflight(
         self,
@@ -683,9 +683,9 @@ class Stove0Coordinator:
         plan = record.workflow_plan
         if plan is None:
             raise RuntimeError("target preflight work has no workflow plan")
-        target = self.targets.contract(plan.target_registration_id)
-        if target.contract_sha256 != plan.target_contract_sha256:
-            raise RuntimeError("configured target contract changed after workflow planning")
+        target = self.targets.descriptor(plan.target_registration_id)
+        if target.descriptor_sha256 != plan.target_descriptor_sha256:
+            raise RuntimeError("configured target descriptor changed after workflow planning")
         documents = self._selection_documents(record)
         input_selection = self.planning.target_input_selection(plan, documents)
         self.work.store.retain_selection(input_selection)

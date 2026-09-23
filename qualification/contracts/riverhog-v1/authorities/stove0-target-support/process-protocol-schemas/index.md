@@ -9,7 +9,7 @@ Structured values exchanged by a process protocol.
 - [ErrorResponse](generated-stove0-target-errorresponse.md)
 - [OperationContract](generated-stove0-target-operationcontract.md)
 - [TargetConformanceResult](generated-stove0-target-targetconformanceresult.md)
-- [TargetContract](generated-stove0-target-targetcontract.md)
+- [TargetDescriptor](generated-stove0-target-targetdescriptor.md)
 - [TargetJobRequest](generated-stove0-target-targetjobrequest.md)
 - [TargetJobStatus](generated-stove0-target-targetjobstatus.md)
 - [TargetPreflightRequest](generated-stove0-target-targetpreflightrequest.md)

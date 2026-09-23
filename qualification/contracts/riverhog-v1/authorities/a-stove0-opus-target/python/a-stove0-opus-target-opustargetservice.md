@@ -30,7 +30,7 @@ Exact externally visible contract owned by this contract element.
 
 - [cancel_job](a-stove0-opus-target-opustargetservice-cancel-job.md)
 - [close](a-stove0-opus-target-opustargetservice-close.md)
-- [contract](a-stove0-opus-target-opustargetservice-contract.md)
+- [descriptor](a-stove0-opus-target-opustargetservice-descriptor.md)
 - [get_job](a-stove0-opus-target-opustargetservice-get-job.md)
 - [prune_terminal_state](a-stove0-opus-target-opustargetservice-prune-terminal-state.md)
 - [preflight](a-stove0-opus-target-opustargetservice-preflight.md)

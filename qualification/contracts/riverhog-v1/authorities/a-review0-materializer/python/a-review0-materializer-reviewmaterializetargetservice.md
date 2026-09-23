@@ -28,13 +28,13 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
+- [descriptor](a-review0-materializer-reviewmaterializetargetservice-descriptor.md)
 - [readiness](a-review0-materializer-reviewmaterializetargetservice-readiness.md)
 - [prune_terminal_state](a-review0-materializer-reviewmaterializetargetservice-prune-terminal-state.md)
 - [preflight](a-review0-materializer-reviewmaterializetargetservice-preflight.md)
 - [cancel_job](a-review0-materializer-reviewmaterializetargetservice-cancel-job.md)
 - [get_job](a-review0-materializer-reviewmaterializetargetservice-get-job.md)
 - [put_job](a-review0-materializer-reviewmaterializetargetservice-put-job.md)
-- [contract](a-review0-materializer-reviewmaterializetargetservice-contract.md)
 - [close](a-review0-materializer-reviewmaterializetargetservice-close.md)
 
 ## Governing policies

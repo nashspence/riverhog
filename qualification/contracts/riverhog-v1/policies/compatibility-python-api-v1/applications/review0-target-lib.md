@@ -13,7 +13,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `review0-target-lib` | [review0_target_lib.ReviewTargetServiceBase](../../../authorities/review0-target-lib/python/review0-target-lib-reviewtargetservicebase.md#pa-538e0debfb) |
 | `review0-target-lib` | [review0_target_lib.ReviewTargetServiceBase.cancel_job](../../../authorities/review0-target-lib/python/review0-target-lib-reviewtargetservicebase-cancel-job.md#pa-4d22e00b07) |
 | `review0-target-lib` | [review0_target_lib.ReviewTargetServiceBase.close](../../../authorities/review0-target-lib/python/review0-target-lib-reviewtargetservicebase-close.md#pa-fa7138c2f4) |
-| `review0-target-lib` | [review0_target_lib.ReviewTargetServiceBase.contract](../../../authorities/review0-target-lib/python/review0-target-lib-reviewtargetservicebase-contract.md#pa-a32e77f91f) |
+| `review0-target-lib` | [review0_target_lib.ReviewTargetServiceBase.descriptor](../../../authorities/review0-target-lib/python/review0-target-lib-reviewtargetservicebase-descriptor.md#pa-46593ddd95) |
 | `review0-target-lib` | [review0_target_lib.ReviewTargetServiceBase.get_job](../../../authorities/review0-target-lib/python/review0-target-lib-reviewtargetservicebase-get-job.md#pa-dd4c0f88c2) |
 | `review0-target-lib` | [review0_target_lib.ReviewTargetServiceBase.preflight](../../../authorities/review0-target-lib/python/review0-target-lib-reviewtargetservicebase-preflight.md#pa-b91a8bb098) |
 | `review0-target-lib` | [review0_target_lib.ReviewTargetServiceBase.prune_terminal_state](../../../authorities/review0-target-lib/python/review0-target-lib-reviewtargetservicebase-prune-terminal-state.md#pa-6b18c084a0) |

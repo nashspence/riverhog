@@ -11,7 +11,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-stove0-opus-target` | [a_stove0_opus_target.OpusTargetService](../../../authorities/a-stove0-opus-target/python/a-stove0-opus-target-opustargetservice.md#pa-48a747dbf3) |
 | `a-stove0-opus-target` | [a_stove0_opus_target.OpusTargetService.cancel_job](../../../authorities/a-stove0-opus-target/python/a-stove0-opus-target-opustargetservice-cancel-job.md#pa-86d2b5e00b) |
 | `a-stove0-opus-target` | [a_stove0_opus_target.OpusTargetService.close](../../../authorities/a-stove0-opus-target/python/a-stove0-opus-target-opustargetservice-close.md#pa-591c1d2af6) |
-| `a-stove0-opus-target` | [a_stove0_opus_target.OpusTargetService.contract](../../../authorities/a-stove0-opus-target/python/a-stove0-opus-target-opustargetservice-contract.md#pa-4e70374068) |
+| `a-stove0-opus-target` | [a_stove0_opus_target.OpusTargetService.descriptor](../../../authorities/a-stove0-opus-target/python/a-stove0-opus-target-opustargetservice-descriptor.md#pa-5df7f8f330) |
 | `a-stove0-opus-target` | [a_stove0_opus_target.OpusTargetService.get_job](../../../authorities/a-stove0-opus-target/python/a-stove0-opus-target-opustargetservice-get-job.md#pa-05c277b58f) |
 | `a-stove0-opus-target` | [a_stove0_opus_target.OpusTargetService.preflight](../../../authorities/a-stove0-opus-target/python/a-stove0-opus-target-opustargetservice-preflight.md#pa-2f37b74613) |
 | `a-stove0-opus-target` | [a_stove0_opus_target.OpusTargetService.prune_terminal_state](../../../authorities/a-stove0-opus-target/python/a-stove0-opus-target-opustargetservice-prune-terminal-state.md#pa-3f67195526) |

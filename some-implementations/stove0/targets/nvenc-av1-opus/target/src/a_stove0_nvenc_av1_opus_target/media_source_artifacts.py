@@ -157,7 +157,7 @@ def build_strict_source_artifacts(
     encode_command: Sequence[str],
     intent: Av1OpusArchiveIntent,
     target_options: Mapping[str, JsonValue],
-    target_contract_sha256: str,
+    target_descriptor_sha256: str,
     plan_sha256: str,
 ) -> dict[str, JsonValue]:
     """Preserve and verify every non-archive source-container artifact.
@@ -233,7 +233,7 @@ def build_strict_source_artifacts(
             svt_lp=0,
             video_codec="av1_nvenc",
             video_encoder={
-                "target_contract_sha256": target_contract_sha256,
+                "target_descriptor_sha256": target_descriptor_sha256,
                 "target_plan_sha256": plan_sha256,
                 "target_options": dict(target_options),
                 "portable_intent": intent.model_dump(mode="json"),

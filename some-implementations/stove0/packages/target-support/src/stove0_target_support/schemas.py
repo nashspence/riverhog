@@ -14,7 +14,7 @@ from stove0_target_protocol import (
     TARGET_HTTP_OPERATIONS,
     TRANSFORM_TARGET_PROTOCOL,
     OperationContract,
-    TargetContract,
+    TargetDescriptor,
     TargetJobRequest,
     TargetJobStatus,
     TargetPreflightRequest,
@@ -73,7 +73,7 @@ _CLI_RESULT_CONTRACT: dict[str, object] = {
 
 _ADDITIONAL_MODELS = (
     OperationContract,
-    TargetContract,
+    TargetDescriptor,
     TargetPreflightRequest,
     TargetPreflightResponse,
     TargetJobRequest,

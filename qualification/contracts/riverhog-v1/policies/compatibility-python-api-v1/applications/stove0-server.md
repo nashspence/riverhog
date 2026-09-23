@@ -53,7 +53,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-server` | [stove0_core.HttpObserverPort.observe](../../../authorities/stove0-server/python/stove0-core-httpobserverport-observe.md#pa-a5b5845b28) |
 | `stove0-server` | [stove0_core.HttpTargetPort](../../../authorities/stove0-server/python/stove0-core-httptargetport.md#pa-b14131879a) |
 | `stove0-server` | [stove0_core.HttpTargetPort.cancel_job](../../../authorities/stove0-server/python/stove0-core-httptargetport-cancel-job.md#pa-d26ead915a) |
-| `stove0-server` | [stove0_core.HttpTargetPort.contract](../../../authorities/stove0-server/python/stove0-core-httptargetport-contract.md#pa-f357ad23e8) |
+| `stove0-server` | [stove0_core.HttpTargetPort.descriptor](../../../authorities/stove0-server/python/stove0-core-httptargetport-descriptor.md#pa-1cd65ccf34) |
 | `stove0-server` | [stove0_core.HttpTargetPort.get_job](../../../authorities/stove0-server/python/stove0-core-httptargetport-get-job.md#pa-1f7f1f0730) |
 | `stove0-server` | [stove0_core.HttpTargetPort.preflight](../../../authorities/stove0-server/python/stove0-core-httptargetport-preflight.md#pa-c9921e2e6c) |
 | `stove0-server` | [stove0_core.HttpTargetPort.put_job](../../../authorities/stove0-server/python/stove0-core-httptargetport-put-job.md#pa-16f560a3da) |
@@ -282,7 +282,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-server` | [stove0_core.TargetInvocationAuthority](../../../authorities/stove0-server/python/stove0-core-targetinvocationauthority.md#pa-802d2fdd67) |
 | `stove0-server` | [stove0_core.TargetPort](../../../authorities/stove0-server/python/stove0-core-targetport.md#pa-8ef51f75df) |
 | `stove0-server` | [stove0_core.TargetPort.cancel_job](../../../authorities/stove0-server/python/stove0-core-targetport-cancel-job.md#pa-2a5ee3da46) |
-| `stove0-server` | [stove0_core.TargetPort.contract](../../../authorities/stove0-server/python/stove0-core-targetport-contract.md#pa-3ee985c03b) |
+| `stove0-server` | [stove0_core.TargetPort.descriptor](../../../authorities/stove0-server/python/stove0-core-targetport-descriptor.md#pa-463c67ba19) |
 | `stove0-server` | [stove0_core.TargetPort.get_job](../../../authorities/stove0-server/python/stove0-core-targetport-get-job.md#pa-440922dadd) |
 | `stove0-server` | [stove0_core.TargetPort.preflight](../../../authorities/stove0-server/python/stove0-core-targetport-preflight.md#pa-30bf307a20) |
 | `stove0-server` | [stove0_core.TargetPort.put_job](../../../authorities/stove0-server/python/stove0-core-targetport-put-job.md#pa-9bcb03d674) |

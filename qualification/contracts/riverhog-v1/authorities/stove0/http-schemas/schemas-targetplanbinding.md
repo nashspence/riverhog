@@ -24,7 +24,7 @@ identity while preserving the full document in the execution envelope.
 - <a id="s-346dc2109d"></a>`type`: `"object"`
 - <a id="s-7d02b0ee48"></a>`additionalProperties`: `false`
 - <a id="s-f30d751b24"></a>`description`: `"Opaque binding to a target-owned preflight plan.\n\nThe target protocol owns the plan schema and canonicalization algorithm. stove0\nretains the complete validated plan document and its target-issued digest, but\ndeliberately does not reinterpret or re-hash the plan with stove0's canonical\nJSON rules. This prevents two authorities from disagreeing about target plan\nidentity while preserving the full document in the execution envelope."`
-- <a id="s-7bbf67155b"></a>`required`: `["protocol","target_implementation_id","target_contract_sha256","operation_contract_sha256","plan","plan_sha256"]`
+- <a id="s-7bbf67155b"></a>`required`: `["protocol","target_implementation_id","target_descriptor_sha256","operation_contract_sha256","plan","plan_sha256"]`
 - <a id="s-0ca7c36062"></a>`title`: `"TargetPlanBinding"`
 
 ### Fields
@@ -35,7 +35,7 @@ identity while preserving the full document in the execution envelope.
 | <a id="s-993b6f21cd"></a>`plan` | yes | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Plan" |  |
 | <a id="s-8280a47826"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
 | <a id="s-9dd294d2a7"></a>`protocol` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Protocol" |  |
-| <a id="s-d9f811c470"></a>`target_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Contract Sha256" |  |
+| <a id="s-6764e17701"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Descriptor Sha256" |  |
 | <a id="s-f996140a29"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Target Implementation Id" |  |
 
 ### Progression, limits, and lifecycle
@@ -56,7 +56,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 |---|---|---|
 | [field operation_contract_sha256](#s-413e96b2fe) | `length · characters · fixed` | shared above |
 | [field plan_sha256](#s-8280a47826) | `length · characters · fixed` | shared above |
-| [field target_contract_sha256](#s-d9f811c470) | `length · characters · fixed` | shared above |
+| [field target_descriptor_sha256](#s-6764e17701) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -95,7 +95,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e347041141bb80657f5487a5324d1f55b68bcaee8feaa37c3c34760ba20f5045 -->
+<!-- exact-contract-value: bde52295dc5c91e6d99bef9efb4cbb794c65002643d4477e2443bfaca4653f01 -->
 
 ```json
 {
@@ -124,9 +124,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Protocol",
       "type": "string"
     },
-    "target_contract_sha256": {
+    "target_descriptor_sha256": {
       "pattern": "^[0-9a-f]{64}$",
-      "title": "Target Contract Sha256",
+      "title": "Target Descriptor Sha256",
       "type": "string"
     },
     "target_implementation_id": {
@@ -138,7 +138,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "required": [
     "protocol",
     "target_implementation_id",
-    "target_contract_sha256",
+    "target_descriptor_sha256",
     "operation_contract_sha256",
     "plan",
     "plan_sha256"

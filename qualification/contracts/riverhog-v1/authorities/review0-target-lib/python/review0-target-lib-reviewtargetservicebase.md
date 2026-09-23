@@ -29,9 +29,9 @@ Exact externally visible contract owned by this contract element.
 ### Related interface records
 
 - [cancel_job](review0-target-lib-reviewtargetservicebase-cancel-job.md)
+- [descriptor](review0-target-lib-reviewtargetservicebase-descriptor.md)
 - [prune_terminal_state](review0-target-lib-reviewtargetservicebase-prune-terminal-state.md)
 - [close](review0-target-lib-reviewtargetservicebase-close.md)
-- [contract](review0-target-lib-reviewtargetservicebase-contract.md)
 - [get_job](review0-target-lib-reviewtargetservicebase-get-job.md)
 - [preflight](review0-target-lib-reviewtargetservicebase-preflight.md)
 - [put_job](review0-target-lib-reviewtargetservicebase-put-job.md)

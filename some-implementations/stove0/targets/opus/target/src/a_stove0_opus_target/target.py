@@ -30,8 +30,8 @@ from stove0_target_support import (
     DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
     OutputArtifact,
     PersistentTargetService,
-    TargetContract,
-    TargetContractPayload,
+    TargetDescriptor,
+    TargetDescriptorPayload,
     TargetExecutionCanceled,
     TargetExecutionInapplicable,
     TargetExecutionRuntime,
@@ -87,8 +87,8 @@ class OpusTargetService(PersistentTargetService):
         os.chmod(self.workspace_root, 0o700)
         self.ffmpeg = ffmpeg
         self.image_digest = image_digest
-        contract = TargetContract.seal(
-            TargetContractPayload(
+        descriptor = TargetDescriptor.seal(
+            TargetDescriptorPayload(
                 implementation_id="a-stove0-opus-target/v1",
                 implementation_version=_version(),
                 source_revision=source_revision,
@@ -103,7 +103,7 @@ class OpusTargetService(PersistentTargetService):
             )
         )
         super().__init__(
-            contract=contract,
+            descriptor=descriptor,
             operations={AUDIO_ARCHIVE_OPERATION.id: AUDIO_ARCHIVE_OPERATION},
             state_root=state_root,
             execute=self._execute,

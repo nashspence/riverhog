@@ -29,11 +29,11 @@ Exact externally visible contract owned by this contract element.
 ### Related interface records
 
 - [preflight](a-stove0-nvenc-av1-opus-target-nvencav1opustargetservice-preflight.md)
+- [descriptor](a-stove0-nvenc-av1-opus-target-nvencav1opustargetservice-descriptor.md)
 - [prune_terminal_state](a-stove0-nvenc-av1-opus-target-nvencav1opustargetservice-prune-terminal-state.md)
 - [get_job](a-stove0-nvenc-av1-opus-target-nvencav1opustargetservice-get-job.md)
 - [put_job](a-stove0-nvenc-av1-opus-target-nvencav1opustargetservice-put-job.md)
 - [cancel_job](a-stove0-nvenc-av1-opus-target-nvencav1opustargetservice-cancel-job.md)
-- [contract](a-stove0-nvenc-av1-opus-target-nvencav1opustargetservice-contract.md)
 - [close](a-stove0-nvenc-av1-opus-target-nvencav1opustargetservice-close.md)
 
 ## Governing policies

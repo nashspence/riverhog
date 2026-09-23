@@ -478,7 +478,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-server` | [stove0-server state verify](../../authorities/stove0-server/cli/stove0-server-state-verify.md#pa-ad16511921) |
 | `stove0-target-support` | [generated:stove0-target: OperationContract](../../authorities/stove0-target-support/process-protocol-schemas/generated-stove0-target-operationcontract.md#pa-a7cca2a7b5) |
 | `stove0-target-support` | [generated:stove0-target: TargetConformanceResult](../../authorities/stove0-target-support/process-protocol-schemas/generated-stove0-target-targetconformanceresult.md#pa-2fd4e8911b) |
-| `stove0-target-support` | [generated:stove0-target: TargetContract](../../authorities/stove0-target-support/process-protocol-schemas/generated-stove0-target-targetcontract.md#pa-617a3b9c02) |
+| `stove0-target-support` | [generated:stove0-target: TargetDescriptor](../../authorities/stove0-target-support/process-protocol-schemas/generated-stove0-target-targetdescriptor.md#pa-1151c39033) |
 | `stove0-target-support` | [generated:stove0-target: TargetJobRequest](../../authorities/stove0-target-support/process-protocol-schemas/generated-stove0-target-targetjobrequest.md#pa-090b7c06a8) |
 | `stove0-target-support` | [generated:stove0-target: TargetJobStatus](../../authorities/stove0-target-support/process-protocol-schemas/generated-stove0-target-targetjobstatus.md#pa-45ca3dc7a9) |
 | `stove0-target-support` | [generated:stove0-target: TargetPreflightRequest](../../authorities/stove0-target-support/process-protocol-schemas/generated-stove0-target-targetpreflightrequest.md#pa-cbe2539aba) |

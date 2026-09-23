@@ -78,8 +78,8 @@ from stove0_target_support import (
     OutputArtifact,
     OutputArtifactContract,
     OutputCollectionRef,
-    TargetContract,
-    TargetContractPayload,
+    TargetDescriptor,
+    TargetDescriptorPayload,
     TargetExecutionEvidence,
     TargetJobDeclaration,
     TargetJobRequest,
@@ -222,9 +222,9 @@ def _operation() -> OperationContract:
     )
 
 
-def _target(operation: OperationContract) -> TargetContract:
-    return TargetContract.seal(
-        TargetContractPayload(
+def _target(operation: OperationContract) -> TargetDescriptor:
+    return TargetDescriptor.seal(
+        TargetDescriptorPayload(
             implementation_id="fixture.target/v1",
             implementation_version="1.0.0",
             source_revision="fixture",
@@ -245,7 +245,7 @@ def _target(operation: OperationContract) -> TargetContract:
 
 def _target_plan(
     operation: OperationContract,
-    target: TargetContract,
+    target: TargetDescriptor,
     *,
     observation_result_sha256s: tuple[str, ...] = (),
     selection: ArtifactSelection | None = None,
@@ -266,7 +266,7 @@ def _target_plan(
     return TransformPlan.seal(
         TransformPlanPayload(
             target_implementation_id=target.implementation_id,
-            target_contract_sha256=target.contract_sha256,
+            target_descriptor_sha256=target.descriptor_sha256,
             operation_id=operation.id,
             operation_contract_sha256=operation.contract_sha256,
             inputs=TargetInputAuthority.from_selection(selection),
@@ -306,7 +306,7 @@ def _branch_decision(
         workflow_intent=WorkflowPlanIntent(
             operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
-            target_contract_sha256=target.contract_sha256,
+            target_descriptor_sha256=target.descriptor_sha256,
             retirement_policy="retain",
         ),
     )
@@ -702,7 +702,7 @@ def _nested_branch_decision(work: WorkIdentity) -> BranchSetDecision:
         workflow_intent=WorkflowPlanIntent(
             operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
-            target_contract_sha256=target.contract_sha256,
+            target_descriptor_sha256=target.descriptor_sha256,
             retirement_policy="retain",
         ),
     )
@@ -767,7 +767,7 @@ def test_one_record_carries_observation_plan_execution_verification_and_completi
             observations=(ContentObservationEvidence(request=request, result=result),),
             operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
-            target_contract_sha256=target.contract_sha256,
+            target_descriptor_sha256=target.descriptor_sha256,
             retirement_policy="retain",
         )
     )
@@ -889,7 +889,7 @@ def test_one_record_carries_observation_plan_execution_verification_and_completi
         production=production,
         output_collection=output_collection,
         execution_evidence=TargetExecutionEvidence(
-            target_contract_sha256=target.contract_sha256,
+            target_descriptor_sha256=target.descriptor_sha256,
             operation_contract_sha256=operation.contract_sha256,
             plan_sha256=plan.plan_sha256,
             execution_sha256=_sha("9"),
@@ -949,7 +949,7 @@ def test_new_claim_fence_resets_unsettled_execution_authorities() -> None:
             work=work,
             operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
-            target_contract_sha256=target.contract_sha256,
+            target_descriptor_sha256=target.descriptor_sha256,
             retirement_policy="retain",
         )
     )
@@ -1583,7 +1583,7 @@ def test_sql_branch_set_admission_rolls_back_every_document_on_child_conflict(
     conflicting_plan = WorkflowPlanIntent(
         operation=branch.workflow_plan.operation,
         target_registration_id=branch.workflow_plan.target_registration_id,
-        target_contract_sha256=branch.workflow_plan.target_contract_sha256,
+        target_descriptor_sha256=branch.workflow_plan.target_descriptor_sha256,
         requested_target_options={"conflict": True},
         retirement_policy="retain",
     ).materialize(work=branch.workflow_plan.work)

@@ -211,7 +211,7 @@ def _ready_preview(work: WorkIdentity) -> WorkflowPreview:
         workflow_intent=WorkflowPlanIntent(
             operation=operation,
             target_registration_id="fixture-target",
-            target_contract_sha256="e" * 64,
+            target_descriptor_sha256="e" * 64,
             retirement_policy="retain",
         ),
     )
@@ -237,7 +237,7 @@ def _ready_preview(work: WorkIdentity) -> WorkflowPreview:
                     target_plan=TargetPlanBinding(
                         protocol="stove0-transform-target/v1",
                         target_implementation_id="fixture.target/v1",
-                        target_contract_sha256=workflow.target_contract_sha256,
+                        target_descriptor_sha256=workflow.target_descriptor_sha256,
                         operation_contract_sha256=operation.sha256,
                         plan={"format": "fixture-target-plan/v1"},
                         plan_sha256="f" * 64,

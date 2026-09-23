@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-6922f0212f"></a>`path` | `"/v1/target"` |
 | <a id="s-4c85079d5b"></a>`path_parameters` | `[]` |
 | <a id="s-fa876b719f"></a>`request` | `{"kind":"none","schema":null}` |
-| <a id="s-1f6e33f930"></a>`response` | `{"headers":[],"kind":"json","schema":"TargetContract","statuses":[200]}` |
+| <a id="s-1f6e33f930"></a>`response` | `{"headers":[],"kind":"json","schema":"TargetDescriptor","statuses":[200]}` |
 
 ## Maintained corroboration
 
@@ -57,7 +57,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 579976aa0d1ddba83df73b67143ec2a50d48bb00eac909816300d63211b540e9 -->
+<!-- exact-contract-value: 68ee56d496a904efdc72449825bed4befb4c975f21c47f6564f061b88d1eb92a -->
 
 ```json
 {
@@ -86,7 +86,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "response": {
     "headers": [],
     "kind": "json",
-    "schema": "TargetContract",
+    "schema": "TargetDescriptor",
     "statuses": [
       200
     ]
