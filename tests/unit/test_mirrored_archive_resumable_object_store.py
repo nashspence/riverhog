@@ -8,7 +8,7 @@ import pytest
 from riverhog_core.ports.archive_objects import (
     CompletedObjectReceipt,
     ResumableWriteConstraints,
-    WriteCompletionAuthority,
+    WriteCompletionPrecondition,
     WriteSegmentCursor,
     WriteSegmentPage,
     WriteSegmentReceipt,
@@ -22,8 +22,8 @@ from riverhog_core.stores.mirrored_archive_resumable_object_store import (
 NOW = "2026-08-13T00:00:00Z"
 
 
-def _authority(segments: tuple[WriteSegmentReceipt, ...]) -> WriteCompletionAuthority:
-    return WriteCompletionAuthority(
+def _authority(segments: tuple[WriteSegmentReceipt, ...]) -> WriteCompletionPrecondition:
+    return WriteCompletionPrecondition(
         len(segments),
         sum(item.bytes for item in segments),
         hashlib.sha256(repr(segments).encode("utf-8")).hexdigest(),

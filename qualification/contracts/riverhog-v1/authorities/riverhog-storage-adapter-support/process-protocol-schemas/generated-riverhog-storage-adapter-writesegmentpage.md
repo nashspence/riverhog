@@ -25,7 +25,7 @@ One bounded page under an adapter-owned immutable traversal view.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-05723f37a4"></a>`completion` | no | anyOf=[([WriteCompletionAuthority](#s-21da49f925)); (type="null")]; default=null |  |
+| <a id="s-05723f37a4"></a>`completion` | no | anyOf=[([WriteCompletionPrecondition](#s-1d26d60d9c)); (type="null")]; default=null |  |
 | <a id="s-2130080be0"></a>`next_after_number` | no | anyOf=[([PositiveDecimal](#s-7c29ea30ee)); (type="null")]; default=null |  |
 | <a id="s-33643dd5a1"></a>`segments` | no | type="array"; default=[]; items=([WriteSegmentReceipt](#s-49182d9498)); maxItems=128; title="Segments"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"exact-adapter-write-traversal","reason":"bounded-storage-write-segment-page"} |  |
 | <a id="s-2b84ac917f"></a>`session` | yes | [WriteSession](#s-182505f3d5) |  |
@@ -35,7 +35,7 @@ One bounded page under an adapter-owned immutable traversal view.
 
 - [NonnegativeDecimal](#s-66040b9130)
 - [PositiveDecimal](#s-7c29ea30ee)
-- [WriteCompletionAuthority](#s-21da49f925)
+- [WriteCompletionPrecondition](#s-1d26d60d9c)
 - [WriteSegmentReceipt](#s-49182d9498)
 - [WriteSession](#s-182505f3d5)
 
@@ -49,21 +49,21 @@ One bounded page under an adapter-owned immutable traversal view.
 - <a id="s-63efb9fa90"></a>`type`: `"string"`
 - <a id="s-268380c69d"></a>`pattern`: `"^[1-9][0-9]*(?![\\s\\S])"`
 
-### <a id="s-21da49f925"></a>definition `WriteCompletionAuthority`
+### <a id="s-1d26d60d9c"></a>definition `WriteCompletionPrecondition`
 
-- <a id="s-5187ac4808"></a>`type`: `"object"`
-- <a id="s-21193e2351"></a>`additionalProperties`: `false`
-- <a id="s-a335faf8e1"></a>`description`: `"Adapter-issued terminal authority for one exact active-write state.\n\nConsumers echo the opaque token unchanged. It is neither a credential nor a\nbearer capability; completion remains independently authorized. Once an exact\nimmutable object is published, its completed-object identity supersedes this\ntransport authority for terminal reconciliation."`
-- <a id="s-b39f82fd05"></a>`required`: `["segment_count","stored_bytes","authority_token"]`
-- <a id="s-a21e438197"></a>`title`: `"WriteCompletionAuthority"`
+- <a id="s-0c3a521399"></a>`type`: `"object"`
+- <a id="s-8cfe3332ba"></a>`additionalProperties`: `false`
+- <a id="s-42ea5d7c4e"></a>`description`: `"Adapter-issued precondition for one exact active-write state.\n\nConsumers echo the opaque token unchanged. It is neither a credential nor a\nbearer capability; completion remains independently authorized. Once an exact\nimmutable object is published, its completed-object identity supersedes this\nactive-write precondition for terminal reconciliation."`
+- <a id="s-bc5ce8dc9d"></a>`required`: `["segment_count","stored_bytes","state_token"]`
+- <a id="s-2781a06388"></a>`title`: `"WriteCompletionPrecondition"`
 
 #### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-be34d2262f"></a>`authority_token` | yes | type="string"; maxLength=4000; minLength=1; title="Authority Token" | Bounded opaque adapter-issued authority for the exact accepted state of an active write. The token grants no authority and must be echoed unchanged. |
-| <a id="s-10adf909eb"></a>`segment_count` | yes | [NonnegativeDecimal](#s-66040b9130) |  |
-| <a id="s-347c213eaf"></a>`stored_bytes` | yes | [NonnegativeDecimal](#s-66040b9130) |  |
+| <a id="s-5fc7c2e1c4"></a>`segment_count` | yes | [NonnegativeDecimal](#s-66040b9130) |  |
+| <a id="s-495da41048"></a>`state_token` | yes | type="string"; maxLength=4000; minLength=1; title="State Token" | Bounded opaque adapter-issued state token for the exact accepted state of an active write. The token grants no authority and must be echoed unchanged. |
+| <a id="s-738e580a0a"></a>`stored_bytes` | yes | [NonnegativeDecimal](#s-66040b9130) |  |
 
 ### <a id="s-49182d9498"></a>definition `WriteSegmentReceipt`
 
@@ -171,7 +171,7 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6cd64e7bd0a57b50185bc48b6a03cd2b1bcdf25a2eeee7c52b23ac86176ae432 -->
+<!-- exact-contract-value: b202acc1ba7165ef9822be331f3d18bb3bf357f8c61c480af4473e1c8d0b0266 -->
 
 ```json
 {
@@ -184,19 +184,19 @@ The following JSON is the complete value owned at each machine-authority pointer
       "pattern": "^[1-9][0-9]*(?![\\s\\S])",
       "type": "string"
     },
-    "WriteCompletionAuthority": {
+    "WriteCompletionPrecondition": {
       "additionalProperties": false,
-      "description": "Adapter-issued terminal authority for one exact active-write state.\n\nConsumers echo the opaque token unchanged. It is neither a credential nor a\nbearer capability; completion remains independently authorized. Once an exact\nimmutable object is published, its completed-object identity supersedes this\ntransport authority for terminal reconciliation.",
+      "description": "Adapter-issued precondition for one exact active-write state.\n\nConsumers echo the opaque token unchanged. It is neither a credential nor a\nbearer capability; completion remains independently authorized. Once an exact\nimmutable object is published, its completed-object identity supersedes this\nactive-write precondition for terminal reconciliation.",
       "properties": {
-        "authority_token": {
-          "description": "Bounded opaque adapter-issued authority for the exact accepted state of an active write. The token grants no authority and must be echoed unchanged.",
-          "maxLength": 4000,
-          "minLength": 1,
-          "title": "Authority Token",
-          "type": "string"
-        },
         "segment_count": {
           "$ref": "#/$defs/NonnegativeDecimal"
+        },
+        "state_token": {
+          "description": "Bounded opaque adapter-issued state token for the exact accepted state of an active write. The token grants no authority and must be echoed unchanged.",
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "State Token",
+          "type": "string"
         },
         "stored_bytes": {
           "$ref": "#/$defs/NonnegativeDecimal"
@@ -205,9 +205,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "required": [
         "segment_count",
         "stored_bytes",
-        "authority_token"
+        "state_token"
       ],
-      "title": "WriteCompletionAuthority",
+      "title": "WriteCompletionPrecondition",
       "type": "object"
     },
     "WriteSegmentReceipt": {
@@ -283,7 +283,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "completion": {
       "anyOf": [
         {
-          "$ref": "#/$defs/WriteCompletionAuthority"
+          "$ref": "#/$defs/WriteCompletionPrecondition"
         },
         {
           "type": "null"

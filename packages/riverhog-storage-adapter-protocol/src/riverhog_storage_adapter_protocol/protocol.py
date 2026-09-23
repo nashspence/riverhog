@@ -40,7 +40,7 @@ _METADATA_KEY_PATTERN = re.compile(r"^[a-z0-9](?:[a-z0-9._-]{0,126}[a-z0-9])?$")
 _MAX_IDENTITY_ASSERTIONS_ITEMS = 64
 _MAX_IDENTITY_ASSERTIONS_BYTES = 16 * 1024
 MAX_WRITE_SEGMENT_PAGE_ITEMS = 128
-_MAX_WRITE_COMPLETION_AUTHORITY_TOKEN_LENGTH = 4000
+_MAX_WRITE_COMPLETION_PRECONDITION_TOKEN_LENGTH = 4000
 
 Sha256 = Annotated[str, StringConstraints(pattern=_SHA256_PATTERN)]
 SemanticId = Annotated[str, StringConstraints(pattern=_SEMANTIC_ID_PATTERN)]
@@ -259,22 +259,22 @@ def _listed_segments(
     return value
 
 
-class WriteCompletionAuthority(StorageAdapterModel):
-    """Adapter-issued terminal authority for one exact active-write state.
+class WriteCompletionPrecondition(StorageAdapterModel):
+    """Adapter-issued precondition for one exact active-write state.
 
     Consumers echo the opaque token unchanged. It is neither a credential nor a
     bearer capability; completion remains independently authorized. Once an exact
     immutable object is published, its completed-object identity supersedes this
-    transport authority for terminal reconciliation.
+    active-write precondition for terminal reconciliation.
     """
 
     segment_count: NonnegativeDecimal
     stored_bytes: NonnegativeDecimal
-    authority_token: str = Field(
+    state_token: str = Field(
         min_length=1,
-        max_length=_MAX_WRITE_COMPLETION_AUTHORITY_TOKEN_LENGTH,
+        max_length=_MAX_WRITE_COMPLETION_PRECONDITION_TOKEN_LENGTH,
         description=(
-            "Bounded opaque adapter-issued authority for the exact accepted state of an "
+            "Bounded opaque adapter-issued state token for the exact accepted state of an "
             "active write. The token grants no authority and must be echoed unchanged."
         ),
     )
@@ -328,7 +328,7 @@ class WriteSegmentPage(StorageAdapterModel):
         },
     )
     next_after_number: PositiveDecimal | None = None
-    completion: WriteCompletionAuthority | None = None
+    completion: WriteCompletionPrecondition | None = None
 
     @field_validator("segments")
     @classmethod
@@ -341,7 +341,9 @@ class WriteSegmentPage(StorageAdapterModel):
     @model_validator(mode="after")
     def validate_terminal(self) -> Self:
         if self.next_after_number is not None and self.completion is not None:
-            raise ValueError("nonterminal write segment pages cannot carry completion authority")
+            raise ValueError(
+                "nonterminal write segment pages cannot carry a completion precondition"
+            )
         if self.next_after_number is not None and (
             not self.segments or self.next_after_number != self.segments[-1].number
         ):
@@ -357,7 +359,7 @@ class WriteSegmentRequest(StorageAdapterModel):
 
 class WriteCompleteRequest(StorageAdapterModel):
     session: WriteSession
-    completion: WriteCompletionAuthority
+    completion: WriteCompletionPrecondition
     expected_bytes: PositiveDecimal
     expected_content_type: str = Field(min_length=1, max_length=255)
     required_identity_assertions: RequiredIdentityAssertions
@@ -375,7 +377,7 @@ class WriteCompleteRequest(StorageAdapterModel):
         if self.completion.segment_count < 1:
             raise ValueError("write completion requires at least one segment")
         if self.completion.stored_bytes != self.expected_bytes:
-            raise ValueError("write byte count does not equal its completion authority")
+            raise ValueError("write byte count does not equal its completion precondition")
         return self
 
 
@@ -1155,7 +1157,7 @@ __all__ = [
     "ImmutableObjectReceipt",
     "MaintenanceResult",
     "WriteCompleteRequest",
-    "WriteCompletionAuthority",
+    "WriteCompletionPrecondition",
     "WriteStartRequest",
     "CompletedWriteLookupRequest",
     "WriteSegmentReceipt",

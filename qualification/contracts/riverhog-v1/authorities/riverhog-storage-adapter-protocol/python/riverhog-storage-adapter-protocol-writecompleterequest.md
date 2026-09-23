@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-9680c53b70"></a>`kind`: `"class"`
-- <a id="s-e41639107b"></a>`signature`: `"\"(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, completion: riverhog_storage_adapter_protocol.protocol.WriteCompletionAuthority, expected_bytes: PositiveDecimal, expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement: Literal['archive', 'immediate']) -> None\""`
+- <a id="s-e41639107b"></a>`signature`: `"\"(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, completion: riverhog_storage_adapter_protocol.protocol.WriteCompletionPrecondition, expected_bytes: PositiveDecimal, expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement: Literal['archive', 'immediate']) -> None\""`
 
 #### Validated model schema
 
@@ -36,7 +36,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-760d87722b"></a>`completion` | yes | [WriteCompletionAuthority](#s-d78eb0b56c) |  |
+| <a id="s-760d87722b"></a>`completion` | yes | [WriteCompletionPrecondition](#s-a37b597897) |  |
 | <a id="s-7a8d87fa71"></a>`expected_bytes` | yes | [PositiveDecimal](#s-be642acd83) |  |
 | <a id="s-ef006a81c9"></a>`expected_content_type` | yes | type="string"; maxLength=255; minLength=1 |  |
 | <a id="s-5e42590d31"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"] |  |
@@ -47,7 +47,7 @@ Exact externally visible contract owned by this contract element.
 
 - [NonnegativeDecimal](#s-1fc0650e04)
 - [PositiveDecimal](#s-be642acd83)
-- [WriteCompletionAuthority](#s-d78eb0b56c)
+- [WriteCompletionPrecondition](#s-a37b597897)
 - [WriteSession](#s-7089c76a7b)
 
 ##### <a id="s-1fc0650e04"></a>definition `NonnegativeDecimal`
@@ -60,19 +60,19 @@ Exact externally visible contract owned by this contract element.
 - <a id="s-13456a80f7"></a>`type`: `"string"`
 - <a id="s-018ca4b4b8"></a>`pattern`: `"^[1-9][0-9]*(?![\\s\\S])"`
 
-##### <a id="s-d78eb0b56c"></a>definition `WriteCompletionAuthority`
+##### <a id="s-a37b597897"></a>definition `WriteCompletionPrecondition`
 
-- <a id="s-bbd2a5fc47"></a>`type`: `"object"`
-- <a id="s-0fa21b80f6"></a>`additionalProperties`: `false`
-- <a id="s-03ecbf432b"></a>`required`: `["segment_count","stored_bytes","authority_token"]`
+- <a id="s-14c4df4869"></a>`type`: `"object"`
+- <a id="s-5820bce365"></a>`additionalProperties`: `false`
+- <a id="s-2e6515efb8"></a>`required`: `["segment_count","stored_bytes","state_token"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3197417b17"></a>`authority_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
-| <a id="s-75cf91dbd4"></a>`segment_count` | yes | [NonnegativeDecimal](#s-1fc0650e04) |  |
-| <a id="s-2bd6b08275"></a>`stored_bytes` | yes | [NonnegativeDecimal](#s-1fc0650e04) |  |
+| <a id="s-9542f337eb"></a>`segment_count` | yes | [NonnegativeDecimal](#s-1fc0650e04) |  |
+| <a id="s-b83cb456d1"></a>`state_token` | yes | type="string"; maxLength=4000; minLength=1 |  |
+| <a id="s-614940ce20"></a>`stored_bytes` | yes | [NonnegativeDecimal](#s-1fc0650e04) |  |
 
 ##### <a id="s-7089c76a7b"></a>definition `WriteSession`
 
@@ -122,7 +122,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d3222be439ec974c7d7d8e6511f75a5ca30e71641404d0654796544ea103e744 -->
+<!-- exact-contract-value: 3fb294a8e399803571814e5360ad3b41a398eb1641ea1a79e891c437c9ea513d -->
 
 ```json
 {
@@ -138,16 +138,16 @@ The following JSON is the complete value owned at each machine-authority pointer
           "pattern": "^[1-9][0-9]*(?![\\s\\S])",
           "type": "string"
         },
-        "WriteCompletionAuthority": {
+        "WriteCompletionPrecondition": {
           "additionalProperties": false,
           "properties": {
-            "authority_token": {
+            "segment_count": {
+              "$ref": "#/$defs/NonnegativeDecimal"
+            },
+            "state_token": {
               "maxLength": 4000,
               "minLength": 1,
               "type": "string"
-            },
-            "segment_count": {
-              "$ref": "#/$defs/NonnegativeDecimal"
             },
             "stored_bytes": {
               "$ref": "#/$defs/NonnegativeDecimal"
@@ -156,7 +156,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "required": [
             "segment_count",
             "stored_bytes",
-            "authority_token"
+            "state_token"
           ],
           "type": "object"
         },
@@ -188,7 +188,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "additionalProperties": false,
       "properties": {
         "completion": {
-          "$ref": "#/$defs/WriteCompletionAuthority"
+          "$ref": "#/$defs/WriteCompletionPrecondition"
         },
         "expected_bytes": {
           "$ref": "#/$defs/PositiveDecimal"
@@ -231,7 +231,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, completion: riverhog_storage_adapter_protocol.protocol.WriteCompletionAuthority, expected_bytes: PositiveDecimal, expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement: Literal['archive', 'immediate']) -> None\""
+    "signature": "\"(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, completion: riverhog_storage_adapter_protocol.protocol.WriteCompletionPrecondition, expected_bytes: PositiveDecimal, expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement: Literal['archive', 'immediate']) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",

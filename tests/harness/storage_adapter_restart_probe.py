@@ -149,7 +149,7 @@ def resume(path: Path) -> dict[str, object]:
         if completed_page.segments != (first_segment, second_segment):
             raise RuntimeError("restarted storage adapter segment traversal changed")
         if completed_page.completion is None:
-            raise RuntimeError("restarted storage adapter did not expose completion authority")
+            raise RuntimeError("restarted storage adapter did not expose completion precondition")
         completion = WriteCompleteRequest(
             session=session,
             completion=completed_page.completion,

@@ -104,7 +104,7 @@ Declared public imports and their selected exact structural contracts.
 - [WriteCompleteRequest](riverhog-storage-adapter-protocol-writecompleterequest.md)
   - [canonical_metadata](riverhog-storage-adapter-protocol-writecompleterequest-canonical-metadata.md)
   - [validate_bytes](riverhog-storage-adapter-protocol-writecompleterequest-validate-bytes.md)
-- [WriteCompletionAuthority](riverhog-storage-adapter-protocol-writecompletionauthority.md)
+- [WriteCompletionPrecondition](riverhog-storage-adapter-protocol-writecompletionprecondition.md)
 - [WriteSegmentListRequest](riverhog-storage-adapter-protocol-writesegmentlistrequest.md)
 - [WriteSegmentPage](riverhog-storage-adapter-protocol-writesegmentpage.md)
   - [canonical_segments](riverhog-storage-adapter-protocol-writesegmentpage-canonical-segments.md)

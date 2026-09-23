@@ -28,7 +28,7 @@ from riverhog_storage_adapter_protocol import (
     CompletedObjectReceipt as AdapterCompletedObjectReceipt,
 )
 from riverhog_storage_adapter_protocol import (
-    WriteCompletionAuthority as AdapterWriteCompletionAuthority,
+    WriteCompletionPrecondition as AdapterWriteCompletionPrecondition,
 )
 from riverhog_storage_adapter_protocol import (
     WriteSegmentReceipt as AdapterWriteSegmentReceipt,
@@ -40,13 +40,13 @@ from riverhog_storage_adapter_protocol import (
 _PART_BYTES = 5 * 1024 * 1024
 
 
-def _completion_authority(
+def _completion_precondition(
     segments: tuple[AdapterWriteSegmentReceipt, ...],
-) -> AdapterWriteCompletionAuthority:
-    return AdapterWriteCompletionAuthority(
+) -> AdapterWriteCompletionPrecondition:
+    return AdapterWriteCompletionPrecondition(
         segment_count=len(segments),
         stored_bytes=sum(segment.stored_bytes for segment in segments),
-        authority_token=hashlib.sha256(repr(segments).encode("utf-8")).hexdigest(),
+        state_token=hashlib.sha256(repr(segments).encode("utf-8")).hexdigest(),
     )
 
 
@@ -136,7 +136,7 @@ class _Adapter:
             traversal_token=token,
             segments=page,
             next_after_number=page[-1].number if has_more else None,
-            completion=None if has_more else _completion_authority(segments),
+            completion=None if has_more else _completion_precondition(segments),
         )
 
     def complete_write(
@@ -152,7 +152,7 @@ class _Adapter:
             )
             for number, content in sorted(self._segments.items())
         )
-        assert _completion_authority(segments) == request.completion
+        assert _completion_precondition(segments) == request.completion
         content = b"".join(self._segments[current.number] for current in segments)
         assert len(content) == request.expected_bytes
         self.objects[request.session.object_path] = content

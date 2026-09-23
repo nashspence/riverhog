@@ -22,7 +22,7 @@ from riverhog_storage_adapter_protocol import (
     validated_storage_adapter,
 )
 from riverhog_storage_adapter_protocol import (
-    WriteCompletionAuthority as AdapterWriteCompletionAuthority,
+    WriteCompletionPrecondition as AdapterWriteCompletionPrecondition,
 )
 from riverhog_storage_adapter_protocol import (
     WriteSegmentReceipt as AdapterWriteSegmentReceipt,
@@ -35,7 +35,7 @@ from riverhog_core.ports.archive_objects import (
     ArchiveResumableObjectStore,
     CompletedObjectReceipt,
     ResumableWriteConstraints,
-    WriteCompletionAuthority,
+    WriteCompletionPrecondition,
     WriteSegmentCursor,
     WriteSegmentPage,
     WriteSegmentReceipt,
@@ -471,10 +471,10 @@ class _StorageAdapterRetrievalCacheResumableObjectStore:
                 else None
             ),
             completion=(
-                WriteCompletionAuthority(
+                WriteCompletionPrecondition(
                     page.completion.segment_count,
                     page.completion.stored_bytes,
-                    page.completion.authority_token,
+                    page.completion.state_token,
                 )
                 if page.completion is not None
                 else None
@@ -485,7 +485,7 @@ class _StorageAdapterRetrievalCacheResumableObjectStore:
         self,
         *,
         session: WriteSession,
-        completion: WriteCompletionAuthority,
+        completion: WriteCompletionPrecondition,
         expected_bytes: int,
         expected_content_type: str,
         expected_metadata: dict[str, str],
@@ -497,7 +497,7 @@ class _StorageAdapterRetrievalCacheResumableObjectStore:
         receipt = self._adapter.complete_write(
             WriteCompleteRequest(
                 session=_adapter_session(session),
-                completion=_adapter_completion_authority(completion),
+                completion=_adapter_completion_precondition(completion),
                 expected_bytes=expected_bytes,
                 expected_content_type="application/octet-stream",
                 required_identity_assertions=self._metadata,
@@ -574,7 +574,7 @@ def _write_session(session: AdapterWriteSession) -> WriteSession:
 def _adapter_completion(
     adapter: StorageAdapterPort,
     session: AdapterWriteSession,
-) -> AdapterWriteCompletionAuthority:
+) -> AdapterWriteCompletionPrecondition:
     request = WriteSegmentListRequest(session=session)
     while True:
         page = adapter.list_segments(request)
@@ -589,13 +589,13 @@ def _adapter_completion(
         )
 
 
-def _adapter_completion_authority(
-    completion: WriteCompletionAuthority,
-) -> AdapterWriteCompletionAuthority:
-    return AdapterWriteCompletionAuthority(
+def _adapter_completion_precondition(
+    completion: WriteCompletionPrecondition,
+) -> AdapterWriteCompletionPrecondition:
+    return AdapterWriteCompletionPrecondition(
         segment_count=completion.segment_count,
         stored_bytes=completion.stored_bytes,
-        authority_token=completion.authority_token,
+        state_token=completion.state_token,
     )
 
 

@@ -10,7 +10,7 @@ from riverhog_core.ports.archive_objects import (
     ArchiveResumableObjectStore,
     CompletedObjectReceipt,
     ResumableWriteConstraints,
-    WriteCompletionAuthority,
+    WriteCompletionPrecondition,
     WriteSegmentCursor,
     WriteSegmentPage,
     WriteSegmentReceipt,
@@ -167,7 +167,7 @@ class MirroredArchiveResumableObjectStore:
         self,
         *,
         session: WriteSession,
-        completion: WriteCompletionAuthority,
+        completion: WriteCompletionPrecondition,
         expected_bytes: int,
         expected_content_type: str,
         expected_metadata: dict[str, str],
@@ -194,17 +194,17 @@ class MirroredArchiveResumableObjectStore:
                     expected_metadata={},
                 )
                 if cache_completed is None:
-                    cache_authority = _completion_authority(cache_objects, cache_session)
+                    cache_precondition = _completion_precondition(cache_objects, cache_session)
                     if (
-                        cache_authority.segment_count != completion.segment_count
-                        or cache_authority.stored_bytes != completion.stored_bytes
+                        cache_precondition.segment_count != completion.segment_count
+                        or cache_precondition.stored_bytes != completion.stored_bytes
                     ):
                         raise RuntimeError(
                             "retrieval cache write segments do not match the archive write"
                         )
                     cache_completed = cache_objects.complete_write(
                         session=cache_session,
-                        completion=cache_authority,
+                        completion=cache_precondition,
                         expected_bytes=expected_bytes,
                         expected_content_type="application/octet-stream",
                         expected_metadata={},
@@ -450,10 +450,10 @@ def _cache_session(admission: RetrievalCacheAdmission | None) -> WriteSession | 
     )
 
 
-def _completion_authority(
+def _completion_precondition(
     store: ArchiveResumableObjectStore,
     session: WriteSession,
-) -> WriteCompletionAuthority:
+) -> WriteCompletionPrecondition:
     cursor = WriteSegmentCursor()
     while True:
         page = store.list_segments(session=session, cursor=cursor)
