@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-20d966fd49"></a>`kind`: `"method"`
-- <a id="s-46e0c6799e"></a>`signature`: `"\"(self, claim_id: 'ProcessingClaimId', *, authority_sha256: 'str', start_ordinal: 'int' = 0) -> 'ProcessingOutcomePageDocument'\""`
+- <a id="s-46e0c6799e"></a>`signature`: `"\"(self, claim_id: 'ProcessingClaimId', *, identity_sha256: 'str', start_ordinal: 'int' = 0) -> 'ProcessingOutcomePageDocument'\""`
 
 ## Maintained corroboration
 
@@ -60,13 +60,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5acc9a9d708c2bd5e7e255949f03d8db8f14b8d8d4ecacfc116d2819b06783ea -->
+<!-- exact-contract-value: 60c93b9004bab9f577a78502577e890c730ff4bd13785a81945b1357d2024900 -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, claim_id: 'ProcessingClaimId', *, authority_sha256: 'str', start_ordinal: 'int' = 0) -> 'ProcessingOutcomePageDocument'\""
+    "signature": "\"(self, claim_id: 'ProcessingClaimId', *, identity_sha256: 'str', start_ordinal: 'int' = 0) -> 'ProcessingOutcomePageDocument'\""
   },
   "distribution": "riverhog-client",
   "module": "riverhog_client",

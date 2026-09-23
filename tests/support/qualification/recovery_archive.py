@@ -37,7 +37,7 @@ from riverhog_protocol import (
 )
 from riverhog_provenance import (
     PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX,
-    FileProvenanceBinding,
+    ArchiveFileProvenanceRecord,
     ProvenancePayloadIdentity,
     ProvenanceRootDocument,
     ProvenanceTerminalDocument,
@@ -176,7 +176,7 @@ def write_archive(
             observed.unlink()
         summary = validate_journal(exact_journal)
         bindings = tuple(
-            FileProvenanceBinding(
+            ArchiveFileProvenanceRecord(
                 path=current.path,
                 bytes=current.bytes,
                 sha256=current.sha256,

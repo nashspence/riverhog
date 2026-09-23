@@ -1,8 +1,8 @@
-# schemas: ArtifactSetAuthorityDocument
+# schemas: ArtifactSetIdentityDocument
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: http-schemas:riverhog:schemas-artifactsetauthoritydocument:46e43c1e6d -->
+<!-- contract-element: http-schemas:riverhog:schemas-artifactsetidentitydocument:720adc4baf -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-3616f004d1"></a>
+<a id="s-81e15c83fc"></a>
 
-- <a id="s-f9249b8e01"></a>`type`: `"object"`
-- <a id="s-82c31979a8"></a>`additionalProperties`: `false`
-- <a id="s-26d79a3665"></a>`required`: `["count","sha256","total_bytes"]`
-- <a id="s-1c081fced5"></a>`title`: `"ArtifactSetAuthorityDocument"`
+- <a id="s-f484d1ecdc"></a>`type`: `"object"`
+- <a id="s-0d6a536c19"></a>`additionalProperties`: `false`
+- <a id="s-b0dd19c2ef"></a>`required`: `["count","sha256","total_bytes"]`
+- <a id="s-bfbe331ffd"></a>`title`: `"ArtifactSetIdentityDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-eaf05ba15d"></a>`count` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
-| <a id="s-0a6fc63066"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
-| <a id="s-647f5ca62b"></a>`total_bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
+| <a id="s-d363ac4540"></a>`count` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
+| <a id="s-87d1f9aadd"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+| <a id="s-6064ca82e6"></a>`total_bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -36,7 +36,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field sha256](#s-0a6fc63066) | `length · characters · fixed` | shared above |
+| [field sha256](#s-87d1f9aadd) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -48,8 +48,8 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
-- <a id="pa-714c7b53c0"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
-- <a id="pa-d6fc9f8737"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
+- <a id="pa-06f45600a0"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-327d002012"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -65,7 +65,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Machine authority
 
-- `/external_contract/http_openapi/riverhog/components/schemas/ArtifactSetAuthorityDocument`
+- `/external_contract/http_openapi/riverhog/components/schemas/ArtifactSetIdentityDocument`
 
 ### Exact owned JSON
 
@@ -74,7 +74,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: dad96ecb4156c2452d456b05f45ac9abb22bc6606fbeb3b4c45d1ce3e90dac9d -->
+<!-- exact-contract-value: 9493438c265e96308223b3fc892089bcfdbd8f5d0daeb38a209abfc12675cc72 -->
 
 ```json
 {
@@ -99,7 +99,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "sha256",
     "total_bytes"
   ],
-  "title": "ArtifactSetAuthorityDocument",
+  "title": "ArtifactSetIdentityDocument",
   "type": "object"
 }
 ```

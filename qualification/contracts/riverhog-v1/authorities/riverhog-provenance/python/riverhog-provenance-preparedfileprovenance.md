@@ -22,13 +22,13 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-b110613148"></a>`kind`: `"class"`
-- <a id="s-a60a22b7e1"></a>`signature`: `"\"(binding: 'FileProvenanceBinding', journals: 'dict[str, bytes]', source: 'str') -> None\""`
+- <a id="s-a60a22b7e1"></a>`signature`: `"\"(binding: 'ArchiveFileProvenanceRecord', journals: 'dict[str, bytes]', source: 'str') -> None\""`
 
 #### Dataclass fields
 
 | Field | Type | Default |
 |---|---|---|
-| <a id="s-90ecba1a23"></a>`binding` | `'FileProvenanceBinding'` | `required` |
+| <a id="s-90ecba1a23"></a>`binding` | `'ArchiveFileProvenanceRecord'` | `required` |
 | <a id="s-609a727567"></a>`journals` | `'dict[str, bytes]'` | `required` |
 | <a id="s-9548e30929"></a>`source` | `'str'` | `required` |
 
@@ -59,7 +59,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2bfc0c6ee1d7f8b378da5e75cf45726512c80f9912c7b723cdef33b3a9fe907e -->
+<!-- exact-contract-value: 34df230e6e9b6d7586dfdb7085cd1f185e85960c1c02e5439e0e61aa9c113baf -->
 
 ```json
 {
@@ -68,7 +68,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       {
         "default": "required",
         "name": "binding",
-        "type": "'FileProvenanceBinding'"
+        "type": "'ArchiveFileProvenanceRecord'"
       },
       {
         "default": "required",
@@ -82,7 +82,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       }
     ],
     "kind": "class",
-    "signature": "\"(binding: 'FileProvenanceBinding', journals: 'dict[str, bytes]', source: 'str') -> None\""
+    "signature": "\"(binding: 'ArchiveFileProvenanceRecord', journals: 'dict[str, bytes]', source: 'str') -> None\""
   },
   "distribution": "riverhog-provenance",
   "module": "riverhog_provenance",

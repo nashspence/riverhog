@@ -26,11 +26,11 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a2e1e51a8f"></a>`artifacts` | yes | [ArtifactSetAuthorityDocument](schemas-artifactsetauthoritydocument.md) |  |
+| <a id="s-a2e1e51a8f"></a>`artifacts` | yes | [ArtifactSetIdentityDocument](schemas-artifactsetidentitydocument.md) |  |
 | <a id="s-c31b744472"></a>`controller_evidence` | yes | type="object"; additionalProperties=(any JSON value); title="Controller Evidence"; x-riverhog-encoded-bytes-max=16777216; x-riverhog-extent={"policy":"contract_max","reason":"bounded-controller-evidence-envelope"} |  |
 | <a id="s-827ae4b73c"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Controller Evidence Sha256" |  |
 | <a id="s-68f89f7550"></a>`execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Execution Id" |  |
-| <a id="s-6449700174"></a>`inputs` | yes | [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md) |  |
+| <a id="s-6449700174"></a>`inputs` | yes | [ExactSetIdentityDocument](schemas-exactsetidentitydocument.md) |  |
 | <a id="s-b014f9416d"></a>`operation` | yes | [OperationIdentityDocument](schemas-operationidentitydocument.md) |  |
 | <a id="s-6904c65b63"></a>`retirement_grace_seconds` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 | <a id="s-d49cde6da8"></a>`retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"]; title="Retirement Policy" |  |
@@ -77,8 +77,8 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract elements
 
-- [ArtifactSetAuthorityDocument](schemas-artifactsetauthoritydocument.md)
-- [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
+- [ArtifactSetIdentityDocument](schemas-artifactsetidentitydocument.md)
+- [ExactSetIdentityDocument](schemas-exactsetidentitydocument.md)
 - [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 - [OperationIdentityDocument](schemas-operationidentitydocument.md)
 
@@ -113,7 +113,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a86b24a085e8d9bb433017fe0ea050bf21ff76164c18d296432b997512b7cdfd -->
+<!-- exact-contract-value: 61cfc5cedb832bd0c65e67fc02c6ec5e25741a515214c3e575289da2f6e096be -->
 
 ```json
 {
@@ -127,7 +127,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "properties": {
     "artifacts": {
-      "$ref": "#/components/schemas/ArtifactSetAuthorityDocument"
+      "$ref": "#/components/schemas/ArtifactSetIdentityDocument"
     },
     "controller_evidence": {
       "additionalProperties": true,
@@ -150,7 +150,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "inputs": {
-      "$ref": "#/components/schemas/ExactSetAuthorityDocument"
+      "$ref": "#/components/schemas/ExactSetIdentityDocument"
     },
     "operation": {
       "$ref": "#/components/schemas/OperationIdentityDocument"

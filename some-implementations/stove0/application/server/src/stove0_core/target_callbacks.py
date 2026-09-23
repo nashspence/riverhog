@@ -339,7 +339,7 @@ class TargetCallbackAuthority:
             or generic.output_edge_count != checkpoint.source_edge_count
             or generic.output_artifact_count != checkpoint.output_count
         ):
-            raise ValueError("Riverhog sealed a different generic derivation authority")
+            raise ValueError("Riverhog sealed a different generic derivation identity")
         if record.controller_evidence is None:
             raise RuntimeError("target production has no controller evidence")
         return checkpoint, TargetProductionAuthority.seal(

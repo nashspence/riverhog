@@ -8,10 +8,10 @@ Declared public imports and their selected exact structural contracts.
 
 ### `riverhog_provenance`
 
+- [ArchiveFileProvenanceRecord](riverhog-provenance-archivefileprovenancerecord.md)
 - [DEFAULT_OBSERVER_AGENT_ID](riverhog-provenance-default-observer-agent-id.md)
 - [DerivativeJournalSeed](riverhog-provenance-derivativejournalseed.md)
 - [ExternalStateReference](riverhog-provenance-externalstatereference.md)
-- [FileProvenanceBinding](riverhog-provenance-fileprovenancebinding.md)
 - [FileStateObserver](riverhog-provenance-filestateobserver.md)
   - [observe](riverhog-provenance-filestateobserver-observe.md)
 - [FileStateObserverFactory](riverhog-provenance-filestateobserverfactory.md)

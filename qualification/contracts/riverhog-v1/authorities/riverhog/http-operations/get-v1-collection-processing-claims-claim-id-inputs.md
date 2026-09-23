@@ -20,14 +20,14 @@ List Processing Claim Inputs
 - <a id="s-25780add0b"></a>`tags`: `["collection-workflows"]`
 - <a id="s-cf4eda9943"></a>`x-riverhog-interface`: `"client-only-primitive"`
 - <a id="s-b34446e232"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control","collection-transforms:execute"]}]`
-- <a id="s-2b0c85ec3a"></a>`x-riverhog-read-collection`: `{"authority":"processing-claim-inputs","authority_parameter":"authority_sha256","cursor_parameter":"start_ordinal","fixed_limit":128,"kind":"exact-authority-page"}`
+- <a id="s-2b0c85ec3a"></a>`x-riverhog-read-collection`: `{"authority":"processing-claim-inputs","authority_parameter":"identity_sha256","cursor_parameter":"start_ordinal","fixed_limit":128,"kind":"exact-authority-page"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
 | <a id="s-96fa7aafb8"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |
-| <a id="s-eb344fd2cb"></a>`authority_sha256` | query | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Authority Sha256" |
+| <a id="s-eb344fd2cb"></a>`identity_sha256` | query | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Identity Sha256" |
 | <a id="s-fcfde1d0f3"></a>`start_ordinal` | query | no | `0` | type="integer"; minimum=0; title="Start Ordinal" |
 
 ### Responses
@@ -44,7 +44,7 @@ List Processing Claim Inputs
 
 #### [extent-rule/route-progression/v1](../../extent-contract/extent/extent-rule-route-progression.md#p-6b76b527cb)
 
-Shared facts for every subject below: progression={"authority":"processing-claim-inputs","authority_parameter":"authority_sha256","cursor_parameter":"start_ordinal","fixed_limit":128,"kind":"exact-authority-page"}; reason="bounded-route-progression"
+Shared facts for every subject below: progression={"authority":"processing-claim-inputs","authority_parameter":"identity_sha256","cursor_parameter":"start_ordinal","fixed_limit":128,"kind":"exact-authority-page"}; reason="bounded-route-progression"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
@@ -57,7 +57,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | <a id="s-7a0d5ac555"></a>[parameter claim_id](#s-96fa7aafb8) | `length · characters · fixed` | shared above |
-| <a id="s-06d022f4e9"></a>[parameter authority_sha256](#s-eb344fd2cb) | `length · characters · fixed` | shared above |
+| <a id="s-06d022f4e9"></a>[parameter identity_sha256](#s-eb344fd2cb) | `length · characters · fixed` | shared above |
 
 ### Evidence gaps
 
@@ -143,7 +143,7 @@ This generated record links maintained client, CLI, response-authority, and prov
   "provider_evidence": null,
   "read_collection": {
     "authority": "processing-claim-inputs",
-    "authority_parameter": "authority_sha256",
+    "authority_parameter": "identity_sha256",
     "cursor_parameter": "start_ordinal",
     "fixed_limit": 128,
     "kind": "exact-authority-page"
@@ -165,7 +165,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 89d237b43d2a0f6085c23afb7ecd7f068d4d3df637dbb8d1dc80fdb108c19887 -->
+<!-- exact-contract-value: 6b02694500403ca2735db764a8b46678832bfef79708fd17c21a7d857b36bb76 -->
 
 ```json
 {
@@ -183,11 +183,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     },
     {
       "in": "query",
-      "name": "authority_sha256",
+      "name": "identity_sha256",
       "required": true,
       "schema": {
         "pattern": "^[0-9a-f]{64}$",
-        "title": "Authority Sha256",
+        "title": "Identity Sha256",
         "type": "string"
       }
     },
@@ -287,7 +287,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "x-riverhog-read-collection": {
     "authority": "processing-claim-inputs",
-    "authority_parameter": "authority_sha256",
+    "authority_parameter": "identity_sha256",
     "cursor_parameter": "start_ordinal",
     "fixed_limit": 128,
     "kind": "exact-authority-page"

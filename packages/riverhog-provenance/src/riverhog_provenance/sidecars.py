@@ -5,7 +5,7 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
-from .archive import FileProvenanceBinding
+from .archive import ArchiveFileProvenanceRecord
 from .interface import FileStateObserver
 from .journal import (
     JournalSummary,
@@ -31,14 +31,14 @@ SIDECAR_SUFFIX = ".riverhog-provenance.json-seq"
 
 @dataclass(frozen=True, slots=True)
 class PreparedFileProvenance:
-    binding: FileProvenanceBinding
+    binding: ArchiveFileProvenanceRecord
     journals: dict[str, bytes]
     source: str
 
 
 @dataclass(frozen=True, slots=True)
 class _ValidatedSegmentedSet:
-    bindings: tuple[FileProvenanceBinding, ...]
+    bindings: tuple[ArchiveFileProvenanceRecord, ...]
     journals: dict[str, JournalSummary]
     journal_bytes: dict[str, bytes]
     identity: str
@@ -69,7 +69,7 @@ def prepare_file_provenance(
                 "provenance omission requires a visible canonical reason"
             )
         return PreparedFileProvenance(
-            binding=FileProvenanceBinding(
+            binding=ArchiveFileProvenanceRecord(
                 path=relative_path,
                 bytes=byte_count,
                 sha256=sha256,
@@ -166,7 +166,7 @@ def _captured(
         )
     summary = current[0]
     return PreparedFileProvenance(
-        binding=FileProvenanceBinding(
+        binding=ArchiveFileProvenanceRecord(
             path=relative_path,
             bytes=byte_count,
             sha256=sha256,
@@ -199,7 +199,7 @@ def _load_segmented_set(root_path: Path) -> _ValidatedSegmentedSet:
         for path in sorted(journal_dir.glob("*.json-seq")):
             journal_id = path.name.removesuffix(".json-seq")
             journals[journal_id] = path.read_bytes()
-    bindings: list[FileProvenanceBinding] = []
+    bindings: list[ArchiveFileProvenanceRecord] = []
     ordered = hashlib.sha256()
     next_file_order = 0
     sequence = 0
@@ -278,10 +278,10 @@ def _load_segmented_set(root_path: Path) -> _ValidatedSegmentedSet:
     )
 
 
-def _binding_from_mapping(row: dict[str, object]) -> FileProvenanceBinding:
+def _binding_from_mapping(row: dict[str, object]) -> ArchiveFileProvenanceRecord:
     status = row.get("status")
     if status == "captured":
-        return FileProvenanceBinding(
+        return ArchiveFileProvenanceRecord(
             path=str(row["path"]),
             bytes=_required_nonnegative_int(row["bytes"], "provenance binding bytes"),
             sha256=str(row["sha256"]),
@@ -290,7 +290,7 @@ def _binding_from_mapping(row: dict[str, object]) -> FileProvenanceBinding:
             current_state_id=str(row["current_state_id"]),
         )
     if status == "omitted":
-        return FileProvenanceBinding(
+        return ArchiveFileProvenanceRecord(
             path=str(row["path"]),
             bytes=_required_nonnegative_int(row["bytes"], "provenance binding bytes"),
             sha256=str(row["sha256"]),

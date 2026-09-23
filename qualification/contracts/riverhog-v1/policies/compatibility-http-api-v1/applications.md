@@ -184,7 +184,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: ArtifactDispositionSetDocument](../../authorities/riverhog/http-schemas/schemas-artifactdispositionsetdocument.md#pa-7bfdca9018) |
 | `riverhog` | [schemas: ArtifactDispositionSetIdentityDocument](../../authorities/riverhog/http-schemas/schemas-artifactdispositionsetidentitydocument.md#pa-e82799760e) |
 | `riverhog` | [schemas: ArtifactReceivingSetDocument](../../authorities/riverhog/http-schemas/schemas-artifactreceivingsetdocument.md#pa-b7d446ac01) |
-| `riverhog` | [schemas: ArtifactSetAuthorityDocument](../../authorities/riverhog/http-schemas/schemas-artifactsetauthoritydocument.md#pa-714c7b53c0) |
+| `riverhog` | [schemas: ArtifactSetIdentityDocument](../../authorities/riverhog/http-schemas/schemas-artifactsetidentitydocument.md#pa-06f45600a0) |
 | `riverhog` | [schemas: BrowsePageToken](../../authorities/riverhog/http-schemas/schemas-browsepagetoken.md#pa-bab9512771) |
 | `riverhog` | [schemas: BrowseQuery](../../authorities/riverhog/http-schemas/schemas-browsequery.md#pa-019169d963) |
 | `riverhog` | [schemas: CanonicalRelPath](../../authorities/riverhog/http-schemas/schemas-canonicalrelpath.md#pa-18bbc517aa) |
@@ -267,7 +267,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: DownloadQuotaSort](../../authorities/riverhog/http-schemas/schemas-downloadquotasort.md#pa-1e6f269cbe) |
 | `riverhog` | [schemas: ErrorBody](../../authorities/riverhog/http-schemas/schemas-errorbody.md#pa-905bf03d33) |
 | `riverhog` | [schemas: ErrorResponse](../../authorities/riverhog/http-schemas/schemas-errorresponse.md#pa-b609aaf28c) |
-| `riverhog` | [schemas: ExactSetAuthorityDocument](../../authorities/riverhog/http-schemas/schemas-exactsetauthoritydocument.md#pa-fd73b42066) |
+| `riverhog` | [schemas: ExactSetIdentityDocument](../../authorities/riverhog/http-schemas/schemas-exactsetidentitydocument.md#pa-4c36b0381b) |
 | `riverhog` | [schemas: FailedArchiveCopyOut](../../authorities/riverhog/http-schemas/schemas-failedarchivecopyout.md#pa-c207ddc641) |
 | `riverhog` | [schemas: FailedArchiveRootPublicationOut](../../authorities/riverhog/http-schemas/schemas-failedarchiverootpublicationout.md#pa-270569fcfd) |
 | `riverhog` | [schemas: HTTPValidationError](../../authorities/riverhog/http-schemas/schemas-httpvalidationerror.md#pa-389729ff63) |

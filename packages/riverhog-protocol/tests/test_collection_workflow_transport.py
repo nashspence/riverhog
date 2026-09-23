@@ -204,8 +204,8 @@ def test_processing_claim_projection_rejects_impossible_state_evidence() -> None
         "updated_at": "2026-08-24T00:00:00.000000Z",
         "work_document": work_document,
         "work_document_sha256": canonical_json_sha256(work_document),
-        "inputs": {"state": "receiving", "count": "0", "authority": None},
-        "outcomes": {"state": "receiving", "count": "0", "authority": None, "failure": None},
+        "inputs": {"state": "receiving", "count": "0", "identity": None},
+        "outcomes": {"state": "receiving", "count": "0", "identity": None, "failure": None},
     }
 
     schema_validator = Draft202012Validator(ProcessingClaimDocument.model_json_schema())

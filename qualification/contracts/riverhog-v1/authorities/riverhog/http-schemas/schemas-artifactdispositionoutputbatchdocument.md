@@ -25,13 +25,13 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-261db41370"></a>`fence` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
-| <a id="s-c4cb257ac3"></a>`outputs` | yes | type="array"; items=([ArtifactDispositionOutputDocument](schemas-artifactdispositionoutputdocument.md)); maxItems=128; minItems=1; title="Outputs"; uniqueItems=true; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"sealed-disposition-authority","reason":"bounded-disposition-append"} |  |
+| <a id="s-c4cb257ac3"></a>`outputs` | yes | type="array"; items=([ArtifactDispositionOutputDocument](schemas-artifactdispositionoutputdocument.md)); maxItems=128; minItems=1; title="Outputs"; uniqueItems=true; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"sealed-disposition-identity","reason":"bounded-disposition-append"} |  |
 
 ### Progression, limits, and lifecycle
 
 #### [extent-rule/bounded-segment/v1](../../extent-contract/extent/extent-rule-bounded-segment.md#p-2b3f3f1594)
 
-Shared facts for every subject below: maximum=128; minimum=1; progression={"progression":"sealed-disposition-authority"}; reason="bounded-disposition-append"
+Shared facts for every subject below: maximum=128; minimum=1; progression={"progression":"sealed-disposition-identity"}; reason="bounded-disposition-append"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
@@ -94,7 +94,7 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2d206baf9ac3e99026ab323c85b7896ee0eaaa6e900b67815f95cade3d7aaa51 -->
+<!-- exact-contract-value: 88e78d59caeca07914d9f7c011ef4c7cac04983c9b109ce5b88df8df14a8f170 -->
 
 ```json
 {
@@ -115,7 +115,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "uniqueItems": true,
       "x-riverhog-extent": {
         "policy": "segmented_no_total_max",
-        "progression": "sealed-disposition-authority",
+        "progression": "sealed-disposition-identity",
         "reason": "bounded-disposition-append"
       }
     }

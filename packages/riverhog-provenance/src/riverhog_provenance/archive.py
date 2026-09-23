@@ -1,4 +1,4 @@
-"""Portable per-file binding vocabulary used by segmented provenance archives."""
+"""Portable file records that compose identity with provenance for segmented archives."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from typing import Literal
 
 
 @dataclass(frozen=True, slots=True)
-class FileProvenanceBinding:
+class ArchiveFileProvenanceRecord:
     path: str
     bytes: int
     sha256: str
@@ -17,4 +17,4 @@ class FileProvenanceBinding:
     omission_reason: str | None = None
 
 
-__all__ = ["FileProvenanceBinding"]
+__all__ = ["ArchiveFileProvenanceRecord"]

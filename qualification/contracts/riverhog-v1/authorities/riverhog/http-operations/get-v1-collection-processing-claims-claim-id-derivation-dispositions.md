@@ -20,14 +20,14 @@ List Processing Claim Dispositions
 - <a id="s-94b7fee779"></a>`tags`: `["collection-workflows"]`
 - <a id="s-e877f88015"></a>`x-riverhog-interface`: `"client-only-primitive"`
 - <a id="s-5c95103bef"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control","collection-transforms:execute"]}]`
-- <a id="s-6ca3fe1b8b"></a>`x-riverhog-read-collection`: `{"authority":"processing-claim-dispositions","authority_parameter":"authority_sha256","cursor_parameter":"start_ordinal","fixed_limit":128,"kind":"exact-authority-page"}`
+- <a id="s-6ca3fe1b8b"></a>`x-riverhog-read-collection`: `{"authority":"processing-claim-dispositions","authority_parameter":"identity_sha256","cursor_parameter":"start_ordinal","fixed_limit":128,"kind":"exact-authority-page"}`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
 | <a id="s-0f745bdd93"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |
-| <a id="s-a4f0794ce1"></a>`authority_sha256` | query | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Authority Sha256" |
+| <a id="s-a4f0794ce1"></a>`identity_sha256` | query | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Identity Sha256" |
 | <a id="s-ec518364be"></a>`start_ordinal` | query | no | `0` | type="integer"; minimum=0; title="Start Ordinal" |
 
 ### Responses
@@ -46,7 +46,7 @@ List Processing Claim Dispositions
 
 #### [extent-rule/route-progression/v1](../../extent-contract/extent/extent-rule-route-progression.md#p-6b76b527cb)
 
-Shared facts for every subject below: progression={"authority":"processing-claim-dispositions","authority_parameter":"authority_sha256","cursor_parameter":"start_ordinal","fixed_limit":128,"kind":"exact-authority-page"}; reason="bounded-route-progression"
+Shared facts for every subject below: progression={"authority":"processing-claim-dispositions","authority_parameter":"identity_sha256","cursor_parameter":"start_ordinal","fixed_limit":128,"kind":"exact-authority-page"}; reason="bounded-route-progression"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
@@ -59,7 +59,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | <a id="s-d06c8c99ae"></a>[parameter claim_id](#s-0f745bdd93) | `length · characters · fixed` | shared above |
-| <a id="s-699b5999fa"></a>[parameter authority_sha256](#s-a4f0794ce1) | `length · characters · fixed` | shared above |
+| <a id="s-699b5999fa"></a>[parameter identity_sha256](#s-a4f0794ce1) | `length · characters · fixed` | shared above |
 
 ### Evidence gaps
 
@@ -145,7 +145,7 @@ This generated record links maintained client, CLI, response-authority, and prov
   "provider_evidence": null,
   "read_collection": {
     "authority": "processing-claim-dispositions",
-    "authority_parameter": "authority_sha256",
+    "authority_parameter": "identity_sha256",
     "cursor_parameter": "start_ordinal",
     "fixed_limit": 128,
     "kind": "exact-authority-page"
@@ -167,7 +167,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3c8bc9e89e9474862215b3cadb3d8d1bfae74b5b5d555efe5df4f8596fcbc4b5 -->
+<!-- exact-contract-value: 4abcacc55869a210e6c394e35729e048f4e45fce6b4c65cb6b859a9d8b179ce4 -->
 
 ```json
 {
@@ -185,11 +185,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     },
     {
       "in": "query",
-      "name": "authority_sha256",
+      "name": "identity_sha256",
       "required": true,
       "schema": {
         "pattern": "^[0-9a-f]{64}$",
-        "title": "Authority Sha256",
+        "title": "Identity Sha256",
         "type": "string"
       }
     },
@@ -315,7 +315,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "x-riverhog-read-collection": {
     "authority": "processing-claim-dispositions",
-    "authority_parameter": "authority_sha256",
+    "authority_parameter": "identity_sha256",
     "cursor_parameter": "start_ordinal",
     "fixed_limit": 128,
     "kind": "exact-authority-page"

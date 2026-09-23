@@ -585,7 +585,7 @@ def _derivation_evidence_records(
             "dispositions",
             service.list_dispositions(
                 claim_id,
-                authority_sha256=authority.sha256,
+                identity_sha256=authority.sha256,
                 start_ordinal=0,
                 principal=WORKFLOW_PRINCIPAL,
             ),
@@ -594,7 +594,7 @@ def _derivation_evidence_records(
             "output-edges",
             service.list_disposition_outputs(
                 claim_id,
-                authority_sha256=authority.sha256,
+                identity_sha256=authority.sha256,
                 start_ordinal=0,
                 principal=WORKFLOW_PRINCIPAL,
             ),
@@ -1391,10 +1391,10 @@ def test_postgres_concurrent_outcome_attachments_are_complete_and_exact(
     assert failures == []
     assert len(settlements) == 2
     settled = _settle_outcomes(services[1], parent_id)
-    authority = cast(dict[str, object], cast(dict[str, object], settled["outcomes"])["authority"])
+    authority = cast(dict[str, object], cast(dict[str, object], settled["outcomes"])["identity"])
     page = services[0].list_claim_outcomes(
         parent_id,
-        authority_sha256=str(authority["sha256"]),
+        identity_sha256=str(authority["sha256"]),
         start_ordinal=0,
         principal=WORKFLOW_PRINCIPAL,
     )
@@ -1525,10 +1525,10 @@ def test_postgres_last_outcome_attachment_and_claim_closure_converge(
     if attachment_failures:
         assert isinstance(attachment_failures[0], Conflict)
     settled = _settle_outcomes(services[1], parent_id)
-    authority = cast(dict[str, object], cast(dict[str, object], settled["outcomes"])["authority"])
+    authority = cast(dict[str, object], cast(dict[str, object], settled["outcomes"])["identity"])
     page = services[0].list_claim_outcomes(
         parent_id,
-        authority_sha256=str(authority["sha256"]),
+        identity_sha256=str(authority["sha256"]),
         start_ordinal=0,
         principal=WORKFLOW_PRINCIPAL,
     )

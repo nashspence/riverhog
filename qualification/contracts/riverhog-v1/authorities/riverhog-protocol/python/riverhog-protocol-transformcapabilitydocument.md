@@ -51,7 +51,7 @@ Exact externally visible contract owned by this contract element.
 ##### Definitions
 
 - [ArtifactReceivingSetDocument](#s-12e03bb1bc)
-- [ArtifactSetAuthorityDocument](#s-6a2b19199e)
+- [ArtifactSetIdentityDocument](#s-176c5edaa6)
 - [NonnegativeDecimal](#s-23fa00047a)
 
 ##### <a id="s-12e03bb1bc"></a>definition `ArtifactReceivingSetDocument`
@@ -64,24 +64,24 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4e7fe48037"></a>`authority` | no | anyOf=[([ArtifactSetAuthorityDocument](#s-6a2b19199e)); (type="null")]; default=null |  |
 | <a id="s-56adc08a7d"></a>`count` | yes | [NonnegativeDecimal](#s-23fa00047a); ge=0 |  |
+| <a id="s-37bf79b9c1"></a>`identity` | no | anyOf=[([ArtifactSetIdentityDocument](#s-176c5edaa6)); (type="null")]; default=null |  |
 | <a id="s-415ecd6ca4"></a>`state` | yes | type="string"; enum=["receiving","sealed"] |  |
 | <a id="s-a45e9e7b9d"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-23fa00047a); ge=0 |  |
 
-##### <a id="s-6a2b19199e"></a>definition `ArtifactSetAuthorityDocument`
+##### <a id="s-176c5edaa6"></a>definition `ArtifactSetIdentityDocument`
 
-- <a id="s-fca2b14728"></a>`type`: `"object"`
-- <a id="s-b07d92120a"></a>`additionalProperties`: `false`
-- <a id="s-4743c36528"></a>`required`: `["count","sha256","total_bytes"]`
+- <a id="s-71f8983c39"></a>`type`: `"object"`
+- <a id="s-d915ac7b5a"></a>`additionalProperties`: `false`
+- <a id="s-6d96fb6181"></a>`required`: `["count","sha256","total_bytes"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ee5ab19b33"></a>`count` | yes | [NonnegativeDecimal](#s-23fa00047a); ge=1 |  |
-| <a id="s-640267e39e"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-247e9891d1"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-23fa00047a); ge=0 |  |
+| <a id="s-cb880cf95e"></a>`count` | yes | [NonnegativeDecimal](#s-23fa00047a); ge=1 |  |
+| <a id="s-313742681c"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c60be5b383"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-23fa00047a); ge=0 |  |
 
 ##### <a id="s-23fa00047a"></a>definition `NonnegativeDecimal`
 
@@ -123,7 +123,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: fd8701c40cd1a7f557402119334f01efc81c92386ac517c028a8dddf2c8c050c -->
+<!-- exact-contract-value: 2e0b0c343a870dfc1da10d9dbc57098ae2bf2998581eefdc20c55670dab2f589 -->
 
 ```json
 {
@@ -134,20 +134,20 @@ The following JSON is the complete value owned at each machine-authority pointer
         "ArtifactReceivingSetDocument": {
           "additionalProperties": false,
           "properties": {
-            "authority": {
+            "count": {
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
+            },
+            "identity": {
               "anyOf": [
                 {
-                  "$ref": "#/$defs/ArtifactSetAuthorityDocument"
+                  "$ref": "#/$defs/ArtifactSetIdentityDocument"
                 },
                 {
                   "type": "null"
                 }
               ],
               "default": null
-            },
-            "count": {
-              "$ref": "#/$defs/NonnegativeDecimal",
-              "ge": 0
             },
             "state": {
               "enum": [
@@ -168,7 +168,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "type": "object"
         },
-        "ArtifactSetAuthorityDocument": {
+        "ArtifactSetIdentityDocument": {
           "additionalProperties": false,
           "properties": {
             "count": {

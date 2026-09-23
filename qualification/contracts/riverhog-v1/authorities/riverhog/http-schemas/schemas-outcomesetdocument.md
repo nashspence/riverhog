@@ -24,9 +24,9 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8b98c68813"></a>`authority` | no | anyOf=[([ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)); (type="null")] |  |
 | <a id="s-c3431dbb24"></a>`count` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 | <a id="s-102c3f6916"></a>`failure` | no | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; title="Failure" |  |
+| <a id="s-219e363cf0"></a>`identity` | no | anyOf=[([ExactSetIdentityDocument](schemas-exactsetidentitydocument.md)); (type="null")] |  |
 | <a id="s-da0eeee06e"></a>`state` | yes | type="string"; enum=["receiving","sealing","sealed","failed"]; title="State" |  |
 
 ### Progression, limits, and lifecycle
@@ -43,7 +43,7 @@ Shared facts for every subject below: maximum=1000; minimum=1; reason="schema-ma
 
 ### Referenced contract elements
 
-- [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
+- [ExactSetIdentityDocument](schemas-exactsetidentitydocument.md)
 - [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
@@ -76,22 +76,12 @@ Shared facts for every subject below: maximum=1000; minimum=1; reason="schema-ma
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4d893950dba1c2cf398ccaaf1de5eb924444fbec6280bf904aa87ae3fdf2b6be -->
+<!-- exact-contract-value: fe4572dd3e6177c160b9e48bad37096b7fd50b6ddc15f7ae8c91c86aa688ea2d -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
-    "authority": {
-      "anyOf": [
-        {
-          "$ref": "#/components/schemas/ExactSetAuthorityDocument"
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
     "count": {
       "$ref": "#/components/schemas/NonnegativeDecimal",
       "ge": 0
@@ -108,6 +98,16 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       ],
       "title": "Failure"
+    },
+    "identity": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/ExactSetIdentityDocument"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "state": {
       "enum": [

@@ -54,11 +54,11 @@ def _append_generic_derivation_evidence(
         while True:
             page = getattr(api, method_name)(
                 claim_id,
-                authority_sha256=disposition_set.sha256,
+                identity_sha256=disposition_set.sha256,
                 start_ordinal=start,
             )
-            if page.authority.model_dump(mode="json") != expected or page.start_ordinal != start:
-                raise RuntimeError("Riverhog returned changed derivation evidence authority")
+            if page.identity.model_dump(mode="json") != expected or page.start_ordinal != start:
+                raise RuntimeError("Riverhog returned changed derivation evidence identity")
             values = getattr(page, field_name)
             if not values:
                 raise RuntimeError("Riverhog returned an empty derivation evidence page")
@@ -145,7 +145,7 @@ class DerivedCollectionWriter:
         ):
             raise ValueError("transform targets may not write Riverhog control paths")
         if disposition_set.output_artifact_count != len(normalized_outputs):
-            raise ValueError("sealed disposition authority differs from derived outputs")
+            raise ValueError("sealed disposition identity differs from derived outputs")
         derivation = CollectionDerivation(
             execution_id=self.execution_id,
             claim_id=self.claim_id,

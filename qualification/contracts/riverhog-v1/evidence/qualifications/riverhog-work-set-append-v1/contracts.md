@@ -1,4 +1,4 @@
-# riverhog-work-authority-append/v1: affected contract elements
+# riverhog-work-set-append/v1: affected contract elements
 
 [Atlas](../../../index.md) · [Reference navigation](index.md)
 

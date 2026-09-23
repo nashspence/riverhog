@@ -8,10 +8,10 @@ These are the indexed contract-element applications. Each link reaches the polic
 
 | Authority | Contract element |
 |---|---|
+| `riverhog-provenance` | [riverhog_provenance.ArchiveFileProvenanceRecord](../../../authorities/riverhog-provenance/python/riverhog-provenance-archivefileprovenancerecord.md#pa-8f5f049337) |
 | `riverhog-provenance` | [riverhog_provenance.DEFAULT_OBSERVER_AGENT_ID](../../../authorities/riverhog-provenance/python/riverhog-provenance-default-observer-agent-id.md#pa-c938b93708) |
 | `riverhog-provenance` | [riverhog_provenance.DerivativeJournalSeed](../../../authorities/riverhog-provenance/python/riverhog-provenance-derivativejournalseed.md#pa-36233ada0f) |
 | `riverhog-provenance` | [riverhog_provenance.ExternalStateReference](../../../authorities/riverhog-provenance/python/riverhog-provenance-externalstatereference.md#pa-b7dae286a6) |
-| `riverhog-provenance` | [riverhog_provenance.FileProvenanceBinding](../../../authorities/riverhog-provenance/python/riverhog-provenance-fileprovenancebinding.md#pa-5838d53f17) |
 | `riverhog-provenance` | [riverhog_provenance.FileStateObserver](../../../authorities/riverhog-provenance/python/riverhog-provenance-filestateobserver.md#pa-8d6b2bc9db) |
 | `riverhog-provenance` | [riverhog_provenance.FileStateObserver.observe](../../../authorities/riverhog-provenance/python/riverhog-provenance-filestateobserver-observe.md#pa-feff087902) |
 | `riverhog-provenance` | [riverhog_provenance.FileStateObserverFactory](../../../authorities/riverhog-provenance/python/riverhog-provenance-filestateobserverfactory.md#pa-418719e0a3) |

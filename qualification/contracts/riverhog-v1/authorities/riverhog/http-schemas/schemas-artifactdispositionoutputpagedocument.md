@@ -17,23 +17,23 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-d7659f4569"></a>`type`: `"object"`
 - <a id="s-48966cfb5b"></a>`additionalProperties`: `false`
-- <a id="s-09fd97b6fd"></a>`required`: `["authority","start_ordinal","outputs"]`
+- <a id="s-09fd97b6fd"></a>`required`: `["identity","start_ordinal","outputs"]`
 - <a id="s-b4be5e79c0"></a>`title`: `"ArtifactDispositionOutputPageDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-38a8152364"></a>`authority` | yes | [ArtifactDispositionSetIdentityDocument](schemas-artifactdispositionsetidentitydocument.md) |  |
+| <a id="s-236d342afc"></a>`identity` | yes | [ArtifactDispositionSetIdentityDocument](schemas-artifactdispositionsetidentitydocument.md) |  |
 | <a id="s-ec50ac8374"></a>`next_ordinal` | no | anyOf=[([NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1); (type="null")] |  |
-| <a id="s-e1fedbe99d"></a>`outputs` | yes | type="array"; items=([ArtifactDispositionOutputDocument](schemas-artifactdispositionoutputdocument.md)); maxItems=128; title="Outputs"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-authority-page"} |  |
+| <a id="s-e1fedbe99d"></a>`outputs` | yes | type="array"; items=([ArtifactDispositionOutputDocument](schemas-artifactdispositionoutputdocument.md)); maxItems=128; title="Outputs"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"identity-bound-start_ordinal","reason":"bounded-identity-page"} |  |
 | <a id="s-3b4b64fa8a"></a>`start_ordinal` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 
 ### Progression, limits, and lifecycle
 
 #### [extent-rule/route-progression/v1](../../extent-contract/extent/extent-rule-route-progression.md#p-6b76b527cb)
 
-Shared facts for every subject below: maximum=128; progression={"authority":"processing-claim-disposition-outputs","authority_parameter":"authority_sha256","cursor_parameter":"start_ordinal","fixed_limit":128,"kind":"exact-authority-page"}; reason="bounded-route-page"
+Shared facts for every subject below: maximum=128; progression={"authority":"processing-claim-disposition-outputs","authority_parameter":"identity_sha256","cursor_parameter":"start_ordinal","fixed_limit":128,"kind":"exact-authority-page"}; reason="bounded-route-page"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
@@ -97,13 +97,13 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 353a472f5576d6e5548fe45e01ebb156c0e8241f87ad60c5ac9d5305cd5c7af5 -->
+<!-- exact-contract-value: 6d9f6f2fe45181cf134ce8c69e2230badce44344e2bb9850f1185e80f6e7ec10 -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
-    "authority": {
+    "identity": {
       "$ref": "#/components/schemas/ArtifactDispositionSetIdentityDocument"
     },
     "next_ordinal": {
@@ -126,8 +126,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "array",
       "x-riverhog-extent": {
         "policy": "segmented_no_total_max",
-        "progression": "authority-bound-start_ordinal",
-        "reason": "bounded-authority-page"
+        "progression": "identity-bound-start_ordinal",
+        "reason": "bounded-identity-page"
       }
     },
     "start_ordinal": {
@@ -136,7 +136,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   },
   "required": [
-    "authority",
+    "identity",
     "start_ordinal",
     "outputs"
   ],

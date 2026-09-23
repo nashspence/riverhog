@@ -17,15 +17,15 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-3e75f6b0b5"></a>`type`: `"object"`
 - <a id="s-63ce487000"></a>`additionalProperties`: `false`
-- <a id="s-d0ea3058a0"></a>`required`: `["authority","start_ordinal","artifacts"]`
+- <a id="s-d0ea3058a0"></a>`required`: `["identity","start_ordinal","artifacts"]`
 - <a id="s-2ac9b854b4"></a>`title`: `"CollectionArtifactPageDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-dec7134215"></a>`artifacts` | yes | type="array"; items=([CollectionArtifactIdentityDocument](schemas-collectionartifactidentitydocument.md)); maxItems=128; title="Artifacts"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-authority-page"} |  |
-| <a id="s-75ddf70b2d"></a>`authority` | yes | [ArtifactSetAuthorityDocument](schemas-artifactsetauthoritydocument.md) |  |
+| <a id="s-dec7134215"></a>`artifacts` | yes | type="array"; items=([CollectionArtifactIdentityDocument](schemas-collectionartifactidentitydocument.md)); maxItems=128; title="Artifacts"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"identity-bound-start_ordinal","reason":"bounded-identity-page"} |  |
+| <a id="s-fea5f16684"></a>`identity` | yes | [ArtifactSetIdentityDocument](schemas-artifactsetidentitydocument.md) |  |
 | <a id="s-5bea015a1e"></a>`next_ordinal` | no | anyOf=[([NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1); (type="null")] |  |
 | <a id="s-cc8bfd36cb"></a>`start_ordinal` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 
@@ -33,7 +33,7 @@ Exact externally visible contract owned by this contract element.
 
 #### [extent-rule/route-progression/v1](../../extent-contract/extent/extent-rule-route-progression.md#p-6b76b527cb)
 
-Shared facts for every subject below: maximum=128; progression={"authority":"processing-claim-artifacts","authority_parameter":"authority_sha256","cursor_parameter":"start_ordinal","fixed_limit":128,"kind":"exact-authority-page"}; reason="bounded-route-page"
+Shared facts for every subject below: maximum=128; progression={"authority":"processing-claim-artifacts","authority_parameter":"identity_sha256","cursor_parameter":"start_ordinal","fixed_limit":128,"kind":"exact-authority-page"}; reason="bounded-route-page"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
@@ -63,7 +63,7 @@ Exact evidence groups for this contract element:
 
 ### Referenced contract elements
 
-- [ArtifactSetAuthorityDocument](schemas-artifactsetauthoritydocument.md)
+- [ArtifactSetIdentityDocument](schemas-artifactsetidentitydocument.md)
 - [CollectionArtifactIdentityDocument](schemas-collectionartifactidentitydocument.md)
 - [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
@@ -97,7 +97,7 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e9862bcaae936cd4fcc29d6eb00c3f617f0116fd1eade574f0133f390bf69bcc -->
+<!-- exact-contract-value: 1d1f4208dad6444c1706109836caecdabd89da990aeeefb4fd3b18442a53b7d9 -->
 
 ```json
 {
@@ -112,12 +112,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "array",
       "x-riverhog-extent": {
         "policy": "segmented_no_total_max",
-        "progression": "authority-bound-start_ordinal",
-        "reason": "bounded-authority-page"
+        "progression": "identity-bound-start_ordinal",
+        "reason": "bounded-identity-page"
       }
     },
-    "authority": {
-      "$ref": "#/components/schemas/ArtifactSetAuthorityDocument"
+    "identity": {
+      "$ref": "#/components/schemas/ArtifactSetIdentityDocument"
     },
     "next_ordinal": {
       "anyOf": [
@@ -136,7 +136,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   },
   "required": [
-    "authority",
+    "identity",
     "start_ordinal",
     "artifacts"
   ],

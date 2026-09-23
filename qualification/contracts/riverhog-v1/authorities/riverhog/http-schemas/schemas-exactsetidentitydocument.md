@@ -1,8 +1,8 @@
-# schemas: ExactSetAuthorityDocument
+# schemas: ExactSetIdentityDocument
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: http-schemas:riverhog:schemas-exactsetauthoritydocument:5edf4844c2 -->
+<!-- contract-element: http-schemas:riverhog:schemas-exactsetidentitydocument:29f7c66391 -->
 
 Small immutable identity for an exact canonically ordered logical set.
 
@@ -13,20 +13,20 @@ Small immutable identity for an exact canonically ordered logical set.
 
 ## External contract
 
-<a id="s-fe161ba236"></a>
+<a id="s-07dc024284"></a>
 
-- <a id="s-7e69e5db62"></a>`type`: `"object"`
-- <a id="s-446126c9d1"></a>`additionalProperties`: `false`
-- <a id="s-0df13433b0"></a>`description`: `"Small immutable identity for an exact canonically ordered logical set."`
-- <a id="s-b977b9a19e"></a>`required`: `["count","sha256"]`
-- <a id="s-044c8a5ab0"></a>`title`: `"ExactSetAuthorityDocument"`
+- <a id="s-a0aed2b809"></a>`type`: `"object"`
+- <a id="s-173b78c3e1"></a>`additionalProperties`: `false`
+- <a id="s-10d6cc6ec6"></a>`description`: `"Small immutable identity for an exact canonically ordered logical set."`
+- <a id="s-5d35642f18"></a>`required`: `["count","sha256"]`
+- <a id="s-f8e5f4125f"></a>`title`: `"ExactSetIdentityDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-edd753f1d8"></a>`count` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
-| <a id="s-9afef3e97a"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+| <a id="s-ea47714b15"></a>`count` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
+| <a id="s-7967c9b1c9"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -36,7 +36,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field sha256](#s-9afef3e97a) | `length · characters · fixed` | shared above |
+| [field sha256](#s-7967c9b1c9) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -48,8 +48,8 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
-- <a id="pa-fd73b42066"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
-- <a id="pa-aef9b3f177"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
+- <a id="pa-4c36b0381b"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-43fa67c048"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -65,7 +65,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Machine authority
 
-- `/external_contract/http_openapi/riverhog/components/schemas/ExactSetAuthorityDocument`
+- `/external_contract/http_openapi/riverhog/components/schemas/ExactSetIdentityDocument`
 
 ### Exact owned JSON
 
@@ -74,7 +74,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 210b90e874e1008e8664061ef9d5740a12f4f1df08272146924bbc05bb3e8642 -->
+<!-- exact-contract-value: 0b0b970182846f8b28a5ab157161f4d26036136fbeeb5437e3569002a59db6fa -->
 
 ```json
 {
@@ -95,7 +95,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "count",
     "sha256"
   ],
-  "title": "ExactSetAuthorityDocument",
+  "title": "ExactSetIdentityDocument",
   "type": "object"
 }
 ```

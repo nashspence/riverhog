@@ -442,8 +442,8 @@ def test_claim_plan_capabilities_settlement_and_deletion_blocker(
         fence=1,
         recipe=RecipeIdentity("camera/v1", 1, "b" * 64),
         operation=OperationIdentity("archive-video/v1", "c" * 64),
-        input_set_sha256=cast(str, claim["inputs"]["authority"]["sha256"]),  # type: ignore[index]
-        artifact_set_sha256=cast(str, claim["artifacts"]["authority"]["sha256"]),  # type: ignore[index]
+        input_set_sha256=cast(str, claim["inputs"]["identity"]["sha256"]),  # type: ignore[index]
+        artifact_set_sha256=cast(str, claim["artifacts"]["identity"]["sha256"]),  # type: ignore[index]
         execution_envelope_sha256=EXECUTION_ID,
         execution_sha256="e" * 64,
         controller_evidence=CONTROLLER_EVIDENCE,
@@ -1022,10 +1022,10 @@ def test_multiple_processing_outcomes_retain_outputs_and_authorize_retirement(
             fence=1,
             recipe=RecipeIdentity("fixture.branch/v1", 1, "b" * 64),
             operation=OperationIdentity("fixture.copy/v1", "c" * 64),
-            input_set_sha256=cast(str, claim["inputs"]["authority"]["sha256"]),  # type: ignore[index]
+            input_set_sha256=cast(str, claim["inputs"]["identity"]["sha256"]),  # type: ignore[index]
             artifact_set_sha256=cast(
                 str,
-                claim["artifacts"]["authority"]["sha256"],  # type: ignore[index]
+                claim["artifacts"]["identity"]["sha256"],  # type: ignore[index]
             ),
             execution_envelope_sha256=execution_id,
             execution_sha256="e" * 64,
@@ -1130,11 +1130,11 @@ def test_multiple_processing_outcomes_retain_outputs_and_authorize_retirement(
         )
     assert settled["state"] == "settled"
     assert settled["outcome_settlement"] is not None
-    outcome_authority = cast(dict[str, object], settled["outcomes"])["authority"]
+    outcome_authority = cast(dict[str, object], settled["outcomes"])["identity"]
     assert isinstance(outcome_authority, dict)
     page = service.list_claim_outcomes(
         parent_id,
-        authority_sha256=cast(str, outcome_authority["sha256"]),
+        identity_sha256=cast(str, outcome_authority["sha256"]),
         start_ordinal=0,
         principal=_principal(),
     )

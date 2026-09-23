@@ -24,8 +24,8 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b4c4f8d76c"></a>`authority` | no | anyOf=[([ArtifactSetAuthorityDocument](schemas-artifactsetauthoritydocument.md)); (type="null")] |  |
 | <a id="s-9eed34922f"></a>`count` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
+| <a id="s-5edc715d56"></a>`identity` | no | anyOf=[([ArtifactSetIdentityDocument](schemas-artifactsetidentitydocument.md)); (type="null")] |  |
 | <a id="s-69a169072e"></a>`state` | yes | type="string"; enum=["receiving","sealed"]; title="State" |  |
 | <a id="s-97ef4d673d"></a>`total_bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 
@@ -33,7 +33,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Referenced contract elements
 
-- [ArtifactSetAuthorityDocument](schemas-artifactsetauthoritydocument.md)
+- [ArtifactSetIdentityDocument](schemas-artifactsetidentitydocument.md)
 - [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
@@ -63,25 +63,25 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f66af406cb1dafe7a60edc5a89eec2e66e324b4fe8308b0be876e9f63d52dfaa -->
+<!-- exact-contract-value: 0b1eb408caaf94148fc546c324c7aabfb806857d7414c2ce65b6b490fd93de86 -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
-    "authority": {
+    "count": {
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 0
+    },
+    "identity": {
       "anyOf": [
         {
-          "$ref": "#/components/schemas/ArtifactSetAuthorityDocument"
+          "$ref": "#/components/schemas/ArtifactSetIdentityDocument"
         },
         {
           "type": "null"
         }
       ]
-    },
-    "count": {
-      "$ref": "#/components/schemas/NonnegativeDecimal",
-      "ge": 0
     },
     "state": {
       "enum": [

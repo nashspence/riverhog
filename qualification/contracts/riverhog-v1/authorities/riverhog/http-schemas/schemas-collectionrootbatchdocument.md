@@ -25,14 +25,14 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-94a5c12b16"></a>`fence` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
-| <a id="s-ab04ca5dfd"></a>`inputs` | yes | type="array"; items=([CollectionRootIdentityDocument](schemas-collectionrootidentitydocument.md)); maxItems=128; minItems=1; title="Inputs"; uniqueItems=true; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"start_ordinal","reason":"bounded-authority-append"} |  |
+| <a id="s-ab04ca5dfd"></a>`inputs` | yes | type="array"; items=([CollectionRootIdentityDocument](schemas-collectionrootidentitydocument.md)); maxItems=128; minItems=1; title="Inputs"; uniqueItems=true; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"start_ordinal","reason":"bounded-set-append"} |  |
 | <a id="s-9c6772d7f8"></a>`start_ordinal` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 
 ### Progression, limits, and lifecycle
 
 #### [extent-rule/bounded-segment/v1](../../extent-contract/extent/extent-rule-bounded-segment.md#p-2b3f3f1594)
 
-Shared facts for every subject below: maximum=128; minimum=1; progression={"progression":"start_ordinal"}; reason="bounded-authority-append"
+Shared facts for every subject below: maximum=128; minimum=1; progression={"progression":"start_ordinal"}; reason="bounded-set-append"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
@@ -56,7 +56,7 @@ Required by: [extent-rule/bounded-segment/v1](../../extent-contract/extent/exten
 
 Exact evidence groups for this contract element:
 
-- [riverhog-work-authority-append/v1](../../../evidence/qualifications/riverhog-work-authority-append-v1/index.md)
+- [riverhog-work-set-append/v1](../../../evidence/qualifications/riverhog-work-set-append-v1/index.md)
 
 ## Maintained corroboration
 
@@ -95,7 +95,7 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f0ac02f34d26738227bc06a6c2830b77dd5dab6b2c4da6288181b8c440aeb888 -->
+<!-- exact-contract-value: 76d633803c81db94db4dca7a53808d8e75b331648fe834b200b2bcddba5de993 -->
 
 ```json
 {
@@ -117,7 +117,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "x-riverhog-extent": {
         "policy": "segmented_no_total_max",
         "progression": "start_ordinal",
-        "reason": "bounded-authority-append"
+        "reason": "bounded-set-append"
       }
     },
     "start_ordinal": {

@@ -17,15 +17,15 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-1c10afcf30"></a>`type`: `"object"`
 - <a id="s-b99bbf8f35"></a>`additionalProperties`: `false`
-- <a id="s-b5ae72aedc"></a>`required`: `["authority","start_ordinal","inputs"]`
+- <a id="s-b5ae72aedc"></a>`required`: `["identity","start_ordinal","inputs"]`
 - <a id="s-47becc1df7"></a>`title`: `"CollectionRootPageDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-cc3eed5ae7"></a>`authority` | yes | [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md) |  |
-| <a id="s-596a3b3f32"></a>`inputs` | yes | type="array"; items=([CollectionRootIdentityDocument](schemas-collectionrootidentitydocument.md)); maxItems=128; title="Inputs"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"authority-bound-start_ordinal","reason":"bounded-authority-page"} |  |
+| <a id="s-6fed7b7c42"></a>`identity` | yes | [ExactSetIdentityDocument](schemas-exactsetidentitydocument.md) |  |
+| <a id="s-596a3b3f32"></a>`inputs` | yes | type="array"; items=([CollectionRootIdentityDocument](schemas-collectionrootidentitydocument.md)); maxItems=128; title="Inputs"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"identity-bound-start_ordinal","reason":"bounded-identity-page"} |  |
 | <a id="s-31aba2331a"></a>`next_ordinal` | no | anyOf=[([NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1); (type="null")] |  |
 | <a id="s-b3e9e02376"></a>`start_ordinal` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 
@@ -33,7 +33,7 @@ Exact externally visible contract owned by this contract element.
 
 #### [extent-rule/route-progression/v1](../../extent-contract/extent/extent-rule-route-progression.md#p-6b76b527cb)
 
-Shared facts for every subject below: maximum=128; progression={"authority":"processing-claim-inputs","authority_parameter":"authority_sha256","cursor_parameter":"start_ordinal","fixed_limit":128,"kind":"exact-authority-page"}; reason="bounded-route-page"
+Shared facts for every subject below: maximum=128; progression={"authority":"processing-claim-inputs","authority_parameter":"identity_sha256","cursor_parameter":"start_ordinal","fixed_limit":128,"kind":"exact-authority-page"}; reason="bounded-route-page"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
@@ -64,7 +64,7 @@ Exact evidence groups for this contract element:
 ### Referenced contract elements
 
 - [CollectionRootIdentityDocument](schemas-collectionrootidentitydocument.md)
-- [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
+- [ExactSetIdentityDocument](schemas-exactsetidentitydocument.md)
 - [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
@@ -97,14 +97,14 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 261271d97113ecc92a837a013b34882bd853e1a05eae1426cc822e432c705cd4 -->
+<!-- exact-contract-value: ae354069176cc6801d9aee5d9a43f99abc5dc8617618bcf84260a1a2e0adea34 -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
-    "authority": {
-      "$ref": "#/components/schemas/ExactSetAuthorityDocument"
+    "identity": {
+      "$ref": "#/components/schemas/ExactSetIdentityDocument"
     },
     "inputs": {
       "items": {
@@ -115,8 +115,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "array",
       "x-riverhog-extent": {
         "policy": "segmented_no_total_max",
-        "progression": "authority-bound-start_ordinal",
-        "reason": "bounded-authority-page"
+        "progression": "identity-bound-start_ordinal",
+        "reason": "bounded-identity-page"
       }
     },
     "next_ordinal": {
@@ -136,7 +136,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   },
   "required": [
-    "authority",
+    "identity",
     "start_ordinal",
     "inputs"
   ],

@@ -26,7 +26,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-66e7037bf1"></a>`outcomes` | yes | [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md) |  |
+| <a id="s-66e7037bf1"></a>`outcomes` | yes | [ExactSetIdentityDocument](schemas-exactsetidentitydocument.md) |  |
 | <a id="s-c9a1869ba6"></a>`retirement_grace_seconds` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 | <a id="s-ca68cd4ae2"></a>`retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"]; title="Retirement Policy" |  |
 
@@ -52,7 +52,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Referenced contract elements
 
-- [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
+- [ExactSetIdentityDocument](schemas-exactsetidentitydocument.md)
 - [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
@@ -82,7 +82,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 374b6cb66f7f56a5497355e6ac97e63745f83b8b4b23e7ea5c820e2666be00b4 -->
+<!-- exact-contract-value: f56d4ee89333c41442d1f3c35a5dad06f2ccd0e7636cbe4c5d3f39518dab7671 -->
 
 ```json
 {
@@ -96,7 +96,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "properties": {
     "outcomes": {
-      "$ref": "#/components/schemas/ExactSetAuthorityDocument"
+      "$ref": "#/components/schemas/ExactSetIdentityDocument"
     },
     "retirement_grace_seconds": {
       "$ref": "#/components/schemas/NonnegativeDecimal",

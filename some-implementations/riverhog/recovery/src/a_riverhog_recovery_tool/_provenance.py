@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import Literal
 
 from riverhog_provenance import (
-    FileProvenanceBinding,
+    ArchiveFileProvenanceRecord,
     ProvenanceRootDocument,
     ProvenanceTerminalDocument,
     ProvenanceValidationError,
@@ -100,7 +100,7 @@ def parse_segmented_provenance_terminal(content: bytes) -> SegmentedProvenanceTe
 
 def parse_segmented_binding_payload(
     content: bytes,
-) -> tuple[int, tuple[FileProvenanceBinding, ...]]:
+) -> tuple[int, tuple[ArchiveFileProvenanceRecord, ...]]:
     try:
         first, rows = parse_binding_segment(content)
         bindings = tuple(_binding(row) for row in rows)
@@ -109,14 +109,14 @@ def parse_segmented_binding_payload(
     return first, bindings
 
 
-def _binding(row: dict[str, object]) -> FileProvenanceBinding:
+def _binding(row: dict[str, object]) -> ArchiveFileProvenanceRecord:
     status = row.get("status")
     byte_count = row.get("bytes")
     if status not in {"captured", "omitted"}:
         raise ProvenanceRecoveryError("provenance binding status is invalid")
     if isinstance(byte_count, bool) or not isinstance(byte_count, int) or byte_count < 0:
         raise ProvenanceRecoveryError("provenance binding byte count is invalid")
-    return FileProvenanceBinding(
+    return ArchiveFileProvenanceRecord(
         path=str(row.get("path") or ""),
         bytes=byte_count,
         sha256=str(row.get("sha256") or ""),

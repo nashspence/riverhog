@@ -24,15 +24,15 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-9aafbb77a1"></a>`authority` | no | anyOf=[([ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)); (type="null")] |  |
 | <a id="s-7af5ab6592"></a>`count` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
+| <a id="s-0544752197"></a>`identity` | no | anyOf=[([ExactSetIdentityDocument](schemas-exactsetidentitydocument.md)); (type="null")] |  |
 | <a id="s-9d3a07ed65"></a>`state` | yes | type="string"; enum=["receiving","sealed"]; title="State" |  |
 
 ## Maintained corroboration
 
 ### Referenced contract elements
 
-- [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
+- [ExactSetIdentityDocument](schemas-exactsetidentitydocument.md)
 - [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
@@ -62,25 +62,25 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c4519c908c9238d57f3cff69d41a759ee47e6ad7e90b2c5eda4cd82da6bb2c90 -->
+<!-- exact-contract-value: eaa0afd45a81414b1bf807b6cf660b88ad5cc8ae6ee81d7e2a3ab1140bdb8ce6 -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
-    "authority": {
+    "count": {
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 0
+    },
+    "identity": {
       "anyOf": [
         {
-          "$ref": "#/components/schemas/ExactSetAuthorityDocument"
+          "$ref": "#/components/schemas/ExactSetIdentityDocument"
         },
         {
           "type": "null"
         }
       ]
-    },
-    "count": {
-      "$ref": "#/components/schemas/NonnegativeDecimal",
-      "ge": 0
     },
     "state": {
       "enum": [

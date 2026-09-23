@@ -1,4 +1,4 @@
-# riverhog-work-authority-append/v1: candidate tests
+# riverhog-work-set-append/v1: candidate tests
 
 [Atlas](../../../index.md) · [Reference navigation](index.md)
 

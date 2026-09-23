@@ -1319,7 +1319,7 @@ def create_derivative_journal_seed(
                 "confidence": "high",
                 "description": (
                     "Riverhog generated this derivative assertion from the sealed "
-                    "collection-work disposition authority."
+                    "collection-work disposition set."
                 ),
             }
         ],

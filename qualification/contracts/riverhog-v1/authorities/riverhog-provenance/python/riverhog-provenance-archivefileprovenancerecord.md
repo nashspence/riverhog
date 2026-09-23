@@ -1,8 +1,8 @@
-# riverhog_provenance.FileProvenanceBinding
+# riverhog_provenance.ArchiveFileProvenanceRecord
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: python:riverhog-provenance:riverhog-provenance-fileprovenancebinding:deaedefd9f -->
+<!-- contract-element: python:riverhog-provenance:riverhog-provenance-archivefileprovenancerecord:d04b71dfe6 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,32 +13,32 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-0773d12145"></a>
-- <a id="s-26a8126566"></a>`distribution`: `riverhog-provenance`
-- <a id="s-ae10cd4e03"></a>`module`: `riverhog_provenance`
-- <a id="s-a4b1168082"></a>`name`: `FileProvenanceBinding`
-- <a id="s-4577a88bbf"></a>`unit`: `export`
+<a id="s-6b53ac3ebc"></a>
+- <a id="s-1a724de657"></a>`distribution`: `riverhog-provenance`
+- <a id="s-637889f9aa"></a>`module`: `riverhog_provenance`
+- <a id="s-55663d8bba"></a>`name`: `ArchiveFileProvenanceRecord`
+- <a id="s-cfa91605e9"></a>`unit`: `export`
 
 ### Declared structure
 
-- <a id="s-0619bc1f0d"></a>`kind`: `"class"`
-- <a id="s-fd74641d6d"></a>`signature`: `"'(path: \\'str\\', bytes: \\'int\\', sha256: \\'str\\', status: \"Literal[\\'captured\\', \\'omitted\\']\", journal_id: \\'str \| None\\' = None, current_state_id: \\'str \| None\\' = None, omission_reason: \\'str \| None\\' = None) -> None'"`
+- <a id="s-4caf755412"></a>`kind`: `"class"`
+- <a id="s-809e2a7c2e"></a>`signature`: `"'(path: \\'str\\', bytes: \\'int\\', sha256: \\'str\\', status: \"Literal[\\'captured\\', \\'omitted\\']\", journal_id: \\'str \| None\\' = None, current_state_id: \\'str \| None\\' = None, omission_reason: \\'str \| None\\' = None) -> None'"`
 
 #### Dataclass fields
 
 | Field | Type | Default |
 |---|---|---|
-| <a id="s-d9ee6148d2"></a>`path` | `'str'` | `required` |
-| <a id="s-d74094fd5f"></a>`bytes` | `'int'` | `required` |
-| <a id="s-c4ce8d3ebb"></a>`sha256` | `'str'` | `required` |
-| <a id="s-8381149583"></a>`status` | `"Literal['captured', 'omitted']"` | `required` |
-| <a id="s-4f63b48705"></a>`journal_id` | `'str \| None'` | `None` |
-| <a id="s-2185563c92"></a>`current_state_id` | `'str \| None'` | `None` |
-| <a id="s-adcaad18df"></a>`omission_reason` | `'str \| None'` | `None` |
+| <a id="s-8e3ce20369"></a>`path` | `'str'` | `required` |
+| <a id="s-48aa041df2"></a>`bytes` | `'int'` | `required` |
+| <a id="s-45a8168750"></a>`sha256` | `'str'` | `required` |
+| <a id="s-e8b921ef1e"></a>`status` | `"Literal['captured', 'omitted']"` | `required` |
+| <a id="s-ce08364e66"></a>`journal_id` | `'str \| None'` | `None` |
+| <a id="s-9f35254f50"></a>`current_state_id` | `'str \| None'` | `None` |
+| <a id="s-c95a712bb5"></a>`omission_reason` | `'str \| None'` | `None` |
 
 ## Governing policies
 
-- <a id="pa-5838d53f17"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
+- <a id="pa-8f5f049337"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
 
 ## Evidence
 
@@ -54,7 +54,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/python/riverhog_provenance.FileProvenanceBinding`
+- `/external_contract/python/riverhog_provenance.ArchiveFileProvenanceRecord`
 
 ### Exact owned JSON
 
@@ -63,7 +63,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 87630c2ca59d6dca73e7859a1784e9f704c8415f7781c7005b51275e3e613849 -->
+<!-- exact-contract-value: 67ab641f32013e42d2d2c5689c35cdd41683970ed6d3e318ae43b93654a9a6f9 -->
 
 ```json
 {
@@ -110,7 +110,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "distribution": "riverhog-provenance",
   "module": "riverhog_provenance",
-  "name": "FileProvenanceBinding",
+  "name": "ArchiveFileProvenanceRecord",
   "unit": "export"
 }
 ```

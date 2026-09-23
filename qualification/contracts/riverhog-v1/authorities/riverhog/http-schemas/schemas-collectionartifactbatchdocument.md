@@ -24,7 +24,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1c0906aa0f"></a>`artifacts` | yes | type="array"; items=([CollectionArtifactIdentityDocument](schemas-collectionartifactidentitydocument.md)); maxItems=128; minItems=1; title="Artifacts"; uniqueItems=true; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"start_ordinal","reason":"bounded-authority-append"} |  |
+| <a id="s-1c0906aa0f"></a>`artifacts` | yes | type="array"; items=([CollectionArtifactIdentityDocument](schemas-collectionartifactidentitydocument.md)); maxItems=128; minItems=1; title="Artifacts"; uniqueItems=true; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"start_ordinal","reason":"bounded-set-append"} |  |
 | <a id="s-1c82d23b05"></a>`fence` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-7ef1e1094b"></a>`start_ordinal` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 
@@ -32,7 +32,7 @@ Exact externally visible contract owned by this contract element.
 
 #### [extent-rule/bounded-segment/v1](../../extent-contract/extent/extent-rule-bounded-segment.md#p-2b3f3f1594)
 
-Shared facts for every subject below: maximum=128; minimum=1; progression={"progression":"start_ordinal"}; reason="bounded-authority-append"
+Shared facts for every subject below: maximum=128; minimum=1; progression={"progression":"start_ordinal"}; reason="bounded-set-append"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
@@ -56,7 +56,7 @@ Required by: [extent-rule/bounded-segment/v1](../../extent-contract/extent/exten
 
 Exact evidence groups for this contract element:
 
-- [riverhog-work-authority-append/v1](../../../evidence/qualifications/riverhog-work-authority-append-v1/index.md)
+- [riverhog-work-set-append/v1](../../../evidence/qualifications/riverhog-work-set-append-v1/index.md)
 
 ## Maintained corroboration
 
@@ -95,7 +95,7 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: daa573db09ea59f1b9f8c6889364f59e9740e957246785d1c0e454cffa2403c1 -->
+<!-- exact-contract-value: d4275f21ad04cb5f7e16f9ef880b1417dbd10ab6301f65c713c21c6e53ac4380 -->
 
 ```json
 {
@@ -113,7 +113,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "x-riverhog-extent": {
         "policy": "segmented_no_total_max",
         "progression": "start_ordinal",
-        "reason": "bounded-authority-append"
+        "reason": "bounded-set-append"
       }
     },
     "fence": {

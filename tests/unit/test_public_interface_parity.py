@@ -598,12 +598,12 @@ PUBLIC_QUERY_SELECTORS = {
         },
         "list_lifecycle_events": {"after", "limit"},
         "list_processing_claims": {"order", "page_size", "page_token", "sort", "state"},
-        "list_processing_claim_artifacts": {"authority_sha256", "start_ordinal"},
-        "list_processing_claim_inputs": {"authority_sha256", "start_ordinal"},
-        "list_processing_claim_outcomes": {"authority_sha256", "start_ordinal"},
-        "list_processing_claim_dispositions": {"authority_sha256", "start_ordinal"},
+        "list_processing_claim_artifacts": {"identity_sha256", "start_ordinal"},
+        "list_processing_claim_inputs": {"identity_sha256", "start_ordinal"},
+        "list_processing_claim_outcomes": {"identity_sha256", "start_ordinal"},
+        "list_processing_claim_dispositions": {"identity_sha256", "start_ordinal"},
         "list_processing_claim_disposition_outputs": {
-            "authority_sha256",
+            "identity_sha256",
             "start_ordinal",
         },
         "list_retrieval_cache_objects": {

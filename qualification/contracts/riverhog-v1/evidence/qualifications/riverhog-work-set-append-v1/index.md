@@ -1,8 +1,8 @@
-# riverhog-work-authority-append/v1
+# riverhog-work-set-append/v1
 
 [Atlas](../../../index.md) · [Reference navigation](../index.md)
 
-<a id="e-5707b3a2d3-6a55d20aca"></a>
+<a id="e-5707b3a2d3-1adf1cdd68"></a>
 Recorded owner: `riverhog`.
 
 - [Affected contract elements (2)](contracts.md)
@@ -28,6 +28,6 @@ Recorded open-claim keys: `bounded_step`, `forward_progress`, `multiple_segments
 
 - [extent-rule/bounded-segment/v1](../../../authorities/extent-contract/extent/extent-rule-bounded-segment.md#p-2b3f3f1594)
 
-Recorded reasons: `bounded-authority-append`.
+Recorded reasons: `bounded-set-append`.
 
 The policy definitions explain the contract. Candidate tests describe potential evidence; their presence does not establish these group-wide guarantees.

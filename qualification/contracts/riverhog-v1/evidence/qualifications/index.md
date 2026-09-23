@@ -21,7 +21,7 @@ Each group has separate routes to its affected contracts and candidate tests. Te
 | [riverhog-upload-work-progression/v1](riverhog-upload-work-progression-v1/index.md) | 1 | 3 |
 | [riverhog-archive-volume-part-progression/v1](riverhog-archive-volume-part-progression-v1/index.md) | 2 | 3 |
 | [riverhog-storage-write-segment-progression/v1](riverhog-storage-write-segment-progression-v1/index.md) | 1 | 3 |
-| [riverhog-work-authority-append/v1](riverhog-work-authority-append-v1/index.md) | 2 | 2 |
+| [riverhog-work-set-append/v1](riverhog-work-set-append-v1/index.md) | 2 | 2 |
 | [riverhog-work-disposition-append/v1](riverhog-work-disposition-append-v1/index.md) | 2 | 2 |
 | [riverhog-provenance-volume-progression/v1](riverhog-provenance-volume-progression-v1/index.md) | 1 | 3 |
 | [riverhog-raw-digest-progression/v1](riverhog-raw-digest-progression-v1/index.md) | 1 | 2 |

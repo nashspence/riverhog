@@ -28,7 +28,7 @@ Exact claim evidence authorizing one retirement deletion plan.
 | <a id="s-61665e5e9e"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |  |
 | <a id="s-c71cfa0fc9"></a>`execution_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Execution Id" |  |
 | <a id="s-77cbd0e0de"></a>`fence` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
-| <a id="s-aeaffe0495"></a>`outcomes` | no | anyOf=[([ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)); (type="null")] |  |
+| <a id="s-aeaffe0495"></a>`outcomes` | no | anyOf=[([ExactSetIdentityDocument](schemas-exactsetidentitydocument.md)); (type="null")] |  |
 | <a id="s-b4b8f49228"></a>`output_collection_id` | no | anyOf=[([CollectionId](schemas-collectionid.md)); (type="null")] |  |
 | <a id="s-e9e363aaf6"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
 
@@ -80,7 +80,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 ### Referenced contract elements
 
 - [CollectionId](schemas-collectionid.md)
-- [ExactSetAuthorityDocument](schemas-exactsetauthoritydocument.md)
+- [ExactSetIdentityDocument](schemas-exactsetidentitydocument.md)
 - [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
@@ -113,7 +113,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e631f1e8d7ccdd8ca043f074c9a257af80fdae98cae6476f800c25dccb01b335 -->
+<!-- exact-contract-value: 32cbaa43f80192e217e416daf298baba0183c752acd98cc6c952ed3f9d64f89b -->
 
 ```json
 {
@@ -180,7 +180,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "outcomes": {
       "anyOf": [
         {
-          "$ref": "#/components/schemas/ExactSetAuthorityDocument"
+          "$ref": "#/components/schemas/ExactSetIdentityDocument"
         },
         {
           "type": "null"

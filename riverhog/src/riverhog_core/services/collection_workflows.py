@@ -253,7 +253,7 @@ class SqlAlchemyCollectionWorkflowService:
                         )
                     )
                     if current is None or _input_identity(current) != value:
-                        raise Conflict("input-root retry differs from staged authority")
+                        raise Conflict("input-root retry differs from staged identity")
                     ordinal += 1
                     continue
                 previous = _last_input_identity(session, claim.id)
@@ -301,7 +301,7 @@ class SqlAlchemyCollectionWorkflowService:
             _require_live_claim(claim, fence=fence)
             if claim.inputs_sealed_at is None:
                 if claim.input_count < 1 or claim.input_hash_state is None:
-                    raise Conflict("input-root authority is empty")
+                    raise Conflict("input-root identity is empty")
                 claim.input_set_sha256 = CheckpointSHA256.from_state(
                     claim.input_hash_state
                 ).hexdigest()
@@ -313,17 +313,17 @@ class SqlAlchemyCollectionWorkflowService:
         self,
         claim_id: str,
         *,
-        authority_sha256: str,
+        identity_sha256: str,
         start_ordinal: int,
         principal: ApplicationPrincipal,
     ) -> dict[str, object]:
         start = _page_start(start_ordinal)
         with read_snapshot(self._session_factory) as session:
             claim = _claim_actor(session, claim_id, principal)
-            authority = _require_set_authority(
+            identity = _require_set_identity(
                 claim.input_count,
                 claim.input_set_sha256,
-                authority_sha256,
+                identity_sha256,
                 "input-root",
             )
             rows = list(
@@ -339,7 +339,7 @@ class SqlAlchemyCollectionWorkflowService:
             )
             next_ordinal = start + len(rows)
             return {
-                "authority": authority,
+                "identity": identity,
                 "start_ordinal": format_scalar("nonnegative", start),
                 "next_ordinal": (
                     format_scalar("nonnegative", next_ordinal)
@@ -379,7 +379,7 @@ class SqlAlchemyCollectionWorkflowService:
                         )
                     )
                     if current is None or _artifact_identity(session, claim.id, current) != value:
-                        raise Conflict("artifact retry differs from staged authority")
+                        raise Conflict("artifact retry differs from staged identity")
                     ordinal += 1
                     continue
                 previous = _last_artifact_identity(session, claim.id)
@@ -423,7 +423,7 @@ class SqlAlchemyCollectionWorkflowService:
             _require_live_claim(claim, fence=fence)
             if claim.artifacts_sealed_at is None:
                 if claim.artifact_count < 1 or claim.artifact_hash_state is None:
-                    raise Conflict("artifact authority is empty")
+                    raise Conflict("artifact identity is empty")
                 claim.artifact_set_sha256 = CheckpointSHA256.from_state(
                     claim.artifact_hash_state
                 ).hexdigest()
@@ -435,14 +435,14 @@ class SqlAlchemyCollectionWorkflowService:
         self,
         claim_id: str,
         *,
-        authority_sha256: str,
+        identity_sha256: str,
         start_ordinal: int,
         principal: ApplicationPrincipal,
     ) -> dict[str, object]:
         start = _page_start(start_ordinal)
         with read_snapshot(self._session_factory) as session:
             claim = _claim_actor(session, claim_id, principal)
-            authority = _require_artifact_authority(claim, authority_sha256)
+            identity = _require_artifact_identity(claim, identity_sha256)
             rows = list(
                 session.scalars(
                     select(CollectionProcessingClaimArtifactRecord)
@@ -456,7 +456,7 @@ class SqlAlchemyCollectionWorkflowService:
             )
             next_ordinal = start + len(rows)
             return {
-                "authority": authority,
+                "identity": identity,
                 "start_ordinal": format_scalar("nonnegative", start),
                 "next_ordinal": (
                     format_scalar("nonnegative", next_ordinal)
@@ -629,7 +629,7 @@ class SqlAlchemyCollectionWorkflowService:
             _require_live_claim(claim, fence=fence)
             _require_inputs_sealed(claim)
             if claim.artifacts_sealed_at is None or claim.artifact_set_sha256 is None:
-                raise Conflict("artifact authority is not sealed")
+                raise Conflict("artifact identity is not sealed")
             encoded_evidence = canonical_json_bytes(evidence).decode("utf-8")
             if claim.plan_sealed_at is not None:
                 expected = (
@@ -732,7 +732,7 @@ class SqlAlchemyCollectionWorkflowService:
                     "state": "receiving",
                     "count": "0",
                     "total_bytes": "0",
-                    "authority": None,
+                    "identity": None,
                 },
                 "token": token,
             }
@@ -774,7 +774,7 @@ class SqlAlchemyCollectionWorkflowService:
                         current is None
                         or _capability_artifact_identity(session, claim, current) != value
                     ):
-                        raise Conflict("capability artifact retry differs from staged authority")
+                        raise Conflict("capability artifact retry differs from staged identity")
                     ordinal += 1
                     continue
                 previous = _last_capability_artifact_identity(session, claim, capability.id)
@@ -827,7 +827,7 @@ class SqlAlchemyCollectionWorkflowService:
                 or capability.artifact_count < 1
                 or capability.artifact_hash_state is None
             ):
-                raise Conflict("capability artifact authority is empty or unavailable")
+                raise Conflict("capability artifact identity is empty or unavailable")
             identity = CheckpointSHA256.from_state(capability.artifact_hash_state).hexdigest()
             actions = tuple(sorted(set(json.loads(capability.actions_json))))
             if "write-output" in actions and (
@@ -1120,15 +1120,15 @@ class SqlAlchemyCollectionWorkflowService:
         self,
         claim_id: str,
         *,
-        authority_sha256: str,
+        identity_sha256: str,
         start_ordinal: int,
         principal: ApplicationPrincipal,
     ) -> dict[str, object]:
         start = _page_start(start_ordinal)
-        expected = _sha256(authority_sha256, "disposition set identity")
+        expected = _sha256(identity_sha256, "disposition set identity")
         with read_snapshot(self._session_factory) as session:
             claim = _claim_actor(session, claim_id, principal)
-            disposition_set = _sealed_disposition_authority(session, claim.id, expected)
+            disposition_set = _sealed_disposition_identity(session, claim.id, expected)
             rows = list(
                 session.scalars(
                     select(CollectionProcessingDispositionRecord)
@@ -1142,7 +1142,7 @@ class SqlAlchemyCollectionWorkflowService:
             )
             next_ordinal = start + len(rows)
             return {
-                "authority": _disposition_set_identity(disposition_set).as_dict(),
+                "identity": _disposition_set_identity(disposition_set).as_dict(),
                 "start_ordinal": format_scalar("nonnegative", start),
                 "next_ordinal": (
                     format_scalar("nonnegative", next_ordinal)
@@ -1158,15 +1158,15 @@ class SqlAlchemyCollectionWorkflowService:
         self,
         claim_id: str,
         *,
-        authority_sha256: str,
+        identity_sha256: str,
         start_ordinal: int,
         principal: ApplicationPrincipal,
     ) -> dict[str, object]:
         start = _page_start(start_ordinal)
-        expected = _sha256(authority_sha256, "disposition set identity")
+        expected = _sha256(identity_sha256, "disposition set identity")
         with read_snapshot(self._session_factory) as session:
             claim = _claim_actor(session, claim_id, principal)
-            disposition_set = _sealed_disposition_authority(session, claim.id, expected)
+            disposition_set = _sealed_disposition_identity(session, claim.id, expected)
             rows = list(
                 session.scalars(
                     select(CollectionProcessingDispositionOutputRecord)
@@ -1180,7 +1180,7 @@ class SqlAlchemyCollectionWorkflowService:
             )
             next_ordinal = start + len(rows)
             return {
-                "authority": _disposition_set_identity(disposition_set).as_dict(),
+                "identity": _disposition_set_identity(disposition_set).as_dict(),
                 "start_ordinal": format_scalar("nonnegative", start),
                 "next_ordinal": (
                     format_scalar("nonnegative", next_ordinal)
@@ -1406,7 +1406,7 @@ class SqlAlchemyCollectionWorkflowService:
         retirement_grace_seconds: int,
         principal: ApplicationPrincipal,
     ) -> dict[str, object]:
-        """Seal, then close, the durable exact outcome authority."""
+        """Seal, then close, the durable exact outcome identity."""
 
         policy = _retirement_policy(retirement_policy, retirement_grace_seconds)
         with session_scope(self._session_factory) as session:
@@ -1425,10 +1425,10 @@ class SqlAlchemyCollectionWorkflowService:
                 return _claim_payload(session, claim)
             _require_active_generation(claim, fence=fence)
             if claim.outcome_state == "failed":
-                raise Conflict(claim.outcome_failure or "outcome authority sealing failed")
+                raise Conflict(claim.outcome_failure or "outcome identity sealing failed")
             if claim.outcome_state == "receiving":
                 if claim.outcome_count < 1:
-                    raise Conflict("outcome authority is empty")
+                    raise Conflict("outcome identity is empty")
                 claim.retirement_policy = policy
                 claim.retirement_grace_seconds = int(retirement_grace_seconds)
                 claim.outcome_state = "sealing"
@@ -1441,14 +1441,14 @@ class SqlAlchemyCollectionWorkflowService:
                 if claim.retirement_policy != policy or claim.retirement_grace_seconds != int(
                     retirement_grace_seconds
                 ):
-                    raise Conflict("outcome authority is sealing with another retirement policy")
+                    raise Conflict("outcome identity is sealing with another retirement policy")
                 return _claim_payload(session, claim)
             if claim.outcome_state != "sealed" or claim.outcome_set_sha256 is None:
-                raise InvalidState("outcome authority is unavailable")
+                raise InvalidState("outcome identity is unavailable")
             if claim.retirement_policy != policy or claim.retirement_grace_seconds != int(
                 retirement_grace_seconds
             ):
-                raise Conflict("outcome authority was sealed with another retirement policy")
+                raise Conflict("outcome identity was sealed with another retirement policy")
             now = utc_timestamp_now()
             claim.state = "settled"
             claim.settled_at = claim.settled_at or now
@@ -1482,17 +1482,17 @@ class SqlAlchemyCollectionWorkflowService:
         self,
         claim_id: str,
         *,
-        authority_sha256: str,
+        identity_sha256: str,
         start_ordinal: int,
         principal: ApplicationPrincipal,
     ) -> dict[str, object]:
         start = _page_start(start_ordinal)
         with read_snapshot(self._session_factory) as session:
             claim = _owned_claim(session, claim_id, principal)
-            authority = _require_set_authority(
+            identity = _require_set_identity(
                 claim.outcome_count,
                 claim.outcome_set_sha256,
-                authority_sha256,
+                identity_sha256,
                 "outcome",
             )
             rows = list(
@@ -1508,7 +1508,7 @@ class SqlAlchemyCollectionWorkflowService:
             )
             next_ordinal = start + len(rows)
             return {
-                "authority": authority,
+                "identity": identity,
                 "start_ordinal": format_scalar("nonnegative", start),
                 "next_ordinal": (
                     format_scalar("nonnegative", next_ordinal)
@@ -1944,7 +1944,7 @@ def _bounded_batch(values: Sequence[object], label: str) -> None:
 def _append_start(value: int, count: int) -> int:
     start = int(value)
     if start < 0 or start > count:
-        raise Conflict("append ordinal is outside the staged authority")
+        raise Conflict("append ordinal is outside the staged identity")
     return start
 
 
@@ -2061,7 +2061,7 @@ def _last_capability_artifact_identity(
 def _capability_artifact_set_payload(
     capability: CollectionTransformCapabilityRecord,
 ) -> dict[str, object]:
-    authority = (
+    identity = (
         {
             "count": format_scalar("nonnegative", capability.artifact_count),
             "total_bytes": format_scalar("nonnegative", capability.artifact_bytes),
@@ -2071,59 +2071,59 @@ def _capability_artifact_set_payload(
         else None
     )
     return {
-        "state": "sealed" if authority is not None else "receiving",
+        "state": "sealed" if identity is not None else "receiving",
         "count": format_scalar("nonnegative", capability.artifact_count),
         "total_bytes": format_scalar("nonnegative", capability.artifact_bytes),
-        "authority": authority,
+        "identity": identity,
     }
 
 
 def _require_inputs_sealed(claim: CollectionProcessingClaimRecord) -> None:
     if claim.inputs_sealed_at is None or claim.input_set_sha256 is None:
-        raise Conflict("input-root authority is not sealed")
+        raise Conflict("input-root identity is not sealed")
 
 
-def _require_set_authority(
+def _require_set_identity(
     count: int,
     actual_sha256: str | None,
     requested_sha256: str,
     label: str,
 ) -> dict[str, object]:
-    expected = _sha256(requested_sha256, f"{label} authority")
+    expected = _sha256(requested_sha256, f"{label} identity")
     if actual_sha256 is None or actual_sha256 != expected or count < 1:
-        raise Conflict(f"{label} authority is unavailable or changed")
+        raise Conflict(f"{label} identity is unavailable or changed")
     return {"count": format_scalar("nonnegative", count), "sha256": actual_sha256}
 
 
-def _require_artifact_authority(
+def _require_artifact_identity(
     claim: CollectionProcessingClaimRecord,
     requested_sha256: str,
 ) -> dict[str, object]:
-    authority = _require_set_authority(
+    identity = _require_set_identity(
         claim.artifact_count,
         claim.artifact_set_sha256,
         requested_sha256,
         "artifact",
     )
-    authority["total_bytes"] = format_scalar("nonnegative", claim.artifact_bytes)
-    return authority
+    identity["total_bytes"] = format_scalar("nonnegative", claim.artifact_bytes)
+    return identity
 
 
 def _input_set_payload(claim: CollectionProcessingClaimRecord) -> dict[str, object]:
-    authority = (
+    identity = (
         {"count": format_scalar("nonnegative", claim.input_count), "sha256": claim.input_set_sha256}
         if claim.input_set_sha256 is not None
         else None
     )
     return {
-        "state": "sealed" if authority is not None else "receiving",
+        "state": "sealed" if identity is not None else "receiving",
         "count": format_scalar("nonnegative", claim.input_count),
-        "authority": authority,
+        "identity": identity,
     }
 
 
 def _artifact_set_payload(claim: CollectionProcessingClaimRecord) -> dict[str, object]:
-    authority = (
+    identity = (
         {
             "count": format_scalar("nonnegative", claim.artifact_count),
             "total_bytes": format_scalar("nonnegative", claim.artifact_bytes),
@@ -2133,15 +2133,15 @@ def _artifact_set_payload(claim: CollectionProcessingClaimRecord) -> dict[str, o
         else None
     )
     return {
-        "state": "sealed" if authority is not None else "receiving",
+        "state": "sealed" if identity is not None else "receiving",
         "count": format_scalar("nonnegative", claim.artifact_count),
         "total_bytes": format_scalar("nonnegative", claim.artifact_bytes),
-        "authority": authority,
+        "identity": identity,
     }
 
 
 def _outcome_set_payload(claim: CollectionProcessingClaimRecord) -> dict[str, object]:
-    authority = (
+    identity = (
         {
             "count": format_scalar("nonnegative", claim.outcome_count),
             "sha256": claim.outcome_set_sha256,
@@ -2152,7 +2152,7 @@ def _outcome_set_payload(claim: CollectionProcessingClaimRecord) -> dict[str, ob
     return {
         "state": claim.outcome_state,
         "count": format_scalar("nonnegative", claim.outcome_count),
-        "authority": authority,
+        "identity": identity,
         "failure": claim.outcome_failure,
     }
 
@@ -2367,7 +2367,7 @@ def _disposition_set_identity(
     record: CollectionProcessingDispositionSetRecord,
 ) -> ArtifactDispositionSetIdentity:
     if record.state != "sealed" or record.identity_sha256 is None:
-        raise Conflict("disposition authority is not sealed")
+        raise Conflict("disposition identity is not sealed")
     return ArtifactDispositionSetIdentity(
         disposition_count=record.disposition_count,
         output_edge_count=record.output_edge_count,
@@ -2376,16 +2376,16 @@ def _disposition_set_identity(
     )
 
 
-def _sealed_disposition_authority(
+def _sealed_disposition_identity(
     session: Session,
     claim_id: str,
-    authority_sha256: str,
+    identity_sha256: str,
 ) -> CollectionProcessingDispositionSetRecord:
     record = session.get(CollectionProcessingDispositionSetRecord, claim_id)
     if record is None or record.state != "sealed":
-        raise Conflict("disposition authority is not sealed")
-    if record.identity_sha256 != authority_sha256:
-        raise Conflict("disposition continuation is bound to another authority")
+        raise Conflict("disposition identity is not sealed")
+    if record.identity_sha256 != identity_sha256:
+        raise Conflict("disposition continuation is bound to another identity")
     return record
 
 
@@ -2395,7 +2395,7 @@ def _advance_disposition_hash(
 ) -> bool:
     claim = session.get(CollectionProcessingClaimRecord, disposition_set.claim_id)
     if claim is None or disposition_set.disposition_hash_state is None:
-        raise RuntimeError("disposition sealing authority is unavailable")
+        raise RuntimeError("disposition sealing state is unavailable")
     statement = select(CollectionProcessingDispositionRecord).where(
         CollectionProcessingDispositionRecord.claim_id == disposition_set.claim_id
     )
@@ -2453,7 +2453,7 @@ def _advance_disposition_output_hash(
 ) -> bool:
     claim = session.get(CollectionProcessingClaimRecord, disposition_set.claim_id)
     if claim is None or disposition_set.output_hash_state is None:
-        raise RuntimeError("disposition output sealing authority is unavailable")
+        raise RuntimeError("disposition output sealing state is unavailable")
     statement = select(CollectionProcessingDispositionOutputRecord).where(
         CollectionProcessingDispositionOutputRecord.claim_id == disposition_set.claim_id
     )
@@ -2602,7 +2602,7 @@ def _attach_processing_outcome(
     if parent.output_collection_id is not None:
         raise InvalidState("outcome claim unexpectedly contains a direct output")
     if parent.outcome_state != "receiving":
-        raise Conflict("processing outcome authority no longer accepts results")
+        raise Conflict("processing outcome identity no longer accepts results")
     root = _collection_root(session, output_collection_id)
     try:
         identity = CollectionProcessingOutcomeIdentity(
@@ -2657,7 +2657,7 @@ def _advance_outcome_set(
     claim: CollectionProcessingClaimRecord,
 ) -> None:
     if claim.outcome_hash_state is None or claim.outcome_state != "sealing":
-        raise RuntimeError("outcome sealing authority is unavailable")
+        raise RuntimeError("outcome sealing state is unavailable")
     statement = select(CollectionProcessingOutcomeRecord).where(
         CollectionProcessingOutcomeRecord.claim_id == claim.id
     )
@@ -2674,7 +2674,7 @@ def _advance_outcome_set(
     )
     if not rows:
         if claim.outcome_validation_count != claim.outcome_count:
-            raise RuntimeError("outcome authority changed while sealing")
+            raise RuntimeError("outcome identity changed while sealing")
         claim.outcome_set_sha256 = CheckpointSHA256.from_state(claim.outcome_hash_state).hexdigest()
         claim.outcome_state = "sealed"
         claim.outcomes_sealed_at = utc_timestamp_now()
@@ -2798,7 +2798,7 @@ def _verify_dispositions(
         disposition_set.output_edge_count + DISPOSITION_BATCH_MAX - 1
     ) // DISPOSITION_BATCH_MAX
     # The server validates each bounded recovery-evidence page against the sealed
-    # generic authority when its exact identity is registered. The scalar count
+    # generic identity when its exact identity is registered. The scalar count
     # then proves complete output and evidence coverage without loading either set.
     if output.file_count != disposition_set.output_artifact_count + evidence_pages + 2:
         raise Conflict("derivation output paths do not match the derived collection artifacts")
@@ -2818,7 +2818,7 @@ def _verified_disposition_set(
         or record.output_edge_count != identity.output_edge_count
         or record.output_artifact_count != identity.output_artifact_count
     ):
-        raise Conflict("derivation disposition authority differs from the sealed claim")
+        raise Conflict("derivation disposition identity differs from the sealed claim")
     return record
 
 

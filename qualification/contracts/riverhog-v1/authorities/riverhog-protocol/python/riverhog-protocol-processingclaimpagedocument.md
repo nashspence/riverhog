@@ -45,10 +45,10 @@ Exact externally visible contract owned by this contract element.
 
 ##### Definitions
 
-- [ArtifactSetAuthorityDocument](#s-e2e3e3e591)
+- [ArtifactSetIdentityDocument](#s-9eb1cbd883)
 - [BrowsePageToken](#s-45f0983f59)
 - [CollectionId](#s-40fd4aa997)
-- [ExactSetAuthorityDocument](#s-b87ccb9da7)
+- [ExactSetIdentityDocument](#s-f7787ce7d5)
 - [NonnegativeDecimal](#s-e156ec829d)
 - [OperationIdentityDocument](#s-e05dec9278)
 - [OutcomeSetDocument](#s-5b13a97ed1)
@@ -61,19 +61,19 @@ Exact externally visible contract owned by this contract element.
 - [ReceivingSetDocument](#s-4631ed20b1)
 - [SortOrder](#s-8b46b0fee4)
 
-##### <a id="s-e2e3e3e591"></a>definition `ArtifactSetAuthorityDocument`
+##### <a id="s-9eb1cbd883"></a>definition `ArtifactSetIdentityDocument`
 
-- <a id="s-b1d19cdb82"></a>`type`: `"object"`
-- <a id="s-dd8d4044c7"></a>`additionalProperties`: `false`
-- <a id="s-7ed065e175"></a>`required`: `["count","sha256","total_bytes"]`
+- <a id="s-8ce0a8a743"></a>`type`: `"object"`
+- <a id="s-772ae4fb1f"></a>`additionalProperties`: `false`
+- <a id="s-d1ab794d33"></a>`required`: `["count","sha256","total_bytes"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-16242acb45"></a>`count` | yes | [NonnegativeDecimal](#s-e156ec829d); ge=1 |  |
-| <a id="s-1379dcee7e"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-68a4257eeb"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-e156ec829d); ge=0 |  |
+| <a id="s-8dda04ecc8"></a>`count` | yes | [NonnegativeDecimal](#s-e156ec829d); ge=1 |  |
+| <a id="s-45ec2d9e53"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-2716b8bb9a"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-e156ec829d); ge=0 |  |
 
 ##### <a id="s-45f0983f59"></a>definition `BrowsePageToken`
 
@@ -91,18 +91,18 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-4f6e0514c8"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
 | <a id="s-afc133e6d1"></a>2 | not=(const="0") |
 
-##### <a id="s-b87ccb9da7"></a>definition `ExactSetAuthorityDocument`
+##### <a id="s-f7787ce7d5"></a>definition `ExactSetIdentityDocument`
 
-- <a id="s-715672d1a1"></a>`type`: `"object"`
-- <a id="s-0a2f41b66d"></a>`additionalProperties`: `false`
-- <a id="s-c4ca9fa08a"></a>`required`: `["count","sha256"]`
+- <a id="s-3cdfa57b35"></a>`type`: `"object"`
+- <a id="s-b9996b38ef"></a>`additionalProperties`: `false`
+- <a id="s-4d6fb3d570"></a>`required`: `["count","sha256"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-74779b7eb3"></a>`count` | yes | [NonnegativeDecimal](#s-e156ec829d); ge=1 |  |
-| <a id="s-0fb46c9599"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-226eb62632"></a>`count` | yes | [NonnegativeDecimal](#s-e156ec829d); ge=1 |  |
+| <a id="s-5c487372ba"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-e156ec829d"></a>definition `NonnegativeDecimal`
 
@@ -132,9 +132,9 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1fda72619f"></a>`authority` | no | anyOf=[([ExactSetAuthorityDocument](#s-b87ccb9da7)); (type="null")]; default=null |  |
 | <a id="s-1386701376"></a>`count` | yes | [NonnegativeDecimal](#s-e156ec829d); ge=0 |  |
 | <a id="s-37fca3d541"></a>`failure` | no | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; default=null |  |
+| <a id="s-dca3f000ef"></a>`identity` | no | anyOf=[([ExactSetIdentityDocument](#s-f7787ce7d5)); (type="null")]; default=null |  |
 | <a id="s-df1f0694f5"></a>`state` | yes | type="string"; enum=["receiving","sealing","sealed","failed"] |  |
 
 ##### <a id="s-4bf8bbae51"></a>definition `ProcessingClaimConsumerDocument`
@@ -213,7 +213,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-dec0678355"></a>`outcomes` | yes | [ExactSetAuthorityDocument](#s-b87ccb9da7) |  |
+| <a id="s-dec0678355"></a>`outcomes` | yes | [ExactSetIdentityDocument](#s-f7787ce7d5) |  |
 | <a id="s-5fd1474596"></a>`retirement_grace_seconds` | yes | [NonnegativeDecimal](#s-e156ec829d); ge=0 |  |
 | <a id="s-d4fe79f988"></a>`retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"] |  |
 
@@ -229,11 +229,11 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-632cfa2299"></a>`artifacts` | yes | [ArtifactSetAuthorityDocument](#s-e2e3e3e591) |  |
+| <a id="s-632cfa2299"></a>`artifacts` | yes | [ArtifactSetIdentityDocument](#s-9eb1cbd883) |  |
 | <a id="s-fa4051fad3"></a>`controller_evidence` | yes | type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=16777216; x-riverhog-extent={"policy":"contract_max","reason":"bounded-controller-evidence-envelope"} |  |
 | <a id="s-aff41b1c6d"></a>`controller_evidence_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-a62dcfe550"></a>`execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-8a3e1bf0b7"></a>`inputs` | yes | [ExactSetAuthorityDocument](#s-b87ccb9da7) |  |
+| <a id="s-8a3e1bf0b7"></a>`inputs` | yes | [ExactSetIdentityDocument](#s-f7787ce7d5) |  |
 | <a id="s-c54d1d1aa2"></a>`operation` | yes | [OperationIdentityDocument](#s-e05dec9278) |  |
 | <a id="s-b7d410c8ce"></a>`retirement_grace_seconds` | yes | [NonnegativeDecimal](#s-e156ec829d); ge=0 |  |
 | <a id="s-dc68417f6b"></a>`retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"] |  |
@@ -254,8 +254,8 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-76cc034fdd"></a>`authority` | no | anyOf=[([ExactSetAuthorityDocument](#s-b87ccb9da7)); (type="null")]; default=null |  |
 | <a id="s-7c1b19f001"></a>`count` | yes | [NonnegativeDecimal](#s-e156ec829d); ge=0 |  |
+| <a id="s-47346444fd"></a>`identity` | no | anyOf=[([ExactSetIdentityDocument](#s-f7787ce7d5)); (type="null")]; default=null |  |
 | <a id="s-2e3cdf0cb5"></a>`state` | yes | type="string"; enum=["receiving","sealed"] |  |
 
 ##### <a id="s-8b46b0fee4"></a>definition `SortOrder`
@@ -333,7 +333,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: bea7db99ea4653abd29f2f57bfbe6a6aca7f2ae9e41fada537b9fe68d94af705 -->
+<!-- exact-contract-value: 3f8979362b3fb53bd9c132286a0eb8e0518be3dae269db4ca8ea2d75fed613da -->
 
 ```json
 {
@@ -341,7 +341,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "$defs": {
-        "ArtifactSetAuthorityDocument": {
+        "ArtifactSetIdentityDocument": {
           "additionalProperties": false,
           "properties": {
             "count": {
@@ -382,7 +382,7 @@ The following JSON is the complete value owned at each machine-authority pointer
             }
           ]
         },
-        "ExactSetAuthorityDocument": {
+        "ExactSetIdentityDocument": {
           "additionalProperties": false,
           "properties": {
             "count": {
@@ -425,17 +425,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "OutcomeSetDocument": {
           "additionalProperties": false,
           "properties": {
-            "authority": {
-              "anyOf": [
-                {
-                  "$ref": "#/$defs/ExactSetAuthorityDocument"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": null
-            },
             "count": {
               "$ref": "#/$defs/NonnegativeDecimal",
               "ge": 0
@@ -446,6 +435,17 @@ The following JSON is the complete value owned at each machine-authority pointer
                   "maxLength": 1000,
                   "minLength": 1,
                   "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "identity": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ExactSetIdentityDocument"
                 },
                 {
                   "type": "null"
@@ -796,7 +796,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           },
           "properties": {
             "outcomes": {
-              "$ref": "#/$defs/ExactSetAuthorityDocument"
+              "$ref": "#/$defs/ExactSetIdentityDocument"
             },
             "retirement_grace_seconds": {
               "$ref": "#/$defs/NonnegativeDecimal",
@@ -835,7 +835,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           },
           "properties": {
             "artifacts": {
-              "$ref": "#/$defs/ArtifactSetAuthorityDocument"
+              "$ref": "#/$defs/ArtifactSetIdentityDocument"
             },
             "controller_evidence": {
               "additionalProperties": true,
@@ -855,7 +855,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "inputs": {
-              "$ref": "#/$defs/ExactSetAuthorityDocument"
+              "$ref": "#/$defs/ExactSetIdentityDocument"
             },
             "operation": {
               "$ref": "#/$defs/OperationIdentityDocument"
@@ -911,20 +911,20 @@ The following JSON is the complete value owned at each machine-authority pointer
         "ReceivingSetDocument": {
           "additionalProperties": false,
           "properties": {
-            "authority": {
+            "count": {
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
+            },
+            "identity": {
               "anyOf": [
                 {
-                  "$ref": "#/$defs/ExactSetAuthorityDocument"
+                  "$ref": "#/$defs/ExactSetIdentityDocument"
                 },
                 {
                   "type": "null"
                 }
               ],
               "default": null
-            },
-            "count": {
-              "$ref": "#/$defs/NonnegativeDecimal",
-              "ge": 0
             },
             "state": {
               "enum": [

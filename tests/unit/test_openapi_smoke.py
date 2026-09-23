@@ -16,7 +16,7 @@ from riverhog_protocol import (
 )
 from riverhog_protocol.collection_workflow_transport import (
     WORK_DOCUMENT_MAX_BYTES,
-    ExactSetAuthorityDocument,
+    ExactSetIdentityDocument,
 )
 from riverhog_protocol.lifecycle_events import RIVERHOG_EVENT_TYPES
 
@@ -228,10 +228,10 @@ def test_wire_batches_are_bounded_without_limiting_workflow_cardinality() -> Non
         operation=OperationIdentityIn(id="fixture.operation/v1", sha256="7" * 64),
     )
 
-    logical_authority = ExactSetAuthorityDocument(count=str(10**100), sha256="8" * 64)
+    logical_identity = ExactSetIdentityDocument(count=str(10**100), sha256="8" * 64)
     assert claim.work_id == "3" * 64
     assert sealed.operation.id == "fixture.operation/v1"
-    assert logical_authority.count == 10**100
+    assert logical_identity.count == 10**100
 
 
 def test_collection_workflow_openapi_uses_exact_riverhog_contract_documents() -> None:
@@ -256,8 +256,8 @@ def test_collection_workflow_openapi_uses_exact_riverhog_contract_documents() ->
     assert claim["inputs"]["$ref"].endswith("/ReceivingSetDocument")
     assert claim["outcomes"]["$ref"].endswith("/OutcomeSetDocument")
     plan = schemas["ProcessingClaimPlanDocument"]["properties"]
-    assert plan["inputs"]["$ref"].endswith("/ExactSetAuthorityDocument")
-    assert plan["artifacts"]["$ref"].endswith("/ArtifactSetAuthorityDocument")
+    assert plan["inputs"]["$ref"].endswith("/ExactSetIdentityDocument")
+    assert plan["artifacts"]["$ref"].endswith("/ArtifactSetIdentityDocument")
     assert (
         "stove0"
         not in str(

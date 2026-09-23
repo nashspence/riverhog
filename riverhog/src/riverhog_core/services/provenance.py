@@ -24,7 +24,7 @@ from riverhog_provenance import (
     PROVENANCE_BINDING_SEGMENT_FILES_MAX,
     PROVENANCE_JOURNAL_ENTRY_BYTES_MAX,
     PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX,
-    FileProvenanceBinding,
+    ArchiveFileProvenanceRecord,
     ProvenancePayloadIdentity,
     ProvenanceRootDocument,
     ProvenanceTerminalDocument,
@@ -840,8 +840,8 @@ def _advance_verification_tree(
 def _file_binding(
     file: CollectionFileRecord,
     binding: CollectionFileProvenanceRecord,
-) -> FileProvenanceBinding:
-    return FileProvenanceBinding(
+) -> ArchiveFileProvenanceRecord:
+    return ArchiveFileProvenanceRecord(
         path=file.path,
         bytes=file.bytes,
         sha256=file.sha256,
@@ -1762,7 +1762,7 @@ def _binding_volume_document(
     tree_sha256: str,
     sequence: int,
     first_file_order: int,
-    bindings: list[FileProvenanceBinding],
+    bindings: list[ArchiveFileProvenanceRecord],
 ) -> ProvenanceVolumeDocument:
     payload = binding_segment_bytes(
         first_file_order=first_file_order,
@@ -1783,7 +1783,7 @@ def _binding_volume_document(
     )
 
 
-def _binding_mapping(binding: FileProvenanceBinding) -> dict[str, object]:
+def _binding_mapping(binding: ArchiveFileProvenanceRecord) -> dict[str, object]:
     value: dict[str, object] = {
         "path": binding.path,
         "bytes": binding.bytes,
