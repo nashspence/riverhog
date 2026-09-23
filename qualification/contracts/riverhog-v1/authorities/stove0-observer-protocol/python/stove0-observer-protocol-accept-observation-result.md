@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-10562f83f1"></a>`kind`: `"function"`
-- <a id="s-238e5e0e27"></a>`signature`: `"\"(result: 'ObservationResult', request: 'ObservationRequest', descriptor: 'ObserverDescriptor', semantic_validators: 'SemanticValidatorProvider \| None' = None) -> 'None'\""`
+- <a id="s-238e5e0e27"></a>`signature`: `"\"(result: 'ContentObservationResult', request: 'ContentObservationRequest', descriptor: 'ObserverDescriptor', semantic_validators: 'SemanticValidatorProvider \| None' = None) -> 'None'\""`
 
 ## Governing policies
 
@@ -51,13 +51,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: bab323215292858c7f97c6b7d531cf820cb3084ab0900cc66ba076fe54c50b2b -->
+<!-- exact-contract-value: 5336a1b70c6be6f18405cfb2b78d360eb995cfd6f7c803bd5367cf63e22d9203 -->
 
 ```json
 {
   "contract": {
     "kind": "function",
-    "signature": "\"(result: 'ObservationResult', request: 'ObservationRequest', descriptor: 'ObserverDescriptor', semantic_validators: 'SemanticValidatorProvider | None' = None) -> 'None'\""
+    "signature": "\"(result: 'ContentObservationResult', request: 'ContentObservationRequest', descriptor: 'ObserverDescriptor', semantic_validators: 'SemanticValidatorProvider | None' = None) -> 'None'\""
   },
   "distribution": "stove0-observer-protocol",
   "module": "stove0_observer_protocol",

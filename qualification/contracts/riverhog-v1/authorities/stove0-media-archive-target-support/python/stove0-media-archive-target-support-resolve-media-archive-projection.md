@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-f2d7ea5079"></a>`kind`: `"function"`
-- <a id="s-fa1d001476"></a>`signature`: `"\"(*, inputs: 'Sequence[InputArtifact]', observations: 'Sequence[ObservationEvidence]', policy: 'MediaProjectionPolicy', archive_directory: 'str', archive_suffix: 'str') -> 'MediaArchiveProjection'\""`
+- <a id="s-fa1d001476"></a>`signature`: `"\"(*, inputs: 'Sequence[InputArtifact]', observations: 'Sequence[ContentObservationEvidence]', policy: 'MediaProjectionPolicy', archive_directory: 'str', archive_suffix: 'str') -> 'MediaArchiveProjection'\""`
 
 ## Governing policies
 
@@ -51,13 +51,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a96bdf7c29171c318ebb85f8514e0252d84825e8d59e955385176327bf1884bd -->
+<!-- exact-contract-value: 8e6515e0787906d1a8d5bb1fb3dc380d05f603653ae68ad3b050609e39cba844 -->
 
 ```json
 {
   "contract": {
     "kind": "function",
-    "signature": "\"(*, inputs: 'Sequence[InputArtifact]', observations: 'Sequence[ObservationEvidence]', policy: 'MediaProjectionPolicy', archive_directory: 'str', archive_suffix: 'str') -> 'MediaArchiveProjection'\""
+    "signature": "\"(*, inputs: 'Sequence[InputArtifact]', observations: 'Sequence[ContentObservationEvidence]', policy: 'MediaProjectionPolicy', archive_directory: 'str', archive_suffix: 'str') -> 'MediaArchiveProjection'\""
   },
   "distribution": "stove0-media-archive-target-support",
   "module": "stove0_media_archive_target_support",

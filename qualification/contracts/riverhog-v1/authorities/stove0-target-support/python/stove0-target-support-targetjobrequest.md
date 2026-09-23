@@ -48,6 +48,11 @@ Exact externally visible contract owned by this contract element.
 - [BranchWorkBinding](#s-1cca51a6da)
 - [CollectionId](#s-b5909be01a)
 - [CollectionRootRef](#s-8e6db4b460)
+- [ContentObservationEvidence](#s-69b4c05664)
+- [ContentObservationFailure](#s-d150b9d06b)
+- [ContentObservationInapplicable](#s-0b48f2809b)
+- [ContentObservationRequest](#s-95e5d283ab)
+- [ContentObservationResult](#s-189e3db195)
 - [ControllerEvidence](#s-ace24c0400)
 - [DeclaredWorkspaceProtection](#s-cbf9b08d1e)
 - [EffectPlan](#s-cf3c6fe504)
@@ -57,11 +62,6 @@ Exact externally visible contract owned by this contract element.
 - [JoinWorkMemberBinding](#s-beca41fd24)
 - [JsonSchemaValidationProfile](#s-5fdc71ed10)
 - [JsonValue](#s-e0da709161)
-- [ObservationEvidence](#s-bf45f46b7a)
-- [ObservationFailure](#s-51a56e7eef)
-- [ObservationInapplicable](#s-133e7d890b)
-- [ObservationRequest](#s-e0818bfe7c)
-- [ObservationResult](#s-704af23928)
 - [ObserverImplementation](#s-b38c162803)
 - [OperationRef](#s-6fcd94a459)
 - [RecipeRef](#s-d0648a228e)
@@ -146,6 +146,94 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-f2a0e9318b"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-da0870e7a2"></a>`collection_id` | yes | [CollectionId](#s-b5909be01a) |  |
 | <a id="s-af139bbf5e"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-69b4c05664"></a>definition `ContentObservationEvidence`
+
+- <a id="s-8d8abb7421"></a>`type`: `"object"`
+- <a id="s-50863f5ec1"></a>`additionalProperties`: `false`
+- <a id="s-206c39b7ab"></a>`required`: `["request","result"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-6cde39b647"></a>`request` | yes | [ContentObservationRequest](#s-95e5d283ab) |  |
+| <a id="s-632d84e964"></a>`result` | yes | [ContentObservationResult](#s-189e3db195) |  |
+
+##### <a id="s-d150b9d06b"></a>definition `ContentObservationFailure`
+
+- <a id="s-bc697396c2"></a>`type`: `"object"`
+- <a id="s-ad815b9dd2"></a>`additionalProperties`: `false`
+- <a id="s-b949439284"></a>`required`: `["code","message","retryable"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-1df46e6a7d"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-e0a93b8f4a"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+| <a id="s-8dcff26536"></a>`retryable` | yes | type="boolean" |  |
+
+##### <a id="s-0b48f2809b"></a>definition `ContentObservationInapplicable`
+
+- <a id="s-fd10e83c07"></a>`type`: `"object"`
+- <a id="s-20e785c8fd"></a>`additionalProperties`: `false`
+- <a id="s-3f80824cda"></a>`required`: `["code","message"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-70c886f4c3"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-62edc292a8"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+
+##### <a id="s-95e5d283ab"></a>definition `ContentObservationRequest`
+
+- <a id="s-dca33ded68"></a>`type`: `"object"`
+- <a id="s-99ecdb585a"></a>`additionalProperties`: `false`
+- <a id="s-3d6bdc095e"></a>`required`: `["work_id","observer_registration_id","observer_descriptor_sha256","observer_contract_id","observer_contract_sha256","subjects","request_id"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-3060b8403c"></a>`format` | no | type="string"; const="stove0-observation-request/v1"; default="stove0-observation-request/v1" |  |
+| <a id="s-4e47a6f797"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864; default=1048576 |  |
+| <a id="s-fc2b184832"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-3adae8f373"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-0f7f2396f5"></a>`observer_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-658eb8c5b6"></a>`observer_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
+| <a id="s-e5fd5a0eee"></a>`options` | no | type="object"; additionalProperties=([JsonValue](#s-e0da709161)) |  |
+| <a id="s-be32cbaf22"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-192ef05e46"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
+| <a id="s-5482a37e1c"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-0a7a50d044)); minItems=1 |  |
+| <a id="s-3ecfb762c7"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300 |  |
+| <a id="s-f913c4447d"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-189e3db195"></a>definition `ContentObservationResult`
+
+- <a id="s-14a8cfd004"></a>`type`: `"object"`
+- <a id="s-27b7c89ea4"></a>`additionalProperties`: `false`
+- <a id="s-96ea60802a"></a>`required`: `["request_id","state","observer","observer_contract_id","observer_contract_sha256","subjects","result_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-05c195acde"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-e0da709161)) |  |
+| <a id="s-8b12bc5605"></a>`facts` | no | anyOf=[(type="object"; additionalProperties=([JsonValue](#s-e0da709161))); (type="null")]; default=null |  |
+| <a id="s-7684a9baa2"></a>`facts_schema` | no | anyOf=[([JsonSchemaValidationProfile](#s-5fdc71ed10)); (type="null")]; default=null |  |
+| <a id="s-b17aea18e2"></a>`facts_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
+| <a id="s-8314d19b79"></a>`failure` | no | anyOf=[([ContentObservationFailure](#s-d150b9d06b)); (type="null")]; default=null |  |
+| <a id="s-35e89b14d3"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1" |  |
+| <a id="s-f3ede3d5fb"></a>`inapplicable` | no | anyOf=[([ContentObservationInapplicable](#s-0b48f2809b)); (type="null")]; default=null |  |
+| <a id="s-41c742cbb6"></a>`observer` | yes | [ObserverImplementation](#s-b38c162803) |  |
+| <a id="s-cc532f8865"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-5729333839"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-58a1ee9805"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-9c73859fce"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-fe092cb995"></a>`state` | yes | type="string"; enum=["observed","inapplicable","failed","canceled"] |  |
+| <a id="s-fde891c646"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-0a7a50d044)); minItems=1 |  |
 
 ##### <a id="s-ace24c0400"></a>definition `ControllerEvidence`
 
@@ -268,94 +356,6 @@ Exact externally visible contract owned by this contract element.
 ##### <a id="s-e0da709161"></a>definition `JsonValue`
 
 - Accepts: any JSON value.
-
-##### <a id="s-bf45f46b7a"></a>definition `ObservationEvidence`
-
-- <a id="s-e476b6ad07"></a>`type`: `"object"`
-- <a id="s-294f7d7303"></a>`additionalProperties`: `false`
-- <a id="s-0172b308e1"></a>`required`: `["request","result"]`
-
-###### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-ddc0f7915b"></a>`request` | yes | [ObservationRequest](#s-e0818bfe7c) |  |
-| <a id="s-d87d986e4a"></a>`result` | yes | [ObservationResult](#s-704af23928) |  |
-
-##### <a id="s-51a56e7eef"></a>definition `ObservationFailure`
-
-- <a id="s-236124e7b0"></a>`type`: `"object"`
-- <a id="s-737807cd6c"></a>`additionalProperties`: `false`
-- <a id="s-967fde6437"></a>`required`: `["code","message","retryable"]`
-
-###### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-98cfc311ad"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-dff459b47c"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
-| <a id="s-bcfe7460ab"></a>`retryable` | yes | type="boolean" |  |
-
-##### <a id="s-133e7d890b"></a>definition `ObservationInapplicable`
-
-- <a id="s-d00cd4661b"></a>`type`: `"object"`
-- <a id="s-4473c543d2"></a>`additionalProperties`: `false`
-- <a id="s-00bdb6fab1"></a>`required`: `["code","message"]`
-
-###### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-e21340128d"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-1855e20150"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
-
-##### <a id="s-e0818bfe7c"></a>definition `ObservationRequest`
-
-- <a id="s-de6bd95c1f"></a>`type`: `"object"`
-- <a id="s-c3f6ad4d0d"></a>`additionalProperties`: `false`
-- <a id="s-694e3dcdc5"></a>`required`: `["work_id","observer_registration_id","observer_descriptor_sha256","observer_contract_id","observer_contract_sha256","subjects","request_id"]`
-
-###### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-42214d989b"></a>`format` | no | type="string"; const="stove0-observation-request/v1"; default="stove0-observation-request/v1" |  |
-| <a id="s-a530737cbc"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864; default=1048576 |  |
-| <a id="s-f5b43dafd0"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-1b55539c3c"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-f4eb81df93"></a>`observer_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-1e4c0b4609"></a>`observer_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
-| <a id="s-f2123d9331"></a>`options` | no | type="object"; additionalProperties=([JsonValue](#s-e0da709161)) |  |
-| <a id="s-57f9dcce68"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-4cc46694a2"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
-| <a id="s-9d471986d9"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-0a7a50d044)); minItems=1 |  |
-| <a id="s-5effc1e970"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300 |  |
-| <a id="s-10b642b5fb"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-
-##### <a id="s-704af23928"></a>definition `ObservationResult`
-
-- <a id="s-ec62a4b18d"></a>`type`: `"object"`
-- <a id="s-4e90a79caa"></a>`additionalProperties`: `false`
-- <a id="s-728dc10962"></a>`required`: `["request_id","state","observer","observer_contract_id","observer_contract_sha256","subjects","result_sha256"]`
-
-###### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-6fc5b92b4f"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-e0da709161)) |  |
-| <a id="s-2b55442a34"></a>`facts` | no | anyOf=[(type="object"; additionalProperties=([JsonValue](#s-e0da709161))); (type="null")]; default=null |  |
-| <a id="s-91eebbc9de"></a>`facts_schema` | no | anyOf=[([JsonSchemaValidationProfile](#s-5fdc71ed10)); (type="null")]; default=null |  |
-| <a id="s-be11c5abd7"></a>`facts_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
-| <a id="s-aafec9e366"></a>`failure` | no | anyOf=[([ObservationFailure](#s-51a56e7eef)); (type="null")]; default=null |  |
-| <a id="s-1030b62db0"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1" |  |
-| <a id="s-a25c92f639"></a>`inapplicable` | no | anyOf=[([ObservationInapplicable](#s-133e7d890b)); (type="null")]; default=null |  |
-| <a id="s-8b1f99e07f"></a>`observer` | yes | [ObserverImplementation](#s-b38c162803) |  |
-| <a id="s-febc52cf6a"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-6135f637f8"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-666e832aed"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-b3290b9d81"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-2026efee6d"></a>`state` | yes | type="string"; enum=["observed","inapplicable","failed","canceled"] |  |
-| <a id="s-0e72c2271a"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-0a7a50d044)); minItems=1 |  |
 
 ##### <a id="s-b38c162803"></a>definition `ObserverImplementation`
 
@@ -540,7 +540,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-c972deffd5"></a>`format` | no | type="string"; const="stove0-workflow-plan/v1"; default="stove0-workflow-plan/v1" |  |
 | <a id="s-c70577efa3"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
-| <a id="s-93eb49250c"></a>`observations` | no | type="array"; default=[]; items=([ObservationEvidence](#s-bf45f46b7a)) |  |
+| <a id="s-93eb49250c"></a>`observations` | no | type="array"; default=[]; items=([ContentObservationEvidence](#s-69b4c05664)) |  |
 | <a id="s-6e5fe082e9"></a>`operation` | yes | [OperationRef](#s-6fcd94a459) |  |
 | <a id="s-384fb6ffee"></a>`output_policy` | no | type="object"; additionalProperties=([JsonValue](#s-e0da709161)) |  |
 | <a id="s-9c0fa74fda"></a>`requested_target_options` | no | type="object"; additionalProperties=([JsonValue](#s-e0da709161)) |  |
@@ -587,7 +587,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4346c0836d52909b9c8c52158dacf3a40783e26b1609b99954a47156f1c44b50 -->
+<!-- exact-contract-value: 77c2c8c8638e56c40b7920eb86666b4355132171edf620b6eca738620b3d847b -->
 
 ```json
 {
@@ -734,6 +734,261 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection_id",
             "archive_root_sha256",
             "content_identity"
+          ],
+          "type": "object"
+        },
+        "ContentObservationEvidence": {
+          "additionalProperties": false,
+          "properties": {
+            "request": {
+              "$ref": "#/$defs/ContentObservationRequest"
+            },
+            "result": {
+              "$ref": "#/$defs/ContentObservationResult"
+            }
+          },
+          "required": [
+            "request",
+            "result"
+          ],
+          "type": "object"
+        },
+        "ContentObservationFailure": {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "type": "string"
+            },
+            "message": {
+              "maxLength": 1000,
+              "minLength": 1,
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "retryable"
+          ],
+          "type": "object"
+        },
+        "ContentObservationInapplicable": {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "type": "string"
+            },
+            "message": {
+              "maxLength": 1000,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "code",
+            "message"
+          ],
+          "type": "object"
+        },
+        "ContentObservationRequest": {
+          "additionalProperties": false,
+          "properties": {
+            "format": {
+              "const": "stove0-observation-request/v1",
+              "default": "stove0-observation-request/v1",
+              "type": "string"
+            },
+            "maximum_result_bytes": {
+              "default": 1048576,
+              "maximum": 67108864,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "observer_contract_id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "type": "string"
+            },
+            "observer_contract_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "observer_descriptor_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "observer_registration_id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9.-]{0,118}[a-z0-9])?$",
+              "type": "string"
+            },
+            "options": {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "type": "object"
+            },
+            "request_id": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "retrieval_policy": {
+              "default": "available-only",
+              "enum": [
+                "available-only",
+                "allow"
+              ],
+              "type": "string"
+            },
+            "subjects": {
+              "items": {
+                "$ref": "#/$defs/ArtifactSubject"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "timeout_seconds": {
+              "default": 300,
+              "maximum": 86400,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "work_id": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "work_id",
+            "observer_registration_id",
+            "observer_descriptor_sha256",
+            "observer_contract_id",
+            "observer_contract_sha256",
+            "subjects",
+            "request_id"
+          ],
+          "type": "object"
+        },
+        "ContentObservationResult": {
+          "additionalProperties": false,
+          "properties": {
+            "execution_evidence": {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "type": "object"
+            },
+            "facts": {
+              "anyOf": [
+                {
+                  "additionalProperties": {
+                    "$ref": "#/$defs/JsonValue"
+                  },
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "facts_schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/JsonSchemaValidationProfile"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "facts_sha256": {
+              "anyOf": [
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "failure": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ContentObservationFailure"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "format": {
+              "const": "stove0-observation-result/v1",
+              "default": "stove0-observation-result/v1",
+              "type": "string"
+            },
+            "inapplicable": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ContentObservationInapplicable"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "observer": {
+              "$ref": "#/$defs/ObserverImplementation"
+            },
+            "observer_contract_id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "type": "string"
+            },
+            "observer_contract_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "request_id": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "result_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "state": {
+              "enum": [
+                "observed",
+                "inapplicable",
+                "failed",
+                "canceled"
+              ],
+              "type": "string"
+            },
+            "subjects": {
+              "items": {
+                "$ref": "#/$defs/ArtifactSubject"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          },
+          "required": [
+            "request_id",
+            "state",
+            "observer",
+            "observer_contract_id",
+            "observer_contract_sha256",
+            "subjects",
+            "result_sha256"
           ],
           "type": "object"
         },
@@ -997,261 +1252,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "object"
         },
         "JsonValue": {},
-        "ObservationEvidence": {
-          "additionalProperties": false,
-          "properties": {
-            "request": {
-              "$ref": "#/$defs/ObservationRequest"
-            },
-            "result": {
-              "$ref": "#/$defs/ObservationResult"
-            }
-          },
-          "required": [
-            "request",
-            "result"
-          ],
-          "type": "object"
-        },
-        "ObservationFailure": {
-          "additionalProperties": false,
-          "properties": {
-            "code": {
-              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "type": "string"
-            },
-            "message": {
-              "maxLength": 1000,
-              "minLength": 1,
-              "type": "string"
-            },
-            "retryable": {
-              "type": "boolean"
-            }
-          },
-          "required": [
-            "code",
-            "message",
-            "retryable"
-          ],
-          "type": "object"
-        },
-        "ObservationInapplicable": {
-          "additionalProperties": false,
-          "properties": {
-            "code": {
-              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "type": "string"
-            },
-            "message": {
-              "maxLength": 1000,
-              "minLength": 1,
-              "type": "string"
-            }
-          },
-          "required": [
-            "code",
-            "message"
-          ],
-          "type": "object"
-        },
-        "ObservationRequest": {
-          "additionalProperties": false,
-          "properties": {
-            "format": {
-              "const": "stove0-observation-request/v1",
-              "default": "stove0-observation-request/v1",
-              "type": "string"
-            },
-            "maximum_result_bytes": {
-              "default": 1048576,
-              "maximum": 67108864,
-              "minimum": 1,
-              "type": "integer"
-            },
-            "observer_contract_id": {
-              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "type": "string"
-            },
-            "observer_contract_sha256": {
-              "pattern": "^[0-9a-f]{64}$",
-              "type": "string"
-            },
-            "observer_descriptor_sha256": {
-              "pattern": "^[0-9a-f]{64}$",
-              "type": "string"
-            },
-            "observer_registration_id": {
-              "pattern": "^[a-z0-9]\u0028?:[a-z0-9.-]{0,118}[a-z0-9])?$",
-              "type": "string"
-            },
-            "options": {
-              "additionalProperties": {
-                "$ref": "#/$defs/JsonValue"
-              },
-              "type": "object"
-            },
-            "request_id": {
-              "pattern": "^[0-9a-f]{64}$",
-              "type": "string"
-            },
-            "retrieval_policy": {
-              "default": "available-only",
-              "enum": [
-                "available-only",
-                "allow"
-              ],
-              "type": "string"
-            },
-            "subjects": {
-              "items": {
-                "$ref": "#/$defs/ArtifactSubject"
-              },
-              "minItems": 1,
-              "type": "array"
-            },
-            "timeout_seconds": {
-              "default": 300,
-              "maximum": 86400,
-              "minimum": 1,
-              "type": "integer"
-            },
-            "work_id": {
-              "pattern": "^[0-9a-f]{64}$",
-              "type": "string"
-            }
-          },
-          "required": [
-            "work_id",
-            "observer_registration_id",
-            "observer_descriptor_sha256",
-            "observer_contract_id",
-            "observer_contract_sha256",
-            "subjects",
-            "request_id"
-          ],
-          "type": "object"
-        },
-        "ObservationResult": {
-          "additionalProperties": false,
-          "properties": {
-            "execution_evidence": {
-              "additionalProperties": {
-                "$ref": "#/$defs/JsonValue"
-              },
-              "type": "object"
-            },
-            "facts": {
-              "anyOf": [
-                {
-                  "additionalProperties": {
-                    "$ref": "#/$defs/JsonValue"
-                  },
-                  "type": "object"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": null
-            },
-            "facts_schema": {
-              "anyOf": [
-                {
-                  "$ref": "#/$defs/JsonSchemaValidationProfile"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": null
-            },
-            "facts_sha256": {
-              "anyOf": [
-                {
-                  "pattern": "^[0-9a-f]{64}$",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": null
-            },
-            "failure": {
-              "anyOf": [
-                {
-                  "$ref": "#/$defs/ObservationFailure"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": null
-            },
-            "format": {
-              "const": "stove0-observation-result/v1",
-              "default": "stove0-observation-result/v1",
-              "type": "string"
-            },
-            "inapplicable": {
-              "anyOf": [
-                {
-                  "$ref": "#/$defs/ObservationInapplicable"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": null
-            },
-            "observer": {
-              "$ref": "#/$defs/ObserverImplementation"
-            },
-            "observer_contract_id": {
-              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "type": "string"
-            },
-            "observer_contract_sha256": {
-              "pattern": "^[0-9a-f]{64}$",
-              "type": "string"
-            },
-            "request_id": {
-              "pattern": "^[0-9a-f]{64}$",
-              "type": "string"
-            },
-            "result_sha256": {
-              "pattern": "^[0-9a-f]{64}$",
-              "type": "string"
-            },
-            "state": {
-              "enum": [
-                "observed",
-                "inapplicable",
-                "failed",
-                "canceled"
-              ],
-              "type": "string"
-            },
-            "subjects": {
-              "items": {
-                "$ref": "#/$defs/ArtifactSubject"
-              },
-              "minItems": 1,
-              "type": "array"
-            }
-          },
-          "required": [
-            "request_id",
-            "state",
-            "observer",
-            "observer_contract_id",
-            "observer_contract_sha256",
-            "subjects",
-            "result_sha256"
-          ],
-          "type": "object"
-        },
         "ObserverImplementation": {
           "additionalProperties": false,
           "properties": {
@@ -1663,7 +1663,7 @@ The following JSON is the complete value owned at each machine-authority pointer
             "observations": {
               "default": [],
               "items": {
-                "$ref": "#/$defs/ObservationEvidence"
+                "$ref": "#/$defs/ContentObservationEvidence"
               },
               "type": "array"
             },

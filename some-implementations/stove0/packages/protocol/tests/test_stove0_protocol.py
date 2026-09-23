@@ -35,14 +35,14 @@ from stove0_protocol import (
     canonical_json_sha256,
 )
 from stove0_protocol.models import (
-    ObservationEvidence,
-    ObservationFailure,
-    ObservationInapplicable,
-    ObservationInvocation,
-    ObservationRequest,
-    ObservationRequestPayload,
-    ObservationResult,
-    ObservationResultPayload,
+    ContentObservationEvidence,
+    ContentObservationFailure,
+    ContentObservationInapplicable,
+    ContentObservationInvocation,
+    ContentObservationRequest,
+    ContentObservationRequestPayload,
+    ContentObservationResult,
+    ContentObservationResultPayload,
     ObserverContract,
     ObserverContractPayload,
     ObserverContractSupport,
@@ -187,9 +187,9 @@ def _request(
     work: WorkIdentity,
     contract: ObserverContract,
     descriptor: ObserverDescriptor,
-) -> ObservationRequest:
-    return ObservationRequest.seal(
-        ObservationRequestPayload(
+) -> ContentObservationRequest:
+    return ContentObservationRequest.seal(
+        ContentObservationRequestPayload(
             work_id=work.work_id,
             observer_registration_id="fixture-observer",
             observer_descriptor_sha256=descriptor.descriptor_sha256,
@@ -204,13 +204,13 @@ def _request(
 
 
 def _result(
-    request: ObservationRequest,
+    request: ContentObservationRequest,
     contract: ObserverContract,
     descriptor: ObserverDescriptor,
-) -> ObservationResult:
+) -> ContentObservationResult:
     facts = {"streams": 2}
-    return ObservationResult.seal(
-        ObservationResultPayload(
+    return ContentObservationResult.seal(
+        ContentObservationResultPayload(
             request_id=request.request_id,
             state="observed",
             observer=ObserverImplementation(
@@ -263,7 +263,7 @@ def test_observer_contract_descriptor_and_result_are_self_verifying() -> None:
     invalid = result.model_dump(mode="json")
     invalid["facts"]["streams"] = 3
     with pytest.raises(ValidationError, match="facts digest"):
-        ObservationResult.model_validate(invalid)
+        ContentObservationResult.model_validate(invalid)
 
 
 def test_non_observed_results_cannot_smuggle_facts() -> None:
@@ -273,7 +273,7 @@ def test_non_observed_results_cannot_smuggle_facts() -> None:
     request = _request(work, contract, descriptor)
 
     with pytest.raises(ValidationError, match="cannot include facts"):
-        ObservationResultPayload(
+        ContentObservationResultPayload(
             request_id=request.request_id,
             state="inapplicable",
             observer=ObserverImplementation(
@@ -296,12 +296,16 @@ def test_non_observed_results_cannot_smuggle_facts() -> None:
     [
         (
             "inapplicable",
-            {"inapplicable": ObservationInapplicable(code="unsupported", message="No match")},
+            {
+                "inapplicable": ContentObservationInapplicable(
+                    code="unsupported", message="No match"
+                )
+            },
         ),
         (
             "failed",
             {
-                "failure": ObservationFailure(
+                "failure": ContentObservationFailure(
                     code="probe-failed", message="Probe failed", retryable=True
                 )
             },
@@ -317,8 +321,8 @@ def test_only_observed_results_are_planning_evidence(
     contract = _contract()
     descriptor = _descriptor(contract)
     request = _request(work, contract, descriptor)
-    result = ObservationResult.seal(
-        ObservationResultPayload(
+    result = ContentObservationResult.seal(
+        ContentObservationResultPayload(
             request_id=request.request_id,
             state=state,  # type: ignore[arg-type]
             observer=ObserverImplementation(
@@ -335,7 +339,7 @@ def test_only_observed_results_are_planning_evidence(
     )
 
     with pytest.raises(ValidationError, match="only observed results"):
-        ObservationEvidence(request=request, result=result)
+        ContentObservationEvidence(request=request, result=result)
 
 
 def test_workflow_target_and_controller_evidence_bind_one_another() -> None:
@@ -348,7 +352,7 @@ def test_workflow_target_and_controller_evidence_bind_one_another() -> None:
     workflow = WorkflowPlan.seal(
         WorkflowPlanPayload(
             work=work,
-            observations=(ObservationEvidence(request=request, result=observation),),
+            observations=(ContentObservationEvidence(request=request, result=observation),),
             operation=operation,
             target_registration_id="nvenc-primary",
             target_contract_sha256=_sha("f"),
@@ -404,7 +408,7 @@ def test_observation_request_identity_is_independent_of_claim_generation() -> No
     descriptor = _descriptor(contract)
     request = _request(work, contract, descriptor)
 
-    first = ObservationInvocation(
+    first = ContentObservationInvocation(
         request=request,
         claim_id="preview-claim",
         fence=1,
@@ -414,7 +418,7 @@ def test_observation_request_identity_is_independent_of_claim_generation() -> No
             declared_workspace_protection="memory-backed",
         ),
     )
-    second = ObservationInvocation(
+    second = ContentObservationInvocation(
         request=request,
         claim_id="transform-claim",
         fence=9,

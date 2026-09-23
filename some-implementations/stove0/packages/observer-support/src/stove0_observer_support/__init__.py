@@ -9,13 +9,13 @@ from stove0_observer_support.http_binding import (
     ObserverHttpBinding,
     ObserverHttpResponse,
 )
-from stove0_observer_support.results import ObservationResultBuilder
+from stove0_observer_support.results import ContentObservationResultBuilder
 from stove0_observer_support.runtime import (
     CancellationCheck,
+    ContentObservationRuntime,
     ContentObserver,
     FactsSemanticValidator,
     Heartbeat,
-    ObservationRuntime,
 )
 from stove0_observer_support.schemas import (
     OBSERVER_SCHEMA_BUNDLE_FORMAT,
@@ -27,8 +27,8 @@ __all__ = [
     "ContentObserver",
     "FactsSemanticValidator",
     "Heartbeat",
-    "ObservationRuntime",
-    "ObservationResultBuilder",
+    "ContentObservationRuntime",
+    "ContentObservationResultBuilder",
     "OBSERVER_HTTP_OPERATIONS",
     "OBSERVER_CONFORMANCE_RESULT",
     "OBSERVER_SCHEMA_BUNDLE_FORMAT",

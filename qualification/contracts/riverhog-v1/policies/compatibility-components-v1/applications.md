@@ -200,10 +200,10 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-observer-support` | [GET /v1/observer](../../authorities/stove0-observer-support/process-protocol-operations/get-v1-observer.md#pa-55b211d970) |
 | `stove0-observer-support` | [POST /v1/observe](../../authorities/stove0-observer-support/process-protocol-operations/post-v1-observe.md#pa-c52b7cb84b) |
 | `stove0-observer-support` | [generated:stove0-observer protocol](../../authorities/stove0-observer-support/process-protocol/generated-stove0-observer-protocol.md#pa-bf2ab137ad) |
+| `stove0-observer-support` | [generated:stove0-observer: ContentObservationInvocation](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-contentobservationinvocation.md#pa-02a5ab9de6) |
+| `stove0-observer-support` | [generated:stove0-observer: ContentObservationRequest](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-contentobservationrequest.md#pa-03a67912f3) |
+| `stove0-observer-support` | [generated:stove0-observer: ContentObservationResult](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-contentobservationresult.md#pa-af3cd3b255) |
 | `stove0-observer-support` | [generated:stove0-observer: ErrorResponse](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-errorresponse.md#pa-104a8ddb73) |
-| `stove0-observer-support` | [generated:stove0-observer: ObservationInvocation](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observationinvocation.md#pa-d4877795f9) |
-| `stove0-observer-support` | [generated:stove0-observer: ObservationRequest](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observationrequest.md#pa-299b887fab) |
-| `stove0-observer-support` | [generated:stove0-observer: ObservationResult](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observationresult.md#pa-a1d1a10939) |
 | `stove0-observer-support` | [generated:stove0-observer: ObserverConformanceResult](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observerconformanceresult.md#pa-1b9cb8a9bb) |
 | `stove0-observer-support` | [generated:stove0-observer: ObserverContract](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observercontract.md#pa-638a161bb5) |
 | `stove0-observer-support` | [generated:stove0-observer: ObserverDescriptor](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observerdescriptor.md#pa-d9eedee78b) |

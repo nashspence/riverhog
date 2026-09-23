@@ -16,7 +16,7 @@ from riverhog_provenance_contracts import (
 )
 
 from .interface import FileStateObserver
-from .model import ObservationRequest, ObservationResult
+from .model import FileStateObservationRequest, FileStateObservationResult
 from .schema import compile_observer_contract_validator
 
 PROVENANCE_OBSERVER_ENTRY_POINT_GROUP = "riverhog.provenance-observers"
@@ -131,16 +131,16 @@ class _ContractValidatedObserver:
         self._validator = validator
         self.platform_family = observer.platform_family
 
-    def observe(self, request: ObservationRequest) -> ObservationResult:
+    def observe(self, request: FileStateObservationRequest) -> FileStateObservationResult:
         result = self._observer.observe(request)
-        if not isinstance(result, ObservationResult):
+        if not isinstance(result, FileStateObservationResult):
             raise TypeError("provenance observer returned an invalid observation result")
         capture = dict(result.capture)
         detail = dict(capture.get("detail", {}))
         detail["provenance_observer"] = dict(self._observer_reference)
         capture["detail"] = detail
-        accepted = ObservationResult(
-            state=result.state,
+        accepted = FileStateObservationResult(
+            file_state=result.file_state,
             capture=capture,
             environment=result.environment,
             agents=result.agents,

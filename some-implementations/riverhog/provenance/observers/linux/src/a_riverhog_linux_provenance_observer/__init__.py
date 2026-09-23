@@ -46,10 +46,10 @@ from riverhog_provenance.errors import (
 from riverhog_provenance.interface import PlatformBackend
 from riverhog_provenance.model import (
     ExtensionDraft,
+    FileStateObservationRequest,
     JsonObject,
     NativeCollection,
     NativeStat,
-    ObservationRequest,
 )
 from riverhog_provenance.providers import ProvenanceObserverBinding
 
@@ -542,7 +542,7 @@ class LinuxBackend(PlatformBackend):
         return self.native
 
     def open_readonly(
-        self, path: str | bytes, request: ObservationRequest
+        self, path: str | bytes, request: FileStateObservationRequest
     ) -> tuple[int, list[JsonObject], bool]:
         flags = os.O_RDONLY
         flags |= getattr(os, "O_CLOEXEC", 0)
@@ -667,7 +667,7 @@ class LinuxBackend(PlatformBackend):
         fd: int,
         path: str | bytes,
         stat: NativeStat,
-        request: ObservationRequest,
+        request: FileStateObservationRequest,
     ) -> NativeCollection:
         result = NativeCollection()
         result.timestamps = self._timestamps(stat, request)
@@ -754,7 +754,7 @@ class LinuxBackend(PlatformBackend):
         return result
 
     @staticmethod
-    def _timestamps(stat: NativeStat, request: ObservationRequest) -> list[JsonObject]:
+    def _timestamps(stat: NativeStat, request: FileStateObservationRequest) -> list[JsonObject]:
         api = "statx(2)" if stat.extras.get("statx_available") else "fstat(2)"
         timestamps = [
             timestamp_observation(
@@ -839,7 +839,7 @@ class LinuxBackend(PlatformBackend):
         return identifiers
 
     def _capture_xattrs(
-        self, fd: int, request: ObservationRequest, result: NativeCollection
+        self, fd: int, request: FileStateObservationRequest, result: NativeCollection
     ) -> None:
         had_error: dict[str, bool] = {
             "extended_attributes": False,
@@ -928,7 +928,9 @@ class LinuxBackend(PlatformBackend):
                 "partial" if had_error["access_control"] else "complete",
             )
 
-    def _capture_acl(self, fd: int, request: ObservationRequest, result: NativeCollection) -> None:
+    def _capture_acl(
+        self, fd: int, request: FileStateObservationRequest, result: NativeCollection
+    ) -> None:
         if self.api.libacl is None:
             merge_coverage(result.coverage, "access_control", "not_supported")
             return
@@ -990,7 +992,7 @@ class LinuxBackend(PlatformBackend):
         self,
         fd: int,
         stat: NativeStat,
-        request: ObservationRequest,
+        request: FileStateObservationRequest,
         result: NativeCollection,
     ) -> None:
         agent_id = request.observer_agent_id or DEFAULT_OBSERVER_AGENT_ID
@@ -1089,7 +1091,7 @@ class LinuxBackend(PlatformBackend):
         self,
         fd: int,
         stat: NativeStat,
-        request: ObservationRequest,
+        request: FileStateObservationRequest,
         result: NativeCollection,
     ) -> None:
         try:
@@ -1135,7 +1137,7 @@ class LinuxBackend(PlatformBackend):
             )
 
     def _capture_special_features(
-        self, fd: int, request: ObservationRequest, result: NativeCollection
+        self, fd: int, request: FileStateObservationRequest, result: NativeCollection
     ) -> None:
         try:
             buffer = bytearray(FSXATTR_STRUCT_SIZE)
@@ -1185,7 +1187,7 @@ class LinuxBackend(PlatformBackend):
 
     @staticmethod
     def _capture_native_stat(
-        stat: NativeStat, request: ObservationRequest, result: NativeCollection
+        stat: NativeStat, request: FileStateObservationRequest, result: NativeCollection
     ) -> None:
         api = "statx(2)" if stat.extras.get("statx_available") else "fstat(2)"
         data: dict[str, Any] = {
@@ -1227,7 +1229,7 @@ class LinuxBackend(PlatformBackend):
         stat: NativeStat,
         path: str | bytes,
         mount: MountInfo | None,
-        request: ObservationRequest,
+        request: FileStateObservationRequest,
     ) -> JsonObject:
         release = _read_os_release()
         host: JsonObject = {

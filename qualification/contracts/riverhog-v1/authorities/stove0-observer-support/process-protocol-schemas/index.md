@@ -6,10 +6,10 @@ Structured values exchanged by a process protocol.
 
 ## Contract elements
 
+- [ContentObservationInvocation](generated-stove0-observer-contentobservationinvocation.md)
+- [ContentObservationRequest](generated-stove0-observer-contentobservationrequest.md)
+- [ContentObservationResult](generated-stove0-observer-contentobservationresult.md)
 - [ErrorResponse](generated-stove0-observer-errorresponse.md)
-- [ObservationInvocation](generated-stove0-observer-observationinvocation.md)
-- [ObservationRequest](generated-stove0-observer-observationrequest.md)
-- [ObservationResult](generated-stove0-observer-observationresult.md)
 - [ObserverConformanceResult](generated-stove0-observer-observerconformanceresult.md)
 - [ObserverContract](generated-stove0-observer-observercontract.md)
 - [ObserverDescriptor](generated-stove0-observer-observerdescriptor.md)

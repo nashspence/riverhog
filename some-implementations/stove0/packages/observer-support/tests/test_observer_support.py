@@ -30,11 +30,11 @@ from stove0_observer_client import (
 from stove0_observer_protocol import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
     OBSERVER_HTTP_OPERATIONS,
-    ObservationInvocation,
-    ObservationRequest,
-    ObservationRequestPayload,
-    ObservationResult,
-    ObservationResultPayload,
+    ContentObservationInvocation,
+    ContentObservationRequest,
+    ContentObservationRequestPayload,
+    ContentObservationResult,
+    ContentObservationResultPayload,
     ObserverContract,
     ObserverContractPayload,
     ObserverContractSupport,
@@ -48,8 +48,8 @@ from stove0_observer_protocol import (
     SemanticValidatorRegistry,
 )
 from stove0_observer_support import (
-    ObservationResultBuilder,
-    ObservationRuntime,
+    ContentObservationResultBuilder,
+    ContentObservationRuntime,
     ObserverHttpBinding,
     conformance_report,
     observer_schema_bundle,
@@ -262,9 +262,9 @@ def _request(
     contract: ObserverContract,
     descriptor: ObserverDescriptor,
     api: RetrievalApi,
-) -> ObservationRequest:
-    return ObservationRequest.seal(
-        ObservationRequestPayload(
+) -> ContentObservationRequest:
+    return ContentObservationRequest.seal(
+        ContentObservationRequestPayload(
             work_id=_sha("a"),
             observer_registration_id="fixture-observer",
             observer_descriptor_sha256=descriptor.descriptor_sha256,
@@ -292,14 +292,14 @@ def _request(
 
 
 def _result(
-    request: ObservationRequest,
+    request: ContentObservationRequest,
     contract: ObserverContract,
     descriptor: ObserverDescriptor,
     byte_count: int,
-) -> ObservationResult:
+) -> ContentObservationResult:
     facts = {"bytes": byte_count}
-    return ObservationResult.seal(
-        ObservationResultPayload(
+    return ContentObservationResult.seal(
+        ContentObservationResultPayload(
             request_id=request.request_id,
             state="observed",
             observer=ObserverImplementation(
@@ -325,7 +325,7 @@ def test_observation_runtime_exposes_only_exact_requested_artifacts(tmp_path: Pa
     descriptor = _descriptor(contract)
     request = _request(contract, descriptor, api)
 
-    with ObservationRuntime(
+    with ContentObservationRuntime(
         api,
         request=request,
         claim_id="claim-1",
@@ -354,7 +354,7 @@ class FixtureObserverClient:
     def __init__(
         self,
         descriptor: ObserverDescriptor,
-        result: ObservationResult,
+        result: ContentObservationResult,
     ) -> None:
         self._descriptor = descriptor
         self._result = result
@@ -364,10 +364,10 @@ class FixtureObserverClient:
 
     def observe(
         self,
-        _invocation: ObservationInvocation,
+        _invocation: ContentObservationInvocation,
         *,
         descriptor: ObserverDescriptor,
-    ) -> ObservationResult:
+    ) -> ContentObservationResult:
         assert descriptor == self._descriptor
         return self._result
 
@@ -387,7 +387,7 @@ def test_conformance_report_checks_contract_schemas_and_result_binding() -> None
         "complete": False,
     }
     assert inspected.contracts[0].semantic_acceptance is None
-    invocation = ObservationInvocation(
+    invocation = ContentObservationInvocation(
         request=request,
         claim_id="claim-1",
         fence=3,
@@ -474,7 +474,7 @@ def test_conformance_report_exercises_semantics_locally_not_as_observer_calls() 
     contract = ObserverContract.seal(ObserverContractPayload.model_validate(payload))
     descriptor = _descriptor(contract)
     request = _request(contract, descriptor, api)
-    invocation = ObservationInvocation(
+    invocation = ContentObservationInvocation(
         request=request,
         claim_id="claim-1",
         fence=3,
@@ -490,16 +490,16 @@ def test_conformance_report_exercises_semantics_locally_not_as_observer_calls() 
     class CountingClient(FixtureObserverClient):
         def observe(
             self,
-            invocation: ObservationInvocation,
+            invocation: ContentObservationInvocation,
             *,
             descriptor: ObserverDescriptor,
-        ) -> ObservationResult:
+        ) -> ContentObservationResult:
             nonlocal observed_calls
             observed_calls += 1
             return super().observe(invocation, descriptor=descriptor)
 
     def validate_positive(
-        _request: ObservationRequest,
+        _request: ContentObservationRequest,
         facts: Mapping[str, object],
     ) -> None:
         if int(facts["bytes"]) < 1:
@@ -538,7 +538,7 @@ def test_result_builder_binds_schema_identity_and_size_limits() -> None:
     contract = _contract()
     descriptor = _descriptor(contract)
     request = _request(contract, descriptor, api)
-    builder = ObservationResultBuilder(descriptor, request)
+    builder = ContentObservationResultBuilder(descriptor, request)
 
     result = builder.observed(
         {"bytes": len(api.data)},
@@ -572,15 +572,15 @@ def test_observer_binding_executes_advertised_request_options_schema() -> None:
     contract = _contract()
     descriptor = _descriptor(contract)
     request = _request(contract, descriptor, api)
-    invalid_request = ObservationRequest.seal(
-        ObservationRequestPayload.model_validate(
+    invalid_request = ContentObservationRequest.seal(
+        ContentObservationRequestPayload.model_validate(
             {
                 **request.model_dump(mode="python", exclude={"request_id"}),
                 "options": {"undeclared": True},
             }
         )
     )
-    invocation = ObservationInvocation(
+    invocation = ContentObservationInvocation(
         request=invalid_request,
         claim_id="claim-1",
         fence=3,
@@ -634,8 +634,8 @@ def test_subject_batch_preference_is_not_a_request_limit() -> None:
         )
         for index in range(3)
     )
-    request = ObservationRequest.seal(
-        ObservationRequestPayload(
+    request = ContentObservationRequest.seal(
+        ContentObservationRequestPayload(
             work_id=_sha("a"),
             observer_registration_id="fixture-observer",
             observer_descriptor_sha256=descriptor.descriptor_sha256,
@@ -646,7 +646,7 @@ def test_subject_batch_preference_is_not_a_request_limit() -> None:
         )
     )
 
-    result = ObservationResultBuilder(descriptor, request).observed({"bytes": len(api.data)})
+    result = ContentObservationResultBuilder(descriptor, request).observed({"bytes": len(api.data)})
 
     assert len(result.subjects) == 3
     assert descriptor.contracts[0].preferred_subject_batch_size == 2
@@ -670,11 +670,11 @@ def test_observer_client_rejects_a_well_formed_result_for_different_work(
         exclude={"request_id"},
     )
     other_request_payload["work_id"] = _sha("b")
-    other_request = ObservationRequest.seal(
-        ObservationRequestPayload.model_validate(other_request_payload)
+    other_request = ContentObservationRequest.seal(
+        ContentObservationRequestPayload.model_validate(other_request_payload)
     )
     result = _result(other_request, contract, descriptor, len(api.data))
-    invocation = ObservationInvocation(
+    invocation = ContentObservationInvocation(
         request=request,
         claim_id="claim-1",
         fence=3,
@@ -711,10 +711,10 @@ class BindingObserver:
 
     def observe(
         self,
-        request: ObservationRequest,
-        _runtime: ObservationRuntime,
-    ) -> ObservationResult:
-        return ObservationResultBuilder(self._descriptor, request).observed(
+        request: ContentObservationRequest,
+        _runtime: ContentObservationRuntime,
+    ) -> ContentObservationResult:
+        return ContentObservationResultBuilder(self._descriptor, request).observed(
             {"bytes": request.subjects[0].bytes},
             execution_evidence={"implementation": "fixture"},
         )
@@ -725,7 +725,7 @@ def test_framework_neutral_observer_http_binding() -> None:
     contract = _contract()
     descriptor = _descriptor(contract)
     request = _request(contract, descriptor, api)
-    invocation = ObservationInvocation(
+    invocation = ContentObservationInvocation(
         request=request,
         claim_id="claim-1",
         fence=3,
@@ -747,7 +747,7 @@ def test_framework_neutral_observer_http_binding() -> None:
         invocation.model_dump_json(exclude_none=True).encode(),
     )
     assert result_response.status == 200
-    result = ObservationResult.model_validate_json(result_response.body)
+    result = ContentObservationResult.model_validate_json(result_response.body)
     assert result.facts == {"bytes": len(api.data)}
     duplicate = (
         b'{"claim_id":"claim-1",' + invocation.model_dump_json(exclude_none=True).encode()[1:]
@@ -814,14 +814,14 @@ def test_observer_binding_and_client_execute_the_exact_semantic_profile(
     called: list[Mapping[str, object]] = []
 
     def reject_facts(
-        _request: ObservationRequest,
+        _request: ContentObservationRequest,
         facts: Mapping[str, object],
     ) -> None:
         called.append(facts)
         raise ValueError("fixture semantic policy rejected the facts")
 
     request = _request(contract, descriptor, api)
-    invocation = ObservationInvocation(
+    invocation = ContentObservationInvocation(
         request=request,
         claim_id="claim-1",
         fence=3,
@@ -913,9 +913,9 @@ def test_observer_descriptor_failure_uses_the_public_error_envelope() -> None:
 
         def observe(
             self,
-            _request: ObservationRequest,
-            _runtime: ObservationRuntime,
-        ) -> ObservationResult:
+            _request: ContentObservationRequest,
+            _runtime: ContentObservationRuntime,
+        ) -> ContentObservationResult:
             raise AssertionError("descriptor endpoint must not execute observation")
 
     response = ObserverHttpBinding(FailingDescriptorObserver()).handle(
@@ -937,7 +937,7 @@ def test_observer_implementation_value_error_is_a_server_fault() -> None:
     contract = _contract()
     descriptor = _descriptor(contract)
     request = _request(contract, descriptor, api)
-    invocation = ObservationInvocation(
+    invocation = ContentObservationInvocation(
         request=request,
         claim_id="claim-1",
         fence=3,
@@ -951,9 +951,9 @@ def test_observer_implementation_value_error_is_a_server_fault() -> None:
     class FaultingObserver(BindingObserver):
         def observe(
             self,
-            _request: ObservationRequest,
-            _runtime: ObservationRuntime,
-        ) -> ObservationResult:
+            _request: ContentObservationRequest,
+            _runtime: ContentObservationRuntime,
+        ) -> ContentObservationResult:
             raise ValueError("private observer defect")
 
     response = ObserverHttpBinding(FaultingObserver(descriptor)).handle(
@@ -972,7 +972,7 @@ def test_observer_binding_serializes_workspace_execution_by_default() -> None:
     contract = _contract()
     descriptor = _descriptor(contract)
     request = _request(contract, descriptor, api)
-    invocation = ObservationInvocation(
+    invocation = ContentObservationInvocation(
         request=request,
         claim_id="claim-1",
         fence=3,
@@ -991,9 +991,9 @@ def test_observer_binding_serializes_workspace_execution_by_default() -> None:
     class BlockingObserver(BindingObserver):
         def observe(
             self,
-            observed_request: ObservationRequest,
-            runtime: ObservationRuntime,
-        ) -> ObservationResult:
+            observed_request: ContentObservationRequest,
+            runtime: ContentObservationRuntime,
+        ) -> ContentObservationResult:
             nonlocal active, active_peak
             with lock:
                 active += 1

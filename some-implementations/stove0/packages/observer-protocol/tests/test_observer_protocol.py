@@ -9,8 +9,8 @@ import pytest
 import stove0_protocol
 from stove0_observer_protocol import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
+    ContentObservationRequest,
     JsonSchemaValidationProfile,
-    ObservationRequest,
     ObserverContract,
     ObserverContractPayload,
     SemanticValidationProfile,
@@ -21,15 +21,15 @@ from stove0_protocol import models as shared_models
 
 _OBSERVER_AUTHOR_SYMBOLS = frozenset(
     {
-        "ObservationEvidence",
-        "ObservationFailure",
-        "ObservationInapplicable",
-        "ObservationInvocation",
-        "ObservationRequest",
-        "ObservationRequestPayload",
-        "ObservationResult",
-        "ObservationResultPayload",
-        "ObservationState",
+        "ContentObservationEvidence",
+        "ContentObservationFailure",
+        "ContentObservationInapplicable",
+        "ContentObservationInvocation",
+        "ContentObservationRequest",
+        "ContentObservationRequestPayload",
+        "ContentObservationResult",
+        "ContentObservationResultPayload",
+        "ContentObservationState",
         "ObserverContract",
         "ObserverContractPayload",
         "ObserverContractSupport",
@@ -85,7 +85,7 @@ def test_observer_contract_models_are_importable_without_runtime_support() -> No
 
 
 def test_observer_author_surface_reuses_one_model_implementation() -> None:
-    assert ObservationRequest is shared_models.ObservationRequest
+    assert ContentObservationRequest is shared_models.ContentObservationRequest
     assert ObserverContract is shared_models.ObserverContract
     assert _OBSERVER_AUTHOR_SYMBOLS.isdisjoint(stove0_protocol.__all__)
 

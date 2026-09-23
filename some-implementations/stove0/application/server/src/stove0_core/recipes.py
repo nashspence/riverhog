@@ -13,10 +13,10 @@ from pydantic import JsonValue
 from riverhog_client import ApiClient
 from riverhog_protocol.collection_workflows import canonical_json_sha256
 from stove0_observer_protocol import (
-    ObservationEvidence,
-    ObservationRequest,
-    ObservationRequestPayload,
-    ObservationResult,
+    ContentObservationEvidence,
+    ContentObservationRequest,
+    ContentObservationRequestPayload,
+    ContentObservationResult,
 )
 from stove0_protocol import (
     ArtifactSelection,
@@ -62,14 +62,14 @@ from stove0_target_protocol import (
 from stove0_core.coordinator import ObserverPort, TargetPort
 from stove0_core.work_state import WorkInapplicable
 
-NestedObservation = Callable[[WorkIdentity], tuple[ObservationEvidence, ...]]
+NestedObservation = Callable[[WorkIdentity], tuple[ContentObservationEvidence, ...]]
 
 
 @dataclass(slots=True)
 class _PlanningFrame:
     work: WorkIdentity
     recipe: RecipeDefinition
-    evidence: tuple[ObservationEvidence, ...]
+    evidence: tuple[ContentObservationEvidence, ...]
     selected: tuple[tuple[RecipeBranch, ArtifactSelection], ...]
     decision_sha256: str
     root: bool
@@ -114,11 +114,11 @@ class RecipePlanner:
             )
         )
 
-    def observation_requests(self, work: WorkIdentity) -> tuple[ObservationRequest, ...]:
+    def observation_requests(self, work: WorkIdentity) -> tuple[ContentObservationRequest, ...]:
         if isinstance(work.fork_join, JoinWorkBinding):
             return ()
         recipe = self._recipe(work)
-        requests: list[ObservationRequest] = []
+        requests: list[ContentObservationRequest] = []
         inventory = self._inventory(work)
         for use in recipe.observers:
             descriptor = self.observers.descriptor(use.registration_id)
@@ -134,8 +134,8 @@ class RecipePlanner:
                 # efficiency, never a request, collection, or workflow limit.
                 batch = subjects[offset : offset + batch_size]
                 requests.append(
-                    ObservationRequest.seal(
-                        ObservationRequestPayload(
+                    ContentObservationRequest.seal(
+                        ContentObservationRequestPayload(
                             work_id=work.work_id,
                             observer_registration_id=use.registration_id,
                             observer_descriptor_sha256=descriptor.descriptor_sha256,
@@ -154,7 +154,7 @@ class RecipePlanner:
     def workflow_plan(
         self,
         work: WorkIdentity,
-        observations: tuple[ObservationEvidence, ...],
+        observations: tuple[ContentObservationEvidence, ...],
         *,
         nested_observer: NestedObservation | None = None,
     ) -> BranchSetDecision | WorkInapplicable:
@@ -283,7 +283,7 @@ class RecipePlanner:
     def _planning_frame(
         self,
         work: WorkIdentity,
-        observations: tuple[ObservationEvidence, ...],
+        observations: tuple[ContentObservationEvidence, ...],
         *,
         root: bool,
     ) -> _PlanningFrame | WorkInapplicable:
@@ -379,7 +379,7 @@ class RecipePlanner:
         self,
         *,
         parent: WorkIdentity,
-        observations: tuple[ObservationEvidence, ...],
+        observations: tuple[ContentObservationEvidence, ...],
         route: RecipeRoute,
         selection: ArtifactSelection,
         decision_sha256: str,
@@ -660,7 +660,7 @@ def _route_artifacts(
     *,
     route: RecipeBranch,
     associations: tuple[ArtifactAssociation, ...],
-    observations: tuple[ObservationEvidence, ...],
+    observations: tuple[ContentObservationEvidence, ...],
 ) -> tuple[ArtifactSubject, ...]:
     if route.primary_role is None:
         if all(
@@ -832,7 +832,7 @@ def _artifact_rule(path: str, rules: Sequence[ArtifactRule]) -> ArtifactRule | N
 
 def _predicate_matches(
     predicate: FactPredicate,
-    observations: Sequence[ObservationEvidence],
+    observations: Sequence[ContentObservationEvidence],
     *,
     candidate: Sequence[ArtifactSubject],
 ) -> bool:
@@ -866,7 +866,7 @@ def _predicate_matches(
 
 
 def _artifact_fact_records(
-    results: Sequence[ObservationResult],
+    results: Sequence[ContentObservationResult],
     binding: ArtifactFactBinding,
     artifact_ids: set[str],
 ) -> dict[str, list[dict[str, JsonValue]]]:

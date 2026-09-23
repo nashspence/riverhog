@@ -453,6 +453,11 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: CollectionId](../../authorities/stove0/http-schemas/schemas-collectionid.md#pa-4760682c9f) |
 | `stove0` | [schemas: CollectionRootRef](../../authorities/stove0/http-schemas/schemas-collectionrootref.md#pa-06f91b0dda) |
 | `stove0` | [schemas: CollectionTag](../../authorities/stove0/http-schemas/schemas-collectiontag.md#pa-5c8aab70ec) |
+| `stove0` | [schemas: ContentObservationEvidence](../../authorities/stove0/http-schemas/schemas-contentobservationevidence.md#pa-80147b0509) |
+| `stove0` | [schemas: ContentObservationFailure](../../authorities/stove0/http-schemas/schemas-contentobservationfailure.md#pa-6876436f50) |
+| `stove0` | [schemas: ContentObservationInapplicable](../../authorities/stove0/http-schemas/schemas-contentobservationinapplicable.md#pa-380e2386d1) |
+| `stove0` | [schemas: ContentObservationRequest](../../authorities/stove0/http-schemas/schemas-contentobservationrequest.md#pa-af3dfeaed8) |
+| `stove0` | [schemas: ContentObservationResult](../../authorities/stove0/http-schemas/schemas-contentobservationresult.md#pa-e3aa9c9b2f) |
 | `stove0` | [schemas: ControllerEvidence](../../authorities/stove0/http-schemas/schemas-controllerevidence.md#pa-c96c0d0065) |
 | `stove0` | [schemas: CoordinationBranchPlan](../../authorities/stove0/http-schemas/schemas-coordinationbranchplan.md#pa-626a18e258) |
 | `stove0` | [schemas: CoordinationChildSettlementRef](../../authorities/stove0/http-schemas/schemas-coordinationchildsettlementref.md#pa-ef0e05b6f1) |
@@ -493,11 +498,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: JoinWorkMemberBinding](../../authorities/stove0/http-schemas/schemas-joinworkmemberbinding.md#pa-bae4607df2) |
 | `stove0` | [schemas: JsonSchemaValidationProfile](../../authorities/stove0/http-schemas/schemas-jsonschemavalidationprofile.md#pa-b65de14345) |
 | `stove0` | [schemas: JsonValue](../../authorities/stove0/http-schemas/schemas-jsonvalue.md#pa-b306831d95) |
-| `stove0` | [schemas: ObservationEvidence](../../authorities/stove0/http-schemas/schemas-observationevidence.md#pa-5959a346c5) |
-| `stove0` | [schemas: ObservationFailure](../../authorities/stove0/http-schemas/schemas-observationfailure.md#pa-831191b05c) |
-| `stove0` | [schemas: ObservationInapplicable](../../authorities/stove0/http-schemas/schemas-observationinapplicable.md#pa-f15f1e04fe) |
-| `stove0` | [schemas: ObservationRequest](../../authorities/stove0/http-schemas/schemas-observationrequest.md#pa-3cf6aafc37) |
-| `stove0` | [schemas: ObservationResult](../../authorities/stove0/http-schemas/schemas-observationresult.md#pa-10909d9ae7) |
 | `stove0` | [schemas: ObserverImplementation](../../authorities/stove0/http-schemas/schemas-observerimplementation.md#pa-b0e5ccca90) |
 | `stove0` | [schemas: ObserverUse](../../authorities/stove0/http-schemas/schemas-observeruse.md#pa-0dc281bf62) |
 | `stove0` | [schemas: OperationProjection](../../authorities/stove0/http-schemas/schemas-operationprojection.md#pa-b1fb0fcd2f) |

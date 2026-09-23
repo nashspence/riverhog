@@ -27,7 +27,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-09d8a2f675"></a>`branch_set_plan` | no | anyOf=[([BranchSetPlan](schemas-branchsetplan.md)); (type="null")] |  |
 | <a id="s-af86a5605a"></a>`branch_sets` | no | type="array"; default=[]; items=([BranchSetPlan](schemas-branchsetplan.md)); title="Branch Sets" |  |
 | <a id="s-3803d68986"></a>`format` | no | type="string"; const="stove0-workflow-preview/v1"; default="stove0-workflow-preview/v1"; title="Format" |  |
-| <a id="s-55d0cba4ef"></a>`observations` | no | type="array"; default=[]; items=([ObservationEvidence](schemas-observationevidence.md)); title="Observations" |  |
+| <a id="s-55d0cba4ef"></a>`observations` | no | type="array"; default=[]; items=([ContentObservationEvidence](schemas-contentobservationevidence.md)); title="Observations" |  |
 | <a id="s-e4744c1f84"></a>`outcome` | no | anyOf=[([PreviewOutcome](schemas-previewoutcome.md)); (type="null")] |  |
 | <a id="s-715057aea7"></a>`preview_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Preview Id" |  |
 | <a id="s-3c3b2303ab"></a>`preview_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Preview Sha256" |  |
@@ -67,7 +67,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - [ArtifactSelection](schemas-artifactselection.md)
 - [BranchSetPlan](schemas-branchsetplan.md)
 - [BranchTargetPreview](schemas-branchtargetpreview.md)
-- [ObservationEvidence](schemas-observationevidence.md)
+- [ContentObservationEvidence](schemas-contentobservationevidence.md)
 - [PreviewOutcome](schemas-previewoutcome.md)
 - [WorkIdentity](schemas-workidentity.md)
 
@@ -102,7 +102,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0891d6903a60a9ac3c1ff0faaef93b801d2931190371903616f95a2f55110d2b -->
+<!-- exact-contract-value: 5f8ebfa3ea7e8f9b125d8773cb0af3c94f6b5daefc1f6ebb8fc04b745c568ea4 -->
 
 ```json
 {
@@ -135,7 +135,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "observations": {
       "default": [],
       "items": {
-        "$ref": "#/components/schemas/ObservationEvidence"
+        "$ref": "#/components/schemas/ContentObservationEvidence"
       },
       "title": "Observations",
       "type": "array"

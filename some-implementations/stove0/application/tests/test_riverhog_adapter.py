@@ -27,7 +27,7 @@ from riverhog_protocol.collection_workflows import (
     canonical_json_sha256 as riverhog_canonical_json_sha256,
 )
 from stove0_core import ClaimBinding, InMemoryWorkStore, Stove0RiverhogClient, WorkRecord
-from stove0_observer_protocol import ObservationRequest, ObservationRequestPayload
+from stove0_observer_protocol import ContentObservationRequest, ContentObservationRequestPayload
 from stove0_protocol import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
     ArtifactSelection,
@@ -879,8 +879,8 @@ def test_synchronous_observation_must_fit_claim_and_capability_lifetime() -> Non
         claim_lease_seconds=30,
         capability_ttl_seconds=30,
     )
-    request = ObservationRequest.seal(
-        ObservationRequestPayload(
+    request = ContentObservationRequest.seal(
+        ContentObservationRequestPayload(
             work_id=work.work_id,
             observer_registration_id="fixture-observer",
             observer_descriptor_sha256=_sha("c"),
@@ -910,8 +910,8 @@ def test_observation_capability_projects_subjects_into_riverhog_artifact_order()
     work, _workflow, _target_plan, _evidence = _authorities()
     api = FixtureApi()
     client = Stove0RiverhogClient(api, declared_workspace_protection="memory-backed")
-    request = ObservationRequest.seal(
-        ObservationRequestPayload(
+    request = ContentObservationRequest.seal(
+        ContentObservationRequestPayload(
             work_id=work.work_id,
             observer_registration_id="fixture-observer",
             observer_descriptor_sha256=_sha("c"),

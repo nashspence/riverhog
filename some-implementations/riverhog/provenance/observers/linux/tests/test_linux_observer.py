@@ -16,8 +16,8 @@ from a_riverhog_linux_provenance_observer import (
     _portable_mount_field,
 )
 from riverhog_provenance import (
+    FileStateObservationRequest,
     ObservationPolicy,
-    ObservationRequest,
     PayloadBindingRequest,
     SymlinkRefusedError,
     UnstableFileError,
@@ -44,7 +44,7 @@ def test_live_linux_observation_is_riverhog_provenance_valid(tmp_path: Path, urn
         pass
 
     result = _observer().observe(
-        ObservationRequest(
+        FileStateObservationRequest(
             path=payload,
             lineage_id=urn_factory(),
             host_id=urn_factory(),
@@ -55,7 +55,7 @@ def test_live_linux_observation_is_riverhog_provenance_valid(tmp_path: Path, urn
     fragment = result.graph_fragment()
     validate_graph_fragment(fragment)
 
-    state = result.state
+    state = result.file_state
     assert state["content"]["size_bytes"] == str(len(content))
     assert state["content"]["digests"][0]["value"] == hashlib.sha256(content).hexdigest()
     assert state["filesystem_metadata"]["access"]["posix_mode"] == "0644"
@@ -102,9 +102,9 @@ def test_linux_non_utf8_filename_round_trips(tmp_path: Path, urn_factory) -> Non
     finally:
         os.close(fd)
     result = _observer().observe(
-        ObservationRequest(path=path, lineage_id=urn_factory(), host_id=urn_factory())
+        FileStateObservationRequest(path=path, lineage_id=urn_factory(), host_id=urn_factory())
     )
-    locator = result.state["locator"]
+    locator = result.file_state["locator"]
     assert locator["text_role"] == "display"
     assert base64.b64decode(locator["bytes"]["data"]) == os.path.abspath(path)
     validate_graph_fragment(result.graph_fragment())
@@ -117,7 +117,7 @@ def test_symlink_final_component_is_refused(tmp_path: Path, urn_factory) -> None
     link.symlink_to(target)
     with pytest.raises(SymlinkRefusedError):
         _observer().observe(
-            ObservationRequest(path=link, lineage_id=urn_factory(), host_id=urn_factory())
+            FileStateObservationRequest(path=link, lineage_id=urn_factory(), host_id=urn_factory())
         )
 
 
@@ -126,7 +126,7 @@ def test_replacement_binding_emits_unbind_and_bind(tmp_path: Path, urn_factory) 
     payload.write_bytes(b"state")
     old_binding = urn_factory()
     result = _observer().observe(
-        ObservationRequest(
+        FileStateObservationRequest(
             path=payload,
             lineage_id=urn_factory(),
             host_id=urn_factory(),
@@ -145,7 +145,9 @@ def test_regular_file_only(tmp_path: Path, urn_factory) -> None:
 
     with pytest.raises(UnsupportedFileTypeError):
         _observer().observe(
-            ObservationRequest(path=tmp_path, lineage_id=urn_factory(), host_id=urn_factory())
+            FileStateObservationRequest(
+                path=tmp_path, lineage_id=urn_factory(), host_id=urn_factory()
+            )
         )
 
 
@@ -154,14 +156,14 @@ def test_locator_authority_is_environment_host_entity(tmp_path: Path, urn_factor
     payload.write_bytes(b"authority")
     stable_host_authority = urn_factory()
     result = _observer().observe(
-        ObservationRequest(
+        FileStateObservationRequest(
             path=payload,
             lineage_id=urn_factory(),
             host_id=stable_host_authority,
         )
     )
     host = result.environment["host"]
-    assert result.state["locator"]["authority_id"] == host["id"]
+    assert result.file_state["locator"]["authority_id"] == host["id"]
     mount_locator = result.environment["filesystem"].get("mount_locator")
     if mount_locator is not None:
         assert mount_locator["authority_id"] == host["id"]
@@ -182,11 +184,11 @@ def test_linux_acl_external_evidence_is_not_silently_empty(tmp_path: Path, urn_f
     payload = tmp_path / "acl.dat"
     payload.write_bytes(b"acl")
     result = _observer().observe(
-        ObservationRequest(path=payload, lineage_id=urn_factory(), host_id=urn_factory())
+        FileStateObservationRequest(path=payload, lineage_id=urn_factory(), host_id=urn_factory())
     )
     acl_rows = [
         row
-        for row in result.state["filesystem_metadata"]["native_metadata"]
+        for row in result.file_state["filesystem_metadata"]["native_metadata"]
         if row["kind"] == "acl" and row["source"]["api"] == "acl_get_fd(3)"
     ]
     if acl_rows:
@@ -210,7 +212,7 @@ def test_primary_read_length_mismatch_is_never_accepted_as_stable(
     monkeypatch.setattr(common, "hash_fd", short_hash)
     with pytest.raises(UnstableFileError, match="primary_read_size"):
         _observer().observe(
-            ObservationRequest(
+            FileStateObservationRequest(
                 path=payload,
                 lineage_id=urn_factory(),
                 host_id=urn_factory(),
@@ -234,7 +236,7 @@ def test_non_strict_mode_still_rejects_incomplete_content_fixity(
     monkeypatch.setattr(common, "hash_fd", short_hash)
     with pytest.raises(UnstableFileError, match="primary_read_size"):
         _observer().observe(
-            ObservationRequest(
+            FileStateObservationRequest(
                 path=payload,
                 lineage_id=urn_factory(),
                 host_id=urn_factory(),
@@ -258,7 +260,9 @@ class _ACLXattrOnlyNative:
 
 
 def test_acl_xattr_counts_as_access_control_evidence_without_libacl(urn_factory) -> None:
-    request = ObservationRequest(path="unused", lineage_id=urn_factory(), host_id=urn_factory())
+    request = FileStateObservationRequest(
+        path="unused", lineage_id=urn_factory(), host_id=urn_factory()
+    )
     backend = LinuxBackend(
         native=_ACLXattrOnlyNative(),
         enforce_platform=False,
@@ -287,7 +291,7 @@ class _LargeXattrNative:
 
 
 def test_policy_not_retained_xattr_does_not_make_enumeration_partial(urn_factory) -> None:
-    request = ObservationRequest(
+    request = FileStateObservationRequest(
         path="unused",
         lineage_id=urn_factory(),
         host_id=urn_factory(),
@@ -336,7 +340,9 @@ def test_unexpected_getflags_failure_is_partial_not_complete(urn_factory, monkey
     backend._capture_file_flags(
         0,
         stat_snapshot,
-        request=ObservationRequest(path="unused", lineage_id=urn_factory(), host_id=urn_factory()),
+        request=FileStateObservationRequest(
+            path="unused", lineage_id=urn_factory(), host_id=urn_factory()
+        ),
         result=collection,
     )
     assert collection.coverage["file_flags"] == "partial"

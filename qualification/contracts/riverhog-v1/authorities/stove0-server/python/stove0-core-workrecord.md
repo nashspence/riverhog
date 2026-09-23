@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-1d335543f0"></a>`kind`: `"class"`
-- <a id="s-c7a88eb901"></a>`signature`: `"\"(*, format: Literal['stove0-work-record/v1'] = 'stove0-work-record/v1', work: stove0_protocol.models.WorkIdentity, phase: Literal['eligible', 'claimed', 'observing', 'planning', 'target_preflight', 'queued', 'executing', 'output_finalizing', 'verifying', 'settled', 'retirement_pending', 'coordinating', 'abandon_pending', 'complete', 'inapplicable', 'failed', 'canceled'] = 'eligible', revision: Annotated[int, Ge(ge=1)] = 1, claim: stove0_core.work_state.ClaimBinding \| None = None, preview_acceptance: stove0_core.work_state.PreviewAcceptance \| None = None, expected_target_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, observation_requests: tuple[stove0_protocol.models.ObservationRequest, ...] = (), observation_results: tuple[stove0_protocol.models.ObservationResult, ...] = (), branch_set_plan: stove0_protocol.fork_join.BranchSetPlan \| None = None, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement \| None = None, join_plan: stove0_protocol.fork_join.JoinPlan \| None = None, coordination_cancel_requested: bool = False, workflow_plan: stove0_protocol.models.WorkflowPlan \| None = None, target_plan: Optional[Annotated[stove0_target_protocol.protocol.TransformPlan \| stove0_target_protocol.protocol.EffectPlan, FieldInfo(annotation=NoneType, required=True, discriminator='protocol')]] = None, controller_evidence: stove0_protocol.models.ControllerEvidence \| None = None, target_request: stove0_target_protocol.protocol.AcceptedTargetJob \| None = None, target_status: stove0_target_protocol.protocol.TargetJobStatus \| None = None, output: stove0_target_protocol.protocol.OutputCollectionRef \| None = None, target_settlement: stove0_target_protocol.protocol.TargetSettlementAuthority \| None = None, retirement_remaining: tuple[int, ...] = (), failure: stove0_core.work_state.WorkFailure \| None = None, inapplicable: stove0_core.work_state.WorkInapplicable \| None = None, abandon_outcome: Optional[Literal['inapplicable', 'failed', 'canceled']] = None) -> None\""`
+- <a id="s-c7a88eb901"></a>`signature`: `"\"(*, format: Literal['stove0-work-record/v1'] = 'stove0-work-record/v1', work: stove0_protocol.models.WorkIdentity, phase: Literal['eligible', 'claimed', 'observing', 'planning', 'target_preflight', 'queued', 'executing', 'output_finalizing', 'verifying', 'settled', 'retirement_pending', 'coordinating', 'abandon_pending', 'complete', 'inapplicable', 'failed', 'canceled'] = 'eligible', revision: Annotated[int, Ge(ge=1)] = 1, claim: stove0_core.work_state.ClaimBinding \| None = None, preview_acceptance: stove0_core.work_state.PreviewAcceptance \| None = None, expected_target_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, observation_requests: tuple[stove0_protocol.models.ContentObservationRequest, ...] = (), observation_results: tuple[stove0_protocol.models.ContentObservationResult, ...] = (), branch_set_plan: stove0_protocol.fork_join.BranchSetPlan \| None = None, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement \| None = None, join_plan: stove0_protocol.fork_join.JoinPlan \| None = None, coordination_cancel_requested: bool = False, workflow_plan: stove0_protocol.models.WorkflowPlan \| None = None, target_plan: Optional[Annotated[stove0_target_protocol.protocol.TransformPlan \| stove0_target_protocol.protocol.EffectPlan, FieldInfo(annotation=NoneType, required=True, discriminator='protocol')]] = None, controller_evidence: stove0_protocol.models.ControllerEvidence \| None = None, target_request: stove0_target_protocol.protocol.AcceptedTargetJob \| None = None, target_status: stove0_target_protocol.protocol.TargetJobStatus \| None = None, output: stove0_target_protocol.protocol.OutputCollectionRef \| None = None, target_settlement: stove0_target_protocol.protocol.TargetSettlementAuthority \| None = None, retirement_remaining: tuple[int, ...] = (), failure: stove0_core.work_state.WorkFailure \| None = None, inapplicable: stove0_core.work_state.WorkInapplicable \| None = None, abandon_outcome: Optional[Literal['inapplicable', 'failed', 'canceled']] = None) -> None\""`
 
 #### Validated model schema
 
@@ -47,8 +47,8 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-3349a7c7ab"></a>`format` | no | type="string"; const="stove0-work-record/v1"; default="stove0-work-record/v1" |  |
 | <a id="s-29dc0ad13e"></a>`inapplicable` | no | anyOf=[([WorkInapplicable](#s-db6729968b)); (type="null")]; default=null |  |
 | <a id="s-4a102fd383"></a>`join_plan` | no | anyOf=[([JoinPlan](#s-5fcc715ea0)); (type="null")]; default=null |  |
-| <a id="s-90932f158b"></a>`observation_requests` | no | type="array"; default=[]; items=([ObservationRequest](#s-ba8270c7f9)) |  |
-| <a id="s-445652acfe"></a>`observation_results` | no | type="array"; default=[]; items=([ObservationResult](#s-9982b86647)) |  |
+| <a id="s-90932f158b"></a>`observation_requests` | no | type="array"; default=[]; items=([ContentObservationRequest](#s-4993a7fb9f)) |  |
+| <a id="s-445652acfe"></a>`observation_results` | no | type="array"; default=[]; items=([ContentObservationResult](#s-15f095de5c)) |  |
 | <a id="s-8639f8c9cd"></a>`output` | no | anyOf=[([OutputCollectionRef](#s-9ec3e43bb5)); (type="null")]; default=null |  |
 | <a id="s-cfa8645f93"></a>`phase` | no | type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"]; default="eligible" |  |
 | <a id="s-4377c4cd4d"></a>`preview_acceptance` | no | anyOf=[([PreviewAcceptance](#s-576b85d135)); (type="null")]; default=null |  |
@@ -73,6 +73,11 @@ Exact externally visible contract owned by this contract element.
 - [ClaimBinding](#s-449a0108a5)
 - [CollectionId](#s-786195a7a0)
 - [CollectionRootRef](#s-a2325beae0)
+- [ContentObservationEvidence](#s-bcb2a93794)
+- [ContentObservationFailure](#s-37c3f097e7)
+- [ContentObservationInapplicable](#s-907125e186)
+- [ContentObservationRequest](#s-4993a7fb9f)
+- [ContentObservationResult](#s-15f095de5c)
 - [ControllerEvidence](#s-792112d1dc)
 - [CoordinationBranchPlan](#s-bcd3578233)
 - [CoordinationChildSettlementRef](#s-99f5278470)
@@ -91,11 +96,6 @@ Exact externally visible contract owned by this contract element.
 - [JoinWorkMemberBinding](#s-62e41c1192)
 - [JsonSchemaValidationProfile](#s-d285b708ae)
 - [JsonValue](#s-c77b395b7f)
-- [ObservationEvidence](#s-447a5c5c04)
-- [ObservationFailure](#s-98486ba445)
-- [ObservationInapplicable](#s-e53628e23d)
-- [ObservationRequest](#s-ba8270c7f9)
-- [ObservationResult](#s-9982b86647)
 - [ObserverImplementation](#s-82d5a45306)
 - [OperationRef](#s-363e2a2f20)
 - [OutputArtifactRoleCount](#s-ddd8716850)
@@ -269,6 +269,94 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-6b8486419b"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-65cdf93afb"></a>`collection_id` | yes | [CollectionId](#s-786195a7a0) |  |
 | <a id="s-916ec8d51c"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-bcb2a93794"></a>definition `ContentObservationEvidence`
+
+- <a id="s-a0048b0cdd"></a>`type`: `"object"`
+- <a id="s-3c85d95237"></a>`additionalProperties`: `false`
+- <a id="s-2eb92e6fcb"></a>`required`: `["request","result"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-d96b3a356e"></a>`request` | yes | [ContentObservationRequest](#s-4993a7fb9f) |  |
+| <a id="s-6d87ac5cd8"></a>`result` | yes | [ContentObservationResult](#s-15f095de5c) |  |
+
+##### <a id="s-37c3f097e7"></a>definition `ContentObservationFailure`
+
+- <a id="s-c7faf95a17"></a>`type`: `"object"`
+- <a id="s-4b35945bb9"></a>`additionalProperties`: `false`
+- <a id="s-7299931789"></a>`required`: `["code","message","retryable"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-03c34d8fe6"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-8f67431954"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+| <a id="s-1d1b081865"></a>`retryable` | yes | type="boolean" |  |
+
+##### <a id="s-907125e186"></a>definition `ContentObservationInapplicable`
+
+- <a id="s-b03ebb0b0a"></a>`type`: `"object"`
+- <a id="s-4f8068823a"></a>`additionalProperties`: `false`
+- <a id="s-8c93733c22"></a>`required`: `["code","message"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-c6b5f5fb24"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-d2b99c90fa"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
+
+##### <a id="s-4993a7fb9f"></a>definition `ContentObservationRequest`
+
+- <a id="s-3b14801453"></a>`type`: `"object"`
+- <a id="s-75df8b2805"></a>`additionalProperties`: `false`
+- <a id="s-ae33c1ccd9"></a>`required`: `["work_id","observer_registration_id","observer_descriptor_sha256","observer_contract_id","observer_contract_sha256","subjects","request_id"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-74c948bdd4"></a>`format` | no | type="string"; const="stove0-observation-request/v1"; default="stove0-observation-request/v1" |  |
+| <a id="s-2fc1d57e51"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864; default=1048576 |  |
+| <a id="s-3c0c721f26"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-f53871bd2b"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-ac761f8afd"></a>`observer_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-0ba0847759"></a>`observer_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
+| <a id="s-81e77238d0"></a>`options` | no | type="object"; additionalProperties=([JsonValue](#s-c77b395b7f)) |  |
+| <a id="s-e348f2161a"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-aa6200aefe"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
+| <a id="s-8ed9be98b2"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-ce72dd420c)); minItems=1 |  |
+| <a id="s-baebbfb81a"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300 |  |
+| <a id="s-e0e7d3af99"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-15f095de5c"></a>definition `ContentObservationResult`
+
+- <a id="s-1e94332762"></a>`type`: `"object"`
+- <a id="s-c071de0fa1"></a>`additionalProperties`: `false`
+- <a id="s-5044d92288"></a>`required`: `["request_id","state","observer","observer_contract_id","observer_contract_sha256","subjects","result_sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-6656743717"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-c77b395b7f)) |  |
+| <a id="s-7f5a6683c8"></a>`facts` | no | anyOf=[(type="object"; additionalProperties=([JsonValue](#s-c77b395b7f))); (type="null")]; default=null |  |
+| <a id="s-0010490193"></a>`facts_schema` | no | anyOf=[([JsonSchemaValidationProfile](#s-d285b708ae)); (type="null")]; default=null |  |
+| <a id="s-c38a74669c"></a>`facts_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
+| <a id="s-7ea0c19f4f"></a>`failure` | no | anyOf=[([ContentObservationFailure](#s-37c3f097e7)); (type="null")]; default=null |  |
+| <a id="s-ca42797ac8"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1" |  |
+| <a id="s-acd90c817f"></a>`inapplicable` | no | anyOf=[([ContentObservationInapplicable](#s-907125e186)); (type="null")]; default=null |  |
+| <a id="s-112a576397"></a>`observer` | yes | [ObserverImplementation](#s-82d5a45306) |  |
+| <a id="s-9b88006e48"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-0ad65e45ee"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b1d45ea42a"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-9db90716e0"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-50b355dcd7"></a>`state` | yes | type="string"; enum=["observed","inapplicable","failed","canceled"] |  |
+| <a id="s-99fe4a7d4f"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-ce72dd420c)); minItems=1 |  |
 
 ##### <a id="s-792112d1dc"></a>definition `ControllerEvidence`
 
@@ -542,94 +630,6 @@ Exact externally visible contract owned by this contract element.
 ##### <a id="s-c77b395b7f"></a>definition `JsonValue`
 
 - Accepts: any JSON value.
-
-##### <a id="s-447a5c5c04"></a>definition `ObservationEvidence`
-
-- <a id="s-a74342047f"></a>`type`: `"object"`
-- <a id="s-bb4a77e7c9"></a>`additionalProperties`: `false`
-- <a id="s-a6891b2094"></a>`required`: `["request","result"]`
-
-###### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-628ad62e60"></a>`request` | yes | [ObservationRequest](#s-ba8270c7f9) |  |
-| <a id="s-a876974e8c"></a>`result` | yes | [ObservationResult](#s-9982b86647) |  |
-
-##### <a id="s-98486ba445"></a>definition `ObservationFailure`
-
-- <a id="s-e8e515c6f2"></a>`type`: `"object"`
-- <a id="s-87a841e408"></a>`additionalProperties`: `false`
-- <a id="s-059e52de1f"></a>`required`: `["code","message","retryable"]`
-
-###### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-027d769d6c"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-d0c5f31791"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
-| <a id="s-a39afe3e81"></a>`retryable` | yes | type="boolean" |  |
-
-##### <a id="s-e53628e23d"></a>definition `ObservationInapplicable`
-
-- <a id="s-9a11d16aa5"></a>`type`: `"object"`
-- <a id="s-38666e15a9"></a>`additionalProperties`: `false`
-- <a id="s-e8d192deb3"></a>`required`: `["code","message"]`
-
-###### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-1f30dfdc83"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-3321699f1a"></a>`message` | yes | type="string"; maxLength=1000; minLength=1 |  |
-
-##### <a id="s-ba8270c7f9"></a>definition `ObservationRequest`
-
-- <a id="s-55f1aff22a"></a>`type`: `"object"`
-- <a id="s-ab4e91518d"></a>`additionalProperties`: `false`
-- <a id="s-03f2ff40d6"></a>`required`: `["work_id","observer_registration_id","observer_descriptor_sha256","observer_contract_id","observer_contract_sha256","subjects","request_id"]`
-
-###### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-3f985e101e"></a>`format` | no | type="string"; const="stove0-observation-request/v1"; default="stove0-observation-request/v1" |  |
-| <a id="s-50393058c0"></a>`maximum_result_bytes` | no | type="integer"; minimum=1; maximum=67108864; default=1048576 |  |
-| <a id="s-f36d33ccef"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-bf58ace172"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-890248b5e9"></a>`observer_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-82c4dc48ff"></a>`observer_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
-| <a id="s-9846fca96a"></a>`options` | no | type="object"; additionalProperties=([JsonValue](#s-c77b395b7f)) |  |
-| <a id="s-f9eab45a86"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-18e2f54814"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
-| <a id="s-077f307657"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-ce72dd420c)); minItems=1 |  |
-| <a id="s-dc33224b49"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300 |  |
-| <a id="s-a9d4b45711"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-
-##### <a id="s-9982b86647"></a>definition `ObservationResult`
-
-- <a id="s-f836f2b925"></a>`type`: `"object"`
-- <a id="s-bf8d7309e5"></a>`additionalProperties`: `false`
-- <a id="s-73638a4bb2"></a>`required`: `["request_id","state","observer","observer_contract_id","observer_contract_sha256","subjects","result_sha256"]`
-
-###### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-857ff8c860"></a>`execution_evidence` | no | type="object"; additionalProperties=([JsonValue](#s-c77b395b7f)) |  |
-| <a id="s-98595bd1d8"></a>`facts` | no | anyOf=[(type="object"; additionalProperties=([JsonValue](#s-c77b395b7f))); (type="null")]; default=null |  |
-| <a id="s-1c7f4edf97"></a>`facts_schema` | no | anyOf=[([JsonSchemaValidationProfile](#s-d285b708ae)); (type="null")]; default=null |  |
-| <a id="s-c6c3ea3f59"></a>`facts_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
-| <a id="s-1cc7ba071a"></a>`failure` | no | anyOf=[([ObservationFailure](#s-98486ba445)); (type="null")]; default=null |  |
-| <a id="s-1c322d0156"></a>`format` | no | type="string"; const="stove0-observation-result/v1"; default="stove0-observation-result/v1" |  |
-| <a id="s-f707f3db26"></a>`inapplicable` | no | anyOf=[([ObservationInapplicable](#s-e53628e23d)); (type="null")]; default=null |  |
-| <a id="s-8454437317"></a>`observer` | yes | [ObserverImplementation](#s-82d5a45306) |  |
-| <a id="s-3af51d6210"></a>`observer_contract_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-55c6a6b718"></a>`observer_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-77af31283e"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-b52673e614"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-7b11329316"></a>`state` | yes | type="string"; enum=["observed","inapplicable","failed","canceled"] |  |
-| <a id="s-b576961cd2"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-ce72dd420c)); minItems=1 |  |
 
 ##### <a id="s-82d5a45306"></a>definition `ObserverImplementation`
 
@@ -1024,7 +1024,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-1e19d21bff"></a>`format` | no | type="string"; const="stove0-workflow-plan/v1"; default="stove0-workflow-plan/v1" |  |
 | <a id="s-8a14231cfb"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
-| <a id="s-90a5e398b8"></a>`observations` | no | type="array"; default=[]; items=([ObservationEvidence](#s-447a5c5c04)) |  |
+| <a id="s-90a5e398b8"></a>`observations` | no | type="array"; default=[]; items=([ContentObservationEvidence](#s-bcb2a93794)) |  |
 | <a id="s-b55354eb3d"></a>`operation` | yes | [OperationRef](#s-363e2a2f20) |  |
 | <a id="s-e05d8d0bdf"></a>`output_policy` | no | type="object"; additionalProperties=([JsonValue](#s-c77b395b7f)) |  |
 | <a id="s-6426c60f1b"></a>`requested_target_options` | no | type="object"; additionalProperties=([JsonValue](#s-c77b395b7f)) |  |
@@ -1090,7 +1090,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b22c95af10087806a24eabe84b24f734ece50f5cbdcae864726d9e8f2e72ae1e -->
+<!-- exact-contract-value: d22a63e78018a1ec5d5e93edb6333b6365cce399031b5aca8d9de6cfa7069bed -->
 
 ```json
 {
@@ -1403,6 +1403,261 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection_id",
             "archive_root_sha256",
             "content_identity"
+          ],
+          "type": "object"
+        },
+        "ContentObservationEvidence": {
+          "additionalProperties": false,
+          "properties": {
+            "request": {
+              "$ref": "#/$defs/ContentObservationRequest"
+            },
+            "result": {
+              "$ref": "#/$defs/ContentObservationResult"
+            }
+          },
+          "required": [
+            "request",
+            "result"
+          ],
+          "type": "object"
+        },
+        "ContentObservationFailure": {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "type": "string"
+            },
+            "message": {
+              "maxLength": 1000,
+              "minLength": 1,
+              "type": "string"
+            },
+            "retryable": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "code",
+            "message",
+            "retryable"
+          ],
+          "type": "object"
+        },
+        "ContentObservationInapplicable": {
+          "additionalProperties": false,
+          "properties": {
+            "code": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "type": "string"
+            },
+            "message": {
+              "maxLength": 1000,
+              "minLength": 1,
+              "type": "string"
+            }
+          },
+          "required": [
+            "code",
+            "message"
+          ],
+          "type": "object"
+        },
+        "ContentObservationRequest": {
+          "additionalProperties": false,
+          "properties": {
+            "format": {
+              "const": "stove0-observation-request/v1",
+              "default": "stove0-observation-request/v1",
+              "type": "string"
+            },
+            "maximum_result_bytes": {
+              "default": 1048576,
+              "maximum": 67108864,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "observer_contract_id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "type": "string"
+            },
+            "observer_contract_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "observer_descriptor_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "observer_registration_id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9.-]{0,118}[a-z0-9])?$",
+              "type": "string"
+            },
+            "options": {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "type": "object"
+            },
+            "request_id": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "retrieval_policy": {
+              "default": "available-only",
+              "enum": [
+                "available-only",
+                "allow"
+              ],
+              "type": "string"
+            },
+            "subjects": {
+              "items": {
+                "$ref": "#/$defs/ArtifactSubject"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            "timeout_seconds": {
+              "default": 300,
+              "maximum": 86400,
+              "minimum": 1,
+              "type": "integer"
+            },
+            "work_id": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "work_id",
+            "observer_registration_id",
+            "observer_descriptor_sha256",
+            "observer_contract_id",
+            "observer_contract_sha256",
+            "subjects",
+            "request_id"
+          ],
+          "type": "object"
+        },
+        "ContentObservationResult": {
+          "additionalProperties": false,
+          "properties": {
+            "execution_evidence": {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "type": "object"
+            },
+            "facts": {
+              "anyOf": [
+                {
+                  "additionalProperties": {
+                    "$ref": "#/$defs/JsonValue"
+                  },
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "facts_schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/JsonSchemaValidationProfile"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "facts_sha256": {
+              "anyOf": [
+                {
+                  "pattern": "^[0-9a-f]{64}$",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "failure": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ContentObservationFailure"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "format": {
+              "const": "stove0-observation-result/v1",
+              "default": "stove0-observation-result/v1",
+              "type": "string"
+            },
+            "inapplicable": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/ContentObservationInapplicable"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "observer": {
+              "$ref": "#/$defs/ObserverImplementation"
+            },
+            "observer_contract_id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "type": "string"
+            },
+            "observer_contract_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "request_id": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "result_sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            "state": {
+              "enum": [
+                "observed",
+                "inapplicable",
+                "failed",
+                "canceled"
+              ],
+              "type": "string"
+            },
+            "subjects": {
+              "items": {
+                "$ref": "#/$defs/ArtifactSubject"
+              },
+              "minItems": 1,
+              "type": "array"
+            }
+          },
+          "required": [
+            "request_id",
+            "state",
+            "observer",
+            "observer_contract_id",
+            "observer_contract_sha256",
+            "subjects",
+            "result_sha256"
           ],
           "type": "object"
         },
@@ -2029,261 +2284,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "object"
         },
         "JsonValue": {},
-        "ObservationEvidence": {
-          "additionalProperties": false,
-          "properties": {
-            "request": {
-              "$ref": "#/$defs/ObservationRequest"
-            },
-            "result": {
-              "$ref": "#/$defs/ObservationResult"
-            }
-          },
-          "required": [
-            "request",
-            "result"
-          ],
-          "type": "object"
-        },
-        "ObservationFailure": {
-          "additionalProperties": false,
-          "properties": {
-            "code": {
-              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "type": "string"
-            },
-            "message": {
-              "maxLength": 1000,
-              "minLength": 1,
-              "type": "string"
-            },
-            "retryable": {
-              "type": "boolean"
-            }
-          },
-          "required": [
-            "code",
-            "message",
-            "retryable"
-          ],
-          "type": "object"
-        },
-        "ObservationInapplicable": {
-          "additionalProperties": false,
-          "properties": {
-            "code": {
-              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "type": "string"
-            },
-            "message": {
-              "maxLength": 1000,
-              "minLength": 1,
-              "type": "string"
-            }
-          },
-          "required": [
-            "code",
-            "message"
-          ],
-          "type": "object"
-        },
-        "ObservationRequest": {
-          "additionalProperties": false,
-          "properties": {
-            "format": {
-              "const": "stove0-observation-request/v1",
-              "default": "stove0-observation-request/v1",
-              "type": "string"
-            },
-            "maximum_result_bytes": {
-              "default": 1048576,
-              "maximum": 67108864,
-              "minimum": 1,
-              "type": "integer"
-            },
-            "observer_contract_id": {
-              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "type": "string"
-            },
-            "observer_contract_sha256": {
-              "pattern": "^[0-9a-f]{64}$",
-              "type": "string"
-            },
-            "observer_descriptor_sha256": {
-              "pattern": "^[0-9a-f]{64}$",
-              "type": "string"
-            },
-            "observer_registration_id": {
-              "pattern": "^[a-z0-9]\u0028?:[a-z0-9.-]{0,118}[a-z0-9])?$",
-              "type": "string"
-            },
-            "options": {
-              "additionalProperties": {
-                "$ref": "#/$defs/JsonValue"
-              },
-              "type": "object"
-            },
-            "request_id": {
-              "pattern": "^[0-9a-f]{64}$",
-              "type": "string"
-            },
-            "retrieval_policy": {
-              "default": "available-only",
-              "enum": [
-                "available-only",
-                "allow"
-              ],
-              "type": "string"
-            },
-            "subjects": {
-              "items": {
-                "$ref": "#/$defs/ArtifactSubject"
-              },
-              "minItems": 1,
-              "type": "array"
-            },
-            "timeout_seconds": {
-              "default": 300,
-              "maximum": 86400,
-              "minimum": 1,
-              "type": "integer"
-            },
-            "work_id": {
-              "pattern": "^[0-9a-f]{64}$",
-              "type": "string"
-            }
-          },
-          "required": [
-            "work_id",
-            "observer_registration_id",
-            "observer_descriptor_sha256",
-            "observer_contract_id",
-            "observer_contract_sha256",
-            "subjects",
-            "request_id"
-          ],
-          "type": "object"
-        },
-        "ObservationResult": {
-          "additionalProperties": false,
-          "properties": {
-            "execution_evidence": {
-              "additionalProperties": {
-                "$ref": "#/$defs/JsonValue"
-              },
-              "type": "object"
-            },
-            "facts": {
-              "anyOf": [
-                {
-                  "additionalProperties": {
-                    "$ref": "#/$defs/JsonValue"
-                  },
-                  "type": "object"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": null
-            },
-            "facts_schema": {
-              "anyOf": [
-                {
-                  "$ref": "#/$defs/JsonSchemaValidationProfile"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": null
-            },
-            "facts_sha256": {
-              "anyOf": [
-                {
-                  "pattern": "^[0-9a-f]{64}$",
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": null
-            },
-            "failure": {
-              "anyOf": [
-                {
-                  "$ref": "#/$defs/ObservationFailure"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": null
-            },
-            "format": {
-              "const": "stove0-observation-result/v1",
-              "default": "stove0-observation-result/v1",
-              "type": "string"
-            },
-            "inapplicable": {
-              "anyOf": [
-                {
-                  "$ref": "#/$defs/ObservationInapplicable"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": null
-            },
-            "observer": {
-              "$ref": "#/$defs/ObserverImplementation"
-            },
-            "observer_contract_id": {
-              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "type": "string"
-            },
-            "observer_contract_sha256": {
-              "pattern": "^[0-9a-f]{64}$",
-              "type": "string"
-            },
-            "request_id": {
-              "pattern": "^[0-9a-f]{64}$",
-              "type": "string"
-            },
-            "result_sha256": {
-              "pattern": "^[0-9a-f]{64}$",
-              "type": "string"
-            },
-            "state": {
-              "enum": [
-                "observed",
-                "inapplicable",
-                "failed",
-                "canceled"
-              ],
-              "type": "string"
-            },
-            "subjects": {
-              "items": {
-                "$ref": "#/$defs/ArtifactSubject"
-              },
-              "minItems": 1,
-              "type": "array"
-            }
-          },
-          "required": [
-            "request_id",
-            "state",
-            "observer",
-            "observer_contract_id",
-            "observer_contract_sha256",
-            "subjects",
-            "result_sha256"
-          ],
-          "type": "object"
-        },
         "ObserverImplementation": {
           "additionalProperties": false,
           "properties": {
@@ -3206,7 +3206,7 @@ The following JSON is the complete value owned at each machine-authority pointer
             "observations": {
               "default": [],
               "items": {
-                "$ref": "#/$defs/ObservationEvidence"
+                "$ref": "#/$defs/ContentObservationEvidence"
               },
               "type": "array"
             },
@@ -3454,14 +3454,14 @@ The following JSON is the complete value owned at each machine-authority pointer
         "observation_requests": {
           "default": [],
           "items": {
-            "$ref": "#/$defs/ObservationRequest"
+            "$ref": "#/$defs/ContentObservationRequest"
           },
           "type": "array"
         },
         "observation_results": {
           "default": [],
           "items": {
-            "$ref": "#/$defs/ObservationResult"
+            "$ref": "#/$defs/ContentObservationResult"
           },
           "type": "array"
         },
@@ -3600,7 +3600,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, format: Literal['stove0-work-record/v1'] = 'stove0-work-record/v1', work: stove0_protocol.models.WorkIdentity, phase: Literal['eligible', 'claimed', 'observing', 'planning', 'target_preflight', 'queued', 'executing', 'output_finalizing', 'verifying', 'settled', 'retirement_pending', 'coordinating', 'abandon_pending', 'complete', 'inapplicable', 'failed', 'canceled'] = 'eligible', revision: Annotated[int, Ge(ge=1)] = 1, claim: stove0_core.work_state.ClaimBinding | None = None, preview_acceptance: stove0_core.work_state.PreviewAcceptance | None = None, expected_target_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, observation_requests: tuple[stove0_protocol.models.ObservationRequest, ...] = (), observation_results: tuple[stove0_protocol.models.ObservationResult, ...] = (), branch_set_plan: stove0_protocol.fork_join.BranchSetPlan | None = None, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement | None = None, join_plan: stove0_protocol.fork_join.JoinPlan | None = None, coordination_cancel_requested: bool = False, workflow_plan: stove0_protocol.models.WorkflowPlan | None = None, target_plan: Optional[Annotated[stove0_target_protocol.protocol.TransformPlan | stove0_target_protocol.protocol.EffectPlan, FieldInfo(annotation=NoneType, required=True, discriminator='protocol')]] = None, controller_evidence: stove0_protocol.models.ControllerEvidence | None = None, target_request: stove0_target_protocol.protocol.AcceptedTargetJob | None = None, target_status: stove0_target_protocol.protocol.TargetJobStatus | None = None, output: stove0_target_protocol.protocol.OutputCollectionRef | None = None, target_settlement: stove0_target_protocol.protocol.TargetSettlementAuthority | None = None, retirement_remaining: tuple[int, ...] = (), failure: stove0_core.work_state.WorkFailure | None = None, inapplicable: stove0_core.work_state.WorkInapplicable | None = None, abandon_outcome: Optional[Literal['inapplicable', 'failed', 'canceled']] = None) -> None\""
+    "signature": "\"(*, format: Literal['stove0-work-record/v1'] = 'stove0-work-record/v1', work: stove0_protocol.models.WorkIdentity, phase: Literal['eligible', 'claimed', 'observing', 'planning', 'target_preflight', 'queued', 'executing', 'output_finalizing', 'verifying', 'settled', 'retirement_pending', 'coordinating', 'abandon_pending', 'complete', 'inapplicable', 'failed', 'canceled'] = 'eligible', revision: Annotated[int, Ge(ge=1)] = 1, claim: stove0_core.work_state.ClaimBinding | None = None, preview_acceptance: stove0_core.work_state.PreviewAcceptance | None = None, expected_target_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, observation_requests: tuple[stove0_protocol.models.ContentObservationRequest, ...] = (), observation_results: tuple[stove0_protocol.models.ContentObservationResult, ...] = (), branch_set_plan: stove0_protocol.fork_join.BranchSetPlan | None = None, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement | None = None, join_plan: stove0_protocol.fork_join.JoinPlan | None = None, coordination_cancel_requested: bool = False, workflow_plan: stove0_protocol.models.WorkflowPlan | None = None, target_plan: Optional[Annotated[stove0_target_protocol.protocol.TransformPlan | stove0_target_protocol.protocol.EffectPlan, FieldInfo(annotation=NoneType, required=True, discriminator='protocol')]] = None, controller_evidence: stove0_protocol.models.ControllerEvidence | None = None, target_request: stove0_target_protocol.protocol.AcceptedTargetJob | None = None, target_status: stove0_target_protocol.protocol.TargetJobStatus | None = None, output: stove0_target_protocol.protocol.OutputCollectionRef | None = None, target_settlement: stove0_target_protocol.protocol.TargetSettlementAuthority | None = None, retirement_remaining: tuple[int, ...] = (), failure: stove0_core.work_state.WorkFailure | None = None, inapplicable: stove0_core.work_state.WorkInapplicable | None = None, abandon_outcome: Optional[Literal['inapplicable', 'failed', 'canceled']] = None) -> None\""
   },
   "distribution": "stove0-server",
   "module": "stove0_core",

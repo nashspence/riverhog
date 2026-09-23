@@ -14,8 +14,8 @@ from typing import Any, Literal, Protocol, Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from stove0_observer_protocol import (
-    ObservationRequest,
-    ObservationResult,
+    ContentObservationRequest,
+    ContentObservationResult,
 )
 from stove0_operator_contracts import validate_work_state_shape
 from stove0_protocol import (
@@ -285,8 +285,8 @@ class WorkRecord(Stove0StateModel):
     claim: ClaimBinding | None = None
     preview_acceptance: PreviewAcceptance | None = None
     expected_target_plan_sha256: Sha256 | None = None
-    observation_requests: tuple[ObservationRequest, ...] = ()
-    observation_results: tuple[ObservationResult, ...] = ()
+    observation_requests: tuple[ContentObservationRequest, ...] = ()
+    observation_results: tuple[ContentObservationResult, ...] = ()
     branch_set_plan: BranchSetPlan | None = None
     coordination_settlement: CoordinationSettlement | None = None
     join_plan: JoinPlan | None = None
@@ -1256,7 +1256,7 @@ class Stove0WorkService:
     def begin_observations(
         self,
         work_id: str,
-        requests: Sequence[ObservationRequest],
+        requests: Sequence[ContentObservationRequest],
         *,
         expected_revision: int,
     ) -> WorkRecord:
@@ -1296,7 +1296,7 @@ class Stove0WorkService:
     def record_observation(
         self,
         work_id: str,
-        result: ObservationResult,
+        result: ContentObservationResult,
         *,
         expected_revision: int,
     ) -> WorkRecord:

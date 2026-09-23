@@ -29,11 +29,11 @@ from .errors import SymlinkRefusedError, UnstableFileError, UnsupportedFileTypeE
 from .interface import PlatformBackend
 from .model import (
     ExtensionDraft,
+    FileStateObservationRequest,
+    FileStateObservationResult,
     JsonObject,
     LargeValueDisposition,
     NativeStat,
-    ObservationRequest,
-    ObservationResult,
 )
 
 UTC = dt.UTC
@@ -256,7 +256,7 @@ def retained_native_value(
     data: bytes,
     *,
     agent_id: str,
-    request: ObservationRequest,
+    request: FileStateObservationRequest,
 ) -> tuple[str, JsonObject | None, str | None]:
     policy = request.policy
     if len(data) <= policy.inline_native_value_bytes:
@@ -373,7 +373,7 @@ def resolve_principal(
     return principal
 
 
-def basic_access(stat: NativeStat, request: ObservationRequest) -> JsonObject:
+def basic_access(stat: NativeStat, request: FileStateObservationRequest) -> JsonObject:
     return {
         "owner": resolve_principal(
             numeric_id=stat.uid,
@@ -539,7 +539,7 @@ def _jsonable(value: Any) -> Any:
     return value
 
 
-def observation_policy_document(request: ObservationRequest) -> JsonObject:
+def observation_policy_document(request: FileStateObservationRequest) -> JsonObject:
     return cast(JsonObject, _jsonable(asdict(request.policy)))
 
 
@@ -628,7 +628,7 @@ class DescriptorFileStateObserver:
         self.backend = backend
         self.platform_family = backend.platform_family
 
-    def observe(self, request: ObservationRequest) -> ObservationResult:
+    def observe(self, request: FileStateObservationRequest) -> FileStateObservationResult:
         self.backend.assert_supported()
         require_urn_uuid(request.lineage_id, "lineage_id")
         require_urn_uuid(request.host_id, "host_id")
@@ -942,8 +942,8 @@ class DescriptorFileStateObserver:
                 for draft in extension_drafts
             )
 
-            return ObservationResult(
-                state=state,
+            return FileStateObservationResult(
+                file_state=state,
                 capture=capture,
                 environment=collection.environment,
                 agents=tuple(agents),

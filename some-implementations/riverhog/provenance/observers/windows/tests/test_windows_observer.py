@@ -38,8 +38,8 @@ from a_riverhog_windows_provenance_observer import (
     windows_locator,
 )
 from riverhog_provenance import (
+    FileStateObservationRequest,
     ObservationPolicy,
-    ObservationRequest,
     PayloadBindingRequest,
     SymlinkRefusedError,
     validate_graph_fragment,
@@ -81,7 +81,7 @@ class FakeWindowsNative:
             reparse_data=self.reparse_data,
         )
 
-    def open_regular_file(self, path: str, request: ObservationRequest):
+    def open_regular_file(self, path: str, request: FileStateObservationRequest):
         fd = os.open(path, os.O_RDONLY)
         info = self.inspect_path(path)
         return (
@@ -167,7 +167,7 @@ class FakeWindowsNative:
         )
 
     @staticmethod
-    def backup_streams(fd: int, request: ObservationRequest):
+    def backup_streams(fd: int, request: FileStateObservationRequest):
         first = _ea_entry(b"Archive.Source", b"host-a", flags=0x80, final=False)
         second = _ea_entry(b"Archive.Sequence", b"7", final=True)
         ea_data = first + second
@@ -262,7 +262,7 @@ def test_mocked_windows_observation_contract(tmp_path: Path, urn_factory) -> Non
     payload.write_bytes(content)
     native = FakeWindowsNative()
     result = WindowsFileStateObserver(native=native, enforce_platform=False).observe(
-        ObservationRequest(
+        FileStateObservationRequest(
             path=payload,
             lineage_id=urn_factory(),
             host_id=urn_factory(),
@@ -274,16 +274,18 @@ def test_mocked_windows_observation_contract(tmp_path: Path, urn_factory) -> Non
     validate_graph_fragment(fragment)
     canonical_json(fragment)
 
-    assert result.state["content"]["size_bytes"] == str(len(content))
-    assert result.state["content"]["digests"][0]["value"] == hashlib.sha256(content).hexdigest()
-    assert result.state["locator"]["syntax"] == "windows"
-    assert result.state["locator"]["source_encoding"] == "UTF-16LE"
+    assert result.file_state["content"]["size_bytes"] == str(len(content))
+    assert (
+        result.file_state["content"]["digests"][0]["value"] == hashlib.sha256(content).hexdigest()
+    )
+    assert result.file_state["locator"]["syntax"] == "windows"
+    assert result.file_state["locator"]["source_encoding"] == "UTF-16LE"
     assert result.payload_binding is not None
     assert result.payload_binding["relative_payload_locator"]["syntax"] == "posix"
 
-    access = result.state["filesystem_metadata"]["access"]
+    access = result.file_state["filesystem_metadata"]["access"]
     assert access["owner"]["identifiers"][0]["value"] == "S-1-5-21-1000"
-    rows = result.state["filesystem_metadata"]["native_metadata"]
+    rows = result.file_state["filesystem_metadata"]["native_metadata"]
     kinds = {row["kind"] for row in rows}
     assert {
         "security_descriptor",
@@ -301,7 +303,7 @@ def test_mocked_windows_observation_contract(tmp_path: Path, urn_factory) -> Non
 
     assert all(
         item["raw_unit"] == "ticks_100ns"
-        for item in result.state["filesystem_metadata"]["timestamps"]
+        for item in result.file_state["filesystem_metadata"]["timestamps"]
     )
     assert result.environment["operating_system"]["family"] == "windows"
     assert result.environment["operating_system"]["version"] == "25H2"
@@ -315,7 +317,7 @@ def test_windows_usn_policy_disables_native_query(tmp_path: Path, urn_factory) -
     payload.write_bytes(b"payload")
     native = FakeWindowsNative()
     result = WindowsFileStateObserver(native=native, enforce_platform=False).observe(
-        ObservationRequest(
+        FileStateObservationRequest(
             path=payload,
             lineage_id=urn_factory(),
             host_id=urn_factory(),
@@ -325,7 +327,7 @@ def test_windows_usn_policy_disables_native_query(tmp_path: Path, urn_factory) -
     assert native.snapshot_capture_usn and not any(native.snapshot_capture_usn)
     assert not any(
         row["name"] == "change-journal-file-record"
-        for row in result.state["filesystem_metadata"]["native_metadata"]
+        for row in result.file_state["filesystem_metadata"]["native_metadata"]
     )
     validate_graph_fragment(result.graph_fragment())
 
@@ -347,7 +349,7 @@ def test_windows_name_surrogate_reparse_is_refused(tmp_path: Path, urn_factory) 
     native.reparse_data = b"reparse"
     with pytest.raises(SymlinkRefusedError):
         WindowsFileStateObserver(native=native, enforce_platform=False).observe(
-            ObservationRequest(
+            FileStateObservationRequest(
                 path=payload,
                 lineage_id=urn_factory(),
                 host_id=urn_factory(),
@@ -360,7 +362,7 @@ def test_windows_drive_relative_payload_binding_is_rejected(tmp_path: Path, urn_
     payload.write_bytes(b"payload")
     with pytest.raises(ValueError, match="payload binding path must be relative"):
         WindowsFileStateObserver(native=FakeWindowsNative(), enforce_platform=False).observe(
-            ObservationRequest(
+            FileStateObservationRequest(
                 path=payload,
                 lineage_id=urn_factory(),
                 host_id=urn_factory(),
@@ -422,7 +424,7 @@ def test_read_file_usn_data_omits_documented_invalid_fields() -> None:
 
 def test_ea_parser_honors_longword_aligned_chain(urn_factory) -> None:
     backend = WindowsBackend(native=FakeWindowsNative(), enforce_platform=False)
-    request = ObservationRequest(
+    request = FileStateObservationRequest(
         path="unused",
         lineage_id=urn_factory(),
         host_id=urn_factory(),

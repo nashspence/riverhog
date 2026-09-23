@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-8786d06a41"></a>`kind`: `"function"`
-- <a id="s-d6bdcedf22"></a>`signature`: `"\"(client: 'ObserverClient', *, invocations: 'Sequence[ObservationInvocation]' = (), semantic_vectors: 'Sequence[SemanticFactsConformanceVectors]' = (), semantic_validators: 'SemanticValidatorProvider \| None' = None) -> 'ObserverConformanceResult'\""`
+- <a id="s-d6bdcedf22"></a>`signature`: `"\"(client: 'ObserverClient', *, invocations: 'Sequence[ContentObservationInvocation]' = (), semantic_vectors: 'Sequence[SemanticFactsConformanceVectors]' = (), semantic_validators: 'SemanticValidatorProvider \| None' = None) -> 'ObserverConformanceResult'\""`
 
 ## Governing policies
 
@@ -51,13 +51,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9b6be68c58c7f65e85663eb8ae7160941f8ab81d7fb964d19796c5db90c1794e -->
+<!-- exact-contract-value: 1e6554ce7d6aa1a92c68e908f35f85b9d3d1ec1c1ef36665609d6dc438e002f3 -->
 
 ```json
 {
   "contract": {
     "kind": "function",
-    "signature": "\"(client: 'ObserverClient', *, invocations: 'Sequence[ObservationInvocation]' = (), semantic_vectors: 'Sequence[SemanticFactsConformanceVectors]' = (), semantic_validators: 'SemanticValidatorProvider | None' = None) -> 'ObserverConformanceResult'\""
+    "signature": "\"(client: 'ObserverClient', *, invocations: 'Sequence[ContentObservationInvocation]' = (), semantic_vectors: 'Sequence[SemanticFactsConformanceVectors]' = (), semantic_validators: 'SemanticValidatorProvider | None' = None) -> 'ObserverConformanceResult'\""
   },
   "distribution": "stove0-observer-support",
   "module": "stove0_observer_support",

@@ -14,10 +14,10 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from stove0_observer_client import ContentObserverClient, load_semantic_validator_registry
 from stove0_observer_protocol import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
-    ObservationInvocation,
-    ObservationRequest,
-    ObservationRequestPayload,
-    ObservationResult,
+    ContentObservationInvocation,
+    ContentObservationRequest,
+    ContentObservationRequestPayload,
+    ContentObservationResult,
     ObserverDescriptor,
     SemanticFactsConformanceVectors,
     SemanticValidatorProvider,
@@ -121,8 +121,8 @@ def _validate_schema_value(value: object, schema: dict[str, Any], *, label: str)
 
 
 class ObserverContractConformanceEvidence(_ObserverConformanceModel):
-    request: ObservationRequest
-    observation: ObservationResult
+    request: ContentObservationRequest
+    observation: ContentObservationResult
 
 
 class ObserverContractConformance(_ObserverConformanceModel):
@@ -237,7 +237,7 @@ class ObserverClient(Protocol):
 
     def observe(
         self,
-        invocation: ObservationInvocation,
+        invocation: ContentObservationInvocation,
         *,
         descriptor: ObserverDescriptor,
     ) -> Any: ...
@@ -246,7 +246,7 @@ class ObserverClient(Protocol):
 def conformance_report(
     client: ObserverClient,
     *,
-    invocations: Sequence[ObservationInvocation] = (),
+    invocations: Sequence[ContentObservationInvocation] = (),
     semantic_vectors: Sequence[SemanticFactsConformanceVectors] = (),
     semantic_validators: SemanticValidatorProvider | None = None,
 ) -> ObserverConformanceResult:
@@ -328,8 +328,8 @@ def conformance_report(
                         support.facts_schema.document,
                         label="observer semantic-vector facts",
                     )
-                    vector_request = ObservationRequest.seal(
-                        ObservationRequestPayload(
+                    vector_request = ContentObservationRequest.seal(
+                        ContentObservationRequestPayload(
                             **base.model_dump(
                                 mode="python",
                                 exclude={"request_id", "subjects", "options"},
@@ -404,7 +404,7 @@ def _parser() -> argparse.ArgumentParser:
         type=Path,
         action="append",
         default=[],
-        help="JSON ObservationInvocation to exercise (repeat once per advertised contract)",
+        help="JSON ContentObservationInvocation to exercise (repeat once per advertised contract)",
     )
     parser.add_argument(
         "--semantic-vectors",
@@ -425,7 +425,7 @@ def _parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     invocations = tuple(
-        ObservationInvocation.model_validate_json(path.read_text(encoding="utf-8"))
+        ContentObservationInvocation.model_validate_json(path.read_text(encoding="utf-8"))
         for path in args.invocation
     )
     semantic_vectors = tuple(

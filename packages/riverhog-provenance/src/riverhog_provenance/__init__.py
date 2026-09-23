@@ -44,10 +44,10 @@ from .journal import (
     verify_payload_binding,
 )
 from .model import (
+    FileStateObservationRequest,
+    FileStateObservationResult,
     LargeValueDisposition,
     ObservationPolicy,
-    ObservationRequest,
-    ObservationResult,
     PayloadBindingRequest,
 )
 from .providers import (
@@ -106,8 +106,8 @@ __all__ = [
     "LargeValueDisposition",
     "NativeObservationError",
     "ObservationPolicy",
-    "ObservationRequest",
-    "ObservationResult",
+    "FileStateObservationRequest",
+    "FileStateObservationResult",
     "PROVENANCE_ENTRY_SCHEMA",
     "PROVENANCE_PROFILE",
     "PROVENANCE_BINDING_SEGMENT_FILES_MAX",

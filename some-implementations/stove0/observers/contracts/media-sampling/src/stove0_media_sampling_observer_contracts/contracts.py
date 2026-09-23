@@ -9,8 +9,8 @@ from typing import Self
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from stove0_observer_protocol import (
     ArtifactSubject,
+    ContentObservationRequest,
     JsonSchemaValidationProfile,
-    ObservationRequest,
     ObserverContract,
     ObserverContractPayload,
     SemanticFactsConformanceVectors,
@@ -148,7 +148,7 @@ def validate_media_sampling_facts(
 
 
 def validate_media_sampling_observation(
-    request: ObservationRequest,
+    request: ContentObservationRequest,
     facts: Mapping[str, object],
 ) -> None:
     """Execute the advertised profile through the generic consumer signature."""

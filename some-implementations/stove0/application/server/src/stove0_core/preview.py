@@ -11,9 +11,9 @@ from __future__ import annotations
 from typing import Protocol
 
 from stove0_observer_protocol import (
-    ObservationEvidence,
-    ObservationInvocation,
-    ObservationRequest,
+    ContentObservationEvidence,
+    ContentObservationInvocation,
+    ContentObservationRequest,
     ObserverRuntimeAuthority,
 )
 from stove0_protocol import (
@@ -46,7 +46,7 @@ class PreviewRiverhogPort(Protocol):
     def observation_authority(
         self,
         claim: ClaimBinding,
-        request: ObservationRequest,
+        request: ContentObservationRequest,
     ) -> ObserverRuntimeAuthority: ...
 
     def abandon_preview_claim(
@@ -78,7 +78,7 @@ class WorkflowPreviewService:
         identity = WorkIdentity.model_validate(work)
         request = WorkflowPreviewRequest.seal(WorkflowPreviewRequestPayload(work=identity))
         claim = self.riverhog.acquire_preview_claim(request)
-        observations: list[ObservationEvidence] = []
+        observations: list[ContentObservationEvidence] = []
         try:
             evidence = self._observe_work(identity, claim, observations)
             decision = self.planning.workflow_plan(
@@ -187,9 +187,9 @@ class WorkflowPreviewService:
         self,
         work: WorkIdentity,
         claim: ClaimBinding,
-        all_observations: list[ObservationEvidence],
-    ) -> tuple[ObservationEvidence, ...]:
-        evidence: list[ObservationEvidence] = []
+        all_observations: list[ContentObservationEvidence],
+    ) -> tuple[ContentObservationEvidence, ...]:
+        evidence: list[ContentObservationEvidence] = []
         for observation_request in self.planning.observation_requests(work):
             if observation_request.work_id != work.work_id:
                 raise RuntimeError("preview observation request differs from the work identity")
@@ -201,7 +201,7 @@ class WorkflowPreviewService:
             authority = self.riverhog.observation_authority(claim, observation_request)
             result = self.observers.observe(
                 observation_request.observer_registration_id,
-                ObservationInvocation(
+                ContentObservationInvocation(
                     request=observation_request,
                     claim_id=claim.claim_id,
                     fence=claim.fence,
@@ -230,7 +230,7 @@ class WorkflowPreviewService:
                     code="observer-canceled",
                     message="The content observer canceled the preview request.",
                 )
-            item = ObservationEvidence(request=observation_request, result=result)
+            item = ContentObservationEvidence(request=observation_request, result=result)
             evidence.append(item)
             all_observations.append(item)
         return tuple(sorted(evidence, key=lambda item: item.request.request_id))

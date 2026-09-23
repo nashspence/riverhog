@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-1f435129ec"></a>`kind`: `"function"`
-- <a id="s-d42dbb4859"></a>`signature`: `"\"(request: 'ObservationRequest', facts: 'Mapping[str, object]') -> 'None'\""`
+- <a id="s-d42dbb4859"></a>`signature`: `"\"(request: 'ContentObservationRequest', facts: 'Mapping[str, object]') -> 'None'\""`
 
 ## Governing policies
 
@@ -51,13 +51,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 869f640a76f538c36b40caea67bd823d9e9ed0b4c796b8a892d4661ff6af1360 -->
+<!-- exact-contract-value: 0ba60d6f9ca57cd17eedf50dc4bb9651ca10f3161f188e049ecc1fcf62fd5da5 -->
 
 ```json
 {
   "contract": {
     "kind": "function",
-    "signature": "\"(request: 'ObservationRequest', facts: 'Mapping[str, object]') -> 'None'\""
+    "signature": "\"(request: 'ContentObservationRequest', facts: 'Mapping[str, object]') -> 'None'\""
   },
   "distribution": "stove0-media-metadata-observer-contracts",
   "module": "stove0_media_metadata_observer_contracts",

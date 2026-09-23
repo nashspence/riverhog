@@ -90,6 +90,8 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: ArtifactSubject](../../authorities/stove0/http-schemas/schemas-artifactsubject.md#pa-60d2e67e32) |
 | `stove0` | [schemas: BranchSetEvaluation](../../authorities/stove0/http-schemas/schemas-branchsetevaluation.md#pa-3ee0a547bd) |
 | `stove0` | [schemas: BranchSetPlan](../../authorities/stove0/http-schemas/schemas-branchsetplan.md#pa-0013d5c5f7) |
+| `stove0` | [schemas: ContentObservationRequest](../../authorities/stove0/http-schemas/schemas-contentobservationrequest.md#pa-3dcdb6c33e) |
+| `stove0` | [schemas: ContentObservationResult](../../authorities/stove0/http-schemas/schemas-contentobservationresult.md#pa-53b829d6de) |
 | `stove0` | [schemas: CoordinationSettlement](../../authorities/stove0/http-schemas/schemas-coordinationsettlement.md#pa-ad5f2311b6) |
 | `stove0` | [schemas: EffectPlan](../../authorities/stove0/http-schemas/schemas-effectplan.md#pa-2fb994db2e) |
 | `stove0` | [schemas: ErrorBody](../../authorities/stove0/http-schemas/schemas-errorbody.md#pa-5d7b9b6843) |
@@ -108,8 +110,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: JoinPlan](../../authorities/stove0/http-schemas/schemas-joinplan.md#pa-9ca08de2b7) |
 | `stove0` | [schemas: JoinWorkBinding](../../authorities/stove0/http-schemas/schemas-joinworkbinding.md#pa-70f28f57bd) |
 | `stove0` | [schemas: JsonSchemaValidationProfile](../../authorities/stove0/http-schemas/schemas-jsonschemavalidationprofile.md#pa-1d478ed654) |
-| `stove0` | [schemas: ObservationRequest](../../authorities/stove0/http-schemas/schemas-observationrequest.md#pa-cab3b3465e) |
-| `stove0` | [schemas: ObservationResult](../../authorities/stove0/http-schemas/schemas-observationresult.md#pa-4073e50262) |
 | `stove0` | [schemas: ObserverUse](../../authorities/stove0/http-schemas/schemas-observeruse.md#pa-6e30440713) |
 | `stove0` | [schemas: OutputArtifact](../../authorities/stove0/http-schemas/schemas-outputartifact.md#pa-7d3e2d46d5) |
 | `stove0` | [schemas: OutputArtifactRoleCount](../../authorities/stove0/http-schemas/schemas-outputartifactrolecount.md#pa-0da94a6ac9) |
@@ -138,10 +138,10 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: WorkflowPlanIntent](../../authorities/stove0/http-schemas/schemas-workflowplanintent.md#pa-6baa6dfffe) |
 | `stove0` | [schemas: WorkflowPreview](../../authorities/stove0/http-schemas/schemas-workflowpreview.md#pa-2c59a99bbc) |
 | `stove0` | [schemas: WorkflowPreviewIn](../../authorities/stove0/http-schemas/schemas-workflowpreviewin.md#pa-1e2526838b) |
+| `stove0-observer-support` | [generated:stove0-observer: ContentObservationInvocation](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-contentobservationinvocation.md#pa-8c249b5664) |
+| `stove0-observer-support` | [generated:stove0-observer: ContentObservationRequest](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-contentobservationrequest.md#pa-ed9360c42d) |
+| `stove0-observer-support` | [generated:stove0-observer: ContentObservationResult](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-contentobservationresult.md#pa-3cb586698f) |
 | `stove0-observer-support` | [generated:stove0-observer: ErrorResponse](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-errorresponse.md#pa-93bdcc0380) |
-| `stove0-observer-support` | [generated:stove0-observer: ObservationInvocation](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observationinvocation.md#pa-b88d960466) |
-| `stove0-observer-support` | [generated:stove0-observer: ObservationRequest](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observationrequest.md#pa-345f3c0e70) |
-| `stove0-observer-support` | [generated:stove0-observer: ObservationResult](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observationresult.md#pa-79be4a2aa8) |
 | `stove0-observer-support` | [generated:stove0-observer: ObserverConformanceResult](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observerconformanceresult.md#pa-95bb6c7bd0) |
 | `stove0-observer-support` | [generated:stove0-observer: ObserverDescriptor](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observerdescriptor.md#pa-fb54bcd5a4) |
 | `stove0-observer-support` | [stove0-observer-conformance](../../authorities/stove0-observer-support/cli/stove0-observer-conformance.md#pa-997f1966d4) |

@@ -16,14 +16,14 @@ from riverhog_provenance import (
     list_provenance_observers,
     resolve_provenance_observer,
 )
-from riverhog_provenance.model import ObservationRequest, ObservationResult
+from riverhog_provenance.model import FileStateObservationRequest, FileStateObservationResult
 from riverhog_provenance_contracts import ProvenanceContractBinding
 
 
 class ExternalObserver:
     platform_family = "external-fixture"
 
-    def observe(self, _request: ObservationRequest) -> ObservationResult:
+    def observe(self, _request: FileStateObservationRequest) -> FileStateObservationResult:
         raise AssertionError("provider resolution must not perform observation")
 
 

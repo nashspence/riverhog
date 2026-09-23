@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-327662281d"></a>`kind`: `"method"`
-- <a id="s-cea988f13e"></a>`signature`: `"\"(self, work: 'WorkIdentity', observations: 'tuple[ObservationEvidence, ...]', *, nested_observer: 'NestedObservation \| None' = None) -> 'BranchSetDecision \| WorkInapplicable'\""`
+- <a id="s-cea988f13e"></a>`signature`: `"\"(self, work: 'WorkIdentity', observations: 'tuple[ContentObservationEvidence, ...]', *, nested_observer: 'NestedObservation \| None' = None) -> 'BranchSetDecision \| WorkInapplicable'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 74913cf2188ea02b5b25205ccca3b417540a57568ccdf40223c498a777b0abf2 -->
+<!-- exact-contract-value: b0135a7975596f700c339b72cb2536e80d8940234ccf98789ddf440f2b494b61 -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, work: 'WorkIdentity', observations: 'tuple[ObservationEvidence, ...]', *, nested_observer: 'NestedObservation | None' = None) -> 'BranchSetDecision | WorkInapplicable'\""
+    "signature": "\"(self, work: 'WorkIdentity', observations: 'tuple[ContentObservationEvidence, ...]', *, nested_observer: 'NestedObservation | None' = None) -> 'BranchSetDecision | WorkInapplicable'\""
   },
   "distribution": "stove0-server",
   "module": "stove0_core",

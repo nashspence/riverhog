@@ -53,12 +53,12 @@ from stove0_media_metadata_observer_contracts import (
     MediaMetadataFacts,
 )
 from stove0_observer_protocol import (
-    ObservationEvidence,
+    ContentObservationEvidence,
     ObserverContractSupport,
     ObserverDescriptor,
     ObserverDescriptorPayload,
 )
-from stove0_observer_support import ObservationResultBuilder
+from stove0_observer_support import ContentObservationResultBuilder
 from stove0_protocol import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
     ArtifactSelection,
@@ -309,9 +309,9 @@ def _conformance_plan(
     work = planner.create_work("stove0.conformance-media/v1", (root,))
     requests = planner.observation_requests(work)
     evidence = tuple(
-        ObservationEvidence(
+        ContentObservationEvidence(
             request=request,
-            result=ObservationResultBuilder(observers.value, request).observed(
+            result=ContentObservationResultBuilder(observers.value, request).observed(
                 MediaMetadataFacts(
                     artifacts=tuple(
                         MediaArtifactFacts(artifact_id=subject.id, state="observed")
@@ -666,9 +666,9 @@ def test_observer_preference_batches_unbounded_collection_work_without_omission(
     assert len(subjects) == 257
     assert len({subject.id for subject in subjects}) == 257
     evidence = tuple(
-        ObservationEvidence(
+        ContentObservationEvidence(
             request=request,
-            result=ObservationResultBuilder(observers.value, request).observed(
+            result=ContentObservationResultBuilder(observers.value, request).observed(
                 MediaMetadataFacts(
                     artifacts=tuple(
                         MediaArtifactFacts(artifact_id=subject.id, state="unsupported")
@@ -770,10 +770,10 @@ def test_media_observation_evidence_binds_exact_primary_sidecar_selection() -> N
             for subject in request.subjects
         )
     )
-    result = ObservationResultBuilder(observers.value, request).observed(
+    result = ContentObservationResultBuilder(observers.value, request).observed(
         observed_facts.model_dump(mode="json")
     )
-    evidence = ObservationEvidence(request=request, result=result)
+    evidence = ContentObservationEvidence(request=request, result=result)
 
     decision = planner.workflow_plan(work, (evidence,))
 
@@ -815,12 +815,12 @@ def test_media_observation_evidence_binds_exact_primary_sidecar_selection() -> N
             )
         }
     )
-    changed_result = ObservationResultBuilder(observers.value, request).observed(
+    changed_result = ContentObservationResultBuilder(observers.value, request).observed(
         changed_facts.model_dump(mode="json")
     )
     changed = planner.workflow_plan(
         work,
-        (ObservationEvidence(request=request, result=changed_result),),
+        (ContentObservationEvidence(request=request, result=changed_result),),
     )
     assert isinstance(changed, BranchSetDecision)
     assert changed.plan.branch_set_sha256 != decision.plan.branch_set_sha256

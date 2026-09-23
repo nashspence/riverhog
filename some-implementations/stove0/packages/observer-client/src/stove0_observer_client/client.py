@@ -14,8 +14,8 @@ from http_api_contracts import (
 from pydantic import BaseModel
 from stove0_observer_protocol import (
     OBSERVER_HTTP_OPERATIONS,
-    ObservationInvocation,
-    ObservationResult,
+    ContentObservationInvocation,
+    ContentObservationResult,
     ObserverDescriptor,
     SemanticValidatorProvider,
     accept_observation_result,
@@ -84,14 +84,14 @@ class ContentObserverClient:
 
     def observe(
         self,
-        invocation: ObservationInvocation,
+        invocation: ContentObservationInvocation,
         *,
         descriptor: ObserverDescriptor,
-    ) -> ObservationResult:
+    ) -> ContentObservationResult:
         result = self._request(
             "POST",
             "/v1/observe",
-            ObservationResult,
+            ContentObservationResult,
             invocation,
         )
         try:

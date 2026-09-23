@@ -11,8 +11,8 @@ from a_riverhog_macos_provenance_observer import (
     MacOSFileStateObserver,
 )
 from riverhog_provenance import (
+    FileStateObservationRequest,
     ObservationPolicy,
-    ObservationRequest,
     PayloadBindingRequest,
     validate_graph_fragment,
 )
@@ -101,7 +101,7 @@ def test_mocked_macos_observation_contract(tmp_path: Path, urn_factory) -> None:
     content = b"opaque image bytes; never parsed"
     payload.write_bytes(content)
     result = MacOSFileStateObserver(native=FakeMacOSNative(), enforce_platform=False).observe(
-        ObservationRequest(
+        FileStateObservationRequest(
             path=payload,
             lineage_id=urn_factory(),
             host_id=urn_factory(),
@@ -109,7 +109,7 @@ def test_mocked_macos_observation_contract(tmp_path: Path, urn_factory) -> None:
         )
     )
     validate_graph_fragment(result.graph_fragment())
-    rows = result.state["filesystem_metadata"]["native_metadata"]
+    rows = result.file_state["filesystem_metadata"]["native_metadata"]
     kinds = {row["kind"] for row in rows}
     assert {
         "resource_fork",
@@ -132,7 +132,7 @@ def test_mocked_large_resource_fork_is_digest_only(tmp_path: Path, urn_factory) 
     payload = tmp_path / "movie.mov"
     payload.write_bytes(b"payload")
     result = MacOSFileStateObserver(native=native, enforce_platform=False).observe(
-        ObservationRequest(
+        FileStateObservationRequest(
             path=payload,
             lineage_id=urn_factory(),
             host_id=urn_factory(),
@@ -144,7 +144,7 @@ def test_mocked_large_resource_fork_is_digest_only(tmp_path: Path, urn_factory) 
     )
     fork = next(
         row
-        for row in result.state["filesystem_metadata"]["native_metadata"]
+        for row in result.file_state["filesystem_metadata"]["native_metadata"]
         if row["kind"] == "resource_fork"
     )
     assert fork["capture_status"] == "digest_only"
@@ -234,7 +234,9 @@ def test_macos_omits_unavailable_empty_volume_observations(tmp_path: Path, urn_f
     payload.write_bytes(b"payload")
     result = MacOSFileStateObserver(
         native=_EmptyVolumeTextMacOSNative(), enforce_platform=False
-    ).observe(ObservationRequest(path=payload, lineage_id=urn_factory(), host_id=urn_factory()))
+    ).observe(
+        FileStateObservationRequest(path=payload, lineage_id=urn_factory(), host_id=urn_factory())
+    )
 
     filesystem = result.environment["filesystem"]
     assert filesystem["type"] == "unknown"
@@ -257,7 +259,9 @@ def test_macos_volume_attribute_failure_retains_fstatfs_context(
     payload.write_bytes(b"payload")
     result = MacOSFileStateObserver(
         native=_VolumeAttributesFailureMacOSNative(), enforce_platform=False
-    ).observe(ObservationRequest(path=payload, lineage_id=urn_factory(), host_id=urn_factory()))
+    ).observe(
+        FileStateObservationRequest(path=payload, lineage_id=urn_factory(), host_id=urn_factory())
+    )
     assert result.environment["filesystem"]["type"] == "apfs"
     assert result.capture["coverage"]["native_identifiers"] == "partial"
     assert result.capture["outcome"] == "partial"

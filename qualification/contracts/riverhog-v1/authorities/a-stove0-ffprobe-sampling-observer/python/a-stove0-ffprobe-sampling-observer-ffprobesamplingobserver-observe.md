@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-d6180e7b3c"></a>`kind`: `"method"`
-- <a id="s-19b2ef1149"></a>`signature`: `"\"(self, request: 'ObservationRequest', runtime: 'ObservationRuntime') -> 'ObservationResult'\""`
+- <a id="s-19b2ef1149"></a>`signature`: `"\"(self, request: 'ContentObservationRequest', runtime: 'ContentObservationRuntime') -> 'ContentObservationResult'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4a93161ebebfa7a98101e6b4647d9b8eab60ea5b720726eda98fa6f3c97f9c15 -->
+<!-- exact-contract-value: 0274492baadb362f78b579ac672dc634e3c9939212705728e99b82e6dd8adf4b -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, request: 'ObservationRequest', runtime: 'ObservationRuntime') -> 'ObservationResult'\""
+    "signature": "\"(self, request: 'ContentObservationRequest', runtime: 'ContentObservationRuntime') -> 'ContentObservationResult'\""
   },
   "distribution": "a-stove0-ffprobe-sampling-observer",
   "module": "a_stove0_ffprobe_sampling_observer",

@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-0f5e979f0a"></a>`kind`: `"method"`
-- <a id="s-1655d1a8aa"></a>`signature`: `"\"(self, request: 'ObservationRequest') -> 'ObservationResult'\""`
+- <a id="s-1655d1a8aa"></a>`signature`: `"\"(self, request: 'FileStateObservationRequest') -> 'FileStateObservationResult'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 445cb111659a9d3411c45e72fa20598714a4f8ea48e828fb7e39f0de6d3cdaa1 -->
+<!-- exact-contract-value: d0101711a761463f3a2b6edc0eb66cd672d1e7be9923f866eabe6cd31cb538fd -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, request: 'ObservationRequest') -> 'ObservationResult'\""
+    "signature": "\"(self, request: 'FileStateObservationRequest') -> 'FileStateObservationResult'\""
   },
   "distribution": "riverhog-provenance",
   "module": "riverhog_provenance",

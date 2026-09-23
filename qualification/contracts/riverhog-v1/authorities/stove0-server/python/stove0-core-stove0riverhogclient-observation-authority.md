@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-798369695b"></a>`kind`: `"method"`
-- <a id="s-e319116a54"></a>`signature`: `"\"(self, claim: 'ClaimBinding', request: 'ObservationRequest') -> 'ObserverRuntimeAuthority'\""`
+- <a id="s-e319116a54"></a>`signature`: `"\"(self, claim: 'ClaimBinding', request: 'ContentObservationRequest') -> 'ObserverRuntimeAuthority'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 27920100f80a66bd7fbb05ef740d0232b3d2e18cbe1a5248c1e895dc650a5668 -->
+<!-- exact-contract-value: ba6d18805289eee33f2b99db243458755571b5db17cfac6ad8963c6afd3d0c40 -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, claim: 'ClaimBinding', request: 'ObservationRequest') -> 'ObserverRuntimeAuthority'\""
+    "signature": "\"(self, claim: 'ClaimBinding', request: 'ContentObservationRequest') -> 'ObserverRuntimeAuthority'\""
   },
   "distribution": "stove0-server",
   "module": "stove0_core",

@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-52e55afc51"></a>`kind`: `"function"`
-- <a id="s-4ce8185602"></a>`signature`: `"\"(request: 'ObservationRequest', descriptor: 'ObserverDescriptor') -> 'ObserverContractSupport'\""`
+- <a id="s-4ce8185602"></a>`signature`: `"\"(request: 'ContentObservationRequest', descriptor: 'ObserverDescriptor') -> 'ObserverContractSupport'\""`
 
 ## Governing policies
 
@@ -51,13 +51,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a26e23a4dda27d23d8dcc6eeafaf324945156b467a23de50cdf10d89d74d697e -->
+<!-- exact-contract-value: 8d08e936a5570f36f0d89bc47954504f14455ca4d9c9ae7a076c1c5eae4ce7d2 -->
 
 ```json
 {
   "contract": {
     "kind": "function",
-    "signature": "\"(request: 'ObservationRequest', descriptor: 'ObserverDescriptor') -> 'ObserverContractSupport'\""
+    "signature": "\"(request: 'ContentObservationRequest', descriptor: 'ObserverDescriptor') -> 'ObserverContractSupport'\""
   },
   "distribution": "stove0-observer-protocol",
   "module": "stove0_observer_protocol",

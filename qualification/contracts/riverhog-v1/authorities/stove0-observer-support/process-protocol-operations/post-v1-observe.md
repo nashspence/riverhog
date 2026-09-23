@@ -21,8 +21,8 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-d5ba2223c6"></a>`method` | `"POST"` |
 | <a id="s-7c53238d9d"></a>`path` | `"/v1/observe"` |
 | <a id="s-61601a5f52"></a>`path_parameters` | `[]` |
-| <a id="s-68965b973b"></a>`request` | `{"kind":"json","schema":"ObservationInvocation"}` |
-| <a id="s-baf226665e"></a>`response` | `{"headers":[],"kind":"json","schema":"ObservationResult","statuses":[200]}` |
+| <a id="s-68965b973b"></a>`request` | `{"kind":"json","schema":"ContentObservationInvocation"}` |
+| <a id="s-baf226665e"></a>`response` | `{"headers":[],"kind":"json","schema":"ContentObservationResult","statuses":[200]}` |
 
 ## Maintained corroboration
 
@@ -57,7 +57,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 856e2af874532e9bb0137670df606d58b78e4976b3783287b5eebaed0ea3292f -->
+<!-- exact-contract-value: 156b955cbed35171dc8df5fe572a1f8a2ab7711104a34286bf1b00908e143e36 -->
 
 ```json
 {
@@ -85,12 +85,12 @@ The following JSON is the complete value owned at each machine-authority pointer
   "path_parameters": [],
   "request": {
     "kind": "json",
-    "schema": "ObservationInvocation"
+    "schema": "ContentObservationInvocation"
   },
   "response": {
     "headers": [],
     "kind": "json",
-    "schema": "ObservationResult",
+    "schema": "ContentObservationResult",
     "statuses": [
       200
     ]

@@ -35,10 +35,12 @@ from stove0_protocol.jcs import canonical_json_bytes, canonical_json_sha256
 
 WORK_FORMAT: Literal["stove0-work/v1"] = "stove0-work/v1"
 OBSERVER_PROTOCOL: Literal["stove0-content-observer/v1"] = "stove0-content-observer/v1"
-OBSERVATION_REQUEST_FORMAT: Literal["stove0-observation-request/v1"] = (
+CONTENT_OBSERVATION_REQUEST_FORMAT: Literal["stove0-observation-request/v1"] = (
     "stove0-observation-request/v1"
 )
-OBSERVATION_RESULT_FORMAT: Literal["stove0-observation-result/v1"] = "stove0-observation-result/v1"
+CONTENT_OBSERVATION_RESULT_FORMAT: Literal["stove0-observation-result/v1"] = (
+    "stove0-observation-result/v1"
+)
 WORKFLOW_PLAN_FORMAT: Literal["stove0-workflow-plan/v1"] = "stove0-workflow-plan/v1"
 EXECUTION_ENVELOPE_FORMAT: Literal["stove0-execution-envelope/v1"] = "stove0-execution-envelope/v1"
 CONTROLLER_EVIDENCE_FORMAT: Literal["stove0-controller-evidence/v1"] = (
@@ -69,7 +71,7 @@ REGISTRATION_ID_PATTERN = r"^[a-z0-9](?:[a-z0-9.-]{0,118}[a-z0-9])?$"
 Sha256 = Annotated[str, StringConstraints(pattern=SHA256_PATTERN)]
 SemanticId = Annotated[str, StringConstraints(pattern=SEMANTIC_ID_PATTERN)]
 RegistrationId = Annotated[str, StringConstraints(pattern=REGISTRATION_ID_PATTERN)]
-ObservationState = Literal["observed", "inapplicable", "failed", "canceled"]
+ContentObservationState = Literal["observed", "inapplicable", "failed", "canceled"]
 RetirementPolicy = Literal["retain", "retire-after-verified-output"]
 RetrievalPolicy = Literal["available-only", "allow"]
 OperationResultKind = Literal["collection", "external-effect"]
@@ -460,8 +462,8 @@ class ObserverDescriptor(ObserverDescriptorPayload):
         raise ValueError(f"observer does not support contract: {contract_id}")
 
 
-class ObservationRequestPayload(Stove0ProtocolModel):
-    format: Literal["stove0-observation-request/v1"] = OBSERVATION_REQUEST_FORMAT
+class ContentObservationRequestPayload(Stove0ProtocolModel):
+    format: Literal["stove0-observation-request/v1"] = CONTENT_OBSERVATION_REQUEST_FORMAT
     work_id: Sha256
     observer_registration_id: RegistrationId
     observer_descriptor_sha256: Sha256
@@ -482,7 +484,7 @@ class ObservationRequestPayload(Stove0ProtocolModel):
         return value
 
 
-class ObservationRequest(ObservationRequestPayload):
+class ContentObservationRequest(ContentObservationRequestPayload):
     request_id: Sha256
 
     @model_validator(mode="after")
@@ -492,7 +494,7 @@ class ObservationRequest(ObservationRequestPayload):
         return self
 
     @classmethod
-    def seal(cls, payload: ObservationRequestPayload) -> ObservationRequest:
+    def seal(cls, payload: ContentObservationRequestPayload) -> ContentObservationRequest:
         document = payload.model_dump(mode="json", by_alias=True, exclude_none=True)
         return cls(**document, request_id=canonical_json_sha256(document))
 
@@ -507,10 +509,10 @@ class ObserverRuntimeAuthority(Stove0ProtocolModel):
     declared_workspace_protection: DeclaredWorkspaceProtection
 
 
-class ObservationInvocation(Stove0ProtocolModel):
+class ContentObservationInvocation(Stove0ProtocolModel):
     """Fence-bound invocation authority excluded from semantic request identity."""
 
-    request: ObservationRequest
+    request: ContentObservationRequest
     claim_id: str = Field(min_length=1, max_length=160)
     fence: int = Field(ge=1)
     runtime: ObserverRuntimeAuthority
@@ -531,21 +533,21 @@ class ObserverImplementation(Stove0ProtocolModel):
     descriptor_sha256: Sha256
 
 
-class ObservationFailure(Stove0ProtocolModel):
+class ContentObservationFailure(Stove0ProtocolModel):
     code: SemanticId
     message: str = Field(min_length=1, max_length=1000)
     retryable: bool
 
 
-class ObservationInapplicable(Stove0ProtocolModel):
+class ContentObservationInapplicable(Stove0ProtocolModel):
     code: SemanticId
     message: str = Field(min_length=1, max_length=1000)
 
 
-class ObservationResultPayload(Stove0ProtocolModel):
-    format: Literal["stove0-observation-result/v1"] = OBSERVATION_RESULT_FORMAT
+class ContentObservationResultPayload(Stove0ProtocolModel):
+    format: Literal["stove0-observation-result/v1"] = CONTENT_OBSERVATION_RESULT_FORMAT
     request_id: Sha256
-    state: ObservationState
+    state: ContentObservationState
     observer: ObserverImplementation
     observer_contract_id: SemanticId
     observer_contract_sha256: Sha256
@@ -554,8 +556,8 @@ class ObservationResultPayload(Stove0ProtocolModel):
     facts: dict[str, JsonValue] | None = None
     facts_sha256: Sha256 | None = None
     execution_evidence: dict[str, JsonValue] = Field(default_factory=dict)
-    inapplicable: ObservationInapplicable | None = None
-    failure: ObservationFailure | None = None
+    inapplicable: ContentObservationInapplicable | None = None
+    failure: ContentObservationFailure | None = None
 
     @field_validator("subjects")
     @classmethod
@@ -593,7 +595,7 @@ class ObservationResultPayload(Stove0ProtocolModel):
         return self
 
 
-class ObservationResult(ObservationResultPayload):
+class ContentObservationResult(ContentObservationResultPayload):
     result_sha256: Sha256
 
     @model_validator(mode="after")
@@ -603,16 +605,16 @@ class ObservationResult(ObservationResultPayload):
         return self
 
     @classmethod
-    def seal(cls, payload: ObservationResultPayload) -> ObservationResult:
+    def seal(cls, payload: ContentObservationResultPayload) -> ContentObservationResult:
         document = payload.model_dump(mode="json", by_alias=True, exclude_none=True)
         return cls(**document, result_sha256=canonical_json_sha256(document))
 
 
-class ObservationEvidence(Stove0ProtocolModel):
+class ContentObservationEvidence(Stove0ProtocolModel):
     """Complete routing evidence: immutable request plus accepted result."""
 
-    request: ObservationRequest
-    result: ObservationResult
+    request: ContentObservationRequest
+    result: ContentObservationResult
 
     @model_validator(mode="after")
     def bind_result(self) -> Self:
@@ -632,7 +634,7 @@ class ObservationEvidence(Stove0ProtocolModel):
 class WorkflowPlanPayload(Stove0ProtocolModel):
     format: Literal["stove0-workflow-plan/v1"] = WORKFLOW_PLAN_FORMAT
     work: WorkIdentity
-    observations: tuple[ObservationEvidence, ...] = ()
+    observations: tuple[ContentObservationEvidence, ...] = ()
     operation: OperationRef
     result_kind: OperationResultKind = "collection"
     target_registration_id: RegistrationId
@@ -646,8 +648,8 @@ class WorkflowPlanPayload(Stove0ProtocolModel):
     @field_validator("observations")
     @classmethod
     def canonical_observations(
-        cls, value: tuple[ObservationEvidence, ...]
-    ) -> tuple[ObservationEvidence, ...]:
+        cls, value: tuple[ContentObservationEvidence, ...]
+    ) -> tuple[ContentObservationEvidence, ...]:
         ids = [item.request.request_id for item in value]
         if ids != sorted(ids) or len(ids) != len(set(ids)):
             raise ValueError("workflow observations must be unique and ordered by request id")
@@ -719,7 +721,7 @@ class WorkflowPlanIntent(Stove0ProtocolModel):
         self,
         *,
         work: WorkIdentity,
-        observations: tuple[ObservationEvidence, ...] = (),
+        observations: tuple[ContentObservationEvidence, ...] = (),
     ) -> WorkflowPlan:
         return WorkflowPlan.seal(
             WorkflowPlanPayload(
@@ -973,17 +975,17 @@ __all__ = [
     "JsonSchemaValidationProfile",
     "JSON_SCHEMA_ONLY_SEMANTIC_PROFILE",
     "OBSERVER_PROTOCOL",
-    "OBSERVATION_REQUEST_FORMAT",
-    "OBSERVATION_RESULT_FORMAT",
-    "ObservationEvidence",
-    "ObservationFailure",
-    "ObservationInapplicable",
-    "ObservationInvocation",
-    "ObservationRequest",
-    "ObservationRequestPayload",
-    "ObservationResult",
-    "ObservationResultPayload",
-    "ObservationState",
+    "CONTENT_OBSERVATION_REQUEST_FORMAT",
+    "CONTENT_OBSERVATION_RESULT_FORMAT",
+    "ContentObservationEvidence",
+    "ContentObservationFailure",
+    "ContentObservationInapplicable",
+    "ContentObservationInvocation",
+    "ContentObservationRequest",
+    "ContentObservationRequestPayload",
+    "ContentObservationResult",
+    "ContentObservationResultPayload",
+    "ContentObservationState",
     "OperationResultKind",
     "ObserverContract",
     "ObserverContractPayload",

@@ -12,6 +12,12 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-provenance` | [riverhog_provenance.DEFAULT_OBSERVER_AGENT_ID](../../../authorities/riverhog-provenance/python/riverhog-provenance-default-observer-agent-id.md#pa-c938b93708) |
 | `riverhog-provenance` | [riverhog_provenance.DerivativeJournalSeed](../../../authorities/riverhog-provenance/python/riverhog-provenance-derivativejournalseed.md#pa-36233ada0f) |
 | `riverhog-provenance` | [riverhog_provenance.ExternalStateReference](../../../authorities/riverhog-provenance/python/riverhog-provenance-externalstatereference.md#pa-b7dae286a6) |
+| `riverhog-provenance` | [riverhog_provenance.FileStateObservationRequest](../../../authorities/riverhog-provenance/python/riverhog-provenance-filestateobservationrequest.md#pa-734198d7b4) |
+| `riverhog-provenance` | [riverhog_provenance.FileStateObservationResult](../../../authorities/riverhog-provenance/python/riverhog-provenance-filestateobservationresult.md#pa-77e53997a4) |
+| `riverhog-provenance` | [riverhog_provenance.FileStateObservationResult.assertion_body](../../../authorities/riverhog-provenance/python/riverhog-provenance-filestateobservationresult-assertion-body.md#pa-e0ce3ba2cf) |
+| `riverhog-provenance` | [riverhog_provenance.FileStateObservationResult.graph_fragment](../../../authorities/riverhog-provenance/python/riverhog-provenance-filestateobservationresult-graph-fragment.md#pa-6d2924c707) |
+| `riverhog-provenance` | [riverhog_provenance.FileStateObservationResult.make_assertion_entry](../../../authorities/riverhog-provenance/python/riverhog-provenance-filestateobservationresult-make-assertion-entry.md#pa-1dc7e7b4b6) |
+| `riverhog-provenance` | [riverhog_provenance.FileStateObservationResult.payload_binding](../../../authorities/riverhog-provenance/python/riverhog-provenance-filestateobservationresult-payload-binding.md#pa-c835f13510) |
 | `riverhog-provenance` | [riverhog_provenance.FileStateObserver](../../../authorities/riverhog-provenance/python/riverhog-provenance-filestateobserver.md#pa-8d6b2bc9db) |
 | `riverhog-provenance` | [riverhog_provenance.FileStateObserver.observe](../../../authorities/riverhog-provenance/python/riverhog-provenance-filestateobserver-observe.md#pa-feff087902) |
 | `riverhog-provenance` | [riverhog_provenance.FileStateObserverFactory](../../../authorities/riverhog-provenance/python/riverhog-provenance-filestateobserverfactory.md#pa-418719e0a3) |
@@ -25,12 +31,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-provenance` | [riverhog_provenance.LargeValueDisposition.__str__](../../../authorities/riverhog-provenance/python/riverhog-provenance-largevaluedisposition-str.md#pa-1e9e6b49b3) |
 | `riverhog-provenance` | [riverhog_provenance.NativeObservationError](../../../authorities/riverhog-provenance/python/riverhog-provenance-nativeobservationerror.md#pa-3fb3d914f1) |
 | `riverhog-provenance` | [riverhog_provenance.ObservationPolicy](../../../authorities/riverhog-provenance/python/riverhog-provenance-observationpolicy.md#pa-cbd2a034eb) |
-| `riverhog-provenance` | [riverhog_provenance.ObservationRequest](../../../authorities/riverhog-provenance/python/riverhog-provenance-observationrequest.md#pa-3c61537f75) |
-| `riverhog-provenance` | [riverhog_provenance.ObservationResult](../../../authorities/riverhog-provenance/python/riverhog-provenance-observationresult.md#pa-3f30d0b1c1) |
-| `riverhog-provenance` | [riverhog_provenance.ObservationResult.assertion_body](../../../authorities/riverhog-provenance/python/riverhog-provenance-observationresult-assertion-body.md#pa-41d551cd99) |
-| `riverhog-provenance` | [riverhog_provenance.ObservationResult.graph_fragment](../../../authorities/riverhog-provenance/python/riverhog-provenance-observationresult-graph-fragment.md#pa-a415a39266) |
-| `riverhog-provenance` | [riverhog_provenance.ObservationResult.make_assertion_entry](../../../authorities/riverhog-provenance/python/riverhog-provenance-observationresult-make-assertion-entry.md#pa-b54c91b202) |
-| `riverhog-provenance` | [riverhog_provenance.ObservationResult.payload_binding](../../../authorities/riverhog-provenance/python/riverhog-provenance-observationresult-payload-binding.md#pa-3b8923f57c) |
 | `riverhog-provenance` | [riverhog_provenance.PROVENANCE_BINDING_SEGMENT_BYTES_MAX](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenance-binding-segment-bytes-max.md#pa-59bf1e0dce) |
 | `riverhog-provenance` | [riverhog_provenance.PROVENANCE_BINDING_SEGMENT_FILES_MAX](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenance-binding-segment-files-max.md#pa-e97b6d2559) |
 | `riverhog-provenance` | [riverhog_provenance.PROVENANCE_BINDING_SEGMENT_SCHEMA](../../../authorities/riverhog-provenance/python/riverhog-provenance-provenance-binding-segment-schema.md#pa-301537acc1) |

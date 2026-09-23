@@ -26,7 +26,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-6b03446110"></a>`format` | no | type="string"; const="stove0-workflow-plan/v1"; default="stove0-workflow-plan/v1"; title="Format" |  |
 | <a id="s-6ad1a7b068"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only"; title="Input Retrieval Policy" |  |
-| <a id="s-6ef6cec03d"></a>`observations` | no | type="array"; default=[]; items=([ObservationEvidence](schemas-observationevidence.md)); title="Observations" |  |
+| <a id="s-6ef6cec03d"></a>`observations` | no | type="array"; default=[]; items=([ContentObservationEvidence](schemas-contentobservationevidence.md)); title="Observations" |  |
 | <a id="s-5cabb9dd3b"></a>`operation` | yes | [OperationRef](schemas-operationref.md) |  |
 | <a id="s-bf4f29710f"></a>`output_policy` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Output Policy" |  |
 | <a id="s-a5d912ee09"></a>`requested_target_options` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Requested Target Options" |  |
@@ -63,8 +63,8 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract elements
 
+- [ContentObservationEvidence](schemas-contentobservationevidence.md)
 - [JsonValue](schemas-jsonvalue.md)
-- [ObservationEvidence](schemas-observationevidence.md)
 - [OperationRef](schemas-operationref.md)
 - [WorkIdentity](schemas-workidentity.md)
 
@@ -99,7 +99,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1ac28da8e579dbffb0ead200dbc696f5253dae3438526682093a5f3e85c9c7bf -->
+<!-- exact-contract-value: 50c3469f87e78d1a5e536347d37131cc519ee984c4d08e2a946a060b589b27b2 -->
 
 ```json
 {
@@ -123,7 +123,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "observations": {
       "default": [],
       "items": {
-        "$ref": "#/components/schemas/ObservationEvidence"
+        "$ref": "#/components/schemas/ContentObservationEvidence"
       },
       "title": "Observations",
       "type": "array"

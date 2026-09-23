@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-91230d9f6f"></a>`authorities · http_operations` | `"http_binding.operations"` |
 | <a id="s-97fdac27e7"></a>`authorities · semantic_acceptance` | `"semantic_acceptance"` |
 | <a id="s-0c79c0ec56"></a>`authorities · structural_models` | `"schemas"` |
-| <a id="s-d5ea9dbeda"></a>`bundle_sha256` | `"34b014a70b80cb2aa232e06a8864503112e6c01e386de02d48bdfb751035ac1f"` |
+| <a id="s-d5ea9dbeda"></a>`bundle_sha256` | `"15d101e66115096b1cef02d30ad0f3ad52cafbdfb11ea4ef206d0e83ef9bab24"` |
 | <a id="s-30491cc055"></a>`compatibility · contract_identity` | `"canonical-json-sha256"` |
 | <a id="s-8476a6bdf5"></a>`compatibility · unknown_fields` | `"reject"` |
 | <a id="s-2f76b229b5"></a>`compatibility · unknown_protocol_revision` | `"reject"` |
@@ -39,10 +39,10 @@ Exact externally visible contract owned by this contract element.
 
 - [GET /v1/observer](../process-protocol-operations/get-v1-observer.md)
 - [POST /v1/observe](../process-protocol-operations/post-v1-observe.md)
+- [generated:stove0-observer: ContentObservationInvocation](../process-protocol-schemas/generated-stove0-observer-contentobservationinvocation.md)
+- [generated:stove0-observer: ContentObservationRequest](../process-protocol-schemas/generated-stove0-observer-contentobservationrequest.md)
+- [generated:stove0-observer: ContentObservationResult](../process-protocol-schemas/generated-stove0-observer-contentobservationresult.md)
 - [generated:stove0-observer: ErrorResponse](../process-protocol-schemas/generated-stove0-observer-errorresponse.md)
-- [generated:stove0-observer: ObservationInvocation](../process-protocol-schemas/generated-stove0-observer-observationinvocation.md)
-- [generated:stove0-observer: ObservationRequest](../process-protocol-schemas/generated-stove0-observer-observationrequest.md)
-- [generated:stove0-observer: ObservationResult](../process-protocol-schemas/generated-stove0-observer-observationresult.md)
 - [generated:stove0-observer: ObserverConformanceResult](../process-protocol-schemas/generated-stove0-observer-observerconformanceresult.md)
 - [generated:stove0-observer: ObserverContract](../process-protocol-schemas/generated-stove0-observer-observercontract.md)
 - [generated:stove0-observer: ObserverDescriptor](../process-protocol-schemas/generated-stove0-observer-observerdescriptor.md)
@@ -93,10 +93,10 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/protocol_schemas/generated:stove0-observer/bundle_sha256`
 
-<!-- exact-contract-value: e79aa7f616f7eb459393f2a49c1e39c4ded8ee7b883500696880ff7be2f4dd7f -->
+<!-- exact-contract-value: 6a3a61c5b0c1014b95643111988515bc144e7bfb334c32abc78d1bd8e8c51b3a -->
 
 ```json
-"34b014a70b80cb2aa232e06a8864503112e6c01e386de02d48bdfb751035ac1f"
+"15d101e66115096b1cef02d30ad0f3ad52cafbdfb11ea4ef206d0e83ef9bab24"
 ```
 
 ### `/external_contract/protocol_schemas/generated:stove0-observer/compatibility`

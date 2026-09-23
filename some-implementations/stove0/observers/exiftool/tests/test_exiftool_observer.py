@@ -13,8 +13,8 @@ from stove0_media_metadata_observer_contracts import (
     MEDIA_METADATA_OBSERVER_CONTRACT,
     MediaMetadataFacts,
 )
-from stove0_observer_protocol import ObservationRequest, ObservationRequestPayload
-from stove0_observer_support import ObservationRuntime
+from stove0_observer_protocol import ContentObservationRequest, ContentObservationRequestPayload
+from stove0_observer_support import ContentObservationRuntime
 from stove0_protocol import (
     ArtifactSubject,
     CollectionRootRef,
@@ -64,7 +64,7 @@ class FixtureRuntime:
         return destination
 
 
-def _request(observer: ExiftoolObserver) -> ObservationRequest:
+def _request(observer: ExiftoolObserver) -> ContentObservationRequest:
     descriptor = observer.descriptor()
     support = descriptor.contracts[0]
     root = CollectionRootRef(
@@ -72,8 +72,8 @@ def _request(observer: ExiftoolObserver) -> ObservationRequest:
         archive_root_sha256=_sha("2"),
         content_identity=_sha("3"),
     )
-    return ObservationRequest.seal(
-        ObservationRequestPayload(
+    return ContentObservationRequest.seal(
+        ContentObservationRequestPayload(
             work_id=_sha("1"),
             observer_registration_id="exiftool",
             observer_descriptor_sha256=descriptor.descriptor_sha256,
@@ -155,7 +155,7 @@ def test_exiftool_observer_preserves_conflicting_exact_field_evidence(
 
     monkeypatch.setattr("a_stove0_exiftool_observer.observer.subprocess.run", run)
     runtime = FixtureRuntime(tmp_path / "request")
-    result = observer.observe(_request(observer), cast(ObservationRuntime, runtime))
+    result = observer.observe(_request(observer), cast(ContentObservationRuntime, runtime))
     facts = MediaMetadataFacts.model_validate(result.facts)
 
     assert observer.descriptor().image_digest == _sha("9")

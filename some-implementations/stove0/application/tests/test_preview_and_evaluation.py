@@ -16,14 +16,14 @@ from stove0_core import (
     WorkRecord,
 )
 from stove0_observer_protocol import (
-    ObservationEvidence,
-    ObservationFailure,
-    ObservationInapplicable,
-    ObservationInvocation,
-    ObservationRequest,
-    ObservationRequestPayload,
-    ObservationResult,
-    ObservationResultPayload,
+    ContentObservationEvidence,
+    ContentObservationFailure,
+    ContentObservationInapplicable,
+    ContentObservationInvocation,
+    ContentObservationRequest,
+    ContentObservationRequestPayload,
+    ContentObservationResult,
+    ContentObservationResultPayload,
     ObserverContract,
     ObserverContractPayload,
     ObserverContractSupport,
@@ -193,11 +193,11 @@ class PreviewPlanning:
         self.target = target
         self.observer = observer
 
-    def observation_requests(self, work: WorkIdentity) -> tuple[ObservationRequest, ...]:
+    def observation_requests(self, work: WorkIdentity) -> tuple[ContentObservationRequest, ...]:
         contract, descriptor = self.observer
         return (
-            ObservationRequest.seal(
-                ObservationRequestPayload(
+            ContentObservationRequest.seal(
+                ContentObservationRequestPayload(
                     work_id=work.work_id,
                     observer_registration_id="fixture-observer",
                     observer_descriptor_sha256=descriptor.descriptor_sha256,
@@ -220,9 +220,10 @@ class PreviewPlanning:
     def workflow_plan(
         self,
         work: WorkIdentity,
-        observations: tuple[ObservationEvidence, ...],
+        observations: tuple[ContentObservationEvidence, ...],
         *,
-        nested_observer: Callable[[WorkIdentity], tuple[ObservationEvidence, ...]] | None = None,
+        nested_observer: Callable[[WorkIdentity], tuple[ContentObservationEvidence, ...]]
+        | None = None,
     ) -> BranchSetDecision:
         assert nested_observer is not None
         selection = ArtifactSelection.seal(observations[0].request.subjects)
@@ -290,9 +291,10 @@ class NestedPreviewPlanning(PreviewPlanning):
     def workflow_plan(
         self,
         work: WorkIdentity,
-        observations: tuple[ObservationEvidence, ...],
+        observations: tuple[ContentObservationEvidence, ...],
         *,
-        nested_observer: Callable[[WorkIdentity], tuple[ObservationEvidence, ...]] | None = None,
+        nested_observer: Callable[[WorkIdentity], tuple[ContentObservationEvidence, ...]]
+        | None = None,
     ) -> BranchSetDecision:
         assert nested_observer is not None
         selection = ArtifactSelection.seal(observations[0].request.subjects)
@@ -366,7 +368,7 @@ class PreviewRiverhog:
     def observation_authority(
         self,
         claim: ClaimBinding,
-        request: ObservationRequest,
+        request: ContentObservationRequest,
     ) -> ObserverRuntimeAuthority:
         assert request.work_id
         self.actions.append("read-inputs")
@@ -384,7 +386,7 @@ class PreviewRiverhog:
 class PreviewObserver:
     def __init__(self, value: tuple[ObserverContract, ObserverDescriptor]) -> None:
         self.contract, self.value = value
-        self.invocations: list[ObservationInvocation] = []
+        self.invocations: list[ContentObservationInvocation] = []
 
     def descriptor(self, registration_id: str) -> ObserverDescriptor:
         assert registration_id == "fixture-observer"
@@ -393,16 +395,16 @@ class PreviewObserver:
     def observe(
         self,
         registration_id: str,
-        invocation: ObservationInvocation,
+        invocation: ContentObservationInvocation,
         *,
         descriptor: ObserverDescriptor,
-    ) -> ObservationResult:
+    ) -> ContentObservationResult:
         assert registration_id == "fixture-observer"
         assert descriptor == self.value
         self.invocations.append(invocation)
         facts = {"kind": "fixture"}
-        return ObservationResult.seal(
-            ObservationResultPayload(
+        return ContentObservationResult.seal(
+            ContentObservationResultPayload(
                 request_id=invocation.request.request_id,
                 state="observed",
                 observer=ObserverImplementation(
@@ -699,10 +701,10 @@ def test_workflow_preview_rejects_observer_result_that_does_not_bind_request() -
         def observe(
             self,
             registration_id: str,
-            invocation: ObservationInvocation,
+            invocation: ContentObservationInvocation,
             *,
             descriptor: ObserverDescriptor,
-        ) -> ObservationResult:
+        ) -> ContentObservationResult:
             result = super().observe(
                 registration_id,
                 invocation,
@@ -716,8 +718,8 @@ def test_workflow_preview_rejects_observer_result_that_does_not_bind_request() -
                 bytes=12,
                 sha256=_sha("4"),
             )
-            return ObservationResult.seal(
-                ObservationResultPayload(
+            return ContentObservationResult.seal(
+                ContentObservationResultPayload(
                     **result.model_dump(
                         mode="python",
                         exclude={"result_sha256", "subjects"},
@@ -746,12 +748,20 @@ def test_workflow_preview_rejects_observer_result_that_does_not_bind_request() -
     [
         (
             "inapplicable",
-            {"inapplicable": ObservationInapplicable(code="unsupported", message="No match")},
+            {
+                "inapplicable": ContentObservationInapplicable(
+                    code="unsupported", message="No match"
+                )
+            },
             None,
         ),
         (
             "failed",
-            {"failure": ObservationFailure(code="temporary", message="Try again", retryable=True)},
+            {
+                "failure": ContentObservationFailure(
+                    code="temporary", message="Try again", retryable=True
+                )
+            },
             True,
         ),
         ("canceled", {}, None),
@@ -771,17 +781,17 @@ def test_workflow_preview_surfaces_each_terminal_observer_result(
         def observe(
             self,
             registration_id: str,
-            invocation: ObservationInvocation,
+            invocation: ContentObservationInvocation,
             *,
             descriptor: ObserverDescriptor,
-        ) -> ObservationResult:
+        ) -> ContentObservationResult:
             observed = super().observe(
                 registration_id,
                 invocation,
                 descriptor=descriptor,
             )
-            return ObservationResult.seal(
-                ObservationResultPayload(
+            return ContentObservationResult.seal(
+                ContentObservationResultPayload(
                     **observed.model_dump(
                         mode="python",
                         exclude_none=True,

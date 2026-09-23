@@ -15,10 +15,10 @@ from typing import Literal, Protocol
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 from stove0_observer_client import ContentObserverClient
 from stove0_observer_protocol import (
-    ObservationEvidence,
-    ObservationInvocation,
-    ObservationRequest,
-    ObservationResult,
+    ContentObservationEvidence,
+    ContentObservationInvocation,
+    ContentObservationRequest,
+    ContentObservationResult,
     ObserverDescriptor,
     ObserverRuntimeAuthority,
 )
@@ -90,7 +90,7 @@ class RiverhogControlPort(Protocol):
     def observation_authority(
         self,
         claim: ClaimBinding,
-        request: ObservationRequest,
+        request: ContentObservationRequest,
     ) -> ObserverRuntimeAuthority: ...
 
     def seal_execution(
@@ -137,14 +137,15 @@ class PlanningPort(Protocol):
     def observation_requests(
         self,
         work: WorkIdentity,
-    ) -> tuple[ObservationRequest, ...]: ...
+    ) -> tuple[ContentObservationRequest, ...]: ...
 
     def workflow_plan(
         self,
         work: WorkIdentity,
-        observations: tuple[ObservationEvidence, ...],
+        observations: tuple[ContentObservationEvidence, ...],
         *,
-        nested_observer: Callable[[WorkIdentity], tuple[ObservationEvidence, ...]] | None = None,
+        nested_observer: Callable[[WorkIdentity], tuple[ContentObservationEvidence, ...]]
+        | None = None,
     ) -> BranchSetDecision | WorkInapplicable: ...
 
     def target_preflight_request(
@@ -168,10 +169,10 @@ class ObserverPort(Protocol):
     def observe(
         self,
         registration_id: str,
-        invocation: ObservationInvocation,
+        invocation: ContentObservationInvocation,
         *,
         descriptor: ObserverDescriptor,
-    ) -> ObservationResult: ...
+    ) -> ContentObservationResult: ...
 
 
 class TargetPort(Protocol):
@@ -248,10 +249,10 @@ class HttpObserverPort:
     def observe(
         self,
         registration_id: str,
-        invocation: ObservationInvocation,
+        invocation: ContentObservationInvocation,
         *,
         descriptor: ObserverDescriptor,
-    ) -> ObservationResult:
+    ) -> ContentObservationResult:
         return self._client(registration_id).observe(invocation, descriptor=descriptor)
 
     def _client(self, registration_id: str) -> ContentObserverClient:
@@ -413,7 +414,7 @@ class Stove0Coordinator:
             return self._observe_one(record)
         if phase == "planning":
             evidence = tuple(
-                ObservationEvidence(request=request, result=result)
+                ContentObservationEvidence(request=request, result=result)
                 for request, result in zip(
                     record.observation_requests,
                     record.observation_results,
@@ -613,7 +614,7 @@ class Stove0Coordinator:
         authority = self.riverhog.observation_authority(record.claim, request)
         result = self.observers.observe(
             request.observer_registration_id,
-            ObservationInvocation(
+            ContentObservationInvocation(
                 request=request,
                 claim_id=record.claim.claim_id,
                 fence=record.claim.fence,
@@ -631,12 +632,12 @@ class Stove0Coordinator:
         self,
         parent: WorkRecord,
         work: WorkIdentity,
-    ) -> tuple[ObservationEvidence, ...]:
+    ) -> tuple[ContentObservationEvidence, ...]:
         """Observe an exact nested coordinator under the root's scoped claim."""
 
         if parent.claim is None:
             raise RuntimeError("nested planning requires the root coordination claim")
-        evidence: list[ObservationEvidence] = []
+        evidence: list[ContentObservationEvidence] = []
         for request in self.planning.observation_requests(work):
             if request.work_id != work.work_id:
                 raise RuntimeError("nested observation request differs from its work identity")
@@ -646,7 +647,7 @@ class Stove0Coordinator:
             authority = self.riverhog.observation_authority(parent.claim, request)
             result = self.observers.observe(
                 request.observer_registration_id,
-                ObservationInvocation(
+                ContentObservationInvocation(
                     request=request,
                     claim_id=parent.claim.claim_id,
                     fence=parent.claim.fence,
@@ -675,7 +676,7 @@ class Stove0Coordinator:
                     code="observer-canceled",
                     message="A required nested content observation was canceled.",
                 )
-            evidence.append(ObservationEvidence(request=request, result=result))
+            evidence.append(ContentObservationEvidence(request=request, result=result))
         return tuple(sorted(evidence, key=lambda item: item.request.request_id))
 
     def _preflight(self, record: WorkRecord) -> WorkRecord:

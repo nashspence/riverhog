@@ -390,6 +390,10 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: CollectionDescription](../../authorities/stove0/http-schemas/schemas-collectiondescription.md#pa-cffbfa934f) |
 | `stove0` | [schemas: CollectionRootRef](../../authorities/stove0/http-schemas/schemas-collectionrootref.md#pa-7b8426a083) |
 | `stove0` | [schemas: CollectionTag](../../authorities/stove0/http-schemas/schemas-collectiontag.md#pa-4208372b63) |
+| `stove0` | [schemas: ContentObservationFailure](../../authorities/stove0/http-schemas/schemas-contentobservationfailure.md#pa-4aca00685b) |
+| `stove0` | [schemas: ContentObservationInapplicable](../../authorities/stove0/http-schemas/schemas-contentobservationinapplicable.md#pa-7f0b4eb0dc) |
+| `stove0` | [schemas: ContentObservationRequest](../../authorities/stove0/http-schemas/schemas-contentobservationrequest.md#pa-76515b7717) |
+| `stove0` | [schemas: ContentObservationResult](../../authorities/stove0/http-schemas/schemas-contentobservationresult.md#pa-e54917069e) |
 | `stove0` | [schemas: ControllerEvidence](../../authorities/stove0/http-schemas/schemas-controllerevidence.md#pa-d935bc2c33) |
 | `stove0` | [schemas: CoordinationBranchPlan](../../authorities/stove0/http-schemas/schemas-coordinationbranchplan.md#pa-af7c7f71e9) |
 | `stove0` | [schemas: CoordinationChildSettlementRef](../../authorities/stove0/http-schemas/schemas-coordinationchildsettlementref.md#pa-e83e6c9607) |
@@ -417,10 +421,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: JoinWorkBinding](../../authorities/stove0/http-schemas/schemas-joinworkbinding.md#pa-a156635db3) |
 | `stove0` | [schemas: JoinWorkMemberBinding](../../authorities/stove0/http-schemas/schemas-joinworkmemberbinding.md#pa-c251992978) |
 | `stove0` | [schemas: JsonSchemaValidationProfile](../../authorities/stove0/http-schemas/schemas-jsonschemavalidationprofile.md#pa-dbe3711acd) |
-| `stove0` | [schemas: ObservationFailure](../../authorities/stove0/http-schemas/schemas-observationfailure.md#pa-5f95e6f61f) |
-| `stove0` | [schemas: ObservationInapplicable](../../authorities/stove0/http-schemas/schemas-observationinapplicable.md#pa-0a2f1e6bf4) |
-| `stove0` | [schemas: ObservationRequest](../../authorities/stove0/http-schemas/schemas-observationrequest.md#pa-fb7dc34cce) |
-| `stove0` | [schemas: ObservationResult](../../authorities/stove0/http-schemas/schemas-observationresult.md#pa-f091cf05da) |
 | `stove0` | [schemas: ObserverImplementation](../../authorities/stove0/http-schemas/schemas-observerimplementation.md#pa-cc1ab4726c) |
 | `stove0` | [schemas: ObserverUse](../../authorities/stove0/http-schemas/schemas-observeruse.md#pa-31d9097b31) |
 | `stove0` | [schemas: OperationRef](../../authorities/stove0/http-schemas/schemas-operationref.md#pa-4e233aad2d) |
@@ -461,9 +461,9 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: WorkflowPlanIntent](../../authorities/stove0/http-schemas/schemas-workflowplanintent.md#pa-abcc685753) |
 | `stove0` | [schemas: WorkflowPreview](../../authorities/stove0/http-schemas/schemas-workflowpreview.md#pa-102e3df726) |
 | `stove0` | [schemas: WorkflowPreviewIn](../../authorities/stove0/http-schemas/schemas-workflowpreviewin.md#pa-001b60fae4) |
-| `stove0-observer-support` | [generated:stove0-observer: ObservationInvocation](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observationinvocation.md#pa-7cda2da729) |
-| `stove0-observer-support` | [generated:stove0-observer: ObservationRequest](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observationrequest.md#pa-dfe57b3bec) |
-| `stove0-observer-support` | [generated:stove0-observer: ObservationResult](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observationresult.md#pa-66c64d45f9) |
+| `stove0-observer-support` | [generated:stove0-observer: ContentObservationInvocation](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-contentobservationinvocation.md#pa-34803a826d) |
+| `stove0-observer-support` | [generated:stove0-observer: ContentObservationRequest](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-contentobservationrequest.md#pa-4d8d438517) |
+| `stove0-observer-support` | [generated:stove0-observer: ContentObservationResult](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-contentobservationresult.md#pa-409ba975de) |
 | `stove0-observer-support` | [generated:stove0-observer: ObserverConformanceResult](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observerconformanceresult.md#pa-15628f904f) |
 | `stove0-observer-support` | [generated:stove0-observer: ObserverContract](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observercontract.md#pa-ec3200d398) |
 | `stove0-observer-support` | [generated:stove0-observer: ObserverDescriptor](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observerdescriptor.md#pa-81237e0250) |

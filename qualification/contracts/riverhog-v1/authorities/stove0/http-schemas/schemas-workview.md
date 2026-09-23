@@ -36,8 +36,8 @@ Operator projection of mutable work; never an execution identity.
 | <a id="s-4c1ffdf0d3"></a>`format` | no | type="string"; const="stove0-work-view/v1"; default="stove0-work-view/v1"; title="Format" |  |
 | <a id="s-ad37985d90"></a>`inapplicable` | no | anyOf=[([WorkInapplicableView](schemas-workinapplicableview.md)); (type="null")] |  |
 | <a id="s-9ab84bc2ad"></a>`join_plan` | no | anyOf=[([JoinPlan](schemas-joinplan.md)); (type="null")] |  |
-| <a id="s-0d80f7addf"></a>`observation_requests` | no | type="array"; default=[]; items=([ObservationRequest](schemas-observationrequest.md)); title="Observation Requests" |  |
-| <a id="s-33173849b4"></a>`observation_results` | no | type="array"; default=[]; items=([ObservationResult](schemas-observationresult.md)); title="Observation Results" |  |
+| <a id="s-0d80f7addf"></a>`observation_requests` | no | type="array"; default=[]; items=([ContentObservationRequest](schemas-contentobservationrequest.md)); title="Observation Requests" |  |
+| <a id="s-33173849b4"></a>`observation_results` | no | type="array"; default=[]; items=([ContentObservationResult](schemas-contentobservationresult.md)); title="Observation Results" |  |
 | <a id="s-7cd6caa0b2"></a>`output` | no | anyOf=[([OutputCollectionRef](schemas-outputcollectionref.md)); (type="null")] |  |
 | <a id="s-426ffe9458"></a>`phase` | yes | type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"]; title="Phase" |  |
 | <a id="s-46d5cbd753"></a>`preview_acceptance` | no | anyOf=[([PreviewAcceptanceView](schemas-previewacceptanceview.md)); (type="null")] |  |
@@ -79,12 +79,12 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 - [AcceptedTargetJob](schemas-acceptedtargetjob.md)
 - [BranchSetPlan](schemas-branchsetplan.md)
+- [ContentObservationRequest](schemas-contentobservationrequest.md)
+- [ContentObservationResult](schemas-contentobservationresult.md)
 - [ControllerEvidence](schemas-controllerevidence.md)
 - [CoordinationSettlement](schemas-coordinationsettlement.md)
 - [EffectPlan](schemas-effectplan.md)
 - [JoinPlan](schemas-joinplan.md)
-- [ObservationRequest](schemas-observationrequest.md)
-- [ObservationResult](schemas-observationresult.md)
 - [OutputCollectionRef](schemas-outputcollectionref.md)
 - [PreviewAcceptanceView](schemas-previewacceptanceview.md)
 - [TargetJobStatus](schemas-targetjobstatus.md)
@@ -127,7 +127,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9841e3ec7c3884ed77d067b18336f060b4cf04a352ec1a59eca808ff340ecd1f -->
+<!-- exact-contract-value: 7ece8bfa7f3c60ad877fb0c212bce4d00494c0cca78e7c3cbd454f99bc662a1f -->
 
 ```json
 {
@@ -246,7 +246,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "observation_requests": {
       "default": [],
       "items": {
-        "$ref": "#/components/schemas/ObservationRequest"
+        "$ref": "#/components/schemas/ContentObservationRequest"
       },
       "title": "Observation Requests",
       "type": "array"
@@ -254,7 +254,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "observation_results": {
       "default": [],
       "items": {
-        "$ref": "#/components/schemas/ObservationResult"
+        "$ref": "#/components/schemas/ContentObservationResult"
       },
       "title": "Observation Results",
       "type": "array"

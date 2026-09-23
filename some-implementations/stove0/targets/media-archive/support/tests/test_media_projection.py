@@ -32,11 +32,11 @@ from stove0_media_metadata_observer_contracts import (
     MediaMetadataFacts,
 )
 from stove0_observer_protocol import (
-    ObservationEvidence,
-    ObservationRequest,
-    ObservationRequestPayload,
-    ObservationResult,
-    ObservationResultPayload,
+    ContentObservationEvidence,
+    ContentObservationRequest,
+    ContentObservationRequestPayload,
+    ContentObservationResult,
+    ContentObservationResultPayload,
     ObserverImplementation,
 )
 from stove0_protocol import (
@@ -62,7 +62,7 @@ def _root() -> CollectionRootRef:
 def _evidence(
     inputs: tuple[InputArtifact, ...],
     facts: dict[str, tuple[MediaMetadataFact, ...]],
-) -> tuple[ObservationEvidence, ...]:
+) -> tuple[ContentObservationEvidence, ...]:
     subjects = tuple(
         ArtifactSubject(
             id=item.id,
@@ -75,8 +75,8 @@ def _evidence(
         )
         for item in inputs
     )
-    request = ObservationRequest.seal(
-        ObservationRequestPayload(
+    request = ContentObservationRequest.seal(
+        ContentObservationRequestPayload(
             work_id=_sha("3"),
             observer_registration_id="exiftool",
             observer_descriptor_sha256=_sha("4"),
@@ -95,8 +95,8 @@ def _evidence(
             for item in inputs
         )
     ).model_dump(mode="json")
-    result = ObservationResult.seal(
-        ObservationResultPayload(
+    result = ContentObservationResult.seal(
+        ContentObservationResultPayload(
             request_id=request.request_id,
             state="observed",
             observer=ObserverImplementation(
@@ -113,7 +113,7 @@ def _evidence(
             facts_sha256=canonical_json_sha256(document),
         )
     )
-    return (ObservationEvidence(request=request, result=result),)
+    return (ContentObservationEvidence(request=request, result=result),)
 
 
 def test_audio_only_archive_cannot_retire_its_richer_source_collection() -> None:
