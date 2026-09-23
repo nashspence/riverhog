@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import threading
+import time
 from collections.abc import Iterator
 from contextlib import contextmanager
 from ftplib import FTP, error_temp
@@ -137,16 +138,8 @@ def test_incomplete_upload_is_not_handed_off_and_resumes_after_restart(
     root = tmp_path / "intake"
     prefix = b"durable prefix-"
     suffix = b"completed after restart"
-    prefix_received = threading.Event()
     incomplete_received = threading.Event()
-    data_handler = ftp_listener._CompletionHandler.dtp_handler
-    on_data = data_handler.handle_read_event
     on_incomplete = ftp_listener._CompletionHandler.on_incomplete_file_received
-
-    def observe_data(handler: Any) -> None:
-        on_data(handler)
-        if handler.receive and handler.tot_bytes_received >= len(prefix):
-            prefix_received.set()
 
     def observe_incomplete(handler: Any, file: str) -> None:
         on_incomplete(handler, file)
@@ -157,15 +150,22 @@ def test_incomplete_upload_is_not_handed_off_and_resumes_after_restart(
         "on_incomplete_file_received",
         observe_incomplete,
     )
-    monkeypatch.setattr(data_handler, "handle_read_event", observe_data)
     with _listener(root) as address:
         ftp = _login(address)
         data = ftp.transfercmd("STOR resumed.bin")
         data.sendall(prefix)
         try:
-            # A local socket send does not establish server-side receipt before
-            # the separate control connection is deliberately aborted.
-            assert prefix_received.wait(timeout=5)
+            deadline = time.monotonic() + 5
+            while time.monotonic() < deadline:
+                status = ftp.sendcmd("STAT")
+                if any(
+                    line.strip() == f"Total bytes received: {len(prefix)}"
+                    for line in status.splitlines()
+                ):
+                    break
+                time.sleep(0.05)
+            else:
+                raise AssertionError("FTP listener did not receive the exact prefix")
             ftp.close()
             assert incomplete_received.wait(timeout=5)
         finally:
