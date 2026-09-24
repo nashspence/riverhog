@@ -7,9 +7,11 @@ Audited base tree: `69cdd7a0ec3f3447997248acdc82a5b6ab1f11ce`.
 Reference branch: `reference/external/869-durable-copy-to-handoff`.
 
 Produced by: OpenAI ChatGPT.
-Model: GPT-5.6 Sol (user-visible identity).
-Configuration / effort: no additional configuration or effort setting exposed.
+Producer model: GPT-6 Astra Pro (ChatGPT 6 Pro; user-visible producer identity).
+Configuration / effort: no additional configuration or effort setting exposed by the producer.
 Requested by: the Riverhog repository user, acting as requester/maintainer; not the producing model.
+Published by: OpenAI ChatGPT.
+Publisher model: GPT-5.6 Sol.
 Prepared: September 24, 2026.
 
 ## Purpose and contents
@@ -88,6 +90,12 @@ hash without creating a circular identity. The archive `MANIFEST.json` records
 the unpublished local preparation object
 `50377238f4134fae38aa244363ba3f4dee30ae50`; it is provenance for the tar
 handoff, not the published GitHub handoff identity.
+
+Publication provenance correction: the first remote publication commit and first
+#869 textual handoff record incorrectly named GPT-5.6 Sol as the producer. The
+user clarified that ChatGPT 6 Pro produced the archive and GPT-5.6 Sol is the
+publishing model. This commit corrects that attribution without rewriting the
+already-published branch history.
 
 No GitHub writes were made during local preparation. The branch was later
 published through the connected GitHub interface. Publication still requires a
