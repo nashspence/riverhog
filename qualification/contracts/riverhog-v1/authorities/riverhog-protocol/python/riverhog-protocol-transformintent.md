@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-33c88b4fbd"></a>`kind`: `"class"`
-- <a id="s-55a08a6a00"></a>`signature`: `"\"(transform_id: 'str', recipe: 'RecipeIdentity', operation: 'OperationIdentity', inputs: 'tuple[CollectionRootIdentity, ...]', effective_intent: 'dict[str, JsonValue]', retirement_policy: 'RetirementPolicy' = 'retain', retirement_grace_seconds: 'int' = 0) -> None\""`
+- <a id="s-55a08a6a00"></a>`signature`: `"\"(transform_id: 'str', recipe: 'RecipeIdentity', operation: 'OperationIdentity', inputs: 'tuple[CollectionRootIdentity, ...]', effective_intent: 'dict[str, JsonValue]', source_collection_retirement_policy: 'SourceCollectionRetirementPolicy' = 'retain', source_collection_retirement_grace_seconds: 'int' = 0) -> None\""`
 
 #### Dataclass fields
 
@@ -33,8 +33,8 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-dc33e87e1a"></a>`operation` | `'OperationIdentity'` | `required` |
 | <a id="s-eda689f306"></a>`inputs` | `'tuple[CollectionRootIdentity, ...]'` | `required` |
 | <a id="s-4478b58b21"></a>`effective_intent` | `'dict[str, JsonValue]'` | `required` |
-| <a id="s-914047a5fa"></a>`retirement_policy` | `'RetirementPolicy'` | `'retain'` |
-| <a id="s-eea4e56ee4"></a>`retirement_grace_seconds` | `'int'` | `0` |
+| <a id="s-914047a5fa"></a>`source_collection_retirement_policy` | `'SourceCollectionRetirementPolicy'` | `'retain'` |
+| <a id="s-eea4e56ee4"></a>`source_collection_retirement_grace_seconds` | `'int'` | `0` |
 
 ## Maintained corroboration
 
@@ -74,7 +74,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 392df695b89099f216f4070eebd0e3a5882e3a9b2dc863e91cd8171b16b0db72 -->
+<!-- exact-contract-value: e1714040f5086a066e3d90110ffb73c6598ad4a0bb42729f482682656f139052 -->
 
 ```json
 {
@@ -107,17 +107,17 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       {
         "default": "'retain'",
-        "name": "retirement_policy",
-        "type": "'RetirementPolicy'"
+        "name": "source_collection_retirement_policy",
+        "type": "'SourceCollectionRetirementPolicy'"
       },
       {
         "default": "0",
-        "name": "retirement_grace_seconds",
+        "name": "source_collection_retirement_grace_seconds",
         "type": "'int'"
       }
     ],
     "kind": "class",
-    "signature": "\"(transform_id: 'str', recipe: 'RecipeIdentity', operation: 'OperationIdentity', inputs: 'tuple[CollectionRootIdentity, ...]', effective_intent: 'dict[str, JsonValue]', retirement_policy: 'RetirementPolicy' = 'retain', retirement_grace_seconds: 'int' = 0) -> None\""
+    "signature": "\"(transform_id: 'str', recipe: 'RecipeIdentity', operation: 'OperationIdentity', inputs: 'tuple[CollectionRootIdentity, ...]', effective_intent: 'dict[str, JsonValue]', source_collection_retirement_policy: 'SourceCollectionRetirementPolicy' = 'retain', source_collection_retirement_grace_seconds: 'int' = 0) -> None\""
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

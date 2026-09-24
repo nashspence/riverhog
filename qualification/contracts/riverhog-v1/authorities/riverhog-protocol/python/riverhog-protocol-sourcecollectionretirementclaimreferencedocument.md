@@ -1,8 +1,8 @@
-# riverhog_protocol.RetirementClaimReferenceDocument
+# riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: python:riverhog-protocol:riverhog-protocol-retirementclaimreferencedocument:72c7681a98 -->
+<!-- contract-element: python:riverhog-protocol:riverhog-protocol-sourcecollectionretirem-01fe187845:6c9514f323 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,112 +13,112 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-a3b7fc9ce8"></a>
-- <a id="s-d82f2c90ad"></a>`distribution`: `riverhog-protocol`
-- <a id="s-321a1fb187"></a>`module`: `riverhog_protocol`
-- <a id="s-0a4afab5ee"></a>`name`: `RetirementClaimReferenceDocument`
-- <a id="s-e4146fce05"></a>`unit`: `export`
+<a id="s-e6ed0922f2"></a>
+- <a id="s-140230a5dc"></a>`distribution`: `riverhog-protocol`
+- <a id="s-9665fe23f7"></a>`module`: `riverhog_protocol`
+- <a id="s-eaecfd4b32"></a>`name`: `SourceCollectionRetirementClaimReferenceDocument`
+- <a id="s-28b1069042"></a>`unit`: `export`
 
 ### Declared structure
 
-- <a id="s-594e347785"></a>`kind`: `"class"`
-- <a id="s-4fa14614b2"></a>`signature`: `"\"(*, claim_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], fence: Annotated[NonnegativeDecimal, Ge(ge=1)], work_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], execution_id: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')])]] = None, output_collection_id: CollectionId \| None = None, outcomes: riverhog_protocol.collection_workflow_transport.ExactSetIdentityDocument \| None = None) -> None\""`
+- <a id="s-354931abed"></a>`kind`: `"class"`
+- <a id="s-5b729b30ad"></a>`signature`: `"\"(*, claim_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], fence: Annotated[NonnegativeDecimal, Ge(ge=1)], work_id: Annotated[str, _PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')], execution_id: Optional[Annotated[str, FieldInfo(annotation=NoneType, required=True, metadata=[_PydanticGeneralMetadata(pattern='^[0-9a-f]{64}$')])]] = None, output_collection_id: CollectionId \| None = None, outcomes: riverhog_protocol.collection_workflow_transport.ExactSetIdentityDocument \| None = None) -> None\""`
 
 #### Validated model schema
 
-<a id="s-83a11ebd8e"></a>
+<a id="s-261a9e5bdb"></a>
 
-- <a id="s-42858d1624"></a>`type`: `"object"`
-- <a id="s-cd95ec7059"></a>`additionalProperties`: `false`
-- <a id="s-3e370fcd50"></a>`required`: `["claim_id","fence","work_id"]`
+- <a id="s-143527cc2d"></a>`type`: `"object"`
+- <a id="s-c724e8d2f1"></a>`additionalProperties`: `false`
+- <a id="s-60f81eb32d"></a>`required`: `["claim_id","fence","work_id"]`
 
 ##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4040051f30"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-ebb211919a"></a>`execution_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
-| <a id="s-25792bb28a"></a>`fence` | yes | [NonnegativeDecimal](#s-0d8a9e0a98); ge=1 |  |
-| <a id="s-8aa807b6bd"></a>`outcomes` | no | anyOf=[([ExactSetIdentityDocument](#s-95e94b36d1)); (type="null")]; default=null |  |
-| <a id="s-5b8d5d0a4e"></a>`output_collection_id` | no | anyOf=[([CollectionId](#s-c5d15daa23)); (type="null")]; default=null |  |
-| <a id="s-5178cf253f"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-e749de66d0"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-94b1d3ca7a"></a>`execution_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
+| <a id="s-6995a16d2c"></a>`fence` | yes | [NonnegativeDecimal](#s-fabdd0a7e3); ge=1 |  |
+| <a id="s-d1cc87b67e"></a>`outcomes` | no | anyOf=[([ExactSetIdentityDocument](#s-8fcf812718)); (type="null")]; default=null |  |
+| <a id="s-dfd60b481f"></a>`output_collection_id` | no | anyOf=[([CollectionId](#s-b7035f848b)); (type="null")]; default=null |  |
+| <a id="s-f66c58c167"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### Exactly one must match (`oneOf`)
 
 | Alternative | Schema |
 |---|---|
-| 1 | [See `oneOf` alternative 1](#s-bf0ba16d67) |
-| 2 | [See `oneOf` alternative 2](#s-e9d70d2c3c) |
+| 1 | [See `oneOf` alternative 1](#s-ad4e2371a7) |
+| 2 | [See `oneOf` alternative 2](#s-1ef14420ca) |
 
 ##### Definitions
 
-- [CollectionId](#s-c5d15daa23)
-- [ExactSetIdentityDocument](#s-95e94b36d1)
-- [NonnegativeDecimal](#s-0d8a9e0a98)
+- [CollectionId](#s-b7035f848b)
+- [ExactSetIdentityDocument](#s-8fcf812718)
+- [NonnegativeDecimal](#s-fabdd0a7e3)
 
-##### <a id="s-bf0ba16d67"></a>`oneOf` alternative 1
+##### <a id="s-ad4e2371a7"></a>`oneOf` alternative 1
 
-- <a id="s-1d4b281732"></a>`required`: `["execution_id","output_collection_id"]`
-
-###### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-412ece3957"></a>`execution_id` | yes | type="string" |  |
-| <a id="s-cc5632f835"></a>`outcomes` | no | type="null" |  |
-| <a id="s-dd5a2f007c"></a>`output_collection_id` | yes | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |  |
-
-##### <a id="s-e9d70d2c3c"></a>`oneOf` alternative 2
-
-- <a id="s-79b870a8cf"></a>`required`: `["outcomes"]`
+- <a id="s-a00abe1e26"></a>`required`: `["execution_id","output_collection_id"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2403cc13ee"></a>`execution_id` | no | type="null" |  |
-| <a id="s-e1925cf638"></a>`outcomes` | yes | type="object" |  |
-| <a id="s-b30f4283a0"></a>`output_collection_id` | no | type="null" |  |
+| <a id="s-c3c900040b"></a>`execution_id` | yes | type="string" |  |
+| <a id="s-8523341b6e"></a>`outcomes` | no | type="null" |  |
+| <a id="s-a8a1f8947f"></a>`output_collection_id` | yes | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |  |
 
-##### <a id="s-c5d15daa23"></a>definition `CollectionId`
+##### <a id="s-1ef14420ca"></a>`oneOf` alternative 2
+
+- <a id="s-62ae107acb"></a>`required`: `["outcomes"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-5cb807389c"></a>`execution_id` | no | type="null" |  |
+| <a id="s-d2169a0203"></a>`outcomes` | yes | type="object" |  |
+| <a id="s-4ea9cacdeb"></a>`output_collection_id` | no | type="null" |  |
+
+##### <a id="s-b7035f848b"></a>definition `CollectionId`
 
 
 ###### All must match (`allOf`)
 
 | Alternative | Schema |
 |---|---|
-| <a id="s-33ed70c73f"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
-| <a id="s-08ad80a06f"></a>2 | not=(const="0") |
+| <a id="s-e1aff9dbe0"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
+| <a id="s-eaeac0dbb2"></a>2 | not=(const="0") |
 
-##### <a id="s-95e94b36d1"></a>definition `ExactSetIdentityDocument`
+##### <a id="s-8fcf812718"></a>definition `ExactSetIdentityDocument`
 
-- <a id="s-bff77b040f"></a>`type`: `"object"`
-- <a id="s-1e84051137"></a>`additionalProperties`: `false`
-- <a id="s-f2a48a13af"></a>`required`: `["count","sha256"]`
+- <a id="s-5583a7d90a"></a>`type`: `"object"`
+- <a id="s-729994d2a5"></a>`additionalProperties`: `false`
+- <a id="s-38eba43e21"></a>`required`: `["count","sha256"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ad5783670a"></a>`count` | yes | [NonnegativeDecimal](#s-0d8a9e0a98); ge=1 |  |
-| <a id="s-48ddc70bc2"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-fe0bf9d948"></a>`count` | yes | [NonnegativeDecimal](#s-fabdd0a7e3); ge=1 |  |
+| <a id="s-ab0b69960e"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
-##### <a id="s-0d8a9e0a98"></a>definition `NonnegativeDecimal`
+##### <a id="s-fabdd0a7e3"></a>definition `NonnegativeDecimal`
 
-- <a id="s-d90eed6f45"></a>`type`: `"string"`
-- <a id="s-1c2eedf67e"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+- <a id="s-9b8df14735"></a>`type`: `"string"`
+- <a id="s-85f87f6e8b"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Maintained corroboration
 
 ### Related interface records
 
-- [__getitem__](riverhog-protocol-retirementclaimreferencedocument-getitem.md)
-- [validate_settlement_form](riverhog-protocol-retirementclaimreferencedocument-validate-settlement-form.md)
-- [get](riverhog-protocol-retirementclaimreferencedocument-get.md)
+- [__getitem__](riverhog-protocol-sourcecollectionretirementclaimreferencedocument-getitem.md)
+- [validate_settlement_form](riverhog-protocol-sourcecollectionretirementclaimreferencedocument-validate-s-d2ffc82827.md)
+- [get](riverhog-protocol-sourcecollectionretirementclaimreferencedocument-get.md)
 
 ## Governing policies
 
-- <a id="pa-8a65e8800b"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
+- <a id="pa-a338031a65"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
 
 ## Evidence
 
@@ -134,7 +134,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/python/riverhog_protocol.RetirementClaimReferenceDocument`
+- `/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument`
 
 ### Exact owned JSON
 
@@ -143,7 +143,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5caf8ebef91fcf4be23898b642047918c5fd8c3e0c73e3cb29b1d89170195fbd -->
+<!-- exact-contract-value: 01d767e847c466fb637c3fcce4088a3f42bdbff0659acc5136f5208a7e335872 -->
 
 ```json
 {
@@ -283,7 +283,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",
-  "name": "RetirementClaimReferenceDocument",
+  "name": "SourceCollectionRetirementClaimReferenceDocument",
   "unit": "export"
 }
 ```

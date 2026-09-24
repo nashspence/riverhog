@@ -253,7 +253,7 @@ class CollectionDeletionService(Protocol):
         collection_id: int,
         *,
         principal: Principal | None = None,
-        retirement_claim_id: str | None = None,
+        source_collection_retirement_claim_id: str | None = None,
     ) -> JsonObject: ...
     def delete(
         self,
@@ -262,7 +262,7 @@ class CollectionDeletionService(Protocol):
         challenge: str,
         initiator: Principal,
         event_context: dict[str, object] | None = None,
-        retirement_claim_id: str | None = None,
+        source_collection_retirement_claim_id: str | None = None,
     ) -> JsonObject: ...
     def process_due(self, *, limit: int = 10) -> int: ...
 

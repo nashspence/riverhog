@@ -364,7 +364,7 @@ def test_workflow_target_and_controller_evidence_bind_one_another() -> None:
             target_registration_id="nvenc-primary",
             target_descriptor_sha256=_sha("f"),
             requested_target_options={"preset": "p7"},
-            retirement_policy="retain",
+            source_collection_retirement_policy="retain",
         )
     )
     target_document = {
@@ -467,7 +467,7 @@ def test_workflow_preview_and_evaluation_contracts_are_deterministic() -> None:
             operation=operation,
             target_registration_id="fixture-target",
             target_descriptor_sha256=_sha("f"),
-            retirement_policy="retain",
+            source_collection_retirement_policy="retain",
         ),
     )
     workflow = branch.workflow_plan
@@ -549,7 +549,7 @@ def test_workflow_preview_and_evaluation_contracts_are_deterministic() -> None:
             operation=operation,
             target_registration_id="fixture-target",
             target_descriptor_sha256=_sha("f"),
-            retirement_policy="retire-after-verified-output",
+            source_collection_retirement_policy="retire-after-verified-output",
         )
 
 

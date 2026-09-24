@@ -34,7 +34,7 @@ Exact externally visible contract owned by this contract element.
 |---|---|---|
 | <a id="s-fbd19d024b"></a>`primary-key` | `—` | `PRIMARY KEY (work_id)` |
 | <a id="s-d6f7938e94"></a>`check` | `ck_stove0_work_records_revision` | `CONSTRAINT ck_stove0_work_records_revision CHECK (revision >= 1)` |
-| <a id="s-ed995ae514"></a>`check` | `ck_stove0_work_records_phase` | `CONSTRAINT ck_stove0_work_records_phase CHECK (phase IN ('eligible','claimed','observing','planning','target_preflight','queued','executing','output_finalizing','verifying','settled','retirement_pending','coordinating','abandon_pending','complete','inapplicable','failed','canceled'))` |
+| <a id="s-ed995ae514"></a>`check` | `ck_stove0_work_records_phase` | `CONSTRAINT ck_stove0_work_records_phase CHECK (phase IN ('eligible','claimed','observing','planning','target_preflight','queued','executing','output_finalizing','verifying','settled','source_collection_retirement_pending','coordinating','abandon_pending','complete','inapplicable','failed','canceled'))` |
 | <a id="s-f490934355"></a>`check` | `ck_stove0_work_records_id` | `CONSTRAINT ck_stove0_work_records_id CHECK (length(work_id) = 64)` |
 | <a id="s-c4575f784b"></a>`check` | `ck_stove0_work_records_document_bytes` | `CONSTRAINT ck_stove0_work_records_document_bytes CHECK (document_bytes >= 0)` |
 | <a id="s-a8be8b2824"></a>`check` | `ck_stove0_work_records_work_id_hex` | `CONSTRAINT ck_stove0_work_records_work_id_hex CHECK (length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
@@ -72,7 +72,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 88f68004fb250c8281e4f83bb0784790bc9b73a355af328af6a41f71a488f5f7 -->
+<!-- exact-contract-value: e85c431fa35579410a05bebc811031ec6cf574c03dfb6b07ab445f9994721702 -->
 
 ```json
 {
@@ -129,8 +129,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "name": "ck_stove0_work_records_revision"
     },
     {
-      "definition": "CONSTRAINT ck_stove0_work_records_phase CHECK (phase IN ('eligible','claimed','observing','planning','target_preflight','queued','executing','output_finalizing','verifying','settled','retirement_pending','coordinating','abandon_pending','complete','inapplicable','failed','canceled'))",
-      "expression": "(phase IN ('eligible','claimed','observing','planning','target_preflight','queued','executing','output_finalizing','verifying','settled','retirement_pending','coordinating','abandon_pending','complete','inapplicable','failed','canceled'))",
+      "definition": "CONSTRAINT ck_stove0_work_records_phase CHECK (phase IN ('eligible','claimed','observing','planning','target_preflight','queued','executing','output_finalizing','verifying','settled','source_collection_retirement_pending','coordinating','abandon_pending','complete','inapplicable','failed','canceled'))",
+      "expression": "(phase IN ('eligible','claimed','observing','planning','target_preflight','queued','executing','output_finalizing','verifying','settled','source_collection_retirement_pending','coordinating','abandon_pending','complete','inapplicable','failed','canceled'))",
       "kind": "check",
       "name": "ck_stove0_work_records_phase"
     },

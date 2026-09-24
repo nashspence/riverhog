@@ -50,8 +50,8 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-2e86da7fa5"></a>`outcome_set_sha256` | `VARCHAR(64)` | yes | `—` | — |
 | <a id="s-6cc85c703f"></a>`outcome_failure` | `TEXT` | yes | `—` | — |
 | <a id="s-acdf17588f"></a>`outcomes_sealed_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-f8fc290c22"></a>`retirement_policy` | `VARCHAR` | yes | `—` | — |
-| <a id="s-c556aa12e0"></a>`retirement_grace_seconds` | `BIGINT` | no | `—` | — |
+| <a id="s-f8fc290c22"></a>`source_collection_retirement_policy` | `VARCHAR` | yes | `—` | — |
+| <a id="s-c556aa12e0"></a>`source_collection_retirement_grace_seconds` | `BIGINT` | no | `—` | — |
 | <a id="s-e7ae4e30c4"></a>`plan_sealed_at` | `VARCHAR` | yes | `—` | — |
 | <a id="s-d67c499fff"></a>`state` | `VARCHAR` | no | `—` | — |
 | <a id="s-c61778590f"></a>`fence` | `BIGINT` | no | `—` | — |
@@ -73,7 +73,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-7de19128fa"></a>`check` | `ck_collection_processing_claims_state` | `CONSTRAINT ck_collection_processing_claims_state CHECK (state IN ('active','settled','retiring','abandoned','released'))` |
 | <a id="s-0ce1453820"></a>`check` | `ck_collection_processing_claims_outcome_state` | `CONSTRAINT ck_collection_processing_claims_outcome_state CHECK (outcome_state IN ('receiving','sealing','sealed','failed'))` |
 | <a id="s-54e2cb8112"></a>`check` | `ck_collection_processing_claims_fence` | `CONSTRAINT ck_collection_processing_claims_fence CHECK (fence >= 1)` |
-| <a id="s-32d808aa1f"></a>`check` | `ck_collection_processing_claims_grace` | `CONSTRAINT ck_collection_processing_claims_grace CHECK (retirement_grace_seconds >= 0)` |
+| <a id="s-32d808aa1f"></a>`check` | `ck_collection_processing_claims_grace` | `CONSTRAINT ck_collection_processing_claims_grace CHECK (source_collection_retirement_grace_seconds >= 0)` |
 | <a id="s-a179979bce"></a>`check` | `ck_collection_processing_claims_artifact_count` | `CONSTRAINT ck_collection_processing_claims_artifact_count CHECK (input_count >= 0 AND artifact_count >= 0 AND artifact_bytes >= 0 AND outcome_count >= 0 AND outcome_validation_count >= 0)` |
 | <a id="s-7857358f39"></a>`check` | `ck_collection_processing_claims_id` | `CONSTRAINT ck_collection_processing_claims_id CHECK (length(id) = 64)` |
 | <a id="s-60084fe685"></a>`check` | `ck_collection_processing_claims_work_id` | `CONSTRAINT ck_collection_processing_claims_work_id CHECK (length(work_id) = 64)` |
@@ -123,7 +123,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6db0ecc5fc0f3ddb994c695a539b1a7f078932645917c575a0f456bfabe1b3dd -->
+<!-- exact-contract-value: 6c698d881d5c7e140bfa353d5feee0a58e39dd9ed6c0d9bc7cce4cdb1c902ec6 -->
 
 ```json
 {
@@ -303,14 +303,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "VARCHAR"
     },
     {
-      "definition": "retirement_policy VARCHAR",
-      "name": "retirement_policy",
+      "definition": "source_collection_retirement_policy VARCHAR",
+      "name": "source_collection_retirement_policy",
       "nullable": true,
       "type": "VARCHAR"
     },
     {
-      "definition": "retirement_grace_seconds BIGINT NOT NULL",
-      "name": "retirement_grace_seconds",
+      "definition": "source_collection_retirement_grace_seconds BIGINT NOT NULL",
+      "name": "source_collection_retirement_grace_seconds",
       "nullable": false,
       "type": "BIGINT"
     },
@@ -418,8 +418,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "name": "ck_collection_processing_claims_fence"
     },
     {
-      "definition": "CONSTRAINT ck_collection_processing_claims_grace CHECK (retirement_grace_seconds >= 0)",
-      "expression": "(retirement_grace_seconds >= 0)",
+      "definition": "CONSTRAINT ck_collection_processing_claims_grace CHECK (source_collection_retirement_grace_seconds >= 0)",
+      "expression": "(source_collection_retirement_grace_seconds >= 0)",
       "kind": "check",
       "name": "ck_collection_processing_claims_grace"
     },

@@ -35,7 +35,7 @@ _CONTROLLER_PHASES = frozenset(
         "coordinating",
         "verifying",
         "settled",
-        "retirement_pending",
+        "source_collection_retirement_pending",
         "abandon_pending",
     }
 )

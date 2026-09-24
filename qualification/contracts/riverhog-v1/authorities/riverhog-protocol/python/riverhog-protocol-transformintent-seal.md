@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-b4594be164"></a>`kind`: `"classmethod"`
-- <a id="s-ac1d0a6590"></a>`signature`: `"\"(cls, *, recipe: 'RecipeIdentity', operation: 'OperationIdentity', inputs: 'Sequence[CollectionRootIdentity]', effective_intent: 'Mapping[str, object]', retirement_policy: 'RetirementPolicy' = 'retain', retirement_grace_seconds: 'int' = 0) -> 'TransformIntent'\""`
+- <a id="s-ac1d0a6590"></a>`signature`: `"\"(cls, *, recipe: 'RecipeIdentity', operation: 'OperationIdentity', inputs: 'Sequence[CollectionRootIdentity]', effective_intent: 'Mapping[str, object]', source_collection_retirement_policy: 'SourceCollectionRetirementPolicy' = 'retain', source_collection_retirement_grace_seconds: 'int' = 0) -> 'TransformIntent'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 86f5f37782b2b764557594185e09dc762ee7de589d365ba3efc5215959f35d7e -->
+<!-- exact-contract-value: 89aa9f219a239402d0503dbb12580ef1af20d80ee83546366070f1fd806a5d97 -->
 
 ```json
 {
   "contract": {
     "kind": "classmethod",
-    "signature": "\"(cls, *, recipe: 'RecipeIdentity', operation: 'OperationIdentity', inputs: 'Sequence[CollectionRootIdentity]', effective_intent: 'Mapping[str, object]', retirement_policy: 'RetirementPolicy' = 'retain', retirement_grace_seconds: 'int' = 0) -> 'TransformIntent'\""
+    "signature": "\"(cls, *, recipe: 'RecipeIdentity', operation: 'OperationIdentity', inputs: 'Sequence[CollectionRootIdentity]', effective_intent: 'Mapping[str, object]', source_collection_retirement_policy: 'SourceCollectionRetirementPolicy' = 'retain', source_collection_retirement_grace_seconds: 'int' = 0) -> 'TransformIntent'\""
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

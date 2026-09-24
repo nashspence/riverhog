@@ -1,10 +1,10 @@
-# schemas: RetirementClaimReferenceDocument
+# schemas: SourceCollectionRetirementClaimReferenceDocument
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: http-schemas:riverhog:schemas-retirementclaimreferencedocument:577a0a9d80 -->
+<!-- contract-element: http-schemas:riverhog:schemas-sourcecollectionretirementclaimre-c2e390d2a9:f53bf9c72e -->
 
-Exact claim evidence authorizing one retirement deletion plan.
+Exact claim evidence authorizing one source collection deletion plan.
 
 | Audit field | Value |
 |---|---|
@@ -13,55 +13,55 @@ Exact claim evidence authorizing one retirement deletion plan.
 
 ## External contract
 
-<a id="s-41ae99dfe3"></a>
+<a id="s-d67ec0d75b"></a>
 
-- <a id="s-0618482f13"></a>`type`: `"object"`
-- <a id="s-60c80365a9"></a>`additionalProperties`: `false`
-- <a id="s-bf12ac752b"></a>`description`: `"Exact claim evidence authorizing one retirement deletion plan."`
-- <a id="s-221af02e54"></a>`required`: `["claim_id","fence","work_id"]`
-- <a id="s-3f0c6f431f"></a>`title`: `"RetirementClaimReferenceDocument"`
+- <a id="s-70bbded4d8"></a>`type`: `"object"`
+- <a id="s-1cedfa0c67"></a>`additionalProperties`: `false`
+- <a id="s-3851a24fb0"></a>`description`: `"Exact claim evidence authorizing one source collection deletion plan."`
+- <a id="s-df6bce345a"></a>`required`: `["claim_id","fence","work_id"]`
+- <a id="s-e126c0a5a6"></a>`title`: `"SourceCollectionRetirementClaimReferenceDocument"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-61665e5e9e"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |  |
-| <a id="s-c71cfa0fc9"></a>`execution_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Execution Id" |  |
-| <a id="s-77cbd0e0de"></a>`fence` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
-| <a id="s-aeaffe0495"></a>`outcomes` | no | anyOf=[([ExactSetIdentityDocument](schemas-exactsetidentitydocument.md)); (type="null")] |  |
-| <a id="s-b4b8f49228"></a>`output_collection_id` | no | anyOf=[([CollectionId](schemas-collectionid.md)); (type="null")] |  |
-| <a id="s-e9e363aaf6"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
+| <a id="s-b28013b5b7"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |  |
+| <a id="s-6c25603795"></a>`execution_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Execution Id" |  |
+| <a id="s-cbb5ee37ed"></a>`fence` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
+| <a id="s-5ad08816e4"></a>`outcomes` | no | anyOf=[([ExactSetIdentityDocument](schemas-exactsetidentitydocument.md)); (type="null")] |  |
+| <a id="s-d06292a7f7"></a>`output_collection_id` | no | anyOf=[([CollectionId](schemas-collectionid.md)); (type="null")] |  |
+| <a id="s-a3faecc7ea"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
 
 ### Exactly one must match (`oneOf`)
 
 | Alternative | Schema |
 |---|---|
-| 1 | [See `oneOf` alternative 1](#s-d900f9d126) |
-| 2 | [See `oneOf` alternative 2](#s-33fc5cf119) |
+| 1 | [See `oneOf` alternative 1](#s-19deed0e71) |
+| 2 | [See `oneOf` alternative 2](#s-159426b525) |
 
-### <a id="s-d900f9d126"></a>`oneOf` alternative 1
+### <a id="s-19deed0e71"></a>`oneOf` alternative 1
 
-- <a id="s-4c64a0b8d5"></a>`required`: `["execution_id","output_collection_id"]`
-
-#### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-7bcd44a05c"></a>`execution_id` | yes | type="string" |  |
-| <a id="s-12f7ce203e"></a>`outcomes` | no | type="null" |  |
-| <a id="s-39f7c3bf74"></a>`output_collection_id` | yes | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |  |
-
-### <a id="s-33fc5cf119"></a>`oneOf` alternative 2
-
-- <a id="s-48f37f74c7"></a>`required`: `["outcomes"]`
+- <a id="s-6cad2db48f"></a>`required`: `["execution_id","output_collection_id"]`
 
 #### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6cf04c2010"></a>`execution_id` | no | type="null" |  |
-| <a id="s-45c45c44dd"></a>`outcomes` | yes | type="object" |  |
-| <a id="s-c235f69279"></a>`output_collection_id` | no | type="null" |  |
+| <a id="s-b2c9598b71"></a>`execution_id` | yes | type="string" |  |
+| <a id="s-22be1f3371"></a>`outcomes` | no | type="null" |  |
+| <a id="s-5f7022e620"></a>`output_collection_id` | yes | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |  |
+
+### <a id="s-159426b525"></a>`oneOf` alternative 2
+
+- <a id="s-d17cab06ca"></a>`required`: `["outcomes"]`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-2132acb0ef"></a>`execution_id` | no | type="null" |  |
+| <a id="s-9cd04fe469"></a>`outcomes` | yes | type="object" |  |
+| <a id="s-cfaa509655"></a>`output_collection_id` | no | type="null" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -71,9 +71,9 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field claim_id](#s-61665e5e9e) | `length · characters · fixed` | shared above |
-| <a id="s-5e31d6c1e5"></a>[field execution_id · string value](#s-c71cfa0fc9) | `length · characters · fixed` | shared above |
-| [field work_id](#s-e9e363aaf6) | `length · characters · fixed` | shared above |
+| [field claim_id](#s-b28013b5b7) | `length · characters · fixed` | shared above |
+| <a id="s-a9e0eb692f"></a>[field execution_id · string value](#s-6c25603795) | `length · characters · fixed` | shared above |
+| [field work_id](#s-a3faecc7ea) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -87,8 +87,8 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
-- <a id="pa-3e64ab0c41"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
-- <a id="pa-5681110271"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
+- <a id="pa-f32ed06009"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-21a9f05e58"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -104,7 +104,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Machine authority
 
-- `/external_contract/http_openapi/riverhog/components/schemas/RetirementClaimReferenceDocument`
+- `/external_contract/http_openapi/riverhog/components/schemas/SourceCollectionRetirementClaimReferenceDocument`
 
 ### Exact owned JSON
 
@@ -113,12 +113,12 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 32cbaa43f80192e217e416daf298baba0183c752acd98cc6c952ed3f9d64f89b -->
+<!-- exact-contract-value: 8fd629b9bbbccf5fb0500f68a8b04f91b8bbb0f61d39715abf335ee42628fc1b -->
 
 ```json
 {
   "additionalProperties": false,
-  "description": "Exact claim evidence authorizing one retirement deletion plan.",
+  "description": "Exact claim evidence authorizing one source collection deletion plan.",
   "oneOf": [
     {
       "properties": {
@@ -208,7 +208,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "fence",
     "work_id"
   ],
-  "title": "RetirementClaimReferenceDocument",
+  "title": "SourceCollectionRetirementClaimReferenceDocument",
   "type": "object"
 }
 ```

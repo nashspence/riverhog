@@ -39,10 +39,10 @@ Operator projection of mutable work; never an execution identity.
 | <a id="s-0d80f7addf"></a>`observation_requests` | no | type="array"; default=[]; items=([ContentObservationRequest](schemas-contentobservationrequest.md)); title="Observation Requests" |  |
 | <a id="s-33173849b4"></a>`observation_results` | no | type="array"; default=[]; items=([ContentObservationResult](schemas-contentobservationresult.md)); title="Observation Results" |  |
 | <a id="s-7cd6caa0b2"></a>`output` | no | anyOf=[([OutputCollectionRef](schemas-outputcollectionref.md)); (type="null")] |  |
-| <a id="s-426ffe9458"></a>`phase` | yes | type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"]; title="Phase" |  |
+| <a id="s-426ffe9458"></a>`phase` | yes | type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","source_collection_retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"]; title="Phase" |  |
 | <a id="s-46d5cbd753"></a>`preview_acceptance` | no | anyOf=[([PreviewAcceptanceView](schemas-previewacceptanceview.md)); (type="null")] |  |
-| <a id="s-6a0a7b056c"></a>`retirement_remaining` | no | type="array"; default=[]; items=(type="integer"); title="Retirement Remaining" |  |
 | <a id="s-59b5cf38e7"></a>`revision` | yes | type="integer"; minimum=1; title="Revision" |  |
+| <a id="s-030dd823a6"></a>`source_collection_retirement_remaining` | no | type="array"; default=[]; items=(type="integer"); title="Source Collection Retirement Remaining" |  |
 | <a id="s-089cf18873"></a>`target_plan` | no | anyOf=[(discriminator={"mapping":{"stove0-effect-target/v1":"#/components/schemas/EffectPlan","stove0-transform-target/v1":"#/components/schemas/TransformPlan"},"propertyName":"protocol"}; oneOf=[([TransformPlan](schemas-transformplan.md)); ([EffectPlan](schemas-effectplan.md))]); (type="null")]; title="Target Plan" |  |
 | <a id="s-3238506934"></a>`target_request` | no | anyOf=[([AcceptedTargetJob](schemas-acceptedtargetjob.md)); (type="null")] |  |
 | <a id="s-47c9f56e77"></a>`target_settlement` | no | anyOf=[([TargetSettlementAuthority](schemas-targetsettlementauthority.md)); (type="null")] |  |
@@ -61,8 +61,8 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 |---|---|---|
 | [field observation_requests](#s-0d80f7addf) | `cardinality · items · operational_policy` | shared above |
 | [field observation_results](#s-33173849b4) | `cardinality · items · operational_policy` | shared above |
-| <a id="s-b25631da5d"></a>[field retirement_remaining · items](#s-6a0a7b056c) | `value · schema-value · operational_policy` | shared above |
-| [field retirement_remaining](#s-6a0a7b056c) | `cardinality · items · operational_policy` | shared above |
+| <a id="s-20214febf1"></a>[field source_collection_retirement_remaining · items](#s-030dd823a6) | `value · schema-value · operational_policy` | shared above |
+| [field source_collection_retirement_remaining](#s-030dd823a6) | `cardinality · items · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
@@ -127,7 +127,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7ece8bfa7f3c60ad877fb0c212bce4d00494c0cca78e7c3cbd454f99bc662a1f -->
+<!-- exact-contract-value: a846b8bf9f3c10ef11af9a66191e952949ee3088e6ca49be9b3e8b8abcfcca23 -->
 
 ```json
 {
@@ -281,7 +281,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "output_finalizing",
         "verifying",
         "settled",
-        "retirement_pending",
+        "source_collection_retirement_pending",
         "coordinating",
         "abandon_pending",
         "complete",
@@ -302,18 +302,18 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       ]
     },
-    "retirement_remaining": {
-      "default": [],
-      "items": {
-        "type": "integer"
-      },
-      "title": "Retirement Remaining",
-      "type": "array"
-    },
     "revision": {
       "minimum": 1,
       "title": "Revision",
       "type": "integer"
+    },
+    "source_collection_retirement_remaining": {
+      "default": [],
+      "items": {
+        "type": "integer"
+      },
+      "title": "Source Collection Retirement Remaining",
+      "type": "array"
     },
     "target_plan": {
       "anyOf": [

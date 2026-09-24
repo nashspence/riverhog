@@ -22,7 +22,7 @@ Declared public imports and their selected exact structural contracts.
   - [append_processing_capability_artifacts](riverhog-client-apiclient-append-processing-capability-artifacts.md)
   - [append_processing_claim_artifacts](riverhog-client-apiclient-append-processing-claim-artifacts.md)
   - [append_processing_claim_inputs](riverhog-client-apiclient-append-processing-claim-inputs.md)
-  - [begin_processing_claim_retirement](riverhog-client-apiclient-begin-processing-claim-retirement.md)
+  - [begin_source_collection_retirement](riverhog-client-apiclient-begin-source-collection-retirement.md)
   - [cancel_archive_copy_job](riverhog-client-apiclient-cancel-archive-copy-job.md)
   - [cancel_collection_provenance_verification](riverhog-client-apiclient-cancel-collection-provenance-verification.md)
   - [cancel_collection_upload_session](riverhog-client-apiclient-cancel-collection-upload-session.md)

@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-89029571f7"></a>`kind`: `"function"`
-- <a id="s-014acc5ea3"></a>`signature`: `"'(*, work: \\'WorkIdentity\\', phase: \\'WorkPhase\\', claim: \\'object \| None\\', preview_acceptance: \\'object \| None\\', expected_target_plan_sha256: \\'str \| None\\', branch_set_plan: \\'BranchSetPlan \| None\\', coordination_settlement: \\'CoordinationSettlement \| None\\', join_plan: \\'JoinPlan \| None\\', coordination_cancel_requested: \\'bool\\', workflow_plan: \\'WorkflowPlan \| None\\', output: \\'OutputCollectionRef \| None\\', retirement_remaining: \\'Sequence[int]\\', failure: \\'object \| None\\', inapplicable: \\'object \| None\\', abandon_outcome: \"Literal[\\'inapplicable\\', \\'failed\\', \\'canceled\\'] \| None\") -> \\'None\\''"`
+- <a id="s-014acc5ea3"></a>`signature`: `"'(*, work: \\'WorkIdentity\\', phase: \\'WorkPhase\\', claim: \\'object \| None\\', preview_acceptance: \\'object \| None\\', expected_target_plan_sha256: \\'str \| None\\', branch_set_plan: \\'BranchSetPlan \| None\\', coordination_settlement: \\'CoordinationSettlement \| None\\', join_plan: \\'JoinPlan \| None\\', coordination_cancel_requested: \\'bool\\', workflow_plan: \\'WorkflowPlan \| None\\', output: \\'OutputCollectionRef \| None\\', source_collection_retirement_remaining: \\'Sequence[int]\\', failure: \\'object \| None\\', inapplicable: \\'object \| None\\', abandon_outcome: \"Literal[\\'inapplicable\\', \\'failed\\', \\'canceled\\'] \| None\") -> \\'None\\''"`
 
 ## Governing policies
 
@@ -51,13 +51,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2c1ab38f3d0a8540756a3594ff1dad20dfbd46936b5f905510073f23bef1fde6 -->
+<!-- exact-contract-value: ffb4908761ae1e3e48b2453d126717bab80e1b5039f11d9caa75c47c7d74a77f -->
 
 ```json
 {
   "contract": {
     "kind": "function",
-    "signature": "'(*, work: \\'WorkIdentity\\', phase: \\'WorkPhase\\', claim: \\'object | None\\', preview_acceptance: \\'object | None\\', expected_target_plan_sha256: \\'str | None\\', branch_set_plan: \\'BranchSetPlan | None\\', coordination_settlement: \\'CoordinationSettlement | None\\', join_plan: \\'JoinPlan | None\\', coordination_cancel_requested: \\'bool\\', workflow_plan: \\'WorkflowPlan | None\\', output: \\'OutputCollectionRef | None\\', retirement_remaining: \\'Sequence[int]\\', failure: \\'object | None\\', inapplicable: \\'object | None\\', abandon_outcome: \"Literal[\\'inapplicable\\', \\'failed\\', \\'canceled\\'] | None\") -> \\'None\\''"
+    "signature": "'(*, work: \\'WorkIdentity\\', phase: \\'WorkPhase\\', claim: \\'object | None\\', preview_acceptance: \\'object | None\\', expected_target_plan_sha256: \\'str | None\\', branch_set_plan: \\'BranchSetPlan | None\\', coordination_settlement: \\'CoordinationSettlement | None\\', join_plan: \\'JoinPlan | None\\', coordination_cancel_requested: \\'bool\\', workflow_plan: \\'WorkflowPlan | None\\', output: \\'OutputCollectionRef | None\\', source_collection_retirement_remaining: \\'Sequence[int]\\', failure: \\'object | None\\', inapplicable: \\'object | None\\', abandon_outcome: \"Literal[\\'inapplicable\\', \\'failed\\', \\'canceled\\'] | None\") -> \\'None\\''"
   },
   "distribution": "stove0-operator-contracts",
   "module": "stove0_operator_contracts",

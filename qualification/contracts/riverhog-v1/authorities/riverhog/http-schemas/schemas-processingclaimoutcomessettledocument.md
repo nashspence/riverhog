@@ -27,8 +27,8 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-f42f23efd4"></a>`fence` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
-| <a id="s-4816a9f240"></a>`retirement_grace_seconds` | no | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
-| <a id="s-4cb34386fa"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Retirement Policy" |  |
+| <a id="s-513af7c9a5"></a>`source_collection_retirement_grace_seconds` | no | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
+| <a id="s-cc980295cc"></a>`source_collection_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Source Collection Retirement Policy" | Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks. |
 
 ### <a id="s-097084343c"></a>`if`
 
@@ -37,7 +37,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4d88daf71f"></a>`retirement_policy` | no | const="retain" |  |
+| <a id="s-23835994ec"></a>`source_collection_retirement_policy` | no | const="retain" |  |
 
 ### <a id="s-e69183022b"></a>`then`
 
@@ -46,7 +46,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f8c8918373"></a>`retirement_grace_seconds` | no | const="0" |  |
+| <a id="s-48aa47e4d8"></a>`source_collection_retirement_grace_seconds` | no | const="0" |  |
 
 ## Maintained corroboration
 
@@ -81,14 +81,14 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b2623434e55b26acac7c35e7f74c6313d3cb500e2fd953740b59df21cb45daac -->
+<!-- exact-contract-value: 14a1daebeaf33b5d6d254ea00db1bb44fccd94b07339d7ad6103071cffeeaf0e -->
 
 ```json
 {
   "additionalProperties": false,
   "if": {
     "properties": {
-      "retirement_policy": {
+      "source_collection_retirement_policy": {
         "const": "retain"
       }
     }
@@ -98,17 +98,18 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$ref": "#/components/schemas/NonnegativeDecimal",
       "ge": 1
     },
-    "retirement_grace_seconds": {
+    "source_collection_retirement_grace_seconds": {
       "$ref": "#/components/schemas/NonnegativeDecimal",
       "ge": 0
     },
-    "retirement_policy": {
+    "source_collection_retirement_policy": {
       "default": "retain",
+      "description": "Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks.",
       "enum": [
         "retain",
         "retire-after-verified-output"
       ],
-      "title": "Retirement Policy",
+      "title": "Source Collection Retirement Policy",
       "type": "string"
     }
   },
@@ -117,7 +118,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   ],
   "then": {
     "properties": {
-      "retirement_grace_seconds": {
+      "source_collection_retirement_grace_seconds": {
         "const": "0"
       }
     }

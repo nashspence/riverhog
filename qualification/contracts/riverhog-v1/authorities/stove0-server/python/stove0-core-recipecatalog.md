@@ -190,7 +190,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-249f692d35"></a>`intent_semantics` | yes | [SemanticValidationProfile](#s-467a54d056) |  |
 | <a id="s-fde0449546"></a>`outputs` | no | type="array"; default=[]; items=([OutputArtifactContract](#s-4ebe2c544b)) |  |
 | <a id="s-70a075cf49"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
-| <a id="s-19847d4bca"></a>`source_retirement_permitted` | no | type="boolean"; default=false |  |
+| <a id="s-bd0d23046b"></a>`source_collection_retirement_permitted` | no | type="boolean"; default=false |  |
 
 ##### <a id="s-bd29d8e8f0"></a>definition `OperationProjection`
 
@@ -258,10 +258,10 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-8b7c8a0bd6"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-89f735570e"></a>`join` | no | anyOf=[([RecipeJoin](#s-ffedb1726b)); (type="null")]; default=null |  |
 | <a id="s-dc666d1ddd"></a>`observers` | no | type="array"; default=[]; items=([ObserverUse](#s-ead92c6441)) |  |
-| <a id="s-9895a15607"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
 | <a id="s-b91532e55d"></a>`revision` | yes | type="integer"; minimum=1 |  |
 | <a id="s-3e17379ac4"></a>`routes` | yes | type="array"; items=(discriminator={"mapping":{"coordination":"#/$defs/RecipeCoordinationRoute","operation":"#/$defs/RecipeRoute"},"propertyName":"kind"}; oneOf=[([RecipeRoute](#s-e0a2848845)); ([RecipeCoordinationRoute](#s-0e7e1d3689))]); minItems=1 |  |
-| <a id="s-683a1f7dfd"></a>`source_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
+| <a id="s-75e0010448"></a>`source_collection_retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
+| <a id="s-1026cdea7a"></a>`source_collection_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
 | <a id="s-7f714f0108"></a>`unmatched_artifact_disposition` | yes | type="string"; enum=["retain-in-source","reject-work"] |  |
 
 ##### <a id="s-ffedb1726b"></a>definition `RecipeJoin`
@@ -386,7 +386,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 54e85d99fded51d581de47b148386271444267e20817034d06b4b2b50a0d547b -->
+<!-- exact-contract-value: a2b76b5356c42ea24e61170a152a6bb5874adaf9d97370600fdd43ea56701401 -->
 
 ```json
 {
@@ -713,7 +713,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               ],
               "type": "string"
             },
-            "source_retirement_permitted": {
+            "source_collection_retirement_permitted": {
               "default": false,
               "type": "boolean"
             }
@@ -916,11 +916,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               },
               "type": "array"
             },
-            "retirement_grace_seconds": {
-              "default": 0,
-              "minimum": 0,
-              "type": "integer"
-            },
             "revision": {
               "minimum": 1,
               "type": "integer"
@@ -946,7 +941,12 @@ The following JSON is the complete value owned at each machine-authority pointer
               "minItems": 1,
               "type": "array"
             },
-            "source_retirement_policy": {
+            "source_collection_retirement_grace_seconds": {
+              "default": 0,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "source_collection_retirement_policy": {
               "default": "retain",
               "enum": [
                 "retain",

@@ -181,13 +181,15 @@ def test_collection_upload_provenance_request_is_an_exact_choice() -> None:
 def test_collection_deletion_plan_types_the_retirement_evidence_reference() -> None:
     schemas = create_app().openapi()["components"]["schemas"]
 
-    assert schemas["CollectionDeletionPlanOut"]["properties"]["retirement_claim"] == {
+    assert schemas["CollectionDeletionPlanOut"]["properties"][
+        "source_collection_retirement_claim"
+    ] == {
         "anyOf": [
-            {"$ref": "#/components/schemas/RetirementClaimReferenceDocument"},
+            {"$ref": "#/components/schemas/SourceCollectionRetirementClaimReferenceDocument"},
             {"type": "null"},
         ]
     }
-    reference = schemas["RetirementClaimReferenceDocument"]
+    reference = schemas["SourceCollectionRetirementClaimReferenceDocument"]
     assert reference["additionalProperties"] is False
     assert set(reference["properties"]) == {
         "claim_id",

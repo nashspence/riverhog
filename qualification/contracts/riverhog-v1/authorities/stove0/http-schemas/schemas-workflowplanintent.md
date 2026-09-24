@@ -30,8 +30,8 @@ Work-independent fields that deterministically materialize a workflow plan.
 | <a id="s-99bb65af48"></a>`output_policy` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Output Policy" |  |
 | <a id="s-0bb17d7fff"></a>`requested_target_options` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Requested Target Options" |  |
 | <a id="s-37b4b89175"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection"; title="Result Kind" |  |
-| <a id="s-e519a84612"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Retirement Grace Seconds" |  |
-| <a id="s-70ece6e07d"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Retirement Policy" |  |
+| <a id="s-7df81052bc"></a>`source_collection_retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Source Collection Retirement Grace Seconds" |  |
+| <a id="s-c535b4dedf"></a>`source_collection_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Source Collection Retirement Policy" | Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks. |
 | <a id="s-8dbb70f238"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Descriptor Sha256" |  |
 | <a id="s-cabd6d9c4e"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$"; title="Target Registration Id" |  |
 
@@ -92,7 +92,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 52ac977b273d7a85ba91f4680c689175d5fd31a57e56001ad44012a915ee31c6 -->
+<!-- exact-contract-value: 6c1fc9c01d7137f700b13db7122bd84690aa92d1135822f4b26800503ae11b12 -->
 
 ```json
 {
@@ -134,19 +134,20 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Result Kind",
       "type": "string"
     },
-    "retirement_grace_seconds": {
+    "source_collection_retirement_grace_seconds": {
       "default": 0,
       "minimum": 0,
-      "title": "Retirement Grace Seconds",
+      "title": "Source Collection Retirement Grace Seconds",
       "type": "integer"
     },
-    "retirement_policy": {
+    "source_collection_retirement_policy": {
       "default": "retain",
+      "description": "Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks.",
       "enum": [
         "retain",
         "retire-after-verified-output"
       ],
-      "title": "Retirement Policy",
+      "title": "Source Collection Retirement Policy",
       "type": "string"
     },
     "target_descriptor_sha256": {

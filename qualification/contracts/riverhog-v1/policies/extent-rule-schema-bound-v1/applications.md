@@ -196,8 +196,8 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [POST /v1/collection-processing-claims/{claim_id}/release](../../authorities/riverhog/http-operations/post-v1-collection-processing-claims-claim-id-release.md#pa-969c2c113f) |
 | `riverhog` | [POST /v1/collection-processing-claims/{claim_id}/renew](../../authorities/riverhog/http-operations/post-v1-collection-processing-claims-claim-id-renew.md#pa-17e833ed46) |
 | `riverhog` | [POST /v1/collection-processing-claims/{claim_id}/restart](../../authorities/riverhog/http-operations/post-v1-collection-processing-claims-claim-id-restart.md#pa-c884848683) |
-| `riverhog` | [POST /v1/collection-processing-claims/{claim_id}/retirement](../../authorities/riverhog/http-operations/post-v1-collection-processing-claims-claim-id-retirement.md#pa-16a13dc2a9) |
 | `riverhog` | [POST /v1/collection-processing-claims/{claim_id}/settle](../../authorities/riverhog/http-operations/post-v1-collection-processing-claims-claim-id-settle.md#pa-bb83091655) |
+| `riverhog` | [POST /v1/collection-processing-claims/{claim_id}/source-collection-retirement](../../authorities/riverhog/http-operations/post-v1-collection-processing-claims-claim-id-source-collection-retirement.md#pa-321f4c26cb) |
 | `riverhog` | [POST /v1/collections/{collection_id}/deletion-plan](../../authorities/riverhog/http-operations/post-v1-collections-collection-id-deletion-plan.md#pa-4f01ffe004) |
 | `riverhog` | [POST /v1/collections/{collection_id}/tags:contains](../../authorities/riverhog/http-operations/post-v1-collections-collection-id-tags-contains.md#pa-dc2ba7f9e9) |
 | `riverhog` | [POST /v1/collections:search](../../authorities/riverhog/http-operations/post-v1-collections-search.md#pa-97d646a9fa) |
@@ -327,7 +327,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: ProvenanceExternalStateReferenceOut](../../authorities/riverhog/http-schemas/schemas-provenanceexternalstatereferenceout.md#pa-38eacfe75f) |
 | `riverhog` | [schemas: ProvenanceJournalOut](../../authorities/riverhog/http-schemas/schemas-provenancejournalout.md#pa-ffdf591ee7) |
 | `riverhog` | [schemas: RecipeIdentityDocument](../../authorities/riverhog/http-schemas/schemas-recipeidentitydocument.md#pa-206910f370) |
-| `riverhog` | [schemas: RetirementClaimReferenceDocument](../../authorities/riverhog/http-schemas/schemas-retirementclaimreferencedocument.md#pa-5681110271) |
 | `riverhog` | [schemas: RetrievalCacheObjectListOut](../../authorities/riverhog/http-schemas/schemas-retrievalcacheobjectlistout.md#pa-7cc912da2b) |
 | `riverhog` | [schemas: RetrievalCacheObjectOut](../../authorities/riverhog/http-schemas/schemas-retrievalcacheobjectout.md#pa-711abdc1bd) |
 | `riverhog` | [schemas: RetrievalCanceledData](../../authorities/riverhog/http-schemas/schemas-retrievalcanceleddata.md#pa-b199ef8429) |
@@ -356,6 +355,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: SearchCollectionsRequest](../../authorities/riverhog/http-schemas/schemas-searchcollectionsrequest.md#pa-e3e1ecf8f7) |
 | `riverhog` | [schemas: SearchFileOut](../../authorities/riverhog/http-schemas/schemas-searchfileout.md#pa-bc30f5420e) |
 | `riverhog` | [schemas: SearchResponse](../../authorities/riverhog/http-schemas/schemas-searchresponse.md#pa-344ca8638f) |
+| `riverhog` | [schemas: SourceCollectionRetirementClaimReferenceDocument](../../authorities/riverhog/http-schemas/schemas-sourcecollectionretirementclaimreferencedocument.md#pa-21a9f05e58) |
 | `riverhog` | [schemas: TagListOut](../../authorities/riverhog/http-schemas/schemas-taglistout.md#pa-296ec2a9ea) |
 | `riverhog` | [schemas: UploadedArchiveCopyOut](../../authorities/riverhog/http-schemas/schemas-uploadedarchivecopyout.md#pa-fecd3a0701) |
 | `riverhog` | [schemas: UploadedArchiveRootPublicationOut](../../authorities/riverhog/http-schemas/schemas-uploadedarchiverootpublicationout.md#pa-4e5691949a) |

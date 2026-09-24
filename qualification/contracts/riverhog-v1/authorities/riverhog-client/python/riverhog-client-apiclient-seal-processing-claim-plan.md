@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-a909cd6340"></a>`kind`: `"method"`
-- <a id="s-f40d085c8b"></a>`signature`: `"\"(self, claim_id: 'ProcessingClaimId', *, fence: 'int', execution_id: 'str', controller_evidence: 'Mapping[str, Any]', controller_evidence_sha256: 'str', operation_id: 'str', operation_sha256: 'str', input_artifacts: 'Iterable[ArtifactInput]', retirement_policy: 'RetirementPolicy' = 'retain', retirement_grace_seconds: 'int' = 0) -> 'ProcessingClaimDocument'\""`
+- <a id="s-f40d085c8b"></a>`signature`: `"\"(self, claim_id: 'ProcessingClaimId', *, fence: 'int', execution_id: 'str', controller_evidence: 'Mapping[str, Any]', controller_evidence_sha256: 'str', operation_id: 'str', operation_sha256: 'str', input_artifacts: 'Iterable[ArtifactInput]', source_collection_retirement_policy: 'SourceCollectionRetirementPolicy' = 'retain', source_collection_retirement_grace_seconds: 'int' = 0) -> 'ProcessingClaimDocument'\""`
 
 ## Maintained corroboration
 
@@ -60,13 +60,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1bb75e172f18cdf93f835ba3b5c77201f4c7a610daca22adfcf62b16115d73d4 -->
+<!-- exact-contract-value: 2f5e72aeef3da05c5697277c32d61eee3e289d468980839b0f2ce7314b9e6aad -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, claim_id: 'ProcessingClaimId', *, fence: 'int', execution_id: 'str', controller_evidence: 'Mapping[str, Any]', controller_evidence_sha256: 'str', operation_id: 'str', operation_sha256: 'str', input_artifacts: 'Iterable[ArtifactInput]', retirement_policy: 'RetirementPolicy' = 'retain', retirement_grace_seconds: 'int' = 0) -> 'ProcessingClaimDocument'\""
+    "signature": "\"(self, claim_id: 'ProcessingClaimId', *, fence: 'int', execution_id: 'str', controller_evidence: 'Mapping[str, Any]', controller_evidence_sha256: 'str', operation_id: 'str', operation_sha256: 'str', input_artifacts: 'Iterable[ArtifactInput]', source_collection_retirement_policy: 'SourceCollectionRetirementPolicy' = 'retain', source_collection_retirement_grace_seconds: 'int' = 0) -> 'ProcessingClaimDocument'\""
   },
   "distribution": "riverhog-client",
   "module": "riverhog_client",

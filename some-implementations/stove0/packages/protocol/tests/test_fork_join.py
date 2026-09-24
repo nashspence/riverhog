@@ -27,7 +27,7 @@ from stove0_protocol import (
     JoinSettlement,
     OperationRef,
     RecipeRef,
-    RetirementPolicy,
+    SourceCollectionRetirementPolicy,
     WorkflowPlanIntent,
     WorkIdentity,
     WorkPayload,
@@ -109,7 +109,7 @@ def workflow_intent(
     label: str,
     *,
     option: int = 1,
-    retirement: RetirementPolicy = "retain",
+    retirement: SourceCollectionRetirementPolicy = "retain",
     result_kind: str = "collection",
 ) -> WorkflowPlanIntent:
     return WorkflowPlanIntent(
@@ -122,7 +122,7 @@ def workflow_intent(
         target_descriptor_sha256=digest(f"target-contract:{label}"),
         requested_target_options={"option": option},
         input_retrieval_policy="available-only",
-        retirement_policy=retirement,
+        source_collection_retirement_policy=retirement,
         output_policy={"kind": label},
     )
 
@@ -239,7 +239,9 @@ def branch_set_fixture(
         evidence_sha256s=(digest("observation"), digest("review")),
         branches=tuple(reversed(tuple(plans.values()))),
         join=join,
-        retirement_policy="retain" if evaluation else "retire-after-verified-output",
+        source_collection_retirement_policy="retain"
+        if evaluation
+        else "retire-after-verified-output",
         selections=selections,
     )
     return plan, selections, plans
@@ -316,7 +318,7 @@ def test_required_effect_branch_gates_completion_without_collection_or_retiremen
         parent_work=plan.parent_work,
         decision_sha256=plan.decision_sha256,
         branches=(branches["audio"], effect),
-        retirement_policy="retain",
+        source_collection_retirement_policy="retain",
         selections=selections,
     )
     audio, audio_selection = successful_branch(
@@ -379,7 +381,7 @@ def test_effect_branches_cannot_join_or_enable_source_retirement() -> None:
             parent_work=plan.parent_work,
             decision_sha256=plan.decision_sha256,
             branches=(branches["audio"], effect),
-            retirement_policy="retire-after-verified-output",
+            source_collection_retirement_policy="retire-after-verified-output",
             selections=selections,
         )
 
@@ -477,7 +479,7 @@ def test_branch_bound_coordination_cannot_request_source_retirement() -> None:
             parent_work=nested_parent,
             decision_sha256=digest("nested-decision"),
             branches=(nested_branch,),
-            retirement_policy="retire-after-verified-output",
+            source_collection_retirement_policy="retire-after-verified-output",
             selections=selections,
         )
 
@@ -690,7 +692,7 @@ def test_branch_set_identity_and_bytes_ignore_declaration_order() -> None:
         evidence_sha256s=tuple(reversed(plan.evidence_sha256s)),
         branches=(branches["metadata"], branches["video"], branches["audio"]),
         join=plan.join,
-        retirement_policy=plan.retirement_policy,
+        source_collection_retirement_policy=plan.source_collection_retirement_policy,
         selections=selections,
     )
     assert rebuilt.branch_set_sha256 == plan.branch_set_sha256
@@ -712,7 +714,7 @@ def test_semantic_declaration_changes_change_branch_set_identity() -> None:
         evidence_sha256s=plan.evidence_sha256s,
         branches=(branches["audio"], branches["metadata"], changed_branch),
         join=plan.join,
-        retirement_policy=plan.retirement_policy,
+        source_collection_retirement_policy=plan.source_collection_retirement_policy,
         selections=selections,
     )
     assert changed.branch_set_sha256 != plan.branch_set_sha256
@@ -1079,7 +1081,7 @@ def test_retirement_coordination_is_only_true_after_complete_success() -> None:
         ),
     )
     assert after.coordination_complete_for_retirement is True
-    assert after.retirement_requested is True
+    assert after.source_collection_retirement_requested is True
 
 
 def test_branch_set_retirement_grace_is_identity_bearing_and_policy_bound() -> None:
@@ -1089,8 +1091,8 @@ def test_branch_set_retirement_grace_is_identity_bearing_and_policy_bound() -> N
         decision_sha256=plan.decision_sha256,
         evidence_sha256s=plan.evidence_sha256s,
         branches=plan.branches,
-        retirement_policy="retire-after-verified-output",
-        retirement_grace_seconds=3600,
+        source_collection_retirement_policy="retire-after-verified-output",
+        source_collection_retirement_grace_seconds=3600,
         selections=selections,
     )
     assert delayed.branch_set_sha256 != plan.branch_set_sha256
@@ -1099,8 +1101,8 @@ def test_branch_set_retirement_grace_is_identity_bearing_and_policy_bound() -> N
             parent_work=plan.parent_work,
             decision_sha256=plan.decision_sha256,
             branches=plan.branches,
-            retirement_policy="retain",
-            retirement_grace_seconds=1,
+            source_collection_retirement_policy="retain",
+            source_collection_retirement_grace_seconds=1,
             selections=selections,
         )
 
@@ -1179,7 +1181,7 @@ def test_join_role_requirements_fail_closed() -> None:
         evidence_sha256s=plan.evidence_sha256s,
         branches=plan.branches,
         join=bad_join,
-        retirement_policy=plan.retirement_policy,
+        source_collection_retirement_policy=plan.source_collection_retirement_policy,
         selections=selections,
     )
     with pytest.raises(ValueError, match="lacks declared join role"):
@@ -1364,7 +1366,7 @@ def test_evaluation_bound_parent_forces_retain() -> None:
             parent_work=plan.parent_work,
             decision_sha256=plan.decision_sha256,
             branches=plan.branches,
-            retirement_policy="retire-after-verified-output",
+            source_collection_retirement_policy="retire-after-verified-output",
             selections=selections,
         )
 

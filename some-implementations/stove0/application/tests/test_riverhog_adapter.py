@@ -150,7 +150,7 @@ def _disposition_set() -> ArtifactDispositionSetIdentity:
 
 
 def _authorities(
-    retirement_policy: str = "retain",
+    source_collection_retirement_policy: str = "retain",
 ) -> tuple[WorkIdentity, WorkflowPlan, TransformPlan, ControllerEvidence]:
     work = WorkIdentity.seal(
         WorkPayload(
@@ -170,7 +170,7 @@ def _authorities(
             operation=OperationRef(id="fixture.copy/v1", sha256=_sha("4")),
             target_registration_id="fixture-target",
             target_descriptor_sha256=_sha("5"),
-            retirement_policy=retirement_policy,
+            source_collection_retirement_policy=source_collection_retirement_policy,
         )
     )
     selection = _input_selection(work)
@@ -213,7 +213,7 @@ def _effect_authorities() -> tuple[WorkIdentity, WorkflowPlan, EffectPlan, Contr
             operation=OperationRef(id="fixture.effect/v1", sha256=_sha("4")),
             target_registration_id="fixture-effect-target",
             target_descriptor_sha256=_sha("5"),
-            retirement_policy="retain",
+            source_collection_retirement_policy="retain",
         )
     )
     target_plan = EffectPlan.seal(
@@ -433,7 +433,7 @@ class FixtureApi:
             "derivation": self.derivation.as_dict(),
         }
 
-    def begin_processing_claim_retirement(self, claim_id: str, **kwargs: Any) -> dict[str, Any]:
+    def begin_source_collection_retirement(self, claim_id: str, **kwargs: Any) -> dict[str, Any]:
         self.calls.append(("retirement", {"claim_id": claim_id, **kwargs}))
         return {"id": claim_id, "fence": kwargs["fence"], "state": self.retirement_state}
 
@@ -772,8 +772,8 @@ def test_riverhog_adapter_closes_only_the_exact_generic_outcome_set() -> None:
     assert payload == {
         "claim_id": _claim_id(),
         "fence": 1,
-        "retirement_policy": "retain",
-        "retirement_grace_seconds": 0,
+        "source_collection_retirement_policy": "retain",
+        "source_collection_retirement_grace_seconds": 0,
     }
 
 
@@ -821,13 +821,13 @@ def test_riverhog_adapter_retirement_is_fenced_and_challenge_bound() -> None:
     client = Stove0RiverhogClient(api, declared_workspace_protection="memory-backed")
     record = _verifying_record(work, workflow, evidence).model_copy(update={"phase": "settled"})
 
-    assert client.begin_retirement(record) is True
-    assert client.retire_input(record, 1) is True
-    assert client.retire_input(record, 1) is True
+    assert client.begin_source_collection_retirement(record) is True
+    assert client.retire_source_collection(record, 1) is True
+    assert client.retire_source_collection(record, 1) is True
     client.release_claim(record)
 
     delete_call = next(payload for name, payload in api.calls if name == "delete")
-    assert delete_call["retirement_claim_id"] == _claim_id()
+    assert delete_call["source_collection_retirement_claim_id"] == _claim_id()
     assert delete_call["challenge"] == "delete-me"
 
 
@@ -838,12 +838,12 @@ def test_riverhog_adapter_reports_grace_and_deletion_blockers_as_waiting() -> No
     record = _verifying_record(work, workflow, evidence).model_copy(update={"phase": "settled"})
 
     api.retirement_state = "settled"
-    assert client.begin_retirement(record) is False
+    assert client.begin_source_collection_retirement(record) is False
 
     api.retirement_state = "retiring"
     api.deletion_blockers = ["active retrieval"]
-    assert client.begin_retirement(record) is True
-    assert client.retire_input(record, 1) is False
+    assert client.begin_source_collection_retirement(record) is True
+    assert client.retire_source_collection(record, 1) is False
     assert not any(name == "delete" for name, _payload in api.calls)
 
 

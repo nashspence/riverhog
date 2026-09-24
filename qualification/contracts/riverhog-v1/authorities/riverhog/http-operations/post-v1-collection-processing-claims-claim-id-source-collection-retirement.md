@@ -1,10 +1,10 @@
-# POST /v1/collection-processing-claims/{claim_id}/retirement
+# POST /v1/collection-processing-claims/{claim_id}/source-collection-retirement
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: http-operations:riverhog:post-v1-collection-processing-claims-clai-5f584a709c:e1966a4253 -->
+<!-- contract-element: http-operations:riverhog:post-v1-collection-processing-claims-clai-4a6fa6825b:7e5cff31df -->
 
-Begin Processing Claim Retirement
+Begin Source Collection Retirement
 
 | Audit field | Value |
 |---|---|
@@ -13,21 +13,21 @@ Begin Processing Claim Retirement
 
 ## External contract
 
-<a id="s-38eb20c898"></a>
-- <a id="s-1ee21b1db8"></a>`operationId`: `"begin_processing_claim_retirement"`
-- <a id="s-884b1fddd9"></a>`security`: `[{"HTTPBearer":[]}]`
-- <a id="s-7c8b16b5b3"></a>`summary`: `"Begin Processing Claim Retirement"`
-- <a id="s-aa07bf3f6d"></a>`tags`: `["collection-workflows"]`
-- <a id="s-924f8b1ce5"></a>`x-riverhog-interface`: `"client-only-primitive"`
-- <a id="s-ea94e04955"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-processing:control"]}]`
+<a id="s-741506c5a2"></a>
+- <a id="s-aa1f0f56cd"></a>`operationId`: `"begin_source_collection_retirement"`
+- <a id="s-b2c9bb6dea"></a>`security`: `[{"HTTPBearer":[]}]`
+- <a id="s-f18e39155c"></a>`summary`: `"Begin Source Collection Retirement"`
+- <a id="s-b5bcfde924"></a>`tags`: `["collection-workflows"]`
+- <a id="s-1b621f65f7"></a>`x-riverhog-interface`: `"client-only-primitive"`
+- <a id="s-53dc2968c1"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-processing:control"]}]`
 
 ### Parameters
 
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
-| <a id="s-ef4c169c5f"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |
+| <a id="s-239624a757"></a>`claim_id` | path | yes | not declared | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |
 
-### <a id="s-5d8bb4cff0"></a>Request body
+### <a id="s-f4d56ec2a7"></a>Request body
 
 - `required`: `true`
 
@@ -39,13 +39,13 @@ Begin Processing Claim Retirement
 
 | Status | Description | Media type | Schema | Declared error codes |
 |---|---|---|---|---|
-| <a id="s-c05c61f682"></a>`200` | Successful Response | application/json | [ProcessingClaimDocument](../http-schemas/schemas-processingclaimdocument.md) | not declared |
-| <a id="s-2e21eefbce"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
-| <a id="s-a2e0920bb8"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
-| <a id="s-3346460b15"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
-| <a id="s-52a612febf"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
-| <a id="s-167493d3cf"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `conflict`, `invalid_state` |
-| <a id="s-46047cafba"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
+| <a id="s-df2033c658"></a>`200` | Successful Response | application/json | [ProcessingClaimDocument](../http-schemas/schemas-processingclaimdocument.md) | not declared |
+| <a id="s-1b1f6e9260"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
+| <a id="s-b9c7dd3a32"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
+| <a id="s-363b729fd1"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
+| <a id="s-6a4aa81f13"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
+| <a id="s-c7b53f29df"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `conflict`, `invalid_state` |
+| <a id="s-977c14745d"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -55,13 +55,13 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-4179891479"></a>[parameter claim_id](#s-ef4c169c5f) | `length · characters · fixed` | shared above |
+| <a id="s-8494c68304"></a>[parameter claim_id](#s-239624a757) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
 ### Related interface records
 
-- [riverhog_client.ApiClient.begin_processing_claim_retirement](../../riverhog-client/python/riverhog-client-apiclient-begin-processing-claim-retirement.md)
+- [riverhog_client.ApiClient.begin_source_collection_retirement](../../riverhog-client/python/riverhog-client-apiclient-begin-source-collection-retirement.md)
 
 ### Referenced contract elements
 
@@ -73,8 +73,8 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
-- <a id="pa-41f42359cb"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
-- <a id="pa-16a13dc2a9"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
+- <a id="pa-d86eb5a145"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-321f4c26cb"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -88,7 +88,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [riverhog/src/riverhog\_api/routers/workflows.py::begin\_processing\_claim\_retirement](../../../../../../riverhog/src/riverhog_api/routers/workflows.py#L684)
+- **Handler:** [riverhog/src/riverhog\_api/routers/workflows.py::begin\_source\_collection\_retirement](../../../../../../riverhog/src/riverhog_api/routers/workflows.py#L684)
 
 ### Structural operation bindings
 
@@ -106,18 +106,18 @@ This generated record links maintained client, CLI, response-authority, and prov
   "client": "ApiClient",
   "client_bindings": [
     {
-      "public_identity": "riverhog_client.ApiClient.begin_processing_claim_retirement",
+      "public_identity": "riverhog_client.ApiClient.begin_source_collection_retirement",
       "source": {
         "line": 672,
         "module": "riverhog_client.workflows",
         "path": "packages/riverhog-client/src/riverhog_client/workflows.py",
-        "symbol": "CollectionWorkflowMethods.begin_processing_claim_retirement"
+        "symbol": "CollectionWorkflowMethods.begin_source_collection_retirement"
       }
     }
   ],
   "method": "POST",
-  "operation_id": "begin_processing_claim_retirement",
-  "path": "/v1/collection-processing-claims/{claim_id}/retirement",
+  "operation_id": "begin_source_collection_retirement",
+  "path": "/v1/collection-processing-claims/{claim_id}/source-collection-retirement",
   "provider_evidence": null,
   "read_collection": null,
   "response_authority": "canonical-document"
@@ -128,7 +128,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 ### Machine authority
 
-- `/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1retirement/post`
+- `/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1source-collection-retirement/post`
 
 ### Exact owned JSON
 
@@ -137,11 +137,11 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 10abb491cba5a26f287592e3ca67474c9ea239ea0e556099dd6215c5d7876fdf -->
+<!-- exact-contract-value: 3bad3c8852298956b3b54bc378d792d378607dceaecc90ce937f242ffe784459 -->
 
 ```json
 {
-  "operationId": "begin_processing_claim_retirement",
+  "operationId": "begin_source_collection_retirement",
   "parameters": [
     {
       "in": "path",
@@ -260,7 +260,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "HTTPBearer": []
     }
   ],
-  "summary": "Begin Processing Claim Retirement",
+  "summary": "Begin Source Collection Retirement",
   "tags": [
     "collection-workflows"
   ],

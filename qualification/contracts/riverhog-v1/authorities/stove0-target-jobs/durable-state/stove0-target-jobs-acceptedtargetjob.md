@@ -542,8 +542,8 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-4c734df6e1"></a>`output_policy` | no | type="object"; additionalProperties=([JsonValue](#s-326d0b99e9)); title="Output Policy" |  |
 | <a id="s-fa3c0884bf"></a>`requested_target_options` | no | type="object"; additionalProperties=([JsonValue](#s-326d0b99e9)); title="Requested Target Options" |  |
 | <a id="s-e389fcca4c"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection"; title="Result Kind" |  |
-| <a id="s-8d0c35340b"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Retirement Grace Seconds" |  |
-| <a id="s-ca6d71b3f0"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Retirement Policy" |  |
+| <a id="s-27bff322aa"></a>`source_collection_retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Source Collection Retirement Grace Seconds" |  |
+| <a id="s-45bdd4707f"></a>`source_collection_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Source Collection Retirement Policy" | Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks. |
 | <a id="s-e9adf760b7"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Descriptor Sha256" |  |
 | <a id="s-0def0e07f6"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$"; title="Target Registration Id" |  |
 | <a id="s-4f0c6f0bce"></a>`work` | yes | [WorkIdentity](#s-7b040f3044) |  |
@@ -582,7 +582,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 35215f78b626e1077805c79c737e7e6113151daa95c727e3b32940e8890eb53c -->
+<!-- exact-contract-value: 6e65abb395ae50d261e58e6c4c897a88b8a9a3cdb25f0282fa8ee68e85d563f0 -->
 
 ```json
 {
@@ -1783,19 +1783,20 @@ The following JSON is the complete value owned at each machine-authority pointer
             "title": "Result Kind",
             "type": "string"
           },
-          "retirement_grace_seconds": {
+          "source_collection_retirement_grace_seconds": {
             "default": 0,
             "minimum": 0,
-            "title": "Retirement Grace Seconds",
+            "title": "Source Collection Retirement Grace Seconds",
             "type": "integer"
           },
-          "retirement_policy": {
+          "source_collection_retirement_policy": {
             "default": "retain",
+            "description": "Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks.",
             "enum": [
               "retain",
               "retire-after-verified-output"
             ],
-            "title": "Retirement Policy",
+            "title": "Source Collection Retirement Policy",
             "type": "string"
           },
           "target_descriptor_sha256": {

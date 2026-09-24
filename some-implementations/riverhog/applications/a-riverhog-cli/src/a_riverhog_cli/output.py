@@ -160,7 +160,7 @@ def format_archive_copy_retirement_plan(payload: Mapping[str, object]) -> str:
     target_copy = target if isinstance(target, Mapping) else {}
     retained = _items(payload, "retained_copies")
     lines = [
-        str(payload.get("warning", "DANGER: This archive copy retirement is permanent.")),
+        str(payload.get("warning", "DANGER: This archive copy will be permanently deleted.")),
         "",
         f"archive copy retirement plan: {payload.get('collection_id', 'unknown')}",
         f"store: {payload.get('store', 'unknown')}",

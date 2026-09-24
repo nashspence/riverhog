@@ -1,8 +1,8 @@
-# stove0_core.RiverhogControlPort.retire_input
+# stove0_core.Stove0WorkService.begin_source_collection_retirement
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: python:stove0-server:stove0-core-riverhogcontrolport-retire-input:4b4bf8515c -->
+<!-- contract-element: python:stove0-server:stove0-core-stove0workservice-begin-sourc-8923a8cf8d:3e3bb7e199 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,27 +13,27 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-f8671ee4ff"></a>
-- <a id="s-4dcd06aad5"></a>`distribution`: `stove0-server`
-- <a id="s-bfb02cc95c"></a>`module`: `stove0_core`
-- <a id="s-6399912955"></a>`name`: `retire_input`
-- <a id="s-17a5e16954"></a>`owner`: `stove0_core.RiverhogControlPort`
-- <a id="s-6083f69d39"></a>`unit`: `member`
+<a id="s-da91082ec1"></a>
+- <a id="s-b5c17ad36b"></a>`distribution`: `stove0-server`
+- <a id="s-8b4da2dc50"></a>`module`: `stove0_core`
+- <a id="s-266ae3eeb7"></a>`name`: `begin_source_collection_retirement`
+- <a id="s-0575b2dbb8"></a>`owner`: `stove0_core.Stove0WorkService`
+- <a id="s-b6d06d727b"></a>`unit`: `member`
 
 ### Declared structure
 
-- <a id="s-e144e4c0e8"></a>`kind`: `"method"`
-- <a id="s-edb6f0f03d"></a>`signature`: `"\"(self, record: 'WorkRecord', collection_id: 'int') -> 'bool'\""`
+- <a id="s-9e9b0331cc"></a>`kind`: `"method"`
+- <a id="s-bf82e1ef9a"></a>`signature`: `"\"(self, work_id: 'str', collection_ids: 'Sequence[int]', *, expected_revision: 'int') -> 'WorkRecord'\""`
 
 ## Maintained corroboration
 
 ### Related interface records
 
-- [RiverhogControlPort](stove0-core-riverhogcontrolport.md)
+- [Stove0WorkService](stove0-core-stove0workservice.md)
 
 ## Governing policies
 
-- <a id="pa-7ead79126c"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
+- <a id="pa-d4a4a727fc"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
 
 ## Evidence
 
@@ -49,7 +49,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/python/stove0_core.RiverhogControlPort.retire_input`
+- `/external_contract/python/stove0_core.Stove0WorkService.begin_source_collection_retirement`
 
 ### Exact owned JSON
 
@@ -58,18 +58,18 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d177df0f2ed94a56268e3fbf88ab20ab8600b57b93442f498892c21e6731a101 -->
+<!-- exact-contract-value: 00db26f6e519007ccbc9a2ba2bc9bb5c82799aa2ace1e9d17bb065564c62e231 -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, record: 'WorkRecord', collection_id: 'int') -> 'bool'\""
+    "signature": "\"(self, work_id: 'str', collection_ids: 'Sequence[int]', *, expected_revision: 'int') -> 'WorkRecord'\""
   },
   "distribution": "stove0-server",
   "module": "stove0_core",
-  "name": "retire_input",
-  "owner": "stove0_core.RiverhogControlPort",
+  "name": "begin_source_collection_retirement",
+  "owner": "stove0_core.Stove0WorkService",
   "unit": "member"
 }
 ```

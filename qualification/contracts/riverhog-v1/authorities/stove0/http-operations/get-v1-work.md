@@ -25,7 +25,7 @@ List Work
 |---|---|---:|---|---|
 | <a id="s-f757afb8e1"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
 | <a id="s-eb23c506e0"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
-| <a id="s-3c013fe019"></a>`phase` | query | no | not declared | anyOf=[(type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"]); (type="null")]; title="Phase" |
+| <a id="s-3c013fe019"></a>`phase` | query | no | not declared | anyOf=[(type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","source_collection_retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"]); (type="null")]; title="Phase" |
 | <a id="s-5f521e9cb3"></a>`q` | query | no | not declared | anyOf=[([BrowseQuery](../http-schemas/schemas-browsequery.md)); (type="null")]; title="Q" |
 | <a id="s-24e7c1f77e"></a>`sort` | query | no | `"updated_at"` | type="string"; enum=["updated_at","phase","work_id"]; title="Sort" |
 | <a id="s-781a235d35"></a>`order` | query | no | `"desc"` | type="string"; enum=["asc","desc"]; title="Order" |
@@ -182,7 +182,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 761543e112dc6d7eb61039c7317c73e2583f90df0db8b1ad6e25d1cc655119dc -->
+<!-- exact-contract-value: 38b65dd12254d071fb76f084dde22f3e5cab412b46c292b02203a15962f6c2cd -->
 
 ```json
 {
@@ -234,7 +234,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "output_finalizing",
               "verifying",
               "settled",
-              "retirement_pending",
+              "source_collection_retirement_pending",
               "coordinating",
               "abandon_pending",
               "complete",

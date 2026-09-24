@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-9934f47acd"></a>`kind`: `"method"`
-- <a id="s-b8b81de746"></a>`signature`: `"\"(self, claim_id: 'str', *, fence: 'int', retirement_policy: 'RetirementPolicy' = 'retain', retirement_grace_seconds: 'int' = 0) -> 'ProcessingClaimDocument'\""`
+- <a id="s-b8b81de746"></a>`signature`: `"\"(self, claim_id: 'str', *, fence: 'int', source_collection_retirement_policy: 'SourceCollectionRetirementPolicy' = 'retain', source_collection_retirement_grace_seconds: 'int' = 0) -> 'ProcessingClaimDocument'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 162ef25be23b9c339078afe7245d402b12a337274ab284fe60f6175223959b35 -->
+<!-- exact-contract-value: 4aa6031f0d83888398ebfe2bfc42b872c862389bf004f37acb54fdce59dea8fd -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, claim_id: 'str', *, fence: 'int', retirement_policy: 'RetirementPolicy' = 'retain', retirement_grace_seconds: 'int' = 0) -> 'ProcessingClaimDocument'\""
+    "signature": "\"(self, claim_id: 'str', *, fence: 'int', source_collection_retirement_policy: 'SourceCollectionRetirementPolicy' = 'retain', source_collection_retirement_grace_seconds: 'int' = 0) -> 'ProcessingClaimDocument'\""
   },
   "distribution": "stove0-server",
   "module": "stove0_core",

@@ -40,7 +40,7 @@ def test_transform_identity_is_stable_and_order_independent_at_seal_boundary() -
         operation=operation,
         inputs=reversed(roots()),
         effective_intent={"preserve_audio": True, "quality": 31},
-        retirement_policy="retain",
+        source_collection_retirement_policy="retain",
     )
     second = TransformIntent.from_mapping(json.loads(first.to_json_bytes()))
 

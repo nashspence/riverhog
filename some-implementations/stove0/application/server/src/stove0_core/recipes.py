@@ -217,7 +217,7 @@ class RecipePlanner:
                 if frame.recipe.join is not None
                 else None
             )
-            policy = frame.recipe.source_retirement_policy if frame.root else "retain"
+            policy = frame.recipe.source_collection_retirement_policy if frame.root else "retain"
             plan = BranchSetPlan.seal(
                 parent_work=frame.work,
                 decision_sha256=frame.decision_sha256,
@@ -226,9 +226,9 @@ class RecipePlanner:
                 ),
                 branches=frame.branches,
                 join=join,
-                retirement_policy=policy,
-                retirement_grace_seconds=(
-                    frame.recipe.retirement_grace_seconds if frame.root else 0
+                source_collection_retirement_policy=policy,
+                source_collection_retirement_grace_seconds=(
+                    frame.recipe.source_collection_retirement_grace_seconds if frame.root else 0
                 ),
                 selections=frame.selections,
                 branch_sets=frame.branch_sets,
@@ -262,7 +262,7 @@ class RecipePlanner:
 
         if completed is None:
             raise RuntimeError("workflow planning produced no branch-set decision")
-        if completed.plan.retirement_policy == "retire-after-verified-output":
+        if completed.plan.source_collection_retirement_policy == "retire-after-verified-output":
             for branch in completed.leaf_branches():
                 selection = completed.selection_documents[
                     branch.artifact_selection.selection_sha256
@@ -334,7 +334,7 @@ class RecipePlanner:
                 ),
             )
 
-        if root and recipe.source_retirement_policy == "retire-after-verified-output":
+        if root and recipe.source_collection_retirement_policy == "retire-after-verified-output":
             if uncovered:
                 return WorkInapplicable(
                     code="unsafe-retirement-coverage",
@@ -408,7 +408,7 @@ class RecipePlanner:
                 target_descriptor_sha256=target.descriptor_sha256,
                 requested_target_options={**route.target_options, **compiled_options},
                 input_retrieval_policy=route.input_retrieval_policy,
-                retirement_policy="retain",
+                source_collection_retirement_policy="retain",
                 output_policy={
                     "route_id": route.id,
                     "branch_id": route.id,
@@ -448,7 +448,7 @@ class RecipePlanner:
                 target_descriptor_sha256=target.descriptor_sha256,
                 requested_target_options={**join.target_options, **compiled_options},
                 input_retrieval_policy=join.input_retrieval_policy,
-                retirement_policy="retain",
+                source_collection_retirement_policy="retain",
                 output_policy={"route_id": join.id, "join_id": join.id},
             ),
         )

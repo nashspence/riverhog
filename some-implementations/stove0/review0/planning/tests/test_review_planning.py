@@ -40,7 +40,7 @@ def _facts() -> MediaSamplingFacts:
 def test_review_planning_bridge_reports_exact_component_contracts() -> None:
     assert MEDIA_SAMPLING_OBSERVER_CONTRACT.id == "stove0.review.media-sampling/v1"
     assert REVIEW_MATERIALIZE_OPERATION.id == "stove0.review.materialize/v1"
-    assert REVIEW_MATERIALIZE_OPERATION.source_retirement_permitted is False
+    assert REVIEW_MATERIALIZE_OPERATION.source_collection_retirement_permitted is False
     assert contract_report()["status"] == "conformant"
 
     assert contract_report()["observer_contract"] == MEDIA_SAMPLING_OBSERVER_CONTRACT.model_dump(

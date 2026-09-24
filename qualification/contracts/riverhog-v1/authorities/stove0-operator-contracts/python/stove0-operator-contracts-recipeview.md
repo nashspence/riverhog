@@ -186,10 +186,10 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-7a966d6ba7"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-4161c7258a"></a>`join` | no | anyOf=[([RecipeJoin](#s-7b4c4aaca2)); (type="null")]; default=null |  |
 | <a id="s-748e053b7a"></a>`observers` | no | type="array"; default=[]; items=([ObserverUse](#s-304ec65dcf)) |  |
-| <a id="s-468c01acec"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
 | <a id="s-fd3e75901e"></a>`revision` | yes | type="integer"; minimum=1 |  |
 | <a id="s-1b5464ebb0"></a>`routes` | yes | type="array"; items=(discriminator={"mapping":{"coordination":"#/$defs/RecipeCoordinationRoute","operation":"#/$defs/RecipeRoute"},"propertyName":"kind"}; oneOf=[([RecipeRoute](#s-4d9172b48a)); ([RecipeCoordinationRoute](#s-f7c81eefc7))]); minItems=1 |  |
-| <a id="s-a55f23d050"></a>`source_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
+| <a id="s-23c0343342"></a>`source_collection_retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
+| <a id="s-2f7f268c8d"></a>`source_collection_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
 | <a id="s-e24c68076e"></a>`unmatched_artifact_disposition` | yes | type="string"; enum=["retain-in-source","reject-work"] |  |
 
 ##### <a id="s-7b4c4aaca2"></a>definition `RecipeJoin`
@@ -295,7 +295,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 128d5af7e94e4f571a5eb2da24b3ca7c6dd3b70546b27a20f6024963ccb99451 -->
+<!-- exact-contract-value: d4f450b7487c267cac75a61757424ce2b6fdb6d0dbd9f1d801f8a9400fb0d90a -->
 
 ```json
 {
@@ -637,11 +637,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               },
               "type": "array"
             },
-            "retirement_grace_seconds": {
-              "default": 0,
-              "minimum": 0,
-              "type": "integer"
-            },
             "revision": {
               "minimum": 1,
               "type": "integer"
@@ -667,7 +662,12 @@ The following JSON is the complete value owned at each machine-authority pointer
               "minItems": 1,
               "type": "array"
             },
-            "source_retirement_policy": {
+            "source_collection_retirement_grace_seconds": {
+              "default": 0,
+              "minimum": 0,
+              "type": "integer"
+            },
+            "source_collection_retirement_policy": {
               "default": "retain",
               "enum": [
                 "retain",

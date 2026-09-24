@@ -122,7 +122,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.replace_app_key_access",
       "source": {
-        "line": 2200,
+        "line": 2206,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.replace_app_key_access"

@@ -498,7 +498,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-825b6cb6a3"></a>`intent_semantics` | yes | [SemanticValidationProfile](#s-ee0cfd3dd1) |  |
 | <a id="s-9fda8d7f17"></a>`outputs` | no | type="array"; default=[]; items=([OutputArtifactContract](#s-d338c851cc)); title="Outputs" |  |
 | <a id="s-0fae452d35"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection"; title="Result Kind" |  |
-| <a id="s-5d3b745cad"></a>`source_retirement_permitted` | no | type="boolean"; default=false; title="Source Retirement Permitted" |  |
+| <a id="s-4eeaeecd34"></a>`source_collection_retirement_permitted` | no | type="boolean"; default=false; title="Source Collection Retirement Permitted" |  |
 
 ### <a id="s-46180fa7c3"></a>definition `OperationRef`
 
@@ -1022,8 +1022,8 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-8379dee316"></a>`output_policy` | no | type="object"; additionalProperties=([JsonValue](#s-40b30ec575)); title="Output Policy" |  |
 | <a id="s-765ca1361e"></a>`requested_target_options` | no | type="object"; additionalProperties=([JsonValue](#s-40b30ec575)); title="Requested Target Options" |  |
 | <a id="s-f92f3d622e"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection"; title="Result Kind" |  |
-| <a id="s-ebefece060"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Retirement Grace Seconds" |  |
-| <a id="s-4e517edfac"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Retirement Policy" |  |
+| <a id="s-012d036721"></a>`source_collection_retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Source Collection Retirement Grace Seconds" |  |
+| <a id="s-6a2e7b04ad"></a>`source_collection_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Source Collection Retirement Policy" | Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks. |
 | <a id="s-a1f389aea5"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Descriptor Sha256" |  |
 | <a id="s-b1e2a706b7"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$"; title="Target Registration Id" |  |
 | <a id="s-2a1d55f30e"></a>`work` | yes | [WorkIdentity](#s-cf67f00f31) |  |
@@ -1212,7 +1212,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 73656e8ca918b7a68c780060bf357c88f7743622cb38e33fc720884124274153 -->
+<!-- exact-contract-value: 178285d47962b2b45962d6673c35b363d7d57192e9c08a97859d565ec5dcc79c -->
 
 ```json
 {
@@ -2242,9 +2242,9 @@ The following JSON is the complete value owned at each machine-authority pointer
           "title": "Result Kind",
           "type": "string"
         },
-        "source_retirement_permitted": {
+        "source_collection_retirement_permitted": {
           "default": false,
-          "title": "Source Retirement Permitted",
+          "title": "Source Collection Retirement Permitted",
           "type": "boolean"
         }
       },
@@ -3670,19 +3670,20 @@ The following JSON is the complete value owned at each machine-authority pointer
           "title": "Result Kind",
           "type": "string"
         },
-        "retirement_grace_seconds": {
+        "source_collection_retirement_grace_seconds": {
           "default": 0,
           "minimum": 0,
-          "title": "Retirement Grace Seconds",
+          "title": "Source Collection Retirement Grace Seconds",
           "type": "integer"
         },
-        "retirement_policy": {
+        "source_collection_retirement_policy": {
           "default": "retain",
+          "description": "Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks.",
           "enum": [
             "retain",
             "retire-after-verified-output"
           ],
-          "title": "Retirement Policy",
+          "title": "Source Collection Retirement Policy",
           "type": "string"
         },
         "target_descriptor_sha256": {

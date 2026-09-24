@@ -240,7 +240,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-f6be725f42"></a>`branch_set_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-10da4a1134"></a>`join_plan_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-d99535311f"></a>`parent_work_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
-| <a id="s-69e18a9ad4"></a>`phase` | yes | type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"] |  |
+| <a id="s-69e18a9ad4"></a>`phase` | yes | type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","source_collection_retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"] |  |
 | <a id="s-fac4d36641"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-dfaa67187b"></a>definition `WorkUpdatedEvent`
@@ -272,7 +272,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-adbe9c6258"></a>`phase` | yes | type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"] |  |
+| <a id="s-adbe9c6258"></a>`phase` | yes | type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","source_collection_retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"] |  |
 | <a id="s-ac6f0e72c4"></a>`revision` | yes | type="integer"; minimum=2 |  |
 | <a id="s-283df3316c"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
@@ -309,7 +309,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3b394f3d4a6f2c99b7f34f9ccd23a874fc21e48afbdbab8ab8b40118043a0171 -->
+<!-- exact-contract-value: c62f80cecf8cf494f258286642bd6b1a9cceb910d1114e504dd0b9ff36c85c2a -->
 
 ```json
 {
@@ -777,7 +777,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "output_finalizing",
                 "verifying",
                 "settled",
-                "retirement_pending",
+                "source_collection_retirement_pending",
                 "coordinating",
                 "abandon_pending",
                 "complete",
@@ -862,7 +862,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "output_finalizing",
                 "verifying",
                 "settled",
-                "retirement_pending",
+                "source_collection_retirement_pending",
                 "coordinating",
                 "abandon_pending",
                 "complete",

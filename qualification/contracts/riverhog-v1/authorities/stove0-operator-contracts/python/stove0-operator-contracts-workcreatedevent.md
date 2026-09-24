@@ -62,7 +62,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-cdec4e381b"></a>`branch_set_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-6c55526b86"></a>`join_plan_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-eba0cb267a"></a>`parent_work_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
-| <a id="s-5ad7514f0b"></a>`phase` | yes | type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"] |  |
+| <a id="s-5ad7514f0b"></a>`phase` | yes | type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","source_collection_retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"] |  |
 | <a id="s-2819be973f"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
@@ -98,7 +98,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d08f220208c16fccdc22263ea4dae87cc84f201f1c27982501381dcded346a3c -->
+<!-- exact-contract-value: 7aa47010dd3d57f745eb72474bf91348652940b2f62e4e6abb5b4cb6accdb881 -->
 
 ```json
 {
@@ -157,7 +157,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "output_finalizing",
                 "verifying",
                 "settled",
-                "retirement_pending",
+                "source_collection_retirement_pending",
                 "coordinating",
                 "abandon_pending",
                 "complete",

@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-3220dcc7c2"></a>`kind`: `"method"`
-- <a id="s-be67df50b2"></a>`signature`: `"\"(self, collection_id: 'int', *, retirement_claim_id: 'str \| None' = None) -> 'dict[str, Any]'\""`
+- <a id="s-be67df50b2"></a>`signature`: `"\"(self, collection_id: 'int', *, source_collection_retirement_claim_id: 'str \| None' = None) -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e44df0d4d428879799a72070aa3a1fa199bf29cec41dc915931c762010c7c817 -->
+<!-- exact-contract-value: e1a41e08adbe5d554c7ad5c50ab340c9c41720580b22069c3d261064cc791c2f -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, collection_id: 'int', *, retirement_claim_id: 'str | None' = None) -> 'dict[str, Any]'\""
+    "signature": "\"(self, collection_id: 'int', *, source_collection_retirement_claim_id: 'str | None' = None) -> 'dict[str, Any]'\""
   },
   "distribution": "stove0-server",
   "module": "stove0_core",

@@ -307,7 +307,7 @@ def _branch_decision(
             operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
             target_descriptor_sha256=target.descriptor_sha256,
-            retirement_policy="retain",
+            source_collection_retirement_policy="retain",
         ),
     )
     return BranchSetDecision(
@@ -703,7 +703,7 @@ def _nested_branch_decision(work: WorkIdentity) -> BranchSetDecision:
             operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
             target_descriptor_sha256=target.descriptor_sha256,
-            retirement_policy="retain",
+            source_collection_retirement_policy="retain",
         ),
     )
     child_plan = BranchSetPlan.seal(
@@ -768,7 +768,7 @@ def test_one_record_carries_observation_plan_execution_verification_and_completi
             operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
             target_descriptor_sha256=target.descriptor_sha256,
-            retirement_policy="retain",
+            source_collection_retirement_policy="retain",
         )
     )
     record = service.seal_workflow_plan(
@@ -922,7 +922,7 @@ def test_one_record_carries_observation_plan_execution_verification_and_completi
         expected_revision=record.revision,
     )
     assert record.phase == "settled"
-    record = service.begin_retirement(
+    record = service.begin_source_collection_retirement(
         work.work_id,
         (),
         expected_revision=record.revision,
@@ -950,7 +950,7 @@ def test_new_claim_fence_resets_unsettled_execution_authorities() -> None:
             operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
             target_descriptor_sha256=target.descriptor_sha256,
-            retirement_policy="retain",
+            source_collection_retirement_policy="retain",
         )
     )
     record = service.seal_workflow_plan(
@@ -1585,7 +1585,7 @@ def test_sql_branch_set_admission_rolls_back_every_document_on_child_conflict(
         target_registration_id=branch.workflow_plan.target_registration_id,
         target_descriptor_sha256=branch.workflow_plan.target_descriptor_sha256,
         requested_target_options={"conflict": True},
-        retirement_policy="retain",
+        source_collection_retirement_policy="retain",
     ).materialize(work=branch.workflow_plan.work)
     store.create(WorkRecord(work=branch.workflow_plan.work, workflow_plan=conflicting_plan))
 

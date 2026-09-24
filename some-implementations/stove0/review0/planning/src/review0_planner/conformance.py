@@ -14,7 +14,7 @@ _REVIEW_CONTRACT_REPORT = {
     "format": "review0-contract-report/v1",
     "observer_contract": MEDIA_SAMPLING_OBSERVER_CONTRACT.model_dump(mode="json"),
     "operation_contract": REVIEW_MATERIALIZE_OPERATION.model_dump(mode="json"),
-    "source_retirement_permitted": False,
+    "source_collection_retirement_permitted": False,
     "status": "conformant",
 }
 _REVIEW_CONTRACT_REPORT_OUTPUT = {

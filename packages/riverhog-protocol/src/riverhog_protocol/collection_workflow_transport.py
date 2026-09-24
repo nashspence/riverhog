@@ -25,7 +25,7 @@ from riverhog_protocol.collection_workflows import (
     CollectionRootIdentity,
     OperationIdentity,
     RecipeIdentity,
-    RetirementPolicy,
+    SourceCollectionRetirementPolicy,
     canonical_json_bytes,
     canonical_json_sha256,
 )
@@ -508,8 +508,8 @@ class ProcessingClaimRestartDocument(ProcessingClaimRenewDocument):
 class ProcessingClaimPlanSealDocument(RiverhogWorkflowDocument):
     model_config = ConfigDict(
         json_schema_extra={
-            "if": {"properties": {"retirement_policy": {"const": "retain"}}},
-            "then": {"properties": {"retirement_grace_seconds": {"const": "0"}}},
+            "if": {"properties": {"source_collection_retirement_policy": {"const": "retain"}}},
+            "then": {"properties": {"source_collection_retirement_grace_seconds": {"const": "0"}}},
         }
     )
 
@@ -518,8 +518,16 @@ class ProcessingClaimPlanSealDocument(RiverhogWorkflowDocument):
     controller_evidence: ControllerEvidenceDocument
     controller_evidence_sha256: SHA256
     operation: OperationIdentityDocument
-    retirement_policy: RetirementPolicy = "retain"
-    retirement_grace_seconds: NonnegativeDecimal = Field(default_factory=lambda: 0, ge=0)
+    source_collection_retirement_policy: SourceCollectionRetirementPolicy = Field(
+        default="retain",
+        description=(
+            "Retain source collections, or permit their permanent deletion after verified "
+            "output, the grace period, and collection deletion checks."
+        ),
+    )
+    source_collection_retirement_grace_seconds: NonnegativeDecimal = Field(
+        default_factory=lambda: 0, ge=0
+    )
 
     @model_validator(mode="after")
     def validate_plan(self) -> Self:
@@ -529,8 +537,11 @@ class ProcessingClaimPlanSealDocument(RiverhogWorkflowDocument):
             label="controller evidence",
             maximum_bytes=CONTROLLER_EVIDENCE_MAX_BYTES,
         )
-        if self.retirement_policy == "retain" and self.retirement_grace_seconds:
-            raise ValueError("retained collection work cannot declare retirement grace")
+        if (
+            self.source_collection_retirement_policy == "retain"
+            and self.source_collection_retirement_grace_seconds
+        ):
+            raise ValueError("retained source collections cannot declare retirement grace")
         return self
 
 
@@ -580,19 +591,30 @@ class ProcessingClaimSettleDocument(RiverhogWorkflowDocument):
 class ProcessingClaimOutcomesSettleDocument(RiverhogWorkflowDocument):
     model_config = ConfigDict(
         json_schema_extra={
-            "if": {"properties": {"retirement_policy": {"const": "retain"}}},
-            "then": {"properties": {"retirement_grace_seconds": {"const": "0"}}},
+            "if": {"properties": {"source_collection_retirement_policy": {"const": "retain"}}},
+            "then": {"properties": {"source_collection_retirement_grace_seconds": {"const": "0"}}},
         }
     )
 
     fence: NonnegativeDecimal = Field(ge=1)
-    retirement_policy: RetirementPolicy = "retain"
-    retirement_grace_seconds: NonnegativeDecimal = Field(default_factory=lambda: 0, ge=0)
+    source_collection_retirement_policy: SourceCollectionRetirementPolicy = Field(
+        default="retain",
+        description=(
+            "Retain source collections, or permit their permanent deletion after verified "
+            "output, the grace period, and collection deletion checks."
+        ),
+    )
+    source_collection_retirement_grace_seconds: NonnegativeDecimal = Field(
+        default_factory=lambda: 0, ge=0
+    )
 
     @model_validator(mode="after")
     def validate_outcomes(self) -> Self:
-        if self.retirement_policy == "retain" and self.retirement_grace_seconds:
-            raise ValueError("retained collection work cannot declare retirement grace")
+        if (
+            self.source_collection_retirement_policy == "retain"
+            and self.source_collection_retirement_grace_seconds
+        ):
+            raise ValueError("retained source collections cannot declare retirement grace")
         return self
 
 
@@ -612,8 +634,8 @@ class ProcessingClaimConsumerDocument(RiverhogWorkflowDocument):
 class ProcessingClaimPlanDocument(RiverhogWorkflowDocument):
     model_config = ConfigDict(
         json_schema_extra={
-            "if": {"properties": {"retirement_policy": {"const": "retain"}}},
-            "then": {"properties": {"retirement_grace_seconds": {"const": "0"}}},
+            "if": {"properties": {"source_collection_retirement_policy": {"const": "retain"}}},
+            "then": {"properties": {"source_collection_retirement_grace_seconds": {"const": "0"}}},
         }
     )
 
@@ -623,8 +645,8 @@ class ProcessingClaimPlanDocument(RiverhogWorkflowDocument):
     operation: OperationIdentityDocument
     inputs: ExactSetIdentityDocument
     artifacts: ArtifactSetIdentityDocument
-    retirement_policy: RetirementPolicy
-    retirement_grace_seconds: NonnegativeDecimal = Field(ge=0)
+    source_collection_retirement_policy: SourceCollectionRetirementPolicy
+    source_collection_retirement_grace_seconds: NonnegativeDecimal = Field(ge=0)
     sealed_at: CanonicalUtcTimestamp
 
     @model_validator(mode="after")
@@ -636,9 +658,9 @@ class ProcessingClaimPlanDocument(RiverhogWorkflowDocument):
                 "controller_evidence": self.controller_evidence,
                 "controller_evidence_sha256": self.controller_evidence_sha256,
                 "operation": self.operation.model_dump(mode="json"),
-                "retirement_policy": self.retirement_policy,
-                "retirement_grace_seconds": format_scalar(
-                    "nonnegative", self.retirement_grace_seconds
+                "source_collection_retirement_policy": self.source_collection_retirement_policy,
+                "source_collection_retirement_grace_seconds": format_scalar(
+                    "nonnegative", self.source_collection_retirement_grace_seconds
                 ),
             }
         )
@@ -648,24 +670,27 @@ class ProcessingClaimPlanDocument(RiverhogWorkflowDocument):
 class ProcessingClaimOutcomeSettlementDocument(RiverhogWorkflowDocument):
     model_config = ConfigDict(
         json_schema_extra={
-            "if": {"properties": {"retirement_policy": {"const": "retain"}}},
-            "then": {"properties": {"retirement_grace_seconds": {"const": "0"}}},
+            "if": {"properties": {"source_collection_retirement_policy": {"const": "retain"}}},
+            "then": {"properties": {"source_collection_retirement_grace_seconds": {"const": "0"}}},
         }
     )
 
     outcomes: ExactSetIdentityDocument
-    retirement_policy: RetirementPolicy
-    retirement_grace_seconds: NonnegativeDecimal = Field(ge=0)
+    source_collection_retirement_policy: SourceCollectionRetirementPolicy
+    source_collection_retirement_grace_seconds: NonnegativeDecimal = Field(ge=0)
 
     @model_validator(mode="after")
     def validate_retirement(self) -> Self:
-        if self.retirement_policy == "retain" and self.retirement_grace_seconds:
-            raise ValueError("retained collection work cannot declare retirement grace")
+        if (
+            self.source_collection_retirement_policy == "retain"
+            and self.source_collection_retirement_grace_seconds
+        ):
+            raise ValueError("retained source collections cannot declare retirement grace")
         return self
 
 
-class RetirementClaimReferenceDocument(RiverhogWorkflowDocument):
-    """Exact claim evidence authorizing one retirement deletion plan."""
+class SourceCollectionRetirementClaimReferenceDocument(RiverhogWorkflowDocument):
+    """Exact claim evidence authorizing one source collection deletion plan."""
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -702,11 +727,18 @@ class RetirementClaimReferenceDocument(RiverhogWorkflowDocument):
         direct = self.execution_id is not None and self.output_collection_id is not None
         delegated = self.outcomes is not None
         if direct == delegated:
-            raise ValueError("retirement claim must identify one direct or delegated settlement")
+            raise ValueError(
+                "source collection retirement claim must identify one direct or "
+                "delegated settlement"
+            )
         if direct and self.outcomes is not None:
-            raise ValueError("direct retirement claims cannot identify delegated outcomes")
+            raise ValueError(
+                "direct source collection retirement claims cannot identify delegated outcomes"
+            )
         if delegated and (self.execution_id is not None or self.output_collection_id is not None):
-            raise ValueError("delegated retirement claims cannot identify a direct output")
+            raise ValueError(
+                "delegated source collection retirement claims cannot identify a direct output"
+            )
         return self
 
 
@@ -918,7 +950,7 @@ __all__ = [
     "ProcessingOutcomePageDocument",
     "RecipeIdentityDocument",
     "ReceivingSetDocument",
-    "RetirementClaimReferenceDocument",
+    "SourceCollectionRetirementClaimReferenceDocument",
     "RiverhogWorkflowDocument",
     "ProcessingCapabilityCreateDocument",
     "ProcessingCapabilityDocument",

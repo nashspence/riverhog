@@ -219,7 +219,7 @@ class ArchiveCopyRetirementPlanOut(RiverhogModel):
     challenge: str | None
     target_copy: ArchiveCopyRetirementTargetOut
     retained_copies: list[ArchiveCopyRetirementRetainedOut]
-    retired_retrieval_job_count: int
+    terminal_retrieval_job_count: int
     blockers: list[str]
     verification_note: str
     billing_note: str
@@ -237,7 +237,7 @@ class ArchiveCopyRetirementPlanOut(RiverhogModel):
 
 
 class ArchiveCopyRetirementResultOut(RiverhogModel):
-    status: Literal["retired", "already_absent"]
+    status: Literal["deleted", "already_absent"]
     collection_id: CollectionId
     store: ArchiveStoreName
     remote_storage_bytes: int

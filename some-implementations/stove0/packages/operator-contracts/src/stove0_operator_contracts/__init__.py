@@ -59,7 +59,7 @@ WorkPhase = Literal[
     "output_finalizing",
     "verifying",
     "settled",
-    "retirement_pending",
+    "source_collection_retirement_pending",
     "coordinating",
     "abandon_pending",
     "complete",
@@ -310,7 +310,7 @@ def validate_work_state_shape(
     coordination_cancel_requested: bool,
     workflow_plan: WorkflowPlan | None,
     output: OutputCollectionRef | None,
-    retirement_remaining: Sequence[int],
+    source_collection_retirement_remaining: Sequence[int],
     failure: object | None,
     inapplicable: object | None,
     abandon_outcome: Literal["inapplicable", "failed", "canceled"] | None,
@@ -325,7 +325,7 @@ def validate_work_state_shape(
     if output is not None and phase not in {
         "verifying",
         "settled",
-        "retirement_pending",
+        "source_collection_retirement_pending",
         "abandon_pending",
         "complete",
     }:
@@ -350,8 +350,8 @@ def validate_work_state_shape(
         raise ValueError("abandon_pending work requires a terminal outcome")
     if phase != "abandon_pending" and abandon_outcome is not None:
         raise ValueError("only abandon_pending work may retain an abandon outcome")
-    if retirement_remaining and phase != "retirement_pending":
-        raise ValueError("retirement work must remain in retirement_pending")
+    if source_collection_retirement_remaining and phase != "source_collection_retirement_pending":
+        raise ValueError("retirement work must remain in source_collection_retirement_pending")
     if branch_set_plan is not None:
         if branch_set_plan.parent_work != work:
             raise ValueError("branch-set plan differs from its parent work record")
@@ -361,7 +361,7 @@ def validate_work_state_shape(
             "eligible",
             "claimed",
             "coordinating",
-            "retirement_pending",
+            "source_collection_retirement_pending",
             "complete",
             "abandon_pending",
             "canceled",
@@ -374,7 +374,8 @@ def validate_work_state_shape(
             branch_set_plan is None
             or coordination_settlement.work != work
             or coordination_settlement.branch_set_sha256 != branch_set_plan.branch_set_sha256
-            or phase not in {"claimed", "coordinating", "retirement_pending", "complete"}
+            or phase
+            not in {"claimed", "coordinating", "source_collection_retirement_pending", "complete"}
         ):
             raise ValueError("coordination settlement differs from its durable coordinator")
     if preview_acceptance is not None:
@@ -714,7 +715,7 @@ class WorkView(OperatorModel):
     target_status: TargetJobStatus | None = None
     output: OutputCollectionRef | None = None
     target_settlement: TargetSettlementAuthority | None = None
-    retirement_remaining: tuple[int, ...] = ()
+    source_collection_retirement_remaining: tuple[int, ...] = ()
     failure: WorkFailureView | None = None
     inapplicable: WorkInapplicableView | None = None
     abandon_outcome: Literal["inapplicable", "failed", "canceled"] | None = None
@@ -735,7 +736,7 @@ class WorkView(OperatorModel):
             coordination_cancel_requested=self.coordination_cancel_requested,
             workflow_plan=self.workflow_plan,
             output=self.output,
-            retirement_remaining=self.retirement_remaining,
+            source_collection_retirement_remaining=self.source_collection_retirement_remaining,
             failure=self.failure,
             inapplicable=self.inapplicable,
             abandon_outcome=self.abandon_outcome,

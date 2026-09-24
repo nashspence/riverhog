@@ -122,7 +122,7 @@ RIVERHOG_HTTP_ERROR_AUTHORITY = HttpOperationErrorAuthority.from_codes(
         "get_processing_claim_dispositions": ("not_found",),
         "settle_processing_claim": ("conflict", "invalid_state", "not_found"),
         "settle_processing_claim_outcomes": ("conflict", "invalid_state", "not_found"),
-        "begin_processing_claim_retirement": ("conflict", "invalid_state", "not_found"),
+        "begin_source_collection_retirement": ("conflict", "invalid_state", "not_found"),
         "release_processing_claim": ("conflict", "invalid_state", "not_found"),
         "get_collection_derivation": ("not_found",),
     },

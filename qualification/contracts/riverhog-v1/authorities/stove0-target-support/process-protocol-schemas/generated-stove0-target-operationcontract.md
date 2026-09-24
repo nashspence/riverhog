@@ -32,7 +32,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-7b1634eba7"></a>`intent_semantics` | yes | [SemanticValidationProfile](#s-c4cc0dce83) |  |
 | <a id="s-b55e379a61"></a>`outputs` | no | type="array"; default=[]; items=([OutputArtifactContract](#s-63772a2004)); title="Outputs" |  |
 | <a id="s-fc20921336"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection"; title="Result Kind" |  |
-| <a id="s-09f0f21d9f"></a>`source_retirement_permitted` | no | type="boolean"; default=false; title="Source Retirement Permitted" |  |
+| <a id="s-3f6c9f5c4c"></a>`source_collection_retirement_permitted` | no | type="boolean"; default=false; title="Source Collection Retirement Permitted" |  |
 
 ### Definitions
 
@@ -174,7 +174,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 55be6abb3d3e6881cba731f8ea8c857355d44523fa90994f5c880376bae376aa -->
+<!-- exact-contract-value: da5bd78e5fc7d548e57a36dadbae622bdd51bb593445117d3b6dead59daca9ba -->
 
 ```json
 {
@@ -419,9 +419,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Result Kind",
       "type": "string"
     },
-    "source_retirement_permitted": {
+    "source_collection_retirement_permitted": {
       "default": false,
-      "title": "Source Retirement Permitted",
+      "title": "Source Collection Retirement Permitted",
       "type": "boolean"
     }
   },

@@ -98,7 +98,7 @@ Applies to: reported · stdout (json).
 | <a id="s-d1f5a6b2c9"></a>`observer_contract · options_schema · format_policy` | `"annotation-only"` |
 | <a id="s-213b93cc1e"></a>`observer_contract · options_schema · id` | `"stove0.review.media-sampling-options/v1"` |
 | <a id="s-34f16418ed"></a>`observer_contract · options_schema · profile_sha256` | `"9c523e70f370789ff20984ca7a638b47ada230c1d751869ce8dfc162db15b77a"` |
-| <a id="s-e2fdd71d23"></a>`operation_contract · contract_sha256` | `"d41bbf55a3cabf764445d4bcf0c00def514327a58d9313a7f6c5d727d8ba7e9f"` |
+| <a id="s-e2fdd71d23"></a>`operation_contract · contract_sha256` | `"7d37787e93f61be7907eec95987cec02ab108d811c34b32c59a47ecd406c5efb"` |
 | <a id="s-86ea3ee5ed"></a>`operation_contract · effect_receipt_schema` | `null` |
 | <a id="s-85d7a26dc0"></a>`operation_contract · id` | `"stove0.review.materialize/v1"` |
 | <a id="s-f103dd016a"></a>`operation_contract · inputs · item 1 · allowed_dispositions` | `["preserved","transformed"]` |
@@ -183,8 +183,8 @@ Applies to: reported · stdout (json).
 | <a id="s-fdcc08aa81"></a>`operation_contract · outputs · item 3 · minimum` | `0` |
 | <a id="s-41fdc21fee"></a>`operation_contract · outputs · item 3 · role` | `"stove0.review.video/v1"` |
 | <a id="s-8dab949f3d"></a>`operation_contract · result_kind` | `"collection"` |
-| <a id="s-3b626482af"></a>`operation_contract · source_retirement_permitted` | `false` |
-| <a id="s-069316d83b"></a>`source_retirement_permitted` | `false` |
+| <a id="s-eda501ab60"></a>`operation_contract · source_collection_retirement_permitted` | `false` |
+| <a id="s-6c1ee01e42"></a>`source_collection_retirement_permitted` | `false` |
 | <a id="s-fbb8421b00"></a>`status` | `"conformant"` |
 
 ## Governing policies
@@ -244,7 +244,7 @@ true
 
 ### `/external_contract/cli/review0-planner/result_contract`
 
-<!-- exact-contract-value: 7d8b2a8040b13e968a4cdbfd45f293f290f24ac2611957a974da30e9c52d7b0e -->
+<!-- exact-contract-value: 83c9c7b8e8c662f2c9bc52c2dad423abb031a530551a7c679923c69b16fc1499 -->
 
 ```json
 {
@@ -369,7 +369,7 @@ true
               }
             },
             "operation_contract": {
-              "contract_sha256": "d41bbf55a3cabf764445d4bcf0c00def514327a58d9313a7f6c5d727d8ba7e9f",
+              "contract_sha256": "7d37787e93f61be7907eec95987cec02ab108d811c34b32c59a47ecd406c5efb",
               "effect_receipt_schema": null,
               "id": "stove0.review.materialize/v1",
               "inputs": [
@@ -545,9 +545,9 @@ true
                 }
               ],
               "result_kind": "collection",
-              "source_retirement_permitted": false
+              "source_collection_retirement_permitted": false
             },
-            "source_retirement_permitted": false,
+            "source_collection_retirement_permitted": false,
             "status": "conformant"
           },
           "identity": "review0-contract-report/v1",

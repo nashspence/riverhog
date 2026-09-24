@@ -173,7 +173,7 @@ Exact externally visible contract owned by this contract element.
 - <a id="s-ac0a622d02"></a>`type`: `"object"`
 - <a id="s-102f7f1d18"></a>`additionalProperties`: `false`
 - `if`: [See definition `ProcessingClaimOutcomeSettlementDocument` · `if`](#s-c359acdbc4)
-- <a id="s-d93d68c6cc"></a>`required`: `["outcomes","retirement_policy","retirement_grace_seconds"]`
+- <a id="s-d93d68c6cc"></a>`required`: `["outcomes","source_collection_retirement_policy","source_collection_retirement_grace_seconds"]`
 - `then`: [See definition `ProcessingClaimOutcomeSettlementDocument` · `then`](#s-e65195034c)
 
 ###### Fields
@@ -181,15 +181,15 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-36d27ecd02"></a>`outcomes` | yes | [ExactSetIdentityDocument](#s-b2d69f0089) |  |
-| <a id="s-4410371a95"></a>`retirement_grace_seconds` | yes | [NonnegativeDecimal](#s-5bc4a4f1b3); ge=0 |  |
-| <a id="s-cc0fa14a7d"></a>`retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"] |  |
+| <a id="s-796da015bf"></a>`source_collection_retirement_grace_seconds` | yes | [NonnegativeDecimal](#s-5bc4a4f1b3); ge=0 |  |
+| <a id="s-ac0cdd1b0c"></a>`source_collection_retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"] |  |
 
 ##### <a id="s-c3d365e968"></a>definition `ProcessingClaimPlanDocument`
 
 - <a id="s-a24c759ac1"></a>`type`: `"object"`
 - <a id="s-d844854b6d"></a>`additionalProperties`: `false`
 - `if`: [See definition `ProcessingClaimPlanDocument` · `if`](#s-10bc900612)
-- <a id="s-2fd1ad586e"></a>`required`: `["execution_id","controller_evidence","controller_evidence_sha256","operation","inputs","artifacts","retirement_policy","retirement_grace_seconds","sealed_at"]`
+- <a id="s-2fd1ad586e"></a>`required`: `["execution_id","controller_evidence","controller_evidence_sha256","operation","inputs","artifacts","source_collection_retirement_policy","source_collection_retirement_grace_seconds","sealed_at"]`
 - `then`: [See definition `ProcessingClaimPlanDocument` · `then`](#s-00a3278eb6)
 
 ###### Fields
@@ -202,9 +202,9 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-294035e4ba"></a>`execution_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-058a20576f"></a>`inputs` | yes | [ExactSetIdentityDocument](#s-b2d69f0089) |  |
 | <a id="s-097037e371"></a>`operation` | yes | [OperationIdentityDocument](#s-e96e2dd600) |  |
-| <a id="s-4bd5171262"></a>`retirement_grace_seconds` | yes | [NonnegativeDecimal](#s-5bc4a4f1b3); ge=0 |  |
-| <a id="s-d1762d6c5c"></a>`retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"] |  |
 | <a id="s-86aec53513"></a>`sealed_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
+| <a id="s-cb831c8f2f"></a>`source_collection_retirement_grace_seconds` | yes | [NonnegativeDecimal](#s-5bc4a4f1b3); ge=0 |  |
+| <a id="s-3172a96f3e"></a>`source_collection_retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"] |  |
 
 ##### <a id="s-9dd4ce27cb"></a>definition `ReceivingSetDocument`
 
@@ -227,7 +227,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e171488835"></a>`retirement_policy` | no | const="retain" |  |
+| <a id="s-3a78585f97"></a>`source_collection_retirement_policy` | no | const="retain" |  |
 
 ##### <a id="s-e65195034c"></a>definition `ProcessingClaimOutcomeSettlementDocument` · `then`
 
@@ -236,7 +236,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ec69ee0b19"></a>`retirement_grace_seconds` | no | const="0" |  |
+| <a id="s-6723dfa8ae"></a>`source_collection_retirement_grace_seconds` | no | const="0" |  |
 
 ##### <a id="s-10bc900612"></a>definition `ProcessingClaimPlanDocument` · `if`
 
@@ -245,7 +245,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f234943b7c"></a>`retirement_policy` | no | const="retain" |  |
+| <a id="s-56a3c45479"></a>`source_collection_retirement_policy` | no | const="retain" |  |
 
 ##### <a id="s-00a3278eb6"></a>definition `ProcessingClaimPlanDocument` · `then`
 
@@ -254,7 +254,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-37e0041936"></a>`retirement_grace_seconds` | no | const="0" |  |
+| <a id="s-2eb724da92"></a>`source_collection_retirement_grace_seconds` | no | const="0" |  |
 
 ## Maintained corroboration
 
@@ -291,7 +291,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: df4982421499fb9c6a9bf9224ac89aeaecb2375e5c9dbedbc8e271e963bfae0d -->
+<!-- exact-contract-value: 6c08e22b3f7b3053946c32b6adbbc315d6fc65b1d1d439a2738fdecd87135995 -->
 
 ```json
 {
@@ -455,7 +455,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "if": {
             "properties": {
-              "retirement_policy": {
+              "source_collection_retirement_policy": {
                 "const": "retain"
               }
             }
@@ -464,11 +464,11 @@ The following JSON is the complete value owned at each machine-authority pointer
             "outcomes": {
               "$ref": "#/$defs/ExactSetIdentityDocument"
             },
-            "retirement_grace_seconds": {
+            "source_collection_retirement_grace_seconds": {
               "$ref": "#/$defs/NonnegativeDecimal",
               "ge": 0
             },
-            "retirement_policy": {
+            "source_collection_retirement_policy": {
               "enum": [
                 "retain",
                 "retire-after-verified-output"
@@ -478,12 +478,12 @@ The following JSON is the complete value owned at each machine-authority pointer
           },
           "required": [
             "outcomes",
-            "retirement_policy",
-            "retirement_grace_seconds"
+            "source_collection_retirement_policy",
+            "source_collection_retirement_grace_seconds"
           ],
           "then": {
             "properties": {
-              "retirement_grace_seconds": {
+              "source_collection_retirement_grace_seconds": {
                 "const": "0"
               }
             }
@@ -494,7 +494,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "if": {
             "properties": {
-              "retirement_policy": {
+              "source_collection_retirement_policy": {
                 "const": "retain"
               }
             }
@@ -526,21 +526,21 @@ The following JSON is the complete value owned at each machine-authority pointer
             "operation": {
               "$ref": "#/$defs/OperationIdentityDocument"
             },
-            "retirement_grace_seconds": {
-              "$ref": "#/$defs/NonnegativeDecimal",
-              "ge": 0
-            },
-            "retirement_policy": {
-              "enum": [
-                "retain",
-                "retire-after-verified-output"
-              ],
-              "type": "string"
-            },
             "sealed_at": {
               "maxLength": 30,
               "minLength": 30,
               "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
+              "type": "string"
+            },
+            "source_collection_retirement_grace_seconds": {
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
+            },
+            "source_collection_retirement_policy": {
+              "enum": [
+                "retain",
+                "retire-after-verified-output"
+              ],
               "type": "string"
             }
           },
@@ -551,13 +551,13 @@ The following JSON is the complete value owned at each machine-authority pointer
             "operation",
             "inputs",
             "artifacts",
-            "retirement_policy",
-            "retirement_grace_seconds",
+            "source_collection_retirement_policy",
+            "source_collection_retirement_grace_seconds",
             "sealed_at"
           ],
           "then": {
             "properties": {
-              "retirement_grace_seconds": {
+              "source_collection_retirement_grace_seconds": {
                 "const": "0"
               }
             }

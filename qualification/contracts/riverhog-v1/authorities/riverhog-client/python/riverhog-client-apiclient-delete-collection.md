@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-158bac1cef"></a>`kind`: `"method"`
-- <a id="s-7806312f9f"></a>`signature`: `"\"(self, collection_id: 'CollectionId', *, challenge: 'str', retirement_claim_id: 'ProcessingClaimId \| None' = None, event_context: 'Mapping[str, Any] \| None' = None) -> 'dict[str, Any]'\""`
+- <a id="s-7806312f9f"></a>`signature`: `"\"(self, collection_id: 'CollectionId', *, challenge: 'str', source_collection_retirement_claim_id: 'ProcessingClaimId \| None' = None, event_context: 'Mapping[str, Any] \| None' = None) -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 
@@ -48,7 +48,7 @@ Exact externally visible contract owned by this contract element.
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [python:riverhog-client:riverhog_client](../../../evidence/sources/authorities.md#src-c149020c71) — [packages/riverhog-client/src/riverhog\_client/\_\_init\_\_.py](../../../../../../packages/riverhog-client/src/riverhog_client/__init__.py)
-- **Client method:** [packages/riverhog-client/src/riverhog\_client/client.py::ApiClient.delete\_collection](../../../../../../packages/riverhog-client/src/riverhog_client/client.py#L1985)
+- **Client method:** [packages/riverhog-client/src/riverhog\_client/client.py::ApiClient.delete\_collection](../../../../../../packages/riverhog-client/src/riverhog_client/client.py#L1989)
 
 ### Machine authority
 
@@ -61,13 +61,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f22e25e818b7955295fa53e195bb37ce8cd55f91f0569b58ccccc80ce1cb64fd -->
+<!-- exact-contract-value: ebc041d9e384755a67325ee4c7dbe9664abd94930fe8f4994d48837adc66c465 -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, collection_id: 'CollectionId', *, challenge: 'str', retirement_claim_id: 'ProcessingClaimId | None' = None, event_context: 'Mapping[str, Any] | None' = None) -> 'dict[str, Any]'\""
+    "signature": "\"(self, collection_id: 'CollectionId', *, challenge: 'str', source_collection_retirement_claim_id: 'ProcessingClaimId | None' = None, event_context: 'Mapping[str, Any] | None' = None) -> 'dict[str, Any]'\""
   },
   "distribution": "riverhog-client",
   "module": "riverhog_client",

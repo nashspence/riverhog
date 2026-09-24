@@ -22,7 +22,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-client` | [riverhog_client.ApiClient.append_processing_capability_artifacts](../../../authorities/riverhog-client/python/riverhog-client-apiclient-append-processing-capability-artifacts.md#pa-ff0a8d23be) |
 | `riverhog-client` | [riverhog_client.ApiClient.append_processing_claim_artifacts](../../../authorities/riverhog-client/python/riverhog-client-apiclient-append-processing-claim-artifacts.md#pa-adabfed80d) |
 | `riverhog-client` | [riverhog_client.ApiClient.append_processing_claim_inputs](../../../authorities/riverhog-client/python/riverhog-client-apiclient-append-processing-claim-inputs.md#pa-0f3aacb58e) |
-| `riverhog-client` | [riverhog_client.ApiClient.begin_processing_claim_retirement](../../../authorities/riverhog-client/python/riverhog-client-apiclient-begin-processing-claim-retirement.md#pa-503b6071c4) |
+| `riverhog-client` | [riverhog_client.ApiClient.begin_source_collection_retirement](../../../authorities/riverhog-client/python/riverhog-client-apiclient-begin-source-collection-retirement.md#pa-aa88ecde54) |
 | `riverhog-client` | [riverhog_client.ApiClient.cancel_archive_copy_job](../../../authorities/riverhog-client/python/riverhog-client-apiclient-cancel-archive-copy-job.md#pa-6686a6a0fe) |
 | `riverhog-client` | [riverhog_client.ApiClient.cancel_collection_provenance_verification](../../../authorities/riverhog-client/python/riverhog-client-apiclient-cancel-collection-provenance-verification.md#pa-e80ba36ba4) |
 | `riverhog-client` | [riverhog_client.ApiClient.cancel_collection_upload_session](../../../authorities/riverhog-client/python/riverhog-client-apiclient-cancel-collection-upload-session.md#pa-9a657a5af1) |

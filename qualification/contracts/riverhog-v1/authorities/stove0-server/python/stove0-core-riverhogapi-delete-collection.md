@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-1416ac4874"></a>`kind`: `"method"`
-- <a id="s-b78a7510da"></a>`signature`: `"\"(self, collection_id: 'int', *, challenge: 'str', retirement_claim_id: 'str \| None' = None, event_context: 'Mapping[str, Any] \| None' = None) -> 'dict[str, Any]'\""`
+- <a id="s-b78a7510da"></a>`signature`: `"\"(self, collection_id: 'int', *, challenge: 'str', source_collection_retirement_claim_id: 'str \| None' = None, event_context: 'Mapping[str, Any] \| None' = None) -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1ab837e8b3f8ed76d7fde9c0c54bb4a9ffb9fa5d692819fe906c2c94a1697ec6 -->
+<!-- exact-contract-value: b035421a63c2c405e4e613f987c974e7b45d4ee0ad219036c1b03799c673ddaf -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, collection_id: 'int', *, challenge: 'str', retirement_claim_id: 'str | None' = None, event_context: 'Mapping[str, Any] | None' = None) -> 'dict[str, Any]'\""
+    "signature": "\"(self, collection_id: 'int', *, challenge: 'str', source_collection_retirement_claim_id: 'str | None' = None, event_context: 'Mapping[str, Any] | None' = None) -> 'dict[str, Any]'\""
   },
   "distribution": "stove0-server",
   "module": "stove0_core",

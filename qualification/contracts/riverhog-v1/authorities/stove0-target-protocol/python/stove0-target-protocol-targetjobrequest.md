@@ -545,8 +545,8 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-3547041b3d"></a>`output_policy` | no | type="object"; additionalProperties=([JsonValue](#s-92d5fcb8ed)) |  |
 | <a id="s-ebe6e9c068"></a>`requested_target_options` | no | type="object"; additionalProperties=([JsonValue](#s-92d5fcb8ed)) |  |
 | <a id="s-6dd9f85519"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
-| <a id="s-47ce6655f1"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
-| <a id="s-0027cde7eb"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
+| <a id="s-6be258a298"></a>`source_collection_retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
+| <a id="s-20eef3245c"></a>`source_collection_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
 | <a id="s-6d8c5d90b5"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-2af5346e2a"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
 | <a id="s-afa5d79e8d"></a>`work` | yes | [WorkIdentity](#s-0fdf700e51) |  |
@@ -587,7 +587,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8efc2d1eea6ac9256136baafef25cfb25208cfa93691afb9a1ee5ad2ddf95259 -->
+<!-- exact-contract-value: 1e473da516eda6b75671abf8a30a747b77b29852271a6c2fef1171b871c52edb -->
 
 ```json
 {
@@ -1690,12 +1690,12 @@ The following JSON is the complete value owned at each machine-authority pointer
               ],
               "type": "string"
             },
-            "retirement_grace_seconds": {
+            "source_collection_retirement_grace_seconds": {
               "default": 0,
               "minimum": 0,
               "type": "integer"
             },
-            "retirement_policy": {
+            "source_collection_retirement_policy": {
               "default": "retain",
               "enum": [
                 "retain",

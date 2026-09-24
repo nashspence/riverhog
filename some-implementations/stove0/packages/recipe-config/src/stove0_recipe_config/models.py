@@ -184,8 +184,14 @@ class RecipeDefinition(RecipeModel):
     routes: tuple[RecipeBranch, ...] = Field(min_length=1)
     unmatched_artifact_disposition: Literal["retain-in-source", "reject-work"]
     allow_derived_inputs: bool = False
-    source_retirement_policy: Literal["retain", "retire-after-verified-output"] = "retain"
-    retirement_grace_seconds: int = Field(default=0, ge=0)
+    source_collection_retirement_policy: Literal["retain", "retire-after-verified-output"] = Field(
+        default="retain",
+        description=(
+            "Retain source collections, or permit their permanent deletion after verified "
+            "output, the grace period, and collection deletion checks."
+        ),
+    )
+    source_collection_retirement_grace_seconds: int = Field(default=0, ge=0)
     join: RecipeJoin | None = None
 
     @model_validator(mode="after")
@@ -219,7 +225,10 @@ class RecipeDefinition(RecipeModel):
             unknown = sorted(set(member_ids) - set(route_ids))
             if unknown:
                 raise ValueError("join members reference unknown route IDs: " + ", ".join(unknown))
-        if self.source_retirement_policy == "retain" and self.retirement_grace_seconds:
+        if (
+            self.source_collection_retirement_policy == "retain"
+            and self.source_collection_retirement_grace_seconds
+        ):
             raise ValueError("retain recipes cannot declare a retirement grace period")
         return self
 
@@ -298,16 +307,18 @@ class RecipeCatalog(RecipeModel):
                         f"recipe {recipe.id} join cannot consume non-collection branch(es): "
                         + ", ".join(effect_members)
                     )
-            if recipe.source_retirement_policy == "retire-after-verified-output":
+            if recipe.source_collection_retirement_policy == "retire-after-verified-output":
                 unsafe: list[str] = []
                 for route in recipe.routes:
                     if isinstance(route, RecipeRoute):
-                        if not operations[route.operation_id].source_retirement_permitted:
+                        if not operations[
+                            route.operation_id
+                        ].source_collection_retirement_permitted:
                             unsafe.append(route.id)
                         continue
                     child = recipes[(route.recipe.id, route.recipe.revision)]
                     if any(
-                        not operations[operation_id].source_retirement_permitted
+                        not operations[operation_id].source_collection_retirement_permitted
                         for operation_id in _descendant_operation_ids(child, recipes)
                     ):
                         unsafe.append(route.id)

@@ -33,17 +33,17 @@ def test_review_target_contracts_retain_exact_result_and_retirement_semantics() 
     assert REVIEW_MATERIALIZE_OPERATION.id == "stove0.review.materialize/v1"
     assert (
         REVIEW_MATERIALIZE_OPERATION.contract_sha256
-        == "d41bbf55a3cabf764445d4bcf0c00def514327a58d9313a7f6c5d727d8ba7e9f"
+        == "7d37787e93f61be7907eec95987cec02ab108d811c34b32c59a47ecd406c5efb"
     )
     assert REVIEW_MATERIALIZE_OPERATION.result_kind == "collection"
     assert REVIEW_RCLONE_DELIVER_OPERATION.id == "stove0.review.rclone-deliver/v1"
     assert (
         REVIEW_RCLONE_DELIVER_OPERATION.contract_sha256
-        == "2c23aa4d9697738b46f2a1a2da7a87d0757725cab5044034c14bc0a6237a358f"
+        == "fc5f7d11db12afb9c81935f3bc05035ba97beaf10dc59fedf6879ca4ece7ad66"
     )
     assert REVIEW_RCLONE_DELIVER_OPERATION.result_kind == "external-effect"
-    assert REVIEW_MATERIALIZE_OPERATION.source_retirement_permitted is False
-    assert REVIEW_RCLONE_DELIVER_OPERATION.source_retirement_permitted is False
+    assert REVIEW_MATERIALIZE_OPERATION.source_collection_retirement_permitted is False
+    assert REVIEW_RCLONE_DELIVER_OPERATION.source_collection_retirement_permitted is False
     assert len(plan.sample_plan_sha256) == 64
     intent = {
         "sample_plan": plan.model_dump(mode="json"),

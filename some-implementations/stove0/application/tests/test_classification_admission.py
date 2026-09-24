@@ -212,7 +212,7 @@ def _ready_preview(work: WorkIdentity) -> WorkflowPreview:
             operation=operation,
             target_registration_id="fixture-target",
             target_descriptor_sha256="e" * 64,
-            retirement_policy="retain",
+            source_collection_retirement_policy="retain",
         ),
     )
     branch_set = BranchSetPlan.seal(

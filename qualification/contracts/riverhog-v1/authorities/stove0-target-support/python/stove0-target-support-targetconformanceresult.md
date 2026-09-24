@@ -479,7 +479,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-c4a94ba1a4"></a>`intent_semantics` | yes | [SemanticValidationProfile](#s-de2c4c6a35) |  |
 | <a id="s-6f99d35aa6"></a>`outputs` | no | type="array"; default=[]; items=([OutputArtifactContract](#s-1999c8b233)) |  |
 | <a id="s-260b9bf26f"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
-| <a id="s-82d42f3311"></a>`source_retirement_permitted` | no | type="boolean"; default=false |  |
+| <a id="s-65b555320f"></a>`source_collection_retirement_permitted` | no | type="boolean"; default=false |  |
 
 ##### <a id="s-f742f4b080"></a>definition `OperationRef`
 
@@ -970,8 +970,8 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-21ff23084c"></a>`output_policy` | no | type="object"; additionalProperties=([JsonValue](#s-770b4fc958)) |  |
 | <a id="s-5331dce695"></a>`requested_target_options` | no | type="object"; additionalProperties=([JsonValue](#s-770b4fc958)) |  |
 | <a id="s-128e4a04eb"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
-| <a id="s-90a5234db2"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
-| <a id="s-6bf8672eaa"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
+| <a id="s-86c1770ade"></a>`source_collection_retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
+| <a id="s-f68255a7f6"></a>`source_collection_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
 | <a id="s-0894d56960"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-318dce826f"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
 | <a id="s-8485d22dbf"></a>`work` | yes | [WorkIdentity](#s-52083e66b0) |  |
@@ -1010,7 +1010,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e61683b536cc248cdfc4f387cdb272da95e848907e276581a90e5cfb03b4cf2f -->
+<!-- exact-contract-value: 44e4941ae24ce09591e862e3f7bc102a0681c2d0dd220cf47a1c8a094ba96241 -->
 
 ```json
 {
@@ -1910,7 +1910,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               ],
               "type": "string"
             },
-            "source_retirement_permitted": {
+            "source_collection_retirement_permitted": {
               "default": false,
               "type": "boolean"
             }
@@ -3178,12 +3178,12 @@ The following JSON is the complete value owned at each machine-authority pointer
               ],
               "type": "string"
             },
-            "retirement_grace_seconds": {
+            "source_collection_retirement_grace_seconds": {
               "default": 0,
               "minimum": 0,
               "type": "integer"
             },
-            "retirement_policy": {
+            "source_collection_retirement_policy": {
               "default": "retain",
               "enum": [
                 "retain",

@@ -15,8 +15,8 @@ from riverhog_canonical_json import format_scalar
 from riverhog_protocol import (
     ClaimState,
     ProcessingClaimSort,
-    RetirementClaimReferenceDocument,
     SortOrder,
+    SourceCollectionRetirementClaimReferenceDocument,
 )
 from riverhog_protocol.collection_workflow_transport import (
     CONTROLLER_EVIDENCE_MAX_BYTES,
@@ -96,7 +96,7 @@ _MAX_LEASE_SECONDS = 24 * 60 * 60
 _DEFAULT_LEASE_SECONDS = 30 * 60
 _CAPABILITY_ACTIONS = frozenset({"read-inputs", "write-output"})
 _CAPABILITY_AUDIENCE = re.compile(r"^[a-z0-9][a-z0-9._:/-]{0,299}$", re.ASCII)
-_RETIREMENT_POLICIES = frozenset({"retain", "retire-after-verified-output"})
+_SOURCE_COLLECTION_RETIREMENT_POLICIES = frozenset({"retain", "retire-after-verified-output"})
 _CLAIM_STATES = closed_literal_values(ClaimState)
 _CLAIM_SORT_NAMES = closed_literal_values(ProcessingClaimSort)
 _SORT_ORDERS = closed_literal_values(SortOrder)
@@ -198,7 +198,7 @@ class SqlAlchemyCollectionWorkflowService:
                 purpose=normalized_purpose,
                 work_document_json=canonical_json_bytes(normalized_work).decode("utf-8"),
                 work_document_sha256=normalized_work_sha256,
-                retirement_grace_seconds=0,
+                source_collection_retirement_grace_seconds=0,
                 state="active",
                 fence=1,
                 expires_at=expires_at,
@@ -613,8 +613,8 @@ class SqlAlchemyCollectionWorkflowService:
         controller_evidence_sha256: str,
         operation_id: str,
         operation_sha256: str,
-        retirement_policy: str,
-        retirement_grace_seconds: int,
+        source_collection_retirement_policy: str,
+        source_collection_retirement_grace_seconds: int,
         principal: Principal,
     ) -> dict[str, object]:
         normalized_execution_id = _sha256(execution_id, "execution identity")
@@ -636,7 +636,9 @@ class SqlAlchemyCollectionWorkflowService:
             )
         except ValueError as exc:
             raise BadRequest(str(exc)) from exc
-        policy = _retirement_policy(retirement_policy, retirement_grace_seconds)
+        policy = _source_collection_retirement_policy(
+            source_collection_retirement_policy, source_collection_retirement_grace_seconds
+        )
         with session_scope(self._session_factory) as session:
             claim = _owned_claim(session, claim_id, principal, lock=True)
             _require_live_claim(claim, fence=fence)
@@ -652,7 +654,7 @@ class SqlAlchemyCollectionWorkflowService:
                     operation.id,
                     operation.sha256,
                     policy,
-                    int(retirement_grace_seconds),
+                    int(source_collection_retirement_grace_seconds),
                 )
                 actual = (
                     claim.execution_id,
@@ -660,8 +662,8 @@ class SqlAlchemyCollectionWorkflowService:
                     claim.controller_evidence_sha256,
                     claim.operation_id,
                     claim.operation_sha256,
-                    claim.retirement_policy,
-                    claim.retirement_grace_seconds,
+                    claim.source_collection_retirement_policy,
+                    claim.source_collection_retirement_grace_seconds,
                 )
                 if actual != expected:
                     raise Conflict("collection processing claim already has another sealed plan")
@@ -680,8 +682,10 @@ class SqlAlchemyCollectionWorkflowService:
             claim.controller_evidence_sha256 = evidence_sha256
             claim.operation_id = operation.id
             claim.operation_sha256 = operation.sha256
-            claim.retirement_policy = policy
-            claim.retirement_grace_seconds = int(retirement_grace_seconds)
+            claim.source_collection_retirement_policy = policy
+            claim.source_collection_retirement_grace_seconds = int(
+                source_collection_retirement_grace_seconds
+            )
             claim.plan_sealed_at = now
             claim.updated_at = now
             # Observation capabilities are no longer required after a plan is sealed.
@@ -1415,13 +1419,15 @@ class SqlAlchemyCollectionWorkflowService:
         claim_id: str,
         *,
         fence: int,
-        retirement_policy: str,
-        retirement_grace_seconds: int,
+        source_collection_retirement_policy: str,
+        source_collection_retirement_grace_seconds: int,
         principal: Principal,
     ) -> dict[str, object]:
         """Seal, then close, the durable exact outcome identity."""
 
-        policy = _retirement_policy(retirement_policy, retirement_grace_seconds)
+        policy = _source_collection_retirement_policy(
+            source_collection_retirement_policy, source_collection_retirement_grace_seconds
+        )
         with session_scope(self._session_factory) as session:
             claim = _owned_claim(session, claim_id, principal, lock=True)
             _require_fence(claim, fence)
@@ -1429,8 +1435,9 @@ class SqlAlchemyCollectionWorkflowService:
                 raise Conflict("an executed collection claim cannot close delegated outcomes")
             if claim.state in {"settled", "retiring", "released"}:
                 if (
-                    claim.retirement_policy != policy
-                    or claim.retirement_grace_seconds != int(retirement_grace_seconds)
+                    claim.source_collection_retirement_policy != policy
+                    or claim.source_collection_retirement_grace_seconds
+                    != int(source_collection_retirement_grace_seconds)
                     or claim.outcome_state != "sealed"
                     or claim.outcome_set_sha256 is None
                 ):
@@ -1442,8 +1449,10 @@ class SqlAlchemyCollectionWorkflowService:
             if claim.outcome_state == "receiving":
                 if claim.outcome_count < 1:
                     raise Conflict("outcome identity is empty")
-                claim.retirement_policy = policy
-                claim.retirement_grace_seconds = int(retirement_grace_seconds)
+                claim.source_collection_retirement_policy = policy
+                claim.source_collection_retirement_grace_seconds = int(
+                    source_collection_retirement_grace_seconds
+                )
                 claim.outcome_state = "sealing"
                 claim.outcome_hash_state = _set_checkpoint(None, "claim-outcomes").export_state()
                 claim.outcome_validation_cursor = None
@@ -1451,17 +1460,26 @@ class SqlAlchemyCollectionWorkflowService:
                 claim.updated_at = utc_timestamp_now()
                 return _claim_payload(session, claim)
             if claim.outcome_state == "sealing":
-                if claim.retirement_policy != policy or claim.retirement_grace_seconds != int(
-                    retirement_grace_seconds
+                if (
+                    claim.source_collection_retirement_policy != policy
+                    or claim.source_collection_retirement_grace_seconds
+                    != int(source_collection_retirement_grace_seconds)
                 ):
-                    raise Conflict("outcome identity is sealing with another retirement policy")
+                    raise Conflict(
+                        "outcome identity is sealing with another source collection "
+                        "retirement policy"
+                    )
                 return _claim_payload(session, claim)
             if claim.outcome_state != "sealed" or claim.outcome_set_sha256 is None:
                 raise InvalidState("outcome identity is unavailable")
-            if claim.retirement_policy != policy or claim.retirement_grace_seconds != int(
-                retirement_grace_seconds
+            if (
+                claim.source_collection_retirement_policy != policy
+                or claim.source_collection_retirement_grace_seconds
+                != int(source_collection_retirement_grace_seconds)
             ):
-                raise Conflict("outcome identity was sealed with another retirement policy")
+                raise Conflict(
+                    "outcome identity was sealed with another source collection retirement policy"
+                )
             now = utc_timestamp_now()
             claim.state = "settled"
             claim.settled_at = claim.settled_at or now
@@ -1550,7 +1568,7 @@ class SqlAlchemyCollectionWorkflowService:
                 "derivation": json.loads(record.document_json),
             }
 
-    def begin_retirement(
+    def begin_source_collection_retirement(
         self,
         claim_id: str,
         *,
@@ -1564,9 +1582,11 @@ class SqlAlchemyCollectionWorkflowService:
                 return _claim_payload(session, claim)
             if (
                 claim.state != "settled"
-                or claim.retirement_policy != "retire-after-verified-output"
+                or claim.source_collection_retirement_policy != "retire-after-verified-output"
             ):
-                raise Conflict("collection processing claim is not eligible for retirement")
+                raise Conflict(
+                    "collection processing claim is not eligible for source collection retirement"
+                )
             if claim.settled_at is None:
                 raise InvalidState("settled claim has no settlement identity")
             if claim.output_collection_id is not None:
@@ -1598,7 +1618,7 @@ class SqlAlchemyCollectionWorkflowService:
                 )
                 if claim.artifact_count != expected_artifact_count:
                     raise Conflict(
-                        "source retirement requires a plan covering every input artifact"
+                        "source collection retirement requires a plan covering every input artifact"
                     )
                 _verified_disposition_set(session, claim, derivation.disposition_set)
                 unsafe = session.scalar(
@@ -1614,13 +1634,14 @@ class SqlAlchemyCollectionWorkflowService:
                 )
                 if unsafe is not None:
                     raise Conflict(
-                        "source retirement is not authorized for omitted or rejected artifacts"
+                        "source collection retirement is not authorized for omitted or "
+                        "rejected artifacts"
                     )
                 _collection_root(session, claim.output_collection_id)
             else:
-                _require_outcome_retirement_coverage(session, claim)
+                _require_source_collection_retirement_coverage(session, claim)
             eligible_at = parse_utc_timestamp(claim.settled_at) + (
-                claim.retirement_grace_seconds * 1_000_000_000
+                claim.source_collection_retirement_grace_seconds * 1_000_000_000
             )
             if utc_epoch_ns_now() < eligible_at:
                 return _claim_payload(session, claim)
@@ -1695,9 +1716,11 @@ class SqlAlchemyCollectionWorkflowService:
                     or 0
                 )
                 if remaining:
-                    raise Conflict("retirement claim still has live input collections")
-            elif claim.state == "settled" and claim.retirement_policy != "retain":
-                raise Conflict("retiring claim must enter retirement before release")
+                    raise Conflict(
+                        "source collection retirement claim still has live input collections"
+                    )
+            elif claim.state == "settled" and claim.source_collection_retirement_policy != "retain":
+                raise Conflict("claim must begin source collection retirement before release")
             elif claim.state not in {"settled", "retiring"}:
                 raise Conflict("only settled collection work may be released")
             now = utc_timestamp_now()
@@ -1774,14 +1797,14 @@ def _canonical_roots(
     return roots
 
 
-def _retirement_policy(value: str, grace_seconds: int) -> str:
+def _source_collection_retirement_policy(value: str, grace_seconds: int) -> str:
     policy = str(value)
-    if policy not in _RETIREMENT_POLICIES:
-        raise BadRequest("retirement policy is invalid")
+    if policy not in _SOURCE_COLLECTION_RETIREMENT_POLICIES:
+        raise BadRequest("source collection retirement policy is invalid")
     if isinstance(grace_seconds, bool) or grace_seconds < 0:
-        raise BadRequest("retirement grace seconds must be non-negative")
+        raise BadRequest("source collection retirement grace seconds must be non-negative")
     if policy == "retain" and grace_seconds:
-        raise BadRequest("retained collection work cannot declare retirement grace")
+        raise BadRequest("retained source collections cannot declare retirement grace")
     return policy
 
 
@@ -1859,8 +1882,8 @@ def _clear_plan(session: Session, claim: CollectionProcessingClaimRecord) -> Non
     claim.outcome_set_sha256 = None
     claim.outcome_failure = None
     claim.outcomes_sealed_at = None
-    claim.retirement_policy = None
-    claim.retirement_grace_seconds = 0
+    claim.source_collection_retirement_policy = None
+    claim.source_collection_retirement_grace_seconds = 0
     claim.plan_sealed_at = None
 
 
@@ -1943,7 +1966,7 @@ def _require_sealed_transform_plan(claim: CollectionProcessingClaimRecord) -> No
             claim.operation_sha256,
             claim.input_set_sha256,
             claim.artifact_set_sha256,
-            claim.retirement_policy,
+            claim.source_collection_retirement_policy,
         )
     ):
         raise InvalidState("collection processing claim has no sealed execution plan")
@@ -2835,7 +2858,7 @@ def _verified_disposition_set(
     return record
 
 
-def _require_outcome_retirement_coverage(
+def _require_source_collection_retirement_coverage(
     session: Session,
     claim: CollectionProcessingClaimRecord,
 ) -> None:
@@ -2904,7 +2927,7 @@ def _require_outcome_retirement_coverage(
     ).first()
     if missing is not None:
         raise Conflict(
-            "source retirement lacks a verified safe disposition for: "
+            "source collection retirement lacks a verified safe disposition for: "
             f"{missing.collection_id}::{missing.path}"
         )
 
@@ -3081,7 +3104,7 @@ def _claim_payload(
         assert claim.operation_sha256 is not None
         assert claim.input_set_sha256 is not None
         assert claim.artifact_set_sha256 is not None
-        assert claim.retirement_policy is not None
+        assert claim.source_collection_retirement_policy is not None
         plan = {
             "execution_id": claim.execution_id,
             "controller_evidence": json.loads(claim.controller_evidence_json),
@@ -3099,24 +3122,24 @@ def _claim_payload(
                 "total_bytes": format_scalar("nonnegative", claim.artifact_bytes),
                 "sha256": claim.artifact_set_sha256,
             },
-            "retirement_policy": claim.retirement_policy,
-            "retirement_grace_seconds": format_scalar(
-                "nonnegative", claim.retirement_grace_seconds
+            "source_collection_retirement_policy": claim.source_collection_retirement_policy,
+            "source_collection_retirement_grace_seconds": format_scalar(
+                "nonnegative", claim.source_collection_retirement_grace_seconds
             ),
             "sealed_at": claim.plan_sealed_at,
         }
     outcome_settlement = None
     if claim.plan_sealed_at is None and claim.settled_at is not None:
-        if claim.retirement_policy is None or claim.outcome_set_sha256 is None:
+        if claim.source_collection_retirement_policy is None or claim.outcome_set_sha256 is None:
             raise InvalidState("settled collection work has no exact outcome settlement")
         outcome_settlement = {
             "outcomes": {
                 "count": format_scalar("nonnegative", claim.outcome_count),
                 "sha256": claim.outcome_set_sha256,
             },
-            "retirement_policy": claim.retirement_policy,
-            "retirement_grace_seconds": format_scalar(
-                "nonnegative", claim.retirement_grace_seconds
+            "source_collection_retirement_policy": claim.source_collection_retirement_policy,
+            "source_collection_retirement_grace_seconds": format_scalar(
+                "nonnegative", claim.source_collection_retirement_grace_seconds
             ),
         }
     return {
@@ -3295,7 +3318,7 @@ def processing_claim_blockers(
     return result
 
 
-def require_retirement_exemption(
+def require_source_collection_retirement_exemption(
     session: Session,
     *,
     claim_id: str,
@@ -3304,7 +3327,7 @@ def require_retirement_exemption(
 ) -> dict[str, object]:
     claim = session.get(CollectionProcessingClaimRecord, claim_id)
     if claim is None or claim.consumer_app != principal.id or claim.state != "retiring":
-        raise Forbidden("retirement claim does not authorize collection deletion")
+        raise Forbidden("source collection retirement claim does not authorize deletion")
     input_row = session.get(CollectionProcessingClaimInputRecord, (claim_id, collection_id))
     direct_output_ready = claim.output_collection_id is not None
     delegated_output_ready = (
@@ -3313,9 +3336,9 @@ def require_retirement_exemption(
         and claim.outcome_set_sha256 is not None
     )
     if input_row is None or not (direct_output_ready or delegated_output_ready):
-        raise Forbidden("retirement claim does not authorize this input collection")
+        raise Forbidden("source collection retirement claim does not authorize this collection")
     outcome_set_sha256 = claim.outcome_set_sha256
-    return RetirementClaimReferenceDocument.model_validate(
+    return SourceCollectionRetirementClaimReferenceDocument.model_validate(
         {
             "claim_id": claim.id,
             "fence": format_scalar("nonnegative", claim.fence),
@@ -3341,5 +3364,5 @@ def require_retirement_exemption(
 __all__ = [
     "SqlAlchemyCollectionWorkflowService",
     "processing_claim_blockers",
-    "require_retirement_exemption",
+    "require_source_collection_retirement_exemption",
 ]

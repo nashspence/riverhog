@@ -190,7 +190,7 @@ _NON_PLAN_QUERY_OPERATIONS = {
     },
     ("riverhog", "list_lifecycle_events"): {"after", "limit"},
     ("riverhog", "list_retrieval_plan_files"): {"page_size", "start_ordinal"},
-    ("riverhog", "plan_collection_deletion"): {"retirement_claim_id"},
+    ("riverhog", "plan_collection_deletion"): {"source_collection_retirement_claim_id"},
     ("riverhog", "list_catalog_sync_changes"): {"cursor", "limit"},
     ("riverhog", "list_catalog_sync_collections"): {"cursor", "limit"},
     ("riverhog", "trace_collection_file_provenance"): {"page_size", "page_token"},
@@ -449,7 +449,7 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
                 work_document_sha256, execution_id,
                 input_count, artifact_count, artifact_bytes,
                 outcome_count, outcome_state, outcome_validation_count,
-                retirement_grace_seconds,
+                source_collection_retirement_grace_seconds,
                 state, fence, expires_at, created_at, updated_at
             )
             SELECT repeat(md5('claim-' || g), 2), repeat(md5('work-' || g), 2),

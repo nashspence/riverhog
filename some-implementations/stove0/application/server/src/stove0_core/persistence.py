@@ -122,7 +122,7 @@ class _WorkRow(_Base):
         CheckConstraint(
             "phase IN ('eligible','claimed','observing','planning','target_preflight',"
             "'queued','executing','output_finalizing','verifying','settled',"
-            "'retirement_pending','coordinating','abandon_pending','complete',"
+            "'source_collection_retirement_pending','coordinating','abandon_pending','complete',"
             "'inapplicable','failed','canceled')",
             name="ck_stove0_work_records_phase",
         ),

@@ -143,7 +143,9 @@ def test_every_public_riverhog_operation_declares_one_known_permission() -> None
         == COLLECTION_PROCESSING_CONTROL
     )
     assert (
-        workflow_permissions[("POST", "/v1/collection-processing-claims/{claim_id}/retirement")]
+        workflow_permissions[
+            ("POST", "/v1/collection-processing-claims/{claim_id}/source-collection-retirement")
+        ]
         == COLLECTION_PROCESSING_CONTROL
     )
     assert (

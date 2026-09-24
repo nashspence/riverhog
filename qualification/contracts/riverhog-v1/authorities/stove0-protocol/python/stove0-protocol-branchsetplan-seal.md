@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-2f44ec25dd"></a>`kind`: `"classmethod"`
-- <a id="s-79bc20af80"></a>`signature`: `"\"(cls, *, parent_work: 'WorkIdentity', decision_sha256: 'str', evidence_sha256s: 'Sequence[str]' = (), branches: 'Sequence[BranchDeclaration]', join: 'JoinDeclaration \| None' = None, retirement_policy: 'RetirementPolicy' = 'retain', retirement_grace_seconds: 'int' = 0, selections: 'SelectionDocuments', branch_sets: 'Mapping[str, BranchSetPlan] \| None' = None) -> 'BranchSetPlan'\""`
+- <a id="s-79bc20af80"></a>`signature`: `"\"(cls, *, parent_work: 'WorkIdentity', decision_sha256: 'str', evidence_sha256s: 'Sequence[str]' = (), branches: 'Sequence[BranchDeclaration]', join: 'JoinDeclaration \| None' = None, source_collection_retirement_policy: 'SourceCollectionRetirementPolicy' = 'retain', source_collection_retirement_grace_seconds: 'int' = 0, selections: 'SelectionDocuments', branch_sets: 'Mapping[str, BranchSetPlan] \| None' = None) -> 'BranchSetPlan'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 240ac3842fe4267c68e6d12f97b6aa31246b490fe2aa2fcae2c00008590bb08c -->
+<!-- exact-contract-value: b9486cff5ef12276004560c8ca61c5c112a4b446d337d54b24bb5a54616572eb -->
 
 ```json
 {
   "contract": {
     "kind": "classmethod",
-    "signature": "\"(cls, *, parent_work: 'WorkIdentity', decision_sha256: 'str', evidence_sha256s: 'Sequence[str]' = (), branches: 'Sequence[BranchDeclaration]', join: 'JoinDeclaration | None' = None, retirement_policy: 'RetirementPolicy' = 'retain', retirement_grace_seconds: 'int' = 0, selections: 'SelectionDocuments', branch_sets: 'Mapping[str, BranchSetPlan] | None' = None) -> 'BranchSetPlan'\""
+    "signature": "\"(cls, *, parent_work: 'WorkIdentity', decision_sha256: 'str', evidence_sha256s: 'Sequence[str]' = (), branches: 'Sequence[BranchDeclaration]', join: 'JoinDeclaration | None' = None, source_collection_retirement_policy: 'SourceCollectionRetirementPolicy' = 'retain', source_collection_retirement_grace_seconds: 'int' = 0, selections: 'SelectionDocuments', branch_sets: 'Mapping[str, BranchSetPlan] | None' = None) -> 'BranchSetPlan'\""
   },
   "distribution": "stove0-protocol",
   "module": "stove0_protocol",

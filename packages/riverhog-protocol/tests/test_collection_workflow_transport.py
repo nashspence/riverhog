@@ -15,7 +15,7 @@ from riverhog_protocol.collection_workflow_transport import (
     ProcessingClaimCreateDocument,
     ProcessingClaimDocument,
     ProcessingClaimPlanSealDocument,
-    RetirementClaimReferenceDocument,
+    SourceCollectionRetirementClaimReferenceDocument,
 )
 from riverhog_protocol.collection_workflows import (
     CollectionArtifactIdentity,
@@ -107,8 +107,8 @@ def test_opaque_work_and_evidence_runtime_match_their_schema_byte_bounds() -> No
         "controller_evidence": evidence,
         "controller_evidence_sha256": canonical_json_sha256(evidence),
         "operation": {"id": "fixture.operation/v1", "sha256": "5" * 64},
-        "retirement_policy": "retain",
-        "retirement_grace_seconds": "0",
+        "source_collection_retirement_policy": "retain",
+        "source_collection_retirement_grace_seconds": "0",
     }
     ProcessingClaimPlanSealDocument.model_validate(plan)
     evidence_above = {"x": evidence["x"] + "a"}
@@ -175,14 +175,17 @@ def test_structural_workflow_relationships_match_their_published_schema() -> Non
         "controller_evidence": {},
         "controller_evidence_sha256": canonical_json_sha256({}),
         "operation": {"id": "fixture.operation/v1", "sha256": "5" * 64},
-        "retirement_policy": "retain",
-        "retirement_grace_seconds": "0",
+        "source_collection_retirement_policy": "retain",
+        "source_collection_retirement_grace_seconds": "0",
     }
     plan_validator = Draft202012Validator(ProcessingClaimPlanSealDocument.model_json_schema())
-    assert ProcessingClaimPlanSealDocument.model_validate(plan).retirement_policy == "retain"
+    assert (
+        ProcessingClaimPlanSealDocument.model_validate(plan).source_collection_retirement_policy
+        == "retain"
+    )
     plan_validator.validate(plan)
 
-    impossible_plan = {**plan, "retirement_grace_seconds": "60"}
+    impossible_plan = {**plan, "source_collection_retirement_grace_seconds": "60"}
     with pytest.raises(ValidationError, match="cannot declare retirement grace"):
         ProcessingClaimPlanSealDocument.model_validate(impossible_plan)
     with pytest.raises(JsonSchemaValidationError):
@@ -236,14 +239,14 @@ def test_processing_claim_projection_rejects_impossible_state_evidence() -> None
 
 
 def test_retirement_reference_identifies_one_exact_settlement_form() -> None:
-    direct = RetirementClaimReferenceDocument(
+    direct = SourceCollectionRetirementClaimReferenceDocument(
         claim_id="1" * 64,
         fence="2",
         work_id="2" * 64,
         execution_id="3" * 64,
         output_collection_id="42",
     )
-    delegated = RetirementClaimReferenceDocument(
+    delegated = SourceCollectionRetirementClaimReferenceDocument(
         claim_id="4" * 64,
         fence="3",
         work_id="5" * 64,
@@ -253,7 +256,9 @@ def test_retirement_reference_identifies_one_exact_settlement_form() -> None:
     assert direct.output_collection_id == 42
     assert delegated.outcomes is not None
     assert delegated.outcomes.sha256 == "6" * 64
-    validator = Draft202012Validator(RetirementClaimReferenceDocument.model_json_schema())
+    validator = Draft202012Validator(
+        SourceCollectionRetirementClaimReferenceDocument.model_json_schema()
+    )
     validator.validate(direct.model_dump(mode="json"))
     validator.validate(delegated.model_dump(mode="json"))
     invalid = {
@@ -262,11 +267,11 @@ def test_retirement_reference_identifies_one_exact_settlement_form() -> None:
         "work_id": "2" * 64,
     }
     with pytest.raises(ValidationError, match="direct or delegated"):
-        RetirementClaimReferenceDocument.model_validate(invalid)
+        SourceCollectionRetirementClaimReferenceDocument.model_validate(invalid)
     with pytest.raises(JsonSchemaValidationError):
         validator.validate(invalid)
     with pytest.raises(ValidationError, match="direct or delegated"):
-        RetirementClaimReferenceDocument(
+        SourceCollectionRetirementClaimReferenceDocument(
             claim_id="1" * 64,
             fence="1",
             work_id="2" * 64,
@@ -275,7 +280,7 @@ def test_retirement_reference_identifies_one_exact_settlement_form() -> None:
             outcomes={"count": "2", "sha256": "4" * 64},
         )
     with pytest.raises(ValidationError, match="canonical integer string"):
-        RetirementClaimReferenceDocument(
+        SourceCollectionRetirementClaimReferenceDocument(
             claim_id="1" * 64,
             fence="1",
             work_id="2" * 64,

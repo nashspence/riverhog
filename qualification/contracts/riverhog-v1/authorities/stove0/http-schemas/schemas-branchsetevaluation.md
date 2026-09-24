@@ -18,7 +18,7 @@ Entirely derived view over a plan and ordinary child/join results.
 - <a id="s-b749aa723f"></a>`type`: `"object"`
 - <a id="s-ab9d9c50b9"></a>`additionalProperties`: `false`
 - <a id="s-8108b93382"></a>`description`: `"Entirely derived view over a plan and ordinary child/join results."`
-- <a id="s-b5d77b0902"></a>`required`: `["branch_set_sha256","succeeded_branches","succeeded_effects","succeeded_coordinations","unsettled_branch_ids","failed_branch_ids","inapplicable_branch_ids","interrupted_branch_ids","canceled_branch_ids","join_ready","resolved_join_plan","join_state","join_settlement","unsettled_work_ids","branch_set_succeeded","coordination_settlement","retirement_requested","coordination_complete_for_retirement"]`
+- <a id="s-b5d77b0902"></a>`required`: `["branch_set_sha256","succeeded_branches","succeeded_effects","succeeded_coordinations","unsettled_branch_ids","failed_branch_ids","inapplicable_branch_ids","interrupted_branch_ids","canceled_branch_ids","join_ready","resolved_join_plan","join_state","join_settlement","unsettled_work_ids","branch_set_succeeded","coordination_settlement","source_collection_retirement_requested","coordination_complete_for_retirement"]`
 - <a id="s-759586f947"></a>`title`: `"BranchSetEvaluation"`
 
 ### Fields
@@ -37,7 +37,7 @@ Entirely derived view over a plan and ordinary child/join results.
 | <a id="s-451ecf2f60"></a>`join_settlement` | yes | anyOf=[([JoinSettlement](schemas-joinsettlement.md)); (type="null")] |  |
 | <a id="s-61ce399152"></a>`join_state` | yes | type="string"; enum=["not-declared","waiting","ready","succeeded","failed","inapplicable","interrupted","canceled"]; title="Join State" |  |
 | <a id="s-580c35fecd"></a>`resolved_join_plan` | yes | anyOf=[([JoinPlan](schemas-joinplan.md)); (type="null")] |  |
-| <a id="s-66b65c7b21"></a>`retirement_requested` | yes | type="boolean"; title="Retirement Requested" |  |
+| <a id="s-c1089e4e09"></a>`source_collection_retirement_requested` | yes | type="boolean"; title="Source Collection Retirement Requested" |  |
 | <a id="s-532021a47d"></a>`succeeded_branches` | yes | type="array"; items=([BranchSettlement](schemas-branchsettlement.md)); title="Succeeded Branches" |  |
 | <a id="s-454b7a1bee"></a>`succeeded_coordinations` | yes | type="array"; items=([CoordinationSettlement](schemas-coordinationsettlement.md)); title="Succeeded Coordinations" |  |
 | <a id="s-e849acf146"></a>`succeeded_effects` | yes | type="array"; items=([BranchEffectSettlement](schemas-brancheffectsettlement.md)); title="Succeeded Effects" |  |
@@ -112,7 +112,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d7d5ac96162389e5952fc1f2a7b3aa3f03379bd18a10fbbc20ee185cdbde36b2 -->
+<!-- exact-contract-value: 8237b579ec1a4931023cc21bc104febfb25492bc35af2c2484e61a5458c9de70 -->
 
 ```json
 {
@@ -212,8 +212,8 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       ]
     },
-    "retirement_requested": {
-      "title": "Retirement Requested",
+    "source_collection_retirement_requested": {
+      "title": "Source Collection Retirement Requested",
       "type": "boolean"
     },
     "succeeded_branches": {
@@ -271,7 +271,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "unsettled_work_ids",
     "branch_set_succeeded",
     "coordination_settlement",
-    "retirement_requested",
+    "source_collection_retirement_requested",
     "coordination_complete_for_retirement"
   ],
   "title": "BranchSetEvaluation",

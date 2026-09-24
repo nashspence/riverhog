@@ -189,7 +189,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-02f71f2d20"></a>`intent_semantics` | yes | [SemanticValidationProfile](#s-8c31943090) |  |
 | <a id="s-13d6cea42d"></a>`outputs` | no | type="array"; default=[]; items=([OutputArtifactContract](#s-917836a5fe)); title="Outputs" |  |
 | <a id="s-b3c7e1132c"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection"; title="Result Kind" |  |
-| <a id="s-89d6fa2f7a"></a>`source_retirement_permitted` | no | type="boolean"; default=false; title="Source Retirement Permitted" |  |
+| <a id="s-1772d8849c"></a>`source_collection_retirement_permitted` | no | type="boolean"; default=false; title="Source Collection Retirement Permitted" |  |
 
 ### <a id="s-5422541e29"></a>definition `OperationProjection`
 
@@ -263,10 +263,10 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-8c4eebf6e1"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
 | <a id="s-90d281d507"></a>`join` | no | anyOf=[([RecipeJoin](#s-788d8a9692)); (type="null")]; default=null |  |
 | <a id="s-a8b913aeb1"></a>`observers` | no | type="array"; default=[]; items=([ObserverUse](#s-15f0f78bba)); title="Observers" |  |
-| <a id="s-80149a62d9"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Retirement Grace Seconds" |  |
 | <a id="s-6210f1cfe6"></a>`revision` | yes | type="integer"; minimum=1; title="Revision" |  |
 | <a id="s-8198a7011b"></a>`routes` | yes | type="array"; items=(discriminator={"mapping":{"coordination":"#/$defs/RecipeCoordinationRoute","operation":"#/$defs/RecipeRoute"},"propertyName":"kind"}; oneOf=[([RecipeRoute](#s-c9d6c9febb)); ([RecipeCoordinationRoute](#s-1ba6e7737f))]); minItems=1; title="Routes" |  |
-| <a id="s-e008204cd3"></a>`source_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Source Retirement Policy" |  |
+| <a id="s-d10c16c90b"></a>`source_collection_retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Source Collection Retirement Grace Seconds" |  |
+| <a id="s-eaea3e8e56"></a>`source_collection_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Source Collection Retirement Policy" | Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks. |
 | <a id="s-a00ccda986"></a>`unmatched_artifact_disposition` | yes | type="string"; enum=["retain-in-source","reject-work"]; title="Unmatched Artifact Disposition" |  |
 
 ### <a id="s-788d8a9692"></a>definition `RecipeJoin`
@@ -443,7 +443,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 65a75c77a5d8915d49c195b6b54fdba13a987ec273c8849ad052685d4b730f1f -->
+<!-- exact-contract-value: b90e46b2934595bddb3b5751a643382459ebe171566c741895f03af4d22cb807 -->
 
 ```json
 {
@@ -811,9 +811,9 @@ The following JSON is the complete value owned at each machine-authority pointer
           "title": "Result Kind",
           "type": "string"
         },
-        "source_retirement_permitted": {
+        "source_collection_retirement_permitted": {
           "default": false,
-          "title": "Source Retirement Permitted",
+          "title": "Source Collection Retirement Permitted",
           "type": "boolean"
         }
       },
@@ -1042,12 +1042,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "title": "Observers",
           "type": "array"
         },
-        "retirement_grace_seconds": {
-          "default": 0,
-          "minimum": 0,
-          "title": "Retirement Grace Seconds",
-          "type": "integer"
-        },
         "revision": {
           "minimum": 1,
           "title": "Revision",
@@ -1075,13 +1069,20 @@ The following JSON is the complete value owned at each machine-authority pointer
           "title": "Routes",
           "type": "array"
         },
-        "source_retirement_policy": {
+        "source_collection_retirement_grace_seconds": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Source Collection Retirement Grace Seconds",
+          "type": "integer"
+        },
+        "source_collection_retirement_policy": {
           "default": "retain",
+          "description": "Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks.",
           "enum": [
             "retain",
             "retire-after-verified-output"
           ],
-          "title": "Source Retirement Policy",
+          "title": "Source Collection Retirement Policy",
           "type": "string"
         },
         "unmatched_artifact_disposition": {

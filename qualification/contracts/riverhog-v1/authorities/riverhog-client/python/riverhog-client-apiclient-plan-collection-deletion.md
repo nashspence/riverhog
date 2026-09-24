@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-3a4af06192"></a>`kind`: `"method"`
-- <a id="s-61fa4ae3ec"></a>`signature`: `"\"(self, collection_id: 'CollectionId', *, retirement_claim_id: 'ProcessingClaimId \| None' = None) -> 'dict[str, Any]'\""`
+- <a id="s-61fa4ae3ec"></a>`signature`: `"\"(self, collection_id: 'CollectionId', *, source_collection_retirement_claim_id: 'ProcessingClaimId \| None' = None) -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 
@@ -61,13 +61,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 913ff682b8ec084d82df0c19f25bce9e78d0eac22cdb93ebb7a5ab2b7f3abde8 -->
+<!-- exact-contract-value: 6bd56ebc029ac495bca37bfc7352264005e7b0ecb7cf07ecd8816965a1a32b43 -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, collection_id: 'CollectionId', *, retirement_claim_id: 'ProcessingClaimId | None' = None) -> 'dict[str, Any]'\""
+    "signature": "\"(self, collection_id: 'CollectionId', *, source_collection_retirement_claim_id: 'ProcessingClaimId | None' = None) -> 'dict[str, Any]'\""
   },
   "distribution": "riverhog-client",
   "module": "riverhog_client",

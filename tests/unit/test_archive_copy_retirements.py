@@ -121,7 +121,7 @@ def test_retirement_plan_counts_the_target_objects(tmp_path: Path) -> None:
     retained = cast(list[dict[str, object]], plan["retained_copies"])
     assert target["object_count"] == 6
     assert [current["store"] for current in retained] == ["b2"]
-    assert plan["retired_retrieval_job_count"] == 0
+    assert plan["terminal_retrieval_job_count"] == 0
     assert plan["challenge"]
     ArchiveCopyRetirementPlanOut.model_validate(plan)
 
@@ -134,7 +134,7 @@ def test_retirement_verifies_a_retained_copy_then_deletes_every_target_object(
 
     result = service.retire(COLLECTION_ID, store="deep", challenge=challenge)
 
-    assert result["status"] == "retired"
+    assert result["status"] == "deleted"
     assert result["verified_store"] == "b2"
     expected = (
         "pack-" + "0" * 64,
@@ -226,7 +226,7 @@ def test_retirement_blocks_an_active_plan_and_reclaims_its_expired_authority(
         challenge=str(ready["challenge"]),
     )
 
-    assert result["status"] == "retired"
+    assert result["status"] == "deleted"
     with session_scope(make_session_factory(config.database_url)) as session:
         assert session.get(RetrievalPlanRecord, plan_id) is None
 
@@ -310,7 +310,7 @@ def test_retirement_deletes_description_only_after_another_current_replica_exist
         challenge=str(plan["challenge"]),
     )
 
-    assert result["status"] == "retired"
+    assert result["status"] == "deleted"
     assert description_path not in deep_store.objects
     with session_scope(make_session_factory(config.database_url)) as session:
         assert session.get(CollectionDescriptionPublicationRecord, (COLLECTION_ID, "deep")) is None

@@ -17,7 +17,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-86305dce22"></a>`type`: `"object"`
 - <a id="s-b920650ee4"></a>`additionalProperties`: `false`
-- <a id="s-2e90ad56f9"></a>`required`: `["status","collection_id","store","warning","expires_at","challenge","target_copy","retained_copies","retired_retrieval_job_count","blockers","verification_note","billing_note"]`
+- <a id="s-2e90ad56f9"></a>`required`: `["status","collection_id","store","warning","expires_at","challenge","target_copy","retained_copies","terminal_retrieval_job_count","blockers","verification_note","billing_note"]`
 - <a id="s-77e7f36434"></a>`title`: `"ArchiveCopyRetirementPlanOut"`
 
 ### Fields
@@ -30,10 +30,10 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-b3e346a57e"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
 | <a id="s-22bb7f1875"></a>`expires_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Expires At" |  |
 | <a id="s-3b329cb5f9"></a>`retained_copies` | yes | type="array"; items=([ArchiveCopyRetirementRetainedOut](schemas-archivecopyretirementretainedout.md)); title="Retained Copies" |  |
-| <a id="s-91c234b2f5"></a>`retired_retrieval_job_count` | yes | type="integer"; title="Retired Retrieval Job Count" |  |
 | <a id="s-bc86b383bf"></a>`status` | yes | type="string"; enum=["ready","blocked","retiring"]; title="Status" |  |
 | <a id="s-ccd5b75997"></a>`store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
 | <a id="s-1bc1feaa61"></a>`target_copy` | yes | [ArchiveCopyRetirementTargetOut](schemas-archivecopyretirementtargetout.md) |  |
+| <a id="s-59e028b38b"></a>`terminal_retrieval_job_count` | yes | type="integer"; title="Terminal Retrieval Job Count" |  |
 | <a id="s-0e9fe4a515"></a>`verification_note` | yes | type="string"; title="Verification Note" |  |
 | <a id="s-3902eea4d7"></a>`warning` | yes | type="string"; title="Warning" |  |
 
@@ -125,7 +125,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c9d96fd5866f52d1ba72117dcc755d564059f9a14070f045a433b86338dadacb -->
+<!-- exact-contract-value: acba47a96474d6b719fb0f0a15656782f6fd74efd5c943003d6e1cd6c015700f -->
 
 ```json
 {
@@ -202,10 +202,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Retained Copies",
       "type": "array"
     },
-    "retired_retrieval_job_count": {
-      "title": "Retired Retrieval Job Count",
-      "type": "integer"
-    },
     "status": {
       "enum": [
         "ready",
@@ -220,6 +216,10 @@ The following JSON is the complete value owned at each machine-authority pointer
     },
     "target_copy": {
       "$ref": "#/components/schemas/ArchiveCopyRetirementTargetOut"
+    },
+    "terminal_retrieval_job_count": {
+      "title": "Terminal Retrieval Job Count",
+      "type": "integer"
     },
     "verification_note": {
       "title": "Verification Note",
@@ -239,7 +239,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "challenge",
     "target_copy",
     "retained_copies",
-    "retired_retrieval_job_count",
+    "terminal_retrieval_job_count",
     "blockers",
     "verification_note",
     "billing_note"

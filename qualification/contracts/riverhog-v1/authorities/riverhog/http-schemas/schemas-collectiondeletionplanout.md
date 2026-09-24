@@ -36,7 +36,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-0c27dfe4e3"></a>`inventory_identity` | yes | type="string"; title="Inventory Identity" |  |
 | <a id="s-ce48510009"></a>`metadata_rows` | yes | type="object"; additionalProperties=(type="integer"); title="Metadata Rows" |  |
 | <a id="s-137b210b76"></a>`remote_storage_bytes` | yes | type="integer"; title="Remote Storage Bytes" |  |
-| <a id="s-6ac0cd51f1"></a>`retirement_claim` | no | anyOf=[([RetirementClaimReferenceDocument](schemas-retirementclaimreferencedocument.md)); (type="null")] |  |
+| <a id="s-ddf9dc19cd"></a>`source_collection_retirement_claim` | no | anyOf=[([SourceCollectionRetirementClaimReferenceDocument](schemas-sourcecollectionretirementclaimreferencedocument.md)); (type="null")] |  |
 | <a id="s-dfa08a8c5d"></a>`status` | yes | type="string"; enum=["ready","blocked","deleting"]; title="Status" |  |
 | <a id="s-0d4f73bd55"></a>`upload_file_count` | yes | type="integer"; title="Upload File Count" |  |
 | <a id="s-653b88a8cb"></a>`warning` | yes | type="string"; title="Warning" |  |
@@ -97,7 +97,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 - [CollectionDeletionArchiveCopyOut](schemas-collectiondeletionarchivecopyout.md)
 - [CollectionId](schemas-collectionid.md)
-- [RetirementClaimReferenceDocument](schemas-retirementclaimreferencedocument.md)
+- [SourceCollectionRetirementClaimReferenceDocument](schemas-sourcecollectionretirementclaimreferencedocument.md)
 
 ## Governing policies
 
@@ -130,7 +130,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f06c23142357224026311aebe8a804f82fc3b32a5fb240c73c200660e846f03b -->
+<!-- exact-contract-value: 1e4d286d5b3b6658800f1a20672c376a71fceb4e8cc2e9c8004e8e4467213792 -->
 
 ```json
 {
@@ -239,10 +239,10 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Remote Storage Bytes",
       "type": "integer"
     },
-    "retirement_claim": {
+    "source_collection_retirement_claim": {
       "anyOf": [
         {
-          "$ref": "#/components/schemas/RetirementClaimReferenceDocument"
+          "$ref": "#/components/schemas/SourceCollectionRetirementClaimReferenceDocument"
         },
         {
           "type": "null"

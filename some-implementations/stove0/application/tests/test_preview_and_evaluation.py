@@ -241,7 +241,7 @@ class PreviewPlanning:
                 ),
                 target_registration_id="fixture-target",
                 target_descriptor_sha256=self.target.descriptor_sha256,
-                retirement_policy="retain",
+                source_collection_retirement_policy="retain",
             ),
             observations=observations,
         )
@@ -321,7 +321,7 @@ class NestedPreviewPlanning(PreviewPlanning):
                 ),
                 target_registration_id="fixture-target",
                 target_descriptor_sha256=self.target.descriptor_sha256,
-                retirement_policy="retain",
+                source_collection_retirement_policy="retain",
             ),
             observations=child_evidence,
         )

@@ -32,8 +32,8 @@ One immutable set of required branches and one optional exact join.
 | <a id="s-3b5284256e"></a>`format` | no | type="string"; const="stove0-branch-set/v1"; default="stove0-branch-set/v1"; title="Format" |  |
 | <a id="s-debaf9ead5"></a>`join` | no | anyOf=[([JoinDeclaration](schemas-joindeclaration.md)); (type="null")] |  |
 | <a id="s-254366e7ed"></a>`parent_work` | yes | [WorkIdentity](schemas-workidentity.md) |  |
-| <a id="s-347ef767d1"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Retirement Grace Seconds" |  |
-| <a id="s-6ba67858d5"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Retirement Policy" |  |
+| <a id="s-edbb8b3842"></a>`source_collection_retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Source Collection Retirement Grace Seconds" |  |
+| <a id="s-eee184b86d"></a>`source_collection_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Source Collection Retirement Policy" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -96,7 +96,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8bdfd120eb1c50e402a9920f0a877174140baadc1d4b30dbc16afbb12d37734b -->
+<!-- exact-contract-value: c6a94f2fe34289ec6c20e3839bd423204a7ad0888cd926957cfaadda3e109475 -->
 
 ```json
 {
@@ -163,19 +163,19 @@ The following JSON is the complete value owned at each machine-authority pointer
     "parent_work": {
       "$ref": "#/components/schemas/WorkIdentity"
     },
-    "retirement_grace_seconds": {
+    "source_collection_retirement_grace_seconds": {
       "default": 0,
       "minimum": 0,
-      "title": "Retirement Grace Seconds",
+      "title": "Source Collection Retirement Grace Seconds",
       "type": "integer"
     },
-    "retirement_policy": {
+    "source_collection_retirement_policy": {
       "default": "retain",
       "enum": [
         "retain",
         "retire-after-verified-output"
       ],
-      "title": "Retirement Policy",
+      "title": "Source Collection Retirement Policy",
       "type": "string"
     }
   },

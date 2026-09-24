@@ -148,7 +148,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-protocol` | [stove0_protocol.RecipeRef](../../../authorities/stove0-protocol/python/stove0-protocol-reciperef.md#pa-c49255b322) |
 | `stove0-protocol` | [stove0_protocol.RecipeRef.from_identity](../../../authorities/stove0-protocol/python/stove0-protocol-reciperef-from-identity.md#pa-d09d3362de) |
 | `stove0-protocol` | [stove0_protocol.RecipeRef.to_identity](../../../authorities/stove0-protocol/python/stove0-protocol-reciperef-to-identity.md#pa-e878d20981) |
-| `stove0-protocol` | [stove0_protocol.RetirementPolicy](../../../authorities/stove0-protocol/python/stove0-protocol-retirementpolicy.md#pa-3b36cde575) |
 | `stove0-protocol` | [stove0_protocol.RetrievalPolicy](../../../authorities/stove0-protocol/python/stove0-protocol-retrievalpolicy.md#pa-f02246c305) |
 | `stove0-protocol` | [stove0_protocol.SHA256_PATTERN](../../../authorities/stove0-protocol/python/stove0-protocol-sha256-pattern.md#pa-19beca5216) |
 | `stove0-protocol` | [stove0_protocol.SelectionDocuments](../../../authorities/stove0-protocol/python/stove0-protocol-selectiondocuments.md#pa-b6496405f7) |
@@ -160,6 +159,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-protocol` | [stove0_protocol.SemanticValidationProfilePayload](../../../authorities/stove0-protocol/python/stove0-protocol-semanticvalidationprofilepayload.md#pa-e3e7911854) |
 | `stove0-protocol` | [stove0_protocol.SemanticValidationProfilePayload.canonical_rules](../../../authorities/stove0-protocol/python/stove0-protocol-semanticvalidationprofilepayload-canonical-rules.md#pa-4ec368b50e) |
 | `stove0-protocol` | [stove0_protocol.Sha256](../../../authorities/stove0-protocol/python/stove0-protocol-sha256.md#pa-fde159286e) |
+| `stove0-protocol` | [stove0_protocol.SourceCollectionRetirementPolicy](../../../authorities/stove0-protocol/python/stove0-protocol-sourcecollectionretirementpolicy.md#pa-cc01517fb8) |
 | `stove0-protocol` | [stove0_protocol.Stove0ProtocolModel](../../../authorities/stove0-protocol/python/stove0-protocol-stove0protocolmodel.md#pa-e5f21081fa) |
 | `stove0-protocol` | [stove0_protocol.TargetPlanBinding](../../../authorities/stove0-protocol/python/stove0-protocol-targetplanbinding.md#pa-9bb5474ee9) |
 | `stove0-protocol` | [stove0_protocol.TargetPlanBinding.require_plan_document](../../../authorities/stove0-protocol/python/stove0-protocol-targetplanbinding-require-plan-document.md#pa-476027932e) |

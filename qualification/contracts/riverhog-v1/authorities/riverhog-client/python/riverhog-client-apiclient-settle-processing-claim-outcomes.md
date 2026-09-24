@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-2aa28ca419"></a>`kind`: `"method"`
-- <a id="s-f61515180d"></a>`signature`: `"\"(self, claim_id: 'ProcessingClaimId', *, fence: 'int', retirement_policy: 'RetirementPolicy' = 'retain', retirement_grace_seconds: 'int' = 0) -> 'ProcessingClaimDocument'\""`
+- <a id="s-f61515180d"></a>`signature`: `"\"(self, claim_id: 'ProcessingClaimId', *, fence: 'int', source_collection_retirement_policy: 'SourceCollectionRetirementPolicy' = 'retain', source_collection_retirement_grace_seconds: 'int' = 0) -> 'ProcessingClaimDocument'\""`
 
 ## Maintained corroboration
 
@@ -60,13 +60,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: fe5e547869dd162d58e67f01ffaa823f5e3a5107cecdcf2d07900463c24526dc -->
+<!-- exact-contract-value: 2cb2c3eb61d61a46fd73376bf3418556468b285b728cb161449710efc8c253a0 -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, claim_id: 'ProcessingClaimId', *, fence: 'int', retirement_policy: 'RetirementPolicy' = 'retain', retirement_grace_seconds: 'int' = 0) -> 'ProcessingClaimDocument'\""
+    "signature": "\"(self, claim_id: 'ProcessingClaimId', *, fence: 'int', source_collection_retirement_policy: 'SourceCollectionRetirementPolicy' = 'retain', source_collection_retirement_grace_seconds: 'int' = 0) -> 'ProcessingClaimDocument'\""
   },
   "distribution": "riverhog-client",
   "module": "riverhog_client",

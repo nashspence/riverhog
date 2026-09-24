@@ -364,7 +364,7 @@ def test_deployment_owned_conformance_catalog_routes_exact_artifacts_independent
     assert _selection_paths(batched_reversed) == expected
     assert single.plan.branch_set_sha256 == single_reversed.plan.branch_set_sha256
     assert batched.plan.branch_set_sha256 == batched_reversed.plan.branch_set_sha256
-    assert single.plan.retirement_policy == "retain"
+    assert single.plan.source_collection_retirement_policy == "retain"
     intents = {
         branch.branch_id: branch.workflow_plan.work.effective_intent
         for branch in single.plan.branches
@@ -421,7 +421,7 @@ def test_planning_rejects_stale_target_operation_contract_before_preflight() -> 
             intent_schema=AUDIO_ARCHIVE_OPERATION.intent_schema,
             inputs=AUDIO_ARCHIVE_OPERATION.inputs,
             outputs=AUDIO_ARCHIVE_OPERATION.outputs,
-            source_retirement_permitted=True,
+            source_collection_retirement_permitted=True,
         )
     )
     recipe = RecipeDefinition(
@@ -517,7 +517,7 @@ def test_planner_seals_exact_nested_subrecipe_tree_without_target_smearing() -> 
     assert declaration.work.effective_intent == {"scope": "child"}
     child_plan = first.branch_set_documents[declaration.branch_set_sha256]
     assert child_plan.parent_work == declaration.work
-    assert child_plan.retirement_policy == "retain"
+    assert child_plan.source_collection_retirement_policy == "retain"
     assert [item.branch_id for item in child_plan.branches] == ["archive"]
     assert [item.workflow_plan.work.work_id for item in first.leaf_branches()] == [
         child_plan.branches[0].workflow_plan.work.work_id
@@ -789,7 +789,7 @@ def test_media_observation_evidence_binds_exact_primary_sidecar_selection() -> N
         "camera/clip.mov": SOURCE_ROLE,
         "camera/clip.xmp": XMP_SOURCE_ROLE,
     }
-    assert decision.plan.retirement_policy == "retain"
+    assert decision.plan.source_collection_retirement_policy == "retain"
     assert decision.plan.evidence_sha256s == (result.result_sha256,)
     assert all(
         branch.workflow_plan.observations == (evidence,) for branch in decision.plan.branches
@@ -1171,7 +1171,7 @@ def _retirement_operation() -> OperationContract:
                     derived_from_roles=("fixture.source/v1",),
                 ),
             ),
-            source_retirement_permitted=True,
+            source_collection_retirement_permitted=True,
         )
     )
 
@@ -1219,7 +1219,7 @@ def test_retirement_plan_accepts_overlapping_selections_covering_complete_invent
         id="fixture.retirement/v1",
         revision=1,
         unmatched_artifact_disposition="retain-in-source",
-        source_retirement_policy="retire-after-verified-output",
+        source_collection_retirement_policy="retire-after-verified-output",
         routes=(
             RecipeRoute(
                 id="all",
@@ -1245,7 +1245,7 @@ def test_retirement_plan_accepts_overlapping_selections_covering_complete_invent
     decision = planner.workflow_plan(planner.create_work(recipe.id, (root,)), ())
 
     assert isinstance(decision, BranchSetDecision)
-    assert decision.plan.retirement_policy == "retire-after-verified-output"
+    assert decision.plan.source_collection_retirement_policy == "retire-after-verified-output"
     selections = {
         branch.branch_id: decision.selection_documents[branch.artifact_selection.selection_sha256]
         for branch in decision.plan.branches
@@ -1259,7 +1259,7 @@ def test_retirement_plan_rejects_incomplete_inventory_before_target_preflight() 
         id="fixture.retirement/v1",
         revision=1,
         unmatched_artifact_disposition="retain-in-source",
-        source_retirement_policy="retire-after-verified-output",
+        source_collection_retirement_policy="retire-after-verified-output",
         routes=(
             RecipeRoute(
                 id="video-only",
@@ -1288,7 +1288,7 @@ def test_catalog_rejects_retirement_recipe_using_audio_only_operation() -> None:
         id="fixture.unsafe-audio-retirement/v1",
         revision=1,
         unmatched_artifact_disposition="retain-in-source",
-        source_retirement_policy="retire-after-verified-output",
+        source_collection_retirement_policy="retire-after-verified-output",
         routes=(
             RecipeRoute(
                 id="audio",

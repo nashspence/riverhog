@@ -310,7 +310,7 @@ def _active_target_work(
             operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
             target_descriptor_sha256=target.descriptor_sha256,
-            retirement_policy="retain",
+            source_collection_retirement_policy="retain",
         )
     )
     record = service.seal_workflow_plan(
@@ -535,7 +535,7 @@ def _active_effect_work(
             operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-effect-target",
             target_descriptor_sha256=target.descriptor_sha256,
-            retirement_policy="retain",
+            source_collection_retirement_policy="retain",
         )
     )
     record = service.seal_workflow_plan(
@@ -654,7 +654,7 @@ def _branch_decision() -> BranchSetDecision:
                 operation=OperationRef(id="fixture.branch/v1", sha256="f" * 64),
                 target_registration_id="fixture-target",
                 target_descriptor_sha256="1" * 64,
-                retirement_policy="retain",
+                source_collection_retirement_policy="retain",
             ),
         )
         for branch_id in ("audio", "video")
@@ -673,7 +673,7 @@ def _branch_decision() -> BranchSetDecision:
             operation=OperationRef(id="fixture.join/v1", sha256="2" * 64),
             target_registration_id="fixture-target",
             target_descriptor_sha256="1" * 64,
-            retirement_policy="retain",
+            source_collection_retirement_policy="retain",
         ),
     )
     documents = {selection.selection_sha256: selection}

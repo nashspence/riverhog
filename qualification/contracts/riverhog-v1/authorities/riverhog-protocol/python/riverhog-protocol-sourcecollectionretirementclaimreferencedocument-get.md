@@ -1,8 +1,8 @@
-# riverhog_protocol.RetirementClaimReferenceDocument.__getitem__
+# riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument.get
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: python:riverhog-protocol:riverhog-protocol-retirementclaimreferenc-8903225afa:374a8785cc -->
+<!-- contract-element: python:riverhog-protocol:riverhog-protocol-sourcecollectionretirem-f9e6e86662:a09b48296d -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,27 +13,27 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-79b53a8f38"></a>
-- <a id="s-7565543b70"></a>`distribution`: `riverhog-protocol`
-- <a id="s-d4448067b5"></a>`module`: `riverhog_protocol`
-- <a id="s-245fa1fe98"></a>`name`: `__getitem__`
-- <a id="s-20d1532bc5"></a>`owner`: `riverhog_protocol.RetirementClaimReferenceDocument`
-- <a id="s-06b7bebe48"></a>`unit`: `member`
+<a id="s-8d3c8bda66"></a>
+- <a id="s-a7da6903ba"></a>`distribution`: `riverhog-protocol`
+- <a id="s-7c31785d46"></a>`module`: `riverhog_protocol`
+- <a id="s-e1452ededb"></a>`name`: `get`
+- <a id="s-bd66edd337"></a>`owner`: `riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument`
+- <a id="s-448b932e78"></a>`unit`: `member`
 
 ### Declared structure
 
-- <a id="s-c8d98509b9"></a>`kind`: `"method"`
-- <a id="s-4d500781b9"></a>`signature`: `"\"(self, key: 'str') -> 'Any'\""`
+- <a id="s-9edb1fd728"></a>`kind`: `"method"`
+- <a id="s-9327c3a499"></a>`signature`: `"\"(self, key: 'str', default: 'Any' = None) -> 'Any'\""`
 
 ## Maintained corroboration
 
 ### Related interface records
 
-- [RetirementClaimReferenceDocument](riverhog-protocol-retirementclaimreferencedocument.md)
+- [SourceCollectionRetirementClaimReferenceDocument](riverhog-protocol-sourcecollectionretirementclaimreferencedocument.md)
 
 ## Governing policies
 
-- <a id="pa-49e97ac114"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
+- <a id="pa-a594443aa6"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
 
 ## Evidence
 
@@ -49,7 +49,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/python/riverhog_protocol.RetirementClaimReferenceDocument.__getitem__`
+- `/external_contract/python/riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument.get`
 
 ### Exact owned JSON
 
@@ -58,18 +58,18 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 39ec0a91d46e0f9e76d1d4b68f71c10928690d9e0f8836869a44b4a4acdc3c44 -->
+<!-- exact-contract-value: b5bcc7996d83428e51847e4e5cd2d11881ecccc3d13f9a3349af4ec141221aa6 -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, key: 'str') -> 'Any'\""
+    "signature": "\"(self, key: 'str', default: 'Any' = None) -> 'Any'\""
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",
-  "name": "__getitem__",
-  "owner": "riverhog_protocol.RetirementClaimReferenceDocument",
+  "name": "get",
+  "owner": "riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument",
   "unit": "member"
 }
 ```

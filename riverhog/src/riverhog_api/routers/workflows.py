@@ -379,8 +379,8 @@ def seal_processing_claim_plan(
             controller_evidence_sha256=request.controller_evidence_sha256,
             operation_id=request.operation.id,
             operation_sha256=request.operation.sha256,
-            retirement_policy=request.retirement_policy,
-            retirement_grace_seconds=request.retirement_grace_seconds,
+            source_collection_retirement_policy=request.source_collection_retirement_policy,
+            source_collection_retirement_grace_seconds=request.source_collection_retirement_grace_seconds,
             principal=principal,
         )
     )
@@ -644,8 +644,8 @@ def settle_processing_claim_outcomes(
         container.collection_workflows.settle_claim_outcomes(
             claim_id,
             fence=request.fence,
-            retirement_policy=request.retirement_policy,
-            retirement_grace_seconds=request.retirement_grace_seconds,
+            source_collection_retirement_policy=request.source_collection_retirement_policy,
+            source_collection_retirement_grace_seconds=request.source_collection_retirement_grace_seconds,
             principal=principal,
         )
     )
@@ -682,18 +682,18 @@ def list_processing_claim_outcomes(
 
 
 @router.post(
-    "/collection-processing-claims/{claim_id}/retirement",
+    "/collection-processing-claims/{claim_id}/source-collection-retirement",
     response_model=ProcessingClaimOut,
     openapi_extra=operation_interface("client-only-primitive"),
 )
-def begin_processing_claim_retirement(
+def begin_source_collection_retirement(
     claim_id: ProcessingClaimId,
     request: ProcessingClaimFenceIn,
     container: ContainerDep,
     principal: CollectionProcessingController,
 ) -> ProcessingClaimOut:
     return ProcessingClaimOut.model_validate(
-        container.collection_workflows.begin_retirement(
+        container.collection_workflows.begin_source_collection_retirement(
             claim_id,
             fence=request.fence,
             principal=principal,

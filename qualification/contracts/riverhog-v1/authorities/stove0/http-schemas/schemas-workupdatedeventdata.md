@@ -24,7 +24,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-5598b9d738"></a>`phase` | yes | type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"]; title="Phase" |  |
+| <a id="s-5598b9d738"></a>`phase` | yes | type="string"; enum=["eligible","claimed","observing","planning","target_preflight","queued","executing","output_finalizing","verifying","settled","source_collection_retirement_pending","coordinating","abandon_pending","complete","inapplicable","failed","canceled"]; title="Phase" |  |
 | <a id="s-4123ed42c3"></a>`revision` | yes | type="integer"; minimum=2; title="Revision" |  |
 | <a id="s-12842d72c4"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
 
@@ -68,7 +68,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ccdca8ddb59e6f6e51efd841d9b827e5b954d845a51a4146d07e9d1b2d80900a -->
+<!-- exact-contract-value: 805566b3a7fab4996cc3b71d7cad9737a32efaebb5d938ddcd34be283ed25fff -->
 
 ```json
 {
@@ -86,7 +86,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "output_finalizing",
         "verifying",
         "settled",
-        "retirement_pending",
+        "source_collection_retirement_pending",
         "coordinating",
         "abandon_pending",
         "complete",

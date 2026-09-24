@@ -30,10 +30,10 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-f2fcf3466b"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
 | <a id="s-2211dbf2b8"></a>`join` | no | anyOf=[([RecipeJoin](schemas-recipejoin.md)); (type="null")] |  |
 | <a id="s-095b4c1e00"></a>`observers` | no | type="array"; default=[]; items=([ObserverUse](schemas-observeruse.md)); title="Observers" |  |
-| <a id="s-ef8d6c456f"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Retirement Grace Seconds" |  |
 | <a id="s-8ae96a9025"></a>`revision` | yes | type="integer"; minimum=1; title="Revision" |  |
 | <a id="s-823b3b9b9f"></a>`routes` | yes | type="array"; items=(discriminator={"mapping":{"coordination":"#/components/schemas/RecipeCoordinationRoute","operation":"#/components/schemas/RecipeRoute"},"propertyName":"kind"}; oneOf=[([RecipeRoute](schemas-reciperoute.md)); ([RecipeCoordinationRoute](schemas-recipecoordinationroute.md))]); minItems=1; title="Routes" |  |
-| <a id="s-f280110403"></a>`source_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Source Retirement Policy" |  |
+| <a id="s-b5d61f057b"></a>`source_collection_retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Source Collection Retirement Grace Seconds" |  |
+| <a id="s-a6a9990e17"></a>`source_collection_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Source Collection Retirement Policy" | Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks. |
 | <a id="s-28b7accac5"></a>`unmatched_artifact_disposition` | yes | type="string"; enum=["retain-in-source","reject-work"]; title="Unmatched Artifact Disposition" |  |
 
 ### Progression, limits, and lifecycle
@@ -88,7 +88,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 52f1f9e36a3f8419274fd929261ca66a4b3c186ef485463299ad5d704efe1005 -->
+<!-- exact-contract-value: 07b376793158866fbb13c8cc929866ab0a928ab240eeb469e30cee1382b84a0d -->
 
 ```json
 {
@@ -136,12 +136,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Observers",
       "type": "array"
     },
-    "retirement_grace_seconds": {
-      "default": 0,
-      "minimum": 0,
-      "title": "Retirement Grace Seconds",
-      "type": "integer"
-    },
     "revision": {
       "minimum": 1,
       "title": "Revision",
@@ -169,13 +163,20 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Routes",
       "type": "array"
     },
-    "source_retirement_policy": {
+    "source_collection_retirement_grace_seconds": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Source Collection Retirement Grace Seconds",
+      "type": "integer"
+    },
+    "source_collection_retirement_policy": {
       "default": "retain",
+      "description": "Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks.",
       "enum": [
         "retain",
         "retire-after-verified-output"
       ],
-      "title": "Source Retirement Policy",
+      "title": "Source Collection Retirement Policy",
       "type": "string"
     },
     "unmatched_artifact_disposition": {

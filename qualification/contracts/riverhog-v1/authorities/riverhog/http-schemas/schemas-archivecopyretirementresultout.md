@@ -26,7 +26,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-133f2d0690"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
 | <a id="s-d6df7ab197"></a>`remote_storage_bytes` | yes | type="integer"; title="Remote Storage Bytes" |  |
-| <a id="s-f3361fbed4"></a>`status` | yes | type="string"; enum=["retired","already_absent"]; title="Status" |  |
+| <a id="s-f3361fbed4"></a>`status` | yes | type="string"; enum=["deleted","already_absent"]; title="Status" |  |
 | <a id="s-03841b12de"></a>`store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
 | <a id="s-f7c4101414"></a>`verified_store` | yes | anyOf=[([ArchiveStoreName](schemas-archivestorename.md)); (type="null")] |  |
 
@@ -64,7 +64,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7e7caad5ef04fee87801c920d47e6384a7bd1d8b0929f69cc7816ad28f90cb51 -->
+<!-- exact-contract-value: 891e9ccd596e2f7ea6a48f758b0cc0c3f5298f154a59d127ade7ef2a9ed446db -->
 
 ```json
 {
@@ -79,7 +79,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     },
     "status": {
       "enum": [
-        "retired",
+        "deleted",
         "already_absent"
       ],
       "title": "Status",

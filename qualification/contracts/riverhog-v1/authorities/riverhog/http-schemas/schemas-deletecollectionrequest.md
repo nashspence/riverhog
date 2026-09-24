@@ -26,7 +26,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-238e9e80f8"></a>`challenge` | yes | type="string"; title="Challenge" |  |
 | <a id="s-cad18f2c6c"></a>`event_context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; title="Event Context" |  |
-| <a id="s-a4430dd637"></a>`retirement_claim_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Retirement Claim Id" |  |
+| <a id="s-fcb69b1897"></a>`source_collection_retirement_claim_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Source Collection Retirement Claim Id" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -43,7 +43,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | [field event_context · object value](#s-b4c2f4d198) | `encoded-size · bytes · contract_max` | maximum=4096; reason="bounded-lifecycle-event-context"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
-| <a id="s-0b341ccab2"></a>[field retirement_claim_id · string value](#s-a4430dd637) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-f9d39426aa"></a>[field source_collection_retirement_claim_id · string value](#s-fcb69b1897) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Governing policies
 
@@ -76,7 +76,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c22cd89335617ccdcf6b1675cd71064d6573c80ac6515a180f5300e5b6b8c3a0 -->
+<!-- exact-contract-value: ec4e6e583e29ad2b6982f09786b4d0a1f4acd9832e5f3c4157a185d8a284a3db -->
 
 ```json
 {
@@ -103,7 +103,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "title": "Event Context"
     },
-    "retirement_claim_id": {
+    "source_collection_retirement_claim_id": {
       "anyOf": [
         {
           "pattern": "^[0-9a-f]{64}$",
@@ -113,7 +113,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "null"
         }
       ],
-      "title": "Retirement Claim Id"
+      "title": "Source Collection Retirement Claim Id"
     }
   },
   "required": [

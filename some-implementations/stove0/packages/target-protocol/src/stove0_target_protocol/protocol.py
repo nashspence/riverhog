@@ -129,7 +129,7 @@ class OperationContractPayload(TargetProtocolModel):
     inputs: tuple[InputArtifactContract, ...] = Field(min_length=1)
     outputs: tuple[OutputArtifactContract, ...] = ()
     effect_receipt_schema: JsonSchemaValidationProfile | None = None
-    source_retirement_permitted: bool = False
+    source_collection_retirement_permitted: bool = False
 
     @model_validator(mode="after")
     def bind_semantic_conformance_vectors(self) -> Self:
@@ -174,8 +174,10 @@ class OperationContractPayload(TargetProtocolModel):
                 raise ValueError("effect-producing operation cannot declare output artifacts")
             if self.effect_receipt_schema is None:
                 raise ValueError("effect-producing operation requires a receipt schema")
-            if self.source_retirement_permitted:
-                raise ValueError("effect-producing operation cannot permit source retirement")
+            if self.source_collection_retirement_permitted:
+                raise ValueError(
+                    "effect-producing operation cannot permit source collection retirement"
+                )
             if any(item.allowed_dispositions is not None for item in self.inputs):
                 raise ValueError("effect-producing operation cannot declare input dispositions")
         return self

@@ -269,7 +269,7 @@ class _LifecycleCoordinator:
             unsettled_work_ids=(preview.branch_set_plan.branches[0].workflow_plan.work.work_id,),
             branch_set_succeeded=False,
             coordination_settlement=None,
-            retirement_requested=False,
+            source_collection_retirement_requested=False,
             coordination_complete_for_retirement=False,
         )
 
@@ -555,7 +555,7 @@ def _ready_preview(work: WorkIdentity) -> WorkflowPreview:
             operation=operation,
             target_registration_id="fixture-target",
             target_descriptor_sha256="7" * 64,
-            retirement_policy="retain",
+            source_collection_retirement_policy="retain",
         ),
     )
     branch_set = BranchSetPlan.seal(

@@ -117,7 +117,7 @@ def _evidence(
 
 
 def test_audio_only_archive_cannot_retire_its_richer_source_collection() -> None:
-    assert AUDIO_ARCHIVE_OPERATION.source_retirement_permitted is False
+    assert AUDIO_ARCHIVE_OPERATION.source_collection_retirement_permitted is False
 
 
 def test_projection_bridge_exhaustively_maps_independent_contract_vocabularies() -> None:
@@ -134,7 +134,7 @@ def test_archive_video_retirement_always_requires_reconstructive_source_artifact
         if output.role == SOURCE_ARTIFACT_ROLE
     )
 
-    assert AV1_OPUS_ARCHIVE_OPERATION.source_retirement_permitted
+    assert AV1_OPUS_ARCHIVE_OPERATION.source_collection_retirement_permitted
     assert source_artifacts.minimum == 1
     assert "preserve_source_artifacts" not in Av1OpusArchiveIntent.model_json_schema()["properties"]
 

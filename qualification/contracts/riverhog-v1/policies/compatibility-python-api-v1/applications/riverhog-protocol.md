@@ -280,10 +280,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-protocol` | [riverhog_protocol.RecipeIdentityDocument.__getitem__](../../../authorities/riverhog-protocol/python/riverhog-protocol-recipeidentitydocument-getitem.md#pa-5105eecbf8) |
 | `riverhog-protocol` | [riverhog_protocol.RecipeIdentityDocument.get](../../../authorities/riverhog-protocol/python/riverhog-protocol-recipeidentitydocument-get.md#pa-e88a042ef2) |
 | `riverhog-protocol` | [riverhog_protocol.RecipeIdentityDocument.validate_identity](../../../authorities/riverhog-protocol/python/riverhog-protocol-recipeidentitydocument-validate-identity.md#pa-bcde46daf0) |
-| `riverhog-protocol` | [riverhog_protocol.RetirementClaimReferenceDocument](../../../authorities/riverhog-protocol/python/riverhog-protocol-retirementclaimreferencedocument.md#pa-8a65e8800b) |
-| `riverhog-protocol` | [riverhog_protocol.RetirementClaimReferenceDocument.__getitem__](../../../authorities/riverhog-protocol/python/riverhog-protocol-retirementclaimreferencedocument-getitem.md#pa-49e97ac114) |
-| `riverhog-protocol` | [riverhog_protocol.RetirementClaimReferenceDocument.get](../../../authorities/riverhog-protocol/python/riverhog-protocol-retirementclaimreferencedocument-get.md#pa-00961e1609) |
-| `riverhog-protocol` | [riverhog_protocol.RetirementClaimReferenceDocument.validate_settlement_form](../../../authorities/riverhog-protocol/python/riverhog-protocol-retirementclaimreferencedocument-validate-settlement-form.md#pa-79229ac8bb) |
 | `riverhog-protocol` | [riverhog_protocol.RetrievalCacheProtection](../../../authorities/riverhog-protocol/python/riverhog-protocol-retrievalcacheprotection.md#pa-2b6f544682) |
 | `riverhog-protocol` | [riverhog_protocol.RetrievalCacheSort](../../../authorities/riverhog-protocol/python/riverhog-protocol-retrievalcachesort.md#pa-0c7aeb46a5) |
 | `riverhog-protocol` | [riverhog_protocol.RetrievalCacheState](../../../authorities/riverhog-protocol/python/riverhog-protocol-retrievalcachestate.md#pa-070f751802) |
@@ -300,6 +296,10 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-protocol` | [riverhog_protocol.SearchSort](../../../authorities/riverhog-protocol/python/riverhog-protocol-searchsort.md#pa-e42ae3240c) |
 | `riverhog-protocol` | [riverhog_protocol.ServiceUnavailable](../../../authorities/riverhog-protocol/python/riverhog-protocol-serviceunavailable.md#pa-9a31d33e8f) |
 | `riverhog-protocol` | [riverhog_protocol.SortOrder](../../../authorities/riverhog-protocol/python/riverhog-protocol-sortorder.md#pa-23fbcfdadf) |
+| `riverhog-protocol` | [riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument](../../../authorities/riverhog-protocol/python/riverhog-protocol-sourcecollectionretirementclaimreferencedocument.md#pa-a338031a65) |
+| `riverhog-protocol` | [riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument.__getitem__](../../../authorities/riverhog-protocol/python/riverhog-protocol-sourcecollectionretirementclaimreferencedocument-getitem.md#pa-d5e60945af) |
+| `riverhog-protocol` | [riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument.get](../../../authorities/riverhog-protocol/python/riverhog-protocol-sourcecollectionretirementclaimreferencedocument-get.md#pa-a594443aa6) |
+| `riverhog-protocol` | [riverhog_protocol.SourceCollectionRetirementClaimReferenceDocument.validate_settlement_form](../../../authorities/riverhog-protocol/python/riverhog-protocol-sourcecollectionretirementclaimreferencedocument-validate-s-d2ffc82827.md#pa-ad699af962) |
 | `riverhog-protocol` | [riverhog_protocol.TransformIntent](../../../authorities/riverhog-protocol/python/riverhog-protocol-transformintent.md#pa-639faa1100) |
 | `riverhog-protocol` | [riverhog_protocol.TransformIntent.as_dict](../../../authorities/riverhog-protocol/python/riverhog-protocol-transformintent-as-dict.md#pa-83d62d5622) |
 | `riverhog-protocol` | [riverhog_protocol.TransformIntent.from_mapping](../../../authorities/riverhog-protocol/python/riverhog-protocol-transformintent-from-mapping.md#pa-4ea662b419) |

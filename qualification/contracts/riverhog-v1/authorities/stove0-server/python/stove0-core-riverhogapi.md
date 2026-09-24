@@ -29,7 +29,7 @@ Exact externally visible contract owned by this contract element.
 ### Related interface records
 
 - [abandon_processing_claim](stove0-core-riverhogapi-abandon-processing-claim.md)
-- [begin_processing_claim_retirement](stove0-core-riverhogapi-begin-processing-claim-retirement.md)
+- [begin_source_collection_retirement](stove0-core-riverhogapi-begin-source-collection-retirement.md)
 - [create_or_resume_processing_claim](stove0-core-riverhogapi-create-or-resume-processing-claim.md)
 - [create_processing_capability](stove0-core-riverhogapi-create-processing-capability.md)
 - [delete_collection](stove0-core-riverhogapi-delete-collection.md)

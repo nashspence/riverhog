@@ -161,8 +161,8 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-cff47816ca"></a>`format` | no | type="string"; const="stove0-branch-set/v1"; default="stove0-branch-set/v1" |  |
 | <a id="s-b7bf168cb4"></a>`join` | no | anyOf=[([JoinDeclaration](#s-c2ab9188ec)); (type="null")]; default=null |  |
 | <a id="s-34a5107c1e"></a>`parent_work` | yes | [WorkIdentity](#s-2dee6e501d) |  |
-| <a id="s-4f9c02bfac"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
-| <a id="s-745c0a79c1"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
+| <a id="s-44dd962fe3"></a>`source_collection_retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
+| <a id="s-1947896a76"></a>`source_collection_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
 
 ##### <a id="s-c63d6c3a12"></a>definition `BranchTargetPreview`
 
@@ -527,8 +527,8 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-197c42c93d"></a>`output_policy` | no | type="object"; additionalProperties=([JsonValue](#s-b9e54fccce)) |  |
 | <a id="s-3d69eb8ea5"></a>`requested_target_options` | no | type="object"; additionalProperties=([JsonValue](#s-b9e54fccce)) |  |
 | <a id="s-abd9c4730c"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
-| <a id="s-67d7d6703e"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
-| <a id="s-e3ffa9f5e3"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
+| <a id="s-73e5fd1e59"></a>`source_collection_retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
+| <a id="s-1b3c4798a9"></a>`source_collection_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
 | <a id="s-815139e1f7"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-baa8fa4030"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
 | <a id="s-dd171af85a"></a>`work` | yes | [WorkIdentity](#s-2dee6e501d) |  |
@@ -549,8 +549,8 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-43dd393160"></a>`output_policy` | no | type="object"; additionalProperties=([JsonValue](#s-b9e54fccce)) |  |
 | <a id="s-a557b541fd"></a>`requested_target_options` | no | type="object"; additionalProperties=([JsonValue](#s-b9e54fccce)) |  |
 | <a id="s-b27bc722e7"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
-| <a id="s-efd82260e2"></a>`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
-| <a id="s-b07ed2d4e4"></a>`retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
+| <a id="s-7c66ff9f27"></a>`source_collection_retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
+| <a id="s-43045a4333"></a>`source_collection_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
 | <a id="s-e9e5eb33e3"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-c951de7bc9"></a>`target_registration_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$" |  |
 
@@ -592,7 +592,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4c8209861485ec60bc087e0292f0821669015e2dcd95d6921e333b1d7fc5bd42 -->
+<!-- exact-contract-value: 7d43da33dc2af4531f68ccbd42692618d28a57bc288dcb6ecf1e5c8bcd6468a3 -->
 
 ```json
 {
@@ -795,12 +795,12 @@ The following JSON is the complete value owned at each machine-authority pointer
             "parent_work": {
               "$ref": "#/$defs/WorkIdentity"
             },
-            "retirement_grace_seconds": {
+            "source_collection_retirement_grace_seconds": {
               "default": 0,
               "minimum": 0,
               "type": "integer"
             },
-            "retirement_policy": {
+            "source_collection_retirement_policy": {
               "default": "retain",
               "enum": [
                 "retain",
@@ -1655,12 +1655,12 @@ The following JSON is the complete value owned at each machine-authority pointer
               ],
               "type": "string"
             },
-            "retirement_grace_seconds": {
+            "source_collection_retirement_grace_seconds": {
               "default": 0,
               "minimum": 0,
               "type": "integer"
             },
-            "retirement_policy": {
+            "source_collection_retirement_policy": {
               "default": "retain",
               "enum": [
                 "retain",
@@ -1727,12 +1727,12 @@ The following JSON is the complete value owned at each machine-authority pointer
               ],
               "type": "string"
             },
-            "retirement_grace_seconds": {
+            "source_collection_retirement_grace_seconds": {
               "default": 0,
               "minimum": 0,
               "type": "integer"
             },
-            "retirement_policy": {
+            "source_collection_retirement_policy": {
               "default": "retain",
               "enum": [
                 "retain",

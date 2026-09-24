@@ -110,7 +110,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.remove_collection_tag",
       "source": {
-        "line": 2318,
+        "line": 2324,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.remove_collection_tag"
