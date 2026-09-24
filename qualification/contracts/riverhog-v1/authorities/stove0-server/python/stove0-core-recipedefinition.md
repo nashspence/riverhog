@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-25cbeb15ae"></a>`kind`: `"class"`
-- <a id="s-15abc1659d"></a>`signature`: `"\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], revision: Annotated[int, Ge(ge=1)], event_input_closure: Literal['single-finalized-collection'] = 'single-finalized-collection', artifact_associations: tuple[stove0_recipe_config.models.ArtifactAssociation, ...] = (), observers: tuple[stove0_recipe_config.models.ObserverUse, ...] = (), routes: Annotated[tuple[Annotated[stove0_recipe_config.models.RecipeRoute \| stove0_recipe_config.models.RecipeCoordinationRoute, FieldInfo(annotation=NoneType, required=True, discriminator='kind')], ...], MinLen(min_length=1)], unmatched_artifact_disposition: Literal['retain-in-source', 'reject-work'], allow_derived_inputs: bool = False, source_collection_retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', source_collection_retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0, join: stove0_recipe_config.models.RecipeJoin \| None = None) -> None\""`
+- <a id="s-15abc1659d"></a>`signature`: `"\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], revision: Annotated[NonnegativeDecimal, Ge(ge=1)], event_input_closure: Literal['single-finalized-collection'] = 'single-finalized-collection', artifact_associations: tuple[stove0_recipe_config.models.ArtifactAssociation, ...] = (), observers: tuple[stove0_recipe_config.models.ObserverUse, ...] = (), routes: Annotated[tuple[Annotated[stove0_recipe_config.models.RecipeRoute \| stove0_recipe_config.models.RecipeCoordinationRoute, FieldInfo(annotation=NoneType, required=True, discriminator='kind')], ...], MinLen(min_length=1)], unmatched_artifact_disposition: Literal['retain-in-source', 'reject-work'], allow_derived_inputs: bool = False, source_collection_retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', source_collection_retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0, join: stove0_recipe_config.models.RecipeJoin \| None = None) -> None\""`
 
 #### Validated model schema
 
@@ -42,7 +42,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-a8c64ce91a"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-d6604860df"></a>`join` | no | anyOf=[([RecipeJoin](#s-2e873f70e1)); (type="null")]; default=null |  |
 | <a id="s-4f80cada1c"></a>`observers` | no | type="array"; default=[]; items=([ObserverUse](#s-b06f9634b7)) |  |
-| <a id="s-7433435a47"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-7433435a47"></a>`revision` | yes | [NonnegativeDecimal](#s-323d7d176e); ge=1 |  |
 | <a id="s-1946289bd0"></a>`routes` | yes | type="array"; items=(discriminator={"mapping":{"coordination":"#/$defs/RecipeCoordinationRoute","operation":"#/$defs/RecipeRoute"},"propertyName":"kind"}; oneOf=[([RecipeRoute](#s-955be0c065)); ([RecipeCoordinationRoute](#s-3accea3610))]); minItems=1 |  |
 | <a id="s-d43d9709cb"></a>`source_collection_retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
 | <a id="s-e90587bdc6"></a>`source_collection_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
@@ -55,6 +55,7 @@ Exact externally visible contract owned by this contract element.
 - [ArtifactRule](#s-020f8a6c73)
 - [FactPredicate](#s-b67d93d394)
 - [JsonValue](#s-67c0d99cde)
+- [NonnegativeDecimal](#s-323d7d176e)
 - [ObserverUse](#s-b06f9634b7)
 - [OperationProjection](#s-5744742ffe)
 - [RecipeCoordinationRoute](#s-3accea3610)
@@ -124,6 +125,11 @@ Exact externally visible contract owned by this contract element.
 
 - Accepts: any JSON value.
 
+##### <a id="s-323d7d176e"></a>definition `NonnegativeDecimal`
+
+- <a id="s-371d7c4fd2"></a>`type`: `"string"`
+- <a id="s-318b70cf1d"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
 ##### <a id="s-b06f9634b7"></a>definition `ObserverUse`
 
 - <a id="s-659aad5d83"></a>`type`: `"object"`
@@ -189,7 +195,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-2e15e8a0ba"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-ab08aab6df"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-ab08aab6df"></a>`revision` | yes | [NonnegativeDecimal](#s-323d7d176e); ge=1 |  |
 | <a id="s-554bd77f5d"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-2e873f70e1"></a>definition `RecipeJoin`
@@ -283,7 +289,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f49052fff766eec4b438e7e0220e279de60f30167d56b67a56ab5cf6af1aa85c -->
+<!-- exact-contract-value: e1119f9d85e62f5334684662bbdebc2fab28f5d97823b35809201fb1e96b1684 -->
 
 ```json
 {
@@ -414,6 +420,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "object"
         },
         "JsonValue": {},
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        },
         "ObserverUse": {
           "additionalProperties": false,
           "properties": {
@@ -592,8 +602,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "revision": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",
@@ -822,8 +832,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "array"
         },
         "revision": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 1
         },
         "routes": {
           "items": {
@@ -875,7 +885,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], revision: Annotated[int, Ge(ge=1)], event_input_closure: Literal['single-finalized-collection'] = 'single-finalized-collection', artifact_associations: tuple[stove0_recipe_config.models.ArtifactAssociation, ...] = (), observers: tuple[stove0_recipe_config.models.ObserverUse, ...] = (), routes: Annotated[tuple[Annotated[stove0_recipe_config.models.RecipeRoute | stove0_recipe_config.models.RecipeCoordinationRoute, FieldInfo(annotation=NoneType, required=True, discriminator='kind')], ...], MinLen(min_length=1)], unmatched_artifact_disposition: Literal['retain-in-source', 'reject-work'], allow_derived_inputs: bool = False, source_collection_retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', source_collection_retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0, join: stove0_recipe_config.models.RecipeJoin | None = None) -> None\""
+    "signature": "\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], revision: Annotated[NonnegativeDecimal, Ge(ge=1)], event_input_closure: Literal['single-finalized-collection'] = 'single-finalized-collection', artifact_associations: tuple[stove0_recipe_config.models.ArtifactAssociation, ...] = (), observers: tuple[stove0_recipe_config.models.ObserverUse, ...] = (), routes: Annotated[tuple[Annotated[stove0_recipe_config.models.RecipeRoute | stove0_recipe_config.models.RecipeCoordinationRoute, FieldInfo(annotation=NoneType, required=True, discriminator='kind')], ...], MinLen(min_length=1)], unmatched_artifact_disposition: Literal['retain-in-source', 'reject-work'], allow_derived_inputs: bool = False, source_collection_retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', source_collection_retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0, join: stove0_recipe_config.models.RecipeJoin | None = None) -> None\""
   },
   "distribution": "stove0-server",
   "module": "stove0_core",

@@ -107,7 +107,7 @@ def _root() -> CollectionRootIdentityRef:
 def _work() -> WorkIdentity:
     return WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision=1, sha256=_sha("3")),
+            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision="1", sha256=_sha("3")),
             inputs=(_root(),),
             effective_intent={"suffix": ".copy"},
         )
@@ -689,7 +689,7 @@ def _nested_branch_decision(work: WorkIdentity) -> BranchSetDecision:
         branch_id="nested",
         decision_sha256=_sha("d"),
         selection=selection,
-        recipe=RecipeIdentityRef(id="fixture.child/v1", revision=1, sha256=_sha("5")),
+        recipe=RecipeIdentityRef(id="fixture.child/v1", revision="1", sha256=_sha("5")),
         effective_intent={"scope": "child"},
     )
     leaf = BranchPlan.build(
@@ -1293,7 +1293,7 @@ def test_sql_runnable_scan_ignores_terminal_history_and_uses_a_keyset(
     for index in range(250):
         identity = WorkIdentity.seal(
             WorkPayload(
-                recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision=1, sha256=_sha("3")),
+                recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision="1", sha256=_sha("3")),
                 inputs=(
                     CollectionRootIdentityRef(
                         collection_id=str(index + 1),
@@ -1402,7 +1402,7 @@ def test_sql_operational_retention_scans_bounded_pages_without_parsing_all_work(
     for ordinal in range(250):
         work = WorkIdentity.seal(
             WorkPayload(
-                recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision=1, sha256=_sha("3")),
+                recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision="1", sha256=_sha("3")),
                 inputs=(_root(),),
                 effective_intent={"ordinal": ordinal},
             )

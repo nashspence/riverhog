@@ -102,7 +102,9 @@ def test_selection_order_projects_directly_to_riverhog_artifact_order() -> None:
 
 
 def recipe(label: str = "parent") -> RecipeIdentityRef:
-    return RecipeIdentityRef(id=f"recipe.{label}/v1", revision=1, sha256=digest(f"recipe:{label}"))
+    return RecipeIdentityRef(
+        id=f"recipe.{label}/v1", revision="1", sha256=digest(f"recipe:{label}")
+    )
 
 
 def workflow_intent(

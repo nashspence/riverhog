@@ -37,6 +37,7 @@ Exact externally visible contract owned by this contract element.
 - [InputArtifactContract](#s-c1f484a7f4)
 - [JsonSchemaValidationProfile](#s-a6bf76e71f)
 - [JsonValue](#s-a5f92f9e8f)
+- [NonnegativeDecimal](#s-8507c73afa)
 - [ObserverUse](#s-15f0f78bba)
 - [OperationContract](#s-c65d8491da)
 - [OperationProjection](#s-5422541e29)
@@ -149,6 +150,11 @@ Exact externally visible contract owned by this contract element.
 ### <a id="s-a5f92f9e8f"></a>definition `JsonValue`
 
 - Accepts: any JSON value.
+
+### <a id="s-8507c73afa"></a>definition `NonnegativeDecimal`
+
+- <a id="s-c18c3db873"></a>`type`: `"string"`
+- <a id="s-1f41f31bc9"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ### <a id="s-15f0f78bba"></a>definition `ObserverUse`
 
@@ -263,7 +269,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-8c4eebf6e1"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
 | <a id="s-90d281d507"></a>`join` | no | anyOf=[([RecipeJoin](#s-788d8a9692)); (type="null")]; default=null |  |
 | <a id="s-a8b913aeb1"></a>`observers` | no | type="array"; default=[]; items=([ObserverUse](#s-15f0f78bba)); title="Observers" |  |
-| <a id="s-6210f1cfe6"></a>`revision` | yes | type="integer"; minimum=1; title="Revision" |  |
+| <a id="s-6210f1cfe6"></a>`revision` | yes | [NonnegativeDecimal](#s-8507c73afa); ge=1 |  |
 | <a id="s-8198a7011b"></a>`routes` | yes | type="array"; items=(discriminator={"mapping":{"coordination":"#/$defs/RecipeCoordinationRoute","operation":"#/$defs/RecipeRoute"},"propertyName":"kind"}; oneOf=[([RecipeRoute](#s-c9d6c9febb)); ([RecipeCoordinationRoute](#s-1ba6e7737f))]); minItems=1; title="Routes" |  |
 | <a id="s-d10c16c90b"></a>`source_collection_retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Source Collection Retirement Grace Seconds" |  |
 | <a id="s-eaea3e8e56"></a>`source_collection_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Source Collection Retirement Policy" | Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks. |
@@ -282,7 +288,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-d70d18e4ff"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
-| <a id="s-e84f83e344"></a>`revision` | yes | type="integer"; minimum=1; title="Revision" |  |
+| <a id="s-e84f83e344"></a>`revision` | yes | [NonnegativeDecimal](#s-8507c73afa); ge=1 |  |
 | <a id="s-7c204efddc"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### <a id="s-788d8a9692"></a>definition `RecipeJoin`
@@ -444,7 +450,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b840ab4ce734e65a87bad9160a9fd0a768313b68e8c9154f6cf35539c338574d -->
+<!-- exact-contract-value: 3255c46fc67b43f38ee83fb7cdf52923c75ba963a57927f2003a5c040d3c15b8 -->
 
 ```json
 {
@@ -687,6 +693,10 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "object"
     },
     "JsonValue": {},
+    "NonnegativeDecimal": {
+      "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+      "type": "string"
+    },
     "ObserverUse": {
       "additionalProperties": false,
       "properties": {
@@ -1044,9 +1054,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "array"
         },
         "revision": {
-          "minimum": 1,
-          "title": "Revision",
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 1
         },
         "routes": {
           "items": {
@@ -1114,9 +1123,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "revision": {
-          "minimum": 1,
-          "title": "Revision",
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 1
         },
         "sha256": {
           "pattern": "^[0-9a-f]{64}$",

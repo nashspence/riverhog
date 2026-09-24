@@ -137,7 +137,7 @@ class _Planner:
             WorkPayload(
                 recipe=RecipeIdentityRef(
                     id=recipe_id,
-                    revision=revision,
+                    revision=str(revision),
                     sha256=self.policy.recipe_sha256,
                 ),
                 inputs=roots,

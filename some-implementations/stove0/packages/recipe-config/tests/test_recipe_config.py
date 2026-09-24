@@ -36,7 +36,7 @@ def test_exact_subrecipe_cycle_detection_is_iterative_and_ancestry_aware() -> No
         revision=1,
         routes=(
             RecipeCoordinationRoute.model_construct(
-                recipe=RecipeIdentityRef(id="fixture.second/v1", revision=1, sha256="1" * 64)
+                recipe=RecipeIdentityRef(id="fixture.second/v1", revision="1", sha256="1" * 64)
             ),
         ),
     )
@@ -45,7 +45,7 @@ def test_exact_subrecipe_cycle_detection_is_iterative_and_ancestry_aware() -> No
         revision=1,
         routes=(
             RecipeCoordinationRoute.model_construct(
-                recipe=RecipeIdentityRef(id="fixture.first/v1", revision=1, sha256="2" * 64)
+                recipe=RecipeIdentityRef(id="fixture.first/v1", revision="1", sha256="2" * 64)
             ),
         ),
     )

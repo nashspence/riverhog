@@ -27,10 +27,10 @@ The following stages count the same discovered universe; their equality is a clo
 
 | Stage | Records |
 |---|---:|
-| Detected | 4215 |
-| Resolved | 4215 |
-| Candidates | 4215 |
-| Included | 4215 |
-| Contract elements | 4215 |
+| Detected | 4216 |
+| Resolved | 4216 |
+| Candidates | 4216 |
+| Included | 4216 |
+| Contract elements | 4216 |
 | Extent decisions | 2077 |
 | Source authorities | 478 |

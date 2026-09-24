@@ -206,7 +206,7 @@ def test_stove0_postgres_current_v1_fixture_validates_and_restarts(
 def _work() -> WorkIdentity:
     return WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeIdentityRef(id="camera.archive/v1", revision=1, sha256="a" * 64),
+            recipe=RecipeIdentityRef(id="camera.archive/v1", revision="1", sha256="a" * 64),
             inputs=(
                 CollectionRootIdentityRef(
                     collection_id="1",
@@ -737,7 +737,7 @@ def _nested_branch_decision() -> BranchSetDecision:
         branch_id="nested",
         decision_sha256="d" * 64,
         selection=selection,
-        recipe=RecipeIdentityRef(id="fixture.child/v1", revision=1, sha256="5" * 64),
+        recipe=RecipeIdentityRef(id="fixture.child/v1", revision="1", sha256="5" * 64),
         effective_intent={"nested": True},
     )
     leaf = BranchPlan.build(

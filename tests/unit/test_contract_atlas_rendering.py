@@ -877,7 +877,10 @@ def _primary_contract(authority: str, title: str) -> tuple[dict[str, Any], str]:
                 '`allow_derived_inputs` | no | type="boolean"; default=false',
                 '`source_collection_retirement_grace_seconds` | no | type="integer"; '
                 "minimum=0; default=0",
-                '`revision` | yes | type="integer"; minimum=1',
+                "`revision` | yes | [NonnegativeDecimal](",
+                "; ge=1",
+                "definition `NonnegativeDecimal`",
+                '`type`: `"string"`',
                 "`additionalProperties`: `false`",
                 '"propertyName":"kind"',
                 "definition `JsonValue`",
@@ -1025,7 +1028,8 @@ def test_nested_definition_links_resolve_to_primary_constraints() -> None:
     assert f"[RecipeDefinition](#{anchor})" in primary
     section = primary.split(f'id="{anchor}"', 1)[1].split("\n### ", 1)[0]
     assert '`allow_derived_inputs` | no | type="boolean"; default=false' in section
-    assert '`revision` | yes | type="integer"; minimum=1' in section
+    assert "`revision` | yes | [NonnegativeDecimal](" in section
+    assert "; ge=1" in section
 
 
 def test_provenance_sequence_uses_the_exact_string_domain_in_primary_and_fallback() -> None:

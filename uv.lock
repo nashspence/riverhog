@@ -2925,6 +2925,7 @@ source = { editable = "some-implementations/stove0/packages/recipe-config" }
 dependencies = [
     { name = "config-validation" },
     { name = "pydantic" },
+    { name = "riverhog-protocol" },
     { name = "stove0-protocol" },
     { name = "stove0-target-protocol" },
 ]
@@ -2933,6 +2934,7 @@ dependencies = [
 requires-dist = [
     { name = "config-validation", editable = "packages/config-validation" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "stove0-protocol", editable = "some-implementations/stove0/packages/protocol" },
     { name = "stove0-target-protocol", editable = "some-implementations/stove0/packages/target-protocol" },
 ]

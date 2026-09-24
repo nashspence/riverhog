@@ -77,6 +77,7 @@ Exact externally visible contract owned by this contract element.
 - [JoinWorkMemberBinding](#s-5c808e6b0d)
 - [JsonSchemaValidationProfile](#s-3a20727452)
 - [JsonValue](#s-e69ffb8f42)
+- [NonnegativeDecimal](#s-8018585049)
 - [ObserverImplementation](#s-4ea959a8e4)
 - [OperationIdentityRef](#s-fbe284576e)
 - [OutputArtifactRoleCount](#s-d272ee95e3)
@@ -590,6 +591,11 @@ Exact externally visible contract owned by this contract element.
 
 - Accepts: any JSON value.
 
+##### <a id="s-8018585049"></a>definition `NonnegativeDecimal`
+
+- <a id="s-57975a3c7e"></a>`type`: `"string"`
+- <a id="s-752cc18828"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
 ##### <a id="s-4ea959a8e4"></a>definition `ObserverImplementation`
 
 - <a id="s-ab481d2b86"></a>`type`: `"object"`
@@ -701,7 +707,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-30e09c2aa8"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-7ec29afd87"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-7ec29afd87"></a>`revision` | yes | [NonnegativeDecimal](#s-8018585049); ge=1 |  |
 | <a id="s-74de00e4d0"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-999ad9a563"></a>definition `TargetExecutionEvidence`
@@ -1115,7 +1121,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d6f64059ff14205447d886d7b9dafbeca3e5fe8d8243dce9292afe12e82e6d7a -->
+<!-- exact-contract-value: d85749a7efc1a50925bd825b4f5c487d97e873859d16ecb6952e03a84a715b36 -->
 
 ```json
 {
@@ -2244,6 +2250,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "object"
         },
         "JsonValue": {},
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        },
         "ObserverImplementation": {
           "additionalProperties": false,
           "properties": {
@@ -2430,8 +2440,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "revision": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",

@@ -84,6 +84,7 @@ Supporting HTTP data definitions; these are not callable operations.
 - [JoinWorkMemberBinding](schemas-joinworkmemberbinding.md)
 - [JsonSchemaValidationProfile](schemas-jsonschemavalidationprofile.md)
 - [JsonValue](schemas-jsonvalue.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 - [ObserverImplementation](schemas-observerimplementation.md)
 - [ObserverUse](schemas-observeruse.md)
 - [OperationIdentityRef](schemas-operationidentityref.md)

@@ -21,12 +21,14 @@ urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "
 dependencies = [
   "config-validation>=0.1,<0.2",
   "pydantic>=2.7,<3.0",
+  "riverhog-protocol>=0.1,<0.2",
   "stove0-protocol>=0.1,<0.2",
   "stove0-target-protocol>=0.1,<0.2",
 ]
 
 [tool.uv.sources]
 config-validation = { workspace = true }
+riverhog-protocol = { workspace = true }
 stove0-protocol = { workspace = true }
 stove0-target-protocol = { workspace = true }
 

@@ -128,7 +128,7 @@ def test_review_evaluation_expands_one_normal_work_per_variant() -> None:
         window_duration_ms=4_000,
     )
     definition = review_evaluation_definition(
-        recipe=RecipeIdentityRef(id="review.encode/v1", revision=1, sha256=_sha("a")),
+        recipe=RecipeIdentityRef(id="review.encode/v1", revision="1", sha256=_sha("a")),
         inputs=(
             CollectionRootIdentityRef(
                 collection_id=str(1),
@@ -169,7 +169,7 @@ def test_materialized_trial_requires_exactly_one_variant() -> None:
     )
     with pytest.raises(ValidationError, match="exactly one variant"):
         review_evaluation_definition(
-            recipe=RecipeIdentityRef(id="review.encode/v1", revision=1, sha256=_sha("a")),
+            recipe=RecipeIdentityRef(id="review.encode/v1", revision="1", sha256=_sha("a")),
             inputs=(
                 CollectionRootIdentityRef(
                     collection_id=str(1),

@@ -50,6 +50,7 @@ Secret-bearing target invocation; never store this document durably.
 - [JoinWorkMemberBinding](#s-b02b34545d)
 - [JsonSchemaValidationProfile](#s-61a9572469)
 - [JsonValue](#s-35500bba5f)
+- [NonnegativeDecimal](#s-7c2dafd839)
 - [ObserverImplementation](#s-53f5ddfdf6)
 - [OperationIdentityRef](#s-f7aecc543b)
 - [RecipeIdentityRef](#s-7bdf7a73a3)
@@ -351,6 +352,11 @@ Secret-bearing target invocation; never store this document durably.
 
 - Accepts: any JSON value.
 
+### <a id="s-7c2dafd839"></a>definition `NonnegativeDecimal`
+
+- <a id="s-e2e5e7b4e2"></a>`type`: `"string"`
+- <a id="s-5fc64ef232"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
 ### <a id="s-53f5ddfdf6"></a>definition `ObserverImplementation`
 
 - <a id="s-1acd37a21f"></a>`type`: `"object"`
@@ -396,7 +402,7 @@ Secret-bearing target invocation; never store this document durably.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-ab1c4d0bd9"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
-| <a id="s-e47dfe854f"></a>`revision` | yes | type="integer"; minimum=1; title="Revision" |  |
+| <a id="s-e47dfe854f"></a>`revision` | yes | [NonnegativeDecimal](#s-7c2dafd839); ge=1 |  |
 | <a id="s-cb0a25e0ff"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### <a id="s-4a6151aff8"></a>definition `TargetCallbackAccess`
@@ -631,7 +637,7 @@ Secret-bearing target invocation; never store this document durably.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9580572de7d80a769ed6e01fdea015a7eeed55598214e145baa7269c7b5174a6 -->
+<!-- exact-contract-value: 21b19a6c33b4c1a8a0c01d8dc6ba9e7192313589f6e83c0d02189679418d72d9 -->
 
 ```json
 {
@@ -1334,6 +1340,10 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "object"
     },
     "JsonValue": {},
+    "NonnegativeDecimal": {
+      "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+      "type": "string"
+    },
     "ObserverImplementation": {
       "additionalProperties": false,
       "properties": {
@@ -1407,9 +1417,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "revision": {
-          "minimum": 1,
-          "title": "Revision",
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 1
         },
         "sha256": {
           "pattern": "^[0-9a-f]{64}$",

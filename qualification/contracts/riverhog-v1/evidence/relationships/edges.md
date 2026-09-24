@@ -206,6 +206,7 @@ Each row is one declared relationship. Its endpoints link to their exact node re
 | <a id="re-73c345280b"></a>[stove0-protocol](nodes.md#rn-72232b7fce) | `depends-on` | [riverhog-canonical-json](nodes.md#rn-f55ab6c77b) | `required` |
 | <a id="re-04733f78fd"></a>[stove0-protocol](nodes.md#rn-72232b7fce) | `depends-on` | [riverhog-protocol](nodes.md#rn-20dbb0d5c0) | `required` |
 | <a id="re-4b559d597e"></a>[stove0-recipe-config](nodes.md#rn-1f5664e176) | `depends-on` | [config-validation](nodes.md#rn-b37402f43f) | `required` |
+| <a id="re-054ae755d8"></a>[stove0-recipe-config](nodes.md#rn-1f5664e176) | `depends-on` | [riverhog-protocol](nodes.md#rn-20dbb0d5c0) | `required` |
 | <a id="re-d09b7aa1b7"></a>[stove0-recipe-config](nodes.md#rn-1f5664e176) | `depends-on` | [stove0-protocol](nodes.md#rn-72232b7fce) | `required` |
 | <a id="re-e1805473b4"></a>[stove0-recipe-config](nodes.md#rn-1f5664e176) | `depends-on` | [stove0-target-protocol](nodes.md#rn-2bfbd86b00) | `required` |
 | <a id="re-26eaf5d3f3"></a>[stove0-server](nodes.md#rn-3540de4d4a) | `depends-on` | [http-api-contracts](nodes.md#rn-f59c7f4102) | `required` |

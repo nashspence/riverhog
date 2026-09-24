@@ -39,7 +39,7 @@ from stove0_protocol import (
 def _work() -> WorkIdentity:
     return WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision=1, sha256="1" * 64),
+            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision="1", sha256="1" * 64),
             inputs=(
                 CollectionRootIdentityRef(
                     collection_id=str(1),
@@ -58,7 +58,7 @@ def _evaluation() -> EvaluationDefinition:
     return EvaluationDefinition.seal(
         EvaluationDefinitionPayload(
             purpose="trial",
-            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision=1, sha256="1" * 64),
+            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision="1", sha256="1" * 64),
             inputs=_work().inputs,
             matrix=matrix,
         )

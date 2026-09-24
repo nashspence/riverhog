@@ -49,6 +49,7 @@ Exact externally visible contract owned by this contract element.
 - [InputArtifactContract](#s-f70eda4717)
 - [JsonSchemaValidationProfile](#s-95f9f7caae)
 - [JsonValue](#s-b65ed278e1)
+- [NonnegativeDecimal](#s-647c8d0d2b)
 - [ObserverUse](#s-790b310f20)
 - [OperationContract](#s-28d95a0ec8)
 - [OperationProjection](#s-66f9c8fe90)
@@ -152,6 +153,11 @@ Exact externally visible contract owned by this contract element.
 ##### <a id="s-b65ed278e1"></a>definition `JsonValue`
 
 - Accepts: any JSON value.
+
+##### <a id="s-647c8d0d2b"></a>definition `NonnegativeDecimal`
+
+- <a id="s-e996e4be3e"></a>`type`: `"string"`
+- <a id="s-f10719baed"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ##### <a id="s-790b310f20"></a>definition `ObserverUse`
 
@@ -258,7 +264,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-da56f25369"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-0a47660473"></a>`join` | no | anyOf=[([RecipeJoin](#s-f90bdb9aff)); (type="null")]; default=null |  |
 | <a id="s-4e0166b18f"></a>`observers` | no | type="array"; default=[]; items=([ObserverUse](#s-790b310f20)) |  |
-| <a id="s-2fb56a366e"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-2fb56a366e"></a>`revision` | yes | [NonnegativeDecimal](#s-647c8d0d2b); ge=1 |  |
 | <a id="s-071ddd7df2"></a>`routes` | yes | type="array"; items=(discriminator={"mapping":{"coordination":"#/$defs/RecipeCoordinationRoute","operation":"#/$defs/RecipeRoute"},"propertyName":"kind"}; oneOf=[([RecipeRoute](#s-bd46a2e35f)); ([RecipeCoordinationRoute](#s-7fffe998a8))]); minItems=1 |  |
 | <a id="s-fea6d2f612"></a>`source_collection_retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
 | <a id="s-5aa6d30914"></a>`source_collection_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
@@ -275,7 +281,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-6c3df0f16a"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-8944e23fe4"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-8944e23fe4"></a>`revision` | yes | [NonnegativeDecimal](#s-647c8d0d2b); ge=1 |  |
 | <a id="s-5ec0715d76"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-f90bdb9aff"></a>definition `RecipeJoin`
@@ -386,7 +392,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3fd57142b8563bf6204c74a85a85909fd2dd41d1f2911e6a50495e7cfb1dfff0 -->
+<!-- exact-contract-value: 971b9e988cb10cc3c84f6af42fb916e1efa97d8fddacb331b7c191b95e34e5b8 -->
 
 ```json
 {
@@ -602,6 +608,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "object"
         },
         "JsonValue": {},
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        },
         "ObserverUse": {
           "additionalProperties": false,
           "properties": {
@@ -917,8 +927,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "array"
             },
             "revision": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "routes": {
               "items": {
@@ -978,8 +988,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "revision": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",

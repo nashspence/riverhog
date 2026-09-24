@@ -16,7 +16,7 @@ The ordinary atlas map owns the authority/interface inventory and its scope desc
 | `durable-state` | 137 |
 | `extent` | 12 |
 | `http-operations` | 147 |
-| `http-schemas` | 400 |
+| `http-schemas` | 401 |
 | `http-security-schemes` | 2 |
 | `http-service-declaration` | 3 |
 | `installation-roots` | 4 |

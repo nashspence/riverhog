@@ -154,7 +154,7 @@ def _authorities(
 ) -> tuple[WorkIdentity, WorkflowPlan, TransformPlan, ControllerEvidence]:
     work = WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision=1, sha256=_sha("1")),
+            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision="1", sha256=_sha("1")),
             inputs=(
                 CollectionRootIdentityRef(
                     collection_id=str(1),

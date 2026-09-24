@@ -127,11 +127,15 @@ def test_embedded_identity_references_preserve_riverhog_identity_values() -> Non
         archive_root_sha256=_sha("a"),
         content_identity=_sha("b"),
     )
-    recipe = RecipeIdentity(id="camera.archive/v1", revision=3, sha256=_sha("c"))
+    recipe = RecipeIdentity(id="camera.archive/v1", revision=(1 << 63) + 3, sha256=_sha("c"))
     operation = OperationIdentity(id="video.archive/v1", sha256=_sha("d"))
 
     assert CollectionRootIdentityRef.from_identity(root).to_identity() == root
-    assert RecipeIdentityRef.from_identity(recipe).to_identity() == recipe
+    recipe_ref = RecipeIdentityRef.from_identity(recipe)
+    assert recipe_ref.model_dump(mode="json")["revision"] == str(recipe.revision)
+    assert recipe_ref.to_identity() == recipe
+    with pytest.raises(ValidationError):
+        RecipeIdentityRef(id=recipe.id, revision=recipe.revision, sha256=recipe.sha256)
     assert OperationIdentityRef.from_identity(operation).to_identity() == operation
 
 
@@ -146,7 +150,7 @@ def _root(collection_id: int = 1) -> CollectionRootIdentityRef:
 def _work() -> WorkIdentity:
     return WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeIdentityRef(id="camera.archive/v1", revision=3, sha256=_sha("a")),
+            recipe=RecipeIdentityRef(id="camera.archive/v1", revision="3", sha256=_sha("a")),
             inputs=(_root(1), _root(2)),
             effective_intent={"preserve_original": True},
         )

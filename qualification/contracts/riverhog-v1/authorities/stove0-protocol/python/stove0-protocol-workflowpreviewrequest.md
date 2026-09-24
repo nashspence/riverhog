@@ -49,6 +49,7 @@ Exact externally visible contract owned by this contract element.
 - [JoinWorkBinding](#s-fe6b314496)
 - [JoinWorkMemberBinding](#s-5a9ef46cbf)
 - [JsonValue](#s-722fca32e8)
+- [NonnegativeDecimal](#s-554e1a783c)
 - [RecipeIdentityRef](#s-8a39867277)
 - [WorkIdentity](#s-ade104b3c3)
 
@@ -141,6 +142,11 @@ Exact externally visible contract owned by this contract element.
 
 - Accepts: any JSON value.
 
+##### <a id="s-554e1a783c"></a>definition `NonnegativeDecimal`
+
+- <a id="s-ea2375514e"></a>`type`: `"string"`
+- <a id="s-667e5008a1"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
 ##### <a id="s-8a39867277"></a>definition `RecipeIdentityRef`
 
 - <a id="s-1c49af9bcd"></a>`type`: `"object"`
@@ -152,7 +158,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-b86e499ffa"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-bc0273731a"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-bc0273731a"></a>`revision` | yes | [NonnegativeDecimal](#s-554e1a783c); ge=1 |  |
 | <a id="s-f481f8f991"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-ade104b3c3"></a>definition `WorkIdentity`
@@ -207,7 +213,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9971c0bd476fc10fbad2937e33f50d1cc2e5fc6044776d21cb0d4aa8a7c795e5 -->
+<!-- exact-contract-value: 9ab8daa09e9525aeefd4867adbf83924394bdb33f8cb2f604fe072906c1333dc -->
 
 ```json
 {
@@ -379,6 +385,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "object"
         },
         "JsonValue": {},
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        },
         "RecipeIdentityRef": {
           "additionalProperties": false,
           "properties": {
@@ -387,8 +397,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "revision": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "sha256": {
               "pattern": "^[0-9a-f]{64}$",

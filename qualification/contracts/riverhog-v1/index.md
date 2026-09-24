@@ -4,7 +4,7 @@
 
 This generated snapshot accounts for the externally exposed surfaces discovered from this repository revision. Discovery means inclusion; no separate acceptance decision is required.
 
-Included contract elements: **4215** · Extent decisions: **2077**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
+Included contract elements: **4216** · Extent decisions: **2077**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
 
 ## Audit references
 
@@ -281,7 +281,7 @@ Included contract elements: **4215** · Extent decisions: **2077**. Complete acc
 
 - **[stove0](authorities/stove0/index.md)** [📦](authorities/stove0/evidence-gaps.md) — The Stove0 application API and its maintained cross-interface operation parity.
   - **[HTTP Operations](authorities/stove0/http-operations/index.md)** [📦](authorities/stove0/http-operations/evidence-gaps.md) (33)
-  - **[HTTP Schemas](authorities/stove0/http-schemas/index.md)** [📦](authorities/stove0/http-schemas/evidence-gaps.md) (137)
+  - **[HTTP Schemas](authorities/stove0/http-schemas/index.md)** [📦](authorities/stove0/http-schemas/evidence-gaps.md) (138)
   - [HTTP Service Declaration](authorities/stove0/http-service-declaration/index.md) (1)
 
 - [stove0-api-client](authorities/stove0-api-client/index.md) — Python client for the Stove0 v1 workflow API.

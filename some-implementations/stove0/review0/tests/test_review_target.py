@@ -597,7 +597,7 @@ def test_review_effect_executes_sampling_delivery_and_canonical_receipt_end_to_e
     )
     work = WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeIdentityRef(id="fixture.review-effect/v1", revision=1, sha256=_sha("4")),
+            recipe=RecipeIdentityRef(id="fixture.review-effect/v1", revision="1", sha256=_sha("4")),
             inputs=(source.collection,),
         )
     )

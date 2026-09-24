@@ -6,10 +6,10 @@ These independent identities distinguish contract semantics, discovery coverage,
 
 | Identity domain | SHA-256 |
 |---|---|
-| <a id="i-668a3da3b1"></a>`boundary_canonical_sha256` | `45602305c354e10489f7aaaea8f420623b0bc7e6d230fb332b791b9194dd60e8` |
-| <a id="i-aef9e4a6d4"></a>`external_contract_sha256` | `dc1c61373bdbbee0ffc63e7513c299b6de876d0f23f5f1fd338ec003a05a2266` |
-| <a id="i-95b76cebb4"></a>`semantic_contract_sha256` | `10c3a305e966b9b14371d6b3185a0dee88434fbebb1666dbb8da9c60e18e338d` |
-| <a id="i-d374a59a6c"></a>`coverage_sha256` | `8119eea4c616501c48635e6fbe55c0cc9eabb625e186d0f5a8f606921188ccd7` |
-| <a id="i-b201ae62f3"></a>`trace_sha256` | `00bb8288eae54d1a6bb2890c1ef79f9b7f712139036f921442b7e02c5d745d52` |
+| <a id="i-668a3da3b1"></a>`boundary_canonical_sha256` | `c4294c1370d6a9367013f6a05f81fcacdcb9f3058ac8707f5c6436241a8dbd73` |
+| <a id="i-aef9e4a6d4"></a>`external_contract_sha256` | `59610253ffcf62331ae5fd5b4432ba14e78e82bd78c6902cc97c9300c3aba9d5` |
+| <a id="i-95b76cebb4"></a>`semantic_contract_sha256` | `cd600d049d9febe8b4b9eaa3d7d863732d11dcdecd0d868740ba43cbd0ef31bf` |
+| <a id="i-d374a59a6c"></a>`coverage_sha256` | `c2823a461eaeb8a948ac27bea61b7856163a405f4aeb20a7e956b824b84dbf5f` |
+| <a id="i-b201ae62f3"></a>`trace_sha256` | `4ad39a901d8b4710b57e55fc0d321d808c62e343ad28dcfe03fee590bee69c97` |
 
 <a id="i-af23736723"></a>The byte-exact `atlas_representation_sha256` is recorded at `/identities/atlas_representation_sha256` in the [machine artifact (raw JSON)](../../riverhog-v1.json?raw=1). It cannot be embedded inside the document bytes that it identifies.

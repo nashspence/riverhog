@@ -30,7 +30,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-f2fcf3466b"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
 | <a id="s-2211dbf2b8"></a>`join` | no | anyOf=[([RecipeJoin](schemas-recipejoin.md)); (type="null")] |  |
 | <a id="s-095b4c1e00"></a>`observers` | no | type="array"; default=[]; items=([ObserverUse](schemas-observeruse.md)); title="Observers" |  |
-| <a id="s-8ae96a9025"></a>`revision` | yes | type="integer"; minimum=1; title="Revision" |  |
+| <a id="s-8ae96a9025"></a>`revision` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-823b3b9b9f"></a>`routes` | yes | type="array"; items=(discriminator={"mapping":{"coordination":"#/components/schemas/RecipeCoordinationRoute","operation":"#/components/schemas/RecipeRoute"},"propertyName":"kind"}; oneOf=[([RecipeRoute](schemas-reciperoute.md)); ([RecipeCoordinationRoute](schemas-recipecoordinationroute.md))]); minItems=1; title="Routes" |  |
 | <a id="s-b5d61f057b"></a>`source_collection_retirement_grace_seconds` | no | type="integer"; minimum=0; default=0; title="Source Collection Retirement Grace Seconds" |  |
 | <a id="s-a6a9990e17"></a>`source_collection_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain"; title="Source Collection Retirement Policy" | Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks. |
@@ -53,6 +53,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 ### Referenced contract elements
 
 - [ArtifactAssociation](schemas-artifactassociation.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 - [ObserverUse](schemas-observeruse.md)
 - [RecipeCoordinationRoute](schemas-recipecoordinationroute.md)
 - [RecipeJoin](schemas-recipejoin.md)
@@ -88,7 +89,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 07b376793158866fbb13c8cc929866ab0a928ab240eeb469e30cee1382b84a0d -->
+<!-- exact-contract-value: fd4423c8ab53df1f4145b646d4cbbebc0499bdebb898b6078d5dd3360a9a8645 -->
 
 ```json
 {
@@ -137,9 +138,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "array"
     },
     "revision": {
-      "minimum": 1,
-      "title": "Revision",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "routes": {
       "items": {

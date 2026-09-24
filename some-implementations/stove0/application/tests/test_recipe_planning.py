@@ -426,7 +426,7 @@ def test_planning_rejects_stale_target_operation_contract_before_preflight() -> 
     )
     recipe = RecipeDefinition(
         id="fixture.stale-target/v1",
-        revision=1,
+        revision="1",
         unmatched_artifact_disposition="retain-in-source",
         routes=(
             RecipeRoute(
@@ -461,7 +461,7 @@ def test_planning_rejects_stale_target_operation_contract_before_preflight() -> 
 def test_planner_seals_exact_nested_subrecipe_tree_without_target_smearing() -> None:
     child = RecipeDefinition(
         id="fixture.child/v1",
-        revision=1,
+        revision="1",
         unmatched_artifact_disposition="retain-in-source",
         routes=(
             RecipeRoute(
@@ -474,7 +474,7 @@ def test_planner_seals_exact_nested_subrecipe_tree_without_target_smearing() -> 
     )
     parent = RecipeDefinition(
         id="fixture.parent/v1",
-        revision=1,
+        revision="1",
         unmatched_artifact_disposition="retain-in-source",
         routes=(
             RecipeCoordinationRoute(
@@ -529,7 +529,7 @@ def test_planner_seals_exact_nested_subrecipe_tree_without_target_smearing() -> 
 def test_recipe_explicitly_rejects_unmatched_primary_and_sidecar_artifacts() -> None:
     recipe = RecipeDefinition(
         id="fixture.reject-unmatched/v1",
-        revision=1,
+        revision="1",
         unmatched_artifact_disposition="reject-work",
         routes=(
             RecipeRoute(
@@ -595,7 +595,7 @@ def test_recipe_projection_count_is_defined_by_the_recipe() -> None:
 def test_observer_preference_batches_unbounded_collection_work_without_omission() -> None:
     recipe = RecipeDefinition(
         id="fixture.large-observation/v1",
-        revision=1,
+        revision="1",
         unmatched_artifact_disposition="retain-in-source",
         observers=(
             ObserverUse(
@@ -715,7 +715,7 @@ def test_media_observation_evidence_binds_exact_primary_sidecar_selection() -> N
     )
     recipe = RecipeDefinition(
         id="fixture.observed-media/v1",
-        revision=1,
+        revision="1",
         unmatched_artifact_disposition="retain-in-source",
         observers=(
             ObserverUse(
@@ -854,7 +854,7 @@ def test_review_recipe_projects_semantic_intent_and_options_before_preflight() -
     )
     recipe = RecipeDefinition(
         id="review-evaluation/v1",
-        revision=1,
+        revision="1",
         unmatched_artifact_disposition="retain-in-source",
         routes=(
             RecipeRoute(
@@ -1056,7 +1056,7 @@ def test_production_planner_resolves_overlapping_branches_into_one_exact_join() 
 
     recipe = RecipeDefinition(
         id="fixture.fork-join/v1",
-        revision=1,
+        revision="1",
         unmatched_artifact_disposition="retain-in-source",
         routes=tuple(
             RecipeRoute(
@@ -1217,7 +1217,7 @@ def _retirement_planner(recipe: RecipeDefinition) -> RecipePlanner:
 def test_retirement_plan_accepts_overlapping_selections_covering_complete_inventory() -> None:
     recipe = RecipeDefinition(
         id="fixture.retirement/v1",
-        revision=1,
+        revision="1",
         unmatched_artifact_disposition="retain-in-source",
         source_collection_retirement_policy="retire-after-verified-output",
         routes=(
@@ -1257,7 +1257,7 @@ def test_retirement_plan_accepts_overlapping_selections_covering_complete_invent
 def test_retirement_plan_rejects_incomplete_inventory_before_target_preflight() -> None:
     recipe = RecipeDefinition(
         id="fixture.retirement/v1",
-        revision=1,
+        revision="1",
         unmatched_artifact_disposition="retain-in-source",
         source_collection_retirement_policy="retire-after-verified-output",
         routes=(
@@ -1286,7 +1286,7 @@ def test_retirement_plan_rejects_incomplete_inventory_before_target_preflight() 
 def test_catalog_rejects_retirement_recipe_using_audio_only_operation() -> None:
     recipe = RecipeDefinition(
         id="fixture.unsafe-audio-retirement/v1",
-        revision=1,
+        revision="1",
         unmatched_artifact_disposition="retain-in-source",
         source_collection_retirement_policy="retire-after-verified-output",
         routes=(
