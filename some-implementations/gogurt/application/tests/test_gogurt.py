@@ -9,6 +9,7 @@ from types import SimpleNamespace
 
 import gogurt.cli as cli
 import pytest
+from a_gogurt_path_volume_lib import MAX_PATH_MARKER_BYTES, PATH_MARKER_NAME
 from config_validation import ConfigError
 from gogurt.cli import app
 from gogurt_core.core import (
@@ -22,7 +23,6 @@ from gogurt_core.core import (
 from gogurt_core.mounts import GogurtRouteMarker, MountedMarkerObservation
 from gogurt_core.providers import GogurtProviderReference
 from gogurt_listener_runtime.listener import ListenerError
-from gogurt_path_volume_support import MAX_PATH_MARKER_BYTES, PATH_MARKER_NAME
 from typer.testing import CliRunner
 
 from tests.gogurt_provider import path_mounted_volume_provider

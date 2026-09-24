@@ -78,7 +78,7 @@ provider_qualification_runtime = "provider-qualification"
 
 [governance.boundary_freeze]
 status = "frozen"
-protected_boundary_sha256 = "cd1bb31bde9b8ca96af879f34eda7960f965f785381c7a7c448fa6af30bba0dd"
+protected_boundary_sha256 = "28d8597f51c7a8752aa3665e42eb29e5ff65c3cbd076b25e597e6b614bc86788"
 protected_components = [
   "config-validation",
   "gogurt",
@@ -88,7 +88,7 @@ protected_components = [
   "gogurt-listener-runtime",
   "a-gogurt-macos-listener",
   "a-gogurt-macos-volume",
-  "gogurt-path-volume-support",
+  "a-gogurt-path-volume-lib",
   "a-gogurt-windows-listener",
   "a-gogurt-windows-volume",
   "http-api-contracts",
@@ -117,17 +117,17 @@ protected_components = [
   "a-riverhog-b2-store",
   "a-riverhog-filesystem-store",
   "riverhog-storage-adapter-protocol",
-  "riverhog-storage-adapter-s3-support",
+  "a-riverhog-s3-store-lib",
   "riverhog-storage-adapter-support",
   "state-schema",
   "stove0-api-client",
   "a-stove0-cli",
   "a-stove0-exiftool-observer",
   "a-stove0-ffprobe-sampling-observer",
-  "stove0-media-archive-target-contracts",
-  "stove0-media-archive-target-support",
-  "stove0-media-metadata-observer-contracts",
-  "stove0-media-sampling-observer-contracts",
+  "a-stove0-media-archive-contract-lib",
+  "a-stove0-media-archive-lib",
+  "a-stove0-media-metadata-contract-lib",
+  "a-stove0-media-sampling-contract-lib",
   "a-review0-nvenc-av1-opus-sampler",
   "a-stove0-nvenc-av1-opus-target",
   "stove0-observer-client",

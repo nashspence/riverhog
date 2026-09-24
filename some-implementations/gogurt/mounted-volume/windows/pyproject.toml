@@ -16,7 +16,7 @@ classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Langu
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
 dependencies = [
   "gogurt-core>=0.1,<0.2",
-  "gogurt-path-volume-support>=0.1,<0.2",
+  "a-gogurt-path-volume-lib>=0.1,<0.2",
 ]
 
 [project.entry-points."gogurt.mounted-volume-providers"]
@@ -24,7 +24,7 @@ a-gogurt-windows-volume = "a_gogurt_windows_volume:MOUNTED_VOLUME_PROVIDER_BINDI
 
 [tool.uv.sources]
 gogurt-core = { workspace = true }
-gogurt-path-volume-support = { workspace = true }
+a-gogurt-path-volume-lib = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/a_gogurt_windows_volume"]

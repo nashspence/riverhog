@@ -3,13 +3,13 @@ requires = ["hatchling>=1.31.0"]
 build-backend = "hatchling.build"
 
 [project]
-name = "gogurt-path-volume-support"
+name = "a-gogurt-path-volume-lib"
 version = "0.1.0"
-description = "Path-mounted volume support shared by Gogurt providers."
+description = "Path-mounted volume library for Gogurt providers."
 requires-python = ">=3.12"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
-readme = { text = "Path-mounted volume support shared by Gogurt providers.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+readme = { text = "Path-mounted volume library for Gogurt providers.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
 authors = [{ name = "Nash Spence" }]
 maintainers = [{ name = "Nash Spence" }]
 classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.12", "Typing :: Typed"]
@@ -24,4 +24,4 @@ config-validation = { workspace = true }
 gogurt-core = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/gogurt_path_volume_support"]
+packages = ["src/a_gogurt_path_volume_lib"]

@@ -46,8 +46,8 @@ FROM build AS bundled-components-build
 COPY some-implementations/stove0/observers/contracts/media-metadata some-implementations/stove0/observers/contracts/media-metadata
 COPY some-implementations/stove0/observers/contracts/media-sampling some-implementations/stove0/observers/contracts/media-sampling
 RUN uv sync --frozen --package stove0-server \
-    --package stove0-media-metadata-observer-contracts \
-    --package stove0-media-sampling-observer-contracts \
+    --package a-stove0-media-metadata-contract-lib \
+    --package a-stove0-media-sampling-contract-lib \
     --no-dev --no-editable
 
 FROM python:3.12-slim@sha256:090ba77e2958f6af52a5341f788b50b032dd4ca28377d2893dcf1ecbdfdfe203 AS runtime-base

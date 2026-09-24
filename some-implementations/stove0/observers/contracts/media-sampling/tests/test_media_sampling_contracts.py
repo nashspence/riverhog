@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import pytest
-from stove0_media_sampling_observer_contracts import (
+from a_stove0_media_sampling_contract_lib import (
     MEDIA_SAMPLING_FACTS_CONFORMANCE_VECTORS,
     MEDIA_SAMPLING_FACTS_SEMANTICS,
     MEDIA_SAMPLING_OBSERVER_CONTRACT,

@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from typing import Any, Literal
 
+from a_stove0_media_sampling_contract_lib import MediaSamplingFacts
 from pydantic import BaseModel, ConfigDict, Field, JsonValue
 from review0_target_contracts import (
     ReviewSamplePlan,
     ReviewSamplePlanPayload,
     ReviewSampleWindow,
 )
-from stove0_media_sampling_observer_contracts import MediaSamplingFacts
 from stove0_protocol import (
     CollectionRootRef,
     EvaluationDefinition,

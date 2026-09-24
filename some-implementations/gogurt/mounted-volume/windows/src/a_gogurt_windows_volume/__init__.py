@@ -8,8 +8,8 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import Any, cast
 
+from a_gogurt_path_volume_lib import PathMountedVolumeAccess
 from gogurt_core.mounts import MountedVolumeProviderBinding
-from gogurt_path_volume_support import PathMountedVolumeAccess
 
 
 def _windows_logical_drive_mask() -> int:

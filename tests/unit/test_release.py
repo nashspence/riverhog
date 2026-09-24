@@ -10,6 +10,7 @@ import sys
 import tarfile
 import tomllib
 from collections import Counter
+from dataclasses import replace
 from pathlib import Path
 from types import ModuleType
 
@@ -117,10 +118,10 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
         "stove0-operator-contracts",
         "stove0-protocol",
         "stove0-recipe-config",
-        "stove0-media-archive-target-contracts",
-        "stove0-media-archive-target-support",
-        "stove0-media-metadata-observer-contracts",
-        "stove0-media-sampling-observer-contracts",
+        "a-stove0-media-archive-contract-lib",
+        "a-stove0-media-archive-lib",
+        "a-stove0-media-metadata-contract-lib",
+        "a-stove0-media-sampling-contract-lib",
         "review0-planner",
         "review0-target-contracts",
         "review0-sampler-client",
@@ -188,6 +189,23 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
         "qualification"
     ]
     assert qualification["storage_providers"] == module.STORAGE_PROVIDER_QUALIFICATION
+
+
+def test_shared_supplied_library_cannot_claim_unprefixed_family_name() -> None:
+    module = load_script()
+    projects = module.validate_release_contract(REPO_ROOT)
+    renamed = [
+        replace(project, name="gogurt-path-volume-support")
+        if project.name == "a-gogurt-path-volume-lib"
+        else project
+        for project in projects
+    ]
+
+    assert "review0-planner" in module.FAMILY_MACHINERY_DISTRIBUTIONS
+    with pytest.raises(
+        module.ReleaseError, match="unregistered=\\['gogurt-path-volume-support'\\]"
+    ):
+        module._validate_supplied_distribution_names(renamed)
 
 
 def test_python_distribution_identities_use_pep_503_canonical_names(

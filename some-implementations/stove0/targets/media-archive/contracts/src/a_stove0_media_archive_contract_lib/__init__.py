@@ -20,13 +20,13 @@ from stove0_target_protocol import (
     SemanticIntentConformanceVectors,
 )
 
-from stove0_media_archive_target_contracts.projection_policy import (
+from a_stove0_media_archive_contract_lib.projection_policy import (
     MediaFieldPreference,
     MediaGps,
     MediaProjectionFieldName,
     MediaProjectionPolicy,
 )
-from stove0_media_archive_target_contracts.roles import (
+from a_stove0_media_archive_contract_lib.roles import (
     AUDIO_ARCHIVE_ROLE,
     AV1_OPUS_ARCHIVE_ROLE,
     METADATA_XMP_ROLE,
@@ -65,12 +65,12 @@ def _schema(identifier: str, model: type[IntentModel]) -> JsonSchemaValidationPr
 
 
 AUDIO_ARCHIVE_INTENT_CONFORMANCE_VECTORS = SemanticIntentConformanceVectors.model_validate_json(
-    files("stove0_media_archive_target_contracts")
+    files("a_stove0_media_archive_contract_lib")
     .joinpath("vectors/audio-archive-intent-v1.json")
     .read_text(encoding="utf-8")
 )
 AV1_OPUS_ARCHIVE_INTENT_CONFORMANCE_VECTORS = SemanticIntentConformanceVectors.model_validate_json(
-    files("stove0_media_archive_target_contracts")
+    files("a_stove0_media_archive_contract_lib")
     .joinpath("vectors/av1-opus-archive-intent-v1.json")
     .read_text(encoding="utf-8")
 )

@@ -5,11 +5,11 @@ build-backend = "hatchling.build"
 [project]
 name = "stove0-api-client"
 version = "0.1.0"
-description = "Official Python client for the Stove0 v1 workflow API."
+description = "Python client for the Stove0 v1 workflow API."
 requires-python = ">=3.12"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
-readme = { text = "Official Python client for the Stove0 v1 workflow API.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+readme = { text = "Python client for the Stove0 v1 workflow API.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
 authors = [{ name = "Nash Spence" }]
 maintainers = [{ name = "Nash Spence" }]
 classifiers = [

@@ -7,14 +7,14 @@ from collections.abc import Sequence
 from typing import Any, Literal
 
 import uvicorn
-from riverhog_storage_adapter_asgi_support import create_storage_adapter_app
-from riverhog_storage_adapter_protocol import ReadReadiness, ReadReady
-from riverhog_storage_adapter_s3_support import (
+from a_riverhog_s3_store_lib import (
     S3ClientConfig,
     S3StorageAdapter,
     S3StorageAdapterConfig,
     create_s3_client,
 )
+from riverhog_storage_adapter_asgi_support import create_storage_adapter_app
+from riverhog_storage_adapter_protocol import ReadReadiness, ReadReady
 
 _PREFIX = "RIVERHOG_GARAGE_STORAGE_ADAPTER_"
 

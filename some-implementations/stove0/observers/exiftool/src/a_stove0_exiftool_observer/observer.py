@@ -11,8 +11,7 @@ import subprocess
 from pathlib import Path
 from typing import Any, cast
 
-from pydantic import JsonValue
-from stove0_media_metadata_observer_contracts import (
+from a_stove0_media_metadata_contract_lib import (
     MEDIA_METADATA_OBSERVER_CONTRACT,
     MediaArtifactFacts,
     MediaFactEvidence,
@@ -21,6 +20,7 @@ from stove0_media_metadata_observer_contracts import (
     MediaMetadataFacts,
     validate_media_metadata_facts,
 )
+from pydantic import JsonValue
 from stove0_observer_protocol import (
     ContentObservationRequest,
     ContentObservationResult,

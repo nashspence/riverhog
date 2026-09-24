@@ -3,13 +3,13 @@ requires = ["hatchling>=1.31.0"]
 build-backend = "hatchling.build"
 
 [project]
-name = "stove0-media-archive-target-contracts"
+name = "a-stove0-media-archive-contract-lib"
 version = "0.1.0"
-description = "Shared media archive target contracts for Stove0."
+description = "Media archive target contracts for Stove0."
 requires-python = ">=3.12"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
-readme = { text = "Shared media archive target contracts for Stove0.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+readme = { text = "Media archive target contracts for Stove0.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
 authors = [{ name = "Nash Spence" }]
 maintainers = [{ name = "Nash Spence" }]
 classifiers = [
@@ -29,4 +29,4 @@ stove0-protocol = { workspace = true }
 stove0-target-protocol = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/stove0_media_archive_target_contracts"]
+packages = ["src/a_stove0_media_archive_contract_lib"]

@@ -1,6 +1,6 @@
 """Observer-owned media sampling contracts for external Stove0 observers."""
 
-from stove0_media_sampling_observer_contracts.contracts import (
+from a_stove0_media_sampling_contract_lib.contracts import (
     MEDIA_SAMPLING_FACTS_CONFORMANCE_VECTORS,
     MEDIA_SAMPLING_FACTS_SCHEMA,
     MEDIA_SAMPLING_FACTS_SCHEMA_ID,

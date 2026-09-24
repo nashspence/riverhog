@@ -9,21 +9,21 @@ from html import escape
 from pathlib import PurePosixPath
 from typing import Final, Literal, Self, cast
 
-from pydantic import BaseModel, ConfigDict, Field, JsonValue, field_validator, model_validator
-from riverhog_protocol.paths import normalize_relpath
-from stove0_media_archive_target_contracts import (
+from a_stove0_media_archive_contract_lib import (
     SOURCE_ROLE,
     XMP_SOURCE_ROLE,
     MediaProjectionFieldName,
     MediaProjectionPolicy,
 )
-from stove0_media_metadata_observer_contracts import (
+from a_stove0_media_metadata_contract_lib import (
     MEDIA_METADATA_OBSERVATION_ID,
     MediaFactEvidence,
     MediaFactName,
     MediaMetadataFact,
     MediaMetadataFacts,
 )
+from pydantic import BaseModel, ConfigDict, Field, JsonValue, field_validator, model_validator
+from riverhog_protocol.paths import normalize_relpath
 from stove0_observer_protocol import (
     ContentObservationEvidence,
     canonical_json_bytes,

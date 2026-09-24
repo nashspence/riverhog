@@ -12,13 +12,13 @@ from collections.abc import Sequence
 from pathlib import Path
 
 import uvicorn
+from a_stove0_media_sampling_contract_lib import (
+    MEDIA_SAMPLING_SEMANTIC_VALIDATOR,
+)
 from fastapi import Depends, FastAPI, Request, Response
 from fastapi.concurrency import run_in_threadpool
 from fastapi.security import HTTPBearer
 from http_api_contracts import ErrorResponse, HealthResponse, error_payload, operation_openapi
-from stove0_media_sampling_observer_contracts import (
-    MEDIA_SAMPLING_SEMANTIC_VALIDATOR,
-)
 from stove0_observer_protocol import SemanticValidatorRegistry
 from stove0_observer_support import OBSERVER_HTTP_OPERATIONS, ObserverHttpBinding
 

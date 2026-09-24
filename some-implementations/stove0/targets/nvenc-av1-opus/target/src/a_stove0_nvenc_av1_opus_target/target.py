@@ -9,9 +9,7 @@ import threading
 from collections.abc import Sequence
 from pathlib import Path, PurePosixPath
 
-from riverhog_client import ProducerFile
-from riverhog_protocol import canonical_json_sha256
-from stove0_media_archive_target_contracts import (
+from a_stove0_media_archive_contract_lib import (
     AV1_OPUS_ARCHIVE_OPERATION,
     AV1_OPUS_ARCHIVE_ROLE,
     METADATA_XMP_ROLE,
@@ -19,13 +17,15 @@ from stove0_media_archive_target_contracts import (
     Av1OpusArchiveIntent,
     validate_av1_opus_archive_intent,
 )
-from stove0_media_archive_target_support import (
+from a_stove0_media_archive_lib import (
     MediaArchiveProjection,
     MediaProjectionItem,
     ffmpeg_container_metadata_args,
     render_projection_xmp,
     resolve_media_archive_preflight_projection,
 )
+from riverhog_client import ProducerFile
+from riverhog_protocol import canonical_json_sha256
 from stove0_protocol import JsonSchemaValidationProfile
 from stove0_target_support import (
     DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,

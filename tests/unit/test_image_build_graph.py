@@ -484,8 +484,8 @@ def test_stove0_supplied_validators_are_compose_composition_only() -> None:
     assert "some-implementations/stove0/observers/" not in generic_build
     assert "some-implementations/stove0/targets/" not in generic_build
     assert "--package stove0-server --no-dev --no-editable" in generic_build
-    assert "stove0-media-metadata-observer-contracts" not in generic_build
-    assert "stove0-media-sampling-observer-contracts" not in generic_build
+    assert "a-stove0-media-metadata-contract-lib" not in generic_build
+    assert "a-stove0-media-sampling-contract-lib" not in generic_build
 
     assert (
         "COPY some-implementations/stove0/observers/contracts/media-metadata "
@@ -495,8 +495,8 @@ def test_stove0_supplied_validators_are_compose_composition_only() -> None:
         "COPY some-implementations/stove0/observers/contracts/media-sampling "
         "some-implementations/stove0/observers/contracts/media-sampling"
     ) in composition_build
-    assert "--package stove0-media-metadata-observer-contracts" in composition_build
-    assert "--package stove0-media-sampling-observer-contracts" in composition_build
+    assert "--package a-stove0-media-metadata-contract-lib" in composition_build
+    assert "--package a-stove0-media-sampling-contract-lib" in composition_build
 
     assert "FROM runtime-base AS bundled-components" in composition_runtime
     assert 'io.github.nashspence.riverhog.composition="bundled-components"' in composition_runtime

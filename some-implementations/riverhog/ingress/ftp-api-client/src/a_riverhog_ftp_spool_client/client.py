@@ -1,4 +1,4 @@
-"""Official operator client for the Riverhog FTP spool API."""
+"""Operator client for the Riverhog FTP spool API."""
 
 from __future__ import annotations
 

@@ -1,6 +1,6 @@
 """Observer-owned portable media metadata vocabulary."""
 
-from stove0_media_metadata_observer_contracts.contracts import (
+from a_stove0_media_metadata_contract_lib.contracts import (
     MEDIA_METADATA_FACTS_CONFORMANCE_VECTORS,
     MEDIA_METADATA_FACTS_SCHEMA,
     MEDIA_METADATA_FACTS_SCHEMA_ID,

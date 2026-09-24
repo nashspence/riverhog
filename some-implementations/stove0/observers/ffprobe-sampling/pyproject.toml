@@ -19,7 +19,7 @@ dependencies = [
   "http-api-contracts>=0.1,<0.2",
   "stove0-observer-protocol>=0.1,<0.2",
   "stove0-observer-support>=0.1,<0.2",
-  "stove0-media-sampling-observer-contracts>=0.1,<0.2",
+  "a-stove0-media-sampling-contract-lib>=0.1,<0.2",
   "uvicorn[standard]>=0.30,<1.0",
 ]
 
@@ -30,7 +30,7 @@ a-stove0-ffprobe-sampling-observer = "a_stove0_ffprobe_sampling_observer.app:mai
 http-api-contracts = { workspace = true }
 stove0-observer-protocol = { workspace = true }
 stove0-observer-support = { workspace = true }
-stove0-media-sampling-observer-contracts = { workspace = true }
+a-stove0-media-sampling-contract-lib = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/a_stove0_ffprobe_sampling_observer"]

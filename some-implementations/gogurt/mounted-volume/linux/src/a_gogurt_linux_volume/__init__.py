@@ -5,8 +5,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
+from a_gogurt_path_volume_lib import PathMountedVolumeAccess
 from gogurt_core.mounts import MountedVolumeProviderBinding
-from gogurt_path_volume_support import PathMountedVolumeAccess
 
 _MOUNTINFO_ESCAPE_RE = re.compile(r"\\([0-7]{3})")
 

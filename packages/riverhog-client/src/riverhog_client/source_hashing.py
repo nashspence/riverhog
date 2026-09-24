@@ -1,4 +1,4 @@
-"""Bounded-memory source hashing support for official Riverhog producers."""
+"""Bounded-memory source hashing support for Riverhog producers."""
 
 from __future__ import annotations
 

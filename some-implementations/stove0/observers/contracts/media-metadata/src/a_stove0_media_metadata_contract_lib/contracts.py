@@ -129,7 +129,7 @@ MEDIA_METADATA_FACTS_SCHEMA = JsonSchemaValidationProfile.from_schema(
 )
 
 MEDIA_METADATA_FACTS_CONFORMANCE_VECTORS = SemanticFactsConformanceVectors.model_validate_json(
-    files("stove0_media_metadata_observer_contracts")
+    files("a_stove0_media_metadata_contract_lib")
     .joinpath("vectors/facts-semantics-v1.json")
     .read_text(encoding="utf-8")
 )
