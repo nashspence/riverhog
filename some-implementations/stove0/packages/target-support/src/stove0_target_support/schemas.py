@@ -10,9 +10,16 @@ from typing import Any
 
 from http_api_contracts import http_operation_inventory, structural_model_catalog
 from stove0_target_protocol import (
+    DEPARTURE_EFFECT_HTTP_OPERATIONS,
     EFFECT_TARGET_PROTOCOL,
     TARGET_HTTP_OPERATIONS,
     TRANSFORM_TARGET_PROTOCOL,
+    DepartureEffectIntent,
+    DepartureEffectIntentPayload,
+    DepartureEffectReceipt,
+    DepartureEffectReceiptPayload,
+    DepartureEffectTargetDescriptor,
+    DepartureEffectTargetDescriptorPayload,
     OperationContract,
     TargetDescriptor,
     TargetJobRequest,
@@ -95,6 +102,8 @@ def target_schema_bundle() -> dict[str, Any]:
         "authorities": {
             "structural_models": "schemas",
             "http_operations": "http_binding.operations",
+            "departure_structural_models": "departure_effect.schemas",
+            "departure_http_operations": "departure_effect.http_binding.operations",
             "semantic_acceptance": "semantic_acceptance",
         },
         "http_binding": {
@@ -110,6 +119,22 @@ def target_schema_bundle() -> dict[str, Any]:
             TARGET_HTTP_OPERATIONS,
             additional_models=(*_ADDITIONAL_MODELS, TargetConformanceResult),
         ),
+        "departure_effect": {
+            "http_binding": {
+                "operations": http_operation_inventory(DEPARTURE_EFFECT_HTTP_OPERATIONS),
+            },
+            "schemas": structural_model_catalog(
+                DEPARTURE_EFFECT_HTTP_OPERATIONS,
+                additional_models=(
+                    DepartureEffectTargetDescriptorPayload,
+                    DepartureEffectTargetDescriptor,
+                    DepartureEffectIntentPayload,
+                    DepartureEffectIntent,
+                    DepartureEffectReceiptPayload,
+                    DepartureEffectReceipt,
+                ),
+            ),
+        },
     }
     return {**payload, "bundle_sha256": canonical_json_sha256(payload)}
 

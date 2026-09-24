@@ -14,6 +14,7 @@ from riverhog_protocol import (
     CatalogSyncDescriptor,
     CatalogSyncUpsert,
 )
+from riverhog_protocol.errors import CatalogSyncViewChanged
 from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
 from stove0_core import DepartureEffectService, SqlAlchemyStateStore
@@ -145,6 +146,13 @@ def _state() -> SqlAlchemyStateStore:
     return SqlAlchemyStateStore("sqlite+pysqlite:///:memory:", engine=engine)
 
 
+def _generation(state: SqlAlchemyStateStore, policy_id: str) -> str:
+    with state.sessions() as session:
+        row = session.get(_DeparturePolicyRow, policy_id)
+        assert row is not None
+        return row.generation
+
+
 def test_departure_effect_is_sealed_retried_and_replayed_by_identity() -> None:
     state = _state()
     first = _descriptor()
@@ -233,16 +241,28 @@ def test_duplicate_departure_is_exact_and_conflicting_replay_fails_closed() -> N
         through_revision="2",
     )
     assert service._commit_change_page(  # noqa: SLF001 - replay authority regression
-        policy, cursor="c0", page=page, evaluated=None
+        policy,
+        cursor="c0",
+        page=page,
+        evaluated=None,
+        expected_generation=_generation(state, policy.id),
     )
     assert not service._commit_change_page(  # noqa: SLF001 - replay authority regression
-        policy, cursor="c0", page=page, evaluated=None
+        policy,
+        cursor="c0",
+        page=page,
+        evaluated=None,
+        expected_generation=_generation(state, policy.id),
     )
     conflict = CatalogSyncUpsert(**_descriptor(revision="2").model_dump())
     conflicting_page = page.model_copy(update={"changes": [conflict]})
     with pytest.raises(RuntimeError, match="replay differs"):
         service._commit_change_page(  # noqa: SLF001 - replay authority regression
-            policy, cursor="c0", page=conflicting_page, evaluated=True
+            policy,
+            cursor="c0",
+            page=conflicting_page,
+            evaluated=True,
+            expected_generation=_generation(state, policy.id),
         )
     changed_cause = CatalogSyncDeparture(
         cause="collection_deleted", collection_id="7", revision="2"
@@ -253,6 +273,7 @@ def test_duplicate_departure_is_exact_and_conflicting_replay_fails_closed() -> N
             cursor="c0",
             page=page.model_copy(update={"changes": [changed_cause]}),
             evaluated=None,
+            expected_generation=_generation(state, policy.id),
         )
     assert len(cast(tuple[Any, ...], service.list_effects()["effects"])) == 1
 
@@ -277,6 +298,96 @@ def test_view_change_requires_explicit_rebaseline_without_fabricating_departure(
         row = session.get(_DeparturePolicyRow, "withdraw-index")
         assert row is not None
         assert row.authorization_view_identity == "8" * 64
+
+
+@pytest.mark.parametrize("transition", ["reset", "rebaseline"])
+def test_delayed_departure_baseline_page_cannot_cross_a_fence(
+    monkeypatch: pytest.MonkeyPatch, transition: str
+) -> None:
+    state = _state()
+    api = _CatalogApi(_descriptor())
+    service = _service(state=state, api=api, target=_Target())
+    policy = service.catalog.policies[0]
+    assert service.advance(limit=1).failures == ()
+    generation = _generation(state, policy.id)
+    page = api.list_catalog_sync_collections("baseline", limit=100)
+
+    def delayed(_cursor: str, *, limit: int) -> CatalogSyncCollectionPage:
+        assert limit == 100
+        if transition == "reset":
+            service._require_rebaseline(  # noqa: SLF001 - delayed response race
+                policy.id, generation=generation, phase="baseline", cursor="baseline"
+            )
+        else:
+            service.rebaseline(policy.id)
+        return page
+
+    monkeypatch.setattr(api, "list_catalog_sync_collections", delayed)
+    with pytest.raises(RuntimeError, match="rebaseline is required"):
+        service._advance_policy(policy)  # noqa: SLF001 - delayed response race
+    assert service.policies().policies[0].phase == (
+        "reset_required" if transition == "reset" else "baseline"
+    )
+    assert service.list_effects()["effects"] == ()
+    if transition == "rebaseline":
+        assert _generation(state, policy.id) != generation
+
+
+@pytest.mark.parametrize("transition", ["reset", "rebaseline"])
+def test_delayed_departure_change_cannot_emit_effect_after_a_fence(
+    monkeypatch: pytest.MonkeyPatch, transition: str
+) -> None:
+    state = _state()
+    api = _CatalogApi(_descriptor())
+    service = _service(state=state, api=api, target=_Target())
+    policy = service.catalog.policies[0]
+    assert service.advance(limit=4).failures == ()
+    generation = _generation(state, policy.id)
+    api.pages["c0"] = (
+        CatalogSyncDeparture(cause="visibility_lost", collection_id="7", revision="2"),
+        "c1",
+    )
+    page = api.list_catalog_sync_changes("c0", limit=1)
+
+    def delayed(_cursor: str, *, limit: int) -> CatalogSyncChangePage:
+        assert limit == 1
+        if transition == "reset":
+            service._require_rebaseline(  # noqa: SLF001 - delayed response race
+                policy.id, generation=generation, phase="following", cursor="c0"
+            )
+        else:
+            service.rebaseline(policy.id)
+        return page
+
+    monkeypatch.setattr(api, "list_catalog_sync_changes", delayed)
+    with pytest.raises(RuntimeError, match="rebaseline is required"):
+        service._advance_policy(policy)  # noqa: SLF001 - delayed response race
+    assert service.policies().policies[0].phase == (
+        "reset_required" if transition == "reset" else "baseline"
+    )
+    assert service.list_effects()["effects"] == ()
+
+
+def test_delayed_departure_error_cannot_reset_a_new_generation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    state = _state()
+    api = _CatalogApi(_descriptor())
+    service = _service(state=state, api=api, target=_Target())
+    policy = service.catalog.policies[0]
+    assert service.advance(limit=1).failures == ()
+    generation = _generation(state, policy.id)
+
+    def stale_error(_cursor: str, *, limit: int) -> CatalogSyncCollectionPage:
+        assert limit == 100
+        service.rebaseline(policy.id)
+        raise CatalogSyncViewChanged("old view changed")
+
+    monkeypatch.setattr(api, "list_catalog_sync_collections", stale_error)
+    with pytest.raises(CatalogSyncViewChanged):
+        service._advance_policy(policy)  # noqa: SLF001 - delayed error race
+    assert service.policies().policies[0].phase == "baseline"
+    assert _generation(state, policy.id) != generation
 
 
 def test_departure_intent_and_receipt_reject_tampering() -> None:

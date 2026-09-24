@@ -524,8 +524,7 @@ class FtpSpool:
         claim_root = self._claims_root(source) / identity
         durable_receipt = self._durable_receipt(source, identity)
         if durable_receipt is not None:
-            self._finish_claim_cleanup(source, identity)
-            return durable_receipt
+            return self._complete_receipted_claim(source, identity, durable_receipt)
         if self._claim_record(source, identity) is not None:
             self._materialize_registered_claim(source, identity)
             self._reconcile_claim(source, claim_root)
@@ -1356,9 +1355,19 @@ class FtpSpool:
     def _record_publication(
         self, source: SourceConfig, claim_id: str, receipt: ProducedCollection
     ) -> None:
+        state = self._receipt_state(source, claim_id)
+        if state is None:
+            raise FtpSpoolError("FTP publication has no durable receipt")
+        if (
+            state.collection_id != receipt.collection_id
+            or state.archive_root_sha256 != receipt.archive_root_sha256
+            or state.content_identity != receipt.content_identity
+            or state.riverhog_receipt != receipt.receipt
+        ):
+            raise ClaimCollision("FTP publication differs from its durable receipt")
         self._record_claim_event(
             source,
-            self._registered_claim_manifest(source, claim_id),
+            {"claim_id": claim_id, "source_event_id": state.source_event_id},
             event_type=CLAIM_PUBLISHED,
             details={
                 "collection_id": str(receipt.collection_id),
@@ -1367,12 +1376,17 @@ class FtpSpool:
             },
         )
 
+    def _complete_receipted_claim(
+        self, source: SourceConfig, claim_id: str, receipt: ProducedCollection
+    ) -> ProducedCollection:
+        self._record_publication(source, claim_id, receipt)
+        self._finish_claim_cleanup(source, claim_id)
+        return receipt
+
     def _publish_claim_once(self, source: SourceConfig, claim_root: Path) -> ProducedCollection:
         durable_receipt = self._durable_receipt(source, claim_root.name)
         if durable_receipt is not None:
-            self._record_publication(source, claim_root.name, durable_receipt)
-            self._finish_claim_cleanup(source, claim_root.name)
-            return durable_receipt
+            return self._complete_receipted_claim(source, claim_root.name, durable_receipt)
         manifest = self._reconcile_claim(source, claim_root)
         files = tuple(
             ProducerFile(
@@ -1420,9 +1434,7 @@ class FtpSpool:
         }
         _write_json(claim_root / _RECEIPT, receipt_payload)
         _write_json(self._receipt_path(source, claim_root.name), receipt_payload)
-        self._record_publication(source, claim_root.name, receipt)
-        self._finish_claim_cleanup(source, claim_root.name)
-        return receipt
+        return self._complete_receipted_claim(source, claim_root.name, receipt)
 
     def _receipt_path(self, source: SourceConfig, claim_id: str) -> Path:
         return source.root / _CONTROL_DIR / _RECEIPTS_DIR / f"{claim_id}.json"
@@ -1432,6 +1444,17 @@ class FtpSpool:
         source: SourceConfig,
         claim_id: str,
     ) -> ProducedCollection | None:
+        payload = self._receipt_state(source, claim_id)
+        if payload is None:
+            return None
+        return ProducedCollection(
+            collection_id=payload.collection_id,
+            archive_root_sha256=payload.archive_root_sha256,
+            content_identity=payload.content_identity,
+            receipt=payload.riverhog_receipt,
+        )
+
+    def _receipt_state(self, source: SourceConfig, claim_id: str) -> FtpReceiptState | None:
         path = self._receipt_path(source, claim_id)
         if not path.is_file():
             return None
@@ -1441,12 +1464,7 @@ class FtpSpool:
             raise FtpSpoolError("invalid durable FTP spool receipt") from exc
         if payload.claim_id != claim_id:
             raise FtpSpoolError("invalid durable FTP spool receipt")
-        return ProducedCollection(
-            collection_id=payload.collection_id,
-            archive_root_sha256=payload.archive_root_sha256,
-            content_identity=payload.content_identity,
-            receipt=payload.riverhog_receipt,
-        )
+        return payload
 
 
 def _claim_identity(

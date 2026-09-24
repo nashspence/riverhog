@@ -356,6 +356,67 @@ def test_durable_receipt_replays_publication_event_after_process_stop(
     assert restarted.event_page(source.id, after=before.next_cursor, limit=100) == after
 
 
+@pytest.mark.parametrize("cleanup_before_replay", [False, True])
+def test_completed_file_receipt_replay_records_publication_before_cleanup(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    cleanup_before_replay: bool,
+) -> None:
+    config = _config(tmp_path)
+    source = config.sources[0]
+    content = b"receipt-led terminal event"
+    upload = source.root / "replay.bin"
+    upload.parent.mkdir(parents=True)
+    upload.write_bytes(content)
+    record = CompletionHandoff(source.root, source.id).complete(upload)
+    custody = source.root / record.custody
+    _Producer.calls = []
+    _Producer.fail_once = False
+    monkeypatch.setattr(landing, "CollectionProducer", _Producer)
+    adapter = FtpSpool(object(), config)  # type: ignore[arg-type]
+
+    with monkeypatch.context() as crash:
+
+        def stop_before_event(
+            _source: SourceConfig, _claim_id: str, _receipt: ProducedCollection
+        ) -> None:
+            raise _SimulatedProcessStop
+
+        crash.setattr(adapter, "_record_publication", stop_before_event)
+        with pytest.raises(_SimulatedProcessStop):
+            adapter.accept_completed_file(
+                source,
+                custody,
+                relative_path=record.path,
+                source_event_id=record.event_id,
+                expected_bytes=record.bytes,
+                expected_sha256=hashlib.sha256(content).hexdigest(),
+            )
+
+    before = adapter.event_page(source.id, after="0", limit=100)
+    assert [event.type for event in before.events] == [CLAIM_REGISTERED, CUSTODY_READY]
+    receipt_files = list((source.root / ".a-riverhog-ftp-spool" / "receipts").glob("*.json"))
+    assert len(receipt_files) == 1
+    if cleanup_before_replay:
+        # Model a prior receipt-led cleanup that retired the SQLite claim first.
+        adapter._finish_claim_cleanup(source, receipt_files[0].stem)  # noqa: SLF001
+
+    restarted = FtpSpool(object(), config)  # type: ignore[arg-type]
+    arguments = dict(
+        relative_path=record.path,
+        source_event_id=record.event_id,
+        expected_bytes=record.bytes,
+        expected_sha256=hashlib.sha256(content).hexdigest(),
+    )
+    first = restarted.accept_completed_file(source, custody, **arguments)
+    assert first.collection_id == 41
+    after = restarted.event_page(source.id, after=before.next_cursor, limit=100)
+    assert [event.type for event in after.events] == [CLAIM_PUBLISHED]
+    assert restarted.accept_completed_file(source, custody, **arguments) == first
+    assert restarted.event_page(source.id, after=before.next_cursor, limit=100) == after
+    assert len(_Producer.calls) == 1
+
+
 def test_completion_event_replay_guard_survives_until_exact_log_tip(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,

@@ -341,6 +341,7 @@ class ClassificationAdmissionService:
                 raise RuntimeError("admission policy state is unavailable")
             phase = row.phase
             cursor = row.cursor
+            generation = row.generation
         if phase == "reset_required":
             return False
         if phase == "new":
@@ -365,6 +366,7 @@ class ClassificationAdmissionService:
                     cursor=cursor,
                     page=catalog_page,
                     matches=matches,
+                    expected_generation=generation,
                 )
             if phase == "following":
                 change_page = self.riverhog.list_catalog_sync_changes(cursor, limit=1)
@@ -379,13 +381,16 @@ class ClassificationAdmissionService:
                     cursor=cursor,
                     page=change_page,
                     evaluated=evaluated,
+                    expected_generation=generation,
                 )
         except RiverhogError as exc:
             if exc.code in _RESET_ERRORS:
-                self._require_rebaseline(policy.id)
+                self._require_rebaseline(
+                    policy.id, generation=generation, phase=phase, cursor=cursor
+                )
             raise
         except _AdmissionAuthorityChanged:
-            self._require_rebaseline(policy.id)
+            self._require_rebaseline(policy.id, generation=generation, phase=phase, cursor=cursor)
             raise
         raise RuntimeError("admission policy phase is invalid")
 
@@ -399,6 +404,7 @@ class ClassificationAdmissionService:
         cursor: str,
         page: CatalogSyncCollectionPage,
         matches: Sequence[tuple[CatalogSyncDescriptor, bool]],
+        expected_generation: str,
     ) -> bool:
         with self.state.sessions() as session, session.begin():
             row = session.get(_AdmissionPolicyRow, policy.id, with_for_update=True)
@@ -407,6 +413,7 @@ class ClassificationAdmissionService:
             if (
                 row is not None
                 and row.policy_sha256 == policy.policy_sha256
+                and row.generation == expected_generation
                 and row.source_identity == page.source_identity
                 and row.authorization_view_identity == page.authorization_view_identity
                 and row.cursor == next_cursor
@@ -418,7 +425,14 @@ class ClassificationAdmissionService:
                             "admission baseline replay differs from committed authority"
                         )
                 return False
-            self._require_page_authority(row, policy, cursor, page)
+            self._require_page_authority(
+                row,
+                policy,
+                cursor,
+                page,
+                expected_generation=expected_generation,
+                expected_phase="baseline",
+            )
             assert row is not None
             for descriptor, matched in matches:
                 recorded = self._record_match(session, row, descriptor, matched)
@@ -436,12 +450,14 @@ class ClassificationAdmissionService:
         cursor: str,
         page: CatalogSyncChangePage,
         evaluated: tuple[CatalogSyncUpsert, bool] | None,
+        expected_generation: str,
     ) -> bool:
         with self.state.sessions() as session, session.begin():
             row = session.get(_AdmissionPolicyRow, policy.id, with_for_update=True)
             if (
                 row is not None
                 and row.policy_sha256 == policy.policy_sha256
+                and row.generation == expected_generation
                 and row.source_identity == page.source_identity
                 and row.authorization_view_identity == page.authorization_view_identity
                 and row.cursor == page.next_cursor
@@ -457,7 +473,14 @@ class ClassificationAdmissionService:
                             "admission change replay differs from committed authority"
                         )
                 return False
-            self._require_page_authority(row, policy, cursor, page)
+            self._require_page_authority(
+                row,
+                policy,
+                cursor,
+                page,
+                expected_generation=expected_generation,
+                expected_phase="following",
+            )
             assert row is not None
             if len(page.changes) > 1:
                 raise RuntimeError("admission change step exceeded its one-change transaction")
@@ -736,10 +759,15 @@ class ClassificationAdmissionService:
         policy: AdmissionPolicy,
         cursor: str,
         page: CatalogSyncCollectionPage | CatalogSyncChangePage,
+        *,
+        expected_generation: str,
+        expected_phase: Literal["baseline", "following"],
     ) -> None:
         if (
             row is None
             or row.policy_sha256 != policy.policy_sha256
+            or row.generation != expected_generation
+            or row.phase != expected_phase
             or row.cursor != cursor
             or row.source_identity != page.source_identity
             or row.authorization_view_identity != page.authorization_view_identity
@@ -748,10 +776,17 @@ class ClassificationAdmissionService:
                 "admission catalog authority changed; rebaseline is required"
             )
 
-    def _require_rebaseline(self, policy_id: str) -> None:
+    def _require_rebaseline(
+        self, policy_id: str, *, generation: str, phase: str, cursor: str
+    ) -> None:
         with self.state.sessions() as session, session.begin():
             row = session.get(_AdmissionPolicyRow, policy_id, with_for_update=True)
-            if row is not None:
+            if (
+                row is not None
+                and row.generation == generation
+                and row.phase == phase
+                and row.cursor == cursor
+            ):
                 row.phase = "reset_required"
                 row.updated_at = utc_timestamp_now()
 

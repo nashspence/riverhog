@@ -61,6 +61,7 @@ from stove0_protocol import (
 )
 from stove0_target_client import TargetClient, TargetProtocolError
 from stove0_target_protocol import (
+    DEPARTURE_EFFECT_HTTP_OPERATIONS,
     OutputArtifactSetIdentity,
     SemanticIntentConformanceVector,
     SemanticIntentConformanceVectors,
@@ -1477,9 +1478,19 @@ def test_target_schema_bundle_is_deterministic_and_self_validating() -> None:
     digest = first.pop("bundle_sha256")
     assert canonical_json_sha256(first) == digest
     assert first["http_binding"]["operations"] == http_operation_inventory(TARGET_HTTP_OPERATIONS)
+    departure = first["departure_effect"]
+    assert departure["http_binding"]["operations"] == http_operation_inventory(
+        DEPARTURE_EFFECT_HTTP_OPERATIONS
+    )
+    assert {operation["path"] for operation in departure["http_binding"]["operations"]} == {
+        "/v1/departure-target",
+        "/v1/departure-effects/{departure_id}",
+    }
     assert first["authorities"] == {
         "structural_models": "schemas",
         "http_operations": "http_binding.operations",
+        "departure_structural_models": "departure_effect.schemas",
+        "departure_http_operations": "departure_effect.http_binding.operations",
         "semantic_acceptance": "semantic_acceptance",
     }
     assert first["semantic_acceptance"]["identity"] == ["id", "profile_sha256"]
@@ -1495,10 +1506,28 @@ def test_target_schema_bundle_is_deterministic_and_self_validating() -> None:
     }
     assert referenced <= set(first["schemas"])
     assert "ErrorOut" in referenced
+    departure_referenced = {
+        value
+        for operation in departure["http_binding"]["operations"]
+        for value in (
+            operation["request"]["schema"],
+            operation["response"]["schema"],
+            operation["error_schema"],
+        )
+        if value is not None
+    }
+    assert departure_referenced <= set(departure["schemas"])
+    assert {
+        "DepartureEffectTargetDescriptorPayload",
+        "DepartureEffectIntentPayload",
+        "DepartureEffectReceiptPayload",
+    } <= set(departure["schemas"])
     assert first["schemas"]["TargetConformanceResult"]["properties"]["format"]["const"] == (
         "stove0-target-conformance-result/v1"
     )
     for schema in first["schemas"].values():
+        Draft202012Validator.check_schema(schema)
+    for schema in departure["schemas"].values():
         Draft202012Validator.check_schema(schema)
 
 
