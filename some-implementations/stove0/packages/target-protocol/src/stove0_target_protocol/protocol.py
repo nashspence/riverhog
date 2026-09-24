@@ -266,12 +266,9 @@ class InputArtifact(TargetProtocolModel):
     @field_validator("path")
     @classmethod
     def canonical_path(cls, value: str) -> str:
-        from riverhog_protocol.paths import normalize_relpath
+        from riverhog_protocol.paths import validate_canonical_relpath
 
-        normalized = normalize_relpath(value)
-        if normalized != value:
-            raise ValueError("artifact path must be canonical")
-        return value
+        return validate_canonical_relpath(value)
 
 
 class TargetInputRoleCount(TargetProtocolModel):
@@ -357,12 +354,9 @@ class OutputArtifact(TargetProtocolModel):
     @field_validator("path")
     @classmethod
     def canonical_path(cls, value: str) -> str:
-        from riverhog_protocol.paths import normalize_relpath
+        from riverhog_protocol.paths import validate_canonical_relpath
 
-        normalized = normalize_relpath(value)
-        if normalized != value:
-            raise ValueError("artifact path must be canonical")
-        return value
+        return validate_canonical_relpath(value)
 
 
 class OutputSourceEdge(TargetProtocolModel):

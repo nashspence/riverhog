@@ -22,7 +22,7 @@ from riverhog_archive_contracts import (
 )
 from riverhog_canonical_json import format_scalar
 from riverhog_protocol.pack_ingress import RESERVED_ARCHIVE_PREFIX
-from riverhog_protocol.paths import normalize_relpath
+from riverhog_protocol.paths import validate_canonical_relpath
 
 from riverhog_core.domain.archive import (
     ArchiveFile,
@@ -78,7 +78,7 @@ def validate_collection_archive_plan(
             coverage[member.path].append((0, member.bytes, pack_plan.volume_id))
 
     for raw_plan in raw_volumes:
-        source_path = normalize_relpath(raw_plan.source_path)
+        source_path = validate_canonical_relpath(raw_plan.source_path)
         expected = expected_by_path.get(source_path)
         if expected is None:
             raise ValueError(f"raw volume references an unknown collection path: {source_path}")
@@ -121,7 +121,7 @@ def build_collection_archive_authority(
     verified_by_path = _verified_raw_files(verified_raw_files)
     raw_by_path: dict[str, list[SealedRawVolume]] = {}
     for current in raw_volumes:
-        raw_by_path.setdefault(normalize_relpath(current.source_path), []).append(current)
+        raw_by_path.setdefault(validate_canonical_relpath(current.source_path), []).append(current)
     if set(raw_by_path) != set(verified_by_path):
         raise ValueError("every raw file must be verified exactly once before root publication")
     for path, verified in verified_by_path.items():
@@ -136,7 +136,7 @@ def build_collection_archive_authority(
             raise ValueError(f"raw file verification does not match sealed volumes: {path}")
 
     for raw_receipt in raw_volumes:
-        source_path = normalize_relpath(raw_receipt.source_path)
+        source_path = validate_canonical_relpath(raw_receipt.source_path)
         expected = expected_by_path.get(source_path)
         if expected is None:
             raise ValueError(f"raw volume references an unknown collection path: {source_path}")
@@ -324,7 +324,7 @@ def _provenance_object_row(item: SealedProvenanceObject) -> dict[str, object]:
     return {
         "id": item.object_id,
         "kind": item.kind,
-        "path": normalize_relpath(item.relative_path),
+        "path": validate_canonical_relpath(item.relative_path),
         "plaintext_bytes": format_scalar("nonnegative", item.plaintext_bytes),
         "sha256": item.plaintext_sha256,
         "stored_bytes": format_scalar("nonnegative", item.stored_bytes),
@@ -344,7 +344,7 @@ def collection_tree_identity(files: Sequence[ArchiveFile]) -> CollectionTreeIden
 
 def _pack_volume_row(plan: PackVolumePlan, receipt: SealedPackVolume) -> dict[str, object]:
     expected_path = f"volumes/{receipt.volume_id}.tar.age"
-    if normalize_relpath(receipt.relative_path) != expected_path:
+    if validate_canonical_relpath(receipt.relative_path) != expected_path:
         raise ValueError("sealed pack receipt path is not canonical")
     return {
         "id": receipt.volume_id,
@@ -364,11 +364,11 @@ def _pack_volume_row(plan: PackVolumePlan, receipt: SealedPackVolume) -> dict[st
 
 
 def _raw_volume_row(receipt: SealedRawVolume) -> dict[str, object]:
-    source_path = normalize_relpath(receipt.source_path)
+    source_path = validate_canonical_relpath(receipt.source_path)
     if source_path.startswith(RESERVED_ARCHIVE_PREFIX):
         raise ValueError("raw volume source uses the reserved archive namespace")
     expected_path = f"volumes/{receipt.volume_id}.bin.age"
-    if normalize_relpath(receipt.relative_path) != expected_path:
+    if validate_canonical_relpath(receipt.relative_path) != expected_path:
         raise ValueError("sealed raw receipt path is not canonical")
     if receipt.sequence >= 1 << 256 or receipt.volume_id != f"segment-{receipt.sequence:064x}":
         raise ValueError("sealed raw receipt identity is not canonical")
@@ -489,7 +489,7 @@ def _verified_raw_files(
 ) -> dict[str, VerifiedRawFile]:
     out: dict[str, VerifiedRawFile] = {}
     for current in files:
-        path = normalize_relpath(current.path)
+        path = validate_canonical_relpath(current.path)
         if path.startswith(RESERVED_ARCHIVE_PREFIX) or path in out:
             raise ValueError("raw file verification path is invalid")
         if (
@@ -513,7 +513,7 @@ def _normalized_files(files: Sequence[ArchiveFile]) -> tuple[ArchiveFile, ...]:
     out: list[ArchiveFile] = []
     seen: set[str] = set()
     for current in files:
-        path = normalize_relpath(current.path)
+        path = validate_canonical_relpath(current.path)
         if path.startswith(RESERVED_ARCHIVE_PREFIX):
             raise ValueError(f"collection path uses reserved archive namespace: {path}")
         if path in seen:

@@ -5,6 +5,7 @@ import binascii
 import builtins
 import hashlib
 import re
+import unicodedata
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from pathlib import PurePosixPath
@@ -98,7 +99,16 @@ def _sha256(value: object, label: str) -> str:
 
 
 def _relative_path(value: object, label: str) -> str:
-    if not isinstance(value, str) or not value or "\\" in value:
+    if (
+        not isinstance(value, str)
+        or not value
+        or len(value) > 4096
+        or value != value.strip()
+        or value != unicodedata.normalize("NFC", value)
+        or "\\" in value
+        or "\x00" in value
+        or any(0xD800 <= ord(character) <= 0xDFFF for character in value)
+    ):
         raise ArchiveManifestError(f"{label} is not a canonical relative path")
     path = PurePosixPath(value)
     if path.is_absolute() or any(part in {"", ".", ".."} for part in path.parts):

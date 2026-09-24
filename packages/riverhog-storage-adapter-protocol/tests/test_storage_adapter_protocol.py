@@ -40,9 +40,9 @@ from riverhog_storage_adapter_protocol import (
     WriteSegmentReceipt,
     WriteSession,
     WriteStartRequest,
-    normalize_object_path,
     validate_completed_write_response,
     validate_object_metadata_response,
+    validate_object_path,
     validate_object_read_response,
     validate_read_status_response,
     validate_small_object_response,
@@ -471,7 +471,7 @@ def test_write_completion_binds_the_immutable_session_length() -> None:
 )
 def test_object_paths_reject_noncanonical_input(path: str) -> None:
     with pytest.raises(ValueError):
-        normalize_object_path(path)
+        validate_object_path(path)
 
 
 def test_revision_and_deletion_modes_preserve_versioned_and_unversioned_targets() -> None:

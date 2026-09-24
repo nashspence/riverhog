@@ -99,7 +99,7 @@ def test_local_materializer_depends_only_on_client_safe_riverhog_modules() -> No
         ("riverhog_protocol.errors", "InvalidState"),
         ("riverhog_protocol.errors", "NotFound"),
         ("riverhog_protocol.paths", "normalize_collection_id"),
-        ("riverhog_protocol.paths", "normalize_relpath"),
+        ("riverhog_protocol.paths", "validate_canonical_relpath"),
         ("riverhog_protocol.transport", "RETRIEVAL_FILE_BATCH_MAX"),
         ("riverhog_provenance", "list_provenance_observers"),
         ("riverhog_provenance", "resolve_provenance_observer"),

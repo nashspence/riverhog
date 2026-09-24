@@ -12,7 +12,7 @@ from riverhog_archive_contracts import (
     CollectionArchiveVolumeDocument,
     format_archive_sequence,
 )
-from riverhog_protocol.paths import normalize_relpath
+from riverhog_protocol.paths import validate_canonical_relpath
 
 from riverhog_core.archive_formats import (
     ROOT_MANIFEST_STORAGE_FORMAT,
@@ -186,7 +186,7 @@ class ArchiveRootPublisher:
             raise RuntimeError("immutable root store returned an inconsistent receipt")
         return SealedArchiveRoot(
             object_path=receipt.object_path,
-            relative_path=normalize_relpath(ROOT_MANIFEST_RELATIVE_PATH),
+            relative_path=validate_canonical_relpath(ROOT_MANIFEST_RELATIVE_PATH),
             revision=receipt.revision,
             plaintext_bytes=len(manifest),
             plaintext_sha256=plaintext_sha256,
@@ -324,7 +324,7 @@ class ArchiveRootPublisher:
             raise RuntimeError("immutable root store returned an inconsistent receipt")
         return SealedArchiveRoot(
             object_path=receipt.object_path,
-            relative_path=normalize_relpath(ROOT_MANIFEST_RELATIVE_PATH),
+            relative_path=validate_canonical_relpath(ROOT_MANIFEST_RELATIVE_PATH),
             revision=receipt.revision,
             plaintext_bytes=len(manifest),
             plaintext_sha256=plaintext_sha256,

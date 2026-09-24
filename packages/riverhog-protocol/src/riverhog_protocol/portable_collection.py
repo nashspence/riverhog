@@ -14,7 +14,7 @@ from riverhog_protocol.exact_scalar import NonnegativeDecimal
 from riverhog_protocol.file_identity import ImmutableFileIdentityDocument
 from riverhog_protocol.paths import (
     CollectionId,
-    normalize_relpath,
+    validate_canonical_relpath,
 )
 
 PORTABLE_COLLECTION_FORMAT: Literal["riverhog-collection/v1"] = "riverhog-collection/v1"
@@ -50,11 +50,9 @@ class PortableCollectionFile:
         if not isinstance(self.path, str):
             raise PortableCollectionError("portable collection file path is invalid")
         try:
-            path = normalize_relpath(self.path)
+            validate_canonical_relpath(self.path)
         except ValueError as exc:
-            raise PortableCollectionError("portable collection file path is invalid") from exc
-        if path != self.path:
-            raise PortableCollectionError("portable collection file path is not canonical")
+            raise PortableCollectionError("portable collection file path is not canonical") from exc
         _nonnegative_int(self.bytes, "portable collection file bytes")
         _sha256(self.sha256, "portable collection file sha256")
 
@@ -63,11 +61,9 @@ class PortableCollectionFile:
         if not isinstance(value, Mapping) or set(value) != {"path", "bytes", "sha256"}:
             raise PortableCollectionError("portable collection file fields are invalid")
         try:
-            path = normalize_relpath(str(value["path"]))
+            path = validate_canonical_relpath(value["path"])
         except ValueError as exc:
-            raise PortableCollectionError("portable collection file path is invalid") from exc
-        if path != value["path"]:
-            raise PortableCollectionError("portable collection file path is not canonical")
+            raise PortableCollectionError("portable collection file path is not canonical") from exc
         try:
             byte_count = parse_scalar("nonnegative", value["bytes"])
         except ValueError as exc:

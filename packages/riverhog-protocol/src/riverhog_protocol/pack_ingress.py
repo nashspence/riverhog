@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 from riverhog_canonical_json import canonical_json_bytes as canonical_json_bytes
 
-from riverhog_protocol.paths import normalize_relpath
+from riverhog_protocol.paths import validate_canonical_relpath
 
 PACK_UPLOAD_PLAN_SCHEMA = "pack-upload-plan/v1"
 RESERVED_ARCHIVE_PREFIX = ".riverhog/"
@@ -22,14 +22,14 @@ class PackUnitSource:
     sha256: str
 
     def __post_init__(self) -> None:
-        normalized = normalize_relpath(self.path)
-        if normalized.startswith(RESERVED_ARCHIVE_PREFIX):
-            raise ValueError(f"collection path uses reserved archive namespace: {normalized}")
+        path = validate_canonical_relpath(self.path)
+        if path.startswith(RESERVED_ARCHIVE_PREFIX):
+            raise ValueError(f"collection path uses reserved archive namespace: {path}")
         if self.bytes < 0:
             raise ValueError("pack unit source bytes must be non-negative")
         if _SHA256_RE.fullmatch(self.sha256) is None:
             raise ValueError("pack unit source sha256 is invalid")
-        object.__setattr__(self, "path", normalized)
+        object.__setattr__(self, "path", path)
 
 
 @dataclass(frozen=True, slots=True)
@@ -212,7 +212,7 @@ def _source_rows(value: object) -> list[dict[str, object]]:
             "sha256",
         }:
             raise ValueError("pack upload unit source must be a canonical mapping")
-        path = normalize_relpath(str(current.get("path", "")))
+        path = validate_canonical_relpath(current["path"])
         if path.startswith(RESERVED_ARCHIVE_PREFIX):
             raise ValueError(f"collection path uses reserved archive namespace: {path}")
         if path in seen:

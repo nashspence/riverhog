@@ -74,7 +74,18 @@
       "additionalProperties": false,
       "required": ["path", "offset", "bytes", "file_bytes", "sha256"],
       "properties": {
-        "path": {"type": "string", "pattern": "^(?!/)(?!\\.riverhog/)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))[^/]+(?:/[^/]+)*$"},
+        "path": {
+          "type": "string",
+          "maxLength": 4096,
+          "format": "riverhog-canonical-relpath-v1",
+          "x-unicode-normalization": "NFC",
+          "pattern": "^(?!/)(?!\\.riverhog/)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))[^/]+(?:/[^/]+)*$",
+          "allOf": [
+            {"not": {"pattern": "^\\s|\\s$"}},
+            {"not": {"pattern": "\\u0000"}},
+            {"not": {"pattern": "[\\ud800-\\udfff]"}}
+          ]
+        },
         "offset": {"$ref": "#/$defs/nonnegative_count"},
         "bytes": {"$ref": "#/$defs/nonnegative_count"},
         "file_bytes": {"$ref": "#/$defs/nonnegative_count"},

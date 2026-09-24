@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from riverhog_age import CHUNK_SIZE
 from riverhog_archive_contracts import ARCHIVE_PACK_FILES_MAX, ARCHIVE_VOLUME_PARTS_MAX
 from riverhog_protocol.pack_ingress import RESERVED_ARCHIVE_PREFIX, canonical_json_bytes
-from riverhog_protocol.paths import normalize_relpath
+from riverhog_protocol.paths import validate_canonical_relpath
 
 from riverhog_core.archive_manifest import collection_tree_identity
 from riverhog_core.domain.archive import ArchiveFile, PackVolumePlan, RawVolumePlan
@@ -232,7 +232,7 @@ def _normalized_files(files: Sequence[ArchiveFile]) -> tuple[ArchiveFile, ...]:
     normalized: list[ArchiveFile] = []
     seen: set[str] = set()
     for current in files:
-        path = normalize_relpath(current.path)
+        path = validate_canonical_relpath(current.path)
         if path.startswith(RESERVED_ARCHIVE_PREFIX) or path in seen:
             raise ValueError(f"collection volume plan path is invalid: {path}")
         if current.bytes < 0 or _SHA256_RE.fullmatch(current.sha256) is None:

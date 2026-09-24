@@ -28,7 +28,7 @@ from riverhog_protocol.collection_workflows import (
     OperationIdentity,
     RecipeIdentity,
 )
-from riverhog_protocol.paths import CollectionId, normalize_relpath
+from riverhog_protocol.paths import CollectionId, validate_canonical_relpath
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 
 from stove0_protocol.jcs import canonical_json_bytes, canonical_json_sha256
@@ -223,10 +223,7 @@ class ArtifactSubject(Stove0ProtocolModel):
     @field_validator("path")
     @classmethod
     def canonical_path(cls, value: str) -> str:
-        normalized = normalize_relpath(value)
-        if normalized != value:
-            raise ValueError("artifact path must be canonical")
-        return normalized
+        return validate_canonical_relpath(value)
 
 
 class BranchWorkBinding(Stove0ProtocolModel):

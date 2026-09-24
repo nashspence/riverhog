@@ -146,7 +146,7 @@ def _decode_inventory_cursor(cursor: str) -> tuple[int, str, str]:
             character not in "0123456789abcdef" for character in inventory_identity
         ):
             raise ValueError
-        after = validate_canonical_relpath(str(payload["after"]))
+        after = validate_canonical_relpath(payload["after"])
     except (binascii.Error, TypeError, ValueError, UnicodeError, json.JSONDecodeError) as exc:
         raise BadRequest("collection inventory cursor is invalid") from exc
     return collection_id, inventory_identity, after

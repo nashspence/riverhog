@@ -15,7 +15,7 @@ from riverhog_protocol.pack_ingress import (
     canonical_json_bytes,
     pack_upload_plan_sha256,
 )
-from riverhog_protocol.paths import normalize_relpath
+from riverhog_protocol.paths import validate_canonical_relpath
 from riverhog_protocol.transport import COLLECTION_UPLOAD_UNIT_SOURCE_MAX
 
 from riverhog_core.domain.archive import (
@@ -413,7 +413,7 @@ def _normalized_files(
     out: list[ArchiveFile] = []
     seen: set[str] = set()
     for current in files:
-        path = normalize_relpath(current.path)
+        path = validate_canonical_relpath(current.path)
         if path.startswith(RESERVED_ARCHIVE_PREFIX):
             raise ValueError(f"collection path uses reserved archive namespace: {path}")
         if path in seen:

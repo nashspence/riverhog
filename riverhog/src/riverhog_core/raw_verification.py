@@ -11,7 +11,7 @@ from riverhog_protocol.pack_ingress import (
     RESERVED_ARCHIVE_PREFIX,
     canonical_json_bytes,
 )
-from riverhog_protocol.paths import normalize_relpath
+from riverhog_protocol.paths import validate_canonical_relpath
 from riverhog_protocol.raw_ingress import RawSourceDigestSummary
 
 from riverhog_core.domain.archive import (
@@ -73,7 +73,7 @@ def raw_file_ordered_volume_commitment(
 
 
 def raw_file_verification_payload(receipt: VerifiedRawFile) -> dict[str, object]:
-    path = normalize_relpath(receipt.path)
+    path = validate_canonical_relpath(receipt.path)
     if path.startswith(RESERVED_ARCHIVE_PREFIX):
         raise ValueError("raw verification path uses the reserved archive namespace")
     if receipt.bytes < 0 or _SHA256_RE.fullmatch(receipt.sha256) is None:
@@ -202,7 +202,7 @@ def verify_raw_file(
 
 
 def _normalized_raw_file(file: ArchiveFile) -> ArchiveFile:
-    path = normalize_relpath(file.path)
+    path = validate_canonical_relpath(file.path)
     if path.startswith(RESERVED_ARCHIVE_PREFIX):
         raise ValueError("raw file uses the reserved archive namespace")
     if file.bytes < 0 or _SHA256_RE.fullmatch(file.sha256) is None:
@@ -217,9 +217,9 @@ def _validate_raw_volume(
     expected_offset: int,
     previous_sequence: int,
 ) -> None:
-    source_path = normalize_relpath(volume.source_path)
+    source_path = validate_canonical_relpath(volume.source_path)
     expected_relative_path = f"volumes/{volume.volume_id}.bin.age"
-    relative_path = normalize_relpath(volume.relative_path)
+    relative_path = validate_canonical_relpath(volume.relative_path)
     if (
         source_path != file.path
         or volume.file_bytes != file.bytes
@@ -242,7 +242,7 @@ def _volume_identity(volume: SealedRawVolume) -> dict[str, object]:
     return {
         "id": volume.volume_id,
         "sequence": volume.sequence,
-        "path": normalize_relpath(volume.relative_path),
+        "path": validate_canonical_relpath(volume.relative_path),
         "file_offset": volume.file_offset,
         "plaintext_bytes": volume.plaintext_bytes,
         "age_state": json.loads(UploadState.from_json_bytes(volume.age_state_json).to_json_bytes()),

@@ -23,7 +23,7 @@ from a_stove0_media_metadata_contract_lib import (
     MediaMetadataFacts,
 )
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, field_validator, model_validator
-from riverhog_protocol.paths import normalize_relpath
+from riverhog_protocol.paths import validate_canonical_relpath
 from stove0_observer_protocol import (
     ContentObservationEvidence,
     canonical_json_bytes,
@@ -100,9 +100,7 @@ class MediaProjectionItem(ProjectionModel):
     @field_validator("archive_path", "xmp_path")
     @classmethod
     def canonical_path(cls, value: str) -> str:
-        if normalize_relpath(value) != value:
-            raise ValueError("media projection output paths must be canonical")
-        return value
+        return validate_canonical_relpath(value)
 
     @model_validator(mode="after")
     def canonical_evidence(self) -> Self:
@@ -138,9 +136,7 @@ class RetainedXmpSidecar(ProjectionModel):
     @field_validator("output_path")
     @classmethod
     def canonical_path(cls, value: str) -> str:
-        if normalize_relpath(value) != value:
-            raise ValueError("retained XMP output path must be canonical")
-        return value
+        return validate_canonical_relpath(value)
 
 
 class MediaArchiveProjectionPayload(ProjectionModel):

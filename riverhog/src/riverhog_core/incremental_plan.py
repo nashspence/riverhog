@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 from riverhog_canonical_json import format_scalar, parse_scalar, require_canonical_json
 from riverhog_protocol.pack_ingress import RESERVED_ARCHIVE_PREFIX, canonical_json_bytes
-from riverhog_protocol.paths import normalize_relpath
+from riverhog_protocol.paths import validate_canonical_relpath
 
 from riverhog_core.checkpoint_sha256 import CheckpointSHA256
 from riverhog_core.collection_plan import CollectionVolumePolicy
@@ -320,7 +320,7 @@ def parse_incremental_volume_planner_checkpoint(
 
 
 def _normalized_file(file: ArchiveFile) -> ArchiveFile:
-    path = normalize_relpath(file.path)
+    path = validate_canonical_relpath(file.path)
     if path.startswith(RESERVED_ARCHIVE_PREFIX):
         raise ValueError("incremental planner file uses the reserved archive namespace")
     if file.bytes < 0 or _SHA256_RE.fullmatch(file.sha256) is None:
