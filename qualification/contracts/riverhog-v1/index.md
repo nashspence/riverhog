@@ -4,7 +4,7 @@
 
 This generated snapshot accounts for the externally exposed surfaces discovered from this repository revision. Discovery means inclusion; no separate acceptance decision is required.
 
-Included contract elements: **4239** · Extent decisions: **2111**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
+Included contract elements: **4321** · Extent decisions: **2151**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
 
 ## Audit references
 
@@ -127,7 +127,7 @@ Included contract elements: **4239** · Extent decisions: **2111**. Complete acc
   - [Python](authorities/a-riverhog-windows-provenance-contract-lib/python/index.md) (4)
 
 - [a-stove0-cli](authorities/a-stove0-cli/index.md) — Command-line client for Stove0.
-  - [CLI](authorities/a-stove0-cli/cli/index.md) (37)
+  - [CLI](authorities/a-stove0-cli/cli/index.md) (43)
 
 - [a-stove0-exiftool-observer](authorities/a-stove0-exiftool-observer/index.md) — ExifTool media metadata observer for Stove0. Implements protocol: [stove0-observer](extensions/process-protocol-stove0-observer.md).
   - [CLI](authorities/a-stove0-exiftool-observer/cli/index.md) (1)
@@ -280,16 +280,16 @@ Included contract elements: **4239** · Extent decisions: **2111**. Complete acc
   - [Python](authorities/state-schema/python/index.md) (58)
 
 - **[stove0](authorities/stove0/index.md)** [📦](authorities/stove0/evidence-gaps.md) — The Stove0 application API and its maintained cross-interface operation parity.
-  - **[HTTP Operations](authorities/stove0/http-operations/index.md)** [📦](authorities/stove0/http-operations/evidence-gaps.md) (33)
-  - **[HTTP Schemas](authorities/stove0/http-schemas/index.md)** [📦](authorities/stove0/http-schemas/evidence-gaps.md) (138)
+  - **[HTTP Operations](authorities/stove0/http-operations/index.md)** [📦](authorities/stove0/http-operations/evidence-gaps.md) (37)
+  - **[HTTP Schemas](authorities/stove0/http-schemas/index.md)** [📦](authorities/stove0/http-schemas/evidence-gaps.md) (148)
   - [HTTP Service Declaration](authorities/stove0/http-service-declaration/index.md) (1)
 
 - [stove0-api-client](authorities/stove0-api-client/index.md) — Python client for the Stove0 v1 workflow API.
   - [Configuration Environment](authorities/stove0-api-client/configuration-environment/index.md) (5)
-  - [Python](authorities/stove0-api-client/python/index.md) (34)
+  - [Python](authorities/stove0-api-client/python/index.md) (38)
 
 - [stove0-control](authorities/stove0-control/index.md) — Content-opaque transformation application for Riverhog.
-  - [Durable State](authorities/stove0-control/durable-state/index.md) (23)
+  - [Durable State](authorities/stove0-control/durable-state/index.md) (26)
 
 - [stove0-observer-client](authorities/stove0-observer-client/index.md) — Narrow HTTP client for Stove0 content observers.
   - [Python](authorities/stove0-observer-client/python/index.md) (6) — Defines extension: [stove0.observer-semantic-validators](extensions/extension-point-stove0-observer-semantic-validators.md).
@@ -305,8 +305,8 @@ Included contract elements: **4239** · Extent decisions: **2111**. Complete acc
   - [Python](authorities/stove0-observer-support/python/index.md) (37)
 
 - [stove0-operator-contracts](authorities/stove0-operator-contracts/index.md) — Canonical public state contracts for the Stove0 v1 operator surface.
-  - [Configuration Documents](authorities/stove0-operator-contracts/configuration/index.md) (1)
-  - [Python](authorities/stove0-operator-contracts/python/index.md) (116)
+  - [Configuration Documents](authorities/stove0-operator-contracts/configuration/index.md) (2)
+  - [Python](authorities/stove0-operator-contracts/python/index.md) (133)
 
 - [stove0-protocol](authorities/stove0-protocol/index.md) — Canonical content-opaque collection orchestration contracts for Stove0.
   - [Python](authorities/stove0-protocol/python/index.md) (207)
@@ -317,17 +317,17 @@ Included contract elements: **4239** · Extent decisions: **2111**. Complete acc
 
 - [stove0-server](authorities/stove0-server/index.md) — Content-opaque transformation application for Riverhog.
   - [CLI](authorities/stove0-server/cli/index.md) (7)
-  - [Configuration Environment](authorities/stove0-server/configuration-environment/index.md) (25)
-  - [Python](authorities/stove0-server/python/index.md) (324)
+  - [Configuration Environment](authorities/stove0-server/configuration-environment/index.md) (27)
+  - [Python](authorities/stove0-server/python/index.md) (333)
 
 - [stove0-target-client](authorities/stove0-target-client/index.md) — Narrow HTTP client for Stove0 transform targets.
-  - [Python](authorities/stove0-target-client/python/index.md) (15)
+  - [Python](authorities/stove0-target-client/python/index.md) (18)
 
 - [stove0-target-jobs](authorities/stove0-target-jobs/index.md) — Hardware-neutral target protocol, runtime, and conformance support for Stove0.
   - [Durable State](authorities/stove0-target-jobs/durable-state/index.md) (3)
 
 - [stove0-target-protocol](authorities/stove0-target-protocol/index.md) — Dependency-light public contracts for external Stove0 targets.
-  - [Python](authorities/stove0-target-protocol/python/index.md) (136) — Defines protocol: [stove0-target](extensions/process-protocol-stove0-target.md).
+  - [Python](authorities/stove0-target-protocol/python/index.md) (154) — Defines protocol: [stove0-target](extensions/process-protocol-stove0-target.md).
 
 - [stove0-target-support](authorities/stove0-target-support/index.md) — Hardware-neutral target protocol, runtime, and conformance support for Stove0.
   - [Process Protocol](authorities/stove0-target-support/process-protocol/index.md) (1)
@@ -335,7 +335,7 @@ Included contract elements: **4239** · Extent decisions: **2111**. Complete acc
   - [Process Protocol Schemas](authorities/stove0-target-support/process-protocol-schemas/index.md) (8)
   - [CLI](authorities/stove0-target-support/cli/index.md) (2)
   - [Configuration Environment](authorities/stove0-target-support/configuration-environment/index.md) (1)
-  - [Python](authorities/stove0-target-support/python/index.md) (151)
+  - [Python](authorities/stove0-target-support/python/index.md) (156)
 
 - [time-formats](authorities/time-formats/index.md) — UTC timestamp and operator duration formats.
   - [Python](authorities/time-formats/python/index.md) (14)

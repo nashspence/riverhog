@@ -67,7 +67,7 @@ from riverhog_core.stores.storage_adapter_archive_store import StorageAdapterArc
 from riverhog_protocol import (
     COLLECTION_TAG_HEAD_RELATIVE_PATH,
     COLLECTION_TAG_UTF8_BYTES_MAX,
-    CatalogSyncDelete,
+    CatalogSyncDeparture,
     CollectionTagChild,
     CollectionTagHeadDocument,
     CollectionTagNode,
@@ -597,7 +597,9 @@ def test_tag_removal_emits_exact_loss_of_visibility_without_event_tag_snapshots(
         principal=principal,
     )
 
-    assert changes.changes == [CatalogSyncDelete(collection_id="1", revision="2")]
+    assert changes.changes == [
+        CatalogSyncDeparture(cause="visibility_lost", collection_id="1", revision="2")
+    ]
     with session_scope(factory) as session:  # type: ignore[arg-type]
         intervals = list(session.scalars(select(CollectionTagVisibilityRecord)))
         assert len(intervals) == 1

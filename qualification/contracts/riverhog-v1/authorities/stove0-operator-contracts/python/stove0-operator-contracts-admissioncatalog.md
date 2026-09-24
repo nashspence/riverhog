@@ -41,15 +41,17 @@ Exact externally visible contract owned by this contract element.
 ##### Definitions
 
 - [AdmissionPolicy](#s-0d836ab3d0)
+- [AllVisibleAdmissionSelector](#s-76fd1c0dbd)
 - [CollectionTag](#s-faf360b591)
 - [JsonValue](#s-0f94759ee8)
 - [NonnegativeDecimal](#s-bb1c00d60a)
+- [TaggedAdmissionSelector](#s-7d6db43e70)
 
 ##### <a id="s-0d836ab3d0"></a>definition `AdmissionPolicy`
 
 - <a id="s-ffcf16cbe8"></a>`type`: `"object"`
 - <a id="s-76bb036182"></a>`additionalProperties`: `false`
-- <a id="s-c9e53d2402"></a>`required`: `["id","revision","required_tags","recipe_id","recipe_revision","recipe_sha256"]`
+- <a id="s-c9e53d2402"></a>`required`: `["id","revision","selector","recipe_id","recipe_revision","recipe_sha256"]`
 
 ###### Fields
 
@@ -62,8 +64,19 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-802dadf68b"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-200d5fef77"></a>`recipe_revision` | yes | [NonnegativeDecimal](#s-bb1c00d60a); ge=1 |  |
 | <a id="s-a9687c9bfe"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-e8dc91bade"></a>`required_tags` | yes | type="array"; items=([CollectionTag](#s-faf360b591)); maxItems=100; minItems=1; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-classification-admission-predicate"} |  |
 | <a id="s-f83795db7e"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-5945709f7a"></a>`selector` | yes | discriminator={"mapping":{"all":"#/$defs/AllVisibleAdmissionSelector","tags":"#/$defs/TaggedAdmissionSelector"},"propertyName":"kind"}; oneOf=[([AllVisibleAdmissionSelector](#s-76fd1c0dbd)); ([TaggedAdmissionSelector](#s-7d6db43e70))] |  |
+
+##### <a id="s-76fd1c0dbd"></a>definition `AllVisibleAdmissionSelector`
+
+- <a id="s-05079f321b"></a>`type`: `"object"`
+- <a id="s-cda0e05ade"></a>`additionalProperties`: `false`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-9751546d87"></a>`kind` | no | type="string"; const="all"; default="all" |  |
 
 ##### <a id="s-faf360b591"></a>definition `CollectionTag`
 
@@ -82,6 +95,19 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-60e10c039e"></a>`type`: `"string"`
 - <a id="s-97fd2462c5"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
+##### <a id="s-7d6db43e70"></a>definition `TaggedAdmissionSelector`
+
+- <a id="s-80e4c8196d"></a>`type`: `"object"`
+- <a id="s-d3875d7a72"></a>`additionalProperties`: `false`
+- <a id="s-818b3c6d74"></a>`required`: `["required"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-1ccdd142d5"></a>`kind` | no | type="string"; const="tags"; default="tags" |  |
+| <a id="s-fac4954d98"></a>`required` | yes | type="array"; items=([CollectionTag](#s-faf360b591)); maxItems=100; minItems=1; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-classification-admission-predicate"} |  |
 
 ## Maintained corroboration
 
@@ -117,7 +143,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4261f26143eaebed457866cb8376dd9fb7e73339ba89db7c0c1faf77679798c6 -->
+<!-- exact-contract-value: 2fd2deb6b93eae1d72d8b7dd86a1d03bb3a1e145d53f0a58b0aad132420311d3 -->
 
 ```json
 {
@@ -161,31 +187,47 @@ The following JSON is the complete value owned at each machine-authority pointer
               "pattern": "^[0-9a-f]{64}$",
               "type": "string"
             },
-            "required_tags": {
-              "items": {
-                "$ref": "#/$defs/CollectionTag"
-              },
-              "maxItems": 100,
-              "minItems": 1,
-              "type": "array",
-              "x-riverhog-extent": {
-                "policy": "contract_max",
-                "reason": "bounded-exact-classification-admission-predicate"
-              }
-            },
             "revision": {
               "minimum": 1,
               "type": "integer"
+            },
+            "selector": {
+              "discriminator": {
+                "mapping": {
+                  "all": "#/$defs/AllVisibleAdmissionSelector",
+                  "tags": "#/$defs/TaggedAdmissionSelector"
+                },
+                "propertyName": "kind"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/AllVisibleAdmissionSelector"
+                },
+                {
+                  "$ref": "#/$defs/TaggedAdmissionSelector"
+                }
+              ]
             }
           },
           "required": [
             "id",
             "revision",
-            "required_tags",
+            "selector",
             "recipe_id",
             "recipe_revision",
             "recipe_sha256"
           ],
+          "type": "object"
+        },
+        "AllVisibleAdmissionSelector": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "all",
+              "default": "all",
+              "type": "string"
+            }
+          },
           "type": "object"
         },
         "CollectionTag": {
@@ -203,6 +245,32 @@ The following JSON is the complete value owned at each machine-authority pointer
         "NonnegativeDecimal": {
           "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
           "type": "string"
+        },
+        "TaggedAdmissionSelector": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "tags",
+              "default": "tags",
+              "type": "string"
+            },
+            "required": {
+              "items": {
+                "$ref": "#/$defs/CollectionTag"
+              },
+              "maxItems": 100,
+              "minItems": 1,
+              "type": "array",
+              "x-riverhog-extent": {
+                "policy": "contract_max",
+                "reason": "bounded-exact-classification-admission-predicate"
+              }
+            }
+          },
+          "required": [
+            "required"
+          ],
+          "type": "object"
         }
       },
       "additionalProperties": false,

@@ -96,6 +96,9 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: ContentObservationRequest](../../authorities/stove0/http-schemas/schemas-contentobservationrequest.md#pa-3dcdb6c33e) |
 | `stove0` | [schemas: ContentObservationResult](../../authorities/stove0/http-schemas/schemas-contentobservationresult.md#pa-53b829d6de) |
 | `stove0` | [schemas: CoordinationSettlement](../../authorities/stove0/http-schemas/schemas-coordinationsettlement.md#pa-ad5f2311b6) |
+| `stove0` | [schemas: DepartureEffectReceipt](../../authorities/stove0/http-schemas/schemas-departureeffectreceipt.md#pa-9460593590) |
+| `stove0` | [schemas: DeparturePolicyCatalogView](../../authorities/stove0/http-schemas/schemas-departurepolicycatalogview.md#pa-f93fa94096) |
+| `stove0` | [schemas: DepartureRun](../../authorities/stove0/http-schemas/schemas-departurerun.md#pa-dc037d5899) |
 | `stove0` | [schemas: EffectPlan](../../authorities/stove0/http-schemas/schemas-effectplan.md#pa-2fb994db2e) |
 | `stove0` | [schemas: ErrorBody](../../authorities/stove0/http-schemas/schemas-errorbody.md#pa-5d7b9b6843) |
 | `stove0` | [schemas: EvaluationBinding](../../authorities/stove0/http-schemas/schemas-evaluationbinding.md#pa-f79245f6b0) |

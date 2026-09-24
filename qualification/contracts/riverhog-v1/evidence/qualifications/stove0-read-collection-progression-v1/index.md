@@ -5,7 +5,7 @@
 <a id="e-5707b3a2d3-34931f753b"></a>
 Recorded owner: `stove0`.
 
-- [Affected contract elements (12)](contracts.md)
+- [Affected contract elements (14)](contracts.md)
 - [Candidate tests and reviewed scopes (3)](tests.md)
 
 ## Guarantees still needing evidence

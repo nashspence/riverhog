@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-target-source-edges:38b3c33983 -->
+<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-target-source-edges:46b54d199e -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-095214b6e3"></a>
+<a id="s-b4b766289d"></a>
 
 ### Table: `stove0_target_source_edges`
 
@@ -21,21 +21,21 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-a5f3958eec"></a>`work_id` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-43fe26f6ef"></a>`job_id` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-2ab568a216"></a>`output_id` | `VARCHAR(160)` | no | `—` | — |
-| <a id="s-98d9f69eaa"></a>`input_id` | `VARCHAR(160)` | no | `—` | — |
+| <a id="s-4b5a5b1d54"></a>`work_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-95249be0c9"></a>`job_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-4254447e8e"></a>`output_id` | `VARCHAR(160)` | no | `—` | — |
+| <a id="s-0332a01825"></a>`input_id` | `VARCHAR(160)` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-f39527f937"></a>`primary-key` | `—` | `PRIMARY KEY (work_id, job_id, output_id, input_id)` |
-| <a id="s-08fd411c7c"></a>`check` | `ck_stove0_target_source_edges_output` | `CONSTRAINT ck_stove0_target_source_edges_output CHECK (length(output_id) >= 1)` |
-| <a id="s-01151a3646"></a>`check` | `ck_stove0_target_source_edges_input` | `CONSTRAINT ck_stove0_target_source_edges_input CHECK (length(input_id) >= 1)` |
-| <a id="s-f75bbd382a"></a>`foreign-key` | `—` | `FOREIGN KEY(work_id) REFERENCES stove0_work_records (work_id) ON DELETE CASCADE` |
-| <a id="s-ca540d957c"></a>`check` | `ck_stove0_target_source_edges_work_id_hex` | `CONSTRAINT ck_stove0_target_source_edges_work_id_hex CHECK (length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-fc1550b187"></a>`check` | `ck_stove0_target_source_edges_job_id_hex` | `CONSTRAINT ck_stove0_target_source_edges_job_id_hex CHECK (length(job_id) = 64 AND lower(job_id) = job_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(job_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-1ba078c8e4"></a>`primary-key` | `—` | `PRIMARY KEY (work_id, job_id, output_id, input_id)` |
+| <a id="s-63d3087474"></a>`check` | `ck_stove0_target_source_edges_output` | `CONSTRAINT ck_stove0_target_source_edges_output CHECK (length(output_id) >= 1)` |
+| <a id="s-14fd323cf6"></a>`check` | `ck_stove0_target_source_edges_input` | `CONSTRAINT ck_stove0_target_source_edges_input CHECK (length(input_id) >= 1)` |
+| <a id="s-e0e07e1e90"></a>`foreign-key` | `—` | `FOREIGN KEY(work_id) REFERENCES stove0_work_records (work_id) ON DELETE CASCADE` |
+| <a id="s-b98a062d8e"></a>`check` | `ck_stove0_target_source_edges_work_id_hex` | `CONSTRAINT ck_stove0_target_source_edges_work_id_hex CHECK (length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-9082ed85fa"></a>`check` | `ck_stove0_target_source_edges_job_id_hex` | `CONSTRAINT ck_stove0_target_source_edges_job_id_hex CHECK (length(job_id) = 64 AND lower(job_id) = job_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(job_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -45,7 +45,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-99a365b99a"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-aa774caed7"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -61,7 +61,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/3/structure/tables/13`
+- `/external_contract/durable_state/owners/3/structure/tables/16`
 
 ### Exact owned JSON
 

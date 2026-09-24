@@ -52,7 +52,7 @@ Declared public imports and their selected exact structural contracts.
   - [validate_continuation](riverhog-protocol-catalogsynccollectionpage-validate-continuation.md)
 - [CatalogSyncCursor](riverhog-protocol-catalogsynccursor.md)
 - [CatalogSyncCursorExpired](riverhog-protocol-catalogsynccursorexpired.md)
-- [CatalogSyncDelete](riverhog-protocol-catalogsyncdelete.md)
+- [CatalogSyncDeparture](riverhog-protocol-catalogsyncdeparture.md)
 - [CatalogSyncDescriptor](riverhog-protocol-catalogsyncdescriptor.md)
 - [CatalogSyncHistoryExpired](riverhog-protocol-catalogsynchistoryexpired.md)
 - [CatalogSyncIdentity](riverhog-protocol-catalogsyncidentity.md)

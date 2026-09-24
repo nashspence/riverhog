@@ -25,6 +25,10 @@ from stove0_operator_contracts import (
     AdmissionSort,
     AdmissionState,
     AdmissionView,
+    DepartureEffectPage,
+    DepartureEffectView,
+    DeparturePolicyCatalogView,
+    DeparturePolicyStatus,
     EvaluationPage,
     EvaluationPhase,
     EvaluationReviewRequest,
@@ -214,6 +218,41 @@ class Stove0ApiClient:
     def get_admission(self, admission_id: str) -> AdmissionView:
         return AdmissionView.model_validate(
             self._json("get_admission", "GET", f"/v1/admissions/{quote(admission_id, safe='')}")
+        )
+
+    def list_departure_policies(self) -> DeparturePolicyCatalogView:
+        return DeparturePolicyCatalogView.model_validate(
+            self._json("list_departure_policies", "GET", "/v1/departure-policies")
+        )
+
+    def rebaseline_departure_policy(self, policy_id: str) -> DeparturePolicyStatus:
+        return DeparturePolicyStatus.model_validate(
+            self._json(
+                "rebaseline_departure_policy",
+                "POST",
+                f"/v1/departure-policies/{quote(policy_id, safe='')}:rebaseline",
+            )
+        )
+
+    def list_departure_effects(
+        self, *, page_size: int = 25, page_token: str | None = None
+    ) -> DepartureEffectPage:
+        return DepartureEffectPage.model_validate(
+            self._json(
+                "list_departure_effects",
+                "GET",
+                "/v1/departure-effects",
+                params=_params(page_size=page_size, page_token=page_token),
+            )
+        )
+
+    def get_departure_effect(self, departure_id: str) -> DepartureEffectView:
+        return DepartureEffectView.model_validate(
+            self._json(
+                "get_departure_effect",
+                "GET",
+                f"/v1/departure-effects/{quote(departure_id, safe='')}",
+            )
         )
 
     def list_work(

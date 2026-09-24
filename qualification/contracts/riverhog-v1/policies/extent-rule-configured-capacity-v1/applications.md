@@ -69,7 +69,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-server` | [STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS](../../authorities/stove0-server/configuration-environment/stove0-browse-token-lifetime-seconds.md#pa-21733b4c74) |
 | `stove0-server` | [STOVE0_CAPABILITY_TTL_SECONDS](../../authorities/stove0-server/configuration-environment/stove0-capability-ttl-seconds.md#pa-d63e28afc3) |
 | `stove0-server` | [STOVE0_CLAIM_LEASE_SECONDS](../../authorities/stove0-server/configuration-environment/stove0-claim-lease-seconds.md#pa-f666cbdafa) |
-| `stove0-server` | [STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS](../../authorities/stove0-server/configuration-environment/stove0-operational-state-retention-seconds.md#pa-6d376549d7) |
-| `stove0-server` | [STOVE0_SCHEDULER_INTERVAL_SECONDS](../../authorities/stove0-server/configuration-environment/stove0-scheduler-interval-seconds.md#pa-5a1d00743c) |
-| `stove0-server` | [STOVE0_TARGET_AUTHORITY_BATCH_SIZE](../../authorities/stove0-server/configuration-environment/stove0-target-authority-batch-size.md#pa-69a58f838c) |
-| `stove0-target-support` | [STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS](../../authorities/stove0-target-support/configuration-environment/stove0-target-terminal-state-retention-seconds.md#pa-fcc5c4e99b) |
+| `stove0-server` | [STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS](../../authorities/stove0-server/configuration-environment/stove0-operational-state-retention-seconds.md#pa-4641ea77ce) |
+| `stove0-server` | [STOVE0_SCHEDULER_INTERVAL_SECONDS](../../authorities/stove0-server/configuration-environment/stove0-scheduler-interval-seconds.md#pa-ffa4d0cc1a) |
+| `stove0-server` | [STOVE0_TARGET_AUTHORITY_BATCH_SIZE](../../authorities/stove0-server/configuration-environment/stove0-target-authority-batch-size.md#pa-6655abbe63) |
+| `stove0-target-support` | [STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS](../../authorities/stove0-target-support/configuration-environment/stove0-target-terminal-state-retention-seconds.md#pa-f02445be5b) |

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-artifact-selection-members:0bf73925aa -->
+<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-artifact-selection-members:bcd39436b0 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-e19eab67c2"></a>
+<a id="s-60299d54bc"></a>
 
 ### Table: `stove0_artifact_selection_members`
 
@@ -21,25 +21,25 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-5d302e9f99"></a>`selection_sha256` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-95d75d7f56"></a>`artifact_id` | `VARCHAR(160)` | no | `—` | — |
-| <a id="s-8a06f51ef2"></a>`artifact_order` | `INTEGER` | no | `—` | — |
-| <a id="s-e56cb3ffad"></a>`continuation_sha256` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-24859e4f23"></a>`document_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-b0ec09b361"></a>`document_json` | `TEXT` | no | `—` | — |
+| <a id="s-c39c30f785"></a>`selection_sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-2516f73647"></a>`artifact_id` | `VARCHAR(160)` | no | `—` | — |
+| <a id="s-299dd2ea38"></a>`artifact_order` | `INTEGER` | no | `—` | — |
+| <a id="s-83bfa6eeb0"></a>`continuation_sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-f9b92fc8f0"></a>`document_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-5d67d3f743"></a>`document_json` | `TEXT` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-4dfa1a6aaa"></a>`primary-key` | `—` | `PRIMARY KEY (selection_sha256, artifact_id)` |
-| <a id="s-6e58358dbc"></a>`check` | `ck_stove0_selection_members_artifact_id` | `CONSTRAINT ck_stove0_selection_members_artifact_id CHECK (length(artifact_id) >= 1)` |
-| <a id="s-c9b8ae1505"></a>`check` | `ck_stove0_selection_members_order` | `CONSTRAINT ck_stove0_selection_members_order CHECK (artifact_order >= 0)` |
-| <a id="s-72b90bab8e"></a>`check` | `ck_stove0_selection_members_continuation` | `CONSTRAINT ck_stove0_selection_members_continuation CHECK (length(continuation_sha256) = 64)` |
-| <a id="s-16ba36bd4e"></a>`check` | `ck_stove0_selection_members_document_bytes` | `CONSTRAINT ck_stove0_selection_members_document_bytes CHECK (document_bytes >= 0)` |
-| <a id="s-6fa272a43a"></a>`foreign-key` | `—` | `FOREIGN KEY(selection_sha256) REFERENCES stove0_artifact_selections (selection_sha256) ON DELETE CASCADE` |
-| <a id="s-4a8c0441cf"></a>`check` | `ck_stove0_artifact_selection_members_selection_sha256_hex` | `CONSTRAINT ck_stove0_artifact_selection_members_selection_sha256_hex CHECK (length(selection_sha256) = 64 AND lower(selection_sha256) = selection_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(selection_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-6b0f4ffce0"></a>`check` | `ck_stove0_artifact_selection_members_continuation_sha256_hex` | `CONSTRAINT ck_stove0_artifact_selection_members_continuation_sha256_hex CHECK (length(continuation_sha256) = 64 AND lower(continuation_sha256) = continuation_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(continuation_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-bee7cdfbe5"></a>`primary-key` | `—` | `PRIMARY KEY (selection_sha256, artifact_id)` |
+| <a id="s-65939fb608"></a>`check` | `ck_stove0_selection_members_artifact_id` | `CONSTRAINT ck_stove0_selection_members_artifact_id CHECK (length(artifact_id) >= 1)` |
+| <a id="s-6cc942a397"></a>`check` | `ck_stove0_selection_members_order` | `CONSTRAINT ck_stove0_selection_members_order CHECK (artifact_order >= 0)` |
+| <a id="s-fbb3772e36"></a>`check` | `ck_stove0_selection_members_continuation` | `CONSTRAINT ck_stove0_selection_members_continuation CHECK (length(continuation_sha256) = 64)` |
+| <a id="s-89a3e7ef56"></a>`check` | `ck_stove0_selection_members_document_bytes` | `CONSTRAINT ck_stove0_selection_members_document_bytes CHECK (document_bytes >= 0)` |
+| <a id="s-029acdff1c"></a>`foreign-key` | `—` | `FOREIGN KEY(selection_sha256) REFERENCES stove0_artifact_selections (selection_sha256) ON DELETE CASCADE` |
+| <a id="s-7525a4c987"></a>`check` | `ck_stove0_artifact_selection_members_selection_sha256_hex` | `CONSTRAINT ck_stove0_artifact_selection_members_selection_sha256_hex CHECK (length(selection_sha256) = 64 AND lower(selection_sha256) = selection_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(selection_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-905d19edb3"></a>`check` | `ck_stove0_artifact_selection_members_continuation_sha256_hex` | `CONSTRAINT ck_stove0_artifact_selection_members_continuation_sha256_hex CHECK (length(continuation_sha256) = 64 AND lower(continuation_sha256) = continuation_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(continuation_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -49,7 +49,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-af77c72436"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-7ce0b3e4b9"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -65,7 +65,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/3/structure/tables/9`
+- `/external_contract/durable_state/owners/3/structure/tables/12`
 
 ### Exact owned JSON
 

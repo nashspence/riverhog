@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-work-records:7e84fc55c9 -->
+<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-work-records:d34c333389 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-1d558a5c9e"></a>
+<a id="s-7c3747144a"></a>
 
 ### Table: `stove0_work_records`
 
@@ -21,23 +21,23 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-a68a8c0f1e"></a>`work_id` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-d43cdafbc0"></a>`revision` | `INTEGER` | no | `—` | — |
-| <a id="s-04c53dd5b7"></a>`phase` | `VARCHAR(32)` | no | `—` | — |
-| <a id="s-091063b1f4"></a>`updated_at` | `VARCHAR(40)` | no | `—` | — |
-| <a id="s-2679702022"></a>`document_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-2516c93f7e"></a>`document_json` | `TEXT` | no | `—` | — |
+| <a id="s-5ceba2c9d9"></a>`work_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-2f8f4a1cca"></a>`revision` | `INTEGER` | no | `—` | — |
+| <a id="s-6d9af8a930"></a>`phase` | `VARCHAR(32)` | no | `—` | — |
+| <a id="s-a9086e8fba"></a>`updated_at` | `VARCHAR(40)` | no | `—` | — |
+| <a id="s-5b65e7adad"></a>`document_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-69dcb30e90"></a>`document_json` | `TEXT` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-fbd19d024b"></a>`primary-key` | `—` | `PRIMARY KEY (work_id)` |
-| <a id="s-d6f7938e94"></a>`check` | `ck_stove0_work_records_revision` | `CONSTRAINT ck_stove0_work_records_revision CHECK (revision >= 1)` |
-| <a id="s-ed995ae514"></a>`check` | `ck_stove0_work_records_phase` | `CONSTRAINT ck_stove0_work_records_phase CHECK (phase IN ('eligible','claimed','observing','planning','target_preflight','queued','executing','output_finalizing','verifying','settled','source_collection_retirement_pending','coordinating','abandon_pending','complete','inapplicable','failed','canceled'))` |
-| <a id="s-f490934355"></a>`check` | `ck_stove0_work_records_id` | `CONSTRAINT ck_stove0_work_records_id CHECK (length(work_id) = 64)` |
-| <a id="s-c4575f784b"></a>`check` | `ck_stove0_work_records_document_bytes` | `CONSTRAINT ck_stove0_work_records_document_bytes CHECK (document_bytes >= 0)` |
-| <a id="s-a8be8b2824"></a>`check` | `ck_stove0_work_records_work_id_hex` | `CONSTRAINT ck_stove0_work_records_work_id_hex CHECK (length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-c1292ba776"></a>`primary-key` | `—` | `PRIMARY KEY (work_id)` |
+| <a id="s-1ac5f87aff"></a>`check` | `ck_stove0_work_records_revision` | `CONSTRAINT ck_stove0_work_records_revision CHECK (revision >= 1)` |
+| <a id="s-cee7be2bce"></a>`check` | `ck_stove0_work_records_phase` | `CONSTRAINT ck_stove0_work_records_phase CHECK (phase IN ('eligible','claimed','observing','planning','target_preflight','queued','executing','output_finalizing','verifying','settled','source_collection_retirement_pending','coordinating','abandon_pending','complete','inapplicable','failed','canceled'))` |
+| <a id="s-a9aa645989"></a>`check` | `ck_stove0_work_records_id` | `CONSTRAINT ck_stove0_work_records_id CHECK (length(work_id) = 64)` |
+| <a id="s-b1dd79e510"></a>`check` | `ck_stove0_work_records_document_bytes` | `CONSTRAINT ck_stove0_work_records_document_bytes CHECK (document_bytes >= 0)` |
+| <a id="s-ced3109970"></a>`check` | `ck_stove0_work_records_work_id_hex` | `CONSTRAINT ck_stove0_work_records_work_id_hex CHECK (length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -47,7 +47,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-fefb2bc6a3"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-e9c9a9e137"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -63,7 +63,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/3/structure/tables/8`
+- `/external_contract/durable_state/owners/3/structure/tables/11`
 
 ### Exact owned JSON
 

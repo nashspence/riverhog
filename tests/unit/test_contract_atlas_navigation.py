@@ -105,8 +105,8 @@ def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None
     assert "[extent-contract](../authorities/extent-contract/index.md)" in authority_inventory
     assert "owning contract element" in configuration_inventory
     reconciliation = checked.files["riverhog-v1/evidence/configuration/reconciliation.md"].decode()
-    assert "Unique environment names: **239**" in reconciliation
-    assert "Implementation reads: **197**" in reconciliation
+    assert "Unique environment names: **241**" in reconciliation
+    assert "Implementation reads: **198**" in reconciliation
     assert "Explicit ambiguity resolutions: **6**" in reconciliation
     assert "| unowned | pass |" in reconciliation
     settings = checked.files[atlas_navigation.CONFIGURATION_SETTINGS_PATH].decode()
@@ -301,7 +301,7 @@ def test_cli_dossiers_expose_exact_result_and_failure_contracts() -> None:
     cli_elements = [item for item in checked.root["elements"] if item["interface"] == "cli"]
     executable = [item for item in cli_elements if item.get("details", {}).get("executable")]
 
-    assert len(executable) == 154
+    assert len(executable) == 158
     assert len({item["details"]["result_identity"] for item in executable}) == len(executable)
     assert {
         tuple(item["details"]["command_path"])
@@ -661,7 +661,7 @@ def test_every_recorded_qualification_follows_exact_ordinary_selection_paths() -
         }
         for item in elements
     }
-    assert sum(bool(ids) for ids in expected.values()) == 84
+    assert sum(bool(ids) for ids in expected.values()) == 86
     root_path = root["atlas"]["root"]
     root_page = checked.files[root_path].decode()
     for authority in {item["authority"] for item in elements}:

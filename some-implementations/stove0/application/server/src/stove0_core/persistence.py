@@ -458,6 +458,100 @@ class _CursorRow(_Base):
     __table_args__ = (CheckConstraint("revision >= 1", name="ck_stove0_event_cursors_revision"),)
 
 
+class _DeparturePolicyRow(_Base):
+    __tablename__ = "stove0_departure_policies"
+
+    policy_id: Mapped[str] = mapped_column(String(160), primary_key=True)
+    policy_revision: Mapped[int] = mapped_column(Integer, nullable=False)
+    policy_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    phase: Mapped[str] = mapped_column(String(32), nullable=False)
+    generation: Mapped[str] = mapped_column(String(64), nullable=False)
+    source_identity: Mapped[str | None] = mapped_column(String(64))
+    authorization_view_identity: Mapped[str | None] = mapped_column(String(64))
+    cursor: Mapped[str | None] = mapped_column(String(4096))
+    through_revision: Mapped[str] = mapped_column(String(19), nullable=False)
+    updated_at: Mapped[str] = mapped_column(String(40), nullable=False)
+
+    __table_args__ = (
+        CheckConstraint("policy_revision >= 1", name="ck_stove0_departure_policy_revision"),
+        CheckConstraint(
+            "phase IN ('new','baseline','following','reset_required')",
+            name="ck_stove0_departure_policy_phase",
+        ),
+        Index("ix_stove0_departure_policies_phase", "phase", "policy_id"),
+    )
+
+
+class _DepartureSeenRow(_Base):
+    """Highest exact event and last visible descriptor in one policy generation."""
+
+    __tablename__ = "stove0_departure_seen"
+
+    policy_id: Mapped[str] = mapped_column(String(160), primary_key=True)
+    generation: Mapped[str] = mapped_column(String(64), primary_key=True)
+    collection_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    revision: Mapped[str] = mapped_column(String(19), nullable=False)
+    operation: Mapped[str] = mapped_column(String(9), nullable=False)
+    authority_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
+    matched: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    document_bytes: Mapped[int | None] = mapped_column(BigInteger)
+    document_json: Mapped[str | None] = mapped_column(Text)
+
+    __table_args__ = (
+        CheckConstraint("collection_id >= 1", name="ck_stove0_departure_seen_collection"),
+        CheckConstraint(
+            "operation IN ('upsert','departure')", name="ck_stove0_departure_seen_operation"
+        ),
+        CheckConstraint(
+            "document_bytes IS NULL AND document_json IS NULL OR "
+            "document_bytes >= 0 AND document_json IS NOT NULL",
+            name="ck_stove0_departure_seen_document",
+        ),
+        Index("ix_stove0_departure_seen_collection", "collection_id", "policy_id"),
+    )
+
+
+class _DepartureEffectRow(_Base):
+    """Retained effect intent, retry state, and immutable target receipt."""
+
+    __tablename__ = "stove0_departure_effects"
+
+    departure_id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    policy_id: Mapped[str] = mapped_column(String(160), nullable=False)
+    state: Mapped[str] = mapped_column(String(16), nullable=False)
+    document_bytes: Mapped[int] = mapped_column(BigInteger, nullable=False)
+    document_json: Mapped[str] = mapped_column(Text, nullable=False)
+    receipt_sha256: Mapped[str | None] = mapped_column(String(64))
+    receipt_bytes: Mapped[int | None] = mapped_column(BigInteger)
+    receipt_json: Mapped[str | None] = mapped_column(Text)
+    attempt_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    next_attempt_at: Mapped[str | None] = mapped_column(String(40))
+    failure: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[str] = mapped_column(String(40), nullable=False)
+    updated_at: Mapped[str] = mapped_column(String(40), nullable=False)
+
+    __table_args__ = (
+        CheckConstraint("state IN ('pending','complete')", name="ck_stove0_departure_effect_state"),
+        CheckConstraint("document_bytes >= 0", name="ck_stove0_departure_effect_bytes"),
+        CheckConstraint(
+            "receipt_bytes IS NULL OR receipt_bytes >= 0",
+            name="ck_stove0_departure_effect_receipt_bytes",
+        ),
+        CheckConstraint("attempt_count >= 0", name="ck_stove0_departure_effect_attempts"),
+        CheckConstraint(
+            "state = 'complete' AND receipt_sha256 IS NOT NULL "
+            "AND receipt_bytes IS NOT NULL AND receipt_json IS NOT NULL "
+            "AND next_attempt_at IS NULL OR "
+            "state = 'pending' AND receipt_sha256 IS NULL "
+            "AND receipt_bytes IS NULL AND receipt_json IS NULL "
+            "AND next_attempt_at IS NOT NULL",
+            name="ck_stove0_departure_effect_stage",
+        ),
+        Index("ix_stove0_departure_effects_retry", "state", "next_attempt_at", "departure_id"),
+        Index("ix_stove0_departure_effects_policy", "policy_id", "departure_id"),
+    )
+
+
 class _AdmissionPolicyRow(_Base):
     __tablename__ = "stove0_admission_policies"
 
@@ -523,7 +617,7 @@ class _AdmissionObservedRevisionRow(_Base):
     generation: Mapped[str] = mapped_column(String(64), primary_key=True)
     collection_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     descriptor_revision: Mapped[str] = mapped_column(String(19), nullable=False)
-    operation: Mapped[str] = mapped_column(String(8), nullable=False)
+    operation: Mapped[str] = mapped_column(String(9), nullable=False)
     authority_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
 
     __table_args__ = (
@@ -531,7 +625,7 @@ class _AdmissionObservedRevisionRow(_Base):
             "collection_id >= 1", name="ck_stove0_admission_observed_revision_collection"
         ),
         CheckConstraint(
-            "operation IN ('upsert','delete')",
+            "operation IN ('upsert','departure')",
             name="ck_stove0_admission_observed_revision_operation",
         ),
         Index(

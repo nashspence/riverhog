@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-e430c631dd"></a>`kind`: `"class"`
-- <a id="s-a8044467c2"></a>`signature`: `"\"(config: 'Stove0RuntimeConfig', riverhog_api: 'ApiClient', state: 'SqlAlchemyStateStore', recipes: 'RecipeCatalog', work: 'Stove0WorkService', coordinator: 'Stove0Coordinator', preview: 'WorkflowPreviewService', evaluations: 'EvaluationService', scheduler: 'Stove0Scheduler', admission: 'ClassificationAdmissionService \| None' = None, target_callbacks: 'TargetCallbackAuthority \| None' = None, browse_tokens: 'BrowseTokenCodec \| None' = None) -> None\""`
+- <a id="s-a8044467c2"></a>`signature`: `"\"(config: 'Stove0RuntimeConfig', riverhog_api: 'ApiClient', state: 'SqlAlchemyStateStore', recipes: 'RecipeCatalog', work: 'Stove0WorkService', coordinator: 'Stove0Coordinator', preview: 'WorkflowPreviewService', evaluations: 'EvaluationService', scheduler: 'Stove0Scheduler', admission: 'ClassificationAdmissionService \| None' = None, departure: 'DepartureEffectService \| None' = None, target_callbacks: 'TargetCallbackAuthority \| None' = None, browse_tokens: 'BrowseTokenCodec \| None' = None) -> None\""`
 
 #### Dataclass fields
 
@@ -38,8 +38,9 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-a127b2bfba"></a>`evaluations` | `'EvaluationService'` | `required` |
 | <a id="s-5ff05a3caf"></a>`scheduler` | `'Stove0Scheduler'` | `required` |
 | <a id="s-0848a3118c"></a>`admission` | `'ClassificationAdmissionService \| None'` | `None` |
-| <a id="s-293cc42d59"></a>`target_callbacks` | `'TargetCallbackAuthority \| None'` | `None` |
-| <a id="s-dfc6b6734b"></a>`browse_tokens` | `'BrowseTokenCodec \| None'` | `None` |
+| <a id="s-293cc42d59"></a>`departure` | `'DepartureEffectService \| None'` | `None` |
+| <a id="s-dfc6b6734b"></a>`target_callbacks` | `'TargetCallbackAuthority \| None'` | `None` |
+| <a id="s-19c7fc8e1e"></a>`browse_tokens` | `'BrowseTokenCodec \| None'` | `None` |
 
 ## Maintained corroboration
 
@@ -74,7 +75,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 50d95f28ac7e4bd3c8b104f18c2750a0715a0774017468a6e19ccacc33300c4b -->
+<!-- exact-contract-value: 76dba4ce70120b9560d142b5fae8d6dd9662252e589f6742554f57e3716eae9e -->
 
 ```json
 {
@@ -132,6 +133,11 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       {
         "default": "None",
+        "name": "departure",
+        "type": "'DepartureEffectService | None'"
+      },
+      {
+        "default": "None",
         "name": "target_callbacks",
         "type": "'TargetCallbackAuthority | None'"
       },
@@ -142,7 +148,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       }
     ],
     "kind": "class",
-    "signature": "\"(config: 'Stove0RuntimeConfig', riverhog_api: 'ApiClient', state: 'SqlAlchemyStateStore', recipes: 'RecipeCatalog', work: 'Stove0WorkService', coordinator: 'Stove0Coordinator', preview: 'WorkflowPreviewService', evaluations: 'EvaluationService', scheduler: 'Stove0Scheduler', admission: 'ClassificationAdmissionService | None' = None, target_callbacks: 'TargetCallbackAuthority | None' = None, browse_tokens: 'BrowseTokenCodec | None' = None) -> None\""
+    "signature": "\"(config: 'Stove0RuntimeConfig', riverhog_api: 'ApiClient', state: 'SqlAlchemyStateStore', recipes: 'RecipeCatalog', work: 'Stove0WorkService', coordinator: 'Stove0Coordinator', preview: 'WorkflowPreviewService', evaluations: 'EvaluationService', scheduler: 'Stove0Scheduler', admission: 'ClassificationAdmissionService | None' = None, departure: 'DepartureEffectService | None' = None, target_callbacks: 'TargetCallbackAuthority | None' = None, browse_tokens: 'BrowseTokenCodec | None' = None) -> None\""
   },
   "distribution": "stove0-server",
   "module": "stove0_api",

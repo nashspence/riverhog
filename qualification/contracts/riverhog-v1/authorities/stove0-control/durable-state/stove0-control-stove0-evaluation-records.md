@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-evaluation-records:dfc17e8eb3 -->
+<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-evaluation-records:f8fdae61e5 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-2815e2a68e"></a>
+<a id="s-1d558a5c9e"></a>
 
 ### Table: `stove0_evaluation_records`
 
@@ -21,23 +21,23 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-29ddb78c38"></a>`evaluation_id` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-44a1a4de48"></a>`revision` | `INTEGER` | no | `—` | — |
-| <a id="s-2ab402d7bf"></a>`phase` | `VARCHAR(32)` | no | `—` | — |
-| <a id="s-046771c8a6"></a>`updated_at` | `VARCHAR(40)` | no | `—` | — |
-| <a id="s-8edce34fcf"></a>`document_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-bf157de57b"></a>`document_json` | `TEXT` | no | `—` | — |
+| <a id="s-a68a8c0f1e"></a>`evaluation_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-d43cdafbc0"></a>`revision` | `INTEGER` | no | `—` | — |
+| <a id="s-04c53dd5b7"></a>`phase` | `VARCHAR(32)` | no | `—` | — |
+| <a id="s-091063b1f4"></a>`updated_at` | `VARCHAR(40)` | no | `—` | — |
+| <a id="s-2679702022"></a>`document_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-2516c93f7e"></a>`document_json` | `TEXT` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-cc8dddb416"></a>`primary-key` | `—` | `PRIMARY KEY (evaluation_id)` |
-| <a id="s-e4a5ec9b5a"></a>`check` | `ck_stove0_evaluation_records_revision` | `CONSTRAINT ck_stove0_evaluation_records_revision CHECK (revision >= 1)` |
-| <a id="s-2b3a2ed99c"></a>`check` | `ck_stove0_evaluation_records_phase` | `CONSTRAINT ck_stove0_evaluation_records_phase CHECK (phase IN ('planning','running','partially_complete','complete','failed','canceled'))` |
-| <a id="s-136ff96364"></a>`check` | `ck_stove0_evaluation_records_id` | `CONSTRAINT ck_stove0_evaluation_records_id CHECK (length(evaluation_id) = 64)` |
-| <a id="s-d8433e13a6"></a>`check` | `ck_stove0_evaluation_records_document_bytes` | `CONSTRAINT ck_stove0_evaluation_records_document_bytes CHECK (document_bytes >= 0)` |
-| <a id="s-c72842df65"></a>`check` | `ck_stove0_evaluation_records_evaluation_id_hex` | `CONSTRAINT ck_stove0_evaluation_records_evaluation_id_hex CHECK (length(evaluation_id) = 64 AND lower(evaluation_id) = evaluation_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(evaluation_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-fbd19d024b"></a>`primary-key` | `—` | `PRIMARY KEY (evaluation_id)` |
+| <a id="s-d6f7938e94"></a>`check` | `ck_stove0_evaluation_records_revision` | `CONSTRAINT ck_stove0_evaluation_records_revision CHECK (revision >= 1)` |
+| <a id="s-ed995ae514"></a>`check` | `ck_stove0_evaluation_records_phase` | `CONSTRAINT ck_stove0_evaluation_records_phase CHECK (phase IN ('planning','running','partially_complete','complete','failed','canceled'))` |
+| <a id="s-f490934355"></a>`check` | `ck_stove0_evaluation_records_id` | `CONSTRAINT ck_stove0_evaluation_records_id CHECK (length(evaluation_id) = 64)` |
+| <a id="s-c4575f784b"></a>`check` | `ck_stove0_evaluation_records_document_bytes` | `CONSTRAINT ck_stove0_evaluation_records_document_bytes CHECK (document_bytes >= 0)` |
+| <a id="s-a8be8b2824"></a>`check` | `ck_stove0_evaluation_records_evaluation_id_hex` | `CONSTRAINT ck_stove0_evaluation_records_evaluation_id_hex CHECK (length(evaluation_id) = 64 AND lower(evaluation_id) = evaluation_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(evaluation_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -47,7 +47,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-91a6451d40"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-fbb40295c1"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -63,7 +63,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/3/structure/tables/5`
+- `/external_contract/durable_state/owners/3/structure/tables/8`
 
 ### Exact owned JSON
 

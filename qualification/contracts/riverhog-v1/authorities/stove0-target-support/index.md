@@ -4,7 +4,7 @@
 
 Hardware-neutral target protocol, runtime, and conformance support for Stove0.
 
-Contract elements: **168** · Extent decisions: **165**
+Contract elements: **173** · Extent decisions: **165**
 
 ## Interfaces
 
@@ -13,4 +13,4 @@ Contract elements: **168** · Extent decisions: **165**
 - [Process Protocol Schemas](process-protocol-schemas/index.md) (8)
 - [CLI](cli/index.md) (2)
 - [Configuration Environment](configuration-environment/index.md) (1)
-- [Python](python/index.md) (151)
+- [Python](python/index.md) (156)

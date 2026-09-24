@@ -179,11 +179,15 @@ def catalog_event_projection(
     permission: str,
 ) -> tuple[ColumnElement[bool], ColumnElement[str]]:
     native_change = cast(ColumnElement[str], CatalogEventRecord.change)
+    projected_native = case(
+        (native_change == "deleted", literal("departure")),
+        else_=native_change,
+    )
     if principal is None:
-        return true(), native_change
+        return true(), projected_native
     resources = permission_resources(principal, permission)
     if ALL_RESOURCES in resources:
-        return true(), native_change
+        return true(), projected_native
 
     allowed_collections = collection_ids(resources)
     allowed_tags = tag_hashes(resources)
@@ -198,9 +202,9 @@ def catalog_event_projection(
     return (
         or_(remains_visible, before_match),
         case(
-            (remains_visible, native_change),
-            (before_match, literal("deleted")),
-            else_=native_change,
+            (remains_visible, projected_native),
+            (before_match, literal("departure")),
+            else_=projected_native,
         ),
     )
 

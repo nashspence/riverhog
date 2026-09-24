@@ -239,6 +239,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-api-client` | [STOVE0_HTTP_TIMEOUT_SECONDS](../../authorities/stove0-api-client/configuration-environment/stove0-http-timeout-seconds.md#pa-a7ace2328d) |
 | `stove0-api-client` | [STOVE0_TOKEN](../../authorities/stove0-api-client/configuration-environment/stove0-token.md#pa-69191ea63d) |
 | `stove0-operator-contracts` | [stove0-operator-contracts:configuration:admission-catalog configuration](../../authorities/stove0-operator-contracts/configuration/stove0-operator-contracts-configuration-admission-catalog-configuration.md#pa-dd2b0b51de) |
+| `stove0-operator-contracts` | [stove0-operator-contracts:configuration:departure-catalog configuration](../../authorities/stove0-operator-contracts/configuration/stove0-operator-contracts-configuration-departure-catalog-configuration.md#pa-6919323f0a) |
 | `stove0-recipe-config` | [stove0-recipe-config:configuration:recipe-catalog configuration](../../authorities/stove0-recipe-config/configuration/stove0-recipe-config-configuration-recipe-catalog-configuration.md#pa-d0c3694e90) |
 | `stove0-server` | [RIVERHOG_ALLOW_INSECURE_HTTP](../../authorities/stove0-server/configuration-environment/riverhog-allow-insecure-http.md#pa-1aac8761d4) |
 | `stove0-server` | [RIVERHOG_BASE_URL](../../authorities/stove0-server/configuration-environment/riverhog-base-url.md#pa-1a81851e13) |
@@ -255,14 +256,16 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-server` | [STOVE0_DATABASE_URL](../../authorities/stove0-server/configuration-environment/stove0-database-url.md#pa-c05dfa6920) |
 | `stove0-server` | [STOVE0_DATABASE_URL_FILE](../../authorities/stove0-server/configuration-environment/stove0-database-url-file.md#pa-6a704d51e7) |
 | `stove0-server` | [STOVE0_DECLARED_WORKSPACE_PROTECTION](../../authorities/stove0-server/configuration-environment/stove0-declared-workspace-protection.md#pa-d66b47297a) |
-| `stove0-server` | [STOVE0_OBSERVERS_JSON](../../authorities/stove0-server/configuration-environment/stove0-observers-json.md#pa-8dab131f68) |
-| `stove0-server` | [STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS](../../authorities/stove0-server/configuration-environment/stove0-operational-state-retention-seconds.md#pa-93d40f9011) |
-| `stove0-server` | [STOVE0_RECIPES_PATH](../../authorities/stove0-server/configuration-environment/stove0-recipes-path.md#pa-06526da700) |
-| `stove0-server` | [STOVE0_SCHEDULER_INTERVAL_SECONDS](../../authorities/stove0-server/configuration-environment/stove0-scheduler-interval-seconds.md#pa-1330e662a2) |
-| `stove0-server` | [STOVE0_TARGETS_JSON](../../authorities/stove0-server/configuration-environment/stove0-targets-json.md#pa-184b4a9ea3) |
-| `stove0-server` | [STOVE0_TARGET_AUTHORITY_BATCH_SIZE](../../authorities/stove0-server/configuration-environment/stove0-target-authority-batch-size.md#pa-fa8bdb5423) |
-| `stove0-server` | [STOVE0_TARGET_CALLBACK_ALLOW_INSECURE_HTTP](../../authorities/stove0-server/configuration-environment/stove0-target-callback-allow-insecure-http.md#pa-cb390e38f9) |
-| `stove0-server` | [STOVE0_TARGET_CALLBACK_BASE_URL](../../authorities/stove0-server/configuration-environment/stove0-target-callback-base-url.md#pa-b426c1ddac) |
-| `stove0-server` | [STOVE0_TARGET_CALLBACK_SIGNING_KEY](../../authorities/stove0-server/configuration-environment/stove0-target-callback-signing-key.md#pa-b28058fbec) |
-| `stove0-server` | [STOVE0_TARGET_CALLBACK_SIGNING_KEY_FILE](../../authorities/stove0-server/configuration-environment/stove0-target-callback-signing-key-file.md#pa-0273201c1d) |
-| `stove0-target-support` | [STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS](../../authorities/stove0-target-support/configuration-environment/stove0-target-terminal-state-retention-seconds.md#pa-92d0f2da2e) |
+| `stove0-server` | [STOVE0_DEPARTURES_PATH](../../authorities/stove0-server/configuration-environment/stove0-departures-path.md#pa-f6d36a69a7) |
+| `stove0-server` | [STOVE0_DEPARTURE_TARGETS_JSON](../../authorities/stove0-server/configuration-environment/stove0-departure-targets-json.md#pa-15cbe09d25) |
+| `stove0-server` | [STOVE0_OBSERVERS_JSON](../../authorities/stove0-server/configuration-environment/stove0-observers-json.md#pa-edbbaa71c9) |
+| `stove0-server` | [STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS](../../authorities/stove0-server/configuration-environment/stove0-operational-state-retention-seconds.md#pa-e151e213ab) |
+| `stove0-server` | [STOVE0_RECIPES_PATH](../../authorities/stove0-server/configuration-environment/stove0-recipes-path.md#pa-9f84f6fe10) |
+| `stove0-server` | [STOVE0_SCHEDULER_INTERVAL_SECONDS](../../authorities/stove0-server/configuration-environment/stove0-scheduler-interval-seconds.md#pa-a762248d80) |
+| `stove0-server` | [STOVE0_TARGETS_JSON](../../authorities/stove0-server/configuration-environment/stove0-targets-json.md#pa-d60d576305) |
+| `stove0-server` | [STOVE0_TARGET_AUTHORITY_BATCH_SIZE](../../authorities/stove0-server/configuration-environment/stove0-target-authority-batch-size.md#pa-322ed5edbd) |
+| `stove0-server` | [STOVE0_TARGET_CALLBACK_ALLOW_INSECURE_HTTP](../../authorities/stove0-server/configuration-environment/stove0-target-callback-allow-insecure-http.md#pa-8c55994f48) |
+| `stove0-server` | [STOVE0_TARGET_CALLBACK_BASE_URL](../../authorities/stove0-server/configuration-environment/stove0-target-callback-base-url.md#pa-ad809a339b) |
+| `stove0-server` | [STOVE0_TARGET_CALLBACK_SIGNING_KEY](../../authorities/stove0-server/configuration-environment/stove0-target-callback-signing-key.md#pa-3834ab6a52) |
+| `stove0-server` | [STOVE0_TARGET_CALLBACK_SIGNING_KEY_FILE](../../authorities/stove0-server/configuration-environment/stove0-target-callback-signing-key-file.md#pa-7070509a7d) |
+| `stove0-target-support` | [STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS](../../authorities/stove0-target-support/configuration-environment/stove0-target-terminal-state-retention-seconds.md#pa-1e43cd3bb3) |

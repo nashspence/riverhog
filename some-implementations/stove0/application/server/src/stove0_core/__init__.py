@@ -11,6 +11,7 @@ from stove0_core.coordinator import (
     TargetInvocationAuthority,
     TargetPort,
 )
+from stove0_core.departure import DepartureEffectService, HttpDepartureTargetPort
 from stove0_core.evaluation import (
     ConcurrentEvaluationUpdate,
     EvaluationChild,
@@ -64,6 +65,7 @@ __all__ = [
     "ConcurrentWorkUpdate",
     "CoordinationProjection",
     "DEFAULT_OPERATIONAL_STATE_RETENTION_SECONDS",
+    "DepartureEffectService",
     "ParentOutcomeBinding",
     "EvaluationChild",
     "EvaluationChildState",
@@ -74,6 +76,7 @@ __all__ = [
     "EvaluationStore",
     "EvaluationWorkController",
     "HttpObserverPort",
+    "HttpDepartureTargetPort",
     "HttpTargetPort",
     "InMemoryEvaluationStore",
     "InMemoryWorkStore",

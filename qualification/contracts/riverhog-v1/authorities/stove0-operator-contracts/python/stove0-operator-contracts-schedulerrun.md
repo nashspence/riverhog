@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-707b5c1086"></a>`kind`: `"class"`
-- <a id="s-ac3c4af9b1"></a>`signature`: `"'(*, pruning: stove0_operator_contracts.SchedulerPruning \| None, admission: stove0_operator_contracts.AdmissionRun \| None = None, work: stove0_operator_contracts.SchedulerWorkBatch) -> None'"`
+- <a id="s-ac3c4af9b1"></a>`signature`: `"'(*, pruning: stove0_operator_contracts.SchedulerPruning \| None, admission: stove0_operator_contracts.AdmissionRun \| None = None, departure: stove0_operator_contracts.DepartureRun \| None = None, work: stove0_operator_contracts.SchedulerWorkBatch) -> None'"`
 
 #### Validated model schema
 
@@ -37,12 +37,14 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-4529d53325"></a>`admission` | no | anyOf=[([AdmissionRun](#s-bba32c184c)); (type="null")]; default=null |  |
+| <a id="s-a914eb2a8d"></a>`departure` | no | anyOf=[([DepartureRun](#s-532856ee63)); (type="null")]; default=null |  |
 | <a id="s-d0ff3529cf"></a>`pruning` | yes | anyOf=[([SchedulerPruning](#s-bc7006be46)); (type="null")] |  |
 | <a id="s-557354c3af"></a>`work` | yes | [SchedulerWorkBatch](#s-85f50ba4ce) |  |
 
 ##### Definitions
 
 - [AdmissionRun](#s-bba32c184c)
+- [DepartureRun](#s-532856ee63)
 - [SchedulerFailure](#s-f931be92db)
 - [SchedulerPruning](#s-bc7006be46)
 - [SchedulerWorkBatch](#s-85f50ba4ce)
@@ -59,6 +61,19 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-dcac46254d"></a>`failures` | no | type="array"; default=[]; items=([SchedulerFailure](#s-f931be92db)) |  |
 | <a id="s-5720136508"></a>`progressed` | yes | type="array"; items=(type="string") |  |
+
+##### <a id="s-532856ee63"></a>definition `DepartureRun`
+
+- <a id="s-4f6f2cd5ef"></a>`type`: `"object"`
+- <a id="s-c1c82c7ebd"></a>`additionalProperties`: `false`
+- <a id="s-ee96b247d6"></a>`required`: `["progressed"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-7bc408630b"></a>`failures` | no | type="array"; default=[]; items=([SchedulerFailure](#s-f931be92db)) |  |
+| <a id="s-beb6af687f"></a>`progressed` | yes | type="array"; items=(type="string") |  |
 
 ##### <a id="s-f931be92db"></a>definition `SchedulerFailure`
 
@@ -136,7 +151,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7871590768273f2167839930d35587f3bce0f42c659838b422c6e9c1cd7e06e0 -->
+<!-- exact-contract-value: bfad01969c0279558e1f961cd43643c4af36e6960d2ff1a39bfcc74b41e1c945 -->
 
 ```json
 {
@@ -145,6 +160,28 @@ The following JSON is the complete value owned at each machine-authority pointer
     "schema": {
       "$defs": {
         "AdmissionRun": {
+          "additionalProperties": false,
+          "properties": {
+            "failures": {
+              "default": [],
+              "items": {
+                "$ref": "#/$defs/SchedulerFailure"
+              },
+              "type": "array"
+            },
+            "progressed": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          },
+          "required": [
+            "progressed"
+          ],
+          "type": "object"
+        },
+        "DepartureRun": {
           "additionalProperties": false,
           "properties": {
             "failures": {
@@ -305,6 +342,17 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "default": null
         },
+        "departure": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DepartureRun"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
         "pruning": {
           "anyOf": [
             {
@@ -325,7 +373,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "'(*, pruning: stove0_operator_contracts.SchedulerPruning | None, admission: stove0_operator_contracts.AdmissionRun | None = None, work: stove0_operator_contracts.SchedulerWorkBatch) -> None'"
+    "signature": "'(*, pruning: stove0_operator_contracts.SchedulerPruning | None, admission: stove0_operator_contracts.AdmissionRun | None = None, departure: stove0_operator_contracts.DepartureRun | None = None, work: stove0_operator_contracts.SchedulerWorkBatch) -> None'"
   },
   "distribution": "stove0-operator-contracts",
   "module": "stove0_operator_contracts",

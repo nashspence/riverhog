@@ -4,8 +4,8 @@
 
 Content-opaque transformation application for Riverhog.
 
-Contract elements: **23** · Extent decisions: **0**
+Contract elements: **26** · Extent decisions: **0**
 
 ## Interfaces
 
-- [Durable State](durable-state/index.md) (23)
+- [Durable State](durable-state/index.md) (26)

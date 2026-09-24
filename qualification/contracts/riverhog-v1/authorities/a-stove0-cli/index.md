@@ -4,8 +4,8 @@
 
 Command-line client for Stove0.
 
-Contract elements: **37** · Extent decisions: **66**
+Contract elements: **43** · Extent decisions: **71**
 
 ## Interfaces
 
-- [CLI](cli/index.md) (37)
+- [CLI](cli/index.md) (43)

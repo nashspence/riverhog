@@ -244,6 +244,8 @@ Recorded consumer and default facts come from discovery. Use the contract elemen
 | `stove0-server` | [STOVE0_DATABASE_URL](../../authorities/stove0-server/configuration-environment/stove0-database-url.md) | `stove0-server` | `''` |
 | `stove0-server` | [STOVE0_DATABASE_URL_FILE](../../authorities/stove0-server/configuration-environment/stove0-database-url-file.md) | `stove0-server` | `''` |
 | `stove0-server` | [STOVE0_DECLARED_WORKSPACE_PROTECTION](../../authorities/stove0-server/configuration-environment/stove0-declared-workspace-protection.md) | `stove0-server` | `''` |
+| `stove0-server` | [STOVE0_DEPARTURES_PATH](../../authorities/stove0-server/configuration-environment/stove0-departures-path.md) | `stove0-server` | `''` |
+| `stove0-server` | [STOVE0_DEPARTURE_TARGETS_JSON](../../authorities/stove0-server/configuration-environment/stove0-departure-targets-json.md) | `stove0-server` | `'{}'` |
 | `stove0-server` | [STOVE0_OBSERVERS_JSON](../../authorities/stove0-server/configuration-environment/stove0-observers-json.md) | `stove0-server` | `'{}'` |
 | `stove0-server` | [STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS](../../authorities/stove0-server/configuration-environment/stove0-operational-state-retention-seconds.md) | `stove0-server` | `str(default)` |
 | `stove0-server` | [STOVE0_RECIPES_PATH](../../authorities/stove0-server/configuration-environment/stove0-recipes-path.md) | `stove0-server` | `''` |

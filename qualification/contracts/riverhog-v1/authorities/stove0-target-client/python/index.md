@@ -8,6 +8,9 @@ Declared public imports and their selected exact structural contracts.
 
 ### `stove0_target_client`
 
+- [DepartureEffectClient](stove0-target-client-departureeffectclient.md)
+  - [descriptor](stove0-target-client-departureeffectclient-descriptor.md)
+  - [put_effect](stove0-target-client-departureeffectclient-put-effect.md)
 - [TargetCallbackClient](stove0-target-client-targetcallbackclient.md)
   - [close](stove0-target-client-targetcallbackclient-close.md)
   - [declare_target_execution_disposition](stove0-target-client-targetcallbackclient-declare-target-execution-disposition.md)

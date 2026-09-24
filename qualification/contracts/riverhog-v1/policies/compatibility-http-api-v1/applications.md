@@ -213,7 +213,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: CatalogSyncChangePage](../../authorities/riverhog/http-schemas/schemas-catalogsyncchangepage.md#pa-0d7f90d5d4) |
 | `riverhog` | [schemas: CatalogSyncCheckpoint](../../authorities/riverhog/http-schemas/schemas-catalogsynccheckpoint.md#pa-ce592a819f) |
 | `riverhog` | [schemas: CatalogSyncCollectionPage](../../authorities/riverhog/http-schemas/schemas-catalogsynccollectionpage.md#pa-dce34a11ba) |
-| `riverhog` | [schemas: CatalogSyncDelete](../../authorities/riverhog/http-schemas/schemas-catalogsyncdelete.md#pa-e4779f0529) |
+| `riverhog` | [schemas: CatalogSyncDeparture](../../authorities/riverhog/http-schemas/schemas-catalogsyncdeparture.md#pa-0104422df9) |
 | `riverhog` | [schemas: CatalogSyncDescriptor](../../authorities/riverhog/http-schemas/schemas-catalogsyncdescriptor.md#pa-c2f9630c41) |
 | `riverhog` | [schemas: CatalogSyncUpsert](../../authorities/riverhog/http-schemas/schemas-catalogsyncupsert.md#pa-1da8efda82) |
 | `riverhog` | [schemas: ClaimFenceDocument](../../authorities/riverhog/http-schemas/schemas-claimfencedocument.md#pa-ac067e5bc9) |
@@ -414,6 +414,9 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [GET /v1/admissions](../../authorities/stove0/http-operations/get-v1-admissions.md#pa-a78cd06929) |
 | `stove0` | [GET /v1/admissions/{admission_id}](../../authorities/stove0/http-operations/get-v1-admissions-admission-id.md#pa-efc4286ee1) |
 | `stove0` | [GET /v1/artifact-selections/{selection_sha256}](../../authorities/stove0/http-operations/get-v1-artifact-selections-selection-sha256.md#pa-45f23eb5ed) |
+| `stove0` | [GET /v1/departure-effects](../../authorities/stove0/http-operations/get-v1-departure-effects.md#pa-71c5a69128) |
+| `stove0` | [GET /v1/departure-effects/{departure_id}](../../authorities/stove0/http-operations/get-v1-departure-effects-departure-id.md#pa-8ea161b99b) |
+| `stove0` | [GET /v1/departure-policies](../../authorities/stove0/http-operations/get-v1-departure-policies.md#pa-b07a62d91c) |
 | `stove0` | [GET /v1/evaluations](../../authorities/stove0/http-operations/get-v1-evaluations.md#pa-6d98cb5096) |
 | `stove0` | [GET /v1/evaluations/{evaluation_id}](../../authorities/stove0/http-operations/get-v1-evaluations-evaluation-id.md#pa-41125a3b1a) |
 | `stove0` | [GET /v1/events](../../authorities/stove0/http-operations/get-v1-events.md#pa-b38788b445) |
@@ -426,6 +429,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [POST /v1/admin/scheduler/run](../../authorities/stove0/http-operations/post-v1-admin-scheduler-run.md#pa-3eb9f79291) |
 | `stove0` | [POST /v1/admission-policies/{policy_id}:backfill](../../authorities/stove0/http-operations/post-v1-admission-policies-policy-id-backfill.md#pa-a52842816b) |
 | `stove0` | [POST /v1/admission-policies/{policy_id}:rebaseline](../../authorities/stove0/http-operations/post-v1-admission-policies-policy-id-rebaseline.md#pa-c6202a3bd8) |
+| `stove0` | [POST /v1/departure-policies/{policy_id}:rebaseline](../../authorities/stove0/http-operations/post-v1-departure-policies-policy-id-rebaseline.md#pa-9c5485f80b) |
 | `stove0` | [POST /v1/evaluations](../../authorities/stove0/http-operations/post-v1-evaluations.md#pa-cc09a100e8) |
 | `stove0` | [POST /v1/evaluations/{evaluation_id}/cancel](../../authorities/stove0/http-operations/post-v1-evaluations-evaluation-id-cancel.md#pa-fd79a907e0) |
 | `stove0` | [POST /v1/evaluations/{evaluation_id}/step](../../authorities/stove0/http-operations/post-v1-evaluations-evaluation-id-step.md#pa-f8cd6b7fdc) |
@@ -448,6 +452,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: AdmissionPolicyStatus](../../authorities/stove0/http-schemas/schemas-admissionpolicystatus.md#pa-ad59bade1a) |
 | `stove0` | [schemas: AdmissionRun](../../authorities/stove0/http-schemas/schemas-admissionrun.md#pa-dc84e452ab) |
 | `stove0` | [schemas: AdmissionView](../../authorities/stove0/http-schemas/schemas-admissionview.md#pa-1749ff8a91) |
+| `stove0` | [schemas: AllVisibleAdmissionSelector](../../authorities/stove0/http-schemas/schemas-allvisibleadmissionselector.md#pa-fdc04dcffc) |
 | `stove0` | [schemas: ArtifactAssociation](../../authorities/stove0/http-schemas/schemas-artifactassociation.md#pa-2b03af97e4) |
 | `stove0` | [schemas: ArtifactDispositionSetIdentity](../../authorities/stove0/http-schemas/schemas-artifactdispositionsetidentity.md#pa-6c62414270) |
 | `stove0` | [schemas: ArtifactFactBinding](../../authorities/stove0/http-schemas/schemas-artifactfactbinding.md#pa-ae4a6ba71c) |
@@ -482,6 +487,14 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: CoordinationCollectionResult](../../authorities/stove0/http-schemas/schemas-coordinationcollectionresult.md#pa-97467c11f8) |
 | `stove0` | [schemas: CoordinationSettlement](../../authorities/stove0/http-schemas/schemas-coordinationsettlement.md#pa-209aaa37c3) |
 | `stove0` | [schemas: DeclaredWorkspaceProtection](../../authorities/stove0/http-schemas/schemas-declaredworkspaceprotection.md#pa-2a754fa1ca) |
+| `stove0` | [schemas: DepartureEffectIntent](../../authorities/stove0/http-schemas/schemas-departureeffectintent.md#pa-433ccc5db8) |
+| `stove0` | [schemas: DepartureEffectPage](../../authorities/stove0/http-schemas/schemas-departureeffectpage.md#pa-8fb5282ea3) |
+| `stove0` | [schemas: DepartureEffectReceipt](../../authorities/stove0/http-schemas/schemas-departureeffectreceipt.md#pa-b287fcd98d) |
+| `stove0` | [schemas: DepartureEffectView](../../authorities/stove0/http-schemas/schemas-departureeffectview.md#pa-d47f8871c8) |
+| `stove0` | [schemas: DeparturePolicy](../../authorities/stove0/http-schemas/schemas-departurepolicy.md#pa-14ce11fd88) |
+| `stove0` | [schemas: DeparturePolicyCatalogView](../../authorities/stove0/http-schemas/schemas-departurepolicycatalogview.md#pa-d11e8d2118) |
+| `stove0` | [schemas: DeparturePolicyStatus](../../authorities/stove0/http-schemas/schemas-departurepolicystatus.md#pa-bfaefa698c) |
+| `stove0` | [schemas: DepartureRun](../../authorities/stove0/http-schemas/schemas-departurerun.md#pa-c861f2d2c9) |
 | `stove0` | [schemas: EffectPlan](../../authorities/stove0/http-schemas/schemas-effectplan.md#pa-876162ce67) |
 | `stove0` | [schemas: ErrorBody](../../authorities/stove0/http-schemas/schemas-errorbody.md#pa-e4546c1b48) |
 | `stove0` | [schemas: ErrorOut](../../authorities/stove0/http-schemas/schemas-errorout.md#pa-d15f790273) |
@@ -546,6 +559,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: SchedulerWorkBatch](../../authorities/stove0/http-schemas/schemas-schedulerworkbatch.md#pa-c458933b76) |
 | `stove0` | [schemas: Stove0EventPage](../../authorities/stove0/http-schemas/schemas-stove0eventpage.md#pa-ecae8ff75b) |
 | `stove0` | [schemas: Stove0LifecycleEvent](../../authorities/stove0/http-schemas/schemas-stove0lifecycleevent.md#pa-8ade29e925) |
+| `stove0` | [schemas: TaggedAdmissionSelector](../../authorities/stove0/http-schemas/schemas-taggedadmissionselector.md#pa-3d65735b63) |
 | `stove0` | [schemas: TargetCallbackAcknowledgement](../../authorities/stove0/http-schemas/schemas-targetcallbackacknowledgement.md#pa-777690247c) |
 | `stove0` | [schemas: TargetExecutionEvidence](../../authorities/stove0/http-schemas/schemas-targetexecutionevidence.md#pa-98d927c932) |
 | `stove0` | [schemas: TargetFailure](../../authorities/stove0/http-schemas/schemas-targetfailure.md#pa-5c57f87b0a) |

@@ -1,10 +1,10 @@
-# schemas: CatalogSyncDelete
+# schemas: CatalogSyncDeparture
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: http-schemas:riverhog:schemas-catalogsyncdelete:f3441b6731 -->
+<!-- contract-element: http-schemas:riverhog:schemas-catalogsyncdeparture:cd194a756b -->
 
-Exact externally visible contract owned by this contract element.
+A collection left this view; the cause identifies deletion or visibility loss.
 
 | Audit field | Value |
 |---|---|
@@ -13,20 +13,22 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-1c0897aa29"></a>
+<a id="s-f7f546cbe1"></a>
 
-- <a id="s-121661ebff"></a>`type`: `"object"`
-- <a id="s-e3aadff647"></a>`additionalProperties`: `false`
-- <a id="s-eced79cb93"></a>`required`: `["collection_id","revision"]`
-- <a id="s-7364b55735"></a>`title`: `"CatalogSyncDelete"`
+- <a id="s-127e8ec317"></a>`type`: `"object"`
+- <a id="s-d959a9ddd3"></a>`additionalProperties`: `false`
+- <a id="s-1e8ebda4cb"></a>`description`: `"A collection left this view; the cause identifies deletion or visibility loss."`
+- <a id="s-6152dbfab3"></a>`required`: `["cause","collection_id","revision"]`
+- <a id="s-10d50f15b6"></a>`title`: `"CatalogSyncDeparture"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ba3c39e6c8"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
-| <a id="s-ca1b3b01b0"></a>`operation` | no | type="string"; const="delete"; default="delete"; title="Operation" |  |
-| <a id="s-8a05c66a42"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$"; title="Revision" |  |
+| <a id="s-9ec11b44ba"></a>`cause` | yes | type="string"; enum=["collection_deleted","visibility_lost"]; title="Cause" |  |
+| <a id="s-02ba909d41"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
+| <a id="s-ab70ac6067"></a>`operation` | no | type="string"; const="departure"; default="departure"; title="Operation" |  |
+| <a id="s-8d68297138"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$"; title="Revision" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -36,7 +38,7 @@ Shared facts for every subject below: maximum=19; minimum=1; reason="schema-maxi
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field revision](#s-8a05c66a42) | `length · characters · contract_max` | shared above |
+| [field revision](#s-8d68297138) | `length · characters · contract_max` | shared above |
 
 ## Maintained corroboration
 
@@ -48,8 +50,8 @@ Shared facts for every subject below: maximum=19; minimum=1; reason="schema-maxi
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
-- <a id="pa-e4779f0529"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
-- <a id="pa-c161c125a9"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
+- <a id="pa-0104422df9"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-4759f600a3"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -65,7 +67,7 @@ Shared facts for every subject below: maximum=19; minimum=1; reason="schema-maxi
 
 ### Machine authority
 
-- `/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncDelete`
+- `/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncDeparture`
 
 ### Exact owned JSON
 
@@ -74,18 +76,27 @@ Shared facts for every subject below: maximum=19; minimum=1; reason="schema-maxi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6f3fb51bea4d0b80c512399c325902293c78eb4ff2a0040187f78eff54653eb0 -->
+<!-- exact-contract-value: 894cd8d85cab2abfcd37c9107dcd0e7742ad754905903886354dad49c76d80bd -->
 
 ```json
 {
   "additionalProperties": false,
+  "description": "A collection left this view; the cause identifies deletion or visibility loss.",
   "properties": {
+    "cause": {
+      "enum": [
+        "collection_deleted",
+        "visibility_lost"
+      ],
+      "title": "Cause",
+      "type": "string"
+    },
     "collection_id": {
       "$ref": "#/components/schemas/CollectionId"
     },
     "operation": {
-      "const": "delete",
-      "default": "delete",
+      "const": "departure",
+      "default": "departure",
       "title": "Operation",
       "type": "string"
     },
@@ -98,10 +109,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   },
   "required": [
+    "cause",
     "collection_id",
     "revision"
   ],
-  "title": "CatalogSyncDelete",
+  "title": "CatalogSyncDeparture",
   "type": "object"
 }
 ```

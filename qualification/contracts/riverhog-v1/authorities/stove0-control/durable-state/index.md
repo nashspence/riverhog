@@ -17,6 +17,9 @@ Persisted structures, schema heads, and v1 transition obligations.
 | [stove0_admission_policies](stove0-control-stove0-admission-policies.md) | Relational table |
 | [stove0_artifact_selection_members](stove0-control-stove0-artifact-selection-members.md) | Relational table |
 | [stove0_artifact_selections](stove0-control-stove0-artifact-selections.md) | Relational table |
+| [stove0_departure_effects](stove0-control-stove0-departure-effects.md) | Relational table |
+| [stove0_departure_policies](stove0-control-stove0-departure-policies.md) | Relational table |
+| [stove0_departure_seen](stove0-control-stove0-departure-seen.md) | Relational table |
 | [stove0_evaluation_children](stove0-control-stove0-evaluation-children.md) | Relational table |
 | [stove0_evaluation_records](stove0-control-stove0-evaluation-records.md) | Relational table |
 | [stove0_event_cursors](stove0-control-stove0-event-cursors.md) | Relational table |

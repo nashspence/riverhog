@@ -15,6 +15,15 @@ from stove0_target_protocol.conformance import (
     SemanticIntentConformanceVector,
     SemanticIntentConformanceVectors,
 )
+from stove0_target_protocol.departure import (
+    MAX_DEPARTURE_RESULT_BYTES,
+    DepartureEffectIntent,
+    DepartureEffectIntentPayload,
+    DepartureEffectReceipt,
+    DepartureEffectReceiptPayload,
+    DepartureEffectTargetDescriptor,
+    DepartureEffectTargetDescriptorPayload,
+)
 from stove0_target_protocol.jcs import canonical_json_bytes, canonical_json_sha256
 from stove0_target_protocol.protocol import (
     ARTIFACT_ID_PATTERN,
@@ -106,6 +115,30 @@ def _target_http_errors(*codes: str) -> tuple[HttpErrorContract, ...]:
 
 
 _JOB_ID_PARAMETER = (HttpPathParameterContract("job_id", Sha256),)
+_DEPARTURE_ID_PARAMETER = (HttpPathParameterContract("departure_id", Sha256),)
+DEPARTURE_EFFECT_HTTP_OPERATIONS = (
+    HttpOperationContract(
+        "GET",
+        "/v1/departure-target",
+        response_type=DepartureEffectTargetDescriptor,
+        errors=_target_http_errors("bad_request", "unauthorized", "target_failed"),
+    ),
+    HttpOperationContract(
+        "PUT",
+        "/v1/departure-effects/{departure_id}",
+        DepartureEffectIntent,
+        DepartureEffectReceipt,
+        "json",
+        errors=_target_http_errors(
+            "invalid_target_request",
+            "unauthorized",
+            "request_too_large",
+            "target_descriptor_mismatch",
+            "target_failed",
+        ),
+        path_parameters=_DEPARTURE_ID_PARAMETER,
+    ),
+)
 TARGET_HTTP_OPERATIONS = (
     HttpOperationContract(
         "GET",
@@ -228,6 +261,14 @@ TARGET_CALLBACK_HTTP_OPERATIONS = (
 
 __all__ = [
     "AcceptedTargetJob",
+    "DEPARTURE_EFFECT_HTTP_OPERATIONS",
+    "DepartureEffectIntent",
+    "DepartureEffectIntentPayload",
+    "DepartureEffectReceipt",
+    "DepartureEffectReceiptPayload",
+    "DepartureEffectTargetDescriptor",
+    "DepartureEffectTargetDescriptorPayload",
+    "MAX_DEPARTURE_RESULT_BYTES",
     "ARTIFACT_ID_PATTERN",
     "SHA256_PATTERN",
     "TARGET_INPUT_PAGE_MAX",

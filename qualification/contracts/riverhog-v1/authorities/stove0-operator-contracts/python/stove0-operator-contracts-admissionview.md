@@ -49,18 +49,20 @@ Exact externally visible contract owned by this contract element.
 ##### Definitions
 
 - [AdmissionIntent](#s-990313fa6e)
+- [AllVisibleAdmissionSelector](#s-6c43ba699e)
 - [CatalogSyncDescriptor](#s-227a918078)
 - [CollectionDescription](#s-c7eddb0819)
 - [CollectionId](#s-8c5a60017f)
 - [CollectionTag](#s-7119e58bd0)
 - [JsonValue](#s-1179c21027)
 - [NonnegativeDecimal](#s-30294c6818)
+- [TaggedAdmissionSelector](#s-f9a9e56953)
 
 ##### <a id="s-990313fa6e"></a>definition `AdmissionIntent`
 
 - <a id="s-bf5e8e4c58"></a>`type`: `"object"`
 - <a id="s-a5fbe8cd1a"></a>`additionalProperties`: `false`
-- <a id="s-ba834e2eab"></a>`required`: `["admission_id","policy_id","policy_revision","policy_sha256","required_tags","collection","recipe_id","recipe_revision","recipe_sha256","effective_intent"]`
+- <a id="s-ba834e2eab"></a>`required`: `["admission_id","policy_id","policy_revision","policy_sha256","selector","collection","recipe_id","recipe_revision","recipe_sha256","effective_intent"]`
 
 ###### Fields
 
@@ -76,7 +78,18 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-55425f61f0"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-0c8c8de178"></a>`recipe_revision` | yes | [NonnegativeDecimal](#s-30294c6818); ge=1 |  |
 | <a id="s-fa9d66ea43"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-da89bdca80"></a>`required_tags` | yes | type="array"; items=([CollectionTag](#s-7119e58bd0)) |  |
+| <a id="s-daf710036f"></a>`selector` | yes | discriminator={"mapping":{"all":"#/$defs/AllVisibleAdmissionSelector","tags":"#/$defs/TaggedAdmissionSelector"},"propertyName":"kind"}; oneOf=[([AllVisibleAdmissionSelector](#s-6c43ba699e)); ([TaggedAdmissionSelector](#s-f9a9e56953))] |  |
+
+##### <a id="s-6c43ba699e"></a>definition `AllVisibleAdmissionSelector`
+
+- <a id="s-36f5541b8b"></a>`type`: `"object"`
+- <a id="s-290adc3803"></a>`additionalProperties`: `false`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-d79e839e64"></a>`kind` | no | type="string"; const="all"; default="all" |  |
 
 ##### <a id="s-227a918078"></a>definition `CatalogSyncDescriptor`
 
@@ -135,6 +148,19 @@ Exact externally visible contract owned by this contract element.
 - <a id="s-cd2719c7e3"></a>`type`: `"string"`
 - <a id="s-28333e1481"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
+##### <a id="s-f9a9e56953"></a>definition `TaggedAdmissionSelector`
+
+- <a id="s-4e37abc962"></a>`type`: `"object"`
+- <a id="s-85701eea50"></a>`additionalProperties`: `false`
+- <a id="s-7e25d98e43"></a>`required`: `["required"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-b52606030c"></a>`kind` | no | type="string"; const="tags"; default="tags" |  |
+| <a id="s-008da7aa60"></a>`required` | yes | type="array"; items=([CollectionTag](#s-7119e58bd0)); maxItems=100; minItems=1; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-classification-admission-predicate"} |  |
+
 ## Maintained corroboration
 
 ### Related interface records
@@ -168,7 +194,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: cf4b953e0d23f71019a389e50ae3c53c1f408a3f99c82efebcceda6e57167efa -->
+<!-- exact-contract-value: bc918ab0aded602df94f0c47fc42cb59e18220695fcf7c798a48177deb40a1af -->
 
 ```json
 {
@@ -223,11 +249,22 @@ The following JSON is the complete value owned at each machine-authority pointer
               "pattern": "^[0-9a-f]{64}$",
               "type": "string"
             },
-            "required_tags": {
-              "items": {
-                "$ref": "#/$defs/CollectionTag"
+            "selector": {
+              "discriminator": {
+                "mapping": {
+                  "all": "#/$defs/AllVisibleAdmissionSelector",
+                  "tags": "#/$defs/TaggedAdmissionSelector"
+                },
+                "propertyName": "kind"
               },
-              "type": "array"
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/AllVisibleAdmissionSelector"
+                },
+                {
+                  "$ref": "#/$defs/TaggedAdmissionSelector"
+                }
+              ]
             }
           },
           "required": [
@@ -235,13 +272,24 @@ The following JSON is the complete value owned at each machine-authority pointer
             "policy_id",
             "policy_revision",
             "policy_sha256",
-            "required_tags",
+            "selector",
             "collection",
             "recipe_id",
             "recipe_revision",
             "recipe_sha256",
             "effective_intent"
           ],
+          "type": "object"
+        },
+        "AllVisibleAdmissionSelector": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "all",
+              "default": "all",
+              "type": "string"
+            }
+          },
           "type": "object"
         },
         "CatalogSyncDescriptor": {
@@ -353,6 +401,32 @@ The following JSON is the complete value owned at each machine-authority pointer
         "NonnegativeDecimal": {
           "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
           "type": "string"
+        },
+        "TaggedAdmissionSelector": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "tags",
+              "default": "tags",
+              "type": "string"
+            },
+            "required": {
+              "items": {
+                "$ref": "#/$defs/CollectionTag"
+              },
+              "maxItems": 100,
+              "minItems": 1,
+              "type": "array",
+              "x-riverhog-extent": {
+                "policy": "contract_max",
+                "reason": "bounded-exact-classification-admission-predicate"
+              }
+            }
+          },
+          "required": [
+            "required"
+          ],
+          "type": "object"
         }
       },
       "additionalProperties": false,

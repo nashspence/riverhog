@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-admission-candidates:65ef62b035 -->
+<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-admission-candidates:00f8e4c26e -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-710e9488a2"></a>
+<a id="s-ee83fb8e33"></a>
 
 ### Table: `stove0_admission_candidates`
 
@@ -21,34 +21,34 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-2c006d9fad"></a>`admission_id` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-ecc1ba6ce2"></a>`policy_id` | `VARCHAR(160)` | no | `—` | — |
-| <a id="s-2696ce9709"></a>`state` | `VARCHAR(16)` | no | `—` | — |
-| <a id="s-276a2a843b"></a>`preview_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-02ff2918b3"></a>`work_id` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-57a5a31149"></a>`document_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-76855d7dbe"></a>`document_json` | `TEXT` | no | `—` | — |
-| <a id="s-91c5847acf"></a>`preview_bytes` | `BIGINT` | yes | `—` | — |
-| <a id="s-f21988c28c"></a>`preview_json` | `TEXT` | yes | `—` | — |
-| <a id="s-f06aa615c4"></a>`attempt_count` | `INTEGER` | no | `—` | — |
-| <a id="s-633abeed7c"></a>`next_attempt_at` | `VARCHAR(40)` | yes | `—` | — |
-| <a id="s-bf0487dac3"></a>`failure` | `TEXT` | yes | `—` | — |
-| <a id="s-2c77dfb06d"></a>`created_at` | `VARCHAR(40)` | no | `—` | — |
-| <a id="s-a3d1e97e09"></a>`updated_at` | `VARCHAR(40)` | no | `—` | — |
+| <a id="s-4a3475cb4c"></a>`admission_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-d0e6f96460"></a>`policy_id` | `VARCHAR(160)` | no | `—` | — |
+| <a id="s-e8d072e3dc"></a>`state` | `VARCHAR(16)` | no | `—` | — |
+| <a id="s-31e9bd711c"></a>`preview_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-73acfa5cd9"></a>`work_id` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-26244aeddc"></a>`document_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-fe2f1b55bf"></a>`document_json` | `TEXT` | no | `—` | — |
+| <a id="s-4ed5ade482"></a>`preview_bytes` | `BIGINT` | yes | `—` | — |
+| <a id="s-649981be6b"></a>`preview_json` | `TEXT` | yes | `—` | — |
+| <a id="s-308f6553bb"></a>`attempt_count` | `INTEGER` | no | `—` | — |
+| <a id="s-e1bf837880"></a>`next_attempt_at` | `VARCHAR(40)` | yes | `—` | — |
+| <a id="s-10b523cf7a"></a>`failure` | `TEXT` | yes | `—` | — |
+| <a id="s-9f44416c23"></a>`created_at` | `VARCHAR(40)` | no | `—` | — |
+| <a id="s-5c232ea3b7"></a>`updated_at` | `VARCHAR(40)` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-1d65b6db96"></a>`primary-key` | `—` | `PRIMARY KEY (admission_id)` |
-| <a id="s-ca7133e811"></a>`check` | `ck_stove0_admission_candidate_state` | `CONSTRAINT ck_stove0_admission_candidate_state CHECK (state IN ('intent','previewed','work_bound'))` |
-| <a id="s-1e52c7e8ef"></a>`check` | `ck_stove0_admission_candidate_bytes` | `CONSTRAINT ck_stove0_admission_candidate_bytes CHECK (document_bytes >= 0)` |
-| <a id="s-38e8b8acd0"></a>`check` | `ck_stove0_admission_candidate_preview_bytes` | `CONSTRAINT ck_stove0_admission_candidate_preview_bytes CHECK (preview_bytes IS NULL OR preview_bytes >= 0)` |
-| <a id="s-b26e492cfd"></a>`check` | `ck_stove0_admission_candidate_attempt_count` | `CONSTRAINT ck_stove0_admission_candidate_attempt_count CHECK (attempt_count >= 0)` |
-| <a id="s-98ab7eef94"></a>`check` | `ck_stove0_admission_candidate_next_attempt` | `CONSTRAINT ck_stove0_admission_candidate_next_attempt CHECK (state = 'work_bound' AND next_attempt_at IS NULL OR state != 'work_bound' AND next_attempt_at IS NOT NULL)` |
-| <a id="s-81d7bd31b8"></a>`check` | `ck_stove0_admission_candidates_admission_id_hex` | `CONSTRAINT ck_stove0_admission_candidates_admission_id_hex CHECK (length(admission_id) = 64 AND lower(admission_id) = admission_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(admission_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-4135b76acd"></a>`check` | `ck_stove0_admission_candidates_preview_sha256_hex` | `CONSTRAINT ck_stove0_admission_candidates_preview_sha256_hex CHECK (preview_sha256 IS NULL OR length(preview_sha256) = 64 AND lower(preview_sha256) = preview_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(preview_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-ce05677d84"></a>`check` | `ck_stove0_admission_candidates_work_id_hex` | `CONSTRAINT ck_stove0_admission_candidates_work_id_hex CHECK (work_id IS NULL OR length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-ce44365cef"></a>`primary-key` | `—` | `PRIMARY KEY (admission_id)` |
+| <a id="s-d2b8bad4e2"></a>`check` | `ck_stove0_admission_candidate_state` | `CONSTRAINT ck_stove0_admission_candidate_state CHECK (state IN ('intent','previewed','work_bound'))` |
+| <a id="s-8daa0a859d"></a>`check` | `ck_stove0_admission_candidate_bytes` | `CONSTRAINT ck_stove0_admission_candidate_bytes CHECK (document_bytes >= 0)` |
+| <a id="s-0b0d98c63c"></a>`check` | `ck_stove0_admission_candidate_preview_bytes` | `CONSTRAINT ck_stove0_admission_candidate_preview_bytes CHECK (preview_bytes IS NULL OR preview_bytes >= 0)` |
+| <a id="s-5d94d0e3af"></a>`check` | `ck_stove0_admission_candidate_attempt_count` | `CONSTRAINT ck_stove0_admission_candidate_attempt_count CHECK (attempt_count >= 0)` |
+| <a id="s-17fa061023"></a>`check` | `ck_stove0_admission_candidate_next_attempt` | `CONSTRAINT ck_stove0_admission_candidate_next_attempt CHECK (state = 'work_bound' AND next_attempt_at IS NULL OR state != 'work_bound' AND next_attempt_at IS NOT NULL)` |
+| <a id="s-483ab99d1d"></a>`check` | `ck_stove0_admission_candidates_admission_id_hex` | `CONSTRAINT ck_stove0_admission_candidates_admission_id_hex CHECK (length(admission_id) = 64 AND lower(admission_id) = admission_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(admission_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-7da5e51665"></a>`check` | `ck_stove0_admission_candidates_preview_sha256_hex` | `CONSTRAINT ck_stove0_admission_candidates_preview_sha256_hex CHECK (preview_sha256 IS NULL OR length(preview_sha256) = 64 AND lower(preview_sha256) = preview_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(preview_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-3aa5caac5c"></a>`check` | `ck_stove0_admission_candidates_work_id_hex` | `CONSTRAINT ck_stove0_admission_candidates_work_id_hex CHECK (work_id IS NULL OR length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -58,7 +58,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-97efa46acb"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-faa135da31"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -74,7 +74,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/3/structure/tables/3`
+- `/external_contract/durable_state/owners/3/structure/tables/6`
 
 ### Exact owned JSON
 

@@ -68,12 +68,14 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: TagListOut](../../authorities/riverhog/http-schemas/schemas-taglistout.md#pa-38d721dd6a) |
 | `stove0` | [GET /v1/admissions](../../authorities/stove0/http-operations/get-v1-admissions.md#pa-7a2b378d49) |
 | `stove0` | [GET /v1/artifact-selections/{selection_sha256}](../../authorities/stove0/http-operations/get-v1-artifact-selections-selection-sha256.md#pa-b00656c731) |
+| `stove0` | [GET /v1/departure-effects](../../authorities/stove0/http-operations/get-v1-departure-effects.md#pa-ab244b7388) |
 | `stove0` | [GET /v1/evaluations](../../authorities/stove0/http-operations/get-v1-evaluations.md#pa-2b69f66470) |
 | `stove0` | [GET /v1/events](../../authorities/stove0/http-operations/get-v1-events.md#pa-25568be241) |
 | `stove0` | [GET /v1/target-executions/{job_id}/inputs](../../authorities/stove0/http-operations/get-v1-target-executions-job-id-inputs.md#pa-88288ccf0d) |
 | `stove0` | [GET /v1/work](../../authorities/stove0/http-operations/get-v1-work.md#pa-0650c319ca) |
 | `stove0` | [schemas: AdmissionPage](../../authorities/stove0/http-schemas/schemas-admissionpage.md#pa-4acb5f91bc) |
 | `stove0` | [schemas: ArtifactSelectionPage](../../authorities/stove0/http-schemas/schemas-artifactselectionpage.md#pa-2cf9b11648) |
+| `stove0` | [schemas: DepartureEffectPage](../../authorities/stove0/http-schemas/schemas-departureeffectpage.md#pa-baea810b06) |
 | `stove0` | [schemas: EvaluationPage](../../authorities/stove0/http-schemas/schemas-evaluationpage.md#pa-05a281c567) |
 | `stove0` | [schemas: Stove0EventPage](../../authorities/stove0/http-schemas/schemas-stove0eventpage.md#pa-31f4c1dd62) |
 | `stove0` | [schemas: TargetInputPage](../../authorities/stove0/http-schemas/schemas-targetinputpage.md#pa-dc2ce2bb91) |

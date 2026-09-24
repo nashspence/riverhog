@@ -1,8 +1,8 @@
-# stove0_operator_contracts.AdmissionPolicy.canonical_required_tags
+# stove0_operator_contracts.DeparturePhase
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: python:stove0-operator-contracts:stove0-operator-contracts-admissionpolicy-241e675154:f2530e4a61 -->
+<!-- contract-element: python:stove0-operator-contracts:stove0-operator-contracts-departurephase:f6de4176f2 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,27 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-0adce5b997"></a>
-- <a id="s-07e6895ea1"></a>`distribution`: `stove0-operator-contracts`
-- <a id="s-71d05c80ca"></a>`module`: `stove0_operator_contracts`
-- <a id="s-02c4f1fef3"></a>`name`: `canonical_required_tags`
-- <a id="s-9e87e17573"></a>`owner`: `stove0_operator_contracts.AdmissionPolicy`
-- <a id="s-f7704b576d"></a>`unit`: `member`
+<a id="s-411c576df8"></a>
+- <a id="s-d3440649ef"></a>`distribution`: `stove0-operator-contracts`
+- <a id="s-f46a0b44e3"></a>`module`: `stove0_operator_contracts`
+- <a id="s-fe15775c05"></a>`name`: `DeparturePhase`
+- <a id="s-21d6977170"></a>`unit`: `export`
 
 ### Declared structure
 
-- <a id="s-8002c43775"></a>`kind`: `"classmethod"`
-- <a id="s-9031f18e7f"></a>`signature`: `"\"(cls, value: 'tuple[CollectionTag, ...]') -> 'tuple[CollectionTag, ...]'\""`
-
-## Maintained corroboration
-
-### Related interface records
-
-- [AdmissionPolicy](stove0-operator-contracts-admissionpolicy.md)
+- <a id="s-ca9ed3405e"></a>`kind`: `"object"`
+- <a id="s-a9dfcc83da"></a>`type`: `"typing._LiteralGenericAlias"`
 
 ## Governing policies
 
-- <a id="pa-b7e25bd7e9"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
+- <a id="pa-1e324e0e2a"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
 
 ## Evidence
 
@@ -49,7 +42,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/python/stove0_operator_contracts.AdmissionPolicy.canonical_required_tags`
+- `/external_contract/python/stove0_operator_contracts.DeparturePhase`
 
 ### Exact owned JSON
 
@@ -58,19 +51,18 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3d099298d85eea286be8aee9a723497e7d4fbb2bb0f1cf00fb98b365e128307e -->
+<!-- exact-contract-value: ceb8cc372c768a60a8946c5b0f4edbffe0450dee9836b3ef569207c25244ad8b -->
 
 ```json
 {
   "contract": {
-    "kind": "classmethod",
-    "signature": "\"(cls, value: 'tuple[CollectionTag, ...]') -> 'tuple[CollectionTag, ...]'\""
+    "kind": "object",
+    "type": "typing._LiteralGenericAlias"
   },
   "distribution": "stove0-operator-contracts",
   "module": "stove0_operator_contracts",
-  "name": "canonical_required_tags",
-  "owner": "stove0_operator_contracts.AdmissionPolicy",
-  "unit": "member"
+  "name": "DeparturePhase",
+  "unit": "export"
 }
 ```
 

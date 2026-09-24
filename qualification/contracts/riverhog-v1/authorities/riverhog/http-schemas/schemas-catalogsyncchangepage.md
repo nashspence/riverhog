@@ -26,7 +26,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-8871b88c1f"></a>`authorization_view_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$"; title="Authorization View Identity" |  |
 | <a id="s-432e1a3267"></a>`caught_up` | yes | type="boolean"; title="Caught Up" |  |
-| <a id="s-6ab6578eda"></a>`changes` | yes | type="array"; items=(discriminator={"mapping":{"delete":"#/components/schemas/CatalogSyncDelete","upsert":"#/components/schemas/CatalogSyncUpsert"},"propertyName":"operation"}; oneOf=[([CatalogSyncUpsert](schemas-catalogsyncupsert.md)); ([CatalogSyncDelete](schemas-catalogsyncdelete.md))]); maxItems=100; title="Changes" |  |
+| <a id="s-6ab6578eda"></a>`changes` | yes | type="array"; items=(discriminator={"mapping":{"departure":"#/components/schemas/CatalogSyncDeparture","upsert":"#/components/schemas/CatalogSyncUpsert"},"propertyName":"operation"}; oneOf=[([CatalogSyncUpsert](schemas-catalogsyncupsert.md)); ([CatalogSyncDeparture](schemas-catalogsyncdeparture.md))]); maxItems=100; title="Changes" |  |
 | <a id="s-7b7de7e14d"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1"; default="riverhog-catalog-sync/v1"; title="Format" |  |
 | <a id="s-e059c8b7fc"></a>`next_cursor` | yes | type="string"; maxLength=4096; minLength=1; title="Next Cursor" |  |
 | <a id="s-aad3b69d89"></a>`source_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$"; title="Source Identity" |  |
@@ -75,7 +75,7 @@ Exact evidence groups for this contract element:
 
 ### Referenced contract elements
 
-- [CatalogSyncDelete](schemas-catalogsyncdelete.md)
+- [CatalogSyncDeparture](schemas-catalogsyncdeparture.md)
 - [CatalogSyncUpsert](schemas-catalogsyncupsert.md)
 
 ## Governing policies
@@ -109,7 +109,7 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f9134d3884d10ad80c358ca088ef4cb1983554941cd38bf93eb6e4c22d95cd09 -->
+<!-- exact-contract-value: 1a42dc9953147dc5bdea7274e56b806f7709f304b35462b5394d5ba87239f3ea -->
 
 ```json
 {
@@ -130,7 +130,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "items": {
         "discriminator": {
           "mapping": {
-            "delete": "#/components/schemas/CatalogSyncDelete",
+            "departure": "#/components/schemas/CatalogSyncDeparture",
             "upsert": "#/components/schemas/CatalogSyncUpsert"
           },
           "propertyName": "operation"
@@ -140,7 +140,7 @@ The following JSON is the complete value owned at each machine-authority pointer
             "$ref": "#/components/schemas/CatalogSyncUpsert"
           },
           {
-            "$ref": "#/components/schemas/CatalogSyncDelete"
+            "$ref": "#/components/schemas/CatalogSyncDeparture"
           }
         ]
       },

@@ -104,6 +104,8 @@ scheduler_app = typer.Typer(help="Scheduler status and execution.")
 selection_app = typer.Typer(help="Exact content-addressed artifact selections.")
 admission_app = typer.Typer(help="Classification admission decisions.")
 admission_policy_app = typer.Typer(help="Configured classification admission policies.")
+departure_app = typer.Typer(help="Catalog-departure external effects.")
+departure_policy_app = typer.Typer(help="Configured departure-effect policies.")
 app.add_typer(work_app, name="work")
 app.add_typer(recipe_app, name="recipe")
 app.add_typer(evaluation_app, name="evaluation")
@@ -112,6 +114,8 @@ app.add_typer(scheduler_app, name="scheduler")
 app.add_typer(selection_app, name="selection")
 app.add_typer(admission_app, name="admission")
 admission_app.add_typer(admission_policy_app, name="policy")
+app.add_typer(departure_app, name="departure")
+departure_app.add_typer(departure_policy_app, name="policy")
 console = Console()
 
 
@@ -188,7 +192,7 @@ def list_admission_policies(context: typer.Context) -> None:
     _call(
         state,
         state.client.list_admission_policies,
-        table=("policies", ("id", "revision", "phase", "required_tags", "recipe_id")),
+        table=("policies", ("id", "revision", "phase", "selector", "recipe_id")),
     )
 
 
@@ -247,6 +251,42 @@ def list_admissions(
 def show_admission(context: typer.Context, admission_id: str) -> None:
     state = _context(context)
     _call(state, lambda: state.client.get_admission(admission_id))
+
+
+@departure_policy_app.command("list")
+def list_departure_policies(context: typer.Context) -> None:
+    state = _context(context)
+    _call(
+        state,
+        state.client.list_departure_policies,
+        table=("policies", ("id", "revision", "phase", "selector", "target_registration_id")),
+    )
+
+
+@departure_policy_app.command("rebaseline")
+def rebaseline_departure_policy(context: typer.Context, policy_id: str) -> None:
+    state = _context(context)
+    _call(state, lambda: state.client.rebaseline_departure_policy(policy_id))
+
+
+@departure_app.command("list")
+def list_departure_effects(
+    context: typer.Context,
+    page_size: int = typer.Option(25, min=1, max=100),
+    page_token: str | None = typer.Option(None),
+) -> None:
+    state = _context(context)
+    _call(
+        state,
+        lambda: state.client.list_departure_effects(page_size=page_size, page_token=page_token),
+        table=("effects", ("departure_id", "policy_id", "state", "attempt_count", "failure")),
+    )
+
+
+@departure_app.command("show")
+def show_departure_effect(context: typer.Context, departure_id: str) -> None:
+    state = _context(context)
+    _call(state, lambda: state.client.get_departure_effect(departure_id))
 
 
 @recipe_app.command("validate")
@@ -598,12 +638,12 @@ def _table_value(item: dict[str, Any], column: str) -> str:
     if isinstance(policy, dict) and column in {
         "id",
         "revision",
-        "required_tags",
+        "selector",
         "recipe_id",
     }:
         return str(policy.get(column, ""))
     intent = item.get("intent")
-    if isinstance(intent, dict) and column in {"admission_id", "policy_id"}:
+    if isinstance(intent, dict) and column in {"admission_id", "departure_id", "policy_id"}:
         return str(intent.get(column, ""))
     if isinstance(intent, dict) and column == "collection_id":
         collection = intent.get("collection")

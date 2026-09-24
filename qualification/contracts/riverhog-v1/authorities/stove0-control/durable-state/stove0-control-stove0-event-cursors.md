@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-event-cursors:a1de6ed85e -->
+<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-event-cursors:9ae03c633b -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-ee83fb8e33"></a>
+<a id="s-e19eab67c2"></a>
 
 ### Table: `stove0_event_cursors`
 
@@ -21,17 +21,17 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-4a3475cb4c"></a>`stream` | `VARCHAR(160)` | no | `—` | — |
-| <a id="s-d0e6f96460"></a>`cursor` | `VARCHAR(500)` | no | `—` | — |
-| <a id="s-e8d072e3dc"></a>`revision` | `INTEGER` | no | `—` | — |
-| <a id="s-31e9bd711c"></a>`updated_at` | `VARCHAR(40)` | no | `—` | — |
+| <a id="s-5d302e9f99"></a>`stream` | `VARCHAR(160)` | no | `—` | — |
+| <a id="s-95d75d7f56"></a>`cursor` | `VARCHAR(500)` | no | `—` | — |
+| <a id="s-8a06f51ef2"></a>`revision` | `INTEGER` | no | `—` | — |
+| <a id="s-e56cb3ffad"></a>`updated_at` | `VARCHAR(40)` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-ce44365cef"></a>`primary-key` | `—` | `PRIMARY KEY (stream)` |
-| <a id="s-d2b8bad4e2"></a>`check` | `ck_stove0_event_cursors_revision` | `CONSTRAINT ck_stove0_event_cursors_revision CHECK (revision >= 1)` |
+| <a id="s-4dfa1a6aaa"></a>`primary-key` | `—` | `PRIMARY KEY (stream)` |
+| <a id="s-6e58358dbc"></a>`check` | `ck_stove0_event_cursors_revision` | `CONSTRAINT ck_stove0_event_cursors_revision CHECK (revision >= 1)` |
 
 ## Maintained corroboration
 
@@ -41,7 +41,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-fc53f8a29d"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-be6ae994e1"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -57,7 +57,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/3/structure/tables/6`
+- `/external_contract/durable_state/owners/3/structure/tables/9`
 
 ### Exact owned JSON
 

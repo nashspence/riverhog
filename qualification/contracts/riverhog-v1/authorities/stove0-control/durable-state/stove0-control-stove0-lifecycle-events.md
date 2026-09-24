@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-lifecycle-events:820f9789aa -->
+<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-lifecycle-events:0970868634 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-1a24f3ea03"></a>
+<a id="s-d5b5eea9cd"></a>
 
 ### Table: `stove0_lifecycle_events`
 
@@ -21,17 +21,17 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-0a70aa7b1a"></a>`sequence` | `SERIAL` | no | `—` | — |
-| <a id="s-65a1cd9f71"></a>`created_at` | `VARCHAR(40)` | no | `—` | — |
-| <a id="s-dfc00cda2e"></a>`event_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-0a67f5efaa"></a>`event_json` | `TEXT` | no | `—` | — |
+| <a id="s-29726f335f"></a>`sequence` | `SERIAL` | no | `—` | — |
+| <a id="s-2b5151653b"></a>`created_at` | `VARCHAR(40)` | no | `—` | — |
+| <a id="s-2e88c2fbab"></a>`event_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-18b34ac43d"></a>`event_json` | `TEXT` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-39f07eb53f"></a>`primary-key` | `—` | `PRIMARY KEY (sequence)` |
-| <a id="s-8044b13c40"></a>`check` | `ck_stove0_lifecycle_events_event_bytes` | `CONSTRAINT ck_stove0_lifecycle_events_event_bytes CHECK (event_bytes >= 0)` |
+| <a id="s-d4bdab0d8f"></a>`primary-key` | `—` | `PRIMARY KEY (sequence)` |
+| <a id="s-5895417179"></a>`check` | `ck_stove0_lifecycle_events_event_bytes` | `CONSTRAINT ck_stove0_lifecycle_events_event_bytes CHECK (event_bytes >= 0)` |
 
 ## Maintained corroboration
 
@@ -41,7 +41,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-7c76b3f363"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-6437d07061"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -57,7 +57,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/3/structure/tables/7`
+- `/external_contract/durable_state/owners/3/structure/tables/10`
 
 ### Exact owned JSON
 

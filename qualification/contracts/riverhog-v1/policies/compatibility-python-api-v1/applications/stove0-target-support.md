@@ -12,6 +12,11 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-target-support` | [stove0_target_support.AcceptedTargetJob](../../../authorities/stove0-target-support/python/stove0-target-support-acceptedtargetjob.md#pa-39a0a37e45) |
 | `stove0-target-support` | [stove0_target_support.AcceptedTargetJob.verify_digest](../../../authorities/stove0-target-support/python/stove0-target-support-acceptedtargetjob-verify-digest.md#pa-d987d3c3e4) |
 | `stove0-target-support` | [stove0_target_support.DEFAULT_TERMINAL_STATE_RETENTION_SECONDS](../../../authorities/stove0-target-support/python/stove0-target-support-default-terminal-state-retention-seconds.md#pa-4e8c645e8c) |
+| `stove0-target-support` | [stove0_target_support.DepartureEffectHttpBinding](../../../authorities/stove0-target-support/python/stove0-target-support-departureeffecthttpbinding.md#pa-588bee8914) |
+| `stove0-target-support` | [stove0_target_support.DepartureEffectHttpBinding.handle](../../../authorities/stove0-target-support/python/stove0-target-support-departureeffecthttpbinding-handle.md#pa-40572f13a1) |
+| `stove0-target-support` | [stove0_target_support.DepartureEffectTargetService](../../../authorities/stove0-target-support/python/stove0-target-support-departureeffecttargetservice.md#pa-65f3544c42) |
+| `stove0-target-support` | [stove0_target_support.DepartureEffectTargetService.descriptor](../../../authorities/stove0-target-support/python/stove0-target-support-departureeffecttargetservice-descriptor.md#pa-b232d60038) |
+| `stove0-target-support` | [stove0_target_support.DepartureEffectTargetService.put_departure_effect](../../../authorities/stove0-target-support/python/stove0-target-support-departureeffecttargetservice-put-departure-effect.md#pa-9fbc901bd2) |
 | `stove0-target-support` | [stove0_target_support.EFFECT_RECEIPT_FORMAT](../../../authorities/stove0-target-support/python/stove0-target-support-effect-receipt-format.md#pa-5a197d1ae0) |
 | `stove0-target-support` | [stove0_target_support.EFFECT_TARGET_PROTOCOL](../../../authorities/stove0-target-support/python/stove0-target-support-effect-target-protocol.md#pa-8499f6f62b) |
 | `stove0-target-support` | [stove0_target_support.EffectPlan](../../../authorities/stove0-target-support/python/stove0-target-support-effectplan.md#pa-0c6897bf98) |

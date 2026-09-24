@@ -199,6 +199,7 @@ _NON_PLAN_QUERY_OPERATIONS = {
     ("stove0", "get_artifact_selection"): {"continuation"},
     ("stove0", "get_recipe"): {"revision"},
     ("stove0", "get_target_execution_inputs"): {"continuation"},
+    ("stove0", "list_departure_effects"): {"page_size", "page_token"},
     ("stove0", "list_events"): {"after", "limit"},
 }
 

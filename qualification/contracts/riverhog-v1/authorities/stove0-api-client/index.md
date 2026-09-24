@@ -4,9 +4,9 @@
 
 Python client for the Stove0 v1 workflow API.
 
-Contract elements: **39** · Extent decisions: **1**
+Contract elements: **43** · Extent decisions: **1**
 
 ## Interfaces
 
 - [Configuration Environment](configuration-environment/index.md) (5)
-- [Python](python/index.md) (34)
+- [Python](python/index.md) (38)

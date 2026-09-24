@@ -19,7 +19,7 @@ from riverhog_protocol import (
     CatalogSyncChangePage,
     CatalogSyncCheckpoint,
     CatalogSyncCollectionPage,
-    CatalogSyncDelete,
+    CatalogSyncDeparture,
     CatalogSyncDescriptor,
     CatalogSyncUpsert,
     decode_collection_tag_node,
@@ -337,10 +337,17 @@ class SqlAlchemyCatalogSyncService:
             for event, projected in rows:
                 if event.revision is None:
                     raise RuntimeError("published catalog event has no revision")
-                if projected == "deleted":
+                if projected == "departure":
+                    if event.change == "deleted":
+                        cause = "collection_deleted"
+                    elif event.change == "updated":
+                        cause = "visibility_lost"
+                    else:
+                        raise RuntimeError("catalog departure has no verified native cause")
                     changes.append(
-                        CatalogSyncDelete.model_validate(
+                        CatalogSyncDeparture.model_validate(
                             dict(
+                                cause=cause,
                                 collection_id=format_scalar("sequence63", event.collection_id),
                                 revision=str(event.revision),
                             )

@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-01561c04e8"></a>`kind`: `"class"`
-- <a id="s-09a60b0417"></a>`signature`: `"\"(*, format: Literal['riverhog-catalog-sync/v1'] = 'riverhog-catalog-sync/v1', source_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], authorization_view_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], changes: Annotated[list[Annotated[riverhog_protocol.catalog_sync.CatalogSyncUpsert \| riverhog_protocol.catalog_sync.CatalogSyncDelete, FieldInfo(annotation=NoneType, required=True, discriminator='operation')]], MaxLen(max_length=100)], next_cursor: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=4096, pattern=None, ascii_only=None)], caught_up: bool, through_revision: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=19, pattern='^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18})$', ascii_only=None)]) -> None\""`
+- <a id="s-09a60b0417"></a>`signature`: `"\"(*, format: Literal['riverhog-catalog-sync/v1'] = 'riverhog-catalog-sync/v1', source_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], authorization_view_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], changes: Annotated[list[Annotated[riverhog_protocol.catalog_sync.CatalogSyncUpsert \| riverhog_protocol.catalog_sync.CatalogSyncDeparture, FieldInfo(annotation=NoneType, required=True, discriminator='operation')]], MaxLen(max_length=100)], next_cursor: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=4096, pattern=None, ascii_only=None)], caught_up: bool, through_revision: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=19, pattern='^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18})$', ascii_only=None)]) -> None\""`
 
 #### Validated model schema
 
@@ -38,7 +38,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-0a4585062d"></a>`authorization_view_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-41c8947328"></a>`caught_up` | yes | type="boolean" |  |
-| <a id="s-c2575cc1c5"></a>`changes` | yes | type="array"; items=(discriminator={"mapping":{"delete":"#/$defs/CatalogSyncDelete","upsert":"#/$defs/CatalogSyncUpsert"},"propertyName":"operation"}; oneOf=[([CatalogSyncUpsert](#s-4015421cfa)); ([CatalogSyncDelete](#s-168dffbf4b))]); maxItems=100 |  |
+| <a id="s-c2575cc1c5"></a>`changes` | yes | type="array"; items=(discriminator={"mapping":{"departure":"#/$defs/CatalogSyncDeparture","upsert":"#/$defs/CatalogSyncUpsert"},"propertyName":"operation"}; oneOf=[([CatalogSyncUpsert](#s-4015421cfa)); ([CatalogSyncDeparture](#s-6b899769b6))]); maxItems=100 |  |
 | <a id="s-abca29af81"></a>`format` | no | type="string"; const="riverhog-catalog-sync/v1"; default="riverhog-catalog-sync/v1" |  |
 | <a id="s-708ac3cf38"></a>`next_cursor` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-d0e9a7990f"></a>`source_identity` | yes | type="string"; maxLength=64; minLength=64; pattern="^[0-9a-f]{64}$" |  |
@@ -46,24 +46,25 @@ Exact externally visible contract owned by this contract element.
 
 ##### Definitions
 
-- [CatalogSyncDelete](#s-168dffbf4b)
+- [CatalogSyncDeparture](#s-6b899769b6)
 - [CatalogSyncUpsert](#s-4015421cfa)
 - [CollectionDescription](#s-aafc0c1ae8)
 - [CollectionId](#s-389380939c)
 
-##### <a id="s-168dffbf4b"></a>definition `CatalogSyncDelete`
+##### <a id="s-6b899769b6"></a>definition `CatalogSyncDeparture`
 
-- <a id="s-668c57e50d"></a>`type`: `"object"`
-- <a id="s-36a38667f6"></a>`additionalProperties`: `false`
-- <a id="s-5ee264b16b"></a>`required`: `["collection_id","revision"]`
+- <a id="s-9d01eb98aa"></a>`type`: `"object"`
+- <a id="s-4613db835d"></a>`additionalProperties`: `false`
+- <a id="s-b6c7d430c4"></a>`required`: `["cause","collection_id","revision"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d6acbd562e"></a>`collection_id` | yes | [CollectionId](#s-389380939c) |  |
-| <a id="s-0f2bac5ce5"></a>`operation` | no | type="string"; const="delete"; default="delete" |  |
-| <a id="s-45aa2629f1"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
+| <a id="s-db63d68293"></a>`cause` | yes | type="string"; enum=["collection_deleted","visibility_lost"] |  |
+| <a id="s-18a95e2782"></a>`collection_id` | yes | [CollectionId](#s-389380939c) |  |
+| <a id="s-6498e477b6"></a>`operation` | no | type="string"; const="departure"; default="departure" |  |
+| <a id="s-44ae650e32"></a>`revision` | yes | type="string"; maxLength=19; minLength=1; pattern="^(?:[1-9][0-9]{0,17}\|[1-8][0-9]{18})$" |  |
 
 ##### <a id="s-4015421cfa"></a>definition `CatalogSyncUpsert`
 
@@ -132,7 +133,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5cf5619639978e96eed3b8bcdb78825b84e93e48320c7f27daaae81e951b37e7 -->
+<!-- exact-contract-value: 114e0758ad9e0bd554919017e1c6f59cae57e9b4e5bdedc5077d715aac9b26ba -->
 
 ```json
 {
@@ -140,15 +141,22 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "$defs": {
-        "CatalogSyncDelete": {
+        "CatalogSyncDeparture": {
           "additionalProperties": false,
           "properties": {
+            "cause": {
+              "enum": [
+                "collection_deleted",
+                "visibility_lost"
+              ],
+              "type": "string"
+            },
             "collection_id": {
               "$ref": "#/$defs/CollectionId"
             },
             "operation": {
-              "const": "delete",
-              "default": "delete",
+              "const": "departure",
+              "default": "departure",
               "type": "string"
             },
             "revision": {
@@ -159,6 +167,7 @@ The following JSON is the complete value owned at each machine-authority pointer
             }
           },
           "required": [
+            "cause",
             "collection_id",
             "revision"
           ],
@@ -279,7 +288,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "items": {
             "discriminator": {
               "mapping": {
-                "delete": "#/$defs/CatalogSyncDelete",
+                "departure": "#/$defs/CatalogSyncDeparture",
                 "upsert": "#/$defs/CatalogSyncUpsert"
               },
               "propertyName": "operation"
@@ -289,7 +298,7 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "$ref": "#/$defs/CatalogSyncUpsert"
               },
               {
-                "$ref": "#/$defs/CatalogSyncDelete"
+                "$ref": "#/$defs/CatalogSyncDeparture"
               }
             ]
           },
@@ -329,7 +338,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, format: Literal['riverhog-catalog-sync/v1'] = 'riverhog-catalog-sync/v1', source_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], authorization_view_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], changes: Annotated[list[Annotated[riverhog_protocol.catalog_sync.CatalogSyncUpsert | riverhog_protocol.catalog_sync.CatalogSyncDelete, FieldInfo(annotation=NoneType, required=True, discriminator='operation')]], MaxLen(max_length=100)], next_cursor: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=4096, pattern=None, ascii_only=None)], caught_up: bool, through_revision: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=19, pattern='^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18})$', ascii_only=None)]) -> None\""
+    "signature": "\"(*, format: Literal['riverhog-catalog-sync/v1'] = 'riverhog-catalog-sync/v1', source_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], authorization_view_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern='^[0-9a-f]{64}$', ascii_only=None)], changes: Annotated[list[Annotated[riverhog_protocol.catalog_sync.CatalogSyncUpsert | riverhog_protocol.catalog_sync.CatalogSyncDeparture, FieldInfo(annotation=NoneType, required=True, discriminator='operation')]], MaxLen(max_length=100)], next_cursor: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=4096, pattern=None, ascii_only=None)], caught_up: bool, through_revision: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=19, pattern='^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18})$', ascii_only=None)]) -> None\""
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

@@ -20,6 +20,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-api-client` | [stove0_api_client.Stove0ApiClient.create_work](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-create-work.md#pa-e0fca2f862) |
 | `stove0-api-client` | [stove0_api_client.Stove0ApiClient.get_admission](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-get-admission.md#pa-6232c2400e) |
 | `stove0-api-client` | [stove0_api_client.Stove0ApiClient.get_artifact_selection](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-get-artifact-selection.md#pa-78bb3cd3dd) |
+| `stove0-api-client` | [stove0_api_client.Stove0ApiClient.get_departure_effect](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-get-departure-effect.md#pa-0c5f68614d) |
 | `stove0-api-client` | [stove0_api_client.Stove0ApiClient.get_evaluation](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-get-evaluation.md#pa-798b2e57df) |
 | `stove0-api-client` | [stove0_api_client.Stove0ApiClient.get_recipe](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-get-recipe.md#pa-ab8809db3a) |
 | `stove0-api-client` | [stove0_api_client.Stove0ApiClient.get_work](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-get-work.md#pa-b06fa063d4) |
@@ -28,12 +29,15 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-api-client` | [stove0_api_client.Stove0ApiClient.inspect_work_coordination](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-inspect-work-coordination.md#pa-a5fae994e7) |
 | `stove0-api-client` | [stove0_api_client.Stove0ApiClient.list_admission_policies](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-list-admission-policies.md#pa-1f75673305) |
 | `stove0-api-client` | [stove0_api_client.Stove0ApiClient.list_admissions](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-list-admissions.md#pa-635119389f) |
+| `stove0-api-client` | [stove0_api_client.Stove0ApiClient.list_departure_effects](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-list-departure-effects.md#pa-efcd8400b3) |
+| `stove0-api-client` | [stove0_api_client.Stove0ApiClient.list_departure_policies](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-list-departure-policies.md#pa-b16675f1dc) |
 | `stove0-api-client` | [stove0_api_client.Stove0ApiClient.list_evaluations](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-list-evaluations.md#pa-96f0e9a0d8) |
 | `stove0-api-client` | [stove0_api_client.Stove0ApiClient.list_events](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-list-events.md#pa-685d2d79f3) |
 | `stove0-api-client` | [stove0_api_client.Stove0ApiClient.list_recipes](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-list-recipes.md#pa-2eb4c36de0) |
 | `stove0-api-client` | [stove0_api_client.Stove0ApiClient.list_work](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-list-work.md#pa-a06a1cc9c9) |
 | `stove0-api-client` | [stove0_api_client.Stove0ApiClient.preview_workflow](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-preview-workflow.md#pa-e0589d8aec) |
 | `stove0-api-client` | [stove0_api_client.Stove0ApiClient.rebaseline_admission_policy](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-rebaseline-admission-policy.md#pa-aeb0e7a7e9) |
+| `stove0-api-client` | [stove0_api_client.Stove0ApiClient.rebaseline_departure_policy](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-rebaseline-departure-policy.md#pa-15b3fade24) |
 | `stove0-api-client` | [stove0_api_client.Stove0ApiClient.retry_evaluation_variant](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-retry-evaluation-variant.md#pa-f43612b334) |
 | `stove0-api-client` | [stove0_api_client.Stove0ApiClient.retry_work](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-retry-work.md#pa-cccf51e98a) |
 | `stove0-api-client` | [stove0_api_client.Stove0ApiClient.review_evaluation_variant](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-review-evaluation-variant.md#pa-a8f3e494da) |

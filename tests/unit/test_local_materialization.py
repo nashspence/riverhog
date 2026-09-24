@@ -12,7 +12,7 @@ from riverhog_protocol import (
     CatalogSyncChangePage,
     CatalogSyncCheckpoint,
     CatalogSyncCollectionPage,
-    CatalogSyncDelete,
+    CatalogSyncDeparture,
     CatalogSyncDescriptor,
     ImmutableFileIdentityDocument,
     PortableCollectionFile,
@@ -251,7 +251,13 @@ class FakeApi:
             return CatalogSyncChangePage(
                 source_identity="c" * 64,
                 authorization_view_identity="d" * 64,
-                changes=[CatalogSyncDelete(collection_id=str(COLLECTION_ID), revision="2")],
+                changes=[
+                    CatalogSyncDeparture(
+                        cause="collection_deleted",
+                        collection_id=str(COLLECTION_ID),
+                        revision="2",
+                    )
+                ],
                 next_cursor="follow-2",
                 caught_up=True,
                 through_revision="2",

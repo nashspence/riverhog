@@ -125,6 +125,12 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-stove0-cli` | [stove0 admission policy list](../../authorities/a-stove0-cli/cli/stove0-admission-policy-list.md#pa-aa5412bdc5) |
 | `a-stove0-cli` | [stove0 admission policy rebaseline](../../authorities/a-stove0-cli/cli/stove0-admission-policy-rebaseline.md#pa-7a4713d5d7) |
 | `a-stove0-cli` | [stove0 admission show](../../authorities/a-stove0-cli/cli/stove0-admission-show.md#pa-c28f9ce4e8) |
+| `a-stove0-cli` | [stove0 departure](../../authorities/a-stove0-cli/cli/stove0-departure.md#pa-5d6e4727b3) |
+| `a-stove0-cli` | [stove0 departure list](../../authorities/a-stove0-cli/cli/stove0-departure-list.md#pa-92413c3fba) |
+| `a-stove0-cli` | [stove0 departure policy](../../authorities/a-stove0-cli/cli/stove0-departure-policy.md#pa-96aa260b6f) |
+| `a-stove0-cli` | [stove0 departure policy list](../../authorities/a-stove0-cli/cli/stove0-departure-policy-list.md#pa-a38adce34d) |
+| `a-stove0-cli` | [stove0 departure policy rebaseline](../../authorities/a-stove0-cli/cli/stove0-departure-policy-rebaseline.md#pa-7f8d90f521) |
+| `a-stove0-cli` | [stove0 departure show](../../authorities/a-stove0-cli/cli/stove0-departure-show.md#pa-970eff4a76) |
 | `a-stove0-cli` | [stove0 evaluation](../../authorities/a-stove0-cli/cli/stove0-evaluation.md#pa-2949566a49) |
 | `a-stove0-cli` | [stove0 evaluation cancel](../../authorities/a-stove0-cli/cli/stove0-evaluation-cancel.md#pa-29e80b8d74) |
 | `a-stove0-cli` | [stove0 evaluation create](../../authorities/a-stove0-cli/cli/stove0-evaluation-create.md#pa-ef381b3425) |

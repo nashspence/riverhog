@@ -41,6 +41,11 @@ from stove0_operator_contracts import (
     AdmissionPolicyCatalogView,
     AdmissionPolicyStatus,
     AdmissionView,
+    DepartureCatalog,
+    DepartureEffectView,
+    DeparturePolicy,
+    DeparturePolicyCatalogView,
+    DeparturePolicyStatus,
     EvaluationReviewRequest,
     OperatorWorkflowPreviewRequest,
     SchedulerRunRequest,
@@ -73,6 +78,10 @@ from stove0_protocol import (
 )
 from stove0_target_client import TargetCallbackClient
 from stove0_target_protocol import (
+    DepartureEffectIntent,
+    DepartureEffectIntentPayload,
+    DepartureEffectReceipt,
+    DepartureEffectReceiptPayload,
     InputArtifact,
     InputDispositionDeclaration,
     OutputArtifact,
@@ -356,7 +365,7 @@ class _LifecycleAdmission:
         self.policy = AdmissionPolicy(
             id="fixture-camera",
             revision=1,
-            required_tags=("camera",),
+            selector={"kind": "tags", "required": ("camera",)},
             recipe_id="stove0.conformance-media/v1",
             recipe_revision=str(1),
             recipe_sha256="3" * 64,
@@ -422,6 +431,87 @@ class _LifecycleAdmission:
         )
 
 
+class _LifecycleDeparture:
+    def __init__(self) -> None:
+        self.policy = DeparturePolicy(
+            id="fixture-withdrawal",
+            revision=1,
+            selector={"kind": "all"},
+            target_registration_id="fixture-index",
+            target_identity="8" * 64,
+        )
+        self.intent = DepartureEffectIntent.seal(
+            DepartureEffectIntentPayload(
+                policy_id=self.policy.id,
+                policy_revision=self.policy.revision,
+                policy_sha256=self.policy.policy_sha256,
+                target_registration_id=self.policy.target_registration_id,
+                target_identity=self.policy.target_identity,
+                source_identity="6" * 64,
+                authorization_view_identity="7" * 64,
+                last_collection=CatalogSyncDescriptor(
+                    collection_id="1",
+                    archive_root_sha256="1" * 64,
+                    content_identity="2" * 64,
+                    description=None,
+                    description_revision=0,
+                    description_identity="4" * 64,
+                    tag_revision=1,
+                    tag_set_identity="5" * 64,
+                    revision="1",
+                ),
+                departure_cause="visibility_lost",
+                departure_revision="2",
+            )
+        )
+        self.receipt = DepartureEffectReceipt.seal(
+            DepartureEffectReceiptPayload(
+                departure_id=self.intent.departure_id,
+                target_identity="8" * 64,
+                result={"action": "withdrawn"},
+            )
+        )
+
+    def policies(self) -> DeparturePolicyCatalogView:
+        return DeparturePolicyCatalogView(
+            catalog_sha256=DepartureCatalog(policies=(self.policy,)).catalog_sha256,
+            policies=(self._status(),),
+        )
+
+    def rebaseline(self, policy_id: str) -> DeparturePolicyStatus:
+        assert policy_id == self.policy.id
+        return self._status()
+
+    def list_effects(self, **_kwargs: object) -> dict[str, object]:
+        return {
+            "page_size": 25,
+            "effects": (self.get_effect(self.intent.departure_id),),
+            "_next_position": None,
+        }
+
+    def get_effect(self, departure_id: str) -> DepartureEffectView:
+        assert departure_id == self.intent.departure_id
+        return DepartureEffectView(
+            intent=self.intent,
+            state="complete",
+            receipt=self.receipt,
+            attempt_count=0,
+            created_at="2026-01-01T00:00:00.000000000Z",
+            updated_at="2026-01-01T00:00:00.000000000Z",
+        )
+
+    def _status(self) -> DeparturePolicyStatus:
+        return DeparturePolicyStatus(
+            policy=self.policy,
+            policy_sha256=self.policy.policy_sha256,
+            phase="following",
+            source_identity="6" * 64,
+            authorization_view_identity="7" * 64,
+            through_revision="2",
+            updated_at="2026-01-01T00:00:00.000000000Z",
+        )
+
+
 def _lifecycle_composition() -> Stove0Composition:
     state = _LifecycleState()
     fixture_path = Path(__file__).parents[4] / "qualification/fixtures/stove0/recipes.yaml"
@@ -455,6 +545,7 @@ def _lifecycle_composition() -> Stove0Composition:
         evaluations=cast(EvaluationService, _LifecycleEvaluations(state)),
         scheduler=cast(Stove0Scheduler, _LifecycleScheduler()),
         admission=cast(Any, _LifecycleAdmission()),
+        departure=cast(Any, _LifecycleDeparture()),
     )
 
 
@@ -789,6 +880,13 @@ def test_stove0_official_client_positive_disposable_lifecycle() -> None:
         admissions = client.list_admissions()
         assert len(admissions.admissions) == 1
         assert client.get_admission(admissions.admissions[0].intent.admission_id).state == "intent"
+        assert client.list_departure_policies().policies[0].policy.id == "fixture-withdrawal"
+        assert client.rebaseline_departure_policy("fixture-withdrawal").phase == "following"
+        effects = client.list_departure_effects()
+        assert len(effects.effects) == 1
+        assert (
+            client.get_departure_effect(effects.effects[0].intent.departure_id).state == "complete"
+        )
         assert client.list_work().work == ()
         preview = client.preview_workflow("stove0.conformance-media/v1", [_collection_root()])
         created = client.create_work(
@@ -844,7 +942,7 @@ def test_stove0_official_client_positive_disposable_lifecycle() -> None:
 
 def test_every_stove0_api_operation_has_one_current_official_client_method() -> None:
     operations = _operator_operations()
-    assert len(operations) == 26
+    assert len(operations) == 30
     assert {
         operation_id
         for operation_id in operations
@@ -986,6 +1084,29 @@ def test_scheduler_work_failures_are_operator_visible(
     assert (
         "stove0 controller scheduler could not advance work work-1: "
         "Conflict: processing outcomes differ"
+    ) in caplog.text
+
+
+def test_scheduler_departure_failures_are_operator_visible(
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    _log_scheduler_failures(
+        "controller",
+        {
+            "departure": {
+                "failures": [
+                    {
+                        "event_id": "departure-effect:effect-1",
+                        "error": "TimeoutError: target did not respond",
+                    }
+                ]
+            }
+        },
+    )
+
+    assert (
+        "stove0 controller scheduler could not advance departure "
+        "departure-effect:effect-1: TimeoutError: target did not respond"
     ) in caplog.text
 
 

@@ -25,6 +25,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-42061fffc2"></a>`admission` | no | anyOf=[([AdmissionRun](schemas-admissionrun.md)); (type="null")] |  |
+| <a id="s-1d6ecd5583"></a>`departure` | no | anyOf=[([DepartureRun](schemas-departurerun.md)); (type="null")] |  |
 | <a id="s-e949e7bfc6"></a>`pruning` | yes | anyOf=[([SchedulerPruning](schemas-schedulerpruning.md)); (type="null")] |  |
 | <a id="s-3b50dd5ead"></a>`work` | yes | [SchedulerWorkBatch](schemas-schedulerworkbatch.md) |  |
 
@@ -33,6 +34,7 @@ Exact externally visible contract owned by this contract element.
 ### Referenced contract elements
 
 - [AdmissionRun](schemas-admissionrun.md)
+- [DepartureRun](schemas-departurerun.md)
 - [SchedulerPruning](schemas-schedulerpruning.md)
 - [SchedulerWorkBatch](schemas-schedulerworkbatch.md)
 
@@ -63,7 +65,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 18340e39255b5eeffda73125a891665cd47056ed52aae5e771c92c75a8d1cac8 -->
+<!-- exact-contract-value: 00dc9d584bac2f41f14517f37b2a792ff36b23457c5285a66117900e13496d2e -->
 
 ```json
 {
@@ -73,6 +75,16 @@ The following JSON is the complete value owned at each machine-authority pointer
       "anyOf": [
         {
           "$ref": "#/components/schemas/AdmissionRun"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "departure": {
+      "anyOf": [
+        {
+          "$ref": "#/components/schemas/DepartureRun"
         },
         {
           "type": "null"

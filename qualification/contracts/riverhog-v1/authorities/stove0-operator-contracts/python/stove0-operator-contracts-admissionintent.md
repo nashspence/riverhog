@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-485b2e0a7c"></a>`kind`: `"class"`
-- <a id="s-d5e1ed28d6"></a>`signature`: `"\"(*, format: Literal['stove0-admission-intent/v1'] = 'stove0-admission-intent/v1', admission_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], policy_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], policy_revision: Annotated[int, Ge(ge=1)], policy_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], required_tags: tuple[CollectionTag, ...], collection: riverhog_protocol.catalog_sync.CatalogSyncDescriptor, recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[NonnegativeDecimal, Ge(ge=1)], recipe_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], effective_intent: dict[str, JsonValue]) -> None\""`
+- <a id="s-d5e1ed28d6"></a>`signature`: `"\"(*, format: Literal['stove0-admission-intent/v1'] = 'stove0-admission-intent/v1', admission_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], policy_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], policy_revision: Annotated[int, Ge(ge=1)], policy_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], selector: stove0_operator_contracts.AllVisibleAdmissionSelector \| stove0_operator_contracts.TaggedAdmissionSelector, collection: riverhog_protocol.catalog_sync.CatalogSyncDescriptor, recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[NonnegativeDecimal, Ge(ge=1)], recipe_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], effective_intent: dict[str, JsonValue]) -> None\""`
 
 #### Validated model schema
 
@@ -30,7 +30,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-41c6814b9d"></a>`type`: `"object"`
 - <a id="s-fbb353d6c3"></a>`additionalProperties`: `false`
-- <a id="s-2f1ab13f3e"></a>`required`: `["admission_id","policy_id","policy_revision","policy_sha256","required_tags","collection","recipe_id","recipe_revision","recipe_sha256","effective_intent"]`
+- <a id="s-2f1ab13f3e"></a>`required`: `["admission_id","policy_id","policy_revision","policy_sha256","selector","collection","recipe_id","recipe_revision","recipe_sha256","effective_intent"]`
 
 ##### Fields
 
@@ -46,16 +46,29 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-e2909a4b58"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-4d0773f3f1"></a>`recipe_revision` | yes | [NonnegativeDecimal](#s-f6f9f65876); ge=1 |  |
 | <a id="s-c1303526bb"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-10f74caced"></a>`required_tags` | yes | type="array"; items=([CollectionTag](#s-949d5d67c3)) |  |
+| <a id="s-df68d414fb"></a>`selector` | yes | discriminator={"mapping":{"all":"#/$defs/AllVisibleAdmissionSelector","tags":"#/$defs/TaggedAdmissionSelector"},"propertyName":"kind"}; oneOf=[([AllVisibleAdmissionSelector](#s-e671ba480d)); ([TaggedAdmissionSelector](#s-c04f382661))] |  |
 
 ##### Definitions
 
+- [AllVisibleAdmissionSelector](#s-e671ba480d)
 - [CatalogSyncDescriptor](#s-becf941a62)
 - [CollectionDescription](#s-8da18b255b)
 - [CollectionId](#s-581e1f826a)
 - [CollectionTag](#s-949d5d67c3)
 - [JsonValue](#s-87dae79148)
 - [NonnegativeDecimal](#s-f6f9f65876)
+- [TaggedAdmissionSelector](#s-c04f382661)
+
+##### <a id="s-e671ba480d"></a>definition `AllVisibleAdmissionSelector`
+
+- <a id="s-9d6eb55efc"></a>`type`: `"object"`
+- <a id="s-405656745b"></a>`additionalProperties`: `false`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-2d7bece143"></a>`kind` | no | type="string"; const="all"; default="all" |  |
 
 ##### <a id="s-becf941a62"></a>definition `CatalogSyncDescriptor`
 
@@ -114,6 +127,19 @@ Exact externally visible contract owned by this contract element.
 - <a id="s-1cc8e860bf"></a>`type`: `"string"`
 - <a id="s-6d33bdded3"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
+##### <a id="s-c04f382661"></a>definition `TaggedAdmissionSelector`
+
+- <a id="s-27786ba03e"></a>`type`: `"object"`
+- <a id="s-9c1cede8de"></a>`additionalProperties`: `false`
+- <a id="s-8c062608a5"></a>`required`: `["required"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-57e99a4a5d"></a>`kind` | no | type="string"; const="tags"; default="tags" |  |
+| <a id="s-cffdf17bd8"></a>`required` | yes | type="array"; items=([CollectionTag](#s-949d5d67c3)); maxItems=100; minItems=1; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-classification-admission-predicate"} |  |
+
 ## Maintained corroboration
 
 ### Related interface records
@@ -148,7 +174,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a03a8943070350ca2ebcc863c85561c967828a96013866cd3ea8f434b45a7953 -->
+<!-- exact-contract-value: 313be4a876fbcb19ed84ca0fa53c456e8d136fb2438e77a2b2933922da47f899 -->
 
 ```json
 {
@@ -156,6 +182,17 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "$defs": {
+        "AllVisibleAdmissionSelector": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "all",
+              "default": "all",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        },
         "CatalogSyncDescriptor": {
           "additionalProperties": false,
           "properties": {
@@ -265,6 +302,32 @@ The following JSON is the complete value owned at each machine-authority pointer
         "NonnegativeDecimal": {
           "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
           "type": "string"
+        },
+        "TaggedAdmissionSelector": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "tags",
+              "default": "tags",
+              "type": "string"
+            },
+            "required": {
+              "items": {
+                "$ref": "#/$defs/CollectionTag"
+              },
+              "maxItems": 100,
+              "minItems": 1,
+              "type": "array",
+              "x-riverhog-extent": {
+                "policy": "contract_max",
+                "reason": "bounded-exact-classification-admission-predicate"
+              }
+            }
+          },
+          "required": [
+            "required"
+          ],
+          "type": "object"
         }
       },
       "additionalProperties": false,
@@ -313,11 +376,22 @@ The following JSON is the complete value owned at each machine-authority pointer
           "pattern": "^[0-9a-f]{64}$",
           "type": "string"
         },
-        "required_tags": {
-          "items": {
-            "$ref": "#/$defs/CollectionTag"
+        "selector": {
+          "discriminator": {
+            "mapping": {
+              "all": "#/$defs/AllVisibleAdmissionSelector",
+              "tags": "#/$defs/TaggedAdmissionSelector"
+            },
+            "propertyName": "kind"
           },
-          "type": "array"
+          "oneOf": [
+            {
+              "$ref": "#/$defs/AllVisibleAdmissionSelector"
+            },
+            {
+              "$ref": "#/$defs/TaggedAdmissionSelector"
+            }
+          ]
         }
       },
       "required": [
@@ -325,7 +399,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "policy_id",
         "policy_revision",
         "policy_sha256",
-        "required_tags",
+        "selector",
         "collection",
         "recipe_id",
         "recipe_revision",
@@ -334,7 +408,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, format: Literal['stove0-admission-intent/v1'] = 'stove0-admission-intent/v1', admission_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], policy_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], policy_revision: Annotated[int, Ge(ge=1)], policy_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], required_tags: tuple[CollectionTag, ...], collection: riverhog_protocol.catalog_sync.CatalogSyncDescriptor, recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[NonnegativeDecimal, Ge(ge=1)], recipe_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], effective_intent: dict[str, JsonValue]) -> None\""
+    "signature": "\"(*, format: Literal['stove0-admission-intent/v1'] = 'stove0-admission-intent/v1', admission_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], policy_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], policy_revision: Annotated[int, Ge(ge=1)], policy_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], selector: stove0_operator_contracts.AllVisibleAdmissionSelector | stove0_operator_contracts.TaggedAdmissionSelector, collection: riverhog_protocol.catalog_sync.CatalogSyncDescriptor, recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[NonnegativeDecimal, Ge(ge=1)], recipe_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], effective_intent: dict[str, JsonValue]) -> None\""
   },
   "distribution": "stove0-operator-contracts",
   "module": "stove0_operator_contracts",

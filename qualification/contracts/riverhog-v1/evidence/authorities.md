@@ -9,14 +9,14 @@ The ordinary atlas map owns the authority/interface inventory and its scope desc
 | Interface | Count |
 |---|---:|
 | `artifact-verification` | 3 |
-| `cli` | 192 |
+| `cli` | 198 |
 | `compatibility-guarantees` | 9 |
-| `configuration` | 7 |
-| `configuration-environment` | 251 |
-| `durable-state` | 138 |
+| `configuration` | 8 |
+| `configuration-environment` | 253 |
+| `durable-state` | 141 |
 | `extent` | 12 |
-| `http-operations` | 149 |
-| `http-schemas` | 417 |
+| `http-operations` | 153 |
+| `http-schemas` | 427 |
 | `http-security-schemes` | 2 |
 | `http-service-declaration` | 3 |
 | `installation-roots` | 4 |
@@ -24,7 +24,7 @@ The ordinary atlas map owns the authority/interface inventory and its scope desc
 | `process-protocol-operations` | 24 |
 | `process-protocol-schemas` | 43 |
 | `publication-locations` | 2 |
-| `python` | 2846 |
+| `python` | 2902 |
 | `python-distributions` | 72 |
 | `release-artifacts` | 12 |
 | `runtime-images` | 13 |

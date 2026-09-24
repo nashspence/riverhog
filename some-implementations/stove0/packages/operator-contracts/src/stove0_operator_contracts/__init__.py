@@ -40,6 +40,8 @@ from stove0_protocol import (
 from stove0_recipe_config import RecipeDefinition
 from stove0_target_protocol import (
     AcceptedTargetJob,
+    DepartureEffectIntent,
+    DepartureEffectReceipt,
     OutputCollectionRef,
     TargetJobStatus,
     TargetPlan,
@@ -98,13 +100,13 @@ class OperatorModel(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
 
-class AdmissionPolicy(OperatorModel):
-    """One bounded, exact all-of classification admission rule."""
+class AllVisibleAdmissionSelector(OperatorModel):
+    kind: Literal["all"] = "all"
 
-    format: Literal["stove0-admission-policy/v1"] = "stove0-admission-policy/v1"
-    id: str = Field(pattern=r"^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$")
-    revision: int = Field(ge=1)
-    required_tags: tuple[CollectionTag, ...] = Field(
+
+class TaggedAdmissionSelector(OperatorModel):
+    kind: Literal["tags"] = "tags"
+    required: tuple[CollectionTag, ...] = Field(
         min_length=1,
         max_length=COLLECTION_TAG_REQUEST_MEMBERS_MAX,
         json_schema_extra={
@@ -114,19 +116,34 @@ class AdmissionPolicy(OperatorModel):
             }
         },
     )
-    recipe_id: str = Field(min_length=1, max_length=160)
-    recipe_revision: NonnegativeDecimal = Field(ge=1)
-    recipe_sha256: Sha256
-    effective_intent: dict[str, JsonValue] = Field(default_factory=dict)
-    automatic_preview: Literal["accept-ready"] = "accept-ready"
 
-    @field_validator("required_tags")
+    @field_validator("required")
     @classmethod
     def canonical_required_tags(cls, value: tuple[CollectionTag, ...]) -> tuple[CollectionTag, ...]:
         ordered = tuple(sorted(value, key=lambda tag: tag.encode("utf-8")))
         if value != ordered or len(value) != len(set(value)):
             raise ValueError("required admission tags must be unique and canonically ordered")
         return value
+
+
+AdmissionSelector = Annotated[
+    AllVisibleAdmissionSelector | TaggedAdmissionSelector,
+    Field(discriminator="kind"),
+]
+
+
+class AdmissionPolicy(OperatorModel):
+    """One bounded admission rule over the policy's Riverhog authorization view."""
+
+    format: Literal["stove0-admission-policy/v1"] = "stove0-admission-policy/v1"
+    id: str = Field(pattern=r"^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$")
+    revision: int = Field(ge=1)
+    selector: AdmissionSelector
+    recipe_id: str = Field(min_length=1, max_length=160)
+    recipe_revision: NonnegativeDecimal = Field(ge=1)
+    recipe_sha256: Sha256
+    effective_intent: dict[str, JsonValue] = Field(default_factory=dict)
+    automatic_preview: Literal["accept-ready"] = "accept-ready"
 
     @property
     def policy_sha256(self) -> str:
@@ -188,7 +205,7 @@ class AdmissionIntent(OperatorModel):
     policy_id: str = Field(min_length=1, max_length=160)
     policy_revision: int = Field(ge=1)
     policy_sha256: Sha256
-    required_tags: tuple[CollectionTag, ...]
+    selector: AdmissionSelector
     collection: CatalogSyncDescriptor
     recipe_id: str = Field(min_length=1, max_length=160)
     recipe_revision: NonnegativeDecimal = Field(ge=1)
@@ -213,7 +230,7 @@ class AdmissionIntent(OperatorModel):
             "policy_id": policy.id,
             "policy_revision": policy.revision,
             "policy_sha256": policy.policy_sha256,
-            "required_tags": list(policy.required_tags),
+            "selector": policy.selector.model_dump(mode="json"),
             "collection": canonical_collection.model_dump(mode="json"),
             "recipe_id": policy.recipe_id,
             "recipe_revision": policy.model_dump(mode="json")["recipe_revision"],
@@ -227,7 +244,7 @@ class AdmissionIntent(OperatorModel):
                 policy_id=policy.id,
                 policy_revision=policy.revision,
                 policy_sha256=policy.policy_sha256,
-                required_tags=policy.required_tags,
+                selector=policy.selector,
                 collection=canonical_collection,
                 recipe_id=policy.recipe_id,
                 recipe_revision=str(policy.recipe_revision),
@@ -242,7 +259,7 @@ class AdmissionIntent(OperatorModel):
             dict(
                 id=self.policy_id,
                 revision=self.policy_revision,
-                required_tags=self.required_tags,
+                selector=self.selector,
                 recipe_id=self.recipe_id,
                 recipe_revision=str(self.recipe_revision),
                 recipe_sha256=self.recipe_sha256,
@@ -254,7 +271,7 @@ class AdmissionIntent(OperatorModel):
             "policy_id": self.policy_id,
             "policy_revision": self.policy_revision,
             "policy_sha256": self.policy_sha256,
-            "required_tags": list(self.required_tags),
+            "selector": self.selector.model_dump(mode="json"),
             "collection": self.collection.model_dump(mode="json"),
             "recipe_id": self.recipe_id,
             "recipe_revision": str(self.recipe_revision),
@@ -300,6 +317,111 @@ class AdmissionPage(OperatorModel):
     policy_id: str | None
     state: AdmissionState | None
     admissions: tuple[AdmissionView, ...]
+
+
+DeparturePhase = Literal["new", "baseline", "following", "reset_required"]
+DepartureEffectState = Literal["pending", "complete"]
+
+
+class DeparturePolicy(OperatorModel):
+    """A catalog departure subscription with no recipe or artifact authority."""
+
+    format: Literal["stove0-departure-policy/v1"] = "stove0-departure-policy/v1"
+    id: str = Field(pattern=r"^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$")
+    revision: int = Field(ge=1)
+    selector: AdmissionSelector
+    target_registration_id: str = Field(min_length=1, max_length=160)
+    target_identity: Sha256
+
+    @property
+    def policy_sha256(self) -> str:
+        return canonical_json_sha256(self.model_dump(mode="json"))
+
+
+class DepartureCatalog(OperatorModel):
+    format: Literal["stove0-departures/v1"] = "stove0-departures/v1"
+    policies: tuple[DeparturePolicy, ...] = Field(
+        default=(),
+        max_length=ADMISSION_POLICY_COUNT_MAX,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "contract_max",
+                "reason": "bounded-deployment-departure-catalog",
+            }
+        },
+    )
+
+    @field_validator("policies")
+    @classmethod
+    def canonical_policies(cls, value: tuple[DeparturePolicy, ...]) -> tuple[DeparturePolicy, ...]:
+        if value != tuple(sorted(value, key=lambda policy: policy.id)):
+            raise ValueError("departure policies must be ordered by ID")
+        if len(value) != len({policy.id for policy in value}):
+            raise ValueError("departure policy IDs must be unique")
+        return value
+
+    @property
+    def catalog_sha256(self) -> str:
+        return canonical_json_sha256(self.model_dump(mode="json"))
+
+
+class DeparturePolicyStatus(OperatorModel):
+    policy: DeparturePolicy
+    policy_sha256: Sha256
+    phase: DeparturePhase
+    source_identity: Sha256 | None = None
+    authorization_view_identity: Sha256 | None = None
+    through_revision: str = Field(pattern=r"^(?:0|[1-9][0-9]*)$")
+    updated_at: CanonicalUtcTimestamp
+
+    @model_validator(mode="after")
+    def exact_policy(self) -> Self:
+        if self.policy_sha256 != self.policy.policy_sha256:
+            raise ValueError("departure status differs from its policy identity")
+        return self
+
+
+class DeparturePolicyCatalogView(OperatorModel):
+    catalog_sha256: Sha256
+    policies: tuple[DeparturePolicyStatus, ...]
+
+
+class DepartureEffectView(OperatorModel):
+    intent: DepartureEffectIntent
+    state: DepartureEffectState
+    receipt: DepartureEffectReceipt | None = None
+    attempt_count: int = Field(ge=0)
+    next_attempt_at: CanonicalUtcTimestamp | None = None
+    failure: str | None = Field(default=None, min_length=1, max_length=1000)
+    created_at: CanonicalUtcTimestamp
+    updated_at: CanonicalUtcTimestamp
+
+    @model_validator(mode="after")
+    def exact_stage(self) -> Self:
+        if (self.state == "complete") != (self.receipt is not None):
+            raise ValueError("departure effect receipt differs from its stage")
+        if (self.state == "complete") != (self.next_attempt_at is None):
+            raise ValueError("departure effect retry schedule differs from its stage")
+        if self.receipt is not None and (
+            self.receipt.departure_id != self.intent.departure_id
+            or self.receipt.target_identity != self.intent.target_identity
+        ):
+            raise ValueError("departure effect receipt differs from its intent")
+        return self
+
+
+class DepartureEffectPage(OperatorModel):
+    page_size: int = Field(ge=1, le=100)
+    next_page_token: BrowsePageToken | None
+    effects: tuple[DepartureEffectView, ...] = Field(
+        max_length=100,
+        json_schema_extra={
+            "x-riverhog-extent": {
+                "policy": "contract_max",
+                "reason": "bounded-departure-effect-browse-page",
+            }
+        },
+    )
 
 
 def validate_work_state_shape(
@@ -882,6 +1004,11 @@ class AdmissionRun(OperatorModel):
     failures: tuple[SchedulerFailure, ...] = ()
 
 
+class DepartureRun(OperatorModel):
+    progressed: tuple[str, ...]
+    failures: tuple[SchedulerFailure, ...] = ()
+
+
 class SchedulerWorkBatch(OperatorModel):
     role: SchedulerRole
     cursor: str
@@ -904,6 +1031,7 @@ class SchedulerPruning(OperatorModel):
 class SchedulerRun(OperatorModel):
     pruning: SchedulerPruning | None
     admission: AdmissionRun | None = None
+    departure: DepartureRun | None = None
     work: SchedulerWorkBatch
 
 
@@ -914,6 +1042,7 @@ def _payload(value: BaseModel | Mapping[str, Any]) -> dict[str, Any]:
 
 
 __all__ = [
+    "AllVisibleAdmissionSelector",
     "ADMISSION_POLICY_COUNT_MAX",
     "AdmissionCatalog",
     "AdmissionIntent",
@@ -922,10 +1051,20 @@ __all__ = [
     "AdmissionPolicy",
     "AdmissionPolicyCatalogView",
     "AdmissionPolicyStatus",
+    "AdmissionSelector",
     "AdmissionRun",
     "AdmissionSort",
     "AdmissionState",
     "AdmissionView",
+    "DepartureCatalog",
+    "DepartureEffectPage",
+    "DepartureEffectState",
+    "DepartureEffectView",
+    "DeparturePhase",
+    "DeparturePolicy",
+    "DeparturePolicyCatalogView",
+    "DeparturePolicyStatus",
+    "DepartureRun",
     "ArtifactSelectionPage",
     "BRANCH_SET_ADMITTED",
     "BranchSetAdmittedEvent",
@@ -963,6 +1102,7 @@ __all__ = [
     "Stove0EventPage",
     "Stove0EventType",
     "Stove0LifecycleEvent",
+    "TaggedAdmissionSelector",
     "WORK_CREATED",
     "WORK_UPDATED",
     "WorkClaimView",

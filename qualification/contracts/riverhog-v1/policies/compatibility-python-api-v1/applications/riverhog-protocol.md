@@ -52,7 +52,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-protocol` | [riverhog_protocol.CatalogSyncCollectionPage.validate_continuation](../../../authorities/riverhog-protocol/python/riverhog-protocol-catalogsynccollectionpage-validate-continuation.md#pa-1e17ab0b1c) |
 | `riverhog-protocol` | [riverhog_protocol.CatalogSyncCursor](../../../authorities/riverhog-protocol/python/riverhog-protocol-catalogsynccursor.md#pa-5b67996677) |
 | `riverhog-protocol` | [riverhog_protocol.CatalogSyncCursorExpired](../../../authorities/riverhog-protocol/python/riverhog-protocol-catalogsynccursorexpired.md#pa-5c08980da0) |
-| `riverhog-protocol` | [riverhog_protocol.CatalogSyncDelete](../../../authorities/riverhog-protocol/python/riverhog-protocol-catalogsyncdelete.md#pa-d3223a6e95) |
+| `riverhog-protocol` | [riverhog_protocol.CatalogSyncDeparture](../../../authorities/riverhog-protocol/python/riverhog-protocol-catalogsyncdeparture.md#pa-9256d9b687) |
 | `riverhog-protocol` | [riverhog_protocol.CatalogSyncDescriptor](../../../authorities/riverhog-protocol/python/riverhog-protocol-catalogsyncdescriptor.md#pa-e0342cb6f9) |
 | `riverhog-protocol` | [riverhog_protocol.CatalogSyncHistoryExpired](../../../authorities/riverhog-protocol/python/riverhog-protocol-catalogsynchistoryexpired.md#pa-9454165a47) |
 | `riverhog-protocol` | [riverhog_protocol.CatalogSyncIdentity](../../../authorities/riverhog-protocol/python/riverhog-protocol-catalogsyncidentity.md#pa-35f5be7568) |

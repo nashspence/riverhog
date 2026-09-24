@@ -8,6 +8,9 @@ These are the indexed contract-element applications. Each link reaches the polic
 
 | Authority | Contract element |
 |---|---|
+| `stove0-target-client` | [stove0_target_client.DepartureEffectClient](../../../authorities/stove0-target-client/python/stove0-target-client-departureeffectclient.md#pa-861e30fc64) |
+| `stove0-target-client` | [stove0_target_client.DepartureEffectClient.descriptor](../../../authorities/stove0-target-client/python/stove0-target-client-departureeffectclient-descriptor.md#pa-d9799e42a9) |
+| `stove0-target-client` | [stove0_target_client.DepartureEffectClient.put_effect](../../../authorities/stove0-target-client/python/stove0-target-client-departureeffectclient-put-effect.md#pa-e6700252cb) |
 | `stove0-target-client` | [stove0_target_client.TargetCallbackClient](../../../authorities/stove0-target-client/python/stove0-target-client-targetcallbackclient.md#pa-13f962cb1c) |
 | `stove0-target-client` | [stove0_target_client.TargetCallbackClient.close](../../../authorities/stove0-target-client/python/stove0-target-client-targetcallbackclient-close.md#pa-230e59c716) |
 | `stove0-target-client` | [stove0_target_client.TargetCallbackClient.declare_target_execution_disposition](../../../authorities/stove0-target-client/python/stove0-target-client-targetcallbackclient-declare-target-execution-disposition.md#pa-23a3175c80) |

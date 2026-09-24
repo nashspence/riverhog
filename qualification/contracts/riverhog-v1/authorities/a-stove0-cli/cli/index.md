@@ -6,7 +6,7 @@ CLI contract owned by a-stove0-cli.
 
 ## Contract elements
 
-Executable commands: **28** · Command groups: **9**
+Executable commands: **32** · Command groups: **11**
 
 ### Command tree
 
@@ -18,6 +18,12 @@ Executable commands: **28** · Command groups: **9**
       - [list](stove0-admission-policy-list.md)
       - [rebaseline](stove0-admission-policy-rebaseline.md)
     - [show](stove0-admission-show.md)
+  - [departure](stove0-departure.md)
+    - [list](stove0-departure-list.md)
+    - [policy](stove0-departure-policy.md)
+      - [list](stove0-departure-policy-list.md)
+      - [rebaseline](stove0-departure-policy-rebaseline.md)
+    - [show](stove0-departure-show.md)
   - [evaluation](stove0-evaluation.md)
     - [cancel](stove0-evaluation-cancel.md)
     - [create](stove0-evaluation-create.md)

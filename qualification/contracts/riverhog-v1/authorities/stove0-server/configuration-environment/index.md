@@ -23,6 +23,8 @@ Configuration Environment contract owned by stove0-server.
 - [STOVE0_DATABASE_URL](stove0-database-url.md)
 - [STOVE0_DATABASE_URL_FILE](stove0-database-url-file.md)
 - [STOVE0_DECLARED_WORKSPACE_PROTECTION](stove0-declared-workspace-protection.md)
+- [STOVE0_DEPARTURES_PATH](stove0-departures-path.md)
+- [STOVE0_DEPARTURE_TARGETS_JSON](stove0-departure-targets-json.md)
 - [STOVE0_OBSERVERS_JSON](stove0-observers-json.md)
 - [STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS](stove0-operational-state-retention-seconds.md)
 - [STOVE0_RECIPES_PATH](stove0-recipes-path.md)

@@ -7,7 +7,7 @@ import time
 from datetime import timedelta
 from typing import Literal, Protocol, cast
 
-from stove0_operator_contracts import AdmissionRun
+from stove0_operator_contracts import AdmissionRun, DepartureRun
 from time_formats import format_utc_timestamp, utc_now
 
 from stove0_core.coordinator import Stove0Coordinator
@@ -25,6 +25,10 @@ class ProductionSealProcessor(Protocol):
 
 class AdmissionProcessor(Protocol):
     def advance(self, *, limit: int = 25) -> AdmissionRun: ...
+
+
+class DepartureProcessor(Protocol):
+    def advance(self, *, limit: int = 25) -> DepartureRun: ...
 
 
 _CONTROLLER_PHASES = frozenset(
@@ -60,6 +64,7 @@ class Stove0Scheduler:
         state: SqlAlchemyStateStore,
         production_seals: ProductionSealProcessor | None = None,
         admission: AdmissionProcessor | None = None,
+        departure: DepartureProcessor | None = None,
         operational_state_retention_seconds: int = 30 * 24 * 60 * 60,
     ) -> None:
         if operational_state_retention_seconds < 1:
@@ -68,6 +73,7 @@ class Stove0Scheduler:
         self.state = state
         self.production_seals = production_seals
         self.admission = admission
+        self.departure = departure
         self.operational_state_retention_seconds = operational_state_retention_seconds
         self._prune_lock = threading.Lock()
         self._next_prune = 0.0
@@ -149,10 +155,16 @@ class Stove0Scheduler:
             if role in {"controller", "combined"} and self.admission is not None
             else None
         )
+        departure = (
+            self.departure.advance(limit=work_limit)
+            if role in {"controller", "combined"} and self.departure is not None
+            else None
+        )
         work = self.advance(role=role, limit=work_limit)
         return {
             "pruning": pruning,
             "admission": (None if admission is None else admission.model_dump(mode="python")),
+            "departure": (None if departure is None else departure.model_dump(mode="python")),
             "work": work,
         }
 

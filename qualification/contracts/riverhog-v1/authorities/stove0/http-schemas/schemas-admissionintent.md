@@ -17,7 +17,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-50460f4d51"></a>`type`: `"object"`
 - <a id="s-5dd1a94947"></a>`additionalProperties`: `false`
-- <a id="s-1b356cffeb"></a>`required`: `["admission_id","policy_id","policy_revision","policy_sha256","required_tags","collection","recipe_id","recipe_revision","recipe_sha256","effective_intent"]`
+- <a id="s-1b356cffeb"></a>`required`: `["admission_id","policy_id","policy_revision","policy_sha256","selector","collection","recipe_id","recipe_revision","recipe_sha256","effective_intent"]`
 - <a id="s-0aec38de14"></a>`title`: `"AdmissionIntent"`
 
 ### Fields
@@ -34,7 +34,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-4ff09b93ec"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1; title="Recipe Id" |  |
 | <a id="s-b4e40a831d"></a>`recipe_revision` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-17ec6189a3"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Recipe Sha256" |  |
-| <a id="s-81dfbfb6bf"></a>`required_tags` | yes | type="array"; items=([CollectionTag](schemas-collectiontag.md)); title="Required Tags" |  |
+| <a id="s-4272c7f765"></a>`selector` | yes | discriminator={"mapping":{"all":"#/components/schemas/AllVisibleAdmissionSelector","tags":"#/components/schemas/TaggedAdmissionSelector"},"propertyName":"kind"}; oneOf=[([AllVisibleAdmissionSelector](schemas-allvisibleadmissionselector.md)); ([TaggedAdmissionSelector](schemas-taggedadmissionselector.md))]; title="Selector" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -45,7 +45,6 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | [field effective_intent](#s-4b7ce35bca) | `cardinality · entries · operational_policy` | shared above |
-| [field required_tags](#s-81dfbfb6bf) | `cardinality · items · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
@@ -61,10 +60,11 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract elements
 
+- [AllVisibleAdmissionSelector](schemas-allvisibleadmissionselector.md)
 - [CatalogSyncDescriptor](schemas-catalogsyncdescriptor.md)
-- [CollectionTag](schemas-collectiontag.md)
 - [JsonValue](schemas-jsonvalue.md)
 - [NonnegativeDecimal](schemas-nonnegativedecimal.md)
+- [TaggedAdmissionSelector](schemas-taggedadmissionselector.md)
 
 ## Governing policies
 
@@ -97,7 +97,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 33d1b1c45c3f3fb6815907a5f4776bf89b4497d9a706e5450a4268306e0b15ea -->
+<!-- exact-contract-value: bcda3b9bf0b88fdb701a2faf9d23306f7b26650a67ec653304907e65ad19d008 -->
 
 ```json
 {
@@ -155,12 +155,23 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Recipe Sha256",
       "type": "string"
     },
-    "required_tags": {
-      "items": {
-        "$ref": "#/components/schemas/CollectionTag"
+    "selector": {
+      "discriminator": {
+        "mapping": {
+          "all": "#/components/schemas/AllVisibleAdmissionSelector",
+          "tags": "#/components/schemas/TaggedAdmissionSelector"
+        },
+        "propertyName": "kind"
       },
-      "title": "Required Tags",
-      "type": "array"
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/AllVisibleAdmissionSelector"
+        },
+        {
+          "$ref": "#/components/schemas/TaggedAdmissionSelector"
+        }
+      ],
+      "title": "Selector"
     }
   },
   "required": [
@@ -168,7 +179,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "policy_id",
     "policy_revision",
     "policy_sha256",
-    "required_tags",
+    "selector",
     "collection",
     "recipe_id",
     "recipe_revision",

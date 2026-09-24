@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from types import SimpleNamespace
-from typing import Any, cast
+from typing import Any, Literal, cast
 
 import pytest
 from riverhog_client import ApiClient
@@ -9,7 +9,7 @@ from riverhog_protocol import (
     CatalogSyncChangePage,
     CatalogSyncCheckpoint,
     CatalogSyncCollectionPage,
-    CatalogSyncDelete,
+    CatalogSyncDeparture,
     CatalogSyncDescriptor,
     CatalogSyncUpsert,
 )
@@ -150,12 +150,64 @@ def _policy(*, policy_id: str = "camera-archive") -> AdmissionPolicy:
     return AdmissionPolicy(
         id=policy_id,
         revision=1,
-        required_tags=("camera", "workflow/archive"),
+        selector={"kind": "tags", "required": ("camera", "workflow/archive")},
         recipe_id="stove0.media.archive/v1",
         recipe_revision=str(1),
         recipe_sha256="a" * 64,
         effective_intent={"quality": "archive"},
     )
+
+
+@pytest.mark.parametrize("mode,expected_baseline", [("observe", 0), ("backfill", 1)])
+def test_all_visible_selector_uses_the_bound_view_without_tag_queries(
+    mode: Literal["observe", "backfill"], expected_baseline: int
+) -> None:
+    state = _state()
+    first = _descriptor(tag_revision=1, tag_identity="6" * 64, revision="1")
+    api = _CatalogApi(first, set())
+    policy = AdmissionPolicy.model_validate(
+        {**_policy().model_dump(mode="json"), "selector": {"kind": "all"}}
+    )
+    service = _service(state=state, api=api, policy=policy)
+    service.rebaseline(policy.id, mode=mode)
+    service.advance(limit=5)
+
+    def admissions() -> tuple[object, ...]:
+        return cast(
+            tuple[object, ...],
+            service.list_admissions(
+                page_size=25,
+                position=None,
+                policy_id=None,
+                state=None,
+                query=None,
+                sort="admission_id",
+                order="asc",
+            )["admissions"],
+        )
+
+    assert len(admissions()) == expected_baseline
+    assert api.membership_calls == []
+
+    next_collection = _descriptor(
+        tag_revision=1, tag_identity="7" * 64, revision="2", collection_id=8
+    )
+    api.change = CatalogSyncUpsert(**next_collection.model_dump())
+    service.advance(limit=5)
+    assert len(admissions()) == expected_baseline + 1
+    assert api.membership_calls == []
+    service.advance(limit=5)
+    assert len(admissions()) == expected_baseline + 1
+
+
+def test_admission_selector_shape_is_explicit_and_exact() -> None:
+    policy = _policy().model_dump(mode="json")
+    with pytest.raises(ValueError):
+        AdmissionPolicy.model_validate({**policy, "selector": {"kind": "tags", "required": []}})
+    with pytest.raises(ValueError):
+        AdmissionPolicy.model_validate({**policy, "selector": {"kind": "all", "required": []}})
+    with pytest.raises(ValueError):
+        AdmissionPolicy.model_validate({**policy, "required_tags": ["camera"]})
 
 
 def _state() -> SqlAlchemyStateStore:
@@ -364,7 +416,7 @@ def test_still_matching_update_does_not_create_implicit_work() -> None:
     )
 
 
-def test_stale_upsert_cannot_resurrect_a_deleted_catalog_revision() -> None:
+def test_stale_upsert_cannot_resurrect_a_departed_catalog_revision() -> None:
     state = _state()
     initial = _descriptor(tag_revision=1, tag_identity="6" * 64, revision="1")
     api = _CatalogApi(initial, {"camera", "workflow/archive"})
@@ -373,19 +425,19 @@ def test_stale_upsert_cannot_resurrect_a_deleted_catalog_revision() -> None:
     service.advance(limit=1)
     service.advance(limit=1)
 
-    deleted = CatalogSyncDelete(collection_id="7", revision="3")
-    delete_page = CatalogSyncChangePage(
+    departed = CatalogSyncDeparture(cause="collection_deleted", collection_id="7", revision="3")
+    departure_page = CatalogSyncChangePage(
         source_identity=api.source_identity,
         authorization_view_identity=api.view_identity,
-        changes=[deleted],
-        next_cursor="after-delete",
+        changes=[departed],
+        next_cursor="after-departure",
         caught_up=False,
         through_revision="3",
     )
     assert service._commit_change_page(  # noqa: SLF001 - exact replay regression proof
         policy,
         cursor="following",
-        page=delete_page,
+        page=departure_page,
         evaluated=None,
     )
 
@@ -410,7 +462,7 @@ def test_stale_upsert_cannot_resurrect_a_deleted_catalog_revision() -> None:
     )
     assert restarted._commit_change_page(  # noqa: SLF001 - exact replay regression proof
         policy,
-        cursor="after-delete",
+        cursor="after-departure",
         page=stale_page,
         evaluated=(stale, True),
     )
@@ -626,7 +678,7 @@ def test_committed_admission_survives_later_policy_edit() -> None:
     edited = AdmissionPolicy(
         id=original.id,
         revision=2,
-        required_tags=("camera",),
+        selector={"kind": "tags", "required": ("camera",)},
         recipe_id=original.recipe_id,
         recipe_revision=str(original.recipe_revision),
         recipe_sha256=original.recipe_sha256,

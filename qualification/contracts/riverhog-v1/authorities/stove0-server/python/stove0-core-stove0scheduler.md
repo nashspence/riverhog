@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-d84283fa69"></a>`kind`: `"class"`
-- <a id="s-65f50f6d1c"></a>`signature`: `"\"(*, coordinator: 'Stove0Coordinator', state: 'SqlAlchemyStateStore', production_seals: 'ProductionSealProcessor \| None' = None, admission: 'AdmissionProcessor \| None' = None, operational_state_retention_seconds: 'int' = 2592000) -> 'None'\""`
+- <a id="s-65f50f6d1c"></a>`signature`: `"\"(*, coordinator: 'Stove0Coordinator', state: 'SqlAlchemyStateStore', production_seals: 'ProductionSealProcessor \| None' = None, admission: 'AdmissionProcessor \| None' = None, departure: 'DepartureProcessor \| None' = None, operational_state_retention_seconds: 'int' = 2592000) -> 'None'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d30e65e43f05a5208516df5e21a53eeaa6def5a7dabbec808c01093fd04d9720 -->
+<!-- exact-contract-value: 91dedd317658b5196a10a531da151f9e96455de029911ad9575ab84fa64b40c4 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "signature": "\"(*, coordinator: 'Stove0Coordinator', state: 'SqlAlchemyStateStore', production_seals: 'ProductionSealProcessor | None' = None, admission: 'AdmissionProcessor | None' = None, operational_state_retention_seconds: 'int' = 2592000) -> 'None'\""
+    "signature": "\"(*, coordinator: 'Stove0Coordinator', state: 'SqlAlchemyStateStore', production_seals: 'ProductionSealProcessor | None' = None, admission: 'AdmissionProcessor | None' = None, departure: 'DepartureProcessor | None' = None, operational_state_retention_seconds: 'int' = 2592000) -> 'None'\""
   },
   "distribution": "stove0-server",
   "module": "stove0_core",

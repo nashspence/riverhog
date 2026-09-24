@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Reference navigation](index.md)
 
-This view covers **6 affected contract elements** within stove0: HTTP Operations. Only their recorded evidence groups are included.
+This view covers **7 affected contract elements** within stove0: HTTP Operations. Only their recorded evidence groups are included.
 
 The named contract groups have recorded evidence gaps in the following guarantees. Each group's page identifies its exact open guarantees and candidate tests:
 
@@ -22,6 +22,7 @@ The table identifies the exact evidence groups for each element. Its element lin
 |---|---|
 | [stove0: GET /v1/admissions](get-v1-admissions.md#evidence-gaps) | [stove0-read-collection-progression/v1](../../../evidence/qualifications/stove0-read-collection-progression-v1/index.md) |
 | [stove0: GET /v1/artifact-selections/{selection_sha256}](get-v1-artifact-selections-selection-sha256.md#evidence-gaps) | [stove0-read-collection-progression/v1](../../../evidence/qualifications/stove0-read-collection-progression-v1/index.md) |
+| [stove0: GET /v1/departure-effects](get-v1-departure-effects.md#evidence-gaps) | [stove0-read-collection-progression/v1](../../../evidence/qualifications/stove0-read-collection-progression-v1/index.md) |
 | [stove0: GET /v1/evaluations](get-v1-evaluations.md#evidence-gaps) | [stove0-read-collection-progression/v1](../../../evidence/qualifications/stove0-read-collection-progression-v1/index.md) |
 | [stove0: GET /v1/events](get-v1-events.md#evidence-gaps) | [stove0-read-collection-progression/v1](../../../evidence/qualifications/stove0-read-collection-progression-v1/index.md) |
 | [stove0: GET /v1/target-executions/{job_id}/inputs](get-v1-target-executions-job-id-inputs.md#evidence-gaps) | [stove0-read-collection-progression/v1](../../../evidence/qualifications/stove0-read-collection-progression-v1/index.md) |

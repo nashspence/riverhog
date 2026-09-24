@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-admission-policies:488f0eafc8 -->
+<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-admission-policies:58769b7898 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-9fcc47afa8"></a>
+<a id="s-710e9488a2"></a>
 
 ### Table: `stove0_admission_policies`
 
@@ -21,31 +21,31 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-0eb2e1316e"></a>`policy_id` | `VARCHAR(160)` | no | `—` | — |
-| <a id="s-e994025205"></a>`policy_revision` | `INTEGER` | no | `—` | — |
-| <a id="s-942b0af2fd"></a>`policy_sha256` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-059199b5d0"></a>`phase` | `VARCHAR(32)` | no | `—` | — |
-| <a id="s-27a3ad2ff9"></a>`generation` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-02c49023f8"></a>`source_identity` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-58b23f9aa7"></a>`authorization_view_identity` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-90c7b06c9e"></a>`cursor` | `VARCHAR(4096)` | yes | `—` | — |
-| <a id="s-caf9796f81"></a>`baseline_mode` | `VARCHAR(16)` | no | `—` | — |
-| <a id="s-776499b623"></a>`through_revision` | `VARCHAR(19)` | no | `—` | — |
-| <a id="s-4438b43506"></a>`updated_at` | `VARCHAR(40)` | no | `—` | — |
+| <a id="s-2c006d9fad"></a>`policy_id` | `VARCHAR(160)` | no | `—` | — |
+| <a id="s-ecc1ba6ce2"></a>`policy_revision` | `INTEGER` | no | `—` | — |
+| <a id="s-2696ce9709"></a>`policy_sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-276a2a843b"></a>`phase` | `VARCHAR(32)` | no | `—` | — |
+| <a id="s-02ff2918b3"></a>`generation` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-57a5a31149"></a>`source_identity` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-76855d7dbe"></a>`authorization_view_identity` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-91c5847acf"></a>`cursor` | `VARCHAR(4096)` | yes | `—` | — |
+| <a id="s-f21988c28c"></a>`baseline_mode` | `VARCHAR(16)` | no | `—` | — |
+| <a id="s-f06aa615c4"></a>`through_revision` | `VARCHAR(19)` | no | `—` | — |
+| <a id="s-633abeed7c"></a>`updated_at` | `VARCHAR(40)` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-255e4b2132"></a>`primary-key` | `—` | `PRIMARY KEY (policy_id)` |
-| <a id="s-eb0d74082c"></a>`check` | `ck_stove0_admission_policy_revision` | `CONSTRAINT ck_stove0_admission_policy_revision CHECK (policy_revision >= 1)` |
-| <a id="s-f9574ba51c"></a>`check` | `ck_stove0_admission_policy_id` | `CONSTRAINT ck_stove0_admission_policy_id CHECK (length(policy_id) >= 1)` |
-| <a id="s-491d0ac14d"></a>`check` | `ck_stove0_admission_policy_phase` | `CONSTRAINT ck_stove0_admission_policy_phase CHECK (phase IN ('new','baseline','following','reset_required'))` |
-| <a id="s-4cd89a59ad"></a>`check` | `ck_stove0_admission_policy_baseline_mode` | `CONSTRAINT ck_stove0_admission_policy_baseline_mode CHECK (baseline_mode IN ('observe','backfill'))` |
-| <a id="s-418322b3cc"></a>`check` | `ck_stove0_admission_policies_policy_sha256_hex` | `CONSTRAINT ck_stove0_admission_policies_policy_sha256_hex CHECK (length(policy_sha256) = 64 AND lower(policy_sha256) = policy_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(policy_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-5921963be0"></a>`check` | `ck_stove0_admission_policies_generation_hex` | `CONSTRAINT ck_stove0_admission_policies_generation_hex CHECK (length(generation) = 64 AND lower(generation) = generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-79a94c69b6"></a>`check` | `ck_stove0_admission_policies_source_identity_hex` | `CONSTRAINT ck_stove0_admission_policies_source_identity_hex CHECK (source_identity IS NULL OR length(source_identity) = 64 AND lower(source_identity) = source_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-8d2f6024df"></a>`check` | `ck_stove0_admission_policies_authorization_view_identity_hex` | `CONSTRAINT ck_stove0_admission_policies_authorization_view_identity_hex CHECK (authorization_view_identity IS NULL OR length(authorization_view_identity) = 64 AND lower(authorization_view_identity) = authorization_view_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(authorization_view_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-1d65b6db96"></a>`primary-key` | `—` | `PRIMARY KEY (policy_id)` |
+| <a id="s-ca7133e811"></a>`check` | `ck_stove0_admission_policy_revision` | `CONSTRAINT ck_stove0_admission_policy_revision CHECK (policy_revision >= 1)` |
+| <a id="s-1e52c7e8ef"></a>`check` | `ck_stove0_admission_policy_id` | `CONSTRAINT ck_stove0_admission_policy_id CHECK (length(policy_id) >= 1)` |
+| <a id="s-38e8b8acd0"></a>`check` | `ck_stove0_admission_policy_phase` | `CONSTRAINT ck_stove0_admission_policy_phase CHECK (phase IN ('new','baseline','following','reset_required'))` |
+| <a id="s-b26e492cfd"></a>`check` | `ck_stove0_admission_policy_baseline_mode` | `CONSTRAINT ck_stove0_admission_policy_baseline_mode CHECK (baseline_mode IN ('observe','backfill'))` |
+| <a id="s-98ab7eef94"></a>`check` | `ck_stove0_admission_policies_policy_sha256_hex` | `CONSTRAINT ck_stove0_admission_policies_policy_sha256_hex CHECK (length(policy_sha256) = 64 AND lower(policy_sha256) = policy_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(policy_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-81d7bd31b8"></a>`check` | `ck_stove0_admission_policies_generation_hex` | `CONSTRAINT ck_stove0_admission_policies_generation_hex CHECK (length(generation) = 64 AND lower(generation) = generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-4135b76acd"></a>`check` | `ck_stove0_admission_policies_source_identity_hex` | `CONSTRAINT ck_stove0_admission_policies_source_identity_hex CHECK (source_identity IS NULL OR length(source_identity) = 64 AND lower(source_identity) = source_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-ce05677d84"></a>`check` | `ck_stove0_admission_policies_authorization_view_identity_hex` | `CONSTRAINT ck_stove0_admission_policies_authorization_view_identity_hex CHECK (authorization_view_identity IS NULL OR length(authorization_view_identity) = 64 AND lower(authorization_view_identity) = authorization_view_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(authorization_view_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -55,7 +55,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-a18ee73de2"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-293100a754"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -71,7 +71,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/3/structure/tables/0`
+- `/external_contract/durable_state/owners/3/structure/tables/3`
 
 ### Exact owned JSON
 

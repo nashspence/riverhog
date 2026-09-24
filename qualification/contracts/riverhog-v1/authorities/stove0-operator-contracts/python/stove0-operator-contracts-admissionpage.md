@@ -49,6 +49,7 @@ Exact externally visible contract owned by this contract element.
 
 - [AdmissionIntent](#s-715abe15ea)
 - [AdmissionView](#s-fc72800bc8)
+- [AllVisibleAdmissionSelector](#s-84d56c2dac)
 - [BrowsePageToken](#s-dd3b10a08d)
 - [CatalogSyncDescriptor](#s-02586960a9)
 - [CollectionDescription](#s-fd5c292b93)
@@ -56,12 +57,13 @@ Exact externally visible contract owned by this contract element.
 - [CollectionTag](#s-660b7ac527)
 - [JsonValue](#s-d964e44e24)
 - [NonnegativeDecimal](#s-1041b08a94)
+- [TaggedAdmissionSelector](#s-c994665bfd)
 
 ##### <a id="s-715abe15ea"></a>definition `AdmissionIntent`
 
 - <a id="s-06f182dd0d"></a>`type`: `"object"`
 - <a id="s-855ebda303"></a>`additionalProperties`: `false`
-- <a id="s-b4b62093c4"></a>`required`: `["admission_id","policy_id","policy_revision","policy_sha256","required_tags","collection","recipe_id","recipe_revision","recipe_sha256","effective_intent"]`
+- <a id="s-b4b62093c4"></a>`required`: `["admission_id","policy_id","policy_revision","policy_sha256","selector","collection","recipe_id","recipe_revision","recipe_sha256","effective_intent"]`
 
 ###### Fields
 
@@ -77,7 +79,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-9f7e272724"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-c7d1409453"></a>`recipe_revision` | yes | [NonnegativeDecimal](#s-1041b08a94); ge=1 |  |
 | <a id="s-5516b1d011"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-8b7c5c7a83"></a>`required_tags` | yes | type="array"; items=([CollectionTag](#s-660b7ac527)) |  |
+| <a id="s-efa4ff87ff"></a>`selector` | yes | discriminator={"mapping":{"all":"#/$defs/AllVisibleAdmissionSelector","tags":"#/$defs/TaggedAdmissionSelector"},"propertyName":"kind"}; oneOf=[([AllVisibleAdmissionSelector](#s-84d56c2dac)); ([TaggedAdmissionSelector](#s-c994665bfd))] |  |
 
 ##### <a id="s-fc72800bc8"></a>definition `AdmissionView`
 
@@ -98,6 +100,17 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-966df76680"></a>`state` | yes | type="string"; enum=["intent","previewed","work_bound"] |  |
 | <a id="s-0ff1be1354"></a>`updated_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-fe6b190aa1"></a>`work_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
+
+##### <a id="s-84d56c2dac"></a>definition `AllVisibleAdmissionSelector`
+
+- <a id="s-74e20a33de"></a>`type`: `"object"`
+- <a id="s-ce28c71f6f"></a>`additionalProperties`: `false`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-a6f8ce4fd3"></a>`kind` | no | type="string"; const="all"; default="all" |  |
 
 ##### <a id="s-dd3b10a08d"></a>definition `BrowsePageToken`
 
@@ -162,6 +175,19 @@ Exact externally visible contract owned by this contract element.
 - <a id="s-67be15ad79"></a>`type`: `"string"`
 - <a id="s-5138e8577a"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
+##### <a id="s-c994665bfd"></a>definition `TaggedAdmissionSelector`
+
+- <a id="s-84132d1c05"></a>`type`: `"object"`
+- <a id="s-e0138193f3"></a>`additionalProperties`: `false`
+- <a id="s-d410c57a84"></a>`required`: `["required"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-22a37e7de0"></a>`kind` | no | type="string"; const="tags"; default="tags" |  |
+| <a id="s-d2b2718a5b"></a>`required` | yes | type="array"; items=([CollectionTag](#s-660b7ac527)); maxItems=100; minItems=1; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-classification-admission-predicate"} |  |
+
 ## Governing policies
 
 - <a id="pa-3d604dd7a3"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
@@ -189,7 +215,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f11ee0b1827313d21d18623df050cc5bf704cf4af0772130bbd713d845fd1be9 -->
+<!-- exact-contract-value: 26f1b099119fbf782f59c22a49af0ebbdd6ede4d6f9412aa9143648be0256197 -->
 
 ```json
 {
@@ -244,11 +270,22 @@ The following JSON is the complete value owned at each machine-authority pointer
               "pattern": "^[0-9a-f]{64}$",
               "type": "string"
             },
-            "required_tags": {
-              "items": {
-                "$ref": "#/$defs/CollectionTag"
+            "selector": {
+              "discriminator": {
+                "mapping": {
+                  "all": "#/$defs/AllVisibleAdmissionSelector",
+                  "tags": "#/$defs/TaggedAdmissionSelector"
+                },
+                "propertyName": "kind"
               },
-              "type": "array"
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/AllVisibleAdmissionSelector"
+                },
+                {
+                  "$ref": "#/$defs/TaggedAdmissionSelector"
+                }
+              ]
             }
           },
           "required": [
@@ -256,7 +293,7 @@ The following JSON is the complete value owned at each machine-authority pointer
             "policy_id",
             "policy_revision",
             "policy_sha256",
-            "required_tags",
+            "selector",
             "collection",
             "recipe_id",
             "recipe_revision",
@@ -354,6 +391,17 @@ The following JSON is the complete value owned at each machine-authority pointer
             "created_at",
             "updated_at"
           ],
+          "type": "object"
+        },
+        "AllVisibleAdmissionSelector": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "all",
+              "default": "all",
+              "type": "string"
+            }
+          },
           "type": "object"
         },
         "BrowsePageToken": {
@@ -470,6 +518,32 @@ The following JSON is the complete value owned at each machine-authority pointer
         "NonnegativeDecimal": {
           "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
           "type": "string"
+        },
+        "TaggedAdmissionSelector": {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "tags",
+              "default": "tags",
+              "type": "string"
+            },
+            "required": {
+              "items": {
+                "$ref": "#/$defs/CollectionTag"
+              },
+              "maxItems": 100,
+              "minItems": 1,
+              "type": "array",
+              "x-riverhog-extent": {
+                "policy": "contract_max",
+                "reason": "bounded-exact-classification-admission-predicate"
+              }
+            }
+          },
+          "required": [
+            "required"
+          ],
+          "type": "object"
         }
       },
       "additionalProperties": false,

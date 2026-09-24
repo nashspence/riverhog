@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-server:stove0-target-callback-signing-key:9cbaffba16 -->
+<!-- contract-element: configuration-environment:stove0-server:stove0-target-callback-signing-key:cca01e534b -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-dd749a07a4"></a>
+<a id="s-ebe4e2c29d"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-3e0dc801fc"></a>`consumers` | `["stove0-server"]` |
-| <a id="s-52577a5285"></a>`default_expressions` | `["''"]` |
-| <a id="s-7dbc7abda1"></a>`id` | `"stove0-server:environment:STOVE0_TARGET_CALLBACK_SIGNING_KEY"` |
-| <a id="s-fa7497d808"></a>`input_shape` | `"environment-string"` |
-| <a id="s-305a3525e1"></a>`name` | `"STOVE0_TARGET_CALLBACK_SIGNING_KEY"` |
-| <a id="s-bcdbfe84df"></a>`owner` | `"stove0-server"` |
+| <a id="s-411d524a1d"></a>`consumers` | `["stove0-server"]` |
+| <a id="s-0e69a309d8"></a>`default_expressions` | `["''"]` |
+| <a id="s-50362410c1"></a>`id` | `"stove0-server:environment:STOVE0_TARGET_CALLBACK_SIGNING_KEY"` |
+| <a id="s-6aa24ea604"></a>`input_shape` | `"environment-string"` |
+| <a id="s-a759ad44ac"></a>`name` | `"STOVE0_TARGET_CALLBACK_SIGNING_KEY"` |
+| <a id="s-ebd0787666"></a>`owner` | `"stove0-server"` |
 
 ## Governing policies
 
-- <a id="pa-b28058fbec"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-3834ab6a52"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/246`
+- `/external_contract/configuration_environment/248`
 
 ### Exact owned JSON
 

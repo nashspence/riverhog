@@ -12,7 +12,11 @@ from http_api_contracts import http_operation_for_request
 from pydantic import BaseModel, ValidationError
 from riverhog_canonical_json import parse_identity_json
 from stove0_target_protocol import (
+    DEPARTURE_EFFECT_HTTP_OPERATIONS,
     TARGET_HTTP_OPERATIONS,
+    DepartureEffectIntent,
+    DepartureEffectReceipt,
+    DepartureEffectTargetDescriptor,
     TargetDescriptor,
     TargetJobRequest,
     TargetJobStatus,
@@ -25,6 +29,7 @@ _LOG = logging.getLogger(__name__)
 _DEFAULT_MAX_REQUEST_BYTES = 16 * 1024 * 1024
 _JOB_PATH = re.compile(r"^/v1/jobs/([0-9a-f]{64})$")
 _CANCEL_PATH = re.compile(r"^/v1/jobs/([0-9a-f]{64})/cancel$")
+_DEPARTURE_PATH = re.compile(r"^/v1/departure-effects/([0-9a-f]{64})$")
 
 ModelT = TypeVar("ModelT", bound=BaseModel)
 
@@ -77,6 +82,12 @@ class TargetService(Protocol):
     def get_job(self, job_id: str) -> TargetJobStatus: ...
 
     def cancel_job(self, job_id: str) -> TargetJobStatus: ...
+
+
+class DepartureEffectTargetService(Protocol):
+    def descriptor(self) -> DepartureEffectTargetDescriptor: ...
+
+    def put_departure_effect(self, intent: DepartureEffectIntent) -> DepartureEffectReceipt: ...
 
 
 class TargetServiceError(RuntimeError):
@@ -172,6 +183,62 @@ class TargetHttpBinding:
             ) from exc
 
 
+class DepartureEffectHttpBinding:
+    """One bounded PUT endpoint; the target owns durable idempotency by departure ID."""
+
+    def __init__(
+        self,
+        target: DepartureEffectTargetService,
+        *,
+        maximum_request_bytes: int = _DEFAULT_MAX_REQUEST_BYTES,
+    ) -> None:
+        if maximum_request_bytes < 1:
+            raise ValueError("departure effect HTTP request limit must be positive")
+        self.target = target
+        self.maximum_request_bytes = maximum_request_bytes
+
+    def handle(self, method: str, path: str, body: bytes = b"") -> TargetHttpResponse:
+        operation = http_operation_for_request(DEPARTURE_EFFECT_HTTP_OPERATIONS, method, path)
+        if method == "GET" and path == "/v1/departure-target" and operation is not None:
+            if body:
+                return _error(400, "bad_request", "departure target GET must not include a body")
+            try:
+                return _model_response(self.target.descriptor())
+            except Exception:
+                _LOG.exception("departure target descriptor failed")
+                return _error(500, "target_failed", "departure target failed")
+        match = _DEPARTURE_PATH.fullmatch(path)
+        if method != "PUT" or match is None or operation is None:
+            return _error(404, "not_found", "departure effect endpoint not found")
+        try:
+            if len(body) > self.maximum_request_bytes:
+                return _error(
+                    413, "request_too_large", "departure effect request exceeds its limit"
+                )
+            try:
+                intent = DepartureEffectIntent.model_validate(parse_identity_json(body))
+            except (ValidationError, ValueError) as exc:
+                return _error(400, "invalid_target_request", str(exc))
+            if intent.departure_id != match.group(1):
+                return _error(400, "invalid_target_request", "departure path differs from intent")
+            if intent.target_identity != self.target.descriptor().target_identity:
+                return _error(
+                    409, "target_descriptor_mismatch", "departure target identity differs"
+                )
+            receipt = self.target.put_departure_effect(intent)
+            if receipt.departure_id != intent.departure_id:
+                raise RuntimeError("departure target returned a receipt for another intent")
+            return _model_response(receipt)
+        except TargetServiceError as exc:
+            if not operation.accepts_error(status=exc.status, code=exc.code):
+                _LOG.exception("departure target emitted an undeclared error")
+                return _error(500, "target_failed", "departure target failed")
+            return _error(exc.status, exc.code, exc.message)
+        except Exception:
+            _LOG.exception("departure effect failed")
+            return _error(500, "target_failed", "departure target failed")
+
+
 def _model_response(model: BaseModel) -> TargetHttpResponse:
     return TargetHttpResponse(
         status=200,
@@ -197,6 +264,8 @@ def _error(status: int, code: str, message: str) -> TargetHttpResponse:
 
 
 __all__ = [
+    "DepartureEffectHttpBinding",
+    "DepartureEffectTargetService",
     "TargetHttpBinding",
     "TARGET_HTTP_OPERATIONS",
     "TargetHttpResponse",

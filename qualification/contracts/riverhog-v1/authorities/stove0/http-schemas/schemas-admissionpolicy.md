@@ -4,7 +4,7 @@
 
 <!-- contract-element: http-schemas:stove0:schemas-admissionpolicy:ff76b0b846 -->
 
-One bounded, exact all-of classification admission rule.
+One bounded admission rule over the policy's Riverhog authorization view.
 
 | Audit field | Value |
 |---|---|
@@ -17,8 +17,8 @@ One bounded, exact all-of classification admission rule.
 
 - <a id="s-05470c8cac"></a>`type`: `"object"`
 - <a id="s-f96d685d70"></a>`additionalProperties`: `false`
-- <a id="s-e714fd9d0a"></a>`description`: `"One bounded, exact all-of classification admission rule."`
-- <a id="s-8b6c4855c7"></a>`required`: `["id","revision","required_tags","recipe_id","recipe_revision","recipe_sha256"]`
+- <a id="s-e714fd9d0a"></a>`description`: `"One bounded admission rule over the policy's Riverhog authorization view."`
+- <a id="s-8b6c4855c7"></a>`required`: `["id","revision","selector","recipe_id","recipe_revision","recipe_sha256"]`
 - <a id="s-99894eeca3"></a>`title`: `"AdmissionPolicy"`
 
 ### Fields
@@ -32,8 +32,8 @@ One bounded, exact all-of classification admission rule.
 | <a id="s-fff97fd387"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1; title="Recipe Id" |  |
 | <a id="s-f81203e699"></a>`recipe_revision` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-59bbce29c6"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Recipe Sha256" |  |
-| <a id="s-a53f69ac6c"></a>`required_tags` | yes | type="array"; items=([CollectionTag](schemas-collectiontag.md)); maxItems=100; minItems=1; title="Required Tags"; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-classification-admission-predicate"} |  |
 | <a id="s-558e3f83fb"></a>`revision` | yes | type="integer"; minimum=1; title="Revision" |  |
+| <a id="s-2cb7a844c5"></a>`selector` | yes | discriminator={"mapping":{"all":"#/components/schemas/AllVisibleAdmissionSelector","tags":"#/components/schemas/TaggedAdmissionSelector"},"propertyName":"kind"}; oneOf=[([AllVisibleAdmissionSelector](schemas-allvisibleadmissionselector.md)); ([TaggedAdmissionSelector](schemas-taggedadmissionselector.md))]; title="Selector" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -51,15 +51,15 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 |---|---|---|
 | [field recipe_id](#s-fff97fd387) | `length · characters · contract_max` | maximum=160; minimum=1; reason="schema-maximum" |
 | [field recipe_sha256](#s-59bbce29c6) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [field required_tags](#s-a53f69ac6c) | `cardinality · items · contract_max` | maximum=100; minimum=1; reason="bounded-exact-classification-admission-predicate" |
 
 ## Maintained corroboration
 
 ### Referenced contract elements
 
-- [CollectionTag](schemas-collectiontag.md)
+- [AllVisibleAdmissionSelector](schemas-allvisibleadmissionselector.md)
 - [JsonValue](schemas-jsonvalue.md)
 - [NonnegativeDecimal](schemas-nonnegativedecimal.md)
+- [TaggedAdmissionSelector](schemas-taggedadmissionselector.md)
 
 ## Governing policies
 
@@ -92,12 +92,12 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ab99feb531b02d6a6f2ded94bee00fb57a99cadc7c339a609aeffec479d6a98d -->
+<!-- exact-contract-value: 8a62a50eba6b6b67536cf8c3cf6bd2c95506c93265e7e597cfb79083e8824542 -->
 
 ```json
 {
   "additionalProperties": false,
-  "description": "One bounded, exact all-of classification admission rule.",
+  "description": "One bounded admission rule over the policy's Riverhog authorization view.",
   "properties": {
     "automatic_preview": {
       "const": "accept-ready",
@@ -138,29 +138,34 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Recipe Sha256",
       "type": "string"
     },
-    "required_tags": {
-      "items": {
-        "$ref": "#/components/schemas/CollectionTag"
-      },
-      "maxItems": 100,
-      "minItems": 1,
-      "title": "Required Tags",
-      "type": "array",
-      "x-riverhog-extent": {
-        "policy": "contract_max",
-        "reason": "bounded-exact-classification-admission-predicate"
-      }
-    },
     "revision": {
       "minimum": 1,
       "title": "Revision",
       "type": "integer"
+    },
+    "selector": {
+      "discriminator": {
+        "mapping": {
+          "all": "#/components/schemas/AllVisibleAdmissionSelector",
+          "tags": "#/components/schemas/TaggedAdmissionSelector"
+        },
+        "propertyName": "kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/components/schemas/AllVisibleAdmissionSelector"
+        },
+        {
+          "$ref": "#/components/schemas/TaggedAdmissionSelector"
+        }
+      ],
+      "title": "Selector"
     }
   },
   "required": [
     "id",
     "revision",
-    "required_tags",
+    "selector",
     "recipe_id",
     "recipe_revision",
     "recipe_sha256"

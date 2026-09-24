@@ -2,7 +2,7 @@
 
 [Atlas](../../index.md) · [Reference navigation](../configuration.md)
 
-Unique environment names: **239** · Implementation reads: **197** · Explicit ambiguity resolutions: **6**
+Unique environment names: **241** · Implementation reads: **198** · Explicit ambiguity resolutions: **6**
 
 | Check | Result |
 |---|---:|
@@ -36,5 +36,5 @@ Unique environment names: **239** · Implementation reads: **197** · Explicit a
 | `riverhog-provenance` | 3 |
 | `riverhog-server` | 49 |
 | `stove0-api-client` | 5 |
-| `stove0-server` | 25 |
+| `stove0-server` | 27 |
 | `stove0-target-support` | 1 |

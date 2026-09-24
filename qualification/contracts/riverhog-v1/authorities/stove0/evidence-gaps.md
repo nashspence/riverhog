@@ -2,7 +2,7 @@
 
 [Atlas](../../index.md) · [Reference navigation](index.md)
 
-This view covers **12 affected contract elements** within stove0. Only their recorded evidence groups are included.
+This view covers **14 affected contract elements** within stove0. Only their recorded evidence groups are included.
 
 The named contract groups have recorded evidence gaps in the following guarantees. Each group's page identifies its exact open guarantees and candidate tests:
 
@@ -22,12 +22,14 @@ The table identifies the exact evidence groups for each element. Its element lin
 |---|---|
 | [stove0: GET /v1/admissions](http-operations/get-v1-admissions.md#evidence-gaps) | [stove0-read-collection-progression/v1](../../evidence/qualifications/stove0-read-collection-progression-v1/index.md) |
 | [stove0: GET /v1/artifact-selections/{selection_sha256}](http-operations/get-v1-artifact-selections-selection-sha256.md#evidence-gaps) | [stove0-read-collection-progression/v1](../../evidence/qualifications/stove0-read-collection-progression-v1/index.md) |
+| [stove0: GET /v1/departure-effects](http-operations/get-v1-departure-effects.md#evidence-gaps) | [stove0-read-collection-progression/v1](../../evidence/qualifications/stove0-read-collection-progression-v1/index.md) |
 | [stove0: GET /v1/evaluations](http-operations/get-v1-evaluations.md#evidence-gaps) | [stove0-read-collection-progression/v1](../../evidence/qualifications/stove0-read-collection-progression-v1/index.md) |
 | [stove0: GET /v1/events](http-operations/get-v1-events.md#evidence-gaps) | [stove0-read-collection-progression/v1](../../evidence/qualifications/stove0-read-collection-progression-v1/index.md) |
 | [stove0: GET /v1/target-executions/{job_id}/inputs](http-operations/get-v1-target-executions-job-id-inputs.md#evidence-gaps) | [stove0-read-collection-progression/v1](../../evidence/qualifications/stove0-read-collection-progression-v1/index.md) |
 | [stove0: GET /v1/work](http-operations/get-v1-work.md#evidence-gaps) | [stove0-read-collection-progression/v1](../../evidence/qualifications/stove0-read-collection-progression-v1/index.md) |
 | [stove0: schemas: AdmissionPage](http-schemas/schemas-admissionpage.md#evidence-gaps) | [stove0-read-collection-progression/v1](../../evidence/qualifications/stove0-read-collection-progression-v1/index.md) |
 | [stove0: schemas: ArtifactSelectionPage](http-schemas/schemas-artifactselectionpage.md#evidence-gaps) | [stove0-read-collection-progression/v1](../../evidence/qualifications/stove0-read-collection-progression-v1/index.md) |
+| [stove0: schemas: DepartureEffectPage](http-schemas/schemas-departureeffectpage.md#evidence-gaps) | [stove0-read-collection-progression/v1](../../evidence/qualifications/stove0-read-collection-progression-v1/index.md) |
 | [stove0: schemas: EvaluationPage](http-schemas/schemas-evaluationpage.md#evidence-gaps) | [stove0-read-collection-progression/v1](../../evidence/qualifications/stove0-read-collection-progression-v1/index.md) |
 | [stove0: schemas: Stove0EventPage](http-schemas/schemas-stove0eventpage.md#evidence-gaps) | [stove0-read-collection-progression/v1](../../evidence/qualifications/stove0-read-collection-progression-v1/index.md) |
 | [stove0: schemas: TargetInputPage](http-schemas/schemas-targetinputpage.md#evidence-gaps) | [stove0-read-collection-progression/v1](../../evidence/qualifications/stove0-read-collection-progression-v1/index.md) |

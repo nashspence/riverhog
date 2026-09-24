@@ -67,7 +67,7 @@ Create Work
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:stove0](../../../evidence/sources/authorities.md#src-52e6e32124) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L349)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [some-implementations/stove0/application/server/src/stove0\_api/app.py::create\_app.&lt;locals&gt;.create\_work](../../../../../../some-implementations/stove0/application/server/src/stove0_api/app.py#L702)
+- **Handler:** [some-implementations/stove0/application/server/src/stove0\_api/app.py::create\_app.&lt;locals&gt;.create\_work](../../../../../../some-implementations/stove0/application/server/src/stove0_api/app.py#L789)
 
 ### Structural operation bindings
 
@@ -86,7 +86,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "stove0",
       "result_identity": "stove0-cli-result/work/create/v1",
       "source": {
-        "line": 295,
+        "line": 335,
         "module": "a_stove0_cli.main",
         "path": "some-implementations/stove0/application/client/src/a_stove0_cli/main.py",
         "symbol": "create_work"
@@ -101,7 +101,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "stove0_api_client.Stove0ApiClient.create_work",
       "source": {
-        "line": 255,
+        "line": 294,
         "module": "stove0_api_client.client",
         "path": "some-implementations/stove0/packages/api-client/src/stove0_api_client/client.py",
         "symbol": "Stove0ApiClient.create_work"

@@ -23,6 +23,12 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-server` | [stove0_core.ConcurrentWorkUpdate](../../../authorities/stove0-server/python/stove0-core-concurrentworkupdate.md#pa-1da1176469) |
 | `stove0-server` | [stove0_core.CoordinationProjection](../../../authorities/stove0-server/python/stove0-core-coordinationprojection.md#pa-484eecf41a) |
 | `stove0-server` | [stove0_core.DEFAULT_OPERATIONAL_STATE_RETENTION_SECONDS](../../../authorities/stove0-server/python/stove0-core-default-operational-state-retention-seconds.md#pa-5e232ca8e5) |
+| `stove0-server` | [stove0_core.DepartureEffectService](../../../authorities/stove0-server/python/stove0-core-departureeffectservice.md#pa-9592edb3ab) |
+| `stove0-server` | [stove0_core.DepartureEffectService.advance](../../../authorities/stove0-server/python/stove0-core-departureeffectservice-advance.md#pa-72a96db66e) |
+| `stove0-server` | [stove0_core.DepartureEffectService.get_effect](../../../authorities/stove0-server/python/stove0-core-departureeffectservice-get-effect.md#pa-95662ef913) |
+| `stove0-server` | [stove0_core.DepartureEffectService.list_effects](../../../authorities/stove0-server/python/stove0-core-departureeffectservice-list-effects.md#pa-1bbe88fe1d) |
+| `stove0-server` | [stove0_core.DepartureEffectService.policies](../../../authorities/stove0-server/python/stove0-core-departureeffectservice-policies.md#pa-904f7438ce) |
+| `stove0-server` | [stove0_core.DepartureEffectService.rebaseline](../../../authorities/stove0-server/python/stove0-core-departureeffectservice-rebaseline.md#pa-2f36485ca5) |
 | `stove0-server` | [stove0_core.EndpointRegistration](../../../authorities/stove0-server/python/stove0-core-endpointregistration.md#pa-9f4d53ea91) |
 | `stove0-server` | [stove0_core.EvaluationChild](../../../authorities/stove0-server/python/stove0-core-evaluationchild.md#pa-c6c927329e) |
 | `stove0-server` | [stove0_core.EvaluationChild.validate_output](../../../authorities/stove0-server/python/stove0-core-evaluationchild-validate-output.md#pa-6c69f5d9af) |
@@ -48,6 +54,9 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-server` | [stove0_core.EvaluationWorkController.cancel](../../../authorities/stove0-server/python/stove0-core-evaluationworkcontroller-cancel.md#pa-1685cb17a1) |
 | `stove0-server` | [stove0_core.EvaluationWorkController.retry](../../../authorities/stove0-server/python/stove0-core-evaluationworkcontroller-retry.md#pa-95aea13298) |
 | `stove0-server` | [stove0_core.EvaluationWorkController.step](../../../authorities/stove0-server/python/stove0-core-evaluationworkcontroller-step.md#pa-ebe5928c00) |
+| `stove0-server` | [stove0_core.HttpDepartureTargetPort](../../../authorities/stove0-server/python/stove0-core-httpdeparturetargetport.md#pa-eaf697542f) |
+| `stove0-server` | [stove0_core.HttpDepartureTargetPort.has_registration](../../../authorities/stove0-server/python/stove0-core-httpdeparturetargetport-has-registration.md#pa-e14f3604e7) |
+| `stove0-server` | [stove0_core.HttpDepartureTargetPort.put_effect](../../../authorities/stove0-server/python/stove0-core-httpdeparturetargetport-put-effect.md#pa-41b5d2471f) |
 | `stove0-server` | [stove0_core.HttpObserverPort](../../../authorities/stove0-server/python/stove0-core-httpobserverport.md#pa-040925d210) |
 | `stove0-server` | [stove0_core.HttpObserverPort.descriptor](../../../authorities/stove0-server/python/stove0-core-httpobserverport-descriptor.md#pa-cee9efb91e) |
 | `stove0-server` | [stove0_core.HttpObserverPort.observe](../../../authorities/stove0-server/python/stove0-core-httpobserverport-observe.md#pa-a5b5845b28) |

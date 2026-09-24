@@ -87,7 +87,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - [cli:stove0](../../../evidence/sources/authorities.md#src-6203ae7d88) — [some-implementations/stove0/application/client/src/a\_stove0\_cli/main.py::&lt;module&gt;](../../../../../../some-implementations/stove0/application/client/src/a_stove0_cli/main.py)
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- **Command callback:** [some-implementations/stove0/application/client/src/a\_stove0\_cli/main.py::cancel\_work](../../../../../../some-implementations/stove0/application/client/src/a_stove0_cli/main.py#L361)
+- **Command callback:** [some-implementations/stove0/application/client/src/a\_stove0\_cli/main.py::cancel\_work](../../../../../../some-implementations/stove0/application/client/src/a_stove0_cli/main.py#L401)
 
 ### Machine authority
 

@@ -61,6 +61,8 @@ from stove0_target_support.conformance import (
 from stove0_target_support.execution import TargetExecutionSession
 from stove0_target_support.http_binding import (
     TARGET_HTTP_OPERATIONS,
+    DepartureEffectHttpBinding,
+    DepartureEffectTargetService,
     TargetHttpBinding,
     TargetHttpResponse,
     TargetService,
@@ -83,6 +85,8 @@ from stove0_target_support.schemas import (
 )
 
 __all__ = [
+    "DepartureEffectHttpBinding",
+    "DepartureEffectTargetService",
     "AcceptedTargetJob",
     "ARTIFACT_ID_PATTERN",
     "DEFAULT_TERMINAL_STATE_RETENTION_SECONDS",

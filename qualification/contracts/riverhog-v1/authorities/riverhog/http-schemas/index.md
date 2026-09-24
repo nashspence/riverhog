@@ -75,7 +75,7 @@ Supporting HTTP data definitions; these are not callable operations.
 - **[CatalogSyncChangePage](schemas-catalogsyncchangepage.md)** [📦](schemas-catalogsyncchangepage.md#evidence-gaps)
 - [CatalogSyncCheckpoint](schemas-catalogsynccheckpoint.md)
 - **[CatalogSyncCollectionPage](schemas-catalogsynccollectionpage.md)** [📦](schemas-catalogsynccollectionpage.md#evidence-gaps)
-- [CatalogSyncDelete](schemas-catalogsyncdelete.md)
+- [CatalogSyncDeparture](schemas-catalogsyncdeparture.md)
 - [CatalogSyncDescriptor](schemas-catalogsyncdescriptor.md)
 - [CatalogSyncUpsert](schemas-catalogsyncupsert.md)
 - [ClaimFenceDocument](schemas-claimfencedocument.md)
