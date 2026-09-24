@@ -32,8 +32,9 @@ calls, but they are still tests of a reference prototype.
 No power-loss/disk-corruption, multi-host/HA, archive-byte transfer, retrieval-cache,
 provider segmentation, migration upgrade, client/CLI, release artifact, or generated
 contract qualification was performed. No repository-wide lint/unit/dist-smoke/build
-or GitHub Actions result is claimed. No remote branch, issue relationship, issue
-comment, or pull request was created.
+or GitHub Actions result is claimed. At validation time no remote branch, issue
+relationship, issue comment, or pull request had been created; publication actions
+are separate from the executed test evidence.
 
 Test dependencies actually used: Python 3.13.5, SQLAlchemy 2.0.50, pytest 9.0.2,
 SQLite 3.46.1. Network cloning and installation of a PostgreSQL runtime failed;

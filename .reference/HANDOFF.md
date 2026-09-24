@@ -82,12 +82,16 @@ Authority remains with the owning issue, subsequent maintainer decisions, and th
 repository's normal integration rail. Reconcile against then-current authoritative
 state and issue decisions; do not apply this material mechanically.
 
-The exact reference commit recorded in the archive's `MANIFEST.json` and in the
-owning issue is the handoff identity. The branch name is navigation. This record
-cannot contain its own commit hash without creating a circular identity.
+The exact published reference commit recorded in the owning issue is the handoff
+identity. The branch name is navigation. This record cannot contain its own commit
+hash without creating a circular identity. The archive `MANIFEST.json` records
+the unpublished local preparation object
+`50377238f4134fae38aa244363ba3f4dee30ae50`; it is provenance for the tar
+handoff, not the published GitHub handoff identity.
 
-No GitHub writes were made during local preparation. Remote publication must create the reference branch,
-link it to #869 using GitHub's native **Development** relationship, and record the
-exact reference SHA in #869. A Markdown link is not the native relationship. Do
-not use an issue-closing keyword or create an integration PR as a substitute.
-Do not rewrite a reference SHA once published.
+No GitHub writes were made during local preparation. The branch was later
+published through the connected GitHub interface. Publication still requires a
+native GitHub **Development** relationship to #869 and an exact-SHA issue record.
+A Markdown link is not the native relationship. Do not use an issue-closing
+keyword or create an integration PR as a substitute. Do not rewrite a published
+reference SHA out of branch history.
