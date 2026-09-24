@@ -129,22 +129,22 @@ def test_http_semantics_are_owned_once_and_operation_bindings_remain_structural(
     http_operations = [item for item in elements if item["interface"] == "http-operations"]
     qualified = {tuple(item["details"]["qualification_key"]): item for item in http_operations}
 
-    assert len(records) == len(http_operations) == len(qualified) == 147
+    assert len(records) == len(http_operations) == len(qualified) == 148
     assert not any(item["interface"] == "operation" for item in elements)
-    assert root["counts"]["by_authority"]["riverhog"] == 369
+    assert root["counts"]["by_authority"]["riverhog"] == 373
     assert (
         sum(
             item["authority"] == "riverhog" and item["interface"] == "http-operations"
             for item in elements
         )
-        == 109
+        == 110
     )
     assert (
         sum(
             item["authority"] == "riverhog" and item["interface"] == "http-schemas"
             for item in elements
         )
-        == 258
+        == 261
     )
     assert len(root["projection"]["external_contract"]["http_route_supplements"]) == 2
     assert set(qualified) == {(item["application"], item["operation_id"]) for item in records}
@@ -1126,7 +1126,7 @@ def test_every_http_permission_formula_and_parameter_description_is_primary() ->
                 )
                 assert parameter["description"] in row
                 descriptions += 1
-    assert formulas == 105
+    assert formulas == 106
     assert descriptions == 2
 
 

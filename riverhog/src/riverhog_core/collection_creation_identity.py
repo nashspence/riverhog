@@ -26,6 +26,8 @@ class CollectionUploadCreationIdentityPayload(BaseModel):
     description: CollectionDescription | None = None
     initial_tag_set_identity: Sha256
     archive_store: ArchiveStoreName
+    use_cache: bool
+    copy_to: list[ArchiveStoreName]
     event_context: dict[str, JsonValue] | None = None
     provenance_mode: Literal["captured", "omitted"]
     provenance_omission_reason: CanonicalVisibleText | None = None

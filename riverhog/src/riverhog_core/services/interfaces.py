@@ -590,12 +590,16 @@ class SearchService(Protocol):
 
 class ArchiveCopyJobService(Protocol):
     def requeue_interrupted_jobs_for_startup(self, *, limit: int = 100) -> int: ...
+    def get_upload_copy_intents(
+        self, collection_id: int, *, principal: Principal
+    ) -> JsonObject: ...
     def create_or_resume(
         self,
         collection_id: int,
         *,
         destination_store: str,
         source_store: str | None = None,
+        use_cache: bool | None = None,
         initiator: Principal,
         event_context: dict[str, object] | None = None,
     ) -> JsonObject: ...

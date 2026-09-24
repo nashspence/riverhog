@@ -33,10 +33,25 @@ from riverhog_api.schemas.archive import (
     ArchiveCopyRetirementResultOut,
     CreateArchiveCopyJobRequest,
     RetireArchiveCopyRequest,
+    UploadCopyIntentsOut,
 )
 from riverhog_api.schemas.archive_stores import ArchiveStoreListOut, ArchiveStoreOut
 
 router = RiverhogRouter(tags=["archive"])
+
+
+@router.get(
+    "/archive/upload-copy-intents/{collection_id}",
+    response_model=UploadCopyIntentsOut,
+)
+def get_upload_copy_intents(
+    collection_id: CollectionIdParameter,
+    container: ContainerDep,
+    principal: ArchiveManager,
+) -> UploadCopyIntentsOut:
+    return UploadCopyIntentsOut.model_validate(
+        container.archive_copy_jobs.get_upload_copy_intents(collection_id, principal=principal)
+    )
 
 
 @router.post("/archive/copy-jobs", response_model=ArchiveCopyJobOut)
@@ -51,6 +66,7 @@ def create_or_resume_archive_copy_job(
             request.collection_id,
             destination_store=request.destination_store,
             source_store=request.source_store,
+            use_cache=request.use_cache,
             initiator=principal,
             event_context=request.event_context,
         )

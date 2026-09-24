@@ -4,6 +4,7 @@ import json
 import logging
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
+from typing import cast
 
 from riverhog_core.domain.retrieval_cache import RetrievalCacheReceipt
 from riverhog_core.ports.archive_objects import (
@@ -47,9 +48,14 @@ class MirroredArchiveResumableObjectStore:
         self._owner = owner
 
     def write_constraints(self) -> ResumableWriteConstraints:
-        # Archive layout and segmentation remain archive-contract authority. A
-        # cache candidate either accepts that exact object or declines admission.
-        return self._archive.write_constraints()
+        archive = self._archive.write_constraints()
+        common_constraints = getattr(self._cache, "mirror_write_constraints", None)
+        if callable(common_constraints):
+            common = common_constraints(archive)
+            if common is None:
+                raise ValueError("archive and retrieval cache write constraints are incompatible")
+            return cast(ResumableWriteConstraints, common)
+        return archive
 
     def begin_write(
         self,

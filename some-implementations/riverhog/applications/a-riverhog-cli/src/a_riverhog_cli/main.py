@@ -1586,6 +1586,8 @@ def _create_or_resume_collection_upload_session(
     description: str | None = None,
     tags: list[str] | None = None,
     archive_store: str | None = None,
+    use_cache: bool | None = None,
+    copy_to: list[str] | None = None,
     provenance_mode: ProvenanceMode,
     provenance_omission_reason: str | None,
 ) -> dict[str, Any]:
@@ -1600,6 +1602,8 @@ def _create_or_resume_collection_upload_session(
                 tags=first_batch,
                 initial_tag_set_identity=identity,
                 archive_store=archive_store,
+                use_cache=use_cache,
+                copy_to=copy_to,
                 provenance_mode=provenance_mode,
                 provenance_omission_reason=provenance_omission_reason,
             ),
@@ -1718,6 +1722,8 @@ def _collection_upload_dry_run_plan(
     description: str | None = None,
     tags: list[str] | None = None,
     archive_store: str | None = None,
+    use_cache: bool | None = None,
+    copy_to: list[str] | None = None,
     provenance_observer: ResolvedProvenanceObserver | None = None,
 ) -> dict[str, object]:
     return {
@@ -1732,6 +1738,8 @@ def _collection_upload_dry_run_plan(
         "files_total": files_total,
         "bytes_total": bytes_total,
         "archive_store": archive_store,
+        "use_cache": use_cache,
+        "copy_to": copy_to,
         "provenance_observer": (
             provenance_observer.as_dict() if provenance_observer is not None else None
         ),
@@ -1958,6 +1966,8 @@ def _upload_collection_via_session(
     description: str | None = None,
     tags: list[str] | None = None,
     archive_store: str | None = None,
+    use_cache: bool | None = None,
+    copy_to: list[str] | None = None,
     json_mode: bool = False,
     file_concurrency: int,
     api_factory: Callable[[], ApiClient] | None = None,
@@ -1973,6 +1983,8 @@ def _upload_collection_via_session(
         description=description,
         tags=tags,
         archive_store=archive_store,
+        use_cache=use_cache,
+        copy_to=copy_to,
         provenance_mode="omitted" if omit_provenance is not None else "captured",
         provenance_omission_reason=omit_provenance,
     )
@@ -2196,6 +2208,14 @@ def upload_cmd(
         str | None,
         typer.Option("--archive-store", help="Named archive store destination"),
     ] = None,
+    use_cache: Annotated[
+        bool | None,
+        typer.Option("--use-cache/--no-use-cache", help="Override retrieval-cache placement"),
+    ] = None,
+    copy_to: Annotated[
+        list[str] | None,
+        typer.Option("--copy-to", help="Archive copy destination; repeat as needed"),
+    ] = None,
     description: Annotated[
         str | None,
         typer.Option("--description", help="Mutable human description for catalog discovery"),
@@ -2301,6 +2321,8 @@ def upload_cmd(
             description=description,
             tags=tag,
             archive_store=archive_store,
+            use_cache=use_cache,
+            copy_to=copy_to,
             provenance_observer=resolved_observer,
         )
         emit(payload if json_mode else format_collection_upload_plan(payload), json_mode=json_mode)
@@ -2316,6 +2338,8 @@ def upload_cmd(
         description=description,
         tags=tag,
         archive_store=archive_store,
+        use_cache=use_cache,
+        copy_to=copy_to,
         json_mode=json_mode,
         file_concurrency=file_concurrency,
         provenance=resolved_provenance,
@@ -2992,6 +3016,10 @@ def archive_copy_cmd(
         str | None,
         typer.Option("--from", help="Source archive store; chosen automatically when omitted"),
     ] = None,
+    use_cache: Annotated[
+        bool | None,
+        typer.Option("--use-cache/--no-use-cache", help="Override retrieval-cache placement"),
+    ] = None,
     json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
 ) -> None:
     """Copy one collection between archive stores."""
@@ -3000,8 +3028,35 @@ def archive_copy_cmd(
         collection_id,
         destination_store=destination_store,
         source_store=source_store,
+        use_cache=use_cache,
     )
     emit(payload if json_mode else format_archive_copy_job(payload), json_mode=json_mode)
+
+
+@archive_copy_app.command("intents")
+def archive_copy_intents_cmd(
+    collection_id: Annotated[int, typer.Argument(help="Published collection id")],
+    json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
+) -> None:
+    """Inspect the upload's durable copy choices and handoff receipts."""
+
+    payload = client().get_upload_copy_intents(collection_id)
+    if json_mode:
+        emit(payload, json_mode=True)
+        return
+    lines = [
+        f"collection {payload['collection_id']} upload copy intents",
+        f"archive store: {payload['archive_store']}",
+        f"use cache: {'yes' if payload['use_cache'] else 'no'}",
+    ]
+    for intent in payload["intents"]:
+        line = f"- {intent['destination_store']}: {intent['state']}"
+        if intent.get("job_state"):
+            line += f" (job {intent['job_state']})"
+        if intent.get("failure_code"):
+            line += f" ({intent['failure_code']})"
+        lines.append(line)
+    emit("\n".join(lines), json_mode=False)
 
 
 _ARCHIVE_COPY_JOB_SORT_FIELDS = {

@@ -21,7 +21,8 @@ ARG FFMPEG_CUDA_FLAGS="--cuda-gpu-arch=sm_120 -O2"
 ENV DEBIAN_FRONTEND=noninteractive \
     SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH}
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN sed -i 's@security.ubuntu.com@archive.ubuntu.com@g' /etc/apt/sources.list.d/ubuntu.sources \
+ && apt-get update && apt-get install -y --no-install-recommends \
     build-essential ca-certificates clang-20 git make pkg-config yasm nasm \
     libfreetype6-dev libharfbuzz-dev libfontconfig1-dev libfribidi-dev \
     libopus-dev zlib1g-dev \
@@ -129,7 +130,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
     SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH}
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN sed -i 's@security.ubuntu.com@archive.ubuntu.com@g' /etc/apt/sources.list.d/ubuntu.sources \
+ && apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates fonts-dejavu-core mkvtoolnix python3 tini zstd \
     libfontconfig1 libfreetype6 libfribidi0 libharfbuzz0b libopus0 \
  && ln -s /usr/bin/python3 /usr/local/bin/python3 \

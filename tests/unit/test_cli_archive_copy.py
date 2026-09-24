@@ -10,7 +10,7 @@ runner = CliRunner()
 
 
 def test_archive_copy_selects_destination_and_optional_source(monkeypatch) -> None:
-    calls: list[tuple[int, str, str | None]] = []
+    calls: list[tuple[int, str, str | None, bool | None]] = []
 
     class FakeClient:
         def create_or_resume_archive_copy_job(
@@ -19,9 +19,10 @@ def test_archive_copy_selects_destination_and_optional_source(monkeypatch) -> No
             *,
             destination_store: str,
             source_store: str | None = None,
+            use_cache: bool | None = None,
             **_kwargs: object,
         ) -> dict[str, object]:
-            calls.append((collection_id, destination_store, source_store))
+            calls.append((collection_id, destination_store, source_store, use_cache))
             return {
                 "collection_id": collection_id,
                 "source_store": source_store,
@@ -46,6 +47,7 @@ def test_archive_copy_selects_destination_and_optional_source(monkeypatch) -> No
             "b2",
             "--to",
             "deep",
+            "--use-cache",
             "--json",
         ],
     )
@@ -54,11 +56,21 @@ def test_archive_copy_selects_destination_and_optional_source(monkeypatch) -> No
     assert json.loads(result.stdout)["state"] == "requested"
     human = runner.invoke(
         app,
-        ["archive", "copy-job", "start", "1", "--from", "b2", "--to", "deep"],
+        [
+            "archive",
+            "copy-job",
+            "start",
+            "1",
+            "--from",
+            "b2",
+            "--to",
+            "deep",
+            "--no-use-cache",
+        ],
     )
     assert human.exit_code == 0
     assert "deep" in human.stdout
-    assert calls == [(1, "deep", "b2"), (1, "deep", "b2")]
+    assert calls == [(1, "deep", "b2", True), (1, "deep", "b2", False)]
 
 
 def test_archive_copy_list_and_show_share_server_job_models(monkeypatch) -> None:

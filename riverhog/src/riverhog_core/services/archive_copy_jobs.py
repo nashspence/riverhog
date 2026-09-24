@@ -10,6 +10,7 @@ import time
 from collections.abc import Iterable, Iterator, Mapping, Sequence
 from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import dataclass, replace
+from datetime import timedelta
 from typing import Any
 
 from http_api_contracts import closed_literal_values
@@ -23,7 +24,7 @@ from sqlalchemy.orm import Session, aliased, selectinload
 from state_schema import read_snapshot
 from time_formats import format_utc_timestamp, utc_now
 
-from riverhog_core.app_permissions import ARCHIVES_MANAGE, Principal
+from riverhog_core.app_permissions import ARCHIVES_MANAGE, Principal, normalize_access
 from riverhog_core.archive_formats import (
     PACK_VOLUME_STORAGE_FORMAT,
     RAW_VOLUME_STORAGE_FORMAT,
@@ -33,16 +34,20 @@ from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.browse import bounded_page, keyset_statement, validate_page_size
 from riverhog_core.catalog_db import SessionFactory, make_session_factory, session_scope
 from riverhog_core.catalog_models import (
+    AppKeyAccessGrantRecord,
+    AppKeyRecord,
     ArchiveCopyJobRecord,
     ArchiveCopyObjectUploadRecord,
     CollectionArchiveCopyRecord,
     CollectionArchiveFileObjectRecord,
     CollectionArchiveObjectRecord,
     CollectionRecord,
+    CollectionUploadCopyIntentRecord,
     RetrievalCacheLeaseRecord,
 )
-from riverhog_core.collection_access import collection_access_filter
+from riverhog_core.collection_access import collection_access_filter, require_collection_access
 from riverhog_core.pack_upload import PACK_VOLUME_CONTENT_TYPE
+from riverhog_core.placement_choices import archive_binding_sha256, resolve_use_cache
 from riverhog_core.ports.archive_objects import (
     ArchiveResumableObjectStore,
     ImmutableArchiveObjectStore,
@@ -211,6 +216,7 @@ class SqlAlchemyArchiveCopyJobService:
         *,
         destination_store: str,
         source_store: str | None = None,
+        use_cache: bool | None = None,
         initiator: Principal,
         event_context: dict[str, object] | None = None,
     ) -> dict[str, object]:
@@ -219,7 +225,6 @@ class SqlAlchemyArchiveCopyJobService:
         source = self._configured_store(source_store) if source_store is not None else None
         if source == destination:
             raise BadRequest("archive copy source and destination stores must differ")
-        destination_archive_store = self._archive_stores.require(destination).store
         current_text = format_utc_timestamp(utc_now())
         normalized_context_json = event_context_json(event_context)
         with session_scope(self._session_factory) as session:
@@ -232,8 +237,30 @@ class SqlAlchemyArchiveCopyJobService:
                 (normalized_collection_id, destination),
             )
             job = session.get(ArchiveCopyJobRecord, (normalized_collection_id, destination))
+            resolved_cache = resolve_use_cache(
+                requested=(job.use_cache if use_cache is None and job is not None else use_cache),
+                store_name=destination,
+                config=self._config,
+                archive_stores=self._archive_stores,
+                retrieval_cache=self._retrieval_cache,
+            )
+            if (
+                job is not None
+                and job.state in ARCHIVE_COPY_JOB_TRANSFER_STATES
+                and job.use_cache != resolved_cache
+            ):
+                raise Conflict("archive copy job cache choice changed")
+            if (
+                job is not None
+                and job.state in ARCHIVE_COPY_JOB_TRANSFER_STATES
+                and source is not None
+                and job.source_store != source
+            ):
+                raise Conflict("archive copy job source choice changed")
             if existing is not None and archive_copy_is_complete(existing):
                 if job is not None and job.state == "completed":
+                    if job.use_cache != resolved_cache:
+                        raise Conflict("archive copy job cache choice changed")
                     return _job_payload(job)
                 raise Conflict("destination already has an uploaded archive copy")
             source_copy = _select_source_copy(
@@ -243,26 +270,21 @@ class SqlAlchemyArchiveCopyJobService:
                 source_store=source,
             )
             if job is None:
-                job = ArchiveCopyJobRecord(
+                job = self._create_job_in_session(
+                    session,
                     collection_id=normalized_collection_id,
                     source_store=source_copy.store,
                     destination_store=destination,
-                    destination_storage_prefix=(
-                        destination_archive_store.new_collection_archive_storage_prefix()
-                    ),
-                    initiated_by_app=initiator.id,
-                    initiated_by_key_id=initiator.key_id,
+                    use_cache=resolved_cache,
+                    initiator=initiator,
                     event_context_json=normalized_context_json,
-                    state="requested",
                     requested_at=current_text,
-                    next_attempt_at=current_text,
                 )
-                session.add(job)
-                self._emit(job, type="archive_copy_job.requested", session=session)
             elif job.state not in ARCHIVE_COPY_JOB_TRANSFER_STATES:
                 if job.state == "canceling":
                     raise Conflict("archive copy cancellation cleanup is still in progress")
                 job.source_store = source_copy.store
+                job.use_cache = resolved_cache
                 job.initiated_by_app = initiator.id
                 job.initiated_by_key_id = initiator.key_id
                 job.event_context_json = normalized_context_json
@@ -279,6 +301,37 @@ class SqlAlchemyArchiveCopyJobService:
                 job.destination_discarded_at = None
                 self._emit(job, type="archive_copy_job.requested", session=session)
             return _job_payload(job)
+
+    def _create_job_in_session(
+        self,
+        session: Session,
+        *,
+        collection_id: int,
+        source_store: str,
+        destination_store: str,
+        use_cache: bool,
+        initiator: Principal,
+        event_context_json: str | None,
+        requested_at: str,
+    ) -> ArchiveCopyJobRecord:
+        destination = self._archive_stores.require(destination_store).store
+        job = ArchiveCopyJobRecord(
+            collection_id=collection_id,
+            source_store=source_store,
+            destination_store=destination_store,
+            destination_storage_prefix=destination.new_collection_archive_storage_prefix(),
+            use_cache=use_cache,
+            initiated_by_app=initiator.id,
+            initiated_by_key_id=initiator.key_id,
+            event_context_json=event_context_json,
+            state="requested",
+            requested_at=requested_at,
+            next_attempt_at=requested_at,
+        )
+        session.add(job)
+        session.flush()
+        self._emit(job, type="archive_copy_job.requested", session=session)
+        return job
 
     def cancel(
         self,
@@ -361,6 +414,47 @@ class SqlAlchemyArchiveCopyJobService:
                 )
             return _job_payload(job)
 
+    def get_upload_copy_intents(
+        self, collection_id: int, *, principal: Principal
+    ) -> dict[str, object]:
+        normalized_id = _normalize_collection_id(collection_id)
+        with session_scope(self._session_factory) as session:
+            require_collection_access(session, principal, ARCHIVES_MANAGE, normalized_id)
+            collection = session.get(CollectionRecord, normalized_id)
+            assert collection is not None
+            intents = session.scalars(
+                select(CollectionUploadCopyIntentRecord)
+                .where(CollectionUploadCopyIntentRecord.collection_id == normalized_id)
+                .order_by(CollectionUploadCopyIntentRecord.destination_store)
+            ).all()
+            return {
+                "collection_id": format_scalar("sequence63", normalized_id),
+                "archive_store": collection.creation_archive_store,
+                "use_cache": collection.creation_use_cache,
+                "copy_to": json.loads(collection.creation_copy_to_json),
+                "intents": [
+                    {
+                        "destination_store": intent.destination_store,
+                        "state": intent.state,
+                        "failure_code": intent.failure_code,
+                        "job_created": intent.job_created,
+                        "job_state": (
+                            job.state
+                            if (
+                                job := session.get(
+                                    ArchiveCopyJobRecord,
+                                    (normalized_id, intent.destination_store),
+                                )
+                            )
+                            is not None
+                            and intent.state == "handed_off"
+                            else None
+                        ),
+                    }
+                    for intent in intents
+                ],
+            }
+
     def list(
         self,
         *,
@@ -435,6 +529,10 @@ class SqlAlchemyArchiveCopyJobService:
     def process_due(self, *, limit: int = 1) -> int:
         if limit < 1:
             return 0
+        handoffs = self.process_due_upload_copy_intents(limit=limit)
+        remaining = limit - handoffs
+        if remaining < 1:
+            return handoffs
         current_text = format_utc_timestamp(utc_now())
         with session_scope(self._session_factory) as session:
             jobs = session.execute(
@@ -454,7 +552,7 @@ class SqlAlchemyArchiveCopyJobService:
                     ArchiveCopyJobRecord.requested_at,
                     ArchiveCopyJobRecord.collection_id,
                 )
-                .limit(limit)
+                .limit(remaining)
             ).all()
         for collection_id, destination_store in jobs:
             try:
@@ -481,7 +579,143 @@ class SqlAlchemyArchiveCopyJobService:
                     collection_id=collection_id,
                     destination_store=str(destination_store),
                 )
-        return len(jobs)
+        return handoffs + len(jobs)
+
+    def process_due_upload_copy_intents(self, *, limit: int = 1) -> int:
+        if limit < 1:
+            return 0
+        now = format_utc_timestamp(utc_now())
+        with session_scope(self._session_factory) as session:
+            due = session.execute(
+                select(
+                    CollectionUploadCopyIntentRecord.collection_id,
+                    CollectionUploadCopyIntentRecord.destination_store,
+                )
+                .where(
+                    CollectionUploadCopyIntentRecord.state == "pending",
+                    CollectionUploadCopyIntentRecord.next_attempt_at <= now,
+                )
+                .order_by(
+                    CollectionUploadCopyIntentRecord.next_attempt_at,
+                    CollectionUploadCopyIntentRecord.collection_id,
+                    CollectionUploadCopyIntentRecord.destination_store,
+                )
+                .limit(limit)
+            ).all()
+        for collection_id, destination_store in due:
+            try:
+                self._handoff_upload_copy_intent(collection_id, destination_store)
+            except Exception:
+                _LOG.exception(
+                    "upload copy handoff deferred: collection=%s destination=%s",
+                    collection_id,
+                    destination_store,
+                )
+                self._defer_upload_copy_intent(collection_id, destination_store)
+        return len(due)
+
+    def _handoff_upload_copy_intent(self, collection_id: int, destination_store: str) -> None:
+        now = format_utc_timestamp(utc_now())
+        with session_scope(self._session_factory) as session:
+            intent = session.scalar(
+                select(CollectionUploadCopyIntentRecord)
+                .where(
+                    CollectionUploadCopyIntentRecord.collection_id == collection_id,
+                    CollectionUploadCopyIntentRecord.destination_store == destination_store,
+                )
+                .with_for_update(skip_locked=True)
+            )
+            if intent is None or intent.state != "pending":
+                return
+            collection = session.get(CollectionRecord, collection_id, with_for_update=True)
+            if collection is None or not collection.is_published:
+                _fail_upload_copy_intent(intent, "source_unavailable")
+                return
+            try:
+                source_binding = archive_binding_sha256(self._config, intent.source_store)
+                destination_binding = archive_binding_sha256(self._config, intent.destination_store)
+                self._archive_stores.require(intent.source_store)
+                self._archive_stores.require(intent.destination_store)
+            except ValueError:
+                _fail_upload_copy_intent(intent, "configuration_changed")
+                return
+            if (
+                source_binding != intent.source_binding_sha256
+                or destination_binding != intent.destination_binding_sha256
+            ):
+                _fail_upload_copy_intent(intent, "configuration_changed")
+                return
+            key = session.get(AppKeyRecord, intent.initiated_by_key_id, with_for_update=True)
+            if (
+                key is None
+                or key.app != intent.initiated_by_app
+                or key.revoked_at is not None
+                or (key.expires_at is not None and key.expires_at <= now)
+            ):
+                _fail_upload_copy_intent(intent, "authorization_denied")
+                return
+            grants = session.scalars(
+                select(AppKeyAccessGrantRecord)
+                .where(AppKeyAccessGrantRecord.key_id == key.id)
+                .with_for_update()
+            ).all()
+            principal = Principal(
+                id=key.app,
+                key_id=key.id,
+                access=frozenset(
+                    normalize_access((grant.permission, grant.resource) for grant in grants)
+                ),
+            )
+            try:
+                require_collection_access(session, principal, ARCHIVES_MANAGE, collection_id)
+            except NotFound:
+                _fail_upload_copy_intent(intent, "authorization_denied")
+                return
+            source_copy = session.get(
+                CollectionArchiveCopyRecord, (collection_id, intent.source_store)
+            )
+            if source_copy is None or not archive_copy_is_complete(source_copy):
+                _fail_upload_copy_intent(intent, "source_unavailable")
+                return
+            job = session.get(ArchiveCopyJobRecord, (collection_id, destination_store))
+            if job is None:
+                destination_copy = session.get(
+                    CollectionArchiveCopyRecord, (collection_id, destination_store)
+                )
+                if destination_copy is not None and archive_copy_is_complete(destination_copy):
+                    _fail_upload_copy_intent(intent, "destination_already_present")
+                    return
+                require_collection_archive_idle(session, collection_id)
+                self._create_job_in_session(
+                    session,
+                    collection_id=collection_id,
+                    source_store=intent.source_store,
+                    destination_store=destination_store,
+                    use_cache=intent.use_cache,
+                    initiator=principal,
+                    event_context_json=intent.event_context_json,
+                    requested_at=now,
+                )
+            else:
+                _fail_upload_copy_intent(intent, "destination_job_conflict")
+                return
+            intent.state = "handed_off"
+            intent.next_attempt_at = None
+            intent.handed_off_at = now
+            intent.job_created = job is None
+
+    def _defer_upload_copy_intent(self, collection_id: int, destination_store: str) -> None:
+        with session_scope(self._session_factory) as session:
+            intent = session.get(
+                CollectionUploadCopyIntentRecord, (collection_id, destination_store)
+            )
+            if intent is None or intent.state != "pending":
+                return
+            intent.attempts += 1
+            delay_seconds = min(3600, 2 ** min(intent.attempts, 12))
+            intent.next_attempt_at = format_utc_timestamp(
+                utc_now() + timedelta(seconds=delay_seconds)
+            )
 
     def _process_one(self, *, collection_id: int, destination_store: str) -> None:
         current = utc_now()
@@ -961,12 +1195,18 @@ class SqlAlchemyArchiveCopyJobService:
     ) -> ArchiveResumableObjectStore:
         binding = self._archive_stores.require(store_name)
         archive = binding.resumable_objects
-        if (
-            not self._config.retrieval_cache_new_archive_enabled
-            or self._retrieval_cache is None
-            or binding.store.read_mode() != "restore_required"
-        ):
+        with session_scope(self._session_factory) as session:
+            use_cache = session.scalar(
+                select(ArchiveCopyJobRecord.use_cache).where(
+                    ArchiveCopyJobRecord.collection_id == collection_id,
+                    ArchiveCopyJobRecord.destination_store == store_name,
+                )
+            )
+        if use_cache and self._retrieval_cache is None:
+            raise Conflict("accepted retrieval cache is no longer configured")
+        if not use_cache:
             return archive
+        assert self._retrieval_cache is not None
         return MirroredArchiveResumableObjectStore(
             archive=archive,
             cache=self._retrieval_cache,
@@ -2083,6 +2323,7 @@ def _job_payload(job: ArchiveCopyJobRecord) -> dict[str, object]:
         "collection_id": format_scalar("sequence63", job.collection_id),
         "source_store": job.source_store,
         "destination_store": job.destination_store,
+        "use_cache": job.use_cache,
         "initiated_by_app": job.initiated_by_app,
         "initiated_by_key_id": job.initiated_by_key_id,
         "state": job.state,
@@ -2092,3 +2333,9 @@ def _job_payload(job: ArchiveCopyJobRecord) -> dict[str, object]:
         "finished_at": job.finished_at,
         "failure": job.failure,
     }
+
+
+def _fail_upload_copy_intent(intent: CollectionUploadCopyIntentRecord, code: str) -> None:
+    intent.state = "failed"
+    intent.failure_code = code
+    intent.next_attempt_at = None

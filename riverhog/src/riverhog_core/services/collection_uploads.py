@@ -115,10 +115,12 @@ from time_formats import (
 
 from riverhog_core.app_permissions import (
     ALL_RESOURCES,
+    ARCHIVES_MANAGE,
     COLLECTION_TAGS_MANAGE,
     COLLECTIONS_CREATE,
     COLLECTIONS_DELETE,
     Principal,
+    normalize_access,
     tag_resource,
 )
 from riverhog_core.archive_manifest import (
@@ -146,6 +148,9 @@ from riverhog_core.catalog_events import (
     publish_catalog_event,
 )
 from riverhog_core.catalog_models import (
+    AppKeyAccessGrantRecord,
+    AppKeyRecord,
+    ArchiveCopyJobRecord,
     CollectionArchiveCopyRecord,
     CollectionArchiveFileObjectRecord,
     CollectionArchiveObjectRecord,
@@ -166,6 +171,7 @@ from riverhog_core.catalog_models import (
     CollectionTagPublishedNodeRecord,
     CollectionTagRecord,
     CollectionTagRevisionRecord,
+    CollectionUploadCopyIntentRecord,
     CollectionUploadFileRecord,
     CollectionUploadProvenanceArchiveVolumeRecord,
     CollectionUploadProvenanceJournalChunkRecord,
@@ -220,6 +226,7 @@ from riverhog_core.pack_volume import (
     pack_volume_plan_bytes,
     parse_pack_volume_plan,
 )
+from riverhog_core.placement_choices import archive_binding_sha256, resolve_use_cache
 from riverhog_core.ports.archive_objects import ArchiveResumableObjectStore
 from riverhog_core.ports.retrieval_cache import RetrievalCache
 from riverhog_core.raw_upload import RawUploadCheckpoint, RawVolumeUploader
@@ -347,6 +354,8 @@ class SqlAlchemyCollectionUploadService:
         tags: Sequence[CollectionTag] = (),
         initial_tag_set_identity: str | None = None,
         archive_store: str | None,
+        use_cache: bool | None = None,
+        copy_to: Sequence[str] | None = None,
         initiator: Principal,
         event_context: Mapping[str, object] | None,
         provenance_mode: str = "captured",
@@ -354,11 +363,6 @@ class SqlAlchemyCollectionUploadService:
         custody_mode: str = "producer-retained",
     ) -> dict[str, object]:
         key = _normalize_idempotency_key(idempotency_key)
-        store_name = archive_store or self._config.archive_write_store
-        try:
-            archive_binding = self._archive_stores.require(store_name)
-        except ValueError as exc:
-            raise BadRequest(str(exc)) from exc
         canonical_tags = _canonical_tag_batch(tags, allow_empty=True)
         if initial_tag_set_identity is None:
             initial_set = CollectionTagSet(MemoryCollectionTagNodeStore())
@@ -375,17 +379,6 @@ class SqlAlchemyCollectionUploadService:
             provenance_omission_reason,
         )
         normalized_custody_mode = _normalize_custody_mode(custody_mode)
-        creation_identity = _collection_upload_creation_identity(
-            ingest_source=ingest_source,
-            description=description,
-            initial_tag_set_identity=initial_tag_set_identity,
-            archive_store=store_name,
-            event_context_json=context_json,
-            provenance_mode=normalized_provenance_mode,
-            provenance_omission_reason=normalized_omission_reason,
-            custody_mode=normalized_custody_mode,
-        )
-
         with session_scope(self._session_factory) as session:
             _require_transform_output_intent(
                 session,
@@ -403,6 +396,76 @@ class SqlAlchemyCollectionUploadService:
                     CollectionRecord.is_published.is_(True),
                 )
             )
+            upload = session.scalar(
+                select(CollectionUploadRecord)
+                .where(
+                    CollectionUploadRecord.initiated_by_principal_id == initiator.id,
+                    CollectionUploadRecord.idempotency_key == key,
+                )
+                .with_for_update()
+            )
+            persisted_store = (
+                collection.creation_archive_store
+                if collection is not None
+                else upload.archive_store
+                if upload is not None
+                else None
+            )
+            store_name = archive_store or persisted_store or self._config.archive_write_store
+            try:
+                archive_binding = self._archive_stores.require(store_name)
+            except ValueError as exc:
+                raise BadRequest(str(exc)) from exc
+            persisted_cache = (
+                collection.creation_use_cache
+                if collection is not None
+                else upload.use_cache
+                if upload is not None
+                else None
+            )
+            resolved_cache = resolve_use_cache(
+                requested=use_cache if use_cache is not None else persisted_cache,
+                store_name=store_name,
+                config=self._config,
+                archive_stores=self._archive_stores,
+                retrieval_cache=self._retrieval_cache,
+            )
+            if copy_to is None:
+                destinations = tuple(
+                    json.loads(
+                        collection.creation_copy_to_json
+                        if collection is not None
+                        else upload.copy_to_json
+                        if upload is not None
+                        else "[]"
+                    )
+                )
+            else:
+                destinations = _normalize_copy_destinations(
+                    copy_to, source_store=store_name, archive_stores=self._archive_stores
+                )
+            creation_identity = _collection_upload_creation_identity(
+                ingest_source=ingest_source,
+                description=description,
+                initial_tag_set_identity=initial_tag_set_identity,
+                archive_store=store_name,
+                use_cache=resolved_cache,
+                copy_to=destinations,
+                event_context_json=context_json,
+                provenance_mode=normalized_provenance_mode,
+                provenance_omission_reason=normalized_omission_reason,
+                custody_mode=normalized_custody_mode,
+            )
+            if destinations:
+                accepted_key = (
+                    collection.created_by_key_id
+                    if collection is not None
+                    else upload.initiated_by_key_id
+                    if upload is not None
+                    else initiator.key_id
+                )
+                if accepted_key != initiator.key_id:
+                    raise Conflict("collection upload copy intent initiator changed")
             if collection is not None:
                 if collection.creation_identity_sha256 != (
                     creation_identity.creation_identity_sha256
@@ -414,14 +477,6 @@ class SqlAlchemyCollectionUploadService:
                     store_name=store_name,
                     resumed=True,
                 )
-            upload = session.scalar(
-                select(CollectionUploadRecord)
-                .where(
-                    CollectionUploadRecord.initiated_by_principal_id == initiator.id,
-                    CollectionUploadRecord.idempotency_key == key,
-                )
-                .with_for_update()
-            )
             if upload is not None:
                 if upload.creation_identity_sha256 != creation_identity.creation_identity_sha256:
                     raise Conflict("collection upload idempotency identity changed")
@@ -441,6 +496,38 @@ class SqlAlchemyCollectionUploadService:
                     raise Conflict("collection upload discard is in progress")
                 return _upload_payload(session, upload, resumed=True)
 
+            if destinations:
+                if initiator.key_id is None:
+                    raise BadRequest("copy_to requires an attributable application key")
+                key_record = session.get(AppKeyRecord, initiator.key_id, with_for_update=True)
+                if (
+                    key_record is None
+                    or key_record.app != initiator.id
+                    or key_record.revoked_at is not None
+                    or (
+                        key_record.expires_at is not None
+                        and key_record.expires_at <= utc_timestamp_now()
+                    )
+                ):
+                    raise NotFound("copy_to initiator is no longer authorized")
+                grants = session.scalars(
+                    select(AppKeyAccessGrantRecord)
+                    .where(AppKeyAccessGrantRecord.key_id == initiator.key_id)
+                    .with_for_update()
+                ).all()
+                current_principal = Principal(
+                    id=initiator.id,
+                    key_id=initiator.key_id,
+                    access=frozenset(
+                        normalize_access((grant.permission, grant.resource) for grant in grants)
+                    ),
+                )
+                require_collection_create_access(
+                    current_principal, COLLECTIONS_CREATE, tags=canonical_tags
+                )
+                require_collection_create_access(
+                    current_principal, ARCHIVES_MANAGE, tags=canonical_tags
+                )
             now = utc_timestamp_now()
             checkpoint = new_incremental_volume_planner(policy=self._policy)
             upload = CollectionUploadRecord(
@@ -466,6 +553,8 @@ class SqlAlchemyCollectionUploadService:
                     else None
                 ),
                 archive_store=store_name,
+                use_cache=resolved_cache,
+                copy_to_json=json.dumps(destinations, separators=(",", ":")),
                 opened_at=now,
                 last_activity_at=now,
                 archive_phase="planning",
@@ -482,6 +571,24 @@ class SqlAlchemyCollectionUploadService:
             )
             session.add(upload)
             session.flush()
+            for destination in destinations:
+                session.add(
+                    CollectionUploadCopyIntentRecord(
+                        collection_id=upload.collection_id,
+                        destination_store=destination,
+                        source_store=store_name,
+                        destination_binding_sha256=archive_binding_sha256(
+                            self._config, destination
+                        ),
+                        source_binding_sha256=archive_binding_sha256(self._config, store_name),
+                        initiated_by_app=initiator.id,
+                        initiated_by_key_id=initiator.key_id,
+                        event_context_json=context_json,
+                        use_cache=resolved_cache,
+                        state="accepted",
+                        accepted_at=now,
+                    )
+                )
             staged_set = advance_collection_tag_set(
                 session,
                 root_sha256=None,
@@ -1040,7 +1147,7 @@ class SqlAlchemyCollectionUploadService:
                 return _finalized_payload(
                     session,
                     collection,
-                    store_name=self._config.archive_write_store,
+                    store_name=collection.creation_archive_store,
                 )
             upload = session.scalar(
                 select(CollectionUploadRecord)
@@ -1369,7 +1476,7 @@ class SqlAlchemyCollectionUploadService:
             return _finalized_payload(
                 session,
                 collection,
-                store_name=self._config.archive_write_store,
+                store_name=collection.creation_archive_store,
             )
 
     def heartbeat(self, collection_id: int) -> dict[str, object]:
@@ -1554,6 +1661,7 @@ class SqlAlchemyCollectionUploadService:
         with session_scope(self._session_factory) as session:
             upload = session.get(CollectionUploadRecord, normalized_id)
             if upload is not None:
+                _cancel_copy_intents(session, normalized_id)
                 session.delete(upload)
         if prefix:
             self._archive_stores.require(store_name).store.discard_collection_archive_upload(
@@ -1692,6 +1800,7 @@ class SqlAlchemyCollectionUploadService:
             if upload is not None:
                 if upload.state != "discarding":
                     raise RuntimeError("collection upload discard state changed unexpectedly")
+                _cancel_copy_intents(session, normalized_id)
                 session.delete(upload)
         return result
 
@@ -1722,12 +1831,17 @@ class SqlAlchemyCollectionUploadService:
     ) -> ArchiveResumableObjectStore:
         binding = self._archive_stores.require(store_name)
         archive = binding.resumable_objects
-        if (
-            not self._config.retrieval_cache_new_archive_enabled
-            or self._retrieval_cache is None
-            or binding.store.read_mode() != "restore_required"
-        ):
+        with session_scope(self._session_factory) as session:
+            use_cache = session.scalar(
+                select(CollectionUploadRecord.use_cache).where(
+                    CollectionUploadRecord.collection_id == collection_id
+                )
+            )
+        if use_cache and self._retrieval_cache is None:
+            raise Conflict("accepted retrieval cache is no longer configured")
+        if not use_cache:
             return archive
+        assert self._retrieval_cache is not None
         return MirroredArchiveResumableObjectStore(
             archive=archive,
             cache=self._retrieval_cache,
@@ -2485,6 +2599,9 @@ class SqlAlchemyCollectionUploadService:
                     creation_idempotency_key=upload.idempotency_key,
                     creation_identity_sha256=upload.creation_identity_sha256,
                     creation_custody_mode=upload.custody_mode,
+                    creation_archive_store=upload.archive_store,
+                    creation_use_cache=upload.use_cache,
+                    creation_copy_to_json=upload.copy_to_json,
                     archive_generation=upload.archive_generation,
                     content_identity=upload.catalog_content_identity,
                     encryption_format=upload.encryption_format,
@@ -2830,6 +2947,14 @@ class SqlAlchemyCollectionUploadService:
             session=session,
         )
         collection.is_published = True
+        for intent in session.scalars(
+            select(CollectionUploadCopyIntentRecord).where(
+                CollectionUploadCopyIntentRecord.collection_id == upload.collection_id,
+                CollectionUploadCopyIntentRecord.state == "accepted",
+            )
+        ):
+            intent.state = "pending"
+            intent.next_attempt_at = now
         upload.catalog_phase = "complete"
         session.delete(upload)
 
@@ -4183,6 +4308,8 @@ def _collection_upload_creation_identity(
     description: CollectionDescription | None,
     initial_tag_set_identity: str,
     archive_store: str,
+    use_cache: bool,
+    copy_to: tuple[str, ...],
     event_context_json: str | None,
     provenance_mode: Literal["captured", "omitted"],
     provenance_omission_reason: str | None,
@@ -4197,12 +4324,47 @@ def _collection_upload_creation_identity(
             description=description,
             initial_tag_set_identity=initial_tag_set_identity,
             archive_store=archive_store,
+            use_cache=use_cache,
+            copy_to=list(copy_to),
             event_context=event_context,
             provenance_mode=provenance_mode,
             provenance_omission_reason=provenance_omission_reason,
             custody_mode=custody_mode,
         )
     )
+
+
+def _normalize_copy_destinations(
+    values: Sequence[str],
+    *,
+    source_store: str,
+    archive_stores: ArchiveStoreRegistry,
+) -> tuple[str, ...]:
+    if isinstance(values, str):
+        raise BadRequest("copy_to must be a list of archive store names")
+    destinations: list[str] = []
+    for value in values:
+        try:
+            archive_stores.require(value)
+        except ValueError as exc:
+            raise BadRequest(str(exc)) from exc
+        if value == source_store:
+            raise BadRequest("copy_to destination must differ from archive_store")
+        destinations.append(value)
+    if len(destinations) != len(set(destinations)):
+        raise BadRequest("copy_to destinations must be unique")
+    return tuple(sorted(destinations))
+
+
+def _cancel_copy_intents(session: Session, collection_id: int) -> None:
+    for intent in session.scalars(
+        select(CollectionUploadCopyIntentRecord).where(
+            CollectionUploadCopyIntentRecord.collection_id == collection_id,
+            CollectionUploadCopyIntentRecord.state == "accepted",
+        )
+    ):
+        intent.state = "canceled"
+        intent.next_attempt_at = None
 
 
 def _require_transform_output_intent(
@@ -6705,6 +6867,11 @@ def _upload_payload(
         "provenance_mode": upload.provenance_mode,
         "provenance_identity": None,
         "archive_store": upload.archive_store,
+        "use_cache": upload.use_cache,
+        "copy_to": json.loads(upload.copy_to_json),
+        "copy_intents": _copy_intent_payloads(
+            session, upload.collection_id, canceled=state == "canceled"
+        ),
         "encryption_format": upload.encryption_format,
         "passphrase_id": upload.passphrase_id,
         "state": state or upload.state,
@@ -6826,7 +6993,10 @@ def _finalized_payload(
         "provenance_identity": collection.provenance_identity,
         "content_identity": collection.content_identity,
         "archive_root_sha256": manifest_sha256,
-        "archive_store": copy.store if copy else store_name,
+        "archive_store": collection.creation_archive_store,
+        "use_cache": collection.creation_use_cache,
+        "copy_to": json.loads(collection.creation_copy_to_json),
+        "copy_intents": _copy_intent_payloads(session, collection.id),
         "encryption_format": collection.encryption_format,
         "passphrase_id": collection.passphrase_id,
         "state": "finalized",
@@ -6851,3 +7021,30 @@ def _finalized_payload(
     if resumed is not None:
         payload["resumed"] = resumed
     return payload
+
+
+def _copy_intent_payloads(
+    session: Session, collection_id: int, *, canceled: bool = False
+) -> list[dict[str, object]]:
+    intents = session.scalars(
+        select(CollectionUploadCopyIntentRecord)
+        .where(CollectionUploadCopyIntentRecord.collection_id == collection_id)
+        .order_by(CollectionUploadCopyIntentRecord.destination_store)
+    ).all()
+    result: list[dict[str, object]] = []
+    for intent in intents:
+        job = (
+            session.get(ArchiveCopyJobRecord, (collection_id, intent.destination_store))
+            if intent.state == "handed_off"
+            else None
+        )
+        result.append(
+            {
+                "destination_store": intent.destination_store,
+                "state": "canceled" if canceled else intent.state,
+                "failure_code": intent.failure_code,
+                "job_state": job.state if job is not None else None,
+                "job_created": intent.job_created,
+            }
+        )
+    return result

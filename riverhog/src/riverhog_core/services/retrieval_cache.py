@@ -18,7 +18,11 @@ from riverhog_core.catalog_models import (
     RetrievalCacheStoreAccountingRecord,
 )
 from riverhog_core.domain.retrieval_cache import RetrievalCacheReceipt
-from riverhog_core.ports.archive_objects import ArchiveResumableObjectStore, WriteSession
+from riverhog_core.ports.archive_objects import (
+    ArchiveResumableObjectStore,
+    ResumableWriteConstraints,
+    WriteSession,
+)
 from riverhog_core.ports.retrieval_cache import RetrievalCacheAdmission
 from riverhog_core.runtime_config import RetrievalCacheStoreRegistration
 from riverhog_core.services.retrieval_cache_accounting import (
@@ -48,6 +52,18 @@ class SqlAlchemyRetrievalCache:
     @property
     def store_names(self) -> tuple[str, ...]:
         return tuple(self._stores)
+
+    def mirror_write_constraints(
+        self, archive: ResumableWriteConstraints
+    ) -> ResumableWriteConstraints | None:
+        from riverhog_core.placement_choices import common_write_constraints
+
+        candidates = tuple(
+            store.write_constraints()
+            for name, store in self._stores.items()
+            if self._registrations[name].admission_enabled
+        )
+        return common_write_constraints(archive, candidates)
 
     def request_accounting_reconciliation_for_startup(self) -> int:
         requested = 0

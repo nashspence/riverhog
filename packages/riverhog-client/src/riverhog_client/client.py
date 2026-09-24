@@ -1113,6 +1113,8 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         tags: Sequence[CollectionTag] = (),
         initial_tag_set_identity: str,
         archive_store: ArchiveStoreName | None = None,
+        use_cache: bool | None = None,
+        copy_to: Sequence[ArchiveStoreName] | None = None,
         event_context: Mapping[str, Any] | None = None,
         provenance_mode: ProvenanceMode = "captured",
         provenance_omission_reason: str | None = None,
@@ -1148,6 +1150,15 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
             payload["tags"] = normalized_tags
         if archive_store is not None:
             payload["archive_store"] = _archive_store_name(archive_store)
+        if use_cache is not None:
+            if not isinstance(use_cache, bool):
+                raise BadRequest("use_cache must be a boolean")
+            payload["use_cache"] = use_cache
+        if copy_to is not None:
+            normalized_destinations = [_archive_store_name(value) for value in copy_to]
+            if len(normalized_destinations) != len(set(normalized_destinations)):
+                raise BadRequest("copy_to destinations must be unique")
+            payload["copy_to"] = sorted(normalized_destinations)
         if event_context is not None:
             payload["event_context"] = dict(event_context)
         if provenance_omission_reason is not None:
@@ -2429,6 +2440,7 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         *,
         destination_store: ArchiveStoreName,
         source_store: ArchiveStoreName | None = None,
+        use_cache: bool | None = None,
         event_context: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]:
         try:
@@ -2444,10 +2456,22 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         }
         if stores.source_store is not None:
             payload["source_store"] = stores.source_store
+        if use_cache is not None:
+            if not isinstance(use_cache, bool):
+                raise BadRequest("use_cache must be a boolean")
+            payload["use_cache"] = use_cache
         if event_context is not None:
             payload["event_context"] = dict(event_context)
         return self._json(
             "create_or_resume_archive_copy_job", "POST", "/v1/archive/copy-jobs", json=payload
+        )
+
+    def get_upload_copy_intents(self, collection_id: CollectionId) -> dict[str, Any]:
+        normalized = _collection_id(collection_id)
+        return self._json(
+            "get_upload_copy_intents",
+            "GET",
+            f"/v1/archive/upload-copy-intents/{normalized}",
         )
 
     def list_archive_copy_jobs(

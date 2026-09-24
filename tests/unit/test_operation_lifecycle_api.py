@@ -423,6 +423,13 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     )
     _finalize_upload(container, operator, collection_id)
     assert operator.get_collection_upload_session(collection_id)["state"] == "finalized"
+    assert operator.get_upload_copy_intents(collection_id) == {
+        "collection_id": str(collection_id),
+        "archive_store": "primary",
+        "use_cache": False,
+        "copy_to": [],
+        "intents": [],
+    }
     source_collection = operator.get_collection(collection_id)
     assert source_collection["id"] == str(collection_id)
     assert source_collection["description"] == "Qualification source collection"
