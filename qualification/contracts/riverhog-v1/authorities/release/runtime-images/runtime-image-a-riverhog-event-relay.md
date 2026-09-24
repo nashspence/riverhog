@@ -4,7 +4,7 @@
 
 <!-- contract-element: runtime-images:release:runtime-image-a-riverhog-event-relay:c0447a7481 -->
 
-CloudEvents event relay for Riverhog.
+Native lifecycle-event to CloudEvents webhook relay.
 
 | Audit field | Value |
 |---|---|
@@ -17,7 +17,7 @@ CloudEvents event relay for Riverhog.
 | Concern | Contract |
 |---|---|
 | <a id="s-9b8c12749d"></a>`build_target` | `"a-riverhog-event-relay"` |
-| <a id="s-3fc650c5ec"></a>`description` | `"CloudEvents event relay for Riverhog."` |
+| <a id="s-3fc650c5ec"></a>`description` | `"Native lifecycle-event to CloudEvents webhook relay."` |
 | <a id="s-40f7c52372"></a>`distribution_roots` | `["a-riverhog-event-relay"]` |
 | <a id="s-9cc51d1922"></a>`format` | `"oci-image"` |
 | <a id="s-aa4306ebb9"></a>`license_baseline` | `"first-v1-publication"` |
@@ -67,12 +67,12 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5f63931d5918148b0206e2c431692ab7ea611a3c420d2a012a2a72ae1004c60b -->
+<!-- exact-contract-value: d53e7ab0a127d0e4e001790e3ce87296bd236f9fffaa84493ab748b1496a327d -->
 
 ```json
 {
   "build_target": "a-riverhog-event-relay",
-  "description": "CloudEvents event relay for Riverhog.",
+  "description": "Native lifecycle-event to CloudEvents webhook relay.",
   "distribution_roots": [
     "a-riverhog-event-relay"
   ],

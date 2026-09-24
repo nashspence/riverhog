@@ -17,20 +17,17 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-473729b35a"></a>`type`: `"object"`
 - <a id="s-1d987b7e1f"></a>`additionalProperties`: `false`
-- <a id="s-10ea9b0981"></a>`required`: `["id","source","type","subject","time","data"]`
+- <a id="s-10ea9b0981"></a>`required`: `["id","type","subject","occurred_at","payload"]`
 - <a id="s-865750d0df"></a>`title`: `"EvaluationCreatedEvent"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-538b5ca99f"></a>`data` | yes | [EvaluationCreatedEventData](schemas-evaluationcreatedeventdata.md) |  |
-| <a id="s-60c3ea799c"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json"; title="Datacontenttype" |  |
 | <a id="s-f51b846526"></a>`id` | yes | type="string"; minLength=1; title="Id" |  |
-| <a id="s-d16f00f0b1"></a>`source` | yes | type="string"; const="urn:riverhog:stove0"; title="Source" |  |
-| <a id="s-5c37f71fa1"></a>`specversion` | no | type="string"; const="1.0"; default="1.0"; title="Specversion" |  |
+| <a id="s-959b33249d"></a>`occurred_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Occurred At" |  |
+| <a id="s-9611926f56"></a>`payload` | yes | [EvaluationCreatedEventData](schemas-evaluationcreatedeventdata.md) |  |
 | <a id="s-12e5c43b39"></a>`subject` | yes | type="string"; minLength=1; title="Subject" |  |
-| <a id="s-04b276da4a"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Time" |  |
 | <a id="s-03c52a6409"></a>`type` | yes | type="string"; const="io.riverhog.stove0.evaluation.created"; title="Type" |  |
 
 ### Progression, limits, and lifecycle
@@ -41,7 +38,7 @@ Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-publ
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field time](#s-04b276da4a) | `length · characters · fixed` | shared above |
+| [field occurred_at](#s-959b33249d) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -79,47 +76,30 @@ Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: be894c2bd545feda908e5b895a43251830ff4c949adfdf7f229ca153b3911828 -->
+<!-- exact-contract-value: d433ddd885081bcfa0aa962e8cf843681fc500e5d0a29c6c6c432abe364728aa -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
-    "data": {
-      "$ref": "#/components/schemas/EvaluationCreatedEventData"
-    },
-    "datacontenttype": {
-      "const": "application/json",
-      "default": "application/json",
-      "title": "Datacontenttype",
-      "type": "string"
-    },
     "id": {
       "minLength": 1,
       "title": "Id",
       "type": "string"
     },
-    "source": {
-      "const": "urn:riverhog:stove0",
-      "title": "Source",
+    "occurred_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
+      "title": "Occurred At",
       "type": "string"
     },
-    "specversion": {
-      "const": "1.0",
-      "default": "1.0",
-      "title": "Specversion",
-      "type": "string"
+    "payload": {
+      "$ref": "#/components/schemas/EvaluationCreatedEventData"
     },
     "subject": {
       "minLength": 1,
       "title": "Subject",
-      "type": "string"
-    },
-    "time": {
-      "maxLength": 30,
-      "minLength": 30,
-      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
-      "title": "Time",
       "type": "string"
     },
     "type": {
@@ -130,11 +110,10 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "required": [
     "id",
-    "source",
     "type",
     "subject",
-    "time",
-    "data"
+    "occurred_at",
+    "payload"
   ],
   "title": "EvaluationCreatedEvent",
   "type": "object"

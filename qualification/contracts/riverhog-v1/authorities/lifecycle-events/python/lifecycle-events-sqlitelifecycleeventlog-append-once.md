@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-5501702f76"></a>`kind`: `"method"`
-- <a id="s-9cc1246c49"></a>`signature`: `"\"(self, event: 'CloudEvent', *, owner: 'str', context: 'dict[str, object] \| None' = None, context_expires_at: 'str \| None' = None) -> 'int'\""`
+- <a id="s-9cc1246c49"></a>`signature`: `"\"(self, event: 'LifecycleEvent', *, owner: 'str', context: 'dict[str, object] \| None' = None, context_expires_at: 'str \| None' = None) -> 'int'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 609873e555c740c9eb2bdc708d4912f93e63067003fbbf0e77c9b7a3efb99898 -->
+<!-- exact-contract-value: 3237afdfe691d0b3702ebd278f583d4cd582de447e2c6b99893e6ce32664a4ca -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, event: 'CloudEvent', *, owner: 'str', context: 'dict[str, object] | None' = None, context_expires_at: 'str | None' = None) -> 'int'\""
+    "signature": "\"(self, event: 'LifecycleEvent', *, owner: 'str', context: 'dict[str, object] | None' = None, context_expires_at: 'str | None' = None) -> 'int'\""
   },
   "distribution": "lifecycle-events",
   "module": "lifecycle_events",

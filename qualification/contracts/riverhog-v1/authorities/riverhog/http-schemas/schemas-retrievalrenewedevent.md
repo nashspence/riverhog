@@ -17,20 +17,17 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-6219101b14"></a>`type`: `"object"`
 - <a id="s-18f77acfd0"></a>`additionalProperties`: `false`
-- <a id="s-ee2e806a02"></a>`required`: `["id","source","type","time","data"]`
+- <a id="s-ee2e806a02"></a>`required`: `["id","type","occurred_at","payload"]`
 - <a id="s-13bd63e05e"></a>`title`: `"RetrievalRenewedEvent"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b2fd48f2e9"></a>`data` | yes | [RetrievalRenewedData](schemas-retrievalreneweddata.md) |  |
-| <a id="s-0177fe3a1e"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json"; title="Datacontenttype" |  |
 | <a id="s-debf7f64f3"></a>`id` | yes | type="string"; minLength=1; title="Id" |  |
-| <a id="s-1a2491dcf0"></a>`source` | yes | type="string"; minLength=1; title="Source" |  |
-| <a id="s-a5eda468f4"></a>`specversion` | no | type="string"; const="1.0"; default="1.0"; title="Specversion" |  |
+| <a id="s-736683f543"></a>`occurred_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Occurred At" |  |
+| <a id="s-d3c1d3dc55"></a>`payload` | yes | [RetrievalRenewedData](schemas-retrievalreneweddata.md) |  |
 | <a id="s-55d9d8850d"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; title="Subject" |  |
-| <a id="s-38d57bfa46"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Time" |  |
 | <a id="s-46bb4a9bf2"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.renewed"; title="Type" |  |
 
 ### Progression, limits, and lifecycle
@@ -41,7 +38,7 @@ Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-publ
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field time](#s-38d57bfa46) | `length · characters · fixed` | shared above |
+| [field occurred_at](#s-736683f543) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -79,36 +76,26 @@ Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 95a0c7f4d6eb5de745595653e371c558002f4a9c1735f6ef3b07e6151a502a41 -->
+<!-- exact-contract-value: dd2df1168a2c7ebb0505025dc2985efa20af8ebaabb727348b5dc6c6111a7378 -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
-    "data": {
-      "$ref": "#/components/schemas/RetrievalRenewedData"
-    },
-    "datacontenttype": {
-      "const": "application/json",
-      "default": "application/json",
-      "title": "Datacontenttype",
-      "type": "string"
-    },
     "id": {
       "minLength": 1,
       "title": "Id",
       "type": "string"
     },
-    "source": {
-      "minLength": 1,
-      "title": "Source",
+    "occurred_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
+      "title": "Occurred At",
       "type": "string"
     },
-    "specversion": {
-      "const": "1.0",
-      "default": "1.0",
-      "title": "Specversion",
-      "type": "string"
+    "payload": {
+      "$ref": "#/components/schemas/RetrievalRenewedData"
     },
     "subject": {
       "anyOf": [
@@ -122,13 +109,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "title": "Subject"
     },
-    "time": {
-      "maxLength": 30,
-      "minLength": 30,
-      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
-      "title": "Time",
-      "type": "string"
-    },
     "type": {
       "const": "io.riverhog.riverhog.retrieval.renewed",
       "title": "Type",
@@ -137,10 +117,9 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "required": [
     "id",
-    "source",
     "type",
-    "time",
-    "data"
+    "occurred_at",
+    "payload"
   ],
   "title": "RetrievalRenewedEvent",
   "type": "object"

@@ -200,7 +200,6 @@ Recorded consumer and default facts come from discovery. Use the contract elemen
 | `riverhog-server` | [RIVERHOG_DATABASE_URL](../../authorities/riverhog-server/configuration-environment/riverhog-database-url.md) | `riverhog-server` | `''` |
 | `riverhog-server` | [RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE](../../authorities/riverhog-server/configuration-environment/riverhog-event-context-reap-batch-size.md) | `riverhog-server` | `'100'` |
 | `riverhog-server` | [RIVERHOG_EVENT_CONTEXT_RETENTION](../../authorities/riverhog-server/configuration-environment/riverhog-event-context-retention.md) | `riverhog-server` | `'30d'` |
-| `riverhog-server` | [RIVERHOG_EVENT_SOURCE](../../authorities/riverhog-server/configuration-environment/riverhog-event-source.md) | `riverhog-server` | `'urn:riverhog'` |
 | `riverhog-server` | [RIVERHOG_INGRESS_MAX_INFLIGHT_BYTES](../../authorities/riverhog-server/configuration-environment/riverhog-ingress-max-inflight-bytes.md) | `riverhog-server` | `unset` |
 | `riverhog-server` | [RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES](../../authorities/riverhog-server/configuration-environment/riverhog-ingress-source-read-chunk-bytes.md) | `riverhog-server` | `unset` |
 | `riverhog-server` | [RIVERHOG_LOG_LEVEL](../../authorities/riverhog-server/configuration-environment/riverhog-log-level.md) | `riverhog-server` | `DEFAULT_LOG_LEVEL` |

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-retrieval-range-billing-mode:cb52bc0059 -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-retrieval-range-billing-mode:f9a2620a93 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-99c8eb1c7d"></a>
+<a id="s-986a5dc23a"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-a52c09abae"></a>`consumers` | `["riverhog-server"]` |
-| <a id="s-a10389ce2d"></a>`default_expressions` | `["unset"]` |
-| <a id="s-62331dcb68"></a>`id` | `"riverhog-server:environment:RIVERHOG_RETRIEVAL_RANGE_BILLING_MODE"` |
-| <a id="s-662e6a0e21"></a>`input_shape` | `"environment-string"` |
-| <a id="s-9e12e97dee"></a>`name` | `"RIVERHOG_RETRIEVAL_RANGE_BILLING_MODE"` |
-| <a id="s-abdde598fa"></a>`owner` | `"riverhog-server"` |
+| <a id="s-72c970d79e"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-d2217a5807"></a>`default_expressions` | `["unset"]` |
+| <a id="s-e7469eabe2"></a>`id` | `"riverhog-server:environment:RIVERHOG_RETRIEVAL_RANGE_BILLING_MODE"` |
+| <a id="s-f0db4b7c89"></a>`input_shape` | `"environment-string"` |
+| <a id="s-adf35c1f47"></a>`name` | `"RIVERHOG_RETRIEVAL_RANGE_BILLING_MODE"` |
+| <a id="s-14d34e06dd"></a>`owner` | `"riverhog-server"` |
 
 ## Governing policies
 
-- <a id="pa-2456f93ea7"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-aabad50fdf"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/214`
+- `/external_contract/configuration_environment/213`
 
 ### Exact owned JSON
 

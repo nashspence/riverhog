@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-server:riverhog-allow-insecure-http:24eff9e1ab -->
+<!-- contract-element: configuration-environment:stove0-server:riverhog-allow-insecure-http:bf0b89890d -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-d907531ff5"></a>
+<a id="s-c406d69a96"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-651656bfc3"></a>`consumers` | `["stove0-server"]` |
-| <a id="s-65a4f0d9de"></a>`default_expressions` | `["unset"]` |
-| <a id="s-3ab60f095f"></a>`id` | `"stove0-server:environment:RIVERHOG_ALLOW_INSECURE_HTTP"` |
-| <a id="s-21cd035f9e"></a>`input_shape` | `"environment-string"` |
-| <a id="s-53770aad28"></a>`name` | `"RIVERHOG_ALLOW_INSECURE_HTTP"` |
-| <a id="s-eb7289352e"></a>`owner` | `"stove0-server"` |
+| <a id="s-2c6a23ce32"></a>`consumers` | `["stove0-server"]` |
+| <a id="s-7e17b4ea81"></a>`default_expressions` | `["unset"]` |
+| <a id="s-64dc759cad"></a>`id` | `"stove0-server:environment:RIVERHOG_ALLOW_INSECURE_HTTP"` |
+| <a id="s-29da3b1cb0"></a>`input_shape` | `"environment-string"` |
+| <a id="s-5192164e70"></a>`name` | `"RIVERHOG_ALLOW_INSECURE_HTTP"` |
+| <a id="s-1a0d87a02e"></a>`owner` | `"stove0-server"` |
 
 ## Governing policies
 
-- <a id="pa-92c2b5b439"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-1aac8761d4"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/224`
+- `/external_contract/configuration_environment/223`
 
 ### Exact owned JSON
 

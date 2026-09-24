@@ -2,10 +2,10 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
-Durable CloudEvents lifecycle log and client primitives.
+Durable native lifecycle-event log and client primitives.
 
-Contract elements: **25** · Extent decisions: **0**
+Contract elements: **23** · Extent decisions: **0**
 
 ## Interfaces
 
-- [Python](python/index.md) (25)
+- [Python](python/index.md) (23)

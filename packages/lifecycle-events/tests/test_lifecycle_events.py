@@ -10,8 +10,7 @@ from lifecycle_events import (
     EventPage,
     SQLiteEventCursorStore,
     SQLiteLifecycleEventLog,
-    caused_event,
-    cloud_event,
+    lifecycle_event,
     normalize_event_context,
 )
 from pydantic import TypeAdapter
@@ -31,7 +30,7 @@ def test_event_context_runtime_and_schema_share_the_exact_encoded_byte_bound() -
 
 
 def test_nonempty_event_pages_require_opaque_cursor_progress() -> None:
-    event = cloud_event(source="urn:riverhog", type="io.riverhog.test")
+    event = lifecycle_event(type="io.riverhog.test")
     nonadvancing = EventPage(events=[event], next_cursor="cursor-7", has_more=False)
     terminal = EventPage(events=[], next_cursor="cursor-7", has_more=False)
 
@@ -46,7 +45,7 @@ def sqlite_connect(path: Path) -> sqlite3.Connection:
     return connection
 
 
-def test_causal_events_and_sqlite_delivery_state_are_idempotent(tmp_path: Path) -> None:
+def test_native_events_and_sqlite_delivery_state_are_idempotent(tmp_path: Path) -> None:
     database = tmp_path / "events.sqlite3"
 
     def connect() -> sqlite3.Connection:
@@ -56,18 +55,10 @@ def test_causal_events_and_sqlite_delivery_state_are_idempotent(tmp_path: Path) 
     cursors = SQLiteEventCursorStore(connect)
     log.initialize()
     cursors.initialize()
-    upstream = cloud_event(
-        source="urn:riverhog",
-        type="io.riverhog.riverhog.collection.finalized",
-        subject="2026/example",
-        data={"collection_id": "2026/example"},
-    )
-    translated = caused_event(
-        cause=upstream,
-        source="urn:target",
+    translated = lifecycle_event(
         type="io.riverhog.target.job.archive.finalized",
         subject="job-1",
-        data={"job_id": "job-1"},
+        payload={"job_id": "job-1"},
     )
 
     first_cursor = log.append_once(translated, owner="target")
@@ -78,7 +69,6 @@ def test_causal_events_and_sqlite_delivery_state_are_idempotent(tmp_path: Path) 
     assert cursors.cursor("riverhog") == "41"
     page = log.page(after=None, limit=100)
     assert page.events == [translated]
-    assert page.events[0].data["cause"]["id"] == upstream.id
 
 
 def test_context_expiry_is_scoped_to_owner_and_subject_in_sql(tmp_path: Path) -> None:
@@ -89,17 +79,15 @@ def test_context_expiry_is_scoped_to_owner_and_subject_in_sql(tmp_path: Path) ->
 
     log = SQLiteLifecycleEventLog(connect)
     log.initialize()
-    matching = cloud_event(
-        source="urn:riverhog",
+    matching = lifecycle_event(
         type="io.riverhog.riverhog.collection.finalized",
         subject="collection-1",
-        data={"collection_id": 1},
+        payload={"collection_id": 1},
     )
-    other_subject = cloud_event(
-        source="urn:riverhog",
+    other_subject = lifecycle_event(
         type="io.riverhog.riverhog.collection.finalized",
         subject="collection-2",
-        data={"collection_id": 2},
+        payload={"collection_id": 2},
     )
     log.append(matching, owner="client", context={"workflow": "matching"})
     log.append(other_subject, owner="client", context={"workflow": "other-subject"})

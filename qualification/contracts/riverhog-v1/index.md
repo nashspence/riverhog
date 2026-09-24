@@ -4,7 +4,7 @@
 
 This generated snapshot accounts for the externally exposed surfaces discovered from this repository revision. Discovery means inclusion; no separate acceptance decision is required.
 
-Included contract elements: **4223** · Extent decisions: **2085**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
+Included contract elements: **4218** · Extent decisions: **2081**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
 
 ## Audit references
 
@@ -78,11 +78,11 @@ Included contract elements: **4223** · Extent decisions: **2085**. Complete acc
 - [a-riverhog-cli-local](authorities/a-riverhog-cli-local/index.md) — Command-line client for Riverhog.
   - [Durable State](authorities/a-riverhog-cli-local/durable-state/index.md) (7)
 
-- [a-riverhog-event-relay](authorities/a-riverhog-event-relay/index.md) — CloudEvents event relay for Riverhog.
+- [a-riverhog-event-relay](authorities/a-riverhog-event-relay/index.md) — Native lifecycle-event to CloudEvents webhook relay.
   - [CLI](authorities/a-riverhog-event-relay/cli/index.md) (5)
   - [Configuration Documents](authorities/a-riverhog-event-relay/configuration/index.md) (1)
 
-- [a-riverhog-event-relay-cursor](authorities/a-riverhog-event-relay-cursor/index.md) — CloudEvents event relay for Riverhog.
+- [a-riverhog-event-relay-cursor](authorities/a-riverhog-event-relay-cursor/index.md) — Native lifecycle-event to CloudEvents webhook relay.
   - [Durable State](authorities/a-riverhog-event-relay-cursor/durable-state/index.md) (2)
 
 - [a-riverhog-filesystem-store](authorities/a-riverhog-filesystem-store/index.md) — Filesystem-backed Riverhog archive and retrieval store. Implements protocol: [riverhog-storage-adapter](extensions/process-protocol-riverhog-storage-adapter.md).
@@ -180,8 +180,8 @@ Included contract elements: **4223** · Extent decisions: **2085**. Complete acc
 - [http-api-contracts](authorities/http-api-contracts/index.md) — Public typed HTTP error, health, client, and operation contracts.
   - [Python](authorities/http-api-contracts/python/index.md) (63)
 
-- [lifecycle-events](authorities/lifecycle-events/index.md) — Durable CloudEvents lifecycle log and client primitives.
-  - [Python](authorities/lifecycle-events/python/index.md) (25)
+- [lifecycle-events](authorities/lifecycle-events/index.md) — Durable native lifecycle-event log and client primitives.
+  - [Python](authorities/lifecycle-events/python/index.md) (23)
 
 - [release](authorities/release/index.md) — Coordinated v1 compatibility and publication promises.
   - [Runtime Images](authorities/release/runtime-images/index.md) (13)
@@ -220,7 +220,7 @@ Included contract elements: **4223** · Extent decisions: **2085**. Complete acc
 
 - **[riverhog](authorities/riverhog/index.md)** [📦](authorities/riverhog/evidence-gaps.md) — The Riverhog service API and its maintained cross-interface operation parity.
   - **[HTTP Operations](authorities/riverhog/http-operations/index.md)** [📦](authorities/riverhog/http-operations/evidence-gaps.md) (110)
-  - **[HTTP Schemas](authorities/riverhog/http-schemas/index.md)** [📦](authorities/riverhog/http-schemas/evidence-gaps.md) (261)
+  - **[HTTP Schemas](authorities/riverhog/http-schemas/index.md)** [📦](authorities/riverhog/http-schemas/evidence-gaps.md) (260)
   - [HTTP Service Declaration](authorities/riverhog/http-service-declaration/index.md) (1)
   - [HTTP Security Schemes](authorities/riverhog/http-security-schemes/index.md) (1)
 
@@ -261,7 +261,7 @@ Included contract elements: **4223** · Extent decisions: **2085**. Complete acc
 
 - [riverhog-server](authorities/riverhog-server/index.md) — Encrypted archive management, catalog, and retrieval.
   - [CLI](authorities/riverhog-server/cli/index.md) (5)
-  - [Configuration Environment](authorities/riverhog-server/configuration-environment/index.md) (52)
+  - [Configuration Environment](authorities/riverhog-server/configuration-environment/index.md) (51)
 
 - [riverhog-storage-adapter-asgi-support](authorities/riverhog-storage-adapter-asgi-support/index.md) — Authenticated ASGI shell for independently scoped Riverhog storage adapters.
   - [Python](authorities/riverhog-storage-adapter-asgi-support/python/index.md) (1)
@@ -306,7 +306,7 @@ Included contract elements: **4223** · Extent decisions: **2085**. Complete acc
 
 - [stove0-operator-contracts](authorities/stove0-operator-contracts/index.md) — Canonical public state contracts for the Stove0 v1 operator surface.
   - [Configuration Documents](authorities/stove0-operator-contracts/configuration/index.md) (1)
-  - [Python](authorities/stove0-operator-contracts/python/index.md) (117)
+  - [Python](authorities/stove0-operator-contracts/python/index.md) (116)
 
 - [stove0-protocol](authorities/stove0-protocol/index.md) — Canonical content-opaque collection orchestration contracts for Stove0.
   - [Python](authorities/stove0-protocol/python/index.md) (207)

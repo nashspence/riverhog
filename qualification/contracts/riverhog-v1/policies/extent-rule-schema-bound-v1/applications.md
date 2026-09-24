@@ -352,7 +352,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: RetrievalRequestedData](../../authorities/riverhog/http-schemas/schemas-retrievalrequesteddata.md#pa-a374dd7942) |
 | `riverhog` | [schemas: RetrievalRequestedEvent](../../authorities/riverhog/http-schemas/schemas-retrievalrequestedevent.md#pa-4cf7a9c174) |
 | `riverhog` | [schemas: RiverhogActor](../../authorities/riverhog/http-schemas/schemas-riverhogactor.md#pa-e2b5fe54f9) |
-| `riverhog` | [schemas: RiverhogEventCause](../../authorities/riverhog/http-schemas/schemas-riverhogeventcause.md#pa-b879585740) |
 | `riverhog` | [schemas: SearchCollectionsRequest](../../authorities/riverhog/http-schemas/schemas-searchcollectionsrequest.md#pa-e3e1ecf8f7) |
 | `riverhog` | [schemas: SearchFileOut](../../authorities/riverhog/http-schemas/schemas-searchfileout.md#pa-bc30f5420e) |
 | `riverhog` | [schemas: SearchOut](../../authorities/riverhog/http-schemas/schemas-searchout.md#pa-21d1360a52) |

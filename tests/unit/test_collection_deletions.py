@@ -209,13 +209,13 @@ def test_deletion_event_belongs_to_the_authenticated_deleter_across_retry(
     assert len(page.events) == 1
     event = page.events[0]
     assert event.type == "io.riverhog.riverhog.collection.deleted"
-    assert event.data["actor"] == {"principal_id": "riverhog"}
-    assert event.data["initiator"] == {
+    assert event.payload["actor"] == {"principal_id": "riverhog"}
+    assert event.payload["initiator"] == {
         "principal_id": "riverhog-client",
         "key_id": "client-key",
     }
-    assert event.data["collection_created_at"] == UPLOADED_AT
-    assert event.data["context"] == {"workflow": "direct-delete"}
+    assert event.payload["collection_created_at"] == UPLOADED_AT
+    assert event.payload["context"] == {"workflow": "direct-delete"}
     assert events.page(owner_principal_id="stove0", after=None, limit=100).events == []
 
 

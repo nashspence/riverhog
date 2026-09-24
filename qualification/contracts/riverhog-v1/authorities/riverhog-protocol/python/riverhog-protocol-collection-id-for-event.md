@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-e362c6097b"></a>`kind`: `"function"`
-- <a id="s-31ae953f7b"></a>`signature`: `"\"(value: 'CloudEvent \| dict[str, Any]') -> 'int'\""`
+- <a id="s-31ae953f7b"></a>`signature`: `"\"(value: 'LifecycleEvent \| dict[str, Any]') -> 'int'\""`
 
 ## Governing policies
 
@@ -51,13 +51,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b5c84f6d712cad1a1218f3f7a1776953b900ba9b9a5e63ff6bc18be905c4f50c -->
+<!-- exact-contract-value: 24fb571e43bc4ac242bd3cd4e27a0fbfcca197c1fd8366f512495a8a48861953 -->
 
 ```json
 {
   "contract": {
     "kind": "function",
-    "signature": "\"(value: 'CloudEvent | dict[str, Any]') -> 'int'\""
+    "signature": "\"(value: 'LifecycleEvent | dict[str, Any]') -> 'int'\""
   },
   "distribution": "riverhog-protocol",
   "module": "riverhog_protocol",

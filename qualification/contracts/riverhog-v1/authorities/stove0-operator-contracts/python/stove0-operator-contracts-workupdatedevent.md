@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-8161f95009"></a>`kind`: `"class"`
-- <a id="s-f078f699e6"></a>`signature`: `"\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Literal['io.riverhog.stove0.work.updated'], subject: Annotated[str, MinLen(min_length=1)], time: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)], datacontenttype: Literal['application/json'] = 'application/json', data: stove0_operator_contracts.WorkUpdatedEventData) -> None\""`
+- <a id="s-f078f699e6"></a>`signature`: `"\"(*, id: Annotated[str, MinLen(min_length=1)], type: Literal['io.riverhog.stove0.work.updated'], subject: Annotated[str, MinLen(min_length=1)], occurred_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)], payload: stove0_operator_contracts.WorkUpdatedEventData) -> None\""`
 
 #### Validated model schema
 
@@ -30,19 +30,16 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-2580168585"></a>`type`: `"object"`
 - <a id="s-0ae4acb550"></a>`additionalProperties`: `false`
-- <a id="s-66f359d54f"></a>`required`: `["id","source","type","subject","time","data"]`
+- <a id="s-66f359d54f"></a>`required`: `["id","type","subject","occurred_at","payload"]`
 
 ##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-99f463106a"></a>`data` | yes | [WorkUpdatedEventData](#s-2e033a7744) |  |
-| <a id="s-5e209602b9"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-76a67b34ed"></a>`id` | yes | type="string"; minLength=1 |  |
-| <a id="s-b22c31709e"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
-| <a id="s-7172069c73"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
+| <a id="s-cb3a35e64f"></a>`occurred_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
+| <a id="s-146ff77ecf"></a>`payload` | yes | [WorkUpdatedEventData](#s-2e033a7744) |  |
 | <a id="s-6ace36c6ad"></a>`subject` | yes | type="string"; minLength=1 |  |
-| <a id="s-1e8e6facd4"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-8d8ae1ff1e"></a>`type` | yes | type="string"; const="io.riverhog.stove0.work.updated" |  |
 
 ##### Definitions
@@ -96,7 +93,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d1c3066b40dff2e507cd05776a997f062d4bc76e23f39d54137ed872193d4124 -->
+<!-- exact-contract-value: 5637047e668b2415eefe36f4c969a107833e5178d938d3a840444f0a060c0acc -->
 
 ```json
 {
@@ -148,35 +145,21 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       "additionalProperties": false,
       "properties": {
-        "data": {
-          "$ref": "#/$defs/WorkUpdatedEventData"
-        },
-        "datacontenttype": {
-          "const": "application/json",
-          "default": "application/json",
-          "type": "string"
-        },
         "id": {
           "minLength": 1,
           "type": "string"
         },
-        "source": {
-          "const": "urn:riverhog:stove0",
-          "type": "string"
-        },
-        "specversion": {
-          "const": "1.0",
-          "default": "1.0",
-          "type": "string"
-        },
-        "subject": {
-          "minLength": 1,
-          "type": "string"
-        },
-        "time": {
+        "occurred_at": {
           "maxLength": 30,
           "minLength": 30,
           "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/WorkUpdatedEventData"
+        },
+        "subject": {
+          "minLength": 1,
           "type": "string"
         },
         "type": {
@@ -186,15 +169,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       "required": [
         "id",
-        "source",
         "type",
         "subject",
-        "time",
-        "data"
+        "occurred_at",
+        "payload"
       ],
       "type": "object"
     },
-    "signature": "\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Literal['io.riverhog.stove0.work.updated'], subject: Annotated[str, MinLen(min_length=1)], time: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)], datacontenttype: Literal['application/json'] = 'application/json', data: stove0_operator_contracts.WorkUpdatedEventData) -> None\""
+    "signature": "\"(*, id: Annotated[str, MinLen(min_length=1)], type: Literal['io.riverhog.stove0.work.updated'], subject: Annotated[str, MinLen(min_length=1)], occurred_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)], payload: stove0_operator_contracts.WorkUpdatedEventData) -> None\""
   },
   "distribution": "stove0-operator-contracts",
   "module": "stove0_operator_contracts",

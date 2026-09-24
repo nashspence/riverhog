@@ -17,20 +17,17 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-eb5544fb20"></a>`type`: `"object"`
 - <a id="s-d7bc97eb46"></a>`additionalProperties`: `false`
-- <a id="s-6c9dd10487"></a>`required`: `["id","source","type","time","data"]`
+- <a id="s-6c9dd10487"></a>`required`: `["id","type","occurred_at","payload"]`
 - <a id="s-96920da11b"></a>`title`: `"ArchiveCopyJobFailedEvent"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3f8c6c5456"></a>`data` | yes | [ArchiveCopyJobFailedData](schemas-archivecopyjobfaileddata.md) |  |
-| <a id="s-e1b7072045"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json"; title="Datacontenttype" |  |
 | <a id="s-4613dced05"></a>`id` | yes | type="string"; minLength=1; title="Id" |  |
-| <a id="s-26e7b47a8a"></a>`source` | yes | type="string"; minLength=1; title="Source" |  |
-| <a id="s-75846b4990"></a>`specversion` | no | type="string"; const="1.0"; default="1.0"; title="Specversion" |  |
+| <a id="s-75859d4cee"></a>`occurred_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Occurred At" |  |
+| <a id="s-0c984cb923"></a>`payload` | yes | [ArchiveCopyJobFailedData](schemas-archivecopyjobfaileddata.md) |  |
 | <a id="s-fbe352fbc9"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; title="Subject" |  |
-| <a id="s-ac9dc45347"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Time" |  |
 | <a id="s-3d72924d38"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.archive_copy_job.failed"; title="Type" |  |
 
 ### Progression, limits, and lifecycle
@@ -41,7 +38,7 @@ Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-publ
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field time](#s-ac9dc45347) | `length · characters · fixed` | shared above |
+| [field occurred_at](#s-75859d4cee) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -79,36 +76,26 @@ Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f3d11b62658d3d17755c024048689ecb6c67c73a0fd8b851ea3f3b0510cbecad -->
+<!-- exact-contract-value: 337f51a09299b9e059110173e81b518439908d4e8bf7f2b9f03b9616e9119d75 -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
-    "data": {
-      "$ref": "#/components/schemas/ArchiveCopyJobFailedData"
-    },
-    "datacontenttype": {
-      "const": "application/json",
-      "default": "application/json",
-      "title": "Datacontenttype",
-      "type": "string"
-    },
     "id": {
       "minLength": 1,
       "title": "Id",
       "type": "string"
     },
-    "source": {
-      "minLength": 1,
-      "title": "Source",
+    "occurred_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
+      "title": "Occurred At",
       "type": "string"
     },
-    "specversion": {
-      "const": "1.0",
-      "default": "1.0",
-      "title": "Specversion",
-      "type": "string"
+    "payload": {
+      "$ref": "#/components/schemas/ArchiveCopyJobFailedData"
     },
     "subject": {
       "anyOf": [
@@ -122,13 +109,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "title": "Subject"
     },
-    "time": {
-      "maxLength": 30,
-      "minLength": 30,
-      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
-      "title": "Time",
-      "type": "string"
-    },
     "type": {
       "const": "io.riverhog.riverhog.archive_copy_job.failed",
       "title": "Type",
@@ -137,10 +117,9 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "required": [
     "id",
-    "source",
     "type",
-    "time",
-    "data"
+    "occurred_at",
+    "payload"
   ],
   "title": "ArchiveCopyJobFailedEvent",
   "type": "object"

@@ -17,20 +17,17 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-797a81b125"></a>`type`: `"object"`
 - <a id="s-e6f1ea9542"></a>`additionalProperties`: `false`
-- <a id="s-d719486eb3"></a>`required`: `["id","source","type","subject","time","data"]`
+- <a id="s-d719486eb3"></a>`required`: `["id","type","subject","occurred_at","payload"]`
 - <a id="s-b5df77a5be"></a>`title`: `"JoinAdmittedEvent"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7dff2842c2"></a>`data` | yes | [JoinAdmittedEventData](schemas-joinadmittedeventdata.md) |  |
-| <a id="s-2ce0d77104"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json"; title="Datacontenttype" |  |
 | <a id="s-3adf064b80"></a>`id` | yes | type="string"; minLength=1; title="Id" |  |
-| <a id="s-0800c849d6"></a>`source` | yes | type="string"; const="urn:riverhog:stove0"; title="Source" |  |
-| <a id="s-443d205ec8"></a>`specversion` | no | type="string"; const="1.0"; default="1.0"; title="Specversion" |  |
+| <a id="s-d057424438"></a>`occurred_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Occurred At" |  |
+| <a id="s-1cb8fcff00"></a>`payload` | yes | [JoinAdmittedEventData](schemas-joinadmittedeventdata.md) |  |
 | <a id="s-ae8b6da303"></a>`subject` | yes | type="string"; minLength=1; title="Subject" |  |
-| <a id="s-6d92c96711"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Time" |  |
 | <a id="s-dbf4280eb9"></a>`type` | yes | type="string"; const="io.riverhog.stove0.join.admitted"; title="Type" |  |
 
 ### Progression, limits, and lifecycle
@@ -41,7 +38,7 @@ Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-publ
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field time](#s-6d92c96711) | `length · characters · fixed` | shared above |
+| [field occurred_at](#s-d057424438) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -79,47 +76,30 @@ Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3931634ded7746bc582c6fbecfcd9b0ac7bc78ea4992fcd537a71e4019314a47 -->
+<!-- exact-contract-value: a145c2ecfc112d37552dd1a9ed24502ca1357f542f1f72e8fa403c4d790edf26 -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
-    "data": {
-      "$ref": "#/components/schemas/JoinAdmittedEventData"
-    },
-    "datacontenttype": {
-      "const": "application/json",
-      "default": "application/json",
-      "title": "Datacontenttype",
-      "type": "string"
-    },
     "id": {
       "minLength": 1,
       "title": "Id",
       "type": "string"
     },
-    "source": {
-      "const": "urn:riverhog:stove0",
-      "title": "Source",
+    "occurred_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
+      "title": "Occurred At",
       "type": "string"
     },
-    "specversion": {
-      "const": "1.0",
-      "default": "1.0",
-      "title": "Specversion",
-      "type": "string"
+    "payload": {
+      "$ref": "#/components/schemas/JoinAdmittedEventData"
     },
     "subject": {
       "minLength": 1,
       "title": "Subject",
-      "type": "string"
-    },
-    "time": {
-      "maxLength": 30,
-      "minLength": 30,
-      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
-      "title": "Time",
       "type": "string"
     },
     "type": {
@@ -130,11 +110,10 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "required": [
     "id",
-    "source",
     "type",
     "subject",
-    "time",
-    "data"
+    "occurred_at",
+    "payload"
   ],
   "title": "JoinAdmittedEvent",
   "type": "object"

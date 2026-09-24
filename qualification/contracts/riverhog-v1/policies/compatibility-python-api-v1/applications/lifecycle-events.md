@@ -8,11 +8,10 @@ These are the indexed contract-element applications. Each link reaches the polic
 
 | Authority | Contract element |
 |---|---|
-| `lifecycle-events` | [lifecycle_events.CLOUDEVENTS_JSON_CONTENT_TYPE](../../../authorities/lifecycle-events/python/lifecycle-events-cloudevents-json-content-type.md#pa-c041d36a71) |
-| `lifecycle-events` | [lifecycle_events.CloudEvent](../../../authorities/lifecycle-events/python/lifecycle-events-cloudevent.md#pa-b731b7c842) |
 | `lifecycle-events` | [lifecycle_events.EventContext](../../../authorities/lifecycle-events/python/lifecycle-events-eventcontext.md#pa-6702f4457a) |
 | `lifecycle-events` | [lifecycle_events.EventPage](../../../authorities/lifecycle-events/python/lifecycle-events-eventpage.md#pa-f0a223d5f6) |
 | `lifecycle-events` | [lifecycle_events.EventPage.require_progress_after](../../../authorities/lifecycle-events/python/lifecycle-events-eventpage-require-progress-after.md#pa-a112b52768) |
+| `lifecycle-events` | [lifecycle_events.LifecycleEvent](../../../authorities/lifecycle-events/python/lifecycle-events-lifecycleevent.md#pa-3aa84c58f5) |
 | `lifecycle-events` | [lifecycle_events.LifecycleEventClient](../../../authorities/lifecycle-events/python/lifecycle-events-lifecycleeventclient.md#pa-9787592011) |
 | `lifecycle-events` | [lifecycle_events.LifecycleEventClient.__enter__](../../../authorities/lifecycle-events/python/lifecycle-events-lifecycleeventclient-enter.md#pa-5c7dc61701) |
 | `lifecycle-events` | [lifecycle_events.LifecycleEventClient.__exit__](../../../authorities/lifecycle-events/python/lifecycle-events-lifecycleeventclient-exit.md#pa-08c7f5f520) |
@@ -29,7 +28,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `lifecycle-events` | [lifecycle_events.SQLiteLifecycleEventLog.expire_context](../../../authorities/lifecycle-events/python/lifecycle-events-sqlitelifecycleeventlog-expire-context.md#pa-ad8f7705b1) |
 | `lifecycle-events` | [lifecycle_events.SQLiteLifecycleEventLog.initialize](../../../authorities/lifecycle-events/python/lifecycle-events-sqlitelifecycleeventlog-initialize.md#pa-6b4573f9d2) |
 | `lifecycle-events` | [lifecycle_events.SQLiteLifecycleEventLog.page](../../../authorities/lifecycle-events/python/lifecycle-events-sqlitelifecycleeventlog-page.md#pa-800ad27d47) |
-| `lifecycle-events` | [lifecycle_events.caused_event](../../../authorities/lifecycle-events/python/lifecycle-events-caused-event.md#pa-2f50b16928) |
-| `lifecycle-events` | [lifecycle_events.cloud_event](../../../authorities/lifecycle-events/python/lifecycle-events-cloud-event.md#pa-618652e11f) |
 | `lifecycle-events` | [lifecycle_events.create_lifecycle_event_schema](../../../authorities/lifecycle-events/python/lifecycle-events-create-lifecycle-event-schema.md#pa-f2929acfd3) |
+| `lifecycle-events` | [lifecycle_events.lifecycle_event](../../../authorities/lifecycle-events/python/lifecycle-events-lifecycle-event.md#pa-350dac5311) |
 | `lifecycle-events` | [lifecycle_events.normalize_event_context](../../../authorities/lifecycle-events/python/lifecycle-events-normalize-event-context.md#pa-3d10725459) |

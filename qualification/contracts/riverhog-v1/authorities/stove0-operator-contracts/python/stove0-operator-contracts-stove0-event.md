@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-f79256aa4a"></a>`kind`: `"function"`
-- <a id="s-ede717616c"></a>`signature`: `"\"(*, type: 'Stove0EventType', subject: 'str', data: 'Mapping[str, Any]') -> 'Stove0LifecycleEvent'\""`
+- <a id="s-ede717616c"></a>`signature`: `"\"(*, type: 'Stove0EventType', subject: 'str', payload: 'Mapping[str, Any]') -> 'Stove0LifecycleEvent'\""`
 
 ## Governing policies
 
@@ -51,13 +51,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d2bdd480cb5bd9914490844c8f5c14364b00aa95deb14d10a99b3325fa3d6fe7 -->
+<!-- exact-contract-value: 5bfbe3138192dca5938a9d32a3f5c3b913c12ffb814ad8eddbc9ca03bc27c172 -->
 
 ```json
 {
   "contract": {
     "kind": "function",
-    "signature": "\"(*, type: 'Stove0EventType', subject: 'str', data: 'Mapping[str, Any]') -> 'Stove0LifecycleEvent'\""
+    "signature": "\"(*, type: 'Stove0EventType', subject: 'str', payload: 'Mapping[str, Any]') -> 'Stove0LifecycleEvent'\""
   },
   "distribution": "stove0-operator-contracts",
   "module": "stove0_operator_contracts",

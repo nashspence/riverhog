@@ -17,20 +17,17 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-4a84b11889"></a>`type`: `"object"`
 - <a id="s-c2f1d620dc"></a>`additionalProperties`: `false`
-- <a id="s-077330d907"></a>`required`: `["id","source","type","subject","time","data"]`
+- <a id="s-077330d907"></a>`required`: `["id","type","subject","occurred_at","payload"]`
 - <a id="s-b3978166b2"></a>`title`: `"WorkUpdatedEvent"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-089d96c784"></a>`data` | yes | [WorkUpdatedEventData](schemas-workupdatedeventdata.md) |  |
-| <a id="s-0a458eb822"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json"; title="Datacontenttype" |  |
 | <a id="s-5445b0c1bb"></a>`id` | yes | type="string"; minLength=1; title="Id" |  |
-| <a id="s-dce1579c51"></a>`source` | yes | type="string"; const="urn:riverhog:stove0"; title="Source" |  |
-| <a id="s-e4a4e26b10"></a>`specversion` | no | type="string"; const="1.0"; default="1.0"; title="Specversion" |  |
+| <a id="s-412414a006"></a>`occurred_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Occurred At" |  |
+| <a id="s-0d82f3e95b"></a>`payload` | yes | [WorkUpdatedEventData](schemas-workupdatedeventdata.md) |  |
 | <a id="s-7d62dec993"></a>`subject` | yes | type="string"; minLength=1; title="Subject" |  |
-| <a id="s-c6fb4b73c2"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Time" |  |
 | <a id="s-eea0cd0fd2"></a>`type` | yes | type="string"; const="io.riverhog.stove0.work.updated"; title="Type" |  |
 
 ### Progression, limits, and lifecycle
@@ -41,7 +38,7 @@ Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-publ
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field time](#s-c6fb4b73c2) | `length · characters · fixed` | shared above |
+| [field occurred_at](#s-412414a006) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -79,47 +76,30 @@ Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4b987d775e169fa3bb843a4dff95e3f33698972c17345d550d81d9bd853f30b2 -->
+<!-- exact-contract-value: de1535c538c849ebc55fa409c6583ed8eec14948ad48bdfe78b81a3481be2746 -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
-    "data": {
-      "$ref": "#/components/schemas/WorkUpdatedEventData"
-    },
-    "datacontenttype": {
-      "const": "application/json",
-      "default": "application/json",
-      "title": "Datacontenttype",
-      "type": "string"
-    },
     "id": {
       "minLength": 1,
       "title": "Id",
       "type": "string"
     },
-    "source": {
-      "const": "urn:riverhog:stove0",
-      "title": "Source",
+    "occurred_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
+      "title": "Occurred At",
       "type": "string"
     },
-    "specversion": {
-      "const": "1.0",
-      "default": "1.0",
-      "title": "Specversion",
-      "type": "string"
+    "payload": {
+      "$ref": "#/components/schemas/WorkUpdatedEventData"
     },
     "subject": {
       "minLength": 1,
       "title": "Subject",
-      "type": "string"
-    },
-    "time": {
-      "maxLength": 30,
-      "minLength": 30,
-      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
-      "title": "Time",
       "type": "string"
     },
     "type": {
@@ -130,11 +110,10 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "required": [
     "id",
-    "source",
     "type",
     "subject",
-    "time",
-    "data"
+    "occurred_at",
+    "payload"
   ],
   "title": "WorkUpdatedEvent",
   "type": "object"

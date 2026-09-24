@@ -17,20 +17,17 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-c3c03e1023"></a>`type`: `"object"`
 - <a id="s-afce010b64"></a>`additionalProperties`: `false`
-- <a id="s-0794ea509c"></a>`required`: `["id","source","type","time","data"]`
+- <a id="s-0794ea509c"></a>`required`: `["id","type","occurred_at","payload"]`
 - <a id="s-de37f7a8cd"></a>`title`: `"RetrievalReadyEvent"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-68122ab8cd"></a>`data` | yes | [RetrievalReadyData](schemas-retrievalreadydata.md) |  |
-| <a id="s-439f04025d"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json"; title="Datacontenttype" |  |
 | <a id="s-b4a383aa60"></a>`id` | yes | type="string"; minLength=1; title="Id" |  |
-| <a id="s-bf46e50353"></a>`source` | yes | type="string"; minLength=1; title="Source" |  |
-| <a id="s-7bad14c84c"></a>`specversion` | no | type="string"; const="1.0"; default="1.0"; title="Specversion" |  |
+| <a id="s-ecd5848eef"></a>`occurred_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Occurred At" |  |
+| <a id="s-ff28841f26"></a>`payload` | yes | [RetrievalReadyData](schemas-retrievalreadydata.md) |  |
 | <a id="s-d45f3e80da"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; title="Subject" |  |
-| <a id="s-41e929a32e"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Time" |  |
 | <a id="s-9b5ee6830d"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.ready"; title="Type" |  |
 
 ### Progression, limits, and lifecycle
@@ -41,7 +38,7 @@ Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-publ
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field time](#s-41e929a32e) | `length · characters · fixed` | shared above |
+| [field occurred_at](#s-ecd5848eef) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -79,36 +76,26 @@ Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f045e19f89aec85f5275c3129c0ea3ee779a55a308e7cd74a64a7729122705b9 -->
+<!-- exact-contract-value: 708a0d08fecded53e62809f38aad1a3cb7f97d940e347b93140f4ab5887c96e4 -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
-    "data": {
-      "$ref": "#/components/schemas/RetrievalReadyData"
-    },
-    "datacontenttype": {
-      "const": "application/json",
-      "default": "application/json",
-      "title": "Datacontenttype",
-      "type": "string"
-    },
     "id": {
       "minLength": 1,
       "title": "Id",
       "type": "string"
     },
-    "source": {
-      "minLength": 1,
-      "title": "Source",
+    "occurred_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
+      "title": "Occurred At",
       "type": "string"
     },
-    "specversion": {
-      "const": "1.0",
-      "default": "1.0",
-      "title": "Specversion",
-      "type": "string"
+    "payload": {
+      "$ref": "#/components/schemas/RetrievalReadyData"
     },
     "subject": {
       "anyOf": [
@@ -122,13 +109,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "title": "Subject"
     },
-    "time": {
-      "maxLength": 30,
-      "minLength": 30,
-      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
-      "title": "Time",
-      "type": "string"
-    },
     "type": {
       "const": "io.riverhog.riverhog.retrieval.ready",
       "title": "Type",
@@ -137,10 +117,9 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "required": [
     "id",
-    "source",
     "type",
-    "time",
-    "data"
+    "occurred_at",
+    "payload"
   ],
   "title": "RetrievalReadyEvent",
   "type": "object"

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-server:stove0-browse-token-signing-key:7f21447c14 -->
+<!-- contract-element: configuration-environment:stove0-server:stove0-browse-token-signing-key:d69b8eea10 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-4100c93200"></a>
+<a id="s-f1fbb5a5d4"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-23f3e07db6"></a>`consumers` | `["stove0-server"]` |
-| <a id="s-1e00eaa47b"></a>`default_expressions` | `["''"]` |
-| <a id="s-1c7f09fb76"></a>`id` | `"stove0-server:environment:STOVE0_BROWSE_TOKEN_SIGNING_KEY"` |
-| <a id="s-875aa8c93f"></a>`input_shape` | `"environment-string"` |
-| <a id="s-c0627a9cb2"></a>`name` | `"STOVE0_BROWSE_TOKEN_SIGNING_KEY"` |
-| <a id="s-ffaf3a09a2"></a>`owner` | `"stove0-server"` |
+| <a id="s-3783a83c9c"></a>`consumers` | `["stove0-server"]` |
+| <a id="s-55628ac85d"></a>`default_expressions` | `["''"]` |
+| <a id="s-bf201c7363"></a>`id` | `"stove0-server:environment:STOVE0_BROWSE_TOKEN_SIGNING_KEY"` |
+| <a id="s-66ede93aca"></a>`input_shape` | `"environment-string"` |
+| <a id="s-54e94dbbfa"></a>`name` | `"STOVE0_BROWSE_TOKEN_SIGNING_KEY"` |
+| <a id="s-c25d212d2e"></a>`owner` | `"stove0-server"` |
 
 ## Governing policies
 
-- <a id="pa-7a0dfeb5e9"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-8d9d8f74da"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/232`
+- `/external_contract/configuration_environment/231`
 
 ### Exact owned JSON
 

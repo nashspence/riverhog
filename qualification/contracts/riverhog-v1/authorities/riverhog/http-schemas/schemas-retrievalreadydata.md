@@ -25,7 +25,6 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-7e2852ec59"></a>`actor` | yes | [RiverhogActor](schemas-riverhogactor.md) |  |
-| <a id="s-9afac4e20b"></a>`cause` | no | anyOf=[([RiverhogEventCause](schemas-riverhogeventcause.md)); (type="null")] |  |
 | <a id="s-d9a2b57fb8"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Collection Created At" |  |
 | <a id="s-328580e7cb"></a>`collection_id` | no | anyOf=[([CollectionId](schemas-collectionid.md)); (type="null")] |  |
 | <a id="s-59cca2fa8c"></a>`collection_ids` | yes | type="array"; items=([CollectionId](schemas-collectionid.md)); minItems=1; title="Collection Ids" |  |
@@ -61,7 +60,6 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 - [CollectionId](schemas-collectionid.md)
 - [RiverhogActor](schemas-riverhogactor.md)
-- [RiverhogEventCause](schemas-riverhogeventcause.md)
 
 ## Governing policies
 
@@ -94,7 +92,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1242fddbae61fcba0d3ab67f325c3b4dd4b702ed7ce213963ad8de58c690bf6c -->
+<!-- exact-contract-value: 17bd45b9a6dc5eef6af9998bbe9e7ab0c9c58247b780941d9c247471734cfcd2 -->
 
 ```json
 {
@@ -102,16 +100,6 @@ The following JSON is the complete value owned at each machine-authority pointer
   "properties": {
     "actor": {
       "$ref": "#/components/schemas/RiverhogActor"
-    },
-    "cause": {
-      "anyOf": [
-        {
-          "$ref": "#/components/schemas/RiverhogEventCause"
-        },
-        {
-          "type": "null"
-        }
-      ]
     },
     "collection_created_at": {
       "anyOf": [

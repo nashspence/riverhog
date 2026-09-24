@@ -78,7 +78,7 @@ provider_qualification_runtime = "provider-qualification"
 
 [governance.boundary_freeze]
 status = "frozen"
-protected_boundary_sha256 = "91402d36568a8872e3d8164eb3aafee17af34d9070458c6577b119bf470e913b"
+protected_boundary_sha256 = "d28fe92917d66ea9d6f7c585b3531421cd6b83aea26893e83f80747a1c3d0696"
 protected_components = [
   "config-validation",
   "gogurt",
@@ -177,7 +177,7 @@ extent-contract = "Repository-wide v1 external extent principles and rules."
 
 [compatibility]
 components = "A supported deployment runs components from one coordinated product version."
-http_api = "Published v1 HTTP and CloudEvents contracts remain backward compatible throughout v1."
+http_api = "Published v1 HTTP and native lifecycle-event contracts remain backward compatible throughout v1."
 cli = "Command names, options, exit status, and structured output remain backward compatible throughout v1; prose output is for people."
 python_api = "Freeze-protected declared public-module exports, callable signatures, selected constants, enum members and values, and selected public model and dataclass structures remain backward compatible throughout v1."
 durable_state = "Every later v1 release applies each durable-state authority's declared transition rule to state created by every earlier v1 release; this does not promise downgrade support or earlier software reading later state."
@@ -429,7 +429,7 @@ platforms = ["linux/amd64"]
 
 [images.runtime]
 riverhog = { role = "product", description = "Riverhog archive service.", distributions = ["riverhog-server"], repository = "ghcr.io/nashspence/riverhog" }
-a-riverhog-event-relay = { role = "application", description = "CloudEvents event relay for Riverhog.", distributions = ["a-riverhog-event-relay"], repository = "ghcr.io/nashspence/a-riverhog-event-relay" }
+a-riverhog-event-relay = { role = "application", description = "Native lifecycle-event to CloudEvents webhook relay.", distributions = ["a-riverhog-event-relay"], repository = "ghcr.io/nashspence/a-riverhog-event-relay" }
 a-riverhog-ftp-spool = { role = "component", description = "FTP upload spool and ingestion adapter for Riverhog.", distributions = ["a-riverhog-ftp-spool", "a-riverhog-linux-provenance-observer"], repository = "ghcr.io/nashspence/a-riverhog-ftp-spool" }
 a-riverhog-aws-store = { role = "component", description = "AWS-backed Riverhog archive and retrieval store.", distributions = ["a-riverhog-aws-store"], repository = "ghcr.io/nashspence/a-riverhog-aws-store" }
 a-riverhog-b2-store = { role = "component", description = "Backblaze B2-backed Riverhog archive and retrieval store.", distributions = ["a-riverhog-b2-store"], repository = "ghcr.io/nashspence/a-riverhog-b2-store" }

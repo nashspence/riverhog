@@ -17,20 +17,17 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-36b0adf5da"></a>`type`: `"object"`
 - <a id="s-1dcc2c1047"></a>`additionalProperties`: `false`
-- <a id="s-e327bc249e"></a>`required`: `["id","source","type","time","data"]`
+- <a id="s-e327bc249e"></a>`required`: `["id","type","occurred_at","payload"]`
 - <a id="s-2252401467"></a>`title`: `"RetrievalRequestedEvent"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-cdc30bddc2"></a>`data` | yes | [RetrievalRequestedData](schemas-retrievalrequesteddata.md) |  |
-| <a id="s-cc1c959882"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json"; title="Datacontenttype" |  |
 | <a id="s-4abe85e7b4"></a>`id` | yes | type="string"; minLength=1; title="Id" |  |
-| <a id="s-ef32c95c1c"></a>`source` | yes | type="string"; minLength=1; title="Source" |  |
-| <a id="s-89504ffcf4"></a>`specversion` | no | type="string"; const="1.0"; default="1.0"; title="Specversion" |  |
+| <a id="s-ff804cccdc"></a>`occurred_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Occurred At" |  |
+| <a id="s-77df049036"></a>`payload` | yes | [RetrievalRequestedData](schemas-retrievalrequesteddata.md) |  |
 | <a id="s-a8852514d7"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; title="Subject" |  |
-| <a id="s-49e4083860"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Time" |  |
 | <a id="s-709147b851"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.requested"; title="Type" |  |
 
 ### Progression, limits, and lifecycle
@@ -41,7 +38,7 @@ Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-publ
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field time](#s-49e4083860) | `length · characters · fixed` | shared above |
+| [field occurred_at](#s-ff804cccdc) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -79,36 +76,26 @@ Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c615959101b6d0da98f8fdaaac92f92829a6f1dffc7f56634ff84df2f77116b2 -->
+<!-- exact-contract-value: c3eea3d87d229b666a873353ac40e36f07a4ab4251d6dfce34a7d6c6e4bc5e44 -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
-    "data": {
-      "$ref": "#/components/schemas/RetrievalRequestedData"
-    },
-    "datacontenttype": {
-      "const": "application/json",
-      "default": "application/json",
-      "title": "Datacontenttype",
-      "type": "string"
-    },
     "id": {
       "minLength": 1,
       "title": "Id",
       "type": "string"
     },
-    "source": {
-      "minLength": 1,
-      "title": "Source",
+    "occurred_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
+      "title": "Occurred At",
       "type": "string"
     },
-    "specversion": {
-      "const": "1.0",
-      "default": "1.0",
-      "title": "Specversion",
-      "type": "string"
+    "payload": {
+      "$ref": "#/components/schemas/RetrievalRequestedData"
     },
     "subject": {
       "anyOf": [
@@ -122,13 +109,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "title": "Subject"
     },
-    "time": {
-      "maxLength": 30,
-      "minLength": 30,
-      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
-      "title": "Time",
-      "type": "string"
-    },
     "type": {
       "const": "io.riverhog.riverhog.retrieval.requested",
       "title": "Type",
@@ -137,10 +117,9 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "required": [
     "id",
-    "source",
     "type",
-    "time",
-    "data"
+    "occurred_at",
+    "payload"
   ],
   "title": "RetrievalRequestedEvent",
   "type": "object"

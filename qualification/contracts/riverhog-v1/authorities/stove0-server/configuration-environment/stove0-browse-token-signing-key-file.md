@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-server:stove0-browse-token-signing-key-file:df19f5c003 -->
+<!-- contract-element: configuration-environment:stove0-server:stove0-browse-token-signing-key-file:26fa069e53 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-f3bfb6e003"></a>
+<a id="s-4100c93200"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-97efa424ba"></a>`consumers` | `["stove0-server"]` |
-| <a id="s-127cb6f97a"></a>`default_expressions` | `["''"]` |
-| <a id="s-7142fe8ae0"></a>`id` | `"stove0-server:environment:STOVE0_BROWSE_TOKEN_SIGNING_KEY_FILE"` |
-| <a id="s-a2187cffa2"></a>`input_shape` | `"environment-string"` |
-| <a id="s-12963474d8"></a>`name` | `"STOVE0_BROWSE_TOKEN_SIGNING_KEY_FILE"` |
-| <a id="s-9aa1a4361c"></a>`owner` | `"stove0-server"` |
+| <a id="s-23f3e07db6"></a>`consumers` | `["stove0-server"]` |
+| <a id="s-1e00eaa47b"></a>`default_expressions` | `["''"]` |
+| <a id="s-1c7f09fb76"></a>`id` | `"stove0-server:environment:STOVE0_BROWSE_TOKEN_SIGNING_KEY_FILE"` |
+| <a id="s-875aa8c93f"></a>`input_shape` | `"environment-string"` |
+| <a id="s-c0627a9cb2"></a>`name` | `"STOVE0_BROWSE_TOKEN_SIGNING_KEY_FILE"` |
+| <a id="s-ffaf3a09a2"></a>`owner` | `"stove0-server"` |
 
 ## Governing policies
 
-- <a id="pa-d954086e3a"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-1d7fc54422"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/233`
+- `/external_contract/configuration_environment/232`
 
 ### Exact owned JSON
 

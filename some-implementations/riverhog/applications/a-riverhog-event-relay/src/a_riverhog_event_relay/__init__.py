@@ -1,1 +1,1 @@
-"""Generic credentialed CloudEvents-to-webhook delivery application."""
+"""Native lifecycle-event to CloudEvents webhook delivery application."""

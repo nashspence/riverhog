@@ -39,7 +39,7 @@ Choose an authority to inspect this policy's indexed contract-element applicatio
 | [gogurt-core](applications/gogurt-core.md) | 43 |
 | [gogurt-listener-runtime](applications/gogurt-listener-runtime.md) | 55 |
 | [http-api-contracts](applications/http-api-contracts.md) | 63 |
-| [lifecycle-events](applications/lifecycle-events.md) | 25 |
+| [lifecycle-events](applications/lifecycle-events.md) | 23 |
 | [review0-planner](applications/review0-planner.md) | 4 |
 | [review0-sampler-client](applications/review0-sampler-client.md) | 7 |
 | [review0-sampler-lib](applications/review0-sampler-lib.md) | 21 |
@@ -62,7 +62,7 @@ Choose an authority to inspect this policy's indexed contract-element applicatio
 | [stove0-observer-client](applications/stove0-observer-client.md) | 6 |
 | [stove0-observer-protocol](applications/stove0-observer-protocol.md) | 81 |
 | [stove0-observer-support](applications/stove0-observer-support.md) | 37 |
-| [stove0-operator-contracts](applications/stove0-operator-contracts.md) | 117 |
+| [stove0-operator-contracts](applications/stove0-operator-contracts.md) | 116 |
 | [stove0-protocol](applications/stove0-protocol.md) | 207 |
 | [stove0-recipe-config](applications/stove0-recipe-config.md) | 30 |
 | [stove0-server](applications/stove0-server.md) | 324 |

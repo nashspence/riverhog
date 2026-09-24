@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 import os
 import sqlite3
@@ -12,12 +13,29 @@ from typing import Any
 
 import httpx
 import yaml
-from lifecycle_events.models import CLOUDEVENTS_JSON_CONTENT_TYPE, EventPage
+from lifecycle_events.models import EventPage, LifecycleEvent
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from a_riverhog_event_relay.schema import validate_state
 
 LOG = logging.getLogger(__name__)
+CLOUDEVENTS_JSON_CONTENT_TYPE = "application/cloudevents+json"
+
+
+def cloud_event_document(event: LifecycleEvent, *, source_name: str) -> dict[str, Any]:
+    """Translate a native event at the outbound webhook boundary."""
+    document: dict[str, Any] = {
+        "specversion": "1.0",
+        "id": event.id,
+        "source": f"urn:riverhog:event-source:{source_name}",
+        "type": event.type,
+        "time": event.occurred_at,
+        "datacontenttype": "application/json",
+        "data": event.payload,
+    }
+    if event.subject is not None:
+        document["subject"] = event.subject
+    return document
 
 
 @dataclass(frozen=True)
@@ -205,7 +223,11 @@ class EventRelay:
                 try:
                     delivery = http.post(
                         os.environ[source.webhook_url_env],
-                        content=event.model_dump_json(exclude_none=True),
+                        content=json.dumps(
+                            cloud_event_document(event, source_name=source.name),
+                            sort_keys=True,
+                            separators=(",", ":"),
+                        ),
                         headers={"Content-Type": CLOUDEVENTS_JSON_CONTENT_TYPE},
                     )
                     delivery.raise_for_status()

@@ -90,7 +90,7 @@ def format_lifecycle_events(payload: Mapping[str, object]) -> str:
         lines.append(
             " ".join(
                 (
-                    str(event.get("time") or "-"),
+                    str(event.get("occurred_at") or "-"),
                     str(event.get("type") or "-"),
                     f"subject={event.get('subject') or '-'}",
                     f"id={event.get('id') or '-'}",

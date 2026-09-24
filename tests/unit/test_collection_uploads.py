@@ -1246,7 +1246,7 @@ def test_small_collection_moves_directly_from_source_unit_to_final_custody(
         if event.type.endswith("collection.finalized") and event.subject == str(collection_id)
     ]
     assert len(finalized_events) == 1
-    assert finalized_events[0].data["archive_root_sha256"] == plaintext_root_sha256
+    assert finalized_events[0].payload["archive_root_sha256"] == plaintext_root_sha256
 
     resumed = service.create_or_resume(
         idempotency_key="upload-1",

@@ -60,19 +60,16 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-dc02e1fc40"></a>`type`: `"object"`
 - <a id="s-fa4d313fb2"></a>`additionalProperties`: `false`
-- <a id="s-c895d13269"></a>`required`: `["id","source","type","subject","time","data"]`
+- <a id="s-c895d13269"></a>`required`: `["id","type","subject","occurred_at","payload"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d2d86d3c96"></a>`data` | yes | [BranchSetAdmittedEventData](#s-e062cfc1fb) |  |
-| <a id="s-088041c7e8"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-ad76ca3ec6"></a>`id` | yes | type="string"; minLength=1 |  |
-| <a id="s-811bc19c53"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
-| <a id="s-d51d3dadab"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
+| <a id="s-f5ddc96547"></a>`occurred_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
+| <a id="s-617277bf25"></a>`payload` | yes | [BranchSetAdmittedEventData](#s-e062cfc1fb) |  |
 | <a id="s-422c8fc3cf"></a>`subject` | yes | type="string"; minLength=1 |  |
-| <a id="s-c446dc142c"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-67943fadab"></a>`type` | yes | type="string"; const="io.riverhog.stove0.branch-set.admitted" |  |
 
 ##### <a id="s-e062cfc1fb"></a>definition `BranchSetAdmittedEventData`
@@ -96,19 +93,16 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-8589cd42c9"></a>`type`: `"object"`
 - <a id="s-1eea6940c2"></a>`additionalProperties`: `false`
-- <a id="s-c10a737250"></a>`required`: `["id","source","type","subject","time","data"]`
+- <a id="s-c10a737250"></a>`required`: `["id","type","subject","occurred_at","payload"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-00061afc5a"></a>`data` | yes | [EvaluationCreatedEventData](#s-76b044aa8b) |  |
-| <a id="s-a7dd621055"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-89615ffd43"></a>`id` | yes | type="string"; minLength=1 |  |
-| <a id="s-c60e55df8b"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
-| <a id="s-9b28726b6a"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
+| <a id="s-cd6b0b867a"></a>`occurred_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
+| <a id="s-a8b57aa7de"></a>`payload` | yes | [EvaluationCreatedEventData](#s-76b044aa8b) |  |
 | <a id="s-1f35f82699"></a>`subject` | yes | type="string"; minLength=1 |  |
-| <a id="s-5540310b99"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-65e1e4ff20"></a>`type` | yes | type="string"; const="io.riverhog.stove0.evaluation.created" |  |
 
 ##### <a id="s-76b044aa8b"></a>definition `EvaluationCreatedEventData`
@@ -128,19 +122,16 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-7289397dbb"></a>`type`: `"object"`
 - <a id="s-5df008de17"></a>`additionalProperties`: `false`
-- <a id="s-53b3025c07"></a>`required`: `["id","source","type","subject","time","data"]`
+- <a id="s-53b3025c07"></a>`required`: `["id","type","subject","occurred_at","payload"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e2746ec7d5"></a>`data` | yes | [EvaluationUpdatedEventData](#s-bf4fa5097c) |  |
-| <a id="s-f3eb1d7d58"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-0d186d9902"></a>`id` | yes | type="string"; minLength=1 |  |
-| <a id="s-f6d946f88c"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
-| <a id="s-9391aa9f3b"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
+| <a id="s-7fac4cf421"></a>`occurred_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
+| <a id="s-06c25f9214"></a>`payload` | yes | [EvaluationUpdatedEventData](#s-bf4fa5097c) |  |
 | <a id="s-6095eff361"></a>`subject` | yes | type="string"; minLength=1 |  |
-| <a id="s-053e48c4e5"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-cdf88f034c"></a>`type` | yes | type="string"; const="io.riverhog.stove0.evaluation.updated" |  |
 
 ##### <a id="s-bf4fa5097c"></a>definition `EvaluationUpdatedEventData`
@@ -161,19 +152,16 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-b38b510778"></a>`type`: `"object"`
 - <a id="s-e6e0032d99"></a>`additionalProperties`: `false`
-- <a id="s-c35842a067"></a>`required`: `["id","source","type","subject","time","data"]`
+- <a id="s-c35842a067"></a>`required`: `["id","type","subject","occurred_at","payload"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7d98074a1f"></a>`data` | yes | [JoinAdmittedEventData](#s-4d75b42669) |  |
-| <a id="s-3050f3af96"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-815b0afa17"></a>`id` | yes | type="string"; minLength=1 |  |
-| <a id="s-afd9d3befa"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
-| <a id="s-e03bdc1770"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
+| <a id="s-5bf236b077"></a>`occurred_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
+| <a id="s-1322c4b56a"></a>`payload` | yes | [JoinAdmittedEventData](#s-4d75b42669) |  |
 | <a id="s-63c8f8a47a"></a>`subject` | yes | type="string"; minLength=1 |  |
-| <a id="s-68f32492f8"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-8d3583f6b2"></a>`type` | yes | type="string"; const="io.riverhog.stove0.join.admitted" |  |
 
 ##### <a id="s-4d75b42669"></a>definition `JoinAdmittedEventData`
@@ -212,19 +200,16 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-a105573d2f"></a>`type`: `"object"`
 - <a id="s-c8cb7904a6"></a>`additionalProperties`: `false`
-- <a id="s-262a38b220"></a>`required`: `["id","source","type","subject","time","data"]`
+- <a id="s-262a38b220"></a>`required`: `["id","type","subject","occurred_at","payload"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-538ebb7c26"></a>`data` | yes | [WorkCreatedEventData](#s-e484369c30) |  |
-| <a id="s-cb2f03012c"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-4882c53ca7"></a>`id` | yes | type="string"; minLength=1 |  |
-| <a id="s-80a7824a80"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
-| <a id="s-c1750c40bb"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
+| <a id="s-b3be680034"></a>`occurred_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
+| <a id="s-0c60a9c66d"></a>`payload` | yes | [WorkCreatedEventData](#s-e484369c30) |  |
 | <a id="s-80fe67098e"></a>`subject` | yes | type="string"; minLength=1 |  |
-| <a id="s-b6397c8ca9"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-0913ecfaa0"></a>`type` | yes | type="string"; const="io.riverhog.stove0.work.created" |  |
 
 ##### <a id="s-e484369c30"></a>definition `WorkCreatedEventData`
@@ -247,19 +232,16 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-cfbe61ceed"></a>`type`: `"object"`
 - <a id="s-85ef992e48"></a>`additionalProperties`: `false`
-- <a id="s-b64c13a5d3"></a>`required`: `["id","source","type","subject","time","data"]`
+- <a id="s-b64c13a5d3"></a>`required`: `["id","type","subject","occurred_at","payload"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-277c57ceea"></a>`data` | yes | [WorkUpdatedEventData](#s-d34baf0de6) |  |
-| <a id="s-d45652f268"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-3502660ebf"></a>`id` | yes | type="string"; minLength=1 |  |
-| <a id="s-06cb374f57"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
-| <a id="s-ef960eec2d"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
+| <a id="s-ccb5416f6b"></a>`occurred_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
+| <a id="s-908813ad96"></a>`payload` | yes | [WorkUpdatedEventData](#s-d34baf0de6) |  |
 | <a id="s-97aab70693"></a>`subject` | yes | type="string"; minLength=1 |  |
-| <a id="s-3a99c2b253"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-62185a28d0"></a>`type` | yes | type="string"; const="io.riverhog.stove0.work.updated" |  |
 
 ##### <a id="s-d34baf0de6"></a>definition `WorkUpdatedEventData`
@@ -309,7 +291,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c62f80cecf8cf494f258286642bd6b1a9cceb910d1114e504dd0b9ff36c85c2a -->
+<!-- exact-contract-value: 8ebca136dbfeab3e2644a8cffaada23df25b52638d4c1ff46dd339afb6939dd4 -->
 
 ```json
 {
@@ -320,35 +302,21 @@ The following JSON is the complete value owned at each machine-authority pointer
         "BranchSetAdmittedEvent": {
           "additionalProperties": false,
           "properties": {
-            "data": {
-              "$ref": "#/$defs/BranchSetAdmittedEventData"
-            },
-            "datacontenttype": {
-              "const": "application/json",
-              "default": "application/json",
-              "type": "string"
-            },
             "id": {
               "minLength": 1,
               "type": "string"
             },
-            "source": {
-              "const": "urn:riverhog:stove0",
-              "type": "string"
-            },
-            "specversion": {
-              "const": "1.0",
-              "default": "1.0",
-              "type": "string"
-            },
-            "subject": {
-              "minLength": 1,
-              "type": "string"
-            },
-            "time": {
+            "occurred_at": {
               "maxLength": 30,
               "minLength": 30,
               "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
+              "type": "string"
+            },
+            "payload": {
+              "$ref": "#/$defs/BranchSetAdmittedEventData"
+            },
+            "subject": {
+              "minLength": 1,
               "type": "string"
             },
             "type": {
@@ -358,11 +326,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           },
           "required": [
             "id",
-            "source",
             "type",
             "subject",
-            "time",
-            "data"
+            "occurred_at",
+            "payload"
           ],
           "type": "object"
         },
@@ -407,35 +374,21 @@ The following JSON is the complete value owned at each machine-authority pointer
         "EvaluationCreatedEvent": {
           "additionalProperties": false,
           "properties": {
-            "data": {
-              "$ref": "#/$defs/EvaluationCreatedEventData"
-            },
-            "datacontenttype": {
-              "const": "application/json",
-              "default": "application/json",
-              "type": "string"
-            },
             "id": {
               "minLength": 1,
               "type": "string"
             },
-            "source": {
-              "const": "urn:riverhog:stove0",
-              "type": "string"
-            },
-            "specversion": {
-              "const": "1.0",
-              "default": "1.0",
-              "type": "string"
-            },
-            "subject": {
-              "minLength": 1,
-              "type": "string"
-            },
-            "time": {
+            "occurred_at": {
               "maxLength": 30,
               "minLength": 30,
               "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
+              "type": "string"
+            },
+            "payload": {
+              "$ref": "#/$defs/EvaluationCreatedEventData"
+            },
+            "subject": {
+              "minLength": 1,
               "type": "string"
             },
             "type": {
@@ -445,11 +398,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           },
           "required": [
             "id",
-            "source",
             "type",
             "subject",
-            "time",
-            "data"
+            "occurred_at",
+            "payload"
           ],
           "type": "object"
         },
@@ -481,35 +433,21 @@ The following JSON is the complete value owned at each machine-authority pointer
         "EvaluationUpdatedEvent": {
           "additionalProperties": false,
           "properties": {
-            "data": {
-              "$ref": "#/$defs/EvaluationUpdatedEventData"
-            },
-            "datacontenttype": {
-              "const": "application/json",
-              "default": "application/json",
-              "type": "string"
-            },
             "id": {
               "minLength": 1,
               "type": "string"
             },
-            "source": {
-              "const": "urn:riverhog:stove0",
-              "type": "string"
-            },
-            "specversion": {
-              "const": "1.0",
-              "default": "1.0",
-              "type": "string"
-            },
-            "subject": {
-              "minLength": 1,
-              "type": "string"
-            },
-            "time": {
+            "occurred_at": {
               "maxLength": 30,
               "minLength": 30,
               "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
+              "type": "string"
+            },
+            "payload": {
+              "$ref": "#/$defs/EvaluationUpdatedEventData"
+            },
+            "subject": {
+              "minLength": 1,
               "type": "string"
             },
             "type": {
@@ -519,11 +457,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           },
           "required": [
             "id",
-            "source",
             "type",
             "subject",
-            "time",
-            "data"
+            "occurred_at",
+            "payload"
           ],
           "type": "object"
         },
@@ -560,35 +497,21 @@ The following JSON is the complete value owned at each machine-authority pointer
         "JoinAdmittedEvent": {
           "additionalProperties": false,
           "properties": {
-            "data": {
-              "$ref": "#/$defs/JoinAdmittedEventData"
-            },
-            "datacontenttype": {
-              "const": "application/json",
-              "default": "application/json",
-              "type": "string"
-            },
             "id": {
               "minLength": 1,
               "type": "string"
             },
-            "source": {
-              "const": "urn:riverhog:stove0",
-              "type": "string"
-            },
-            "specversion": {
-              "const": "1.0",
-              "default": "1.0",
-              "type": "string"
-            },
-            "subject": {
-              "minLength": 1,
-              "type": "string"
-            },
-            "time": {
+            "occurred_at": {
               "maxLength": 30,
               "minLength": 30,
               "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
+              "type": "string"
+            },
+            "payload": {
+              "$ref": "#/$defs/JoinAdmittedEventData"
+            },
+            "subject": {
+              "minLength": 1,
               "type": "string"
             },
             "type": {
@@ -598,11 +521,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           },
           "required": [
             "id",
-            "source",
             "type",
             "subject",
-            "time",
-            "data"
+            "occurred_at",
+            "payload"
           ],
           "type": "object"
         },
@@ -680,35 +602,21 @@ The following JSON is the complete value owned at each machine-authority pointer
         "WorkCreatedEvent": {
           "additionalProperties": false,
           "properties": {
-            "data": {
-              "$ref": "#/$defs/WorkCreatedEventData"
-            },
-            "datacontenttype": {
-              "const": "application/json",
-              "default": "application/json",
-              "type": "string"
-            },
             "id": {
               "minLength": 1,
               "type": "string"
             },
-            "source": {
-              "const": "urn:riverhog:stove0",
-              "type": "string"
-            },
-            "specversion": {
-              "const": "1.0",
-              "default": "1.0",
-              "type": "string"
-            },
-            "subject": {
-              "minLength": 1,
-              "type": "string"
-            },
-            "time": {
+            "occurred_at": {
               "maxLength": 30,
               "minLength": 30,
               "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
+              "type": "string"
+            },
+            "payload": {
+              "$ref": "#/$defs/WorkCreatedEventData"
+            },
+            "subject": {
+              "minLength": 1,
               "type": "string"
             },
             "type": {
@@ -718,11 +626,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           },
           "required": [
             "id",
-            "source",
             "type",
             "subject",
-            "time",
-            "data"
+            "occurred_at",
+            "payload"
           ],
           "type": "object"
         },
@@ -801,35 +708,21 @@ The following JSON is the complete value owned at each machine-authority pointer
         "WorkUpdatedEvent": {
           "additionalProperties": false,
           "properties": {
-            "data": {
-              "$ref": "#/$defs/WorkUpdatedEventData"
-            },
-            "datacontenttype": {
-              "const": "application/json",
-              "default": "application/json",
-              "type": "string"
-            },
             "id": {
               "minLength": 1,
               "type": "string"
             },
-            "source": {
-              "const": "urn:riverhog:stove0",
-              "type": "string"
-            },
-            "specversion": {
-              "const": "1.0",
-              "default": "1.0",
-              "type": "string"
-            },
-            "subject": {
-              "minLength": 1,
-              "type": "string"
-            },
-            "time": {
+            "occurred_at": {
               "maxLength": 30,
               "minLength": 30,
               "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
+              "type": "string"
+            },
+            "payload": {
+              "$ref": "#/$defs/WorkUpdatedEventData"
+            },
+            "subject": {
+              "minLength": 1,
               "type": "string"
             },
             "type": {
@@ -839,11 +732,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           },
           "required": [
             "id",
-            "source",
             "type",
             "subject",
-            "time",
-            "data"
+            "occurred_at",
+            "payload"
           ],
           "type": "object"
         },

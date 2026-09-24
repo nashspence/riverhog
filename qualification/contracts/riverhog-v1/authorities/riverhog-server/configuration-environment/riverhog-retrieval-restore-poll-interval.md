@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-retrieval-restore-poll-interval:c922d5ce07 -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-retrieval-restore-poll-interval:b3c8c139ee -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,16 +13,16 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-fd7d73e69a"></a>
+<a id="s-2a3f124dad"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-a55a59faa3"></a>`consumers` | `["riverhog-server"]` |
-| <a id="s-d1b08aa8b5"></a>`default_expressions` | `["'5m'"]` |
-| <a id="s-46c2e22331"></a>`id` | `"riverhog-server:environment:RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL"` |
-| <a id="s-cf58e17e41"></a>`input_shape` | `"environment-string"` |
-| <a id="s-2148cfff12"></a>`name` | `"RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL"` |
-| <a id="s-fe294b0ec7"></a>`owner` | `"riverhog-server"` |
+| <a id="s-4b39157865"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-97b263b2b9"></a>`default_expressions` | `["'5m'"]` |
+| <a id="s-c556f2f26b"></a>`id` | `"riverhog-server:environment:RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL"` |
+| <a id="s-577a558dba"></a>`input_shape` | `"environment-string"` |
+| <a id="s-5a42b163c0"></a>`name` | `"RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL"` |
+| <a id="s-c60ee59f23"></a>`owner` | `"riverhog-server"` |
 
 ### Progression, limits, and lifecycle
 
@@ -32,14 +32,14 @@ Shared facts for every subject below: configuration="RIVERHOG_RETRIEVAL_RESTORE_
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL](#s-fd7d73e69a) | `value · configured-value · operational_policy` | shared above |
+| [RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL](#s-2a3f124dad) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
-- <a id="pa-15a98e9208"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
-- <a id="pa-1aa196e9fb"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
+- <a id="pa-3f4dcbee0f"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-2632394c1e"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -63,7 +63,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/218`
+- `/external_contract/configuration_environment/217`
 
 ### Exact owned JSON
 

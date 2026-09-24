@@ -19,7 +19,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Value |
 |---|---|
-| <a id="s-9e2eb4b18c"></a>`http_api` | `"Published v1 HTTP and CloudEvents contracts remain backward compatible throughout v1."` |
+| <a id="s-9e2eb4b18c"></a>`http_api` | `"Published v1 HTTP and native lifecycle-event contracts remain backward compatible throughout v1."` |
 
 ## Evidence
 
@@ -45,10 +45,10 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2585cfdddab6eb45045fb1e0a19776f07029a40553fc17b28811f710586512ac -->
+<!-- exact-contract-value: 51d7a042dc9394b0f11d62fff0b49fd522b99cd9e6b4fe59943c1118d893f2e3 -->
 
 ```json
-"Published v1 HTTP and CloudEvents contracts remain backward compatible throughout v1."
+"Published v1 HTTP and native lifecycle-event contracts remain backward compatible throughout v1."
 ```
 
 </details>

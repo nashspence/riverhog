@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-log-level:0f5ad430f3 -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-log-level:469968a981 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-6dde132904"></a>
+<a id="s-baf83c7110"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-f8e4d1c1e8"></a>`consumers` | `["riverhog-server"]` |
-| <a id="s-9fcf455451"></a>`default_expressions` | `["DEFAULT_LOG_LEVEL"]` |
-| <a id="s-cd775f77c0"></a>`id` | `"riverhog-server:environment:RIVERHOG_LOG_LEVEL"` |
-| <a id="s-57e15b45fe"></a>`input_shape` | `"environment-string"` |
-| <a id="s-bb8c4184e6"></a>`name` | `"RIVERHOG_LOG_LEVEL"` |
-| <a id="s-6616e13dd1"></a>`owner` | `"riverhog-server"` |
+| <a id="s-a2fa2bd77d"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-3fc7fae88b"></a>`default_expressions` | `["DEFAULT_LOG_LEVEL"]` |
+| <a id="s-a54273fb17"></a>`id` | `"riverhog-server:environment:RIVERHOG_LOG_LEVEL"` |
+| <a id="s-ea0e7b5fd3"></a>`input_shape` | `"environment-string"` |
+| <a id="s-facd7c0dcf"></a>`name` | `"RIVERHOG_LOG_LEVEL"` |
+| <a id="s-a72677a8ab"></a>`owner` | `"riverhog-server"` |
 
 ## Governing policies
 
-- <a id="pa-db5e57361e"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-61c46879f3"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/197`
+- `/external_contract/configuration_environment/196`
 
 ### Exact owned JSON
 

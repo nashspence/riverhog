@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:riverhog-server:riverhog-retrieval-cache-new-archive-enabled:4c515ca9ff -->
+<!-- contract-element: configuration-environment:riverhog-server:riverhog-retrieval-cache-new-archive-enabled:26c857e178 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-13620c3fea"></a>
+<a id="s-decbf9314d"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-11f3d08040"></a>`consumers` | `["riverhog-server"]` |
-| <a id="s-9d822879a1"></a>`default_expressions` | `["'true'"]` |
-| <a id="s-90a83ea7d9"></a>`id` | `"riverhog-server:environment:RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_ENABLED"` |
-| <a id="s-2c31df2fca"></a>`input_shape` | `"environment-string"` |
-| <a id="s-d88606930a"></a>`name` | `"RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_ENABLED"` |
-| <a id="s-e21f91e942"></a>`owner` | `"riverhog-server"` |
+| <a id="s-f540a20671"></a>`consumers` | `["riverhog-server"]` |
+| <a id="s-da8e120990"></a>`default_expressions` | `["'true'"]` |
+| <a id="s-ff75883761"></a>`id` | `"riverhog-server:environment:RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_ENABLED"` |
+| <a id="s-40c15532e4"></a>`input_shape` | `"environment-string"` |
+| <a id="s-933d21d395"></a>`name` | `"RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_ENABLED"` |
+| <a id="s-c02703316b"></a>`owner` | `"riverhog-server"` |
 
 ## Governing policies
 
-- <a id="pa-16f1091408"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-9e6e838416"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/203`
+- `/external_contract/configuration_environment/202`
 
 ### Exact owned JSON
 

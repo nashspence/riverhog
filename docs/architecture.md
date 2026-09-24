@@ -27,7 +27,7 @@ Contracts define packages; architecture records ownership.
   Supplied applications own their workflows and interfaces; components own independently selected
   capabilities.
   They enter Riverhog only through public contracts.
-- **Public contracts.** Published HTTP and CloudEvents contracts define integration. Shared models
+- **Public contracts.** Published HTTP and native lifecycle-event contracts define integration. Shared models
   own identities; HTTP/OpenAPI owns CRUD and maintained-client JSON.
 - **Riverhog platform.** Server owns archives, transfer, retrieval, and
   delivery. Generic client owns transport, production, sync, and capability-scoped processing;

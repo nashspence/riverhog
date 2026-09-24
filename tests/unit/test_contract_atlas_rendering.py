@@ -131,7 +131,7 @@ def test_http_semantics_are_owned_once_and_operation_bindings_remain_structural(
 
     assert len(records) == len(http_operations) == len(qualified) == 148
     assert not any(item["interface"] == "operation" for item in elements)
-    assert root["counts"]["by_authority"]["riverhog"] == 373
+    assert root["counts"]["by_authority"]["riverhog"] == 372
     assert (
         sum(
             item["authority"] == "riverhog" and item["interface"] == "http-operations"
@@ -144,7 +144,7 @@ def test_http_semantics_are_owned_once_and_operation_bindings_remain_structural(
             item["authority"] == "riverhog" and item["interface"] == "http-schemas"
             for item in elements
         )
-        == 261
+        == 260
     )
     assert len(root["projection"]["external_contract"]["http_route_supplements"]) == 2
     assert set(qualified) == {(item["application"], item["operation_id"]) for item in records}

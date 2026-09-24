@@ -27,7 +27,7 @@ def test_shared_cli_output_formats_lifecycle_event_pages() -> None:
         "events": [
             {
                 "id": "event-1",
-                "time": "2026-08-02T12:00:00.000000000Z",
+                "occurred_at": "2026-08-02T12:00:00.000000000Z",
                 "type": "io.riverhog.target.job.succeeded",
                 "subject": "job-1",
             }

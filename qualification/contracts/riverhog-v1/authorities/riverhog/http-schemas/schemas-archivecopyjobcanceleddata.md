@@ -25,7 +25,6 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-949c3e0ce5"></a>`actor` | yes | [RiverhogActor](schemas-riverhogactor.md) |  |
-| <a id="s-dd2a281c2c"></a>`cause` | no | anyOf=[([RiverhogEventCause](schemas-riverhogeventcause.md)); (type="null")] |  |
 | <a id="s-44f363cb1f"></a>`collection_created_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Collection Created At" |  |
 | <a id="s-a0de233562"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
 | <a id="s-c809d4fca1"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; title="Context" |  |
@@ -58,7 +57,6 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - [ArchiveStoreName](schemas-archivestorename.md)
 - [CollectionId](schemas-collectionid.md)
 - [RiverhogActor](schemas-riverhogactor.md)
-- [RiverhogEventCause](schemas-riverhogeventcause.md)
 
 ## Governing policies
 
@@ -91,7 +89,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 864bc4adf067484df650a13146b4a84a30afb34ab6e0e61fb60018ffed36807f -->
+<!-- exact-contract-value: ef06bfe564d6c772c54ee0292877a6de4a4d9f21f744efb8a35288f2805a0b2a -->
 
 ```json
 {
@@ -99,16 +97,6 @@ The following JSON is the complete value owned at each machine-authority pointer
   "properties": {
     "actor": {
       "$ref": "#/components/schemas/RiverhogActor"
-    },
-    "cause": {
-      "anyOf": [
-        {
-          "$ref": "#/components/schemas/RiverhogEventCause"
-        },
-        {
-          "type": "null"
-        }
-      ]
     },
     "collection_created_at": {
       "maxLength": 30,

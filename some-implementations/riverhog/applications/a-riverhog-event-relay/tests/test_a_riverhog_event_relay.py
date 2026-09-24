@@ -10,15 +10,43 @@ import httpx
 import pytest
 from a_riverhog_event_relay.cli import main as a_riverhog_event_relay_main
 from a_riverhog_event_relay.relay import (
+    CLOUDEVENTS_JSON_CONTENT_TYPE,
     CursorState,
     EventRelay,
     EventRelayConfig,
     SourceConfig,
     SourceRelayError,
+    cloud_event_document,
     load_config,
 )
 from a_riverhog_event_relay.schema import upgrade_state
-from lifecycle_events import CLOUDEVENTS_JSON_CONTENT_TYPE, cloud_event
+from lifecycle_events import lifecycle_event
+from riverhog_protocol.lifecycle_events import RIVERHOG_EVENT_TYPES
+from stove0_operator_contracts import STOVE0_EVENT_TYPES
+
+
+@pytest.mark.parametrize("event_type", sorted(RIVERHOG_EVENT_TYPES | STOVE0_EVENT_TYPES))
+def test_native_lifecycle_event_maps_losslessly_to_outbound_cloudevents(
+    event_type: str,
+) -> None:
+    event = lifecycle_event(
+        type=event_type,
+        subject="subject-1",
+        payload={"identity": "subject-1", "context": {"nested": [1, 2]}},
+    )
+
+    document = cloud_event_document(event, source_name="source-1")
+
+    assert document == {
+        "specversion": "1.0",
+        "id": event.id,
+        "source": "urn:riverhog:event-source:source-1",
+        "type": event_type,
+        "subject": "subject-1",
+        "time": event.occurred_at,
+        "datacontenttype": "application/json",
+        "data": event.payload,
+    }
 
 
 def _write_config(
@@ -143,7 +171,7 @@ def test_one_shot_partial_failure_is_visible_and_does_not_block_other_sources(
     monkeypatch.setenv("BETA_TOKEN", "beta-token")
     monkeypatch.setenv("BETA_WEBHOOK", "https://beta-hook.test/hook")
     upgrade_state(state_path)
-    event = cloud_event(source="urn:test", type="io.riverhog.test")
+    event = lifecycle_event(type="io.riverhog.test")
     fetched: list[str] = []
     delivered: list[str] = []
 
@@ -239,7 +267,7 @@ def test_nonadvancing_page_is_rejected_before_webhook_delivery(
 ) -> None:
     monkeypatch.setenv("EVENT_TOKEN", "token")
     monkeypatch.setenv("HA_WEBHOOK", "https://ha.test/hook")
-    event = cloud_event(source="urn:stove0", type="io.riverhog.stove0.attempt.issue")
+    event = lifecycle_event(type="io.riverhog.stove0.attempt.issue")
     config = EventRelayConfig(
         state_path=tmp_path / "a-riverhog-event-relay.sqlite3",
         sources=(
@@ -280,8 +308,8 @@ def test_a_riverhog_event_relay_advances_only_after_the_complete_page_is_deliver
     monkeypatch.setenv("EVENT_TOKEN", "token")
     monkeypatch.setenv("HA_WEBHOOK", "https://ha.test/hook")
     events = [
-        cloud_event(source="urn:stove0", type="io.riverhog.stove0.attempt.issue", subject="a"),
-        cloud_event(source="urn:stove0", type="io.riverhog.stove0.attempt.issue", subject="b"),
+        lifecycle_event(type="io.riverhog.stove0.attempt.issue", subject="a"),
+        lifecycle_event(type="io.riverhog.stove0.attempt.issue", subject="b"),
     ]
     deliveries: list[str] = []
     fail_second = True

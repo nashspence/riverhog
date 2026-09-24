@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-97be2a0ce6"></a>`kind`: `"class"`
-- <a id="s-59a3993686"></a>`signature`: `"\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Literal['io.riverhog.stove0.join.admitted'], subject: Annotated[str, MinLen(min_length=1)], time: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)], datacontenttype: Literal['application/json'] = 'application/json', data: stove0_operator_contracts.JoinAdmittedEventData) -> None\""`
+- <a id="s-59a3993686"></a>`signature`: `"\"(*, id: Annotated[str, MinLen(min_length=1)], type: Literal['io.riverhog.stove0.join.admitted'], subject: Annotated[str, MinLen(min_length=1)], occurred_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)], payload: stove0_operator_contracts.JoinAdmittedEventData) -> None\""`
 
 #### Validated model schema
 
@@ -30,19 +30,16 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-931ec71f9e"></a>`type`: `"object"`
 - <a id="s-9fd89b828d"></a>`additionalProperties`: `false`
-- <a id="s-abbe116e3a"></a>`required`: `["id","source","type","subject","time","data"]`
+- <a id="s-abbe116e3a"></a>`required`: `["id","type","subject","occurred_at","payload"]`
 
 ##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6869980525"></a>`data` | yes | [JoinAdmittedEventData](#s-1698a3ec14) |  |
-| <a id="s-785e024407"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-ccb2be9233"></a>`id` | yes | type="string"; minLength=1 |  |
-| <a id="s-51011c4491"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
-| <a id="s-d2654e8452"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
+| <a id="s-ed80953368"></a>`occurred_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
+| <a id="s-f507dacd71"></a>`payload` | yes | [JoinAdmittedEventData](#s-1698a3ec14) |  |
 | <a id="s-3b54a9a1b2"></a>`subject` | yes | type="string"; minLength=1 |  |
-| <a id="s-56769ad228"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-73450a5e5b"></a>`type` | yes | type="string"; const="io.riverhog.stove0.join.admitted" |  |
 
 ##### Definitions
@@ -99,7 +96,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 683c78d9a0ed38c6f92f4c3e1e558785fe7e8fa3dfcde8f30aa68dfe90d3e986 -->
+<!-- exact-contract-value: e95cd0cb49deb5cc6148dbb1ed11f3bda91f9f4fb9123018b3be9e0567dfba66 -->
 
 ```json
 {
@@ -148,35 +145,21 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       "additionalProperties": false,
       "properties": {
-        "data": {
-          "$ref": "#/$defs/JoinAdmittedEventData"
-        },
-        "datacontenttype": {
-          "const": "application/json",
-          "default": "application/json",
-          "type": "string"
-        },
         "id": {
           "minLength": 1,
           "type": "string"
         },
-        "source": {
-          "const": "urn:riverhog:stove0",
-          "type": "string"
-        },
-        "specversion": {
-          "const": "1.0",
-          "default": "1.0",
-          "type": "string"
-        },
-        "subject": {
-          "minLength": 1,
-          "type": "string"
-        },
-        "time": {
+        "occurred_at": {
           "maxLength": 30,
           "minLength": 30,
           "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/JoinAdmittedEventData"
+        },
+        "subject": {
+          "minLength": 1,
           "type": "string"
         },
         "type": {
@@ -186,15 +169,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       "required": [
         "id",
-        "source",
         "type",
         "subject",
-        "time",
-        "data"
+        "occurred_at",
+        "payload"
       ],
       "type": "object"
     },
-    "signature": "\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Literal['io.riverhog.stove0.join.admitted'], subject: Annotated[str, MinLen(min_length=1)], time: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)], datacontenttype: Literal['application/json'] = 'application/json', data: stove0_operator_contracts.JoinAdmittedEventData) -> None\""
+    "signature": "\"(*, id: Annotated[str, MinLen(min_length=1)], type: Literal['io.riverhog.stove0.join.admitted'], subject: Annotated[str, MinLen(min_length=1)], occurred_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)], payload: stove0_operator_contracts.JoinAdmittedEventData) -> None\""
   },
   "distribution": "stove0-operator-contracts",
   "module": "stove0_operator_contracts",

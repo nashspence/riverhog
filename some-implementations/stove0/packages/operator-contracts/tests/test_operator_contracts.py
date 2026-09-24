@@ -4,7 +4,7 @@ import subprocess
 import sys
 
 import pytest
-from lifecycle_events import cloud_event
+from lifecycle_events import lifecycle_event
 from pydantic import ValidationError
 from stove0_operator_contracts import (
     BRANCH_SET_ADMITTED,
@@ -184,17 +184,17 @@ def test_stove0_events_use_one_closed_typed_operator_vocabulary() -> None:
         stove0_event(
             type=WORK_CREATED,
             subject=work_id,
-            data={"work_id": work_id, "phase": "eligible"},
+            payload={"work_id": work_id, "phase": "eligible"},
         ),
         stove0_event(
             type=WORK_UPDATED,
             subject=work_id,
-            data={"work_id": work_id, "phase": "claimed", "revision": 2},
+            payload={"work_id": work_id, "phase": "claimed", "revision": 2},
         ),
         stove0_event(
             type=BRANCH_SET_ADMITTED,
             subject=work_id,
-            data={
+            payload={
                 "work_id": work_id,
                 "phase": "coordinating",
                 "revision": 3,
@@ -206,7 +206,7 @@ def test_stove0_events_use_one_closed_typed_operator_vocabulary() -> None:
         stove0_event(
             type=JOIN_ADMITTED,
             subject=work_id,
-            data={
+            payload={
                 "work_id": work_id,
                 "phase": "coordinating",
                 "revision": 4,
@@ -218,26 +218,25 @@ def test_stove0_events_use_one_closed_typed_operator_vocabulary() -> None:
         stove0_event(
             type=EVALUATION_CREATED,
             subject=evaluation_id,
-            data={"evaluation_id": evaluation_id, "phase": "planning"},
+            payload={"evaluation_id": evaluation_id, "phase": "planning"},
         ),
         stove0_event(
             type=EVALUATION_UPDATED,
             subject=evaluation_id,
-            data={"evaluation_id": evaluation_id, "phase": "running", "revision": 2},
+            payload={"evaluation_id": evaluation_id, "phase": "running", "revision": 2},
         ),
     ]
     page = Stove0EventPage(events=events, next_cursor="6", has_more=False)
 
     assert {event.type for event in page.events} == STOVE0_EVENT_TYPES
-    assert page.events[2].data["branch_count"] == 2
+    assert page.events[2].payload["branch_count"] == 2
 
 
 def test_stove0_events_reject_unknown_types_and_mismatched_subjects() -> None:
-    unknown = cloud_event(
-        source="urn:riverhog:stove0",
+    unknown = lifecycle_event(
         type="io.riverhog.stove0.work.mystery",
         subject="1" * 64,
-        data={"work_id": "1" * 64, "phase": "eligible"},
+        payload={"work_id": "1" * 64, "phase": "eligible"},
     )
     with pytest.raises(ValidationError):
         parse_stove0_event(unknown.model_dump(mode="python"))
@@ -245,7 +244,7 @@ def test_stove0_events_reject_unknown_types_and_mismatched_subjects() -> None:
         stove0_event(
             type=WORK_CREATED,
             subject="2" * 64,
-            data={"work_id": "1" * 64, "phase": "eligible"},
+            payload={"work_id": "1" * 64, "phase": "eligible"},
         )
 
 

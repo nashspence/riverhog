@@ -5,11 +5,11 @@ build-backend = "hatchling.build"
 [project]
 name = "a-riverhog-event-relay"
 version = "0.1.0"
-description = "CloudEvents event relay for Riverhog."
+description = "Native lifecycle-event to CloudEvents webhook relay."
 requires-python = ">=3.12"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
-readme = { text = "CloudEvents event relay for Riverhog.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+readme = { text = "Native lifecycle-event to CloudEvents webhook relay.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
 authors = [{ name = "Nash Spence" }]
 maintainers = [{ name = "Nash Spence" }]
 classifiers = [

@@ -73,7 +73,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-operator-contracts` | [stove0_operator_contracts.RecipeView](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-recipeview.md#pa-97ffd5ad4f) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.RecipeView.exact_digest](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-recipeview-exact-digest.md#pa-9577231946) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.RecipeView.from_definition](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-recipeview-from-definition.md#pa-105f055624) |
-| `stove0-operator-contracts` | [stove0_operator_contracts.STOVE0_EVENT_SOURCE](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-stove0-event-source.md#pa-f552c9a6f1) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.STOVE0_EVENT_TYPES](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-stove0-event-types.md#pa-d2112f137d) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.STOVE0_HTTP_ERROR_AUTHORITY](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-stove0-http-error-authority.md#pa-2edd45f215) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.SchedulerFailure](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-schedulerfailure.md#pa-122eda134a) |
@@ -85,8 +84,8 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-operator-contracts` | [stove0_operator_contracts.SchedulerStatus](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-schedulerstatus.md#pa-23dd0659f0) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.SchedulerWorkBatch](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-schedulerworkbatch.md#pa-fe676e9736) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.SortOrder](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-sortorder.md#pa-4c64140cd3) |
-| `stove0-operator-contracts` | [stove0_operator_contracts.Stove0CloudEvent](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-stove0cloudevent.md#pa-c54ab721eb) |
-| `stove0-operator-contracts` | [stove0_operator_contracts.Stove0CloudEvent.exact_subject](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-stove0cloudevent-exact-subject.md#pa-c0f1b21fd1) |
+| `stove0-operator-contracts` | [stove0_operator_contracts.Stove0Event](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-stove0event.md#pa-dab5c2c669) |
+| `stove0-operator-contracts` | [stove0_operator_contracts.Stove0Event.exact_subject](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-stove0event-exact-subject.md#pa-5aea9ad512) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.Stove0EventData](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-stove0eventdata.md#pa-db17f8710a) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.Stove0EventData.__getitem__](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-stove0eventdata-getitem.md#pa-e479056dd5) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.Stove0EventData.get](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-stove0eventdata-get.md#pa-19f4581f5d) |

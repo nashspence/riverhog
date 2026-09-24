@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-b00e398e69"></a>`kind`: `"class"`
-- <a id="s-8a9f74e0cb"></a>`signature`: `"'(*, events: list[lifecycle_events.models.CloudEvent], next_cursor: str, has_more: bool) -> None'"`
+- <a id="s-8a9f74e0cb"></a>`signature`: `"'(*, events: list[lifecycle_events.models.LifecycleEvent], next_cursor: str, has_more: bool) -> None'"`
 
 #### Validated model schema
 
@@ -36,32 +36,29 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0facf2cec7"></a>`events` | yes | type="array"; items=([CloudEvent](#s-d72037c6f5)) |  |
+| <a id="s-0facf2cec7"></a>`events` | yes | type="array"; items=([LifecycleEvent](#s-ae9e965a9e)) |  |
 | <a id="s-3c6245566d"></a>`has_more` | yes | type="boolean" |  |
 | <a id="s-98ac6308d7"></a>`next_cursor` | yes | type="string" |  |
 
 ##### Definitions
 
-- [CloudEvent](#s-d72037c6f5)
+- [LifecycleEvent](#s-ae9e965a9e)
 
-##### <a id="s-d72037c6f5"></a>definition `CloudEvent`
+##### <a id="s-ae9e965a9e"></a>definition `LifecycleEvent`
 
-- <a id="s-f10e2d53a4"></a>`type`: `"object"`
-- <a id="s-af2d35022e"></a>`additionalProperties`: `false`
-- <a id="s-f6c00b9e7d"></a>`required`: `["id","source","type","time"]`
+- <a id="s-a62e4de8b1"></a>`type`: `"object"`
+- <a id="s-0759b74b7c"></a>`additionalProperties`: `false`
+- <a id="s-e07ddc41ef"></a>`required`: `["id","type","occurred_at"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-59024638e2"></a>`data` | no | type="object"; additionalProperties=(any JSON value) |  |
-| <a id="s-0f0e8ae15b"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
-| <a id="s-84846940b3"></a>`id` | yes | type="string"; minLength=1 |  |
-| <a id="s-d690335fef"></a>`source` | yes | type="string"; minLength=1 |  |
-| <a id="s-5dfa018c91"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
-| <a id="s-cf47bcc831"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
-| <a id="s-d33f524596"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
-| <a id="s-206b110aaf"></a>`type` | yes | type="string"; minLength=1 |  |
+| <a id="s-bd94225de7"></a>`id` | yes | type="string"; minLength=1 |  |
+| <a id="s-bd291136e8"></a>`occurred_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
+| <a id="s-4bc03a082d"></a>`payload` | no | type="object"; additionalProperties=(any JSON value) |  |
+| <a id="s-00ec5282e2"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
+| <a id="s-c4a8e7e2f7"></a>`type` | yes | type="string"; minLength=1 |  |
 
 ## Maintained corroboration
 
@@ -96,7 +93,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 40efa8a9430e78a02fe51dae363202e6d413427c0f0827f0f5ca834e60ea33e2 -->
+<!-- exact-contract-value: 653e7d29a6c26d4f17263a38ac6256e436b2addb56ec017dfd95ee01cd94a478 -->
 
 ```json
 {
@@ -104,30 +101,22 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "$defs": {
-        "CloudEvent": {
+        "LifecycleEvent": {
           "additionalProperties": false,
           "properties": {
-            "data": {
-              "additionalProperties": true,
-              "type": "object"
-            },
-            "datacontenttype": {
-              "const": "application/json",
-              "default": "application/json",
-              "type": "string"
-            },
             "id": {
               "minLength": 1,
               "type": "string"
             },
-            "source": {
-              "minLength": 1,
+            "occurred_at": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
-            "specversion": {
-              "const": "1.0",
-              "default": "1.0",
-              "type": "string"
+            "payload": {
+              "additionalProperties": true,
+              "type": "object"
             },
             "subject": {
               "anyOf": [
@@ -141,12 +130,6 @@ The following JSON is the complete value owned at each machine-authority pointer
               ],
               "default": null
             },
-            "time": {
-              "maxLength": 30,
-              "minLength": 30,
-              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
-              "type": "string"
-            },
             "type": {
               "minLength": 1,
               "type": "string"
@@ -154,9 +137,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           },
           "required": [
             "id",
-            "source",
             "type",
-            "time"
+            "occurred_at"
           ],
           "type": "object"
         }
@@ -165,7 +147,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "properties": {
         "events": {
           "items": {
-            "$ref": "#/$defs/CloudEvent"
+            "$ref": "#/$defs/LifecycleEvent"
           },
           "type": "array"
         },
@@ -183,7 +165,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "'(*, events: list[lifecycle_events.models.CloudEvent], next_cursor: str, has_more: bool) -> None'"
+    "signature": "'(*, events: list[lifecycle_events.models.LifecycleEvent], next_cursor: str, has_more: bool) -> None'"
   },
   "distribution": "lifecycle-events",
   "module": "lifecycle_events",

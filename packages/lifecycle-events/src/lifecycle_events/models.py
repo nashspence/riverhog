@@ -4,12 +4,11 @@ import json
 import uuid
 from collections.abc import Mapping
 from datetime import datetime
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any
 
 from pydantic import BaseModel, ConfigDict, Field
 from time_formats import CanonicalUtcTimestamp, format_utc_timestamp, utc_now
 
-CLOUDEVENTS_JSON_CONTENT_TYPE = "application/cloudevents+json"
 MAX_EVENT_CONTEXT_BYTES = 4096
 EventContext = Annotated[
     dict[str, Any],
@@ -29,23 +28,20 @@ def event_time(value: datetime | None = None) -> str:
     return format_utc_timestamp(value or utc_now())
 
 
-class CloudEvent(BaseModel):
+class LifecycleEvent(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    specversion: Literal["1.0"] = "1.0"
     id: str = Field(min_length=1)
-    source: str = Field(min_length=1)
     type: str = Field(min_length=1)
     subject: str | None = Field(default=None, min_length=1)
-    time: CanonicalUtcTimestamp
-    datacontenttype: Literal["application/json"] = "application/json"
-    data: dict[str, Any] = Field(default_factory=dict)
+    occurred_at: CanonicalUtcTimestamp
+    payload: dict[str, Any] = Field(default_factory=dict)
 
 
 class EventPage(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    events: list[CloudEvent]
+    events: list[LifecycleEvent]
     next_cursor: str
     has_more: bool
 
@@ -55,62 +51,20 @@ class EventPage(BaseModel):
             raise ValueError("nonempty lifecycle-event page did not advance its cursor")
 
 
-def cloud_event(
+def lifecycle_event(
     *,
-    source: str,
     type: str,
-    data: Mapping[str, Any] | None = None,
+    payload: Mapping[str, Any] | None = None,
     subject: str | None = None,
     occurred_at: datetime | None = None,
     event_id: str | None = None,
-) -> CloudEvent:
-    return CloudEvent(
+) -> LifecycleEvent:
+    return LifecycleEvent(
         id=event_id or str(uuid.uuid4()),
-        source=source,
         type=type,
         subject=subject,
-        time=event_time(occurred_at),
-        data=dict(data or {}),
-    )
-
-
-def caused_event(
-    *,
-    cause: CloudEvent,
-    source: str,
-    type: str,
-    data: Mapping[str, Any] | None = None,
-    subject: str | None = None,
-    occurred_at: datetime | None = None,
-) -> CloudEvent:
-    payload = dict(data or {})
-    payload["cause"] = {
-        "id": cause.id,
-        "source": cause.source,
-        "type": cause.type,
-        **({"subject": cause.subject} if cause.subject is not None else {}),
-    }
-    event_id = str(
-        uuid.uuid5(
-            uuid.NAMESPACE_URL,
-            "\x1f".join(
-                (
-                    cause.source,
-                    cause.id,
-                    source,
-                    type,
-                    subject or "",
-                )
-            ),
-        )
-    )
-    return cloud_event(
-        source=source,
-        type=type,
-        subject=subject,
-        data=payload,
-        occurred_at=occurred_at,
-        event_id=event_id,
+        occurred_at=event_time(occurred_at),
+        payload=dict(payload or {}),
     )
 
 
@@ -142,13 +96,11 @@ def normalize_event_context(
 
 
 __all__ = [
-    "CLOUDEVENTS_JSON_CONTENT_TYPE",
     "MAX_EVENT_CONTEXT_BYTES",
-    "CloudEvent",
+    "LifecycleEvent",
     "EventContext",
     "EventPage",
-    "caused_event",
-    "cloud_event",
+    "lifecycle_event",
     "event_time",
     "normalize_event_context",
 ]

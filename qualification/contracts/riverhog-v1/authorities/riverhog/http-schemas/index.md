@@ -250,7 +250,6 @@ Supporting HTTP data definitions; these are not callable operations.
 - [RetrievalRequestedData](schemas-retrievalrequesteddata.md)
 - [RetrievalRequestedEvent](schemas-retrievalrequestedevent.md)
 - [RiverhogActor](schemas-riverhogactor.md)
-- [RiverhogEventCause](schemas-riverhogeventcause.md)
 - **[RiverhogEventPage](schemas-riverhogeventpage.md)** [📦](schemas-riverhogeventpage.md#evidence-gaps)
 - [RiverhogLifecycleEvent](schemas-riverhoglifecycleevent.md)
 - [SearchCollectionsRequest](schemas-searchcollectionsrequest.md)

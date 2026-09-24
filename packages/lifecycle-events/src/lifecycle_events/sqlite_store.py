@@ -8,7 +8,7 @@ from contextlib import closing
 
 from time_formats import utc_timestamp_now
 
-from lifecycle_events.models import CloudEvent, EventPage, normalize_event_context
+from lifecycle_events.models import EventPage, LifecycleEvent, normalize_event_context
 
 LIFECYCLE_EVENT_SCHEMA = (
     """
@@ -77,7 +77,7 @@ class SQLiteLifecycleEventLog:
 
     def append(
         self,
-        event: CloudEvent,
+        event: LifecycleEvent,
         *,
         owner: str,
         context: dict[str, object] | None = None,
@@ -113,7 +113,7 @@ class SQLiteLifecycleEventLog:
 
     def append_once(
         self,
-        event: CloudEvent,
+        event: LifecycleEvent,
         *,
         owner: str,
         context: dict[str, object] | None = None,
@@ -198,13 +198,13 @@ class SQLiteLifecycleEventLog:
 
         has_more = len(rows) > limit
         selected = rows[:limit]
-        events: list[CloudEvent] = []
+        events: list[LifecycleEvent] = []
         for row in selected:
-            event = CloudEvent.model_validate_json(str(row["event_json"]))
+            event = LifecycleEvent.model_validate_json(str(row["event_json"]))
             if row["context_json"] is not None:
-                data = dict(event.data)
+                data = dict(event.payload)
                 data["context"] = json.loads(str(row["context_json"]))
-                event = event.model_copy(update={"data": data})
+                event = event.model_copy(update={"payload": data})
             events.append(event)
         next_cursor = str(selected[-1]["sequence"] if selected else cursor)
         return EventPage(events=events, next_cursor=next_cursor, has_more=has_more)

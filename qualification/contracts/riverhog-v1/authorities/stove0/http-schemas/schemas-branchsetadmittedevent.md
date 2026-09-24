@@ -17,20 +17,17 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-90f8fe8621"></a>`type`: `"object"`
 - <a id="s-9271a5b14f"></a>`additionalProperties`: `false`
-- <a id="s-2a5f25323f"></a>`required`: `["id","source","type","subject","time","data"]`
+- <a id="s-2a5f25323f"></a>`required`: `["id","type","subject","occurred_at","payload"]`
 - <a id="s-81b45141f4"></a>`title`: `"BranchSetAdmittedEvent"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-99cbec3f8b"></a>`data` | yes | [BranchSetAdmittedEventData](schemas-branchsetadmittedeventdata.md) |  |
-| <a id="s-0c20775d0b"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json"; title="Datacontenttype" |  |
 | <a id="s-db8b0a166a"></a>`id` | yes | type="string"; minLength=1; title="Id" |  |
-| <a id="s-2731606c32"></a>`source` | yes | type="string"; const="urn:riverhog:stove0"; title="Source" |  |
-| <a id="s-f66f2438fe"></a>`specversion` | no | type="string"; const="1.0"; default="1.0"; title="Specversion" |  |
+| <a id="s-bf3d3b408f"></a>`occurred_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Occurred At" |  |
+| <a id="s-9acd6b4632"></a>`payload` | yes | [BranchSetAdmittedEventData](schemas-branchsetadmittedeventdata.md) |  |
 | <a id="s-5021293ee9"></a>`subject` | yes | type="string"; minLength=1; title="Subject" |  |
-| <a id="s-a9160be71a"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Time" |  |
 | <a id="s-c424b8e8e3"></a>`type` | yes | type="string"; const="io.riverhog.stove0.branch-set.admitted"; title="Type" |  |
 
 ### Progression, limits, and lifecycle
@@ -41,7 +38,7 @@ Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-publ
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field time](#s-a9160be71a) | `length · characters · fixed` | shared above |
+| [field occurred_at](#s-bf3d3b408f) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -79,47 +76,30 @@ Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9d5f0b261854b70a8fe9e1909dfeee9df8ac42dcd976d068ec3b10aff7d31d9c -->
+<!-- exact-contract-value: 472482b2ddd753f6cff81370a4d5cf89af9b2fc83f4f3540b9bf312b9a7f352e -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
-    "data": {
-      "$ref": "#/components/schemas/BranchSetAdmittedEventData"
-    },
-    "datacontenttype": {
-      "const": "application/json",
-      "default": "application/json",
-      "title": "Datacontenttype",
-      "type": "string"
-    },
     "id": {
       "minLength": 1,
       "title": "Id",
       "type": "string"
     },
-    "source": {
-      "const": "urn:riverhog:stove0",
-      "title": "Source",
+    "occurred_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
+      "title": "Occurred At",
       "type": "string"
     },
-    "specversion": {
-      "const": "1.0",
-      "default": "1.0",
-      "title": "Specversion",
-      "type": "string"
+    "payload": {
+      "$ref": "#/components/schemas/BranchSetAdmittedEventData"
     },
     "subject": {
       "minLength": 1,
       "title": "Subject",
-      "type": "string"
-    },
-    "time": {
-      "maxLength": 30,
-      "minLength": 30,
-      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
-      "title": "Time",
       "type": "string"
     },
     "type": {
@@ -130,11 +110,10 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "required": [
     "id",
-    "source",
     "type",
     "subject",
-    "time",
-    "data"
+    "occurred_at",
+    "payload"
   ],
   "title": "BranchSetAdmittedEvent",
   "type": "object"

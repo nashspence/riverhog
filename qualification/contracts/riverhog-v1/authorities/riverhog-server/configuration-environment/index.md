@@ -36,7 +36,6 @@ Configuration Environment contract owned by riverhog-server.
 - [RIVERHOG_DATABASE_URL](riverhog-database-url.md)
 - [RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE](riverhog-event-context-reap-batch-size.md)
 - [RIVERHOG_EVENT_CONTEXT_RETENTION](riverhog-event-context-retention.md)
-- [RIVERHOG_EVENT_SOURCE](riverhog-event-source.md)
 - [RIVERHOG_INGRESS_MAX_INFLIGHT_BYTES](riverhog-ingress-max-inflight-bytes.md)
 - [RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES](riverhog-ingress-source-read-chunk-bytes.md)
 - [RIVERHOG_LOG_LEVEL](riverhog-log-level.md)

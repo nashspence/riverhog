@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-ef44a085a3"></a>`kind`: `"class"`
-- <a id="s-5b6d3438ad"></a>`signature`: `"\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Literal['io.riverhog.stove0.evaluation.updated'], subject: Annotated[str, MinLen(min_length=1)], time: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)], datacontenttype: Literal['application/json'] = 'application/json', data: stove0_operator_contracts.EvaluationUpdatedEventData) -> None\""`
+- <a id="s-5b6d3438ad"></a>`signature`: `"\"(*, id: Annotated[str, MinLen(min_length=1)], type: Literal['io.riverhog.stove0.evaluation.updated'], subject: Annotated[str, MinLen(min_length=1)], occurred_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)], payload: stove0_operator_contracts.EvaluationUpdatedEventData) -> None\""`
 
 #### Validated model schema
 
@@ -30,19 +30,16 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-3ba4ded61b"></a>`type`: `"object"`
 - <a id="s-3c798a40a9"></a>`additionalProperties`: `false`
-- <a id="s-bba09db829"></a>`required`: `["id","source","type","subject","time","data"]`
+- <a id="s-bba09db829"></a>`required`: `["id","type","subject","occurred_at","payload"]`
 
 ##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a6a8e49a71"></a>`data` | yes | [EvaluationUpdatedEventData](#s-267e631fd0) |  |
-| <a id="s-dbcd58ed46"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json" |  |
 | <a id="s-34a9bd9582"></a>`id` | yes | type="string"; minLength=1 |  |
-| <a id="s-def10d38ca"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
-| <a id="s-6a3681d5ee"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
+| <a id="s-d6c52da8f6"></a>`occurred_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
+| <a id="s-abdb770576"></a>`payload` | yes | [EvaluationUpdatedEventData](#s-267e631fd0) |  |
 | <a id="s-06a722e14d"></a>`subject` | yes | type="string"; minLength=1 |  |
-| <a id="s-27203fd068"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-f4794df724"></a>`type` | yes | type="string"; const="io.riverhog.stove0.evaluation.updated" |  |
 
 ##### Definitions
@@ -96,7 +93,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ddb38b27593213d6b4ce72bf7423998e1f61fad3cde522c67baa3d1e108ca14b -->
+<!-- exact-contract-value: ecf7bb8564d8a89c77134b434e3ca19778d7d61bdb1cd44faf806a55aad5bfdb -->
 
 ```json
 {
@@ -137,35 +134,21 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       "additionalProperties": false,
       "properties": {
-        "data": {
-          "$ref": "#/$defs/EvaluationUpdatedEventData"
-        },
-        "datacontenttype": {
-          "const": "application/json",
-          "default": "application/json",
-          "type": "string"
-        },
         "id": {
           "minLength": 1,
           "type": "string"
         },
-        "source": {
-          "const": "urn:riverhog:stove0",
-          "type": "string"
-        },
-        "specversion": {
-          "const": "1.0",
-          "default": "1.0",
-          "type": "string"
-        },
-        "subject": {
-          "minLength": 1,
-          "type": "string"
-        },
-        "time": {
+        "occurred_at": {
           "maxLength": 30,
           "minLength": 30,
           "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
+          "type": "string"
+        },
+        "payload": {
+          "$ref": "#/$defs/EvaluationUpdatedEventData"
+        },
+        "subject": {
+          "minLength": 1,
           "type": "string"
         },
         "type": {
@@ -175,15 +158,14 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       "required": [
         "id",
-        "source",
         "type",
         "subject",
-        "time",
-        "data"
+        "occurred_at",
+        "payload"
       ],
       "type": "object"
     },
-    "signature": "\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Literal['io.riverhog.stove0.evaluation.updated'], subject: Annotated[str, MinLen(min_length=1)], time: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)], datacontenttype: Literal['application/json'] = 'application/json', data: stove0_operator_contracts.EvaluationUpdatedEventData) -> None\""
+    "signature": "\"(*, id: Annotated[str, MinLen(min_length=1)], type: Literal['io.riverhog.stove0.evaluation.updated'], subject: Annotated[str, MinLen(min_length=1)], occurred_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)], payload: stove0_operator_contracts.EvaluationUpdatedEventData) -> None\""
   },
   "distribution": "stove0-operator-contracts",
   "module": "stove0_operator_contracts",

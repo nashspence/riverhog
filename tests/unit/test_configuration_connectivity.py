@@ -129,7 +129,6 @@ def _classification(name: str) -> str:
         "archive_stores",
         "archive_write_store",
         "database_url",
-        "event_source",
         "ftp_projection",
         "gpu_target",
         "backend",

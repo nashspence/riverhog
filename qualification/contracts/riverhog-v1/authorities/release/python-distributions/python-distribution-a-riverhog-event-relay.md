@@ -4,7 +4,7 @@
 
 <!-- contract-element: python-distributions:release:python-distribution-a-riverhog-event-relay:5a811c6012 -->
 
-CloudEvents event relay for Riverhog.
+Native lifecycle-event to CloudEvents webhook relay.
 
 | Audit field | Value |
 |---|---|
@@ -18,7 +18,7 @@ CloudEvents event relay for Riverhog.
 |---|---|
 | <a id="s-d8355ea46a"></a>`artifacts` | `[{"coordinate":"dist/a_riverhog_event_relay-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/a_riverhog_event_relay-{version}.tar.gz","format":"sdist"}]` |
 | <a id="s-a245141b83"></a>`channel` | `"github-release"` |
-| <a id="s-685f5b5a03"></a>`description` | `"CloudEvents event relay for Riverhog."` |
+| <a id="s-685f5b5a03"></a>`description` | `"Native lifecycle-event to CloudEvents webhook relay."` |
 | <a id="s-4b3b00d4a1"></a>`license_baseline` | `"first-v1-publication"` |
 | <a id="s-bc591abc1f"></a>`license_expression` | `"Apache-2.0"` |
 | <a id="s-6e0207dace"></a>`publication_identity` | `{"coordinate":"a-riverhog-event-relay","kind":"python-distribution"}` |
@@ -63,7 +63,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 24fa9fc6344468ceba543c5b2cb3b9a86503405911a862d5daa6df3072fafce3 -->
+<!-- exact-contract-value: cd591853e83b578615b85255c250468a32800cf70ed0021b69b200d418d66467 -->
 
 ```json
 {
@@ -78,7 +78,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   ],
   "channel": "github-release",
-  "description": "CloudEvents event relay for Riverhog.",
+  "description": "Native lifecycle-event to CloudEvents webhook relay.",
   "license_baseline": "first-v1-publication",
   "license_expression": "Apache-2.0",
   "publication_identity": {

@@ -2,7 +2,7 @@
 
 [Atlas](../../index.md) · [Policies](../../policies/index.md)
 
-CloudEvents event relay for Riverhog.
+Native lifecycle-event to CloudEvents webhook relay.
 
 Contract elements: **2** · Extent decisions: **0**
 

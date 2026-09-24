@@ -252,7 +252,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "audit": 1,
         "cli": 29,
         "configuration": 7,
-        "configuration-environment": 250,
+        "configuration-environment": 249,
         "configuration-environment-pattern": 2,
         "openapi": 3,
         "protocol": 35,
@@ -320,12 +320,12 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         external["configuration_documents"]
     )
     assert configuration["counts"] == {
-        "contracts": 250,
-        "detections": 198,
+        "contracts": 249,
+        "detections": 197,
         "patterns": 2,
         "resolution_exceptions": 6,
-        "resolved_detections": 198,
-        "unique_environment_names": 240,
+        "resolved_detections": 197,
+        "unique_environment_names": 239,
         "by_owner": {
             "a-gogurt-linux-listener": 2,
             "a-gogurt-windows-listener": 3,
@@ -334,7 +334,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
             "a-riverhog-ftp-spool": 3,
             "a-riverhog-ftp-spool-client": 5,
             "riverhog-provenance": 3,
-            "riverhog-server": 50,
+            "riverhog-server": 49,
             "a-riverhog-aws-store": 30,
             "a-riverhog-b2-store": 20,
             "a-riverhog-filesystem-store": 8,

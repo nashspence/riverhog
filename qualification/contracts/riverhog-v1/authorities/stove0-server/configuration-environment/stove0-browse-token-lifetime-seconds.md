@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-server:stove0-browse-token-lifetime-seconds:79227c37e7 -->
+<!-- contract-element: configuration-environment:stove0-server:stove0-browse-token-lifetime-seconds:e5435e5bb0 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,16 +13,16 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-f1fbb5a5d4"></a>
+<a id="s-1e11f442b1"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-3783a83c9c"></a>`consumers` | `["stove0-server"]` |
-| <a id="s-55628ac85d"></a>`default_expressions` | `["str(default)"]` |
-| <a id="s-bf201c7363"></a>`id` | `"stove0-server:environment:STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS"` |
-| <a id="s-66ede93aca"></a>`input_shape` | `"environment-string"` |
-| <a id="s-54e94dbbfa"></a>`name` | `"STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS"` |
-| <a id="s-c25d212d2e"></a>`owner` | `"stove0-server"` |
+| <a id="s-1da413efaf"></a>`consumers` | `["stove0-server"]` |
+| <a id="s-0d19b67e16"></a>`default_expressions` | `["str(default)"]` |
+| <a id="s-ffe3cd761b"></a>`id` | `"stove0-server:environment:STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS"` |
+| <a id="s-a9dc398834"></a>`input_shape` | `"environment-string"` |
+| <a id="s-6c7bb367ae"></a>`name` | `"STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS"` |
+| <a id="s-7f6a641ee0"></a>`owner` | `"stove0-server"` |
 
 ### Progression, limits, and lifecycle
 
@@ -32,14 +32,14 @@ Shared facts for every subject below: configuration="STOVE0_BROWSE_TOKEN_LIFETIM
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS](#s-f1fbb5a5d4) | `value · configured-value · operational_policy` | shared above |
+| [STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS](#s-1e11f442b1) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
-- <a id="pa-011978f66d"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
-- <a id="pa-cf31f5861f"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
+- <a id="pa-0f4812c6b7"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-21733b4c74"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -63,7 +63,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/231`
+- `/external_contract/configuration_environment/230`
 
 ### Exact owned JSON
 

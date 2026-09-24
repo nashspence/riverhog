@@ -4,7 +4,7 @@
 
 <!-- contract-element: python-distributions:release:python-distribution-lifecycle-events:58352114ca -->
 
-Durable CloudEvents lifecycle log and client primitives.
+Durable native lifecycle-event log and client primitives.
 
 | Audit field | Value |
 |---|---|
@@ -18,7 +18,7 @@ Durable CloudEvents lifecycle log and client primitives.
 |---|---|
 | <a id="s-814d634c2e"></a>`artifacts` | `[{"coordinate":"dist/lifecycle_events-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/lifecycle_events-{version}.tar.gz","format":"sdist"}]` |
 | <a id="s-a9416a0876"></a>`channel` | `"github-release"` |
-| <a id="s-7a81146c9a"></a>`description` | `"Durable CloudEvents lifecycle log and client primitives."` |
+| <a id="s-7a81146c9a"></a>`description` | `"Durable native lifecycle-event log and client primitives."` |
 | <a id="s-9e68ace761"></a>`license_baseline` | `"first-v1-publication"` |
 | <a id="s-3d9209a103"></a>`license_expression` | `"Apache-2.0"` |
 | <a id="s-ecea441dd3"></a>`publication_identity` | `{"coordinate":"lifecycle-events","kind":"python-distribution"}` |
@@ -63,7 +63,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 87d915b7475a7692bfc649307ec0b5a8af8b241caeab6686205a8e68b115cb88 -->
+<!-- exact-contract-value: 3ad77882b122368d0e5a672c2701999709c7bd6f3c6b6d1e88011592b871e6f1 -->
 
 ```json
 {
@@ -78,7 +78,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   ],
   "channel": "github-release",
-  "description": "Durable CloudEvents lifecycle log and client primitives.",
+  "description": "Durable native lifecycle-event log and client primitives.",
   "license_baseline": "first-v1-publication",
   "license_expression": "Apache-2.0",
   "publication_identity": {

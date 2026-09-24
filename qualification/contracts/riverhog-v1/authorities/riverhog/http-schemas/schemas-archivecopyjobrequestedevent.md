@@ -17,20 +17,17 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-650c849516"></a>`type`: `"object"`
 - <a id="s-d5b1f5ae50"></a>`additionalProperties`: `false`
-- <a id="s-8102fa6789"></a>`required`: `["id","source","type","time","data"]`
+- <a id="s-8102fa6789"></a>`required`: `["id","type","occurred_at","payload"]`
 - <a id="s-bdd91a5426"></a>`title`: `"ArchiveCopyJobRequestedEvent"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-a00ff65bab"></a>`data` | yes | [ArchiveCopyJobRequestedData](schemas-archivecopyjobrequesteddata.md) |  |
-| <a id="s-f0989d67f9"></a>`datacontenttype` | no | type="string"; const="application/json"; default="application/json"; title="Datacontenttype" |  |
 | <a id="s-0d21d128f5"></a>`id` | yes | type="string"; minLength=1; title="Id" |  |
-| <a id="s-c4919ceb82"></a>`source` | yes | type="string"; minLength=1; title="Source" |  |
-| <a id="s-f3907cb2c0"></a>`specversion` | no | type="string"; const="1.0"; default="1.0"; title="Specversion" |  |
+| <a id="s-81e2e09118"></a>`occurred_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Occurred At" |  |
+| <a id="s-c8596bbe22"></a>`payload` | yes | [ArchiveCopyJobRequestedData](schemas-archivecopyjobrequesteddata.md) |  |
 | <a id="s-6d50fd48ea"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; title="Subject" |  |
-| <a id="s-16b28add54"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Time" |  |
 | <a id="s-19f7983b5f"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.archive_copy_job.requested"; title="Type" |  |
 
 ### Progression, limits, and lifecycle
@@ -41,7 +38,7 @@ Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-publ
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field time](#s-16b28add54) | `length · characters · fixed` | shared above |
+| [field occurred_at](#s-81e2e09118) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -79,36 +76,26 @@ Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 23713dac295e7943325b77332e08c438ce7fb3908eba509fc540c59d859ff6b8 -->
+<!-- exact-contract-value: d080259dd5caaccfaa29a00842e355b3a476910f31905046e1bd31c7ca5a31a5 -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
-    "data": {
-      "$ref": "#/components/schemas/ArchiveCopyJobRequestedData"
-    },
-    "datacontenttype": {
-      "const": "application/json",
-      "default": "application/json",
-      "title": "Datacontenttype",
-      "type": "string"
-    },
     "id": {
       "minLength": 1,
       "title": "Id",
       "type": "string"
     },
-    "source": {
-      "minLength": 1,
-      "title": "Source",
+    "occurred_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
+      "title": "Occurred At",
       "type": "string"
     },
-    "specversion": {
-      "const": "1.0",
-      "default": "1.0",
-      "title": "Specversion",
-      "type": "string"
+    "payload": {
+      "$ref": "#/components/schemas/ArchiveCopyJobRequestedData"
     },
     "subject": {
       "anyOf": [
@@ -122,13 +109,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "title": "Subject"
     },
-    "time": {
-      "maxLength": 30,
-      "minLength": 30,
-      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
-      "title": "Time",
-      "type": "string"
-    },
     "type": {
       "const": "io.riverhog.riverhog.archive_copy_job.requested",
       "title": "Type",
@@ -137,10 +117,9 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "required": [
     "id",
-    "source",
     "type",
-    "time",
-    "data"
+    "occurred_at",
+    "payload"
   ],
   "title": "ArchiveCopyJobRequestedEvent",
   "type": "object"
