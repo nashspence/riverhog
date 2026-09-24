@@ -61,7 +61,7 @@ def run(
             expected_bytes=payload_bytes,
             content_type="application/octet-stream",
             required_identity_assertions={"riverhog-conformance": "goodput/v1"},
-            placement="immediate",
+            placement_policy="immediate_default",
         )
         expected = hashlib.sha256()
         expected_offset = 0
@@ -116,7 +116,7 @@ def run(
             expected_bytes=payload_bytes,
             expected_content_type=request.content_type,
             required_identity_assertions=request.required_identity_assertions,
-            expected_placement=request.placement,
+            expected_placement_policy=request.placement_policy,
         )
         completed = client.complete_write(completion)
         validate_completed_write_response(completion, completed)

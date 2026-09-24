@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-c742f07cf8"></a>`authorities · http_operations` | `"http_binding.operations"` |
 | <a id="s-e21b95b638"></a>`authorities · semantic_acceptance` | `"semantic_acceptance"` |
 | <a id="s-71e0aa3ad6"></a>`authorities · structural_models` | `"schemas"` |
-| <a id="s-73519fff77"></a>`bundle_sha256` | `"1416fddf32f149df66f3a1341850c967666df8b794699f95d23b880f996f3c2f"` |
+| <a id="s-73519fff77"></a>`bundle_sha256` | `"25326a203bfc708cfd2c2e6e015bc7590b2a74316d4653d23989dbdb2b28fcbb"` |
 | <a id="s-c56a5e64c9"></a>`compatibility · provider_ontology` | `"private"` |
 | <a id="s-58a0866fa0"></a>`compatibility · unknown_fields` | `"reject"` |
 | <a id="s-de29ee0e6e"></a>`format` | `"riverhog-storage-adapter-schema-bundle/v1"` |
@@ -119,10 +119,10 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/bundle_sha256`
 
-<!-- exact-contract-value: 816120907a28d6e211d74d684bf9ed2e2568622effc7cb22a1e40bce396b4407 -->
+<!-- exact-contract-value: 7f9a49216b660d34eb36d16b874d67b0fea0c78d66e328fa6381a4f683482863 -->
 
 ```json
-"1416fddf32f149df66f3a1341850c967666df8b794699f95d23b880f996f3c2f"
+"25326a203bfc708cfd2c2e6e015bc7590b2a74316d4653d23989dbdb2b28fcbb"
 ```
 
 ### `/external_contract/protocol_schemas/generated:riverhog-storage-adapter/compatibility`

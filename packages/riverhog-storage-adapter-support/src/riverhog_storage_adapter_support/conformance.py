@@ -155,7 +155,7 @@ def run_storage_adapter_conformance(
         object_path=small_path,
         content_type="application/octet-stream",
         required_identity_assertions={"riverhog-conformance": "small/v1"},
-        placement="immediate",
+        placement_policy="immediate_default",
         mode="create_only",
         stored_bytes=len(small_content),
         stored_sha256=small_sha256,
@@ -164,7 +164,7 @@ def run_storage_adapter_conformance(
         first_small = client.put_small_object(small_request, small_content)
         if (
             first_small.verified_identity_assertions != small_request.required_identity_assertions
-            or first_small.verified_placement != small_request.placement
+            or first_small.verified_placement_policy != small_request.placement_policy
         ):
             raise AssertionError("small-object receipt does not attest its exact request")
         retried_small = client.put_small_object(small_request, small_content)
@@ -175,7 +175,7 @@ def run_storage_adapter_conformance(
         metadata = client.head_object(
             ObjectHeadRequest(
                 object=ObjectLocator(object_path=small_path),
-                expected_placement="immediate",
+                expected_placement_policy="immediate_default",
             )
         )
         if (
@@ -183,7 +183,7 @@ def run_storage_adapter_conformance(
             or metadata.stored_bytes != len(small_content)
             or metadata.stored_sha256 != small_sha256
             or metadata.observed_identity_assertions != small_request.required_identity_assertions
-            or metadata.verified_placement != small_request.placement
+            or metadata.verified_placement_policy != small_request.placement_policy
         ):
             raise AssertionError("small-object metadata differs from its exact input")
         checks.append("exact-metadata")
@@ -228,7 +228,7 @@ def run_storage_adapter_conformance(
                 expected_bytes=descriptor.minimum_nonfinal_segment_bytes * 2,
                 content_type="application/octet-stream",
                 required_identity_assertions={"riverhog-conformance": "sparse-resumable-write/v1"},
-                placement="immediate",
+                placement_policy="immediate_default",
             )
             sparse_session = client.begin_write(sparse_request)
             persisted_sparse_session = WriteSession.model_validate_json(
@@ -268,7 +268,7 @@ def run_storage_adapter_conformance(
             expected_bytes=sum(len(content) for content in segment_contents),
             content_type="application/octet-stream",
             required_identity_assertions={"riverhog-conformance": "resumable-write/v1"},
-            placement="immediate",
+            placement_policy="immediate_default",
         )
         session = client.begin_write(write_request)
         recovered_session = continuation_client.begin_write(write_request)
@@ -346,7 +346,7 @@ def run_storage_adapter_conformance(
             expected_bytes=total_bytes,
             expected_content_type=write_request.content_type,
             required_identity_assertions=write_request.required_identity_assertions,
-            expected_placement=write_request.placement,
+            expected_placement_policy=write_request.placement_policy,
         )
         altered_precondition = listed_segment_page.completion.model_copy(
             update={"state_token": "conformance-altered-state"}
@@ -385,7 +385,7 @@ def run_storage_adapter_conformance(
                 expected_bytes=total_bytes,
                 expected_content_type=write_request.content_type,
                 required_identity_assertions=write_request.required_identity_assertions,
-                expected_placement=write_request.placement,
+                expected_placement_policy=write_request.placement_policy,
             )
         )
         if headed_completion != completed:
@@ -455,7 +455,7 @@ def run_storage_adapter_conformance(
             client.head_object(
                 ObjectHeadRequest(
                     object=ObjectLocator(object_path=small_path),
-                    expected_placement="immediate",
+                    expected_placement_policy="immediate_default",
                 )
             )
             is not None
@@ -470,7 +470,7 @@ def run_storage_adapter_conformance(
             client.head_object(
                 ObjectHeadRequest(
                     object=ObjectLocator(object_path=write_path),
-                    expected_placement="immediate",
+                    expected_placement_policy="immediate_default",
                 )
             )
             is not None

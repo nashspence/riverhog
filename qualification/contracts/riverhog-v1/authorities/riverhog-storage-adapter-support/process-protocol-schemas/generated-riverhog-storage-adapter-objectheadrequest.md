@@ -17,14 +17,14 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-9c07a6f0f2"></a>`type`: `"object"`
 - <a id="s-85883b5aa8"></a>`additionalProperties`: `false`
-- <a id="s-4f333ef0a1"></a>`required`: `["object","expected_placement"]`
+- <a id="s-4f333ef0a1"></a>`required`: `["object","expected_placement_policy"]`
 - <a id="s-43f6a60384"></a>`title`: `"ObjectHeadRequest"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6e4b7e80f0"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"]; title="Expected Placement" |  |
+| <a id="s-27a9a45940"></a>`expected_placement_policy` | yes | type="string"; enum=["archive_default","immediate_default"]; title="Expected Placement Policy" | Select an adapter-configured placement default. This does not establish archive membership or read readiness. |
 | <a id="s-5415a60fb9"></a>`object` | yes | [ObjectLocator](#s-3721011c38) |  |
 
 ### Definitions
@@ -78,7 +78,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1e0283dd234d9ca0e0f4a026cfc1d8102dd40e8a31f86eb9e99e8613976200e5 -->
+<!-- exact-contract-value: 4db1a95e0303fcf04a15b59b8aa1e008a8dad54a19b8922f675b518530a1eb10 -->
 
 ```json
 {
@@ -116,12 +116,13 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "additionalProperties": false,
   "properties": {
-    "expected_placement": {
+    "expected_placement_policy": {
+      "description": "Select an adapter-configured placement default. This does not establish archive membership or read readiness.",
       "enum": [
-        "archive",
-        "immediate"
+        "archive_default",
+        "immediate_default"
       ],
-      "title": "Expected Placement",
+      "title": "Expected Placement Policy",
       "type": "string"
     },
     "object": {
@@ -130,7 +131,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "required": [
     "object",
-    "expected_placement"
+    "expected_placement_policy"
   ],
   "title": "ObjectHeadRequest",
   "type": "object"

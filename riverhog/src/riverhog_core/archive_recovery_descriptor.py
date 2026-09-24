@@ -81,7 +81,7 @@ class ArchiveRecoveryDescriptorPublisher:
                 "riverhog-sha256": sha256,
                 "riverhog-root-stored-sha256": root.stored_sha256,
             },
-            placement="immediate",
+            placement_policy="immediate_default",
         )
         if receipt.object_path != object_path or receipt.stored_bytes != len(content):
             raise RuntimeError("immutable descriptor store returned an inconsistent receipt")

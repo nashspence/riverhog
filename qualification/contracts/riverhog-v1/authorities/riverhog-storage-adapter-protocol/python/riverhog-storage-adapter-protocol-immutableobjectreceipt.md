@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-9b111302ab"></a>`kind`: `"class"`
-- <a id="s-c756a1ecb4"></a>`signature`: `"\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], revision: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=2000)] = None, entity_token: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=4000)] = None, stored_bytes: NonnegativeDecimal, stored_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], verified_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], verified_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], verified_placement: Literal['archive', 'immediate'], completed_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)]) -> None\""`
+- <a id="s-c756a1ecb4"></a>`signature`: `"\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], revision: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=2000)] = None, entity_token: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=4000)] = None, stored_bytes: NonnegativeDecimal, stored_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], verified_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], verified_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], verified_placement_policy: Literal['archive_default', 'immediate_default'], completed_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)]) -> None\""`
 
 #### Validated model schema
 
@@ -30,7 +30,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-4a5c7d34d2"></a>`type`: `"object"`
 - <a id="s-f2b8dffc7d"></a>`additionalProperties`: `false`
-- <a id="s-a828f3ff72"></a>`required`: `["object_path","stored_bytes","stored_sha256","verified_content_type","verified_identity_assertions","verified_placement","completed_at"]`
+- <a id="s-a828f3ff72"></a>`required`: `["object_path","stored_bytes","stored_sha256","verified_content_type","verified_identity_assertions","verified_placement_policy","completed_at"]`
 
 ##### Fields
 
@@ -44,7 +44,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-a6191dde3e"></a>`stored_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-1f0efb195e"></a>`verified_content_type` | yes | type="string"; maxLength=255; minLength=1 |  |
 | <a id="s-ebdea37c08"></a>`verified_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} |  |
-| <a id="s-d850b34b34"></a>`verified_placement` | yes | type="string"; enum=["archive","immediate"] |  |
+| <a id="s-c075babd78"></a>`verified_placement_policy` | yes | type="string"; enum=["archive_default","immediate_default"] |  |
 
 ##### Definitions
 
@@ -89,7 +89,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a2e268cd42a04772db204dfb755a12204a9e45a64a15666e6da1d1678d1f0ceb -->
+<!-- exact-contract-value: 4114f91f5f37b3a9121dbebd39885dc407ffe8a81fd50ee2080b7446f581898a -->
 
 ```json
 {
@@ -165,10 +165,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "reason": "bounded-object-identity-assertion-envelope"
           }
         },
-        "verified_placement": {
+        "verified_placement_policy": {
           "enum": [
-            "archive",
-            "immediate"
+            "archive_default",
+            "immediate_default"
           ],
           "type": "string"
         }
@@ -179,12 +179,12 @@ The following JSON is the complete value owned at each machine-authority pointer
         "stored_sha256",
         "verified_content_type",
         "verified_identity_assertions",
-        "verified_placement",
+        "verified_placement_policy",
         "completed_at"
       ],
       "type": "object"
     },
-    "signature": "\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], revision: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=2000)] = None, entity_token: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=4000)] = None, stored_bytes: NonnegativeDecimal, stored_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], verified_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], verified_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], verified_placement: Literal['archive', 'immediate'], completed_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)]) -> None\""
+    "signature": "\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], revision: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=2000)] = None, entity_token: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=4000)] = None, stored_bytes: NonnegativeDecimal, stored_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], verified_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], verified_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], verified_placement_policy: Literal['archive_default', 'immediate_default'], completed_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)]) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",

@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-a7a58809dc"></a>`kind`: `"class"`
-- <a id="s-75bd69e572"></a>`signature`: `"\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], revision: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=2000)] = None, entity_token: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=4000)] = None, stored_bytes: PositiveDecimal, verified_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], verified_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], verified_placement: Literal['archive', 'immediate'], completed_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)]) -> None\""`
+- <a id="s-75bd69e572"></a>`signature`: `"\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], revision: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=2000)] = None, entity_token: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=4000)] = None, stored_bytes: PositiveDecimal, verified_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], verified_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], verified_placement_policy: Literal['archive_default', 'immediate_default'], completed_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)]) -> None\""`
 
 #### Validated model schema
 
@@ -30,7 +30,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-9c6edd0b86"></a>`type`: `"object"`
 - <a id="s-7a13382623"></a>`additionalProperties`: `false`
-- <a id="s-e3d5d357ae"></a>`required`: `["object_path","stored_bytes","verified_content_type","verified_identity_assertions","verified_placement","completed_at"]`
+- <a id="s-e3d5d357ae"></a>`required`: `["object_path","stored_bytes","verified_content_type","verified_identity_assertions","verified_placement_policy","completed_at"]`
 
 ##### Fields
 
@@ -43,7 +43,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-1e07875f37"></a>`stored_bytes` | yes | [PositiveDecimal](#s-f366680e78) |  |
 | <a id="s-aa2f38771f"></a>`verified_content_type` | yes | type="string"; maxLength=255; minLength=1 |  |
 | <a id="s-0aea214e3f"></a>`verified_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} |  |
-| <a id="s-fb208f5363"></a>`verified_placement` | yes | type="string"; enum=["archive","immediate"] |  |
+| <a id="s-f98d82b5b6"></a>`verified_placement_policy` | yes | type="string"; enum=["archive_default","immediate_default"] |  |
 
 ##### Definitions
 
@@ -88,7 +88,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4d4e022a2a8d85f1facde0485a0c610c767434118cf31da06cf0def8ce749baf -->
+<!-- exact-contract-value: 698e8c538bea6874f672c72fa0cd0978a103a1a60eb741e24e2ee97716e4310c -->
 
 ```json
 {
@@ -160,10 +160,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "reason": "bounded-object-identity-assertion-envelope"
           }
         },
-        "verified_placement": {
+        "verified_placement_policy": {
           "enum": [
-            "archive",
-            "immediate"
+            "archive_default",
+            "immediate_default"
           ],
           "type": "string"
         }
@@ -173,12 +173,12 @@ The following JSON is the complete value owned at each machine-authority pointer
         "stored_bytes",
         "verified_content_type",
         "verified_identity_assertions",
-        "verified_placement",
+        "verified_placement_policy",
         "completed_at"
       ],
       "type": "object"
     },
-    "signature": "\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], revision: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=2000)] = None, entity_token: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=4000)] = None, stored_bytes: PositiveDecimal, verified_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], verified_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], verified_placement: Literal['archive', 'immediate'], completed_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)]) -> None\""
+    "signature": "\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], revision: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=2000)] = None, entity_token: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=4000)] = None, stored_bytes: PositiveDecimal, verified_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], verified_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], verified_placement_policy: Literal['archive_default', 'immediate_default'], completed_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)]) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",

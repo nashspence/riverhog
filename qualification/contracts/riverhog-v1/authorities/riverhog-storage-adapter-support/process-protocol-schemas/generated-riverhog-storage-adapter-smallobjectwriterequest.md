@@ -17,7 +17,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-376ce5c3c7"></a>`type`: `"object"`
 - <a id="s-1a59983e51"></a>`additionalProperties`: `false`
-- <a id="s-d142c2462b"></a>`required`: `["object_path","content_type","required_identity_assertions","placement","mode","stored_bytes","stored_sha256"]`
+- <a id="s-d142c2462b"></a>`required`: `["object_path","content_type","required_identity_assertions","placement_policy","mode","stored_bytes","stored_sha256"]`
 - <a id="s-2040f98675"></a>`title`: `"SmallObjectWriteRequest"`
 
 ### Fields
@@ -28,7 +28,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-694f5617c3"></a>`expected_current_stored_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null; title="Expected Current Stored Sha256" |  |
 | <a id="s-cddc05ccf5"></a>`mode` | yes | type="string"; enum=["create_only","replace_current"]; title="Mode" |  |
 | <a id="s-9555273565"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
-| <a id="s-60cd7fe648"></a>`placement` | yes | type="string"; enum=["archive","immediate"]; title="Placement" |  |
+| <a id="s-2c7543503f"></a>`placement_policy` | yes | type="string"; enum=["archive_default","immediate_default"]; title="Placement Policy" | Select an adapter-configured placement default. This does not establish archive membership or read readiness. |
 | <a id="s-a8fdc8c0a1"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; title="Required Identity Assertions"; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
 | <a id="s-831f49620d"></a>`stored_bytes` | yes | [NonnegativeDecimal](#s-726aeae300) |  |
 | <a id="s-d8fcaa470d"></a>`stored_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Stored Sha256" |  |
@@ -91,7 +91,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1b6ec8a2d0dec1cb07f5f8640dbcd8b4becbfde492c53cb7a690d4979f7f1691 -->
+<!-- exact-contract-value: f180bab05433fbe1b47a138e524e161f999b49e7fd77955e1edb954bd8b86f36 -->
 
 ```json
 {
@@ -136,12 +136,13 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Object Path",
       "type": "string"
     },
-    "placement": {
+    "placement_policy": {
+      "description": "Select an adapter-configured placement default. This does not establish archive membership or read readiness.",
       "enum": [
-        "archive",
-        "immediate"
+        "archive_default",
+        "immediate_default"
       ],
-      "title": "Placement",
+      "title": "Placement Policy",
       "type": "string"
     },
     "required_identity_assertions": {
@@ -171,7 +172,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "object_path",
     "content_type",
     "required_identity_assertions",
-    "placement",
+    "placement_policy",
     "mode",
     "stored_bytes",
     "stored_sha256"

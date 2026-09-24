@@ -22,7 +22,7 @@ credentials used to realize that session remain adapter-private.
 - <a id="s-5de2718e1e"></a>`type`: `"object"`
 - <a id="s-0ed83f3a4f"></a>`additionalProperties`: `false`
 - <a id="s-5b9e227aa3"></a>`description`: `"Exact authority for one idempotently established nonterminal write.\n\nRepeating the same canonical request against the same configured adapter while the\nwrite remains nonterminal returns the same continuation session. Operational\ncredentials used to realize that session remain adapter-private."`
-- <a id="s-1b1df3a43d"></a>`required`: `["object_path","expected_bytes","content_type","required_identity_assertions","placement"]`
+- <a id="s-1b1df3a43d"></a>`required`: `["object_path","expected_bytes","content_type","required_identity_assertions","placement_policy"]`
 - <a id="s-2e642e279f"></a>`title`: `"WriteStartRequest"`
 
 ### Fields
@@ -32,7 +32,7 @@ credentials used to realize that session remain adapter-private.
 | <a id="s-f983ec7947"></a>`content_type` | yes | type="string"; maxLength=255; minLength=1; title="Content Type" |  |
 | <a id="s-ba391b3964"></a>`expected_bytes` | yes | [PositiveDecimal](#s-d52ec9da98) |  |
 | <a id="s-59aac5a432"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
-| <a id="s-23f1edee7b"></a>`placement` | yes | type="string"; enum=["archive","immediate"]; title="Placement" |  |
+| <a id="s-cd5929f979"></a>`placement_policy` | yes | type="string"; enum=["archive_default","immediate_default"]; title="Placement Policy" | Select an adapter-configured placement default. This does not establish archive membership or read readiness. |
 | <a id="s-3f20a9ba4d"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; title="Required Identity Assertions"; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
 
 ### Definitions
@@ -91,7 +91,7 @@ credentials used to realize that session remain adapter-private.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0e103c3a2f576ea678fe60069dd4eadac497e35bd3ef4babb78cd373babc08cd -->
+<!-- exact-contract-value: 3e3cc1f9225a12c68af5af559b58b56040d57b1af26dbc0b6ee78b657031bae9 -->
 
 ```json
 {
@@ -119,12 +119,13 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Object Path",
       "type": "string"
     },
-    "placement": {
+    "placement_policy": {
+      "description": "Select an adapter-configured placement default. This does not establish archive membership or read readiness.",
       "enum": [
-        "archive",
-        "immediate"
+        "archive_default",
+        "immediate_default"
       ],
-      "title": "Placement",
+      "title": "Placement Policy",
       "type": "string"
     },
     "required_identity_assertions": {
@@ -147,7 +148,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "expected_bytes",
     "content_type",
     "required_identity_assertions",
-    "placement"
+    "placement_policy"
   ],
   "title": "WriteStartRequest",
   "type": "object"

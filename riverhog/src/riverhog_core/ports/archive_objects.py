@@ -4,7 +4,7 @@ from collections.abc import Iterator
 from dataclasses import dataclass
 from typing import Protocol
 
-from riverhog_storage_adapter_protocol import ObjectPlacement
+from riverhog_storage_adapter_protocol import ObjectPlacementPolicy
 
 from riverhog_core.domain.retrieval_cache import RetrievalCacheReceipt
 
@@ -132,7 +132,7 @@ class ImmutableArchiveObjectStore(Protocol):
         content: bytes,
         content_type: str,
         required_identity_assertions: dict[str, str],
-        placement: ObjectPlacement,
+        placement_policy: ObjectPlacementPolicy,
     ) -> ImmutableObjectReceipt: ...
 
 

@@ -33,7 +33,7 @@ Declared public imports and their selected exact structural contracts.
 - [ObjectMetadataReceipt](riverhog-storage-adapter-protocol-objectmetadatareceipt.md)
   - [canonical_metadata](riverhog-storage-adapter-protocol-objectmetadatareceipt-canonical-metadata.md)
   - [canonical_path](riverhog-storage-adapter-protocol-objectmetadatareceipt-canonical-path.md)
-- [ObjectPlacement](riverhog-storage-adapter-protocol-objectplacement.md)
+- [ObjectPlacementPolicy](riverhog-storage-adapter-protocol-objectplacementpolicy.md)
 - [ObjectReadReceipt](riverhog-storage-adapter-protocol-objectreadreceipt.md)
   - [validate_range](riverhog-storage-adapter-protocol-objectreadreceipt-validate-range.md)
 - [ObjectReadRequest](riverhog-storage-adapter-protocol-objectreadrequest.md)

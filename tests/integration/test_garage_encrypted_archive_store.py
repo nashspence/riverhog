@@ -217,7 +217,7 @@ def test_canonical_archive_capabilities_against_garage_adapter(tmp_path: Path) -
                 "riverhog-plaintext-bytes": str(len(manifest_plaintext)),
                 "riverhog-plaintext-sha256": archive_root_sha256,
             },
-            placement="immediate",
+            placement_policy="immediate_default",
         )
         assert (
             immutable.put_immutable_object(
@@ -229,7 +229,7 @@ def test_canonical_archive_capabilities_against_garage_adapter(tmp_path: Path) -
                     "riverhog-plaintext-bytes": str(len(manifest_plaintext)),
                     "riverhog-plaintext-sha256": archive_root_sha256,
                 },
-                placement="immediate",
+                placement_policy="immediate_default",
             )
             == root
         )

@@ -47,7 +47,7 @@ class _Stored:
     content: bytes
     content_type: str
     identity: dict[str, str]
-    placement: str
+    placement_policy: str
     revision: str
     completed_at: str = "2026-08-21T00:00:00.000000000Z"
 
@@ -95,7 +95,7 @@ class _MemoryAdapter:
             content=content,
             content_type=request.content_type,
             identity=dict(request.required_identity_assertions),
-            placement=request.placement,
+            placement_policy=request.placement_policy,
             revision=revision,
         )
         self.objects[request.object_path] = stored
@@ -105,7 +105,7 @@ class _MemoryAdapter:
         stored = self.objects.get(request.object.object_path)
         if stored is None:
             return None
-        assert stored.placement == request.expected_placement
+        assert stored.placement_policy == request.expected_placement_policy
         if request.object.revision is not None:
             assert stored.revision == request.object.revision
         return ObjectMetadataReceipt(
@@ -116,7 +116,7 @@ class _MemoryAdapter:
             stored_bytes=len(stored.content),
             stored_sha256=hashlib.sha256(stored.content).hexdigest(),
             observed_identity_assertions=stored.identity,
-            verified_placement=request.expected_placement,
+            verified_placement_policy=request.expected_placement_policy,
             completed_at=stored.completed_at,
         )
 
@@ -201,7 +201,7 @@ class _MemoryAdapter:
             stored_sha256=hashlib.sha256(stored.content).hexdigest(),
             verified_content_type=stored.content_type,
             verified_identity_assertions=stored.identity,
-            verified_placement=stored.placement,
+            verified_placement_policy=stored.placement_policy,
             completed_at=stored.completed_at,
         )
 
@@ -243,7 +243,7 @@ class _VersionedMemoryAdapter(_MemoryAdapter):
             stored_bytes=len(stored.content),
             stored_sha256=hashlib.sha256(stored.content).hexdigest(),
             observed_identity_assertions=stored.identity,
-            verified_placement=request.expected_placement,
+            verified_placement_policy=request.expected_placement_policy,
             completed_at=stored.completed_at,
         )
 
@@ -287,7 +287,7 @@ def test_verification_is_metadata_only_and_explicit_hashing_reads_once() -> None
             "riverhog-plaintext-bytes": "1024",
             "riverhog-plaintext-sha256": "a" * 64,
         },
-        placement="archive",
+        placement_policy="archive_default",
         revision="version-pack",
     )
     identity = ArchiveObjectIdentity(
@@ -356,7 +356,7 @@ def test_deletion_uses_all_versions_and_verifies_current_absence() -> None:
             "riverhog-plaintext-bytes": "1",
             "riverhog-plaintext-sha256": "a" * 64,
         },
-        placement="immediate",
+        placement_policy="immediate_default",
         revision="version-manifest",
     )
     identity = ArchiveObjectIdentity(
@@ -402,7 +402,7 @@ def test_collection_description_is_replaced_idempotently_without_readback() -> N
     stored = adapter.objects[path]
     assert receipt == repeated
     assert adapter.reads == 0
-    assert stored.placement == "immediate"
+    assert stored.placement_policy == "immediate_default"
     assert stored.identity == {
         "riverhog-format": "riverhog-collection-description/v1",
         "riverhog-archive-root-sha256": "a" * 64,
@@ -444,7 +444,7 @@ def test_tag_node_gc_removes_current_then_its_exact_data_revision() -> None:
         content=b"ciphertext",
         content_type="application/vnd.riverhog.collection-tag-node.v1+age",
         identity={},
-        placement="immediate",
+        placement_policy="immediate_default",
         revision="provider-revision-1",
     )
     adapter.objects[path] = stored
@@ -510,7 +510,7 @@ def test_discard_removes_completed_objects_from_the_exact_archive_namespace() ->
         content=b"partial",
         content_type="application/octet-stream",
         identity={},
-        placement="archive",
+        placement_policy="archive_default",
         revision="partial-version",
     )
 

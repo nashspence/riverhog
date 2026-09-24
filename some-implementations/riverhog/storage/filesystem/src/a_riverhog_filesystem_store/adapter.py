@@ -36,7 +36,7 @@ from riverhog_storage_adapter_protocol import (
     ObjectHeadRequest,
     ObjectLocator,
     ObjectMetadataReceipt,
-    ObjectPlacement,
+    ObjectPlacementPolicy,
     ObjectReadReceipt,
     ObjectReadRequest,
     ObjectReadStream,
@@ -293,7 +293,7 @@ class _WriteState:
     expected_bytes: int
     content_type: str
     required_identity_assertions: dict[str, str]
-    placement: ObjectPlacement
+    placement_policy: ObjectPlacementPolicy
     created_at: str
 
     @classmethod
@@ -305,7 +305,7 @@ class _WriteState:
             "expected_bytes",
             "content_type",
             "required_identity_assertions",
-            "placement",
+            "placement_policy",
             "created_at",
         }
         if set(raw) != expected or raw.get("schema") != _WRITE_SCHEMA:
@@ -314,7 +314,7 @@ class _WriteState:
         object_path = raw["object_path"]
         content_type = raw["content_type"]
         assertions = raw["required_identity_assertions"]
-        placement = raw["placement"]
+        placement_policy = raw["placement_policy"]
         if not isinstance(token, str) or not token:
             raise RuntimeError("filesystem write token is invalid")
         if not isinstance(object_path, str) or not object_path:
@@ -323,8 +323,8 @@ class _WriteState:
             raise RuntimeError("filesystem write content type is invalid")
         if not _is_string_mapping(assertions):
             raise RuntimeError("filesystem write assertions are invalid")
-        if placement not in {"archive", "immediate"}:
-            raise RuntimeError("filesystem write placement is invalid")
+        if placement_policy not in {"archive_default", "immediate_default"}:
+            raise RuntimeError("filesystem write placement policy is invalid")
         expected_bytes = _required_int(raw, "expected_bytes", minimum=1)
         return cls(
             token=token,
@@ -332,7 +332,7 @@ class _WriteState:
             expected_bytes=expected_bytes,
             content_type=content_type,
             required_identity_assertions=dict(sorted(cast(dict[str, str], assertions).items())),
-            placement=cast(ObjectPlacement, placement),
+            placement_policy=cast(ObjectPlacementPolicy, placement_policy),
             created_at=_required_string(raw, "created_at"),
         )
 
@@ -344,7 +344,7 @@ class _WriteState:
             "expected_bytes": self.expected_bytes,
             "content_type": self.content_type,
             "required_identity_assertions": self.required_identity_assertions,
-            "placement": self.placement,
+            "placement_policy": self.placement_policy,
             "created_at": self.created_at,
         }
 
@@ -361,7 +361,7 @@ class _WriteState:
             and self.expected_bytes == request.expected_bytes
             and self.content_type == request.content_type
             and self.required_identity_assertions == request.required_identity_assertions
-            and self.placement == request.placement
+            and self.placement_policy == request.placement_policy
         )
 
 
@@ -374,7 +374,7 @@ class _ObjectRecord:
     stored_sha256: str | None
     content_type: str
     required_identity_assertions: dict[str, str]
-    placement: ObjectPlacement
+    placement_policy: ObjectPlacementPolicy
     completed_at: str
     segment_count: int
     segment_sequence_sha256: str | None
@@ -390,7 +390,7 @@ class _ObjectRecord:
             "stored_sha256",
             "content_type",
             "required_identity_assertions",
-            "placement",
+            "placement_policy",
             "completed_at",
             "segment_count",
             "segment_sequence_sha256",
@@ -398,11 +398,11 @@ class _ObjectRecord:
         if set(raw) != expected or raw.get("schema") != _OBJECT_SCHEMA:
             raise RuntimeError("filesystem object metadata has an invalid shape")
         assertions = raw["required_identity_assertions"]
-        placement = raw["placement"]
+        placement_policy = raw["placement_policy"]
         if not _is_string_mapping(assertions):
             raise RuntimeError("filesystem object assertions are invalid")
-        if placement not in {"archive", "immediate"}:
-            raise RuntimeError("filesystem object placement is invalid")
+        if placement_policy not in {"archive_default", "immediate_default"}:
+            raise RuntimeError("filesystem object placement policy is invalid")
         stored_bytes = _required_int(raw, "stored_bytes", minimum=0)
         segment_count = _required_int(raw, "segment_count", minimum=0)
         segment_sequence_sha256 = raw["segment_sequence_sha256"]
@@ -421,7 +421,7 @@ class _ObjectRecord:
             stored_sha256=_optional_sha256(raw, "stored_sha256"),
             content_type=_required_string(raw, "content_type"),
             required_identity_assertions=dict(sorted(cast(dict[str, str], assertions).items())),
-            placement=cast(ObjectPlacement, placement),
+            placement_policy=cast(ObjectPlacementPolicy, placement_policy),
             completed_at=_required_string(raw, "completed_at"),
             segment_count=segment_count,
             segment_sequence_sha256=cast(str | None, segment_sequence_sha256),
@@ -437,7 +437,7 @@ class _ObjectRecord:
             "stored_sha256": self.stored_sha256,
             "content_type": self.content_type,
             "required_identity_assertions": self.required_identity_assertions,
-            "placement": self.placement,
+            "placement_policy": self.placement_policy,
             "completed_at": self.completed_at,
             "segment_count": self.segment_count,
             "segment_sequence_sha256": self.segment_sequence_sha256,
@@ -542,7 +542,7 @@ class FilesystemStorageAdapter:
                     expected_bytes=request.expected_bytes,
                     content_type=request.content_type,
                     required_identity_assertions=dict(request.required_identity_assertions),
-                    placement=request.placement,
+                    placement_policy=request.placement_policy,
                     created_at=format_utc_timestamp(utc_now()),
                 )
                 self._initialize_segment_database(write_dir / _SEGMENT_DATABASE)
@@ -663,7 +663,7 @@ class FilesystemStorageAdapter:
                     expected_bytes=request.expected_bytes,
                     expected_content_type=request.expected_content_type,
                     required_identity_assertions=request.required_identity_assertions,
-                    expected_placement=request.expected_placement,
+                    expected_placement_policy=request.expected_placement_policy,
                 )
                 write_dir = self._write_dir_by_key(object_key)
                 state_path = write_dir / "state.json"
@@ -683,7 +683,7 @@ class FilesystemStorageAdapter:
                 state.expected_bytes != request.expected_bytes
                 or state.content_type != request.expected_content_type
                 or state.required_identity_assertions != request.required_identity_assertions
-                or state.placement != request.expected_placement
+                or state.placement_policy != request.expected_placement_policy
             ):
                 raise StorageAdapterRejection(
                     "identity_conflict",
@@ -707,7 +707,7 @@ class FilesystemStorageAdapter:
                 stored_sha256=None,
                 content_type=state.content_type,
                 required_identity_assertions=state.required_identity_assertions,
-                placement=state.placement,
+                placement_policy=state.placement_policy,
                 completed_at=completed_at,
                 segment_count=completion.segment_count,
                 segment_sequence_sha256=completion.state_token,
@@ -732,7 +732,7 @@ class FilesystemStorageAdapter:
                 expected_bytes=request.expected_bytes,
                 expected_content_type=request.expected_content_type,
                 required_identity_assertions=request.required_identity_assertions,
-                expected_placement=request.expected_placement,
+                expected_placement_policy=request.expected_placement_policy,
             )
             self._verify_object_payload(self._revision_dir(object_key, record.revision), record)
             return self._completed_receipt(record)
@@ -816,7 +816,7 @@ class FilesystemStorageAdapter:
                     stored_sha256=digest,
                     content_type=request.content_type,
                     required_identity_assertions=dict(request.required_identity_assertions),
-                    placement=request.placement,
+                    placement_policy=request.placement_policy,
                     completed_at=format_utc_timestamp(utc_now()),
                     segment_count=0,
                     segment_sequence_sha256=None,
@@ -838,7 +838,7 @@ class FilesystemStorageAdapter:
             )
             if record is None:
                 return None
-            self._require_placement(record, request.expected_placement)
+            self._require_placement_policy(record, request.expected_placement_policy)
             self._verify_object_payload(self._revision_dir(object_key, record.revision), record)
             return ObjectMetadataReceipt(
                 object_path=record.object_path,
@@ -848,7 +848,7 @@ class FilesystemStorageAdapter:
                 stored_bytes=record.stored_bytes,
                 stored_sha256=record.stored_sha256,
                 observed_identity_assertions=record.required_identity_assertions,
-                verified_placement=record.placement,
+                verified_placement_policy=record.placement_policy,
                 completed_at=record.completed_at,
             )
         finally:
@@ -1066,7 +1066,7 @@ class FilesystemStorageAdapter:
                     expected_bytes=state.expected_bytes,
                     expected_content_type=state.content_type,
                     required_identity_assertions=state.required_identity_assertions,
-                    expected_placement=state.placement,
+                    expected_placement_policy=state.placement_policy,
                 )
                 if not os.path.samefile(payload, installed_payload):
                     raise RuntimeError(
@@ -1618,7 +1618,7 @@ class FilesystemStorageAdapter:
                 "stored_sha256": request.stored_sha256,
                 "content_type": request.content_type,
                 "required_identity_assertions": request.required_identity_assertions,
-                "placement": request.placement,
+                "placement_policy": request.placement_policy,
             },
             allow_nan=False,
             ensure_ascii=False,
@@ -1645,7 +1645,7 @@ class FilesystemStorageAdapter:
             and record.stored_sha256 == request.stored_sha256
             and record.content_type == request.content_type
             and record.required_identity_assertions == request.required_identity_assertions
-            and record.placement == request.placement
+            and record.placement_policy == request.placement_policy
         )
 
     @staticmethod
@@ -1655,13 +1655,13 @@ class FilesystemStorageAdapter:
         expected_bytes: int,
         expected_content_type: str,
         required_identity_assertions: dict[str, str],
-        expected_placement: ObjectPlacement,
+        expected_placement_policy: ObjectPlacementPolicy,
     ) -> None:
         if (
             record.stored_bytes != expected_bytes
             or record.content_type != expected_content_type
             or record.required_identity_assertions != required_identity_assertions
-            or record.placement != expected_placement
+            or record.placement_policy != expected_placement_policy
         ):
             raise StorageAdapterRejection(
                 "identity_conflict",
@@ -1669,11 +1669,11 @@ class FilesystemStorageAdapter:
             )
 
     @staticmethod
-    def _require_placement(record: _ObjectRecord, expected: ObjectPlacement) -> None:
-        if record.placement != expected:
+    def _require_placement_policy(record: _ObjectRecord, expected: ObjectPlacementPolicy) -> None:
+        if record.placement_policy != expected:
             raise StorageAdapterRejection(
                 "identity_conflict",
-                "filesystem object placement differs from its request",
+                "filesystem object placement policy differs from its request",
             )
 
     @staticmethod
@@ -1685,7 +1685,7 @@ class FilesystemStorageAdapter:
             stored_bytes=record.stored_bytes,
             verified_content_type=record.content_type,
             verified_identity_assertions=record.required_identity_assertions,
-            verified_placement=record.placement,
+            verified_placement_policy=record.placement_policy,
             completed_at=record.completed_at,
         )
 
@@ -1701,7 +1701,7 @@ class FilesystemStorageAdapter:
             stored_sha256=record.stored_sha256,
             verified_content_type=record.content_type,
             verified_identity_assertions=record.required_identity_assertions,
-            verified_placement=record.placement,
+            verified_placement_policy=record.placement_policy,
             completed_at=record.completed_at,
         )
 

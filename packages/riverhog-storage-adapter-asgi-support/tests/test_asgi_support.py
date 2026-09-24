@@ -71,7 +71,7 @@ class _Adapter:
             stored_sha256=request.stored_sha256,
             verified_content_type=request.content_type,
             verified_identity_assertions=request.required_identity_assertions,
-            verified_placement=request.placement,
+            verified_placement_policy=request.placement_policy,
             completed_at="2026-08-25T00:00:00.000000000Z",
         )
 
@@ -181,7 +181,7 @@ def test_asgi_shell_streams_framed_uploads_without_materializing_request_body(
         object_path="objects/large-control-object",
         content_type="application/octet-stream",
         required_identity_assertions={"riverhog-format": "fixture/v1"},
-        placement="immediate",
+        placement_policy="immediate_default",
         mode="create_only",
         stored_bytes=len(payload),
         stored_sha256=hashlib.sha256(payload).hexdigest(),
@@ -217,7 +217,7 @@ def test_asgi_shell_rejects_unnamed_framing_before_adapter_consumption() -> None
         object_path="objects/item",
         content_type="application/octet-stream",
         required_identity_assertions={},
-        placement="immediate",
+        placement_policy="immediate_default",
         mode="create_only",
         stored_bytes=1,
         stored_sha256=hashlib.sha256(b"x").hexdigest(),

@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-fb610e0881"></a>`kind`: `"class"`
-- <a id="s-057720001d"></a>`signature`: `"\"(*, object: riverhog_storage_adapter_protocol.protocol.ObjectLocator, expected_placement: Literal['archive', 'immediate']) -> None\""`
+- <a id="s-057720001d"></a>`signature`: `"\"(*, object: riverhog_storage_adapter_protocol.protocol.ObjectLocator, expected_placement_policy: Literal['archive_default', 'immediate_default']) -> None\""`
 
 #### Validated model schema
 
@@ -30,13 +30,13 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-e0ac15e6f5"></a>`type`: `"object"`
 - <a id="s-e3a97b24c8"></a>`additionalProperties`: `false`
-- <a id="s-cab2844872"></a>`required`: `["object","expected_placement"]`
+- <a id="s-cab2844872"></a>`required`: `["object","expected_placement_policy"]`
 
 ##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1798c06a34"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"] |  |
+| <a id="s-bce09d9b33"></a>`expected_placement_policy` | yes | type="string"; enum=["archive_default","immediate_default"] |  |
 | <a id="s-01cf494aa8"></a>`object` | yes | [ObjectLocator](#s-6b8a5bc6a1) |  |
 
 ##### Definitions
@@ -83,7 +83,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 620f7a9e3aeb13b966599512ed96907754da14748a771d250a87a7a7b21dd595 -->
+<!-- exact-contract-value: fe4827e6edccfe4cf8f4fbff8dddcdb569e00cb27ed316a35805abbc5f0cad8c -->
 
 ```json
 {
@@ -121,10 +121,10 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       "additionalProperties": false,
       "properties": {
-        "expected_placement": {
+        "expected_placement_policy": {
           "enum": [
-            "archive",
-            "immediate"
+            "archive_default",
+            "immediate_default"
           ],
           "type": "string"
         },
@@ -134,11 +134,11 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       "required": [
         "object",
-        "expected_placement"
+        "expected_placement_policy"
       ],
       "type": "object"
     },
-    "signature": "\"(*, object: riverhog_storage_adapter_protocol.protocol.ObjectLocator, expected_placement: Literal['archive', 'immediate']) -> None\""
+    "signature": "\"(*, object: riverhog_storage_adapter_protocol.protocol.ObjectLocator, expected_placement_policy: Literal['archive_default', 'immediate_default']) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",

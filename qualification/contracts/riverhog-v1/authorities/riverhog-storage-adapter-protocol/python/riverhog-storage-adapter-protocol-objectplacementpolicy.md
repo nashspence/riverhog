@@ -1,8 +1,8 @@
-# riverhog_storage_adapter_protocol.ObjectPlacement
+# riverhog_storage_adapter_protocol.ObjectPlacementPolicy
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: python:riverhog-storage-adapter-protocol:riverhog-storage-adapter-protocol-objectplacement:9a8b61f4da -->
+<!-- contract-element: python:riverhog-storage-adapter-protocol:riverhog-storage-adapter-protocol-objectp-57cd881b50:091fb0c7e5 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-032101ab29"></a>
-- <a id="s-9a66a27ed6"></a>`distribution`: `riverhog-storage-adapter-protocol`
-- <a id="s-568c58019d"></a>`module`: `riverhog_storage_adapter_protocol`
-- <a id="s-afb41b4d66"></a>`name`: `ObjectPlacement`
-- <a id="s-c3d8cf369f"></a>`unit`: `export`
+<a id="s-6bb7eedf3d"></a>
+- <a id="s-3ea56772a1"></a>`distribution`: `riverhog-storage-adapter-protocol`
+- <a id="s-7541e1d613"></a>`module`: `riverhog_storage_adapter_protocol`
+- <a id="s-cd7eda4b3d"></a>`name`: `ObjectPlacementPolicy`
+- <a id="s-69c4cfc24e"></a>`unit`: `export`
 
 ### Declared structure
 
-- <a id="s-47d2d9af2c"></a>`kind`: `"object"`
-- <a id="s-424b5b2b4f"></a>`type`: `"typing._LiteralGenericAlias"`
+- <a id="s-a0ac689304"></a>`kind`: `"object"`
+- <a id="s-c9260079be"></a>`type`: `"typing._AnnotatedAlias"`
 
 ## Governing policies
 
-- <a id="pa-cb8c9aff3a"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
+- <a id="pa-0b2326a15f"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
 
 ## Evidence
 
@@ -42,7 +42,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/python/riverhog_storage_adapter_protocol.ObjectPlacement`
+- `/external_contract/python/riverhog_storage_adapter_protocol.ObjectPlacementPolicy`
 
 ### Exact owned JSON
 
@@ -51,17 +51,17 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 34ceb0bc646191a1e0a7ee919f6f55a1541a2e9ee3d4c3c46497dab1315418f3 -->
+<!-- exact-contract-value: d19c1e9ed0e1fc41c8802570f387d89ed26e217088a22b176c0895e5353e4bd5 -->
 
 ```json
 {
   "contract": {
     "kind": "object",
-    "type": "typing._LiteralGenericAlias"
+    "type": "typing._AnnotatedAlias"
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",
-  "name": "ObjectPlacement",
+  "name": "ObjectPlacementPolicy",
   "unit": "export"
 }
 ```

@@ -17,7 +17,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-f0cc3d4013"></a>`type`: `"object"`
 - <a id="s-bafc321385"></a>`additionalProperties`: `false`
-- <a id="s-25c72d105e"></a>`required`: `["object_path","stored_bytes","observed_identity_assertions","verified_placement","completed_at"]`
+- <a id="s-25c72d105e"></a>`required`: `["object_path","stored_bytes","observed_identity_assertions","verified_placement_policy","completed_at"]`
 - <a id="s-7317b0829c"></a>`title`: `"ObjectMetadataReceipt"`
 
 ### Fields
@@ -32,7 +32,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-8d6db65455"></a>`revision` | no | anyOf=[(type="string"; maxLength=2000; minLength=1); (type="null")]; default=null; title="Revision" |  |
 | <a id="s-03ecfd198f"></a>`stored_bytes` | yes | [NonnegativeDecimal](#s-6db6f11095) |  |
 | <a id="s-fd6d184c14"></a>`stored_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null; title="Stored Sha256" |  |
-| <a id="s-9740c0377a"></a>`verified_placement` | yes | type="string"; enum=["archive","immediate"]; title="Verified Placement" |  |
+| <a id="s-e69a8dbe6e"></a>`verified_placement_policy` | yes | type="string"; enum=["archive_default","immediate_default"]; title="Verified Placement Policy" | Select an adapter-configured placement default. This does not establish archive membership or read readiness. |
 
 ### Definitions
 
@@ -94,7 +94,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b098522dbf4bf0857ee209a65843cc5bc6bdfc4a9a373f57e20ac1a73d88d187 -->
+<!-- exact-contract-value: fe4d3c1be605b83c0701cbf42a1442e8c742e643807e502cb852a64893290b68 -->
 
 ```json
 {
@@ -191,12 +191,13 @@ The following JSON is the complete value owned at each machine-authority pointer
       "default": null,
       "title": "Stored Sha256"
     },
-    "verified_placement": {
+    "verified_placement_policy": {
+      "description": "Select an adapter-configured placement default. This does not establish archive membership or read readiness.",
       "enum": [
-        "archive",
-        "immediate"
+        "archive_default",
+        "immediate_default"
       ],
-      "title": "Verified Placement",
+      "title": "Verified Placement Policy",
       "type": "string"
     }
   },
@@ -204,7 +205,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "object_path",
     "stored_bytes",
     "observed_identity_assertions",
-    "verified_placement",
+    "verified_placement_policy",
     "completed_at"
   ],
   "title": "ObjectMetadataReceipt",

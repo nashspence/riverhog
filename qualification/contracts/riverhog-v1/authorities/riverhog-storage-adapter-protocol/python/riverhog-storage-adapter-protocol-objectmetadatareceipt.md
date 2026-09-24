@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-8f29a8307d"></a>`kind`: `"class"`
-- <a id="s-916130124e"></a>`signature`: `"\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], revision: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=2000)] = None, entity_token: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=4000)] = None, content_type: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=255)] = None, stored_bytes: NonnegativeDecimal, stored_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, observed_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], verified_placement: Literal['archive', 'immediate'], completed_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)]) -> None\""`
+- <a id="s-916130124e"></a>`signature`: `"\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], revision: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=2000)] = None, entity_token: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=4000)] = None, content_type: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=255)] = None, stored_bytes: NonnegativeDecimal, stored_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, observed_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], verified_placement_policy: Literal['archive_default', 'immediate_default'], completed_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)]) -> None\""`
 
 #### Validated model schema
 
@@ -30,7 +30,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-c5b1d384c5"></a>`type`: `"object"`
 - <a id="s-f03025a7b6"></a>`additionalProperties`: `false`
-- <a id="s-ee522613f9"></a>`required`: `["object_path","stored_bytes","observed_identity_assertions","verified_placement","completed_at"]`
+- <a id="s-ee522613f9"></a>`required`: `["object_path","stored_bytes","observed_identity_assertions","verified_placement_policy","completed_at"]`
 
 ##### Fields
 
@@ -44,7 +44,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-066c38dc7c"></a>`revision` | no | anyOf=[(type="string"; maxLength=2000; minLength=1); (type="null")]; default=null |  |
 | <a id="s-e2d56684bf"></a>`stored_bytes` | yes | [NonnegativeDecimal](#s-9e68c8b860) |  |
 | <a id="s-c7938f3880"></a>`stored_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
-| <a id="s-749f31ee61"></a>`verified_placement` | yes | type="string"; enum=["archive","immediate"] |  |
+| <a id="s-820715202e"></a>`verified_placement_policy` | yes | type="string"; enum=["archive_default","immediate_default"] |  |
 
 ##### Definitions
 
@@ -89,7 +89,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: eddc43e2e382323463cbaa58785841eff84c675f6890f86f377e6c0399576ae3 -->
+<!-- exact-contract-value: 4785d01d760d97847238bc04bd17c3e08bed4d98cb813627e00e70bbeba4e549 -->
 
 ```json
 {
@@ -181,10 +181,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "default": null
         },
-        "verified_placement": {
+        "verified_placement_policy": {
           "enum": [
-            "archive",
-            "immediate"
+            "archive_default",
+            "immediate_default"
           ],
           "type": "string"
         }
@@ -193,12 +193,12 @@ The following JSON is the complete value owned at each machine-authority pointer
         "object_path",
         "stored_bytes",
         "observed_identity_assertions",
-        "verified_placement",
+        "verified_placement_policy",
         "completed_at"
       ],
       "type": "object"
     },
-    "signature": "\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], revision: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=2000)] = None, entity_token: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=4000)] = None, content_type: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=255)] = None, stored_bytes: NonnegativeDecimal, stored_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, observed_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], verified_placement: Literal['archive', 'immediate'], completed_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)]) -> None\""
+    "signature": "\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], revision: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=2000)] = None, entity_token: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=4000)] = None, content_type: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=255)] = None, stored_bytes: NonnegativeDecimal, stored_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, observed_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], verified_placement_policy: Literal['archive_default', 'immediate_default'], completed_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)]) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",

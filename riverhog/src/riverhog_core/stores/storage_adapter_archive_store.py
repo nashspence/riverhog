@@ -26,7 +26,7 @@ from riverhog_storage_adapter_protocol import (
     ObjectHeadRequest,
     ObjectLocator,
     ObjectMetadataReceipt,
-    ObjectPlacement,
+    ObjectPlacementPolicy,
     ObjectReadRequest,
     ReadPreparationRequest,
     SmallObjectWriteRequest,
@@ -130,7 +130,7 @@ class StorageAdapterArchiveStore:
             if self._head(
                 object_path=current.object_path,
                 revision=None,
-                placement=_object_placement(current.kind),
+                placement_policy=_object_placement_policy(current.kind),
             )
             is not None
         ]
@@ -166,7 +166,7 @@ class StorageAdapterArchiveStore:
         existing = self._head(
             object_path=object_path,
             revision=None,
-            placement="immediate",
+            placement_policy="immediate_default",
         )
         if existing is not None and _metadata_contains(existing, identity):
             return CollectionDescriptionReceipt(
@@ -213,7 +213,10 @@ class StorageAdapterArchiveStore:
                 mode="all_versions",
             )
         )
-        if self._head(object_path=object_path, revision=None, placement="immediate") is not None:
+        if (
+            self._head(object_path=object_path, revision=None, placement_policy="immediate_default")
+            is not None
+        ):
             raise RuntimeError("collection description deletion could not be verified")
 
     def publish_collection_tag_node(
@@ -239,7 +242,9 @@ class StorageAdapterArchiveStore:
             _PLAINTEXT_BYTES_METADATA: str(len(encoded)),
             _PLAINTEXT_SHA256_METADATA: hashlib.sha256(encoded).hexdigest(),
         }
-        existing = self._head(object_path=object_path, revision=None, placement="immediate")
+        existing = self._head(
+            object_path=object_path, revision=None, placement_policy="immediate_default"
+        )
         if existing is not None and _metadata_contains(existing, identity):
             return _tag_receipt(existing)
         ciphertext = encrypt_age_scrypt(
@@ -281,7 +286,9 @@ class StorageAdapterArchiveStore:
             _PLAINTEXT_BYTES_METADATA: str(len(document)),
             _PLAINTEXT_SHA256_METADATA: hashlib.sha256(document).hexdigest(),
         }
-        existing = self._head(object_path=object_path, revision=None, placement="immediate")
+        existing = self._head(
+            object_path=object_path, revision=None, placement_policy="immediate_default"
+        )
         if existing is not None and _metadata_contains(existing, identity):
             return _tag_receipt(existing)
         ciphertext = encrypt_age_scrypt(
@@ -331,7 +338,10 @@ class StorageAdapterArchiveStore:
                 expected_current_stored_sha256=expected_current_stored_sha256,
             )
         )
-        if self._head(object_path=object_path, revision=None, placement="immediate") is not None:
+        if (
+            self._head(object_path=object_path, revision=None, placement_policy="immediate_default")
+            is not None
+        ):
             raise RuntimeError("collection tag-node deletion could not be verified")
         if provider_revision is None:
             return
@@ -348,7 +358,7 @@ class StorageAdapterArchiveStore:
             self._head(
                 object_path=object_path,
                 revision=provider_revision,
-                placement="immediate",
+                placement_policy="immediate_default",
             )
             is not None
         ):
@@ -364,13 +374,15 @@ class StorageAdapterArchiveStore:
         exact = self._head(
             object_path=object_path,
             revision=provider_revision,
-            placement="immediate",
+            placement_policy="immediate_default",
         )
         if exact is None:
             return
         if _required_stored_sha256(exact, object_path=object_path) != expected_stored_sha256:
             raise RuntimeError("mutable collection document revision differs from its receipt")
-        current = self._head(object_path=object_path, revision=None, placement="immediate")
+        current = self._head(
+            object_path=object_path, revision=None, placement_policy="immediate_default"
+        )
         if current is not None and current.revision == provider_revision:
             raise RuntimeError("refusing to reclaim the current mutable collection document")
         self._adapter.delete_object(
@@ -386,7 +398,7 @@ class StorageAdapterArchiveStore:
             self._head(
                 object_path=object_path,
                 revision=provider_revision,
-                placement="immediate",
+                placement_policy="immediate_default",
             )
             is not None
         ):
@@ -507,7 +519,7 @@ class StorageAdapterArchiveStore:
         metadata = self._head(
             object_path=object.object_path,
             revision=object.revision,
-            placement=_object_placement(object.kind),
+            placement_policy=_object_placement_policy(object.kind),
         )
         if metadata is None:
             raise RuntimeError(f"Archive object is missing: {object.object_path}")
@@ -518,12 +530,12 @@ class StorageAdapterArchiveStore:
         *,
         object_path: str,
         revision: str | None,
-        placement: ObjectPlacement,
+        placement_policy: ObjectPlacementPolicy,
     ) -> ObjectMetadataReceipt | None:
         return self._adapter.head_object(
             ObjectHeadRequest(
                 object=ObjectLocator(object_path=object_path, revision=revision),
-                expected_placement=placement,
+                expected_placement_policy=placement_policy,
             )
         )
 
@@ -542,7 +554,7 @@ class StorageAdapterArchiveStore:
                 object_path=object_path,
                 content_type=content_type,
                 required_identity_assertions=identity,
-                placement="immediate",
+                placement_policy="immediate_default",
                 mode=mode,
                 expected_current_stored_sha256=expected_current_stored_sha256,
                 stored_bytes=len(content),
@@ -656,8 +668,8 @@ def _read_request(objects: Sequence[ArchiveObjectIdentity]) -> ReadPreparationRe
     return ReadPreparationRequest(objects=locators)
 
 
-def _object_placement(kind: str) -> ObjectPlacement:
-    return "archive" if kind in {"pack", "file", "segment"} else "immediate"
+def _object_placement_policy(kind: str) -> ObjectPlacementPolicy:
+    return "archive_default" if kind in {"pack", "file", "segment"} else "immediate_default"
 
 
 def _verify_metadata(

@@ -113,7 +113,7 @@ class StorageAdapterRetrievalCache:
                     collection_id,
                     object_id,
                 ),
-                placement="immediate",
+                placement_policy="immediate_default",
             )
         )
         return _write_session(session)
@@ -135,7 +135,7 @@ class StorageAdapterRetrievalCache:
                 collection_id,
                 object_id,
             ),
-            expected_placement="immediate",
+            expected_placement_policy="immediate_default",
         )
         try:
             receipt = self._adapter.find_completed_write(request)
@@ -184,7 +184,7 @@ class StorageAdapterRetrievalCache:
                     collection_id,
                     object_id,
                 ),
-                expected_placement="immediate",
+                expected_placement_policy="immediate_default",
             )
         )
         remote_seconds += time.perf_counter() - remote_started
@@ -427,7 +427,7 @@ class _StorageAdapterRetrievalCacheResumableObjectStore:
                 expected_bytes=expected_bytes,
                 content_type="application/octet-stream",
                 required_identity_assertions=self._metadata,
-                placement="immediate",
+                placement_policy="immediate_default",
             )
         )
         return _write_session(session)
@@ -501,7 +501,7 @@ class _StorageAdapterRetrievalCacheResumableObjectStore:
                 expected_bytes=expected_bytes,
                 expected_content_type="application/octet-stream",
                 required_identity_assertions=self._metadata,
-                expected_placement="immediate",
+                expected_placement_policy="immediate_default",
             )
         )
         return self._completed_with_cache(_completed(receipt))
@@ -520,7 +520,7 @@ class _StorageAdapterRetrievalCacheResumableObjectStore:
             expected_bytes=expected_bytes,
             expected_content_type="application/octet-stream",
             required_identity_assertions=self._metadata,
-            expected_placement="immediate",
+            expected_placement_policy="immediate_default",
         )
         try:
             receipt = self._adapter.find_completed_write(request)

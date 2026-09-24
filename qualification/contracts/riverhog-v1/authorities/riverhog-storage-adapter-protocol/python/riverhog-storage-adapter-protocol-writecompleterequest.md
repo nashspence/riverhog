@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-9680c53b70"></a>`kind`: `"class"`
-- <a id="s-e41639107b"></a>`signature`: `"\"(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, completion: riverhog_storage_adapter_protocol.protocol.WriteCompletionPrecondition, expected_bytes: PositiveDecimal, expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement: Literal['archive', 'immediate']) -> None\""`
+- <a id="s-e41639107b"></a>`signature`: `"\"(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, completion: riverhog_storage_adapter_protocol.protocol.WriteCompletionPrecondition, expected_bytes: PositiveDecimal, expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement_policy: Literal['archive_default', 'immediate_default']) -> None\""`
 
 #### Validated model schema
 
@@ -30,7 +30,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-149060f9b6"></a>`type`: `"object"`
 - <a id="s-06c4ee0293"></a>`additionalProperties`: `false`
-- <a id="s-0c8939af9a"></a>`required`: `["session","completion","expected_bytes","expected_content_type","required_identity_assertions","expected_placement"]`
+- <a id="s-0c8939af9a"></a>`required`: `["session","completion","expected_bytes","expected_content_type","required_identity_assertions","expected_placement_policy"]`
 
 ##### Fields
 
@@ -39,7 +39,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-760d87722b"></a>`completion` | yes | [WriteCompletionPrecondition](#s-a37b597897) |  |
 | <a id="s-7a8d87fa71"></a>`expected_bytes` | yes | [PositiveDecimal](#s-be642acd83) |  |
 | <a id="s-ef006a81c9"></a>`expected_content_type` | yes | type="string"; maxLength=255; minLength=1 |  |
-| <a id="s-5e42590d31"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"] |  |
+| <a id="s-3a547556e8"></a>`expected_placement_policy` | yes | type="string"; enum=["archive_default","immediate_default"] |  |
 | <a id="s-8c917da295"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} |  |
 | <a id="s-77b14e55b9"></a>`session` | yes | [WriteSession](#s-7089c76a7b) |  |
 
@@ -122,7 +122,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3fb294a8e399803571814e5360ad3b41a398eb1641ea1a79e891c437c9ea513d -->
+<!-- exact-contract-value: 497ea6190dcd72418c51d495cf39bcd82f634a09912372654dbd8dfe8c8a1570 -->
 
 ```json
 {
@@ -198,10 +198,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "minLength": 1,
           "type": "string"
         },
-        "expected_placement": {
+        "expected_placement_policy": {
           "enum": [
-            "archive",
-            "immediate"
+            "archive_default",
+            "immediate_default"
           ],
           "type": "string"
         },
@@ -227,11 +227,11 @@ The following JSON is the complete value owned at each machine-authority pointer
         "expected_bytes",
         "expected_content_type",
         "required_identity_assertions",
-        "expected_placement"
+        "expected_placement_policy"
       ],
       "type": "object"
     },
-    "signature": "\"(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, completion: riverhog_storage_adapter_protocol.protocol.WriteCompletionPrecondition, expected_bytes: PositiveDecimal, expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement: Literal['archive', 'immediate']) -> None\""
+    "signature": "\"(*, session: riverhog_storage_adapter_protocol.protocol.WriteSession, completion: riverhog_storage_adapter_protocol.protocol.WriteCompletionPrecondition, expected_bytes: PositiveDecimal, expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement_policy: Literal['archive_default', 'immediate_default']) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",

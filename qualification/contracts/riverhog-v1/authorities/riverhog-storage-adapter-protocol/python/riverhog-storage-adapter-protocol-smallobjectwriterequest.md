@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-f780091ab5"></a>`kind`: `"class"`
-- <a id="s-989b1f79b8"></a>`signature`: `"\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], placement: Literal['archive', 'immediate'], mode: Literal['create_only', 'replace_current'], expected_current_stored_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, stored_bytes: NonnegativeDecimal, stored_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+- <a id="s-989b1f79b8"></a>`signature`: `"\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], placement_policy: Literal['archive_default', 'immediate_default'], mode: Literal['create_only', 'replace_current'], expected_current_stored_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, stored_bytes: NonnegativeDecimal, stored_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
 
 #### Validated model schema
 
@@ -30,7 +30,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-84cb71abcd"></a>`type`: `"object"`
 - <a id="s-ed1ca2fe8e"></a>`additionalProperties`: `false`
-- <a id="s-4eb62601f3"></a>`required`: `["object_path","content_type","required_identity_assertions","placement","mode","stored_bytes","stored_sha256"]`
+- <a id="s-4eb62601f3"></a>`required`: `["object_path","content_type","required_identity_assertions","placement_policy","mode","stored_bytes","stored_sha256"]`
 
 ##### Fields
 
@@ -40,7 +40,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-64b62e7b27"></a>`expected_current_stored_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-79af9aeeff"></a>`mode` | yes | type="string"; enum=["create_only","replace_current"] |  |
 | <a id="s-a8eadba612"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-b9984bcb75"></a>`placement` | yes | type="string"; enum=["archive","immediate"] |  |
+| <a id="s-9ca2f4f718"></a>`placement_policy` | yes | type="string"; enum=["archive_default","immediate_default"] |  |
 | <a id="s-cb413a6c39"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} |  |
 | <a id="s-0152b13085"></a>`stored_bytes` | yes | [NonnegativeDecimal](#s-93bc80f836) |  |
 | <a id="s-75cc37e215"></a>`stored_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -89,7 +89,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 396633971960fb1a22d30fba17226389e34a24c77aeae9bcf6f8648092e1ff51 -->
+<!-- exact-contract-value: ebaf38f8eccda1750ed12420e8f657380f243f98bbf248db431aeb09d62c8ebf -->
 
 ```json
 {
@@ -133,10 +133,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "minLength": 1,
           "type": "string"
         },
-        "placement": {
+        "placement_policy": {
           "enum": [
-            "archive",
-            "immediate"
+            "archive_default",
+            "immediate_default"
           ],
           "type": "string"
         },
@@ -164,14 +164,14 @@ The following JSON is the complete value owned at each machine-authority pointer
         "object_path",
         "content_type",
         "required_identity_assertions",
-        "placement",
+        "placement_policy",
         "mode",
         "stored_bytes",
         "stored_sha256"
       ],
       "type": "object"
     },
-    "signature": "\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], placement: Literal['archive', 'immediate'], mode: Literal['create_only', 'replace_current'], expected_current_stored_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, stored_bytes: NonnegativeDecimal, stored_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
+    "signature": "\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], placement_policy: Literal['archive_default', 'immediate_default'], mode: Literal['create_only', 'replace_current'], expected_current_stored_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]] = None, stored_bytes: NonnegativeDecimal, stored_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",

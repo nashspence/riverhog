@@ -44,7 +44,15 @@ _MAX_WRITE_COMPLETION_PRECONDITION_TOKEN_LENGTH = 4000
 
 Sha256 = Annotated[str, StringConstraints(pattern=_SHA256_PATTERN)]
 SemanticId = Annotated[str, StringConstraints(pattern=_SEMANTIC_ID_PATTERN)]
-ObjectPlacement = Literal["archive", "immediate"]
+ObjectPlacementPolicy = Annotated[
+    Literal["archive_default", "immediate_default"],
+    Field(
+        description=(
+            "Select an adapter-configured placement default. This does not establish "
+            "archive membership or read readiness."
+        )
+    ),
+]
 ReadMode = Literal["immediate", "restore_required"]
 StorageAdapterErrorCode = Literal[
     "unauthorized",
@@ -230,7 +238,7 @@ class WriteStartRequest(StorageAdapterModel):
     expected_bytes: PositiveDecimal
     content_type: str = Field(min_length=1, max_length=255)
     required_identity_assertions: RequiredIdentityAssertions
-    placement: ObjectPlacement
+    placement_policy: ObjectPlacementPolicy
 
     @field_validator("object_path")
     @classmethod
@@ -353,7 +361,7 @@ class WriteCompleteRequest(StorageAdapterModel):
     expected_bytes: PositiveDecimal
     expected_content_type: str = Field(min_length=1, max_length=255)
     required_identity_assertions: RequiredIdentityAssertions
-    expected_placement: ObjectPlacement
+    expected_placement_policy: ObjectPlacementPolicy
 
     @field_validator("required_identity_assertions")
     @classmethod
@@ -376,7 +384,7 @@ class CompletedWriteLookupRequest(StorageAdapterModel):
     expected_bytes: PositiveDecimal
     expected_content_type: str = Field(min_length=1, max_length=255)
     required_identity_assertions: RequiredIdentityAssertions
-    expected_placement: ObjectPlacement
+    expected_placement_policy: ObjectPlacementPolicy
 
     @field_validator("object_path")
     @classmethod
@@ -396,7 +404,7 @@ class CompletedObjectReceipt(StorageAdapterModel):
     stored_bytes: PositiveDecimal
     verified_content_type: str = Field(min_length=1, max_length=255)
     verified_identity_assertions: RequiredIdentityAssertions
-    verified_placement: ObjectPlacement
+    verified_placement_policy: ObjectPlacementPolicy
     completed_at: CanonicalUtcTimestamp
 
     @field_validator("object_path")
@@ -414,7 +422,7 @@ class SmallObjectWriteRequest(StorageAdapterModel):
     object_path: str = Field(min_length=1, max_length=4096)
     content_type: str = Field(min_length=1, max_length=255)
     required_identity_assertions: RequiredIdentityAssertions
-    placement: ObjectPlacement
+    placement_policy: ObjectPlacementPolicy
     mode: Literal["create_only", "replace_current"]
     expected_current_stored_sha256: Sha256 | None = None
     stored_bytes: NonnegativeDecimal
@@ -445,7 +453,7 @@ class ImmutableObjectReceipt(StorageAdapterModel):
     stored_sha256: Sha256
     verified_content_type: str = Field(min_length=1, max_length=255)
     verified_identity_assertions: RequiredIdentityAssertions
-    verified_placement: ObjectPlacement
+    verified_placement_policy: ObjectPlacementPolicy
     completed_at: CanonicalUtcTimestamp
 
     @field_validator("object_path")
@@ -467,7 +475,7 @@ class ObjectMetadataReceipt(StorageAdapterModel):
     stored_bytes: NonnegativeDecimal
     stored_sha256: Sha256 | None = None
     observed_identity_assertions: RequiredIdentityAssertions
-    verified_placement: ObjectPlacement
+    verified_placement_policy: ObjectPlacementPolicy
     completed_at: CanonicalUtcTimestamp
 
     @field_validator("object_path")
@@ -483,7 +491,7 @@ class ObjectMetadataReceipt(StorageAdapterModel):
 
 class ObjectHeadRequest(StorageAdapterModel):
     object: ObjectLocator
-    expected_placement: ObjectPlacement
+    expected_placement_policy: ObjectPlacementPolicy
 
 
 class ObjectReadRequest(StorageAdapterModel):
@@ -757,8 +765,8 @@ def validate_completed_write_response(
         raise ValueError("adapter completed-object identity assertions differ from their request")
     if response.verified_content_type != request.expected_content_type:
         raise ValueError("adapter completed-object content type differs from its request")
-    if response.verified_placement != request.expected_placement:
-        raise ValueError("adapter completed-object placement differs from its request")
+    if response.verified_placement_policy != request.expected_placement_policy:
+        raise ValueError("adapter completed-object placement policy differs from its request")
     if response.stored_bytes != request.expected_bytes:
         raise ValueError("adapter completed-object bytes differ from their request")
 
@@ -773,7 +781,7 @@ def validate_small_object_response(
         or response.stored_sha256 != request.stored_sha256
         or response.verified_content_type != request.content_type
         or response.verified_identity_assertions != request.required_identity_assertions
-        or response.verified_placement != request.placement
+        or response.verified_placement_policy != request.placement_policy
     ):
         raise ValueError("adapter immutable-object receipt differs from its request")
 
@@ -786,8 +794,8 @@ def validate_object_metadata_response(
         raise ValueError("adapter object metadata differs from its request")
     if request.object.revision is not None and response.revision != request.object.revision:
         raise ValueError("adapter object metadata revision differs from its request")
-    if response.verified_placement != request.expected_placement:
-        raise ValueError("adapter object metadata placement differs from its request")
+    if response.verified_placement_policy != request.expected_placement_policy:
+        raise ValueError("adapter object metadata placement policy differs from its request")
 
 
 def validate_object_read_response(
@@ -1133,7 +1141,7 @@ __all__ = [
     "ObjectLocator",
     "ObjectHeadRequest",
     "ObjectMetadataReceipt",
-    "ObjectPlacement",
+    "ObjectPlacementPolicy",
     "ObjectReadRequest",
     "ObjectReadReceipt",
     "ObjectReadStream",

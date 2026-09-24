@@ -50,7 +50,7 @@ def prepare(workspace: Path) -> None:
                 object_path=object_path,
                 content_type="application/octet-stream",
                 required_identity_assertions={"riverhog-object": relative},
-                placement="archive",
+                placement_policy="archive_default",
                 mode="create_only",
                 stored_bytes=len(payload),
                 stored_sha256=hashlib.sha256(payload).hexdigest(),
@@ -63,7 +63,7 @@ def prepare(workspace: Path) -> None:
             object_path="archives/unrelated/payload.age",
             content_type="application/octet-stream",
             required_identity_assertions={"riverhog-object": "unrelated"},
-            placement="archive",
+            placement_policy="archive_default",
             mode="create_only",
             stored_bytes=len(unrelated),
             stored_sha256=hashlib.sha256(unrelated).hexdigest(),
@@ -76,7 +76,7 @@ def prepare(workspace: Path) -> None:
             expected_bytes=1024,
             content_type="application/octet-stream",
             required_identity_assertions={"riverhog-object": "incomplete"},
-            placement="archive",
+            placement_policy="archive_default",
         )
     )
     adapter.close()

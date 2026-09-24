@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-151f9f31e1"></a>`kind`: `"class"`
-- <a id="s-4e102cc2fb"></a>`signature`: `"\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], expected_bytes: PositiveDecimal, expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement: Literal['archive', 'immediate']) -> None\""`
+- <a id="s-4e102cc2fb"></a>`signature`: `"\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], expected_bytes: PositiveDecimal, expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement_policy: Literal['archive_default', 'immediate_default']) -> None\""`
 
 #### Validated model schema
 
@@ -30,7 +30,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-ac31600127"></a>`type`: `"object"`
 - <a id="s-a6bee3cd02"></a>`additionalProperties`: `false`
-- <a id="s-1947ad74e8"></a>`required`: `["object_path","expected_bytes","expected_content_type","required_identity_assertions","expected_placement"]`
+- <a id="s-1947ad74e8"></a>`required`: `["object_path","expected_bytes","expected_content_type","required_identity_assertions","expected_placement_policy"]`
 
 ##### Fields
 
@@ -38,7 +38,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-5a818e43f0"></a>`expected_bytes` | yes | [PositiveDecimal](#s-4cbb400754) |  |
 | <a id="s-4065844c2e"></a>`expected_content_type` | yes | type="string"; maxLength=255; minLength=1 |  |
-| <a id="s-eb7521c9e8"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"] |  |
+| <a id="s-a56f294142"></a>`expected_placement_policy` | yes | type="string"; enum=["archive_default","immediate_default"] |  |
 | <a id="s-83c616d94c"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-f23981c971"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} |  |
 
@@ -85,7 +85,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c31d183af5695852a44cfeaaeb416039ccb6993414986ed13e72967630687556 -->
+<!-- exact-contract-value: d329824d0f41a5ed80cd9a3d2f337df9f5edabbc9a6b92bbed591f77f068074e -->
 
 ```json
 {
@@ -108,10 +108,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "minLength": 1,
           "type": "string"
         },
-        "expected_placement": {
+        "expected_placement_policy": {
           "enum": [
-            "archive",
-            "immediate"
+            "archive_default",
+            "immediate_default"
           ],
           "type": "string"
         },
@@ -138,11 +138,11 @@ The following JSON is the complete value owned at each machine-authority pointer
         "expected_bytes",
         "expected_content_type",
         "required_identity_assertions",
-        "expected_placement"
+        "expected_placement_policy"
       ],
       "type": "object"
     },
-    "signature": "\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], expected_bytes: PositiveDecimal, expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement: Literal['archive', 'immediate']) -> None\""
+    "signature": "\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], expected_bytes: PositiveDecimal, expected_content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], expected_placement_policy: Literal['archive_default', 'immediate_default']) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",

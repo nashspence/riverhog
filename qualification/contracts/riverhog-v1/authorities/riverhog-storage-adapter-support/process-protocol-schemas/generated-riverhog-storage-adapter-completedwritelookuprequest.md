@@ -17,7 +17,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-37f9a223b9"></a>`type`: `"object"`
 - <a id="s-b58067e30e"></a>`additionalProperties`: `false`
-- <a id="s-41b6488a2d"></a>`required`: `["object_path","expected_bytes","expected_content_type","required_identity_assertions","expected_placement"]`
+- <a id="s-41b6488a2d"></a>`required`: `["object_path","expected_bytes","expected_content_type","required_identity_assertions","expected_placement_policy"]`
 - <a id="s-03703c29e8"></a>`title`: `"CompletedWriteLookupRequest"`
 
 ### Fields
@@ -26,7 +26,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-d6b613d625"></a>`expected_bytes` | yes | [PositiveDecimal](#s-53abf440a5) |  |
 | <a id="s-558690d0bf"></a>`expected_content_type` | yes | type="string"; maxLength=255; minLength=1; title="Expected Content Type" |  |
-| <a id="s-8c0b60131f"></a>`expected_placement` | yes | type="string"; enum=["archive","immediate"]; title="Expected Placement" |  |
+| <a id="s-db4c4e79b6"></a>`expected_placement_policy` | yes | type="string"; enum=["archive_default","immediate_default"]; title="Expected Placement Policy" | Select an adapter-configured placement default. This does not establish archive membership or read readiness. |
 | <a id="s-ceec1bb3a7"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
 | <a id="s-dc8a372d2a"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; title="Required Identity Assertions"; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
 
@@ -86,7 +86,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8557b5a8676d11e86387a84720802c031aad1a451b29d1b96872109b8a993834 -->
+<!-- exact-contract-value: 5539af3b8dd2080259c7c590ccb3a1076ee12595abae48cf23dfd6d907d2d90a -->
 
 ```json
 {
@@ -107,12 +107,13 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Expected Content Type",
       "type": "string"
     },
-    "expected_placement": {
+    "expected_placement_policy": {
+      "description": "Select an adapter-configured placement default. This does not establish archive membership or read readiness.",
       "enum": [
-        "archive",
-        "immediate"
+        "archive_default",
+        "immediate_default"
       ],
-      "title": "Expected Placement",
+      "title": "Expected Placement Policy",
       "type": "string"
     },
     "object_path": {
@@ -141,7 +142,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "expected_bytes",
     "expected_content_type",
     "required_identity_assertions",
-    "expected_placement"
+    "expected_placement_policy"
   ],
   "title": "CompletedWriteLookupRequest",
   "type": "object"

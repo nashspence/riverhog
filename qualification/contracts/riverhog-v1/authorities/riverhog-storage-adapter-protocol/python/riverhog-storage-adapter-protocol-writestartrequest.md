@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-7dbcaedcab"></a>`kind`: `"class"`
-- <a id="s-66089900c1"></a>`signature`: `"\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], expected_bytes: PositiveDecimal, content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], placement: Literal['archive', 'immediate']) -> None\""`
+- <a id="s-66089900c1"></a>`signature`: `"\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], expected_bytes: PositiveDecimal, content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], placement_policy: Literal['archive_default', 'immediate_default']) -> None\""`
 
 #### Validated model schema
 
@@ -30,7 +30,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-ca9f1d8fd4"></a>`type`: `"object"`
 - <a id="s-85823fc036"></a>`additionalProperties`: `false`
-- <a id="s-389d33dd35"></a>`required`: `["object_path","expected_bytes","content_type","required_identity_assertions","placement"]`
+- <a id="s-389d33dd35"></a>`required`: `["object_path","expected_bytes","content_type","required_identity_assertions","placement_policy"]`
 
 ##### Fields
 
@@ -39,7 +39,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-66562d712e"></a>`content_type` | yes | type="string"; maxLength=255; minLength=1 |  |
 | <a id="s-0920fe8051"></a>`expected_bytes` | yes | [PositiveDecimal](#s-412bc07bda) |  |
 | <a id="s-cb6fed8c86"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-5911af9f98"></a>`placement` | yes | type="string"; enum=["archive","immediate"] |  |
+| <a id="s-2b5a564874"></a>`placement_policy` | yes | type="string"; enum=["archive_default","immediate_default"] |  |
 | <a id="s-f32bac3861"></a>`required_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} |  |
 
 ##### Definitions
@@ -85,7 +85,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9585268b2851e2bbf5214039dd399d316c4a8ce25e2d0a2f3e4f4dc1fe8b02bc -->
+<!-- exact-contract-value: 99587903d6bb85e6ae43893b3c813fa1c956761ebf27bfab4c9e1bd5f799763c -->
 
 ```json
 {
@@ -113,10 +113,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "minLength": 1,
           "type": "string"
         },
-        "placement": {
+        "placement_policy": {
           "enum": [
-            "archive",
-            "immediate"
+            "archive_default",
+            "immediate_default"
           ],
           "type": "string"
         },
@@ -138,11 +138,11 @@ The following JSON is the complete value owned at each machine-authority pointer
         "expected_bytes",
         "content_type",
         "required_identity_assertions",
-        "placement"
+        "placement_policy"
       ],
       "type": "object"
     },
-    "signature": "\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], expected_bytes: PositiveDecimal, content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], placement: Literal['archive', 'immediate']) -> None\""
+    "signature": "\"(*, object_path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], expected_bytes: PositiveDecimal, content_type: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], required_identity_assertions: Annotated[dict[str, str], MaxLen(max_length=64)], placement_policy: Literal['archive_default', 'immediate_default']) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",

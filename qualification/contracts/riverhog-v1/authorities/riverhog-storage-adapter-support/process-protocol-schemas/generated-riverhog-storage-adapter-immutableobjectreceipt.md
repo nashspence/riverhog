@@ -17,7 +17,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-a408c9d96c"></a>`type`: `"object"`
 - <a id="s-b244407b30"></a>`additionalProperties`: `false`
-- <a id="s-7be06f5573"></a>`required`: `["object_path","stored_bytes","stored_sha256","verified_content_type","verified_identity_assertions","verified_placement","completed_at"]`
+- <a id="s-7be06f5573"></a>`required`: `["object_path","stored_bytes","stored_sha256","verified_content_type","verified_identity_assertions","verified_placement_policy","completed_at"]`
 - <a id="s-d161b1c6dd"></a>`title`: `"ImmutableObjectReceipt"`
 
 ### Fields
@@ -32,7 +32,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-2806c9d5c6"></a>`stored_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Stored Sha256" |  |
 | <a id="s-eb1ed81ecd"></a>`verified_content_type` | yes | type="string"; maxLength=255; minLength=1; title="Verified Content Type" |  |
 | <a id="s-f13441d8ea"></a>`verified_identity_assertions` | yes | type="object"; additionalProperties=(type="string"); maxProperties=64; title="Verified Identity Assertions"; x-riverhog-encoded-bytes-max=16384; x-riverhog-extent={"policy":"contract_max","reason":"bounded-object-identity-assertion-envelope"} | Inert caller-owned facts used only to identify and reconcile an exact stored object. Adapters canonicalize, persist, return, and compare these assertions; they must not interpret them as routing, retrieval, retention, credentials, placement, or provider-control instructions. Adapters may retain additional adapter-private assertions. |
-| <a id="s-107d1345ef"></a>`verified_placement` | yes | type="string"; enum=["archive","immediate"]; title="Verified Placement" |  |
+| <a id="s-82d729a0dd"></a>`verified_placement_policy` | yes | type="string"; enum=["archive_default","immediate_default"]; title="Verified Placement Policy" | Select an adapter-configured placement default. This does not establish archive membership or read readiness. |
 
 ### Definitions
 
@@ -94,7 +94,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f435da03f7ef92a57a3a0f43a34f9ff198d7285899b1cdfe0cbcc824ea47a92c -->
+<!-- exact-contract-value: e6d14f612fb194b085b59c9360b5482fffef6f1a165d66158c4fd38169ecdebf -->
 
 ```json
 {
@@ -175,12 +175,13 @@ The following JSON is the complete value owned at each machine-authority pointer
         "reason": "bounded-object-identity-assertion-envelope"
       }
     },
-    "verified_placement": {
+    "verified_placement_policy": {
+      "description": "Select an adapter-configured placement default. This does not establish archive membership or read readiness.",
       "enum": [
-        "archive",
-        "immediate"
+        "archive_default",
+        "immediate_default"
       ],
-      "title": "Verified Placement",
+      "title": "Verified Placement Policy",
       "type": "string"
     }
   },
@@ -190,7 +191,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "stored_sha256",
     "verified_content_type",
     "verified_identity_assertions",
-    "verified_placement",
+    "verified_placement_policy",
     "completed_at"
   ],
   "title": "ImmutableObjectReceipt",
