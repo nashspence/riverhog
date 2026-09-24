@@ -100,7 +100,7 @@ def test_event_reads_and_concurrent_context_reapers_do_only_bounded_work(
 
     page = first.page(owner_principal_id="fixture", after=None, limit=3)
     assert len(page.events) == 3
-    assert all("context" not in event.data for event in page.events)
+    assert all("context" not in event.model_dump(mode="json") for event in page.events)
     with session_scope(make_session_factory(database_url)) as session:
         assert (
             session.scalar(

@@ -1163,19 +1163,19 @@ def test_postgres_concurrent_nested_tree_admission_is_atomic_and_normalized(
     admission = next(
         item for item in events if item.type == "io.riverhog.stove0.branch-set.admitted"
     )
-    assert admission.data["branch_count"] == 1
-    assert admission.data["admitted_work_count"] == 2
+    assert admission.payload.branch_count == 1
+    assert admission.payload.admitted_work_count == 2
     created_events = {
-        item.data.work_id: item
+        item.payload.work_id: item
         for item in events
-        if isinstance(item, WorkCreatedEvent) and item.data.parent_work_id is not None
+        if isinstance(item, WorkCreatedEvent) and item.payload.parent_work_id is not None
     }
     assert nested.work.work_id in created_events
     assert (
-        created_events[nested.work.work_id].data.parent_work_id == decision.plan.parent_work.work_id
+        created_events[nested.work.work_id].payload.parent_work_id == decision.plan.parent_work.work_id
     )
     assert (
-        created_events[leaf.workflow_plan.work.work_id].data.parent_work_id == nested.work.work_id
+        created_events[leaf.workflow_plan.work.work_id].payload.parent_work_id == nested.work.work_id
     )
 
 
