@@ -9,8 +9,8 @@
         "stove0/conformance"
       ],
       "recipe_id": "stove0.conformance-media/v1",
-      "recipe_revision": 1,
-      "recipe_sha256": "a13518568649960293227a2b1ff2cc4a7d0a376ac3024a0b89b818e007279b51",
+      "recipe_revision": "1",
+      "recipe_sha256": "2229b4f736a85e6373efe69c3370b32471287f691a7228508e44af3938802c02",
       "effective_intent": {},
       "automatic_preview": "accept-ready"
     }

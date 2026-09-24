@@ -17,6 +17,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from riverhog_canonical_json import CanonicalJsonError, canonical_json_bytes
 from riverhog_client import ApiClient
 from riverhog_client.producer import CollectionProducer, ProducedCollection, ProducerFile
 from riverhog_provenance import (
@@ -1377,12 +1378,10 @@ def _claim_completion_record(
         return None
     if not isinstance(value, Mapping):
         raise FtpSpoolError("FTP claim completion record is invalid")
-    raw = (
-        json.dumps(dict(value), ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
-    ).encode("utf-8")
     try:
+        raw = canonical_json_bytes(dict(value)) + b"\n"
         record = parse_completion_record(raw)
-    except CompletionError as exc:
+    except (CanonicalJsonError, CompletionError) as exc:
         raise FtpSpoolError("FTP claim completion record is invalid") from exc
     expected = (
         source.id,

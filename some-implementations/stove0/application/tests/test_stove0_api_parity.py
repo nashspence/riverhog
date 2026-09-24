@@ -17,6 +17,7 @@ from riverhog_protocol.collection_workflows import ArtifactDispositionSetIdentit
 from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
 from stove0_api.app import Stove0Composition, _log_scheduler_failures, create_app
+from stove0_api.routing import ExactJsonRoute
 from stove0_api_client import Stove0ApiClient, Stove0ApiError
 from stove0_core import (
     ClaimBinding,
@@ -357,7 +358,7 @@ class _LifecycleAdmission:
             revision=1,
             required_tags=("camera",),
             recipe_id="stove0.conformance-media/v1",
-            recipe_revision=1,
+            recipe_revision=str(1),
             recipe_sha256="3" * 64,
         )
         self.intent = AdmissionIntent.seal(
@@ -532,7 +533,7 @@ def _fixture_selection(work: WorkIdentity) -> ArtifactSelection:
                 role="fixture.source/v1",
                 collection=work.inputs[0],
                 path="source/input.bin",
-                bytes=12,
+                bytes=str(12),
                 sha256="4" * 64,
                 media_type="application/octet-stream",
             ),
@@ -673,14 +674,14 @@ class _LifecycleTargetCallbacks:
                 content_identity="2" * 64,
             ),
             path="source/input.bin",
-            bytes=12,
+            bytes=str(12),
             sha256="4" * 64,
         )
         self.output = OutputArtifact(
             id="output",
             role="fixture.output/v1",
             path="output/result.bin",
-            bytes=12,
+            bytes=str(12),
             sha256="5" * 64,
         )
 
@@ -1062,6 +1063,30 @@ def test_stove0_runtime_errors_use_the_shared_envelope() -> None:
         )
         assert malformed.status_code == 400
         assert malformed.json()["error"]["code"] == "bad_request"
+
+
+def test_stove0_raw_json_admission_precedes_operator_model_validation() -> None:
+    app = create_app(_composition())
+    assert all(
+        isinstance(route, ExactJsonRoute) for route in app.routes if isinstance(route, APIRoute)
+    )
+    headers = {"Authorization": "Bearer stove0-test-token", "Content-Type": "application/json"}
+    with TestClient(app) as client:
+        for body, reason in (
+            (b'{"recipe_id":"first","recipe_id":"second"}', "duplicate"),
+            (b'{"recipe_revision":9007199254740993}', "numeric"),
+        ):
+            response = client.post("/v1/workflow-previews", content=body, headers=headers)
+            assert response.status_code == 400
+            assert reason in response.json()["error"]["message"]
+
+        accepted_number = client.post(
+            "/v1/workflow-previews",
+            content=b'{"recipe_id":"fixture","inputs":[],"effective_intent":{"ratio":0.1}}',
+            headers=headers,
+        )
+        assert accepted_number.status_code == 400
+        assert "numeric" not in accepted_number.json()["error"]["message"]
 
 
 def test_workflow_preview_rejects_a_receipt_from_another_riverhog_authority() -> None:

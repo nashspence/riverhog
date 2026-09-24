@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import threading
 import time
+import uuid
 from collections.abc import Iterator
 from contextlib import contextmanager
 from ftplib import FTP, error_temp
@@ -14,6 +15,7 @@ import a_riverhog_ftp_spool.listener as ftp_listener
 import pytest
 from a_riverhog_ftp_spool.completion import (
     CONTROL_DIR,
+    CompletionError,
     CompletionHandoff,
     CompletionRecord,
     completion_log_path,
@@ -69,6 +71,26 @@ def _login(address: tuple[str, int]) -> FTP:
 def _records(root: Path) -> list[CompletionRecord]:
     lines = completion_log_path(root).read_bytes().splitlines(keepends=True)
     return [parse_completion_record(line) for line in lines[1:]]
+
+
+def test_completion_authority_rejects_duplicate_json_members_before_decode() -> None:
+    event_id = str(uuid.uuid4())
+    record = CompletionRecord(
+        format="riverhog-ftp-completion-record/v1",
+        event_id=event_id,
+        source_id="camera-a",
+        path="clip.mov",
+        custody=f"{CONTROL_DIR}/handoffs/{event_id}/clip.mov",
+        bytes=12,
+        device=1,
+        inode=2,
+    )
+    raw = record.canonical_bytes()
+    assert parse_completion_record(raw) == record
+    with pytest.raises(CompletionError, match="not canonical JSON"):
+        parse_completion_record(
+            raw.replace(b'"source_id":"camera-a"', b'"source_id":"camera-a","source_id":"camera-b"')
+        )
 
 
 def _adapter_config(root: Path) -> FtpSpoolConfig:

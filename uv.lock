@@ -429,6 +429,7 @@ dependencies = [
     { name = "http-api-contracts" },
     { name = "pydantic" },
     { name = "pyftpdlib" },
+    { name = "riverhog-canonical-json" },
     { name = "riverhog-client" },
     { name = "riverhog-protocol" },
     { name = "riverhog-provenance" },
@@ -443,6 +444,7 @@ requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
     { name = "pyftpdlib", specifier = ">=2.2,<3.0" },
+    { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-client", editable = "packages/riverhog-client" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "riverhog-provenance", editable = "packages/riverhog-provenance" },
@@ -1229,12 +1231,14 @@ source = { editable = "some-implementations/gogurt/packages/listener-runtime" }
 dependencies = [
     { name = "config-validation" },
     { name = "gogurt-core" },
+    { name = "time-formats" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "config-validation", editable = "packages/config-validation" },
     { name = "gogurt-core", editable = "some-implementations/gogurt/packages/core" },
+    { name = "time-formats", editable = "packages/time-formats" },
 ]
 
 [[package]]
@@ -2949,6 +2953,7 @@ dependencies = [
     { name = "http-api-contracts" },
     { name = "psycopg", extra = ["binary"] },
     { name = "pydantic" },
+    { name = "riverhog-canonical-json" },
     { name = "riverhog-client" },
     { name = "riverhog-protocol" },
     { name = "sqlalchemy" },
@@ -2972,6 +2977,7 @@ requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.3,<4.0" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
+    { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-client", editable = "packages/riverhog-client" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "sqlalchemy", specifier = ">=2.0,<3.0" },

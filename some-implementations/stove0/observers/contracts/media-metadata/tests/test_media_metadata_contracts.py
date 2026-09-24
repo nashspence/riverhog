@@ -39,7 +39,7 @@ def test_media_metadata_contract_carries_exact_evidence_without_a_ceiling() -> N
     assert MEDIA_METADATA_OBSERVER_CONTRACT.id == "stove0.media.metadata/v1"
     assert (
         MEDIA_METADATA_OBSERVER_CONTRACT.contract_sha256
-        == "4f9316118eb68d64154e3013e7e7d89738097881fb399ad3a3721404a47e375c"
+        == "6bd7dab32a7857f706ca10316f9fcc3d1faa8d9a8459b8058d187d77c3675119"
     )
     assert facts.artifacts[0].artifact_id == "primary"
     assert (
@@ -100,7 +100,7 @@ def test_media_metadata_semantics_bind_evidence_and_exact_request_subjects() -> 
             content_identity="b" * 64,
         ),
         path="camera.mp4",
-        bytes=10,
+        bytes=str(10),
         sha256="c" * 64,
     )
     document = {

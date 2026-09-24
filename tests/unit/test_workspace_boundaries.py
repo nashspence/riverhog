@@ -532,6 +532,7 @@ def test_portable_core_listener_runtime_and_platform_dependency_direction_is_exa
     assert declared_project_dependencies(listener_runtime_config) == {
         "config-validation",
         "gogurt-core",
+        "time-formats",
     }
     listener_runtime_imports = set().union(
         *(

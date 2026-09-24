@@ -103,11 +103,7 @@ def _reject_constant(value: str) -> object:
     raise CanonicalJsonError("numeric", f"{value} is not a JSON number")
 
 
-def _pointer(parent: str, part: str) -> str:
-    return parent + "/" + part.replace("~", "~0").replace("/", "~1")
-
-
-def _adapt_number(value: _Number, path: str, binary64_paths: frozenset[str]) -> int | float:
+def _adapt_number(value: _Number) -> int | float:
     try:
         exact = Decimal(value)
         number = float(value)
@@ -115,22 +111,16 @@ def _adapt_number(value: _Number, path: str, binary64_paths: frozenset[str]) -> 
         raise CanonicalJsonError("numeric", "invalid JSON number") from exc
     if not math.isfinite(number) or (number == 0 and exact != 0):
         raise CanonicalJsonError("numeric", "number overflows or underflows binary64")
-    if path in binary64_paths:
-        return number
-    if Decimal.from_float(number) != exact:
-        raise CanonicalJsonError("numeric", "exact value needs a string or binary64 domain")
     if exact == exact.to_integral_value():
         return _exact_integer(int(exact))
-    if Decimal(rfc8785.dumps(number).decode("ascii")) != exact:
-        raise CanonicalJsonError("numeric", "JCS spelling changes the exact number")
     return number
 
 
-def parse_identity_json(raw: bytes, *, binary64_paths: frozenset[str] = frozenset()) -> JsonValue:
+def parse_identity_json(raw: bytes) -> JsonValue:
     """Parse UTF-8 JSON before duplicate keys or exact number lexemes are lost.
 
-    The default number domain is exact. A caller may name JSON Pointer locations
-    whose semantic type is binary64; those locations may admit decimal rounding.
+    JSON fractional numbers use JCS's binary64 domain. Exact unbounded values
+    use named string codecs; integral tokens must survive JCS without loss.
     """
 
     if type(raw) is not bytes:
@@ -148,17 +138,17 @@ def parse_identity_json(raw: bytes, *, binary64_paths: frozenset[str] = frozense
     except (json.JSONDecodeError, RecursionError) as exc:
         raise CanonicalJsonError("syntax", "invalid JSON text") from exc
 
-    def adapt(node: object, path: str = "") -> JsonValue:
+    def adapt(node: object) -> JsonValue:
         if type(node) is _Number:
-            return _adapt_number(node, path, binary64_paths)
+            return _adapt_number(node)
         if node is None or type(node) is bool:
             return cast(JsonValue, node)
         if type(node) is str:
             return _string(node)
         if type(node) is list:
-            return [adapt(item, _pointer(path, str(index))) for index, item in enumerate(node)]
+            return [adapt(item) for item in node]
         if type(node) is dict:
-            return {_string(key): adapt(item, _pointer(path, key)) for key, item in node.items()}
+            return {_string(key): adapt(item) for key, item in node.items()}
         raise CanonicalJsonError("shape", "parsed value is outside JSON")
 
     try:
@@ -167,10 +157,8 @@ def parse_identity_json(raw: bytes, *, binary64_paths: frozenset[str] = frozense
         raise CanonicalJsonError("syntax", "excessively nested JSON text") from exc
 
 
-def require_canonical_json(
-    raw: bytes, *, binary64_paths: frozenset[str] = frozenset()
-) -> JsonValue:
-    value = parse_identity_json(raw, binary64_paths=binary64_paths)
+def require_canonical_json(raw: bytes) -> JsonValue:
+    value = parse_identity_json(raw)
     if canonical_json_bytes(value) != raw:
         raise CanonicalJsonError("canonical", "JSON text does not use RFC 8785 encoding")
     return value

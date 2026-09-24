@@ -488,14 +488,16 @@ class RecipePlanner:
             raise RuntimeError("target execution requires explicit branch or join work")
         return ArtifactSelection.seal(
             tuple(
-                WorkArtifactSubject(
-                    id=artifact.id,
-                    role=artifact.role,
-                    collection=artifact.collection,
-                    path=artifact.path,
-                    bytes=artifact.bytes,
-                    sha256=artifact.sha256,
-                    media_type=artifact.media_type,
+                WorkArtifactSubject.model_validate(
+                    dict(
+                        id=artifact.id,
+                        role=artifact.role,
+                        collection=artifact.collection,
+                        path=artifact.path,
+                        bytes=str(artifact.bytes),
+                        sha256=artifact.sha256,
+                        media_type=artifact.media_type,
+                    )
                 )
                 for artifact in artifacts
             )
@@ -642,14 +644,16 @@ def _subjects(
             + canonical_json_sha256({"collection_id": root.collection_id, "path": raw["path"]})[:32]
         )
         subjects.append(
-            WorkArtifactSubject(
-                id=artifact_id,
-                role=rule.role,
-                collection=root,
-                path=str(raw["path"]),
-                bytes=byte_count,
-                sha256=str(raw["sha256"]),
-                media_type=rule.media_type,
+            WorkArtifactSubject.model_validate(
+                dict(
+                    id=artifact_id,
+                    role=rule.role,
+                    collection=root,
+                    path=str(raw["path"]),
+                    bytes=str(byte_count),
+                    sha256=str(raw["sha256"]),
+                    media_type=rule.media_type,
+                )
             )
         )
     return tuple(sorted(subjects, key=lambda subject: subject.id))
@@ -760,14 +764,16 @@ def _target_inputs(
     rules: Sequence[ArtifactRule],
 ) -> tuple[InputArtifact, ...]:
     return tuple(
-        InputArtifact(
-            id=subject.id,
-            role=subject.role,
-            collection=subject.collection,
-            path=subject.path,
-            bytes=subject.bytes,
-            sha256=subject.sha256,
-            media_type=subject.media_type,
+        InputArtifact.model_validate(
+            dict(
+                id=subject.id,
+                role=subject.role,
+                collection=subject.collection,
+                path=subject.path,
+                bytes=str(subject.bytes),
+                sha256=subject.sha256,
+                media_type=subject.media_type,
+            )
         )
         for subject in _subjects(inventory, rules)
     )
@@ -777,14 +783,16 @@ def _target_inputs_from_selection(
     selection: ArtifactSelection,
 ) -> tuple[InputArtifact, ...]:
     return tuple(
-        InputArtifact(
-            id=subject.id,
-            role=subject.role,
-            collection=subject.collection,
-            path=subject.path,
-            bytes=subject.bytes,
-            sha256=subject.sha256,
-            media_type=subject.media_type,
+        InputArtifact.model_validate(
+            dict(
+                id=subject.id,
+                role=subject.role,
+                collection=subject.collection,
+                path=subject.path,
+                bytes=str(subject.bytes),
+                sha256=subject.sha256,
+                media_type=subject.media_type,
+            )
         )
         for subject in selection.artifacts
     )
@@ -813,14 +821,16 @@ def _join_target_inputs(
                 )[:32]
             )
             artifacts.append(
-                InputArtifact(
-                    id=artifact_id,
-                    role=subject.role,
-                    collection=subject.collection,
-                    path=subject.path,
-                    bytes=subject.bytes,
-                    sha256=subject.sha256,
-                    media_type=subject.media_type,
+                InputArtifact.model_validate(
+                    dict(
+                        id=artifact_id,
+                        role=subject.role,
+                        collection=subject.collection,
+                        path=subject.path,
+                        bytes=str(subject.bytes),
+                        sha256=subject.sha256,
+                        media_type=subject.media_type,
+                    )
                 )
             )
     return tuple(sorted(artifacts, key=lambda item: item.id))

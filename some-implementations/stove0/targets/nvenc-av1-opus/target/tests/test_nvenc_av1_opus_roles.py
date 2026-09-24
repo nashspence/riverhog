@@ -55,7 +55,7 @@ def test_nvenc_execution_identity_is_the_canonical_semantic_result() -> None:
         id="archive-source",
         role="stove0.media.video-archive/v1",
         path="video/source.mkv",
-        bytes=12,
+        bytes=str(12),
         sha256=_sha("3"),
         media_type="video/x-matroska",
     )

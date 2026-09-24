@@ -21,6 +21,7 @@ from riverhog_protocol import (
     CatalogSyncDescriptor,
     CollectionTag,
 )
+from riverhog_protocol.exact_scalar import NonnegativeDecimal
 from stove0_observer_protocol import ContentObservationRequest, ContentObservationResult
 from stove0_protocol import (
     ArtifactSelectionPage,
@@ -114,7 +115,7 @@ class AdmissionPolicy(OperatorModel):
         },
     )
     recipe_id: str = Field(min_length=1, max_length=160)
-    recipe_revision: int = Field(ge=1)
+    recipe_revision: NonnegativeDecimal = Field(ge=1)
     recipe_sha256: Sha256
     effective_intent: dict[str, JsonValue] = Field(default_factory=dict)
     automatic_preview: Literal["accept-ready"] = "accept-ready"
@@ -190,7 +191,7 @@ class AdmissionIntent(OperatorModel):
     required_tags: tuple[CollectionTag, ...]
     collection: CatalogSyncDescriptor
     recipe_id: str = Field(min_length=1, max_length=160)
-    recipe_revision: int = Field(ge=1)
+    recipe_revision: NonnegativeDecimal = Field(ge=1)
     recipe_sha256: Sha256
     effective_intent: dict[str, JsonValue]
 
@@ -215,34 +216,38 @@ class AdmissionIntent(OperatorModel):
             "required_tags": list(policy.required_tags),
             "collection": canonical_collection.model_dump(mode="json"),
             "recipe_id": policy.recipe_id,
-            "recipe_revision": policy.recipe_revision,
+            "recipe_revision": policy.model_dump(mode="json")["recipe_revision"],
             "recipe_sha256": policy.recipe_sha256,
             "effective_intent": policy.effective_intent,
         }
         identity = canonical_json_sha256(payload)
-        return cls(
-            admission_id=identity,
-            policy_id=policy.id,
-            policy_revision=policy.revision,
-            policy_sha256=policy.policy_sha256,
-            required_tags=policy.required_tags,
-            collection=canonical_collection,
-            recipe_id=policy.recipe_id,
-            recipe_revision=policy.recipe_revision,
-            recipe_sha256=policy.recipe_sha256,
-            effective_intent=policy.effective_intent,
+        return cls.model_validate(
+            dict(
+                admission_id=identity,
+                policy_id=policy.id,
+                policy_revision=policy.revision,
+                policy_sha256=policy.policy_sha256,
+                required_tags=policy.required_tags,
+                collection=canonical_collection,
+                recipe_id=policy.recipe_id,
+                recipe_revision=str(policy.recipe_revision),
+                recipe_sha256=policy.recipe_sha256,
+                effective_intent=policy.effective_intent,
+            )
         )
 
     @model_validator(mode="after")
     def exact_identity(self) -> Self:
-        policy = AdmissionPolicy(
-            id=self.policy_id,
-            revision=self.policy_revision,
-            required_tags=self.required_tags,
-            recipe_id=self.recipe_id,
-            recipe_revision=self.recipe_revision,
-            recipe_sha256=self.recipe_sha256,
-            effective_intent=self.effective_intent,
+        policy = AdmissionPolicy.model_validate(
+            dict(
+                id=self.policy_id,
+                revision=self.policy_revision,
+                required_tags=self.required_tags,
+                recipe_id=self.recipe_id,
+                recipe_revision=str(self.recipe_revision),
+                recipe_sha256=self.recipe_sha256,
+                effective_intent=self.effective_intent,
+            )
         )
         payload = {
             "format": self.format,
@@ -252,7 +257,7 @@ class AdmissionIntent(OperatorModel):
             "required_tags": list(self.required_tags),
             "collection": self.collection.model_dump(mode="json"),
             "recipe_id": self.recipe_id,
-            "recipe_revision": self.recipe_revision,
+            "recipe_revision": str(self.recipe_revision),
             "recipe_sha256": self.recipe_sha256,
             "effective_intent": self.effective_intent,
         }
@@ -437,7 +442,7 @@ def validate_evaluation_state_shape(
 
 class OperatorWorkflowPreviewRequest(OperatorModel):
     recipe_id: str = Field(min_length=1, max_length=160)
-    recipe_revision: int | None = Field(default=None, ge=1)
+    recipe_revision: NonnegativeDecimal | None = Field(default=None, ge=1)
     inputs: tuple[CollectionRootIdentityRef, ...] = Field(min_length=1)
     effective_intent: dict[str, JsonValue] = Field(default_factory=dict)
 

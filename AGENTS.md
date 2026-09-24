@@ -38,8 +38,10 @@ inventories of those surfaces to `main`; release reference is generated from a t
 GitHub issue bodies own durable scope, decisions, and issue-local acceptance. Use native
 sub-issues for decomposition, dependencies for hard prerequisites, and milestones for release
 membership; do not mirror child or transitive state in parent checklists or workflow title
-prefixes. When reopening an issue, narrow its body to the current residual and preserve completed
-history in comments; use checklists only for acceptance steps owned by that issue.
+prefixes. Preserve an existing issue body as its historical scope and decision record. Record
+later decisions in comments, and open a linked follow-up issue for residual work instead of
+reopening or rewriting a completed issue. Use checklists only for acceptance steps owned by
+that issue.
 
 Durable documentation has distinct roles:
 

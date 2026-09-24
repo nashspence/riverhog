@@ -63,7 +63,7 @@ def artifact(
         role=role,
         collection=collection,
         path=path,
-        bytes=byte_count,
+        bytes=str(byte_count),
         sha256=digest(f"artifact:{collection.collection_id}:{path}:{byte_count}"),
     )
 
@@ -789,7 +789,7 @@ def test_selection_reference_is_closed_and_summary_verified() -> None:
     bad_ref = ArtifactSelectionRef(
         selection_sha256=selection.selection_sha256,
         artifact_count=2,
-        total_bytes=selection.total_bytes,
+        total_bytes=str(selection.total_bytes),
     )
     from stove0_protocol.fork_join import resolve_selection
 

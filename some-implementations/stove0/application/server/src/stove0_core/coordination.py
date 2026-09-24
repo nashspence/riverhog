@@ -349,14 +349,16 @@ def _output_selection(record: WorkRecord, store: WorkStore) -> ArtifactSelection
     root = _collection_root(output)
     return ArtifactSelection.seal(
         tuple(
-            WorkArtifactSubject(
-                id=item.id,
-                role=item.role,
-                collection=root,
-                path=item.path,
-                bytes=item.bytes,
-                sha256=item.sha256,
-                media_type=item.media_type,
+            WorkArtifactSubject.model_validate(
+                dict(
+                    id=item.id,
+                    role=item.role,
+                    collection=root,
+                    path=item.path,
+                    bytes=str(item.bytes),
+                    sha256=item.sha256,
+                    media_type=item.media_type,
+                )
             )
             for item in store.iter_target_outputs(record.work_id, status.production.job_id)
         )

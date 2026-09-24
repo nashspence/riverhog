@@ -175,7 +175,7 @@ def test_review_preflight_seals_exact_sampler_identity_and_one_operation(
                         content_identity=_sha("2"),
                     ),
                     path="camera/source.wav",
-                    bytes=12,
+                    bytes=str(12),
                     sha256=_sha("3"),
                     media_type="audio/wav",
                 )
@@ -291,7 +291,7 @@ def test_review_execution_identity_is_the_canonical_semantic_result() -> None:
         id="review-index",
         role="stove0.review.index/v1",
         path="review/index.json",
-        bytes=12,
+        bytes=str(12),
         sha256=_sha("4"),
         media_type="application/json",
     )
@@ -424,7 +424,7 @@ def test_review_effect_deployment_has_one_fixed_effect_contract(tmp_path: Path) 
                         content_identity=_sha("2"),
                     ),
                     path="camera/source.wav",
-                    bytes=12,
+                    bytes=str(12),
                     sha256=_sha("3"),
                     media_type="audio/wav",
                 )
@@ -473,7 +473,7 @@ def test_rclone_review_destination_commits_manifest_last_and_returns_opaque_rece
                 id="sample",
                 role="stove0.review.audio/v1",
                 path="sample.opus",
-                bytes=6,
+                bytes=str(6),
                 sha256=canonical_json_sha256("sample"),
             ),
         ),
@@ -578,7 +578,7 @@ def test_review_effect_executes_sampling_delivery_and_canonical_receipt_end_to_e
             content_identity=_sha("2"),
         ),
         path="camera/source.wav",
-        bytes=len(source_payload),
+        bytes=str(len(source_payload)),
         sha256=hashlib.sha256(source_payload).hexdigest(),
         media_type="audio/wav",
     )

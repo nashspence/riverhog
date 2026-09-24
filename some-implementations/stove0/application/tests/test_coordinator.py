@@ -250,7 +250,7 @@ def _input() -> InputArtifact:
         role="fixture.source/v1",
         collection=_root(),
         path="source/input.bin",
-        bytes=12,
+        bytes=str(12),
         sha256=_sha("4"),
     )
 
@@ -340,7 +340,7 @@ class FixturePlanning:
             role="fixture.source/v1",
             collection=_root(),
             path="source/input.bin",
-            bytes=12,
+            bytes=str(12),
             sha256=_sha("4"),
         )
         return (
@@ -372,7 +372,7 @@ class FixturePlanning:
                     role="fixture.source/v1",
                     collection=_root(),
                     path="source/input.bin",
-                    bytes=12,
+                    bytes=str(12),
                     sha256=_sha("4"),
                 ),
             )
@@ -468,7 +468,7 @@ class ForkJoinPlanning:
                     role="fixture.source/v1",
                     collection=_root(),
                     path="source/input.bin",
-                    bytes=12,
+                    bytes=str(12),
                     sha256=_sha("4"),
                 ),
             )
@@ -568,7 +568,7 @@ class NestedPlanning(FixturePlanning):
                     role="fixture.source/v1",
                     collection=_root(),
                     path="source/input.bin",
-                    bytes=12,
+                    bytes=str(12),
                     sha256=_sha("4"),
                 ),
             )
@@ -641,7 +641,7 @@ class NestedJoinPlanning(ForkJoinPlanning):
                     role="fixture.source/v1",
                     collection=_root(),
                     path="source/input.bin",
-                    bytes=12,
+                    bytes=str(12),
                     sha256=_sha("4"),
                 ),
             )
@@ -798,7 +798,7 @@ def _successful_target_status(
         id=output_id,
         role=output_role,
         path=output_path,
-        bytes=12,
+        bytes=str(12),
         sha256=output_sha256,
     )
     FixtureTargetCallbacks.record_production(request, output)
@@ -881,7 +881,7 @@ def _target_settlement(status: TargetJobStatus) -> TargetSettlementAuthority:
             output_collection=status.output_collection,
             output_bindings=TargetOutputBindingSetIdentity(
                 artifact_count=status.production.outputs.artifact_count,
-                total_bytes=status.production.outputs.total_bytes,
+                total_bytes=str(status.production.outputs.total_bytes),
                 sha256=canonical_json_sha256(
                     {"job_id": status.job_id, "authority": "output-bindings"}
                 ),

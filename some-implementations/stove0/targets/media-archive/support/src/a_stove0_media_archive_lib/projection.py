@@ -342,14 +342,16 @@ def resolve_media_archive_preflight_projection(
     if TargetInputAuthority.from_selection(selection) != request.inputs:
         raise ValueError("media preflight evidence differs from the exact input authority")
     inputs = tuple(
-        InputArtifact(
-            id=subject.id,
-            role=subject.role,
-            collection=subject.collection,
-            path=subject.path,
-            bytes=subject.bytes,
-            sha256=subject.sha256,
-            media_type=subject.media_type,
+        InputArtifact.model_validate(
+            dict(
+                id=subject.id,
+                role=subject.role,
+                collection=subject.collection,
+                path=subject.path,
+                bytes=str(subject.bytes),
+                sha256=subject.sha256,
+                media_type=subject.media_type,
+            )
         )
         for subject in ordered_subjects
     )

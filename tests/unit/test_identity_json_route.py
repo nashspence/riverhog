@@ -21,7 +21,6 @@ def test_public_json_routes_admit_exact_values_before_model_validation() -> None
     client = TestClient(app)
     for body, reason, headers in (
         (b'{"work_id":"one","work_id":"two"}', "duplicate", {"content-type": "application/json"}),
-        (b'{"work_document":{"value":0.1}}', "numeric", {"content-type": "application/json"}),
         (
             b'{"work_document":{"value":9007199254740993}}',
             "numeric",

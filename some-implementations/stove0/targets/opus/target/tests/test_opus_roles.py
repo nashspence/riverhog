@@ -184,7 +184,7 @@ def test_opus_execution_identity_is_the_canonical_semantic_result() -> None:
         id="opus-source",
         role="stove0.media.audio-archive/v1",
         path="audio/source.opus",
-        bytes=12,
+        bytes=str(12),
         sha256=_sha("3"),
         media_type="audio/ogg",
     )

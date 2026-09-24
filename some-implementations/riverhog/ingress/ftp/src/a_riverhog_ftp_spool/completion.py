@@ -5,7 +5,6 @@ from __future__ import annotations
 import builtins
 import fcntl
 import hashlib
-import json
 import os
 import stat
 import uuid
@@ -13,6 +12,11 @@ from dataclasses import asdict, dataclass
 from pathlib import Path, PurePosixPath
 from typing import Final, Literal
 
+from riverhog_canonical_json import (
+    CanonicalJsonError,
+    canonical_json_bytes,
+    require_canonical_json,
+)
 from riverhog_provenance import SIDECAR_SUFFIX, canonical_sidecar_path
 
 CONTROL_DIR = ".a-riverhog-ftp-spool"
@@ -47,10 +51,7 @@ class CompletionRecord:
         return asdict(self)
 
     def canonical_bytes(self) -> builtins.bytes:
-        return (
-            json.dumps(self.payload(), ensure_ascii=False, sort_keys=True, separators=(",", ":"))
-            + "\n"
-        ).encode("utf-8")
+        return canonical_json_bytes(self.payload()) + b"\n"
 
 
 def completion_log_path(source_root: Path) -> Path:
@@ -92,8 +93,8 @@ def read_completion_header(path: Path) -> tuple[str, int]:
 
 def parse_completion_record(raw: bytes) -> CompletionRecord:
     try:
-        payload = json.loads(raw)
-    except (UnicodeDecodeError, ValueError) as exc:
+        payload = _read_canonical_line(raw)
+    except CanonicalJsonError as exc:
         raise CompletionError("FTP completion record is not canonical JSON") from exc
     if not isinstance(payload, dict) or set(payload) != {
         "format",
@@ -358,13 +359,17 @@ class CompletionHandoff:
 
 def _intent_bytes(record: CompletionRecord) -> bytes:
     payload = {"intent_format": _INTENT_FORMAT, **asdict(record)}
-    return (
-        json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
-    ).encode("utf-8")
+    return canonical_json_bytes(payload) + b"\n"
+
+
+def _read_canonical_line(raw: bytes) -> object:
+    if not raw.endswith(b"\n"):
+        raise CanonicalJsonError("canonical", "FTP JSON record lacks line terminator")
+    return require_canonical_json(raw[:-1])
 
 
 def _parse_intent(raw: bytes) -> CompletionRecord:
-    payload = json.loads(raw)
+    payload = _read_canonical_line(raw)
     if not isinstance(payload, dict) or payload.pop("intent_format", None) != _INTENT_FORMAT:
         raise ValueError
     record = CompletionRecord(**payload)
@@ -376,14 +381,12 @@ def _parse_intent(raw: bytes) -> CompletionRecord:
 
 def _pending_sidecar_bytes(record: CompletionRecord) -> bytes:
     payload = {"pending_format": _PENDING_SIDECAR_FORMAT, **asdict(record)}
-    return (
-        json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
-    ).encode("utf-8")
+    return canonical_json_bytes(payload) + b"\n"
 
 
 def _read_pending_sidecar(path: Path) -> CompletionRecord:
     try:
-        payload = json.loads(path.read_bytes())
+        payload = _read_canonical_line(path.read_bytes())
         if (
             not isinstance(payload, dict)
             or payload.pop("pending_format", None) != _PENDING_SIDECAR_FORMAT

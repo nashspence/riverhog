@@ -1119,7 +1119,7 @@ def test_production_planner_resolves_overlapping_branches_into_one_exact_join() 
                     role="fixture.branch-output/v1",
                     collection=output_root,
                     path=f"{branch.branch_id}/output.bin",
-                    bytes=12,
+                    bytes=str(12),
                     sha256=f"{(collection_id + 2) % 16:x}" * 64,
                 ),
             )

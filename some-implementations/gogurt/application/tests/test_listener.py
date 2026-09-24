@@ -51,6 +51,16 @@ from gogurt_listener_runtime.platform import (
 from tests.gogurt_provider import FixtureMountedVolumeProvider, path_mounted_volume_provider
 
 TEST_PRODUCT_VERSION = importlib.metadata.version("gogurt")
+
+
+def test_listener_heartbeat_timestamp_is_fixed_nine_digit_utc() -> None:
+    value = listener_module._now_text(0.1)
+    assert value == "1970-01-01T00:00:00.100000000Z"
+    assert listener_module._heartbeat_timestamp(value, field="time") == 0.1
+    with pytest.raises(ListenerError, match="time is invalid"):
+        listener_module._heartbeat_timestamp("1970-01-01T00:00:00.1Z", field="time")
+
+
 TEST_MOUNTED_VOLUME_PROVIDER = GogurtProviderReference(
     kind="mounted-volume",
     name="test-mount",
@@ -1829,8 +1839,8 @@ def test_listener_status_reports_health_and_dispatch_attention(tmp_path: Path) -
         "format": "gogurt-listener-heartbeat/v1",
         "runtime_version": "an-earlier-gogurt-build",
         "pid": os.getpid(),
-        "started_at": "2026-08-14T00:00:00Z",
-        "heartbeat_at": "2026-08-14T00:00:10Z",
+        "started_at": "2026-08-14T00:00:00.000000000Z",
+        "heartbeat_at": "2026-08-14T00:00:10.000000000Z",
         "queue_depth": 0,
         "active_dispatch": None,
         "dispatches": {"counts": {}, "attention": []},
@@ -1877,8 +1887,8 @@ def test_listener_status_bounds_malformed_heartbeat_representations(
         "format": "gogurt-listener-heartbeat/v1",
         "runtime_version": importlib.metadata.version("gogurt"),
         "pid": os.getpid(),
-        "started_at": "2026-08-14T00:00:00Z",
-        "heartbeat_at": "2026-08-14T00:00:10Z",
+        "started_at": "2026-08-14T00:00:00.000000000Z",
+        "heartbeat_at": "2026-08-14T00:00:10.000000000Z",
         "queue_depth": 0,
         "active_dispatch": None,
         "dispatches": {"counts": {}, "attention": []},
@@ -1909,8 +1919,8 @@ def test_listener_status_rejects_a_future_heartbeat_as_false_liveness(tmp_path: 
         "format": "gogurt-listener-heartbeat/v1",
         "runtime_version": importlib.metadata.version("gogurt"),
         "pid": os.getpid(),
-        "started_at": "2026-08-14T00:00:00Z",
-        "heartbeat_at": "2026-08-14T01:00:00Z",
+        "started_at": "2026-08-14T00:00:00.000000000Z",
+        "heartbeat_at": "2026-08-14T01:00:00.000000000Z",
         "queue_depth": 0,
         "active_dispatch": None,
         "dispatches": {"counts": {}, "attention": []},
@@ -1966,8 +1976,8 @@ def test_listener_status_reports_corrupt_state_without_crashing(tmp_path: Path) 
                 "format": "gogurt-listener-heartbeat/v1",
                 "runtime_version": importlib.metadata.version("gogurt"),
                 "pid": os.getpid(),
-                "started_at": "2026-08-14T00:00:00Z",
-                "heartbeat_at": "2026-08-14T00:00:10Z",
+                "started_at": "2026-08-14T00:00:00.000000000Z",
+                "heartbeat_at": "2026-08-14T00:00:10.000000000Z",
                 "queue_depth": 0,
                 "active_dispatch": None,
                 "dispatches": {"counts": {}, "attention": []},
@@ -2060,8 +2070,8 @@ def test_restarted_native_process_cannot_reuse_a_predecessor_heartbeat(
                 "format": "gogurt-listener-heartbeat/v1",
                 "runtime_version": importlib.metadata.version("gogurt"),
                 "pid": 4321,
-                "started_at": "2026-08-14T00:00:00Z",
-                "heartbeat_at": "2026-08-14T00:00:10Z",
+                "started_at": "2026-08-14T00:00:00.000000000Z",
+                "heartbeat_at": "2026-08-14T00:00:10.000000000Z",
                 "queue_depth": 0,
                 "active_dispatch": None,
                 "dispatches": {"counts": {"uncertain": 1}, "attention": []},

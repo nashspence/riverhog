@@ -172,14 +172,16 @@ class TargetCallbackAuthority:
             next_continuation=next_continuation,
             complete=complete,
             artifacts=tuple(
-                InputArtifact(
-                    id=item.id,
-                    role=item.role,
-                    collection=item.collection,
-                    path=item.path,
-                    bytes=item.bytes,
-                    sha256=item.sha256,
-                    media_type=item.media_type,
+                InputArtifact.model_validate(
+                    dict(
+                        id=item.id,
+                        role=item.role,
+                        collection=item.collection,
+                        path=item.path,
+                        bytes=str(item.bytes),
+                        sha256=item.sha256,
+                        media_type=item.media_type,
+                    )
                 )
                 for item in artifacts
             ),
@@ -719,11 +721,13 @@ def _target_job_id(record: WorkRecord) -> str:
 
 
 def _output_identity(checkpoint: TargetProductionSealCheckpoint) -> OutputArtifactSetIdentity:
-    return OutputArtifactSetIdentity(
-        artifact_count=checkpoint.output_count,
-        total_bytes=checkpoint.output_bytes,
-        roles=checkpoint.output_roles,
-        sha256=CheckpointSHA256.from_state(checkpoint.output_hash_state).hexdigest(),
+    return OutputArtifactSetIdentity.model_validate(
+        dict(
+            artifact_count=checkpoint.output_count,
+            total_bytes=str(checkpoint.output_bytes),
+            roles=checkpoint.output_roles,
+            sha256=CheckpointSHA256.from_state(checkpoint.output_hash_state).hexdigest(),
+        )
     )
 
 

@@ -185,6 +185,7 @@ def test_installation_artifacts_are_derived_and_mutually_consistent(
             "gogurt",
             "gogurt-core",
             "gogurt-listener-runtime",
+            "time-formats",
         } <= gogurt_closure
         assert gogurt_closure.isdisjoint(all_gogurt_native)
         assert manifest["qualification"]["gogurt_providers"]["platforms"][platform] == {
@@ -197,6 +198,7 @@ def test_installation_artifacts_are_derived_and_mutually_consistent(
                         "gogurt-core",
                         selection["listener_host_distribution"],
                         "gogurt-listener-runtime",
+                        "time-formats",
                         "a-gogurt-path-volume-lib",
                         selection["mounted_volume_distribution"],
                     }

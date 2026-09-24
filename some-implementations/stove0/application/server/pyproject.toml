@@ -25,6 +25,7 @@ dependencies = [
   "psycopg[binary]>=3.3,<4.0",
   "pydantic>=2.7,<3.0",
   "riverhog-client>=0.1,<0.2",
+  "riverhog-canonical-json>=0.1,<0.2",
   "riverhog-protocol>=0.1,<0.2",
   "sqlalchemy>=2.0,<3.0",
   "starlette>=0.37,<2.0",
@@ -46,6 +47,7 @@ stove0-server = "stove0_api.app:main"
 [tool.uv.sources]
 http-api-contracts = { workspace = true }
 riverhog-client = { workspace = true }
+riverhog-canonical-json = { workspace = true }
 riverhog-protocol = { workspace = true }
 stove0-observer-client = { workspace = true }
 stove0-observer-protocol = { workspace = true }

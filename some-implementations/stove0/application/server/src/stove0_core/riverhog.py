@@ -637,14 +637,16 @@ class Stove0RiverhogClient:
                 or declared.sha256 != file.sha256
             ):
                 raise RuntimeError("Riverhog artifact differs from its target declaration")
-            binding = TargetOutputBinding(
-                output_id=declared.id,
-                role=declared.role,
-                collection=output,
-                path=declared.path,
-                bytes=declared.bytes,
-                sha256=declared.sha256,
-                media_type=declared.media_type,
+            binding = TargetOutputBinding.model_validate(
+                dict(
+                    output_id=declared.id,
+                    role=declared.role,
+                    collection=output,
+                    path=declared.path,
+                    bytes=str(declared.bytes),
+                    sha256=declared.sha256,
+                    media_type=declared.media_type,
+                )
             )
             update_target_output_binding_commitment(
                 digest,
@@ -681,10 +683,12 @@ class Stove0RiverhogClient:
                     job_id=production.job_id,
                     production_sha256=production.production_sha256,
                     output_collection=output,
-                    output_bindings=TargetOutputBindingSetIdentity(
-                        artifact_count=artifact_count,
-                        total_bytes=total_bytes,
-                        sha256=digest.hexdigest(),
+                    output_bindings=TargetOutputBindingSetIdentity.model_validate(
+                        dict(
+                            artifact_count=artifact_count,
+                            total_bytes=str(total_bytes),
+                            sha256=digest.hexdigest(),
+                        )
                     ),
                 )
             )
