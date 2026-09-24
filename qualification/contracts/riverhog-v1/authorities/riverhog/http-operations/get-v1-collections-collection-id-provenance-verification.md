@@ -31,11 +31,11 @@ Get Collection Provenance Verification
 | Status | Description | Media type | Schema | Declared error codes |
 |---|---|---|---|---|
 | <a id="s-d1f90bc6b1"></a>`200` | Successful Response | application/json | [CollectionProvenanceVerificationJobOut](../http-schemas/schemas-collectionprovenanceverificationjobout.md) | not declared |
-| <a id="s-4d7e0340dc"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
-| <a id="s-dd22622f62"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
-| <a id="s-06f1a4742b"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
-| <a id="s-eec8024348"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
-| <a id="s-de46d6f4a9"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
+| <a id="s-4d7e0340dc"></a>`400` | Bad Request | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `bad_request` |
+| <a id="s-dd22622f62"></a>`401` | Unauthorized | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `unauthorized` |
+| <a id="s-06f1a4742b"></a>`403` | Forbidden | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `forbidden` |
+| <a id="s-eec8024348"></a>`404` | Not Found | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `not_found` |
+| <a id="s-de46d6f4a9"></a>`500` | Internal Server Error | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `internal_error` |
 
 ## Maintained corroboration
 
@@ -48,7 +48,7 @@ Get Collection Provenance Verification
 ### Referenced contract elements
 
 - [schemas: CollectionProvenanceVerificationJobOut](../http-schemas/schemas-collectionprovenanceverificationjobout.md)
-- [schemas: ErrorResponse](../http-schemas/schemas-errorresponse.md)
+- [schemas: ErrorOut](../http-schemas/schemas-errorout.md)
 
 ## Governing policies
 
@@ -141,7 +141,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ba58a8a54a122d6283fdaaf85eacb7d35bc2e160c3a5d9dd9a00fde3ae0a7644 -->
+<!-- exact-contract-value: 93d7b4fa7ed51488b6a461858f3bbf1f131a1c9a64688b107f776b7039e10ea9 -->
 
 ```json
 {
@@ -182,7 +182,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -195,7 +195,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -208,7 +208,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -221,7 +221,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -234,7 +234,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },

@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-41d8cb5c9a"></a>`kind`: `"class"`
-- <a id="s-bb64e5154a"></a>`signature`: `"\"(archive_generation: 'str', archive_tree_sha256: 'str', volume: 'ArchiveVolume', schema: 'str' = 'collection-archive-volume/v1') -> None\""`
+- <a id="s-bb64e5154a"></a>`signature`: `"\"(archive_generation: 'str', archive_tree_sha256: 'str', volume: 'ArchiveVolume', format: 'str' = 'collection-archive-volume/v1') -> None\""`
 
 #### Dataclass fields
 
@@ -31,7 +31,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-0b6dfe1efc"></a>`archive_generation` | `'str'` | `required` |
 | <a id="s-ccd494cd45"></a>`archive_tree_sha256` | `'str'` | `required` |
 | <a id="s-aa6c76dea9"></a>`volume` | `'ArchiveVolume'` | `required` |
-| <a id="s-fe3b05b275"></a>`schema` | `'str'` | `'collection-archive-volume/v1'` |
+| <a id="s-fe3b05b275"></a>`format` | `'str'` | `'collection-archive-volume/v1'` |
 
 ## Maintained corroboration
 
@@ -69,7 +69,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4debd0ad8451cb5a5763d212647a27ecbf6c2d43325508317bd90b09fe788630 -->
+<!-- exact-contract-value: fbd887fcd16c48816cd57d24d5e2ed9e17ddee2554d334e7ed57798b776d9301 -->
 
 ```json
 {
@@ -92,12 +92,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       {
         "default": "'collection-archive-volume/v1'",
-        "name": "schema",
+        "name": "format",
         "type": "'str'"
       }
     ],
     "kind": "class",
-    "signature": "\"(archive_generation: 'str', archive_tree_sha256: 'str', volume: 'ArchiveVolume', schema: 'str' = 'collection-archive-volume/v1') -> None\""
+    "signature": "\"(archive_generation: 'str', archive_tree_sha256: 'str', volume: 'ArchiveVolume', format: 'str' = 'collection-archive-volume/v1') -> None\""
   },
   "distribution": "riverhog-archive-contracts",
   "module": "riverhog_archive_contracts",

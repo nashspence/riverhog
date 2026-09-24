@@ -31,19 +31,19 @@ Review Evaluation Variant
 
 | Media type | Schema |
 |---|---|
-| application/json | [EvaluationReviewIn](../http-schemas/schemas-evaluationreviewin.md) |
+| application/json | [EvaluationReviewRequest](../http-schemas/schemas-evaluationreviewrequest.md) |
 
 ### Responses
 
 | Status | Description | Media type | Schema | Declared error codes |
 |---|---|---|---|---|
 | <a id="s-efd76461f6"></a>`200` | Successful Response | application/json | [EvaluationView](../http-schemas/schemas-evaluationview.md) | not declared |
-| <a id="s-a90a718e05"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
-| <a id="s-3b25eb3bf7"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
-| <a id="s-7cd394e1c8"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
-| <a id="s-009996cdec"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
-| <a id="s-34eb7fb837"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `conflict` |
-| <a id="s-3c3dc958bd"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
+| <a id="s-a90a718e05"></a>`400` | Bad Request | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `bad_request` |
+| <a id="s-3b25eb3bf7"></a>`401` | Unauthorized | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `unauthorized` |
+| <a id="s-7cd394e1c8"></a>`403` | Forbidden | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `forbidden` |
+| <a id="s-009996cdec"></a>`404` | Not Found | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `not_found` |
+| <a id="s-34eb7fb837"></a>`409` | Conflict | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `conflict` |
+| <a id="s-3c3dc958bd"></a>`500` | Internal Server Error | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `internal_error` |
 
 ## Maintained corroboration
 
@@ -54,8 +54,8 @@ Review Evaluation Variant
 
 ### Referenced contract elements
 
-- [schemas: ErrorResponse](../http-schemas/schemas-errorresponse.md)
-- [schemas: EvaluationReviewIn](../http-schemas/schemas-evaluationreviewin.md)
+- [schemas: ErrorOut](../http-schemas/schemas-errorout.md)
+- [schemas: EvaluationReviewRequest](../http-schemas/schemas-evaluationreviewrequest.md)
 - [schemas: EvaluationView](../http-schemas/schemas-evaluationview.md)
 
 ## Governing policies
@@ -137,7 +137,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: fb16c91f67e058ffebb868f3416e277e583e882a6a7019fdb174e50e562b4d13 -->
+<!-- exact-contract-value: 880271100a3c442266e791e81e70653ca3efe2edcb5ee45254b810a4ed0123b0 -->
 
 ```json
 {
@@ -166,7 +166,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "content": {
       "application/json": {
         "schema": {
-          "$ref": "#/components/schemas/EvaluationReviewIn"
+          "$ref": "#/components/schemas/EvaluationReviewRequest"
         }
       }
     },
@@ -187,7 +187,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -200,7 +200,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -213,7 +213,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -226,7 +226,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -239,7 +239,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -252,7 +252,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },

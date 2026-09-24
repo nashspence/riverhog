@@ -19,7 +19,7 @@ Exact externally visible contract owned by this contract element.
 - <a id="s-2e49c00f44"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-volume-v1.schema.json"`
 - <a id="s-338f0870c6"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
 - <a id="s-ab473a6804"></a>`additionalProperties`: `false`
-- <a id="s-e9ea457682"></a>`required`: `["schema","archive_generation","archive_tree_sha256","sequence","payload"]`
+- <a id="s-e9ea457682"></a>`required`: `["format","archive_generation","archive_tree_sha256","sequence","payload"]`
 - <a id="s-10939df91d"></a>`title`: `"Riverhog v1 bounded provenance volume"`
 
 ### Fields
@@ -29,9 +29,9 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-95119c3060"></a>`archive_generation` | yes | [sha256](#s-4908acae04) |  |
 | <a id="s-56edc337cb"></a>`archive_tree_sha256` | yes | [sha256](#s-4908acae04) |  |
 | `binding_range` | no | [See field `binding_range`](#s-9e51e10024) |  |
+| <a id="s-386d3091de"></a>`format` | yes | const="riverhog-provenance-volume/v1" |  |
 | `journal_range` | no | [See field `journal_range`](#s-5520638242) |  |
 | `payload` | yes | [See field `payload`](#s-037496be78) |  |
-| <a id="s-88ab8801ba"></a>`schema` | yes | const="riverhog-provenance-volume/v1" |  |
 | <a id="s-777a2a8777"></a>`sequence` | yes | [sequence](#s-897f94e1be) |  |
 
 ### Exactly one must match (`oneOf`)
@@ -151,7 +151,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 651e89ee007b6d340ef86662f3f052343a26f03cfac91327491edf6b2931c768 -->
+<!-- exact-contract-value: dd7560ab99e0ec119b84ed2dab72fb07d64191b3cd5ae188af5dd227dbe42568 -->
 
 ```json
 {
@@ -216,6 +216,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
+    "format": {
+      "const": "riverhog-provenance-volume/v1"
+    },
     "journal_range": {
       "additionalProperties": false,
       "properties": {
@@ -272,15 +275,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "schema": {
-      "const": "riverhog-provenance-volume/v1"
-    },
     "sequence": {
       "$ref": "#/$defs/sequence"
     }
   },
   "required": [
-    "schema",
+    "format",
     "archive_generation",
     "archive_tree_sha256",
     "sequence",

@@ -29,11 +29,11 @@ Inspect Work Coordination
 | Status | Description | Media type | Schema | Declared error codes |
 |---|---|---|---|---|
 | <a id="s-51b7e8e06d"></a>`200` | Successful Response | application/json | [BranchSetEvaluation](../http-schemas/schemas-branchsetevaluation.md) | not declared |
-| <a id="s-a4e0d2b42e"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
-| <a id="s-0f87e73bae"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
-| <a id="s-9ae3130b0f"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
-| <a id="s-2c0ea53089"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
-| <a id="s-da4f3c5f56"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
+| <a id="s-a4e0d2b42e"></a>`400` | Bad Request | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `bad_request` |
+| <a id="s-0f87e73bae"></a>`401` | Unauthorized | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `unauthorized` |
+| <a id="s-9ae3130b0f"></a>`403` | Forbidden | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `forbidden` |
+| <a id="s-2c0ea53089"></a>`404` | Not Found | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `not_found` |
+| <a id="s-da4f3c5f56"></a>`500` | Internal Server Error | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `internal_error` |
 
 ## Maintained corroboration
 
@@ -45,7 +45,7 @@ Inspect Work Coordination
 ### Referenced contract elements
 
 - [schemas: BranchSetEvaluation](../http-schemas/schemas-branchsetevaluation.md)
-- [schemas: ErrorResponse](../http-schemas/schemas-errorresponse.md)
+- [schemas: ErrorOut](../http-schemas/schemas-errorout.md)
 
 ## Governing policies
 
@@ -126,7 +126,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: be6fc15455af78b7ea96b2d8c3cf5e5ca1f2ee410015542ba4a50e80a2c9815d -->
+<!-- exact-contract-value: 4d4632a92f1b9e5780649f8c12df2618b675576e4ba478611e64fd4bd96188cb -->
 
 ```json
 {
@@ -157,7 +157,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -170,7 +170,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -183,7 +183,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -196,7 +196,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -209,7 +209,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },

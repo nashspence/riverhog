@@ -33,12 +33,12 @@ List Catalog Sync Collections
 | Status | Description | Media type | Schema | Declared error codes |
 |---|---|---|---|---|
 | <a id="s-a4ea653adc"></a>`200` | Successful Response | application/json | [CatalogSyncCollectionPage](../http-schemas/schemas-catalogsynccollectionpage.md) | not declared |
-| <a id="s-856ce31e75"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
-| <a id="s-19e5d2f0ce"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
-| <a id="s-fe8f7a9a39"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
-| <a id="s-2a64b5f010"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `catalog_sync_source_changed`, `catalog_sync_view_changed` |
-| <a id="s-cd19c82c0c"></a>`410` | Gone | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `catalog_sync_cursor_expired`, `catalog_sync_history_expired` |
-| <a id="s-e8f4d640c1"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
+| <a id="s-856ce31e75"></a>`400` | Bad Request | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `bad_request` |
+| <a id="s-19e5d2f0ce"></a>`401` | Unauthorized | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `unauthorized` |
+| <a id="s-fe8f7a9a39"></a>`403` | Forbidden | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `forbidden` |
+| <a id="s-2a64b5f010"></a>`409` | Conflict | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `catalog_sync_source_changed`, `catalog_sync_view_changed` |
+| <a id="s-cd19c82c0c"></a>`410` | Gone | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `catalog_sync_cursor_expired`, `catalog_sync_history_expired` |
+| <a id="s-e8f4d640c1"></a>`500` | Internal Server Error | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -89,7 +89,7 @@ Exact evidence groups for this contract element:
 ### Referenced contract elements
 
 - [schemas: CatalogSyncCollectionPage](../http-schemas/schemas-catalogsynccollectionpage.md)
-- [schemas: ErrorResponse](../http-schemas/schemas-errorresponse.md)
+- [schemas: ErrorOut](../http-schemas/schemas-errorout.md)
 
 ## Governing policies
 
@@ -179,7 +179,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7ba4ba5dbdaa71d29c9b6b43c41b7d1193f6c218010108ff2e636ec1f2bd8a84 -->
+<!-- exact-contract-value: 75596f06db0a660139e5ed54c3d6073f45fbfb97f8741251d14bc729a516c76e -->
 
 ```json
 {
@@ -224,7 +224,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -237,7 +237,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -250,7 +250,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -263,7 +263,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -277,7 +277,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -291,7 +291,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },

@@ -40,12 +40,12 @@ Set App Key Download Quota
 | Status | Description | Media type | Schema | Declared error codes |
 |---|---|---|---|---|
 | <a id="s-2e6c8a295b"></a>`200` | Successful Response | application/json | [KeyDownloadQuotaOut](../http-schemas/schemas-keydownloadquotaout.md) | not declared |
-| <a id="s-e19e890d43"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
-| <a id="s-b3b6ade9e9"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
-| <a id="s-6226a3dc6c"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
-| <a id="s-67a33d9aeb"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
-| <a id="s-7c6e363655"></a>`429` | Too Many Requests | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `download_allowance_exceeded` |
-| <a id="s-e62b803c6b"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
+| <a id="s-e19e890d43"></a>`400` | Bad Request | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `bad_request` |
+| <a id="s-b3b6ade9e9"></a>`401` | Unauthorized | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `unauthorized` |
+| <a id="s-6226a3dc6c"></a>`403` | Forbidden | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `forbidden` |
+| <a id="s-67a33d9aeb"></a>`404` | Not Found | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `not_found` |
+| <a id="s-7c6e363655"></a>`429` | Too Many Requests | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `download_allowance_exceeded` |
+| <a id="s-e62b803c6b"></a>`500` | Internal Server Error | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -66,7 +66,7 @@ Shared facts for every subject below: maximum=16; minimum=16; reason="fixed-publ
 
 ### Referenced contract elements
 
-- [schemas: ErrorResponse](../http-schemas/schemas-errorresponse.md)
+- [schemas: ErrorOut](../http-schemas/schemas-errorout.md)
 - [schemas: KeyDownloadQuotaOut](../http-schemas/schemas-keydownloadquotaout.md)
 - [schemas: SetKeyDownloadQuotaRequest](../http-schemas/schemas-setkeydownloadquotarequest.md)
 
@@ -152,7 +152,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: addcbf5eacdc4600d7277ecad5290f4b30a4a63c6e97fbd0a282df094b876b0a -->
+<!-- exact-contract-value: 22862246929153c0b65ddfcb9e0afc655de4d59bbac310c058543f7b9eb067c6 -->
 
 ```json
 {
@@ -204,7 +204,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -217,7 +217,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -230,7 +230,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -243,7 +243,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -256,7 +256,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -269,7 +269,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },

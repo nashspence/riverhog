@@ -20,12 +20,12 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `http-api-contracts` | [http_api_contracts.DEFAULT_HTTP_ERROR_AUTHORITY](../../../authorities/http-api-contracts/python/http-api-contracts-default-http-error-authority.md#pa-64b18dd548) |
 | `http-api-contracts` | [http_api_contracts.ERROR_STATUS_BY_CODE](../../../authorities/http-api-contracts/python/http-api-contracts-error-status-by-code.md#pa-ac6ffe89a7) |
 | `http-api-contracts` | [http_api_contracts.ErrorBody](../../../authorities/http-api-contracts/python/http-api-contracts-errorbody.md#pa-d1eddee41c) |
-| `http-api-contracts` | [http_api_contracts.ErrorResponse](../../../authorities/http-api-contracts/python/http-api-contracts-errorresponse.md#pa-78b812f1e8) |
+| `http-api-contracts` | [http_api_contracts.ErrorOut](../../../authorities/http-api-contracts/python/http-api-contracts-errorout.md#pa-a988a45f8e) |
 | `http-api-contracts` | [http_api_contracts.FRAMED_BODY_DECLARATION_LENGTH_BYTES](../../../authorities/http-api-contracts/python/http-api-contracts-framed-body-declaration-length-bytes.md#pa-b4c47fe4a4) |
 | `http-api-contracts` | [http_api_contracts.FRAMED_BODY_FORMAT](../../../authorities/http-api-contracts/python/http-api-contracts-framed-body-format.md#pa-c03642d41c) |
 | `http-api-contracts` | [http_api_contracts.FRAMED_BODY_MAXIMUM_DECLARATION_BYTES](../../../authorities/http-api-contracts/python/http-api-contracts-framed-body-maximum-declaration-bytes.md#pa-1553839c26) |
 | `http-api-contracts` | [http_api_contracts.FRAMED_BODY_MEDIA_TYPE](../../../authorities/http-api-contracts/python/http-api-contracts-framed-body-media-type.md#pa-41441d6f82) |
-| `http-api-contracts` | [http_api_contracts.HealthResponse](../../../authorities/http-api-contracts/python/http-api-contracts-healthresponse.md#pa-9a3e812c6a) |
+| `http-api-contracts` | [http_api_contracts.HealthOut](../../../authorities/http-api-contracts/python/http-api-contracts-healthout.md#pa-9b4f91118e) |
 | `http-api-contracts` | [http_api_contracts.HttpBodyKind](../../../authorities/http-api-contracts/python/http-api-contracts-httpbodykind.md#pa-22041d8f6f) |
 | `http-api-contracts` | [http_api_contracts.HttpErrorContract](../../../authorities/http-api-contracts/python/http-api-contracts-httperrorcontract.md#pa-527f069a92) |
 | `http-api-contracts` | [http_api_contracts.HttpOperationContract](../../../authorities/http-api-contracts/python/http-api-contracts-httpoperationcontract.md#pa-de6fdf542e) |

@@ -36,10 +36,10 @@ List Admissions
 | Status | Description | Media type | Schema | Declared error codes |
 |---|---|---|---|---|
 | <a id="s-7778dfac1e"></a>`200` | Successful Response | application/json | [AdmissionPage](../http-schemas/schemas-admissionpage.md) | not declared |
-| <a id="s-b4be83d92f"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
-| <a id="s-aa8f5e887d"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
-| <a id="s-9c80b18cca"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
-| <a id="s-760e2d15b3"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
+| <a id="s-b4be83d92f"></a>`400` | Bad Request | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `bad_request` |
+| <a id="s-aa8f5e887d"></a>`401` | Unauthorized | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `unauthorized` |
+| <a id="s-9c80b18cca"></a>`403` | Forbidden | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `forbidden` |
+| <a id="s-760e2d15b3"></a>`500` | Internal Server Error | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -91,7 +91,7 @@ Exact evidence groups for this contract element:
 - [schemas: AdmissionPage](../http-schemas/schemas-admissionpage.md)
 - [schemas: BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)
 - [schemas: BrowseQuery](../http-schemas/schemas-browsequery.md)
-- [schemas: ErrorResponse](../http-schemas/schemas-errorresponse.md)
+- [schemas: ErrorOut](../http-schemas/schemas-errorout.md)
 
 ## Governing policies
 
@@ -183,7 +183,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 12007064afe250200df10cec52a8f5e43abe9a2ac58d6ccfe25273dc93ed29df -->
+<!-- exact-contract-value: bd85ba6a28ec8d528557271bb2777094129ac4c052d01be1b272a8c23e63e33e -->
 
 ```json
 {
@@ -316,7 +316,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -329,7 +329,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -342,7 +342,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -355,7 +355,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },

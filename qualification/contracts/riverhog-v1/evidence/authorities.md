@@ -48,7 +48,7 @@ These internal projection records are not exclusions of discovered external cont
 | Projection record | Machine location | Reason |
 |---|---|---|
 | `boundary-projection` | `/boundaries` | Frozen authority and extension topology used to attribute and navigate semantic contracts; component existence is not itself an external semantic promise. |
-| `contract-projection-envelope` | `/schema, /series` | Machine projection identity, not an external product promise. |
-| `durable-state-registry-envelope` | `/external_contract/durable_state/schema` | Registry format identity; each durable-state promise belongs to its named owner. |
-| `extent-projection-envelope` | `/external_contract/extents/coverage, /external_contract/extents/schema, /external_contract/extents/sha256` | Generated coverage and identity metadata, not external extent semantics. |
-| `release-publication-envelope` | `/external_contract/release/publication/schema` | Release generator and evidence format metadata; the exact publication promises belong to the meaningful release interfaces. |
+| `contract-projection-envelope` | `/format, /series` | Machine projection identity, not an external product promise. |
+| `durable-state-registry-envelope` | `/external_contract/durable_state/format` | Registry format identity; each durable-state promise belongs to its named owner. |
+| `extent-projection-envelope` | `/external_contract/extents/coverage, /external_contract/extents/format, /external_contract/extents/sha256` | Generated coverage and identity metadata, not external extent semantics. |
+| `release-publication-envelope` | `/external_contract/release/publication/format` | Release generator and evidence format metadata; the exact publication promises belong to the meaningful release interfaces. |

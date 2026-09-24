@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-d55d11bb87"></a>`kind`: `"class"`
-- <a id="s-acec45b370"></a>`signature`: `"\"(archive_generation: 'str', tree: 'CollectionTreeIdentity', ordered_volume_sha256: 'str', provenance: 'ArchiveProvenanceIdentity \| None' = None, schema: 'str' = 'collection-archive-manifest/v1') -> None\""`
+- <a id="s-acec45b370"></a>`signature`: `"\"(archive_generation: 'str', tree: 'CollectionTreeIdentity', ordered_volume_sha256: 'str', provenance: 'ArchiveProvenanceIdentity \| None' = None, format: 'str' = 'collection-archive-manifest/v1') -> None\""`
 
 #### Dataclass fields
 
@@ -32,7 +32,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-ae4ee3a651"></a>`tree` | `'CollectionTreeIdentity'` | `required` |
 | <a id="s-9bcfc1fed4"></a>`ordered_volume_sha256` | `'str'` | `required` |
 | <a id="s-04b654329f"></a>`provenance` | `'ArchiveProvenanceIdentity \| None'` | `None` |
-| <a id="s-e1caa74619"></a>`schema` | `'str'` | `'collection-archive-manifest/v1'` |
+| <a id="s-e1caa74619"></a>`format` | `'str'` | `'collection-archive-manifest/v1'` |
 
 ## Maintained corroboration
 
@@ -73,7 +73,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 551bb5cc435bf094f889b00022d895bd852d049d22cefdf3b9252206a27e965c -->
+<!-- exact-contract-value: df1e9561d51d21febdb8582abf78dea8a4b49ee7eaaeb05fa35a612da864bf53 -->
 
 ```json
 {
@@ -101,12 +101,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       {
         "default": "'collection-archive-manifest/v1'",
-        "name": "schema",
+        "name": "format",
         "type": "'str'"
       }
     ],
     "kind": "class",
-    "signature": "\"(archive_generation: 'str', tree: 'CollectionTreeIdentity', ordered_volume_sha256: 'str', provenance: 'ArchiveProvenanceIdentity | None' = None, schema: 'str' = 'collection-archive-manifest/v1') -> None\""
+    "signature": "\"(archive_generation: 'str', tree: 'CollectionTreeIdentity', ordered_volume_sha256: 'str', provenance: 'ArchiveProvenanceIdentity | None' = None, format: 'str' = 'collection-archive-manifest/v1') -> None\""
   },
   "distribution": "riverhog-archive-contracts",
   "module": "riverhog_archive_contracts",

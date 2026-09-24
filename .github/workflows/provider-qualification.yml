@@ -88,7 +88,7 @@ jobs:
             gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact_id/zip" > "$input_dir/artifact.zip"
             unzip -q "$input_dir/artifact.zip" -d "$input_dir"
             jq --exit-status \
-              '.schema == "riverhog-provider-qualification-status/v1"
+              '.format == "riverhog-provider-qualification-status/v1"
                 and (.active | type == "boolean")
                 and (.started_at | type == "string")' \
               "$input_dir/status.json" >/dev/null
@@ -261,7 +261,7 @@ jobs:
             > "$input_dir/artifact.zip"
           unzip -q "$input_dir/artifact.zip" -d "$input_dir"
           jq --exit-status \
-            '.schema == "riverhog-provider-qualification-status/v1" and .active == true' \
+            '.format == "riverhog-provider-qualification-status/v1" and .active == true' \
             "$input_dir/status.json" >/dev/null
           if [[ "$ACTION" == poll ]]; then
             test "$(jq -r '.source_sha' "$input_dir/status.json")" = "$SOURCE_SHA"
@@ -521,7 +521,7 @@ jobs:
             --arg started_at "$(jq -r '.started_at' "$STATE_DIR/checkpoint.json")" \
             --argjson active "$active" \
             '{
-              schema: "riverhog-provider-qualification-status/v1",
+              format: "riverhog-provider-qualification-status/v1",
               source_sha: $source_sha,
               source_ref: $source_ref,
               corpus_profile: $corpus_profile,

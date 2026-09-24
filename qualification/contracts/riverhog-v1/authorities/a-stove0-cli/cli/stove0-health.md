@@ -43,7 +43,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
-| <a id="s-72134d018e"></a>`completed` | <a id="s-33063dab99"></a>`{"kind":"command-completed"}` | <a id="s-324e8e1f27"></a>`0` | <a id="s-da84358252"></a>human: `"noncontractual-presentation-of-command-result"`; json: [OpenAPI stove0.HealthResponse](../../stove0/http-schemas/schemas-healthresponse.md) | <a id="s-99cbfd66ae"></a>all: `"empty"` |
+| <a id="s-72134d018e"></a>`completed` | <a id="s-33063dab99"></a>`{"kind":"command-completed"}` | <a id="s-324e8e1f27"></a>`0` | <a id="s-da84358252"></a>human: `"noncontractual-presentation-of-command-result"`; json: [OpenAPI stove0.HealthOut](../../stove0/http-schemas/schemas-healthout.md) | <a id="s-99cbfd66ae"></a>all: `"empty"` |
 
 #### Failure outcomes
 
@@ -170,7 +170,7 @@ false
 
 ### `/external_contract/cli/stove0/commands/health/result_contract`
 
-<!-- exact-contract-value: 005eed7894fdd398813667271e005f830cf8c4dcabebfb34bafbc0801f0817e8 -->
+<!-- exact-contract-value: 3f9d606044bbdf38054447a754487a28f566f9629c4b75e5ffa6a56ee0eb15f5 -->
 
 ```json
 {
@@ -238,11 +238,11 @@ false
               "service",
               "status"
             ],
-            "title": "HealthResponse",
+            "title": "HealthOut",
             "type": "object"
           },
           "kind": "openapi-schema",
-          "schema": "HealthResponse"
+          "schema": "HealthOut"
         }
       }
     }

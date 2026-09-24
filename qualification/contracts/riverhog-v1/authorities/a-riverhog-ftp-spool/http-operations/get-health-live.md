@@ -22,7 +22,7 @@ Health Live
 
 | Status | Description | Media type | Schema | Declared error codes |
 |---|---|---|---|---|
-| <a id="s-2d55e87baa"></a>`200` | Successful Response | application/json | [HealthResponse](../http-schemas/schemas-healthresponse.md) | not declared |
+| <a id="s-2d55e87baa"></a>`200` | Successful Response | application/json | [HealthOut](../http-schemas/schemas-healthout.md) | not declared |
 
 ## Maintained corroboration
 
@@ -32,7 +32,7 @@ Health Live
 
 ### Referenced contract elements
 
-- [schemas: HealthResponse](../http-schemas/schemas-healthresponse.md)
+- [schemas: HealthOut](../http-schemas/schemas-healthout.md)
 
 ## Governing policies
 
@@ -99,7 +99,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 84172652b1d1264e2dcab448a93b522bf015bdd06f0a51e1fa4d03612da64316 -->
+<!-- exact-contract-value: 4ef0d401f642ba5eea34e6184581c32762993cabad7c22f00af7c6fe9330a7fd -->
 
 ```json
 {
@@ -109,7 +109,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/HealthResponse"
+            "$ref": "#/components/schemas/HealthOut"
           }
         }
       },

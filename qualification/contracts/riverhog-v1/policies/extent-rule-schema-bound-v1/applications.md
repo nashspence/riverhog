@@ -296,10 +296,10 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: KeyDownloadQuotaListOut](../../authorities/riverhog/http-schemas/schemas-keydownloadquotalistout.md#pa-c8e223989e) |
 | `riverhog` | [schemas: KeyDownloadQuotaOut](../../authorities/riverhog/http-schemas/schemas-keydownloadquotaout.md#pa-6235c2ed33) |
 | `riverhog` | [schemas: LifecycleEventCursor](../../authorities/riverhog/http-schemas/schemas-lifecycleeventcursor.md#pa-29de0c7263) |
-| `riverhog` | [schemas: ListCollectionUploadSessionFilesResponse](../../authorities/riverhog/http-schemas/schemas-listcollectionuploadsessionfilesresponse.md#pa-3fbfc7c811) |
-| `riverhog` | [schemas: ListCollectionUploadSessionsResponse](../../authorities/riverhog/http-schemas/schemas-listcollectionuploadsessionsresponse.md#pa-0dad561f82) |
-| `riverhog` | [schemas: ListCollectionsResponse](../../authorities/riverhog/http-schemas/schemas-listcollectionsresponse.md#pa-31950cc906) |
-| `riverhog` | [schemas: ListProvenanceJournalAgentsResponse](../../authorities/riverhog/http-schemas/schemas-listprovenancejournalagentsresponse.md#pa-a7f57d7d7b) |
+| `riverhog` | [schemas: ListCollectionUploadSessionFilesOut](../../authorities/riverhog/http-schemas/schemas-listcollectionuploadsessionfilesout.md#pa-55d050509e) |
+| `riverhog` | [schemas: ListCollectionUploadSessionsOut](../../authorities/riverhog/http-schemas/schemas-listcollectionuploadsessionsout.md#pa-4dceaacafa) |
+| `riverhog` | [schemas: ListCollectionsOut](../../authorities/riverhog/http-schemas/schemas-listcollectionsout.md#pa-d212391906) |
+| `riverhog` | [schemas: ListProvenanceJournalAgentsOut](../../authorities/riverhog/http-schemas/schemas-listprovenancejournalagentsout.md#pa-2259abb8b0) |
 | `riverhog` | [schemas: MixedCollectionFileProvenancePage](../../authorities/riverhog/http-schemas/schemas-mixedcollectionfileprovenancepage.md#pa-0d5c8b6ea3) |
 | `riverhog` | [schemas: OmittedCollectionFileProvenanceDetailOut](../../authorities/riverhog/http-schemas/schemas-omittedcollectionfileprovenancedetailout.md#pa-4aad6c3d35) |
 | `riverhog` | [schemas: OmittedCollectionFileProvenanceOut](../../authorities/riverhog/http-schemas/schemas-omittedcollectionfileprovenanceout.md#pa-df17c1ddd7) |
@@ -354,7 +354,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: RiverhogEventCause](../../authorities/riverhog/http-schemas/schemas-riverhogeventcause.md#pa-b879585740) |
 | `riverhog` | [schemas: SearchCollectionsRequest](../../authorities/riverhog/http-schemas/schemas-searchcollectionsrequest.md#pa-e3e1ecf8f7) |
 | `riverhog` | [schemas: SearchFileOut](../../authorities/riverhog/http-schemas/schemas-searchfileout.md#pa-bc30f5420e) |
-| `riverhog` | [schemas: SearchResponse](../../authorities/riverhog/http-schemas/schemas-searchresponse.md#pa-344ca8638f) |
+| `riverhog` | [schemas: SearchOut](../../authorities/riverhog/http-schemas/schemas-searchout.md#pa-21d1360a52) |
 | `riverhog` | [schemas: SourceCollectionRetirementClaimReferenceDocument](../../authorities/riverhog/http-schemas/schemas-sourcecollectionretirementclaimreferencedocument.md#pa-21a9f05e58) |
 | `riverhog` | [schemas: TagListOut](../../authorities/riverhog/http-schemas/schemas-taglistout.md#pa-296ec2a9ea) |
 | `riverhog` | [schemas: UploadedArchiveCopyOut](../../authorities/riverhog/http-schemas/schemas-uploadedarchivecopyout.md#pa-fecd3a0701) |
@@ -436,7 +436,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: EvaluationDefinition](../../authorities/stove0/http-schemas/schemas-evaluationdefinition.md#pa-0cc9786c7a) |
 | `stove0` | [schemas: EvaluationMatrix](../../authorities/stove0/http-schemas/schemas-evaluationmatrix.md#pa-8b4f89562e) |
 | `stove0` | [schemas: EvaluationPage](../../authorities/stove0/http-schemas/schemas-evaluationpage.md#pa-3698449ebe) |
-| `stove0` | [schemas: EvaluationReviewIn](../../authorities/stove0/http-schemas/schemas-evaluationreviewin.md#pa-e9568f4d7c) |
+| `stove0` | [schemas: EvaluationReviewRequest](../../authorities/stove0/http-schemas/schemas-evaluationreviewrequest.md#pa-0e19fc8cd6) |
 | `stove0` | [schemas: EvaluationReviewView](../../authorities/stove0/http-schemas/schemas-evaluationreviewview.md#pa-57e06c6609) |
 | `stove0` | [schemas: EvaluationUpdatedEvent](../../authorities/stove0/http-schemas/schemas-evaluationupdatedevent.md#pa-0bc8a94680) |
 | `stove0` | [schemas: EvaluationUpdatedEventData](../../authorities/stove0/http-schemas/schemas-evaluationupdatedeventdata.md#pa-ecb6d9caeb) |
@@ -456,6 +456,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: ObserverImplementation](../../authorities/stove0/http-schemas/schemas-observerimplementation.md#pa-cc1ab4726c) |
 | `stove0` | [schemas: ObserverUse](../../authorities/stove0/http-schemas/schemas-observeruse.md#pa-31d9097b31) |
 | `stove0` | [schemas: OperationIdentityRef](../../authorities/stove0/http-schemas/schemas-operationidentityref.md#pa-07a55a4843) |
+| `stove0` | [schemas: OperatorWorkflowPreviewRequest](../../authorities/stove0/http-schemas/schemas-operatorworkflowpreviewrequest.md#pa-8c39d42b90) |
 | `stove0` | [schemas: OutputArtifact](../../authorities/stove0/http-schemas/schemas-outputartifact.md#pa-fb46a0a383) |
 | `stove0` | [schemas: OutputArtifactSetIdentity](../../authorities/stove0/http-schemas/schemas-outputartifactsetidentity.md#pa-87acabf08b) |
 | `stove0` | [schemas: OutputCollectionRef](../../authorities/stove0/http-schemas/schemas-outputcollectionref.md#pa-efff40aa4d) |
@@ -466,7 +467,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: RecipeIdentityRef](../../authorities/stove0/http-schemas/schemas-recipeidentityref.md#pa-b38ad90c9b) |
 | `stove0` | [schemas: RecipeView](../../authorities/stove0/http-schemas/schemas-recipeview.md#pa-ee8408c2c6) |
 | `stove0` | [schemas: SchedulerFailure](../../authorities/stove0/http-schemas/schemas-schedulerfailure.md#pa-5fcb14f582) |
-| `stove0` | [schemas: SchedulerRunIn](../../authorities/stove0/http-schemas/schemas-schedulerrunin.md#pa-b0f8db1c6c) |
+| `stove0` | [schemas: SchedulerRunRequest](../../authorities/stove0/http-schemas/schemas-schedulerrunrequest.md#pa-f984232e7d) |
 | `stove0` | [schemas: SchedulerWorkBatch](../../authorities/stove0/http-schemas/schemas-schedulerworkbatch.md#pa-6e7de394d6) |
 | `stove0` | [schemas: TargetExecutionEvidence](../../authorities/stove0/http-schemas/schemas-targetexecutionevidence.md#pa-2bfb34468a) |
 | `stove0` | [schemas: TargetFailure](../../authorities/stove0/http-schemas/schemas-targetfailure.md#pa-41c8c3d14e) |
@@ -482,7 +483,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: TransformPlan](../../authorities/stove0/http-schemas/schemas-transformplan.md#pa-bf9e9fd822) |
 | `stove0` | [schemas: WorkArtifactSubject](../../authorities/stove0/http-schemas/schemas-workartifactsubject.md#pa-ffd4553c9b) |
 | `stove0` | [schemas: WorkClaimView](../../authorities/stove0/http-schemas/schemas-workclaimview.md#pa-6e2e04c33e) |
-| `stove0` | [schemas: WorkCreateIn](../../authorities/stove0/http-schemas/schemas-workcreatein.md#pa-b0ee03247f) |
+| `stove0` | [schemas: WorkCreateRequest](../../authorities/stove0/http-schemas/schemas-workcreaterequest.md#pa-1df5d26ccf) |
 | `stove0` | [schemas: WorkCreatedEvent](../../authorities/stove0/http-schemas/schemas-workcreatedevent.md#pa-0041924b53) |
 | `stove0` | [schemas: WorkCreatedEventData](../../authorities/stove0/http-schemas/schemas-workcreatedeventdata.md#pa-ce6ad83281) |
 | `stove0` | [schemas: WorkFailureView](../../authorities/stove0/http-schemas/schemas-workfailureview.md#pa-f58d512ed1) |
@@ -495,7 +496,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: WorkflowPlan](../../authorities/stove0/http-schemas/schemas-workflowplan.md#pa-86b6d8f856) |
 | `stove0` | [schemas: WorkflowPlanIntent](../../authorities/stove0/http-schemas/schemas-workflowplanintent.md#pa-abcc685753) |
 | `stove0` | [schemas: WorkflowPreview](../../authorities/stove0/http-schemas/schemas-workflowpreview.md#pa-102e3df726) |
-| `stove0` | [schemas: WorkflowPreviewIn](../../authorities/stove0/http-schemas/schemas-workflowpreviewin.md#pa-001b60fae4) |
 | `stove0-observer-support` | [generated:stove0-observer: ContentObservationInvocation](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-contentobservationinvocation.md#pa-34803a826d) |
 | `stove0-observer-support` | [generated:stove0-observer: ContentObservationRequest](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-contentobservationrequest.md#pa-4d8d438517) |
 | `stove0-observer-support` | [generated:stove0-observer: ContentObservationResult](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-contentobservationresult.md#pa-409ba975de) |

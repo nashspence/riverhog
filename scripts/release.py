@@ -40,17 +40,17 @@ from runtime_image_attribution import RuntimeAttributionError, locked_runtime_pa
 
 ROOT = Path(__file__).resolve().parents[1]
 RELEASE_CONFIG = "release.toml"
-RELEASE_SCHEMA = "riverhog-release/v1"
-NOTICE_SCHEMA = "riverhog-artifact-notices/v1"
+RELEASE_FORMAT = "riverhog-release/v1"
+NOTICE_FORMAT = "riverhog-artifact-notices/v1"
 NOTICE_POLICY = {
-    "schema": NOTICE_SCHEMA,
+    "format": NOTICE_FORMAT,
     "directory": "notices",
-    "format": "tar.gz",
+    "archive_format": "tar.gz",
     "basis": "exact-artifact-contents",
     "required_for": ["wheel", "image"],
 }
 IMAGE_DISTRIBUTION_ROOTS_LABEL = "io.github.nashspence.riverhog.distribution-roots"
-PUBLICATION_SCHEMA = "riverhog-release-publication/v1"
+PUBLICATION_FORMAT = "riverhog-release-publication/v1"
 PUBLICATION_POLICY_KEYS = {
     "role_retention",
     "platform_scope",
@@ -136,7 +136,7 @@ FAMILY_MACHINERY_DISTRIBUTIONS = frozenset(
         "stove0-target-support",
     }
 )
-STATE_INVENTORY_SCHEMA = "riverhog-durable-state-inventory/v1"
+STATE_INVENTORY_FORMAT = "riverhog-durable-state-inventory/v1"
 PROJECT_README_FOOTER = "\n\nSee the project URL for documentation and releases."
 PROJECT_PEOPLE = [{"name": "Nash Spence"}]
 PROJECT_CLASSIFIERS = [
@@ -590,8 +590,8 @@ def _validate_supplied_distribution_names(projects: Sequence[Project]) -> None:
 
 def validate_release_contract(root: Path, *, expected_version: str | None = None) -> list[Project]:
     config = _load_config(root)
-    if config.get("schema") != RELEASE_SCHEMA:
-        raise ReleaseError("release.toml has another schema")
+    if config.get("format") != RELEASE_FORMAT:
+        raise ReleaseError("release.toml has another format")
     if config.get("series") != "v1" or config.get("release_branch") != "release/v1":
         raise ReleaseError("release.toml does not describe the v1 release line")
     if config.get("tag_template") != "v{version}":
@@ -958,10 +958,10 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
     if any(not str(value).strip() for value in compatibility.values()):
         raise ReleaseError("v1 compatibility promises must be visible")
     state = config.get("state")
-    if not isinstance(state, dict) or set(state) != {"schema", "owners"}:
+    if not isinstance(state, dict) or set(state) != {"format", "owners"}:
         raise ReleaseError("release.toml lacks the complete durable-state inventory")
     owners = state.get("owners")
-    if state.get("schema") != STATE_INVENTORY_SCHEMA or not isinstance(owners, list):
+    if state.get("format") != STATE_INVENTORY_FORMAT or not isinstance(owners, list):
         raise ReleaseError("release.toml durable-state inventory is invalid")
     state_ids: set[str] = set()
     for owner in owners:
@@ -1133,7 +1133,7 @@ def publication_contract(
     signing = cast(dict[str, object], config["signing"])
     tags = cast(dict[str, object], config["governance"]["tags"])
     return {
-        "schema": PUBLICATION_SCHEMA,
+        "format": PUBLICATION_FORMAT,
         "policy": dict(config["publication"]),
         "versioning": {
             "series": config["series"],
@@ -1374,7 +1374,7 @@ def build_release_plan(root: Path, version: str, *, allow_dirty: bool = False) -
         "evidence": list(config["artifacts"]["evidence"]),
     }
     return {
-        "schema": RELEASE_SCHEMA,
+        "format": RELEASE_FORMAT,
         "series": config["series"],
         "version": version,
         "tag": config["tag_template"].format(version=version),
@@ -1623,7 +1623,7 @@ def _verify_v1_manifest_history(
 ) -> dict[str, object]:
     version = str(candidate.get("version", ""))
     tag = str(candidate.get("tag", ""))
-    if candidate.get("schema") != RELEASE_SCHEMA or tag != f"v{version}":
+    if candidate.get("format") != RELEASE_FORMAT or tag != f"v{version}":
         raise ReleaseError("candidate release manifest identity is invalid")
     if _version(version)[0] != 1:
         raise ReleaseError("release manifest history accepts only v1 releases")
@@ -1644,7 +1644,7 @@ def _verify_v1_manifest_history(
         historical_tag = str(manifest.get("tag", ""))
         historical_version = str(manifest.get("version", ""))
         if (
-            manifest.get("schema") != RELEASE_SCHEMA
+            manifest.get("format") != RELEASE_FORMAT
             or historical_tag != f"v{historical_version}"
             or not historical_tag.startswith("v1.")
         ):
@@ -1830,7 +1830,7 @@ def _write_notice_bundle(
             }
         )
     index = {
-        "schema": NOTICE_SCHEMA,
+        "format": NOTICE_FORMAT,
         "basis": NOTICE_POLICY["basis"],
         "subject": {
             "kind": str(record["kind"]),
@@ -2882,11 +2882,11 @@ def _verify_notice_bundle(path: Path, subject: dict[str, Any]) -> int:
     except (UnicodeDecodeError, json.JSONDecodeError) as error:
         raise ReleaseError(f"artifact notice index is invalid: {path.name}") from error
     if (
-        set(index) != {"schema", "basis", "subject", "components"}
-        or index["schema"] != NOTICE_SCHEMA
+        set(index) != {"format", "basis", "subject", "components"}
+        or index["format"] != NOTICE_FORMAT
         or index["basis"] != NOTICE_POLICY["basis"]
     ):
-        raise ReleaseError(f"artifact notice index uses another schema: {path.name}")
+        raise ReleaseError(f"artifact notice index uses another format: {path.name}")
     expected_subject = {
         "kind": str(subject["kind"]),
         "name": str(subject["name"]),
@@ -2996,8 +2996,8 @@ def verify_release_evidence(
         dict[str, Any],
         json.loads((output / "release-manifest.json").read_text(encoding="utf-8")),
     )
-    if manifest.get("schema") != RELEASE_SCHEMA:
-        raise ReleaseError("release manifest uses another schema")
+    if manifest.get("format") != RELEASE_FORMAT:
+        raise ReleaseError("release manifest uses another format")
     if publication is None:
         publication = publication_contract(root)
     publication_licenses = _publication_license_inventory(publication)
@@ -3244,7 +3244,7 @@ def _generate_release_evidence(
     publication_licenses = _publication_license_inventory(publication)
     _verify_built_publication_licenses(records, publication_licenses)
     manifest = {
-        "schema": RELEASE_SCHEMA,
+        "format": RELEASE_FORMAT,
         "version": version,
         "tag": config["tag_template"].format(version=version),
         "source_sha": source_sha,
@@ -3399,7 +3399,7 @@ def build_release_evidence(
     finally:
         _remove_release_image_tags(cleanup_tags, cwd=root)
     return {
-        "schema": RELEASE_SCHEMA,
+        "format": RELEASE_FORMAT,
         "version": version,
         "tag": f"v{version}",
         "source_sha": source_sha,
@@ -3547,7 +3547,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "check":
             projects = validate_release_contract(ROOT)
             payload: dict[str, Any] = {
-                "schema": RELEASE_SCHEMA,
+                "format": RELEASE_FORMAT,
                 "version": projects[0].version,
                 "python_distributions": len(projects),
             }
@@ -3562,7 +3562,7 @@ def main(argv: list[str] | None = None) -> int:
             print(
                 json.dumps(
                     {
-                        "schema": PUBLICATION_SCHEMA,
+                        "format": PUBLICATION_FORMAT,
                         "python_distributions": len(projects),
                         "distribution_artifacts": len(validated),
                         "requires_python_verified": len(validated),

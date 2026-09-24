@@ -54,7 +54,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
 | <a id="s-7f1ed6dd33"></a>`usage` | <a id="s-95f1755026"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-1a3bf8ad61"></a>`2` | <a id="s-7731ed346d"></a>all: `"empty"` | <a id="s-0861b51bc5"></a>all: `"noncontractual-usage-diagnostic"` |
-| <a id="s-494f0bb3a1"></a>`operational` | <a id="s-ef04863ace"></a>`{"kind":"application-error"}` | <a id="s-0ebf268d92"></a>`1` | <a id="s-2896b866a5"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-fa71c908d5"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
+| <a id="s-494f0bb3a1"></a>`operational` | <a id="s-ef04863ace"></a>`{"kind":"application-error"}` | <a id="s-0ebf268d92"></a>`1` | <a id="s-2896b866a5"></a>human: `"empty"`; json: [http-api-contracts.ErrorOut](../../http-api-contracts/python/http-api-contracts-errorout.md) | <a id="s-fa71c908d5"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 | <a id="s-db17ffe490"></a>`blocked` | <a id="s-3b87ccad44"></a>`{"kind":"plan-reported-blockers"}` | <a id="s-bc8bbe60db"></a>`1` | <a id="s-1863eafdc2"></a>human: `"noncontractual-presentation-of-command-result"` | <a id="s-a65a57edf9"></a>human: `"empty"` |
 | <a id="s-1d65c30d97"></a>`confirmation-declined` | <a id="s-0727671a92"></a>`{"kind":"interactive-confirmation-mismatch"}` | <a id="s-9c709b4eea"></a>`1` | <a id="s-29e97bb1de"></a>human: `"noncontractual-presentation-of-command-result"` | <a id="s-bb1b7af094"></a>human: `"noncontractual-diagnostic"` |
 
@@ -233,7 +233,7 @@ false
 
 ### `/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/discard/result_contract`
 
-<!-- exact-contract-value: b2f2a7a4f4bff28a0205ef70c6a90476c6ac2254ec763555fc70788ce13a53d0 -->
+<!-- exact-contract-value: bffebba5da36df90c87e1f310923e6da4f8932b8b3db14a9d1029cd673a264f4 -->
 
 ```json
 {
@@ -264,7 +264,7 @@ false
       "stdout": {
         "human": "empty",
         "json": {
-          "identity": "http-api-contracts.ErrorResponse",
+          "identity": "http-api-contracts.ErrorOut",
           "kind": "python-model",
           "schema": {
             "$defs": {
@@ -312,7 +312,7 @@ false
             "required": [
               "error"
             ],
-            "title": "ErrorResponse",
+            "title": "ErrorOut",
             "type": "object"
           }
         }

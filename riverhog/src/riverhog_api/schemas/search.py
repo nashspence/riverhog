@@ -23,7 +23,7 @@ class SearchFileOut(ImmutableFileIdentityDocument):
         return self
 
 
-class SearchResponse(RiverhogModel):
+class SearchOut(RiverhogModel):
     query: str | None
     collection: CollectionId | None
     page_size: int = Field(ge=1, le=100)

@@ -26,8 +26,8 @@ from riverhog_core.domain.archive import (
     PackVolumePlan,
 )
 
-PACK_INDEX_SCHEMA = "riverhog-pack-index/v1"
-PACK_VOLUME_PLAN_SCHEMA = "pack-volume-plan/v1"
+PACK_INDEX_FORMAT = "riverhog-pack-index/v1"
+PACK_VOLUME_PLAN_FORMAT = "pack-volume-plan/v1"
 PACK_INDEX_PATH = ".riverhog/pack-index.json"
 PACK_PADDING_PREFIX = ".riverhog/padding/"
 RESERVED_ARCHIVE_PREFIX = ".riverhog/"
@@ -205,7 +205,7 @@ def pack_volume_plan_payload(plan: PackVolumePlan) -> dict[str, object]:
     """
 
     return {
-        "schema": PACK_VOLUME_PLAN_SCHEMA,
+        "format": PACK_VOLUME_PLAN_FORMAT,
         "volume_id": plan.volume_id,
         "sequence": plan.sequence,
         "max_member_bytes": plan.max_member_bytes,
@@ -233,10 +233,10 @@ def parse_pack_volume_plan(content: bytes | str) -> PackVolumePlan:
         payload = json.loads(content)
     except (UnicodeError, json.JSONDecodeError) as exc:
         raise ValueError("pack volume plan is not valid JSON") from exc
-    if not isinstance(payload, dict) or payload.get("schema") != PACK_VOLUME_PLAN_SCHEMA:
-        raise ValueError("pack volume plan schema mismatch")
+    if not isinstance(payload, dict) or payload.get("format") != PACK_VOLUME_PLAN_FORMAT:
+        raise ValueError("pack volume plan format mismatch")
     expected_keys = {
-        "schema",
+        "format",
         "volume_id",
         "sequence",
         "max_member_bytes",
@@ -453,7 +453,7 @@ def _pack_index_bytes(
         )
     return canonical_json_bytes(
         {
-            "schema": PACK_INDEX_SCHEMA,
+            "format": PACK_INDEX_FORMAT,
             "volume": {"id": volume_id, "sequence": sequence},
             "tree": {
                 "files": len(members),

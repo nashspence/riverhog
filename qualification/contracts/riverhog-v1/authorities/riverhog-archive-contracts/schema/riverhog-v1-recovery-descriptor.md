@@ -19,7 +19,7 @@ Exact externally visible contract owned by this contract element.
 - <a id="s-73491a8562"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/schemas/riverhog-recovery-descriptor-v1.schema.json"`
 - <a id="s-b6e231d4d9"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
 - <a id="s-1a229fead9"></a>`additionalProperties`: `false`
-- <a id="s-59821c0437"></a>`required`: `["schema","encryption","root"]`
+- <a id="s-59821c0437"></a>`required`: `["format","encryption","root"]`
 - <a id="s-9788b6bdfd"></a>`title`: `"Riverhog v1 recovery descriptor"`
 
 ### Fields
@@ -27,8 +27,8 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | `encryption` | yes | [See field `encryption`](#s-d907c3144a) |  |
+| <a id="s-3f367cff88"></a>`format` | yes | const="riverhog-recovery-descriptor/v1" |  |
 | `root` | yes | [See field `root`](#s-2b019864cd) |  |
-| <a id="s-d0b998e46c"></a>`schema` | yes | const="riverhog-recovery-descriptor/v1" |  |
 
 ### <a id="s-d907c3144a"></a>field `encryption`
 
@@ -97,7 +97,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7b1d9088abe193eddafd6d9e715dda240c61f7f241650c4e91de4f4a6ad37720 -->
+<!-- exact-contract-value: 1a9f345317a6854d3274f4701657c6377f22f0899c0771122ae9d3e90353cd87 -->
 
 ```json
 {
@@ -122,6 +122,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
+    "format": {
+      "const": "riverhog-recovery-descriptor/v1"
+    },
     "root": {
       "additionalProperties": false,
       "properties": {
@@ -143,13 +146,10 @@ The following JSON is the complete value owned at each machine-authority pointer
         "stored_sha256"
       ],
       "type": "object"
-    },
-    "schema": {
-      "const": "riverhog-recovery-descriptor/v1"
     }
   },
   "required": [
-    "schema",
+    "format",
     "encryption",
     "root"
   ],

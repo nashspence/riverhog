@@ -54,7 +54,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
 | <a id="s-74d27bff86"></a>`usage` | <a id="s-b2137a5c40"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-f9c1d1618f"></a>`2` | <a id="s-d9a42baeed"></a>all: `"empty"` | <a id="s-da8b09ef0b"></a>all: `"noncontractual-usage-diagnostic"` |
-| <a id="s-f9686351f3"></a>`operational` | <a id="s-5f184a320f"></a>`{"kind":"application-error"}` | <a id="s-71761f1d4b"></a>`1` | <a id="s-fe2732ae9f"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-052b01cb64"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
+| <a id="s-f9686351f3"></a>`operational` | <a id="s-5f184a320f"></a>`{"kind":"application-error"}` | <a id="s-71761f1d4b"></a>`1` | <a id="s-fe2732ae9f"></a>human: `"empty"`; json: [http-api-contracts.ErrorOut](../../http-api-contracts/python/http-api-contracts-errorout.md) | <a id="s-052b01cb64"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Progression, limits, and lifecycle
 
@@ -249,7 +249,7 @@ false
 
 ### `/external_contract/cli/a-riverhog-cli/commands/collection/commands/provenance/commands/agents/result_contract`
 
-<!-- exact-contract-value: 2acbcb5d6c6931556e4ba20f691c40e3b0ba148b3a9bcb19b071505691c0d409 -->
+<!-- exact-contract-value: b5cafcc6ef808f291cbd633e12d55e654f387f48109edf743b3e7a3e51872529 -->
 
 ```json
 {
@@ -280,7 +280,7 @@ false
       "stdout": {
         "human": "empty",
         "json": {
-          "identity": "http-api-contracts.ErrorResponse",
+          "identity": "http-api-contracts.ErrorOut",
           "kind": "python-model",
           "schema": {
             "$defs": {
@@ -328,7 +328,7 @@ false
             "required": [
               "error"
             ],
-            "title": "ErrorResponse",
+            "title": "ErrorOut",
             "type": "object"
           }
         }
@@ -358,7 +358,7 @@ false
           "operation_id": "list_collection_provenance_journal_agents",
           "path": "/v1/collections/{collection_id}/provenance/journals/{journal_id}/agents",
           "schema": {
-            "$ref": "#/components/schemas/ListProvenanceJournalAgentsResponse"
+            "$ref": "#/components/schemas/ListProvenanceJournalAgentsOut"
           },
           "status": "200"
         }

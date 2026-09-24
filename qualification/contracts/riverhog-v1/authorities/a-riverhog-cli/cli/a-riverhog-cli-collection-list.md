@@ -61,7 +61,7 @@ Repeated `tag` accepts at most **100** occurrences, through [schemas: SearchColl
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
 | <a id="s-7e95d920c6"></a>`usage` | <a id="s-f5d872feea"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-b59484c458"></a>`2` | <a id="s-3b74d055dd"></a>all: `"empty"` | <a id="s-fa13caf24b"></a>all: `"noncontractual-usage-diagnostic"` |
-| <a id="s-afbcf9f3b7"></a>`operational` | <a id="s-55734129aa"></a>`{"kind":"application-error"}` | <a id="s-bd331cd20f"></a>`1` | <a id="s-7e7f5bf849"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-29adb81a80"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
+| <a id="s-afbcf9f3b7"></a>`operational` | <a id="s-55734129aa"></a>`{"kind":"application-error"}` | <a id="s-bd331cd20f"></a>`1` | <a id="s-7e7f5bf849"></a>human: `"empty"`; json: [http-api-contracts.ErrorOut](../../http-api-contracts/python/http-api-contracts-errorout.md) | <a id="s-29adb81a80"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Progression, limits, and lifecycle
 
@@ -361,7 +361,7 @@ false
 
 ### `/external_contract/cli/a-riverhog-cli/commands/collection/commands/list/result_contract`
 
-<!-- exact-contract-value: 373a315694625f510182ac243fcaf76ab41190c495f239e8d360ec1119847fca -->
+<!-- exact-contract-value: 1a381f3393e83128f8386d326f7a6714905bc9e588e3a560416eb5a6d07e53fc -->
 
 ```json
 {
@@ -392,7 +392,7 @@ false
       "stdout": {
         "human": "empty",
         "json": {
-          "identity": "http-api-contracts.ErrorResponse",
+          "identity": "http-api-contracts.ErrorOut",
           "kind": "python-model",
           "schema": {
             "$defs": {
@@ -440,7 +440,7 @@ false
             "required": [
               "error"
             ],
-            "title": "ErrorResponse",
+            "title": "ErrorOut",
             "type": "object"
           }
         }
@@ -470,7 +470,7 @@ false
           "operation_id": "list_collections",
           "path": "/v1/collections:search",
           "schema": {
-            "$ref": "#/components/schemas/ListCollectionsResponse"
+            "$ref": "#/components/schemas/ListCollectionsOut"
           },
           "status": "200"
         }

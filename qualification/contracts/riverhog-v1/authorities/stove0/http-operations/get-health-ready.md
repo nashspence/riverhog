@@ -22,9 +22,9 @@ Health Ready
 
 | Status | Description | Media type | Schema | Declared error codes |
 |---|---|---|---|---|
-| <a id="s-0d14b360c7"></a>`200` | Successful Response | application/json | [HealthResponse](../http-schemas/schemas-healthresponse.md) | not declared |
-| <a id="s-238595f36d"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
-| <a id="s-79e0d02a26"></a>`503` | Service Unavailable | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `service_unavailable` |
+| <a id="s-0d14b360c7"></a>`200` | Successful Response | application/json | [HealthOut](../http-schemas/schemas-healthout.md) | not declared |
+| <a id="s-238595f36d"></a>`500` | Internal Server Error | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `internal_error` |
+| <a id="s-79e0d02a26"></a>`503` | Service Unavailable | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `service_unavailable` |
 
 ## Maintained corroboration
 
@@ -35,8 +35,8 @@ Health Ready
 
 ### Referenced contract elements
 
-- [schemas: ErrorResponse](../http-schemas/schemas-errorresponse.md)
-- [schemas: HealthResponse](../http-schemas/schemas-healthresponse.md)
+- [schemas: ErrorOut](../http-schemas/schemas-errorout.md)
+- [schemas: HealthOut](../http-schemas/schemas-healthout.md)
 
 ## Governing policies
 
@@ -117,7 +117,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 73735cc334d44871eee444468dca1ad3f7098d878b4d942201c85713ade1cee3 -->
+<!-- exact-contract-value: e399402703856794bdd22361640be970bdc910b5845596c8de0b1f3dcb48c7ef -->
 
 ```json
 {
@@ -127,7 +127,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/HealthResponse"
+            "$ref": "#/components/schemas/HealthOut"
           }
         }
       },
@@ -137,7 +137,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -150,7 +150,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },

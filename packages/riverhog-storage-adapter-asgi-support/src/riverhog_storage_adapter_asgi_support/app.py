@@ -13,7 +13,7 @@ from fastapi import Depends, FastAPI, Request, Response
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.security import HTTPBearer
-from http_api_contracts import FRAMED_BODY_MEDIA_TYPE, HealthResponse, operation_openapi
+from http_api_contracts import FRAMED_BODY_MEDIA_TYPE, HealthOut, operation_openapi
 from riverhog_storage_adapter_protocol import (
     StorageAdapterError,
     StorageAdapterErrorBody,
@@ -108,13 +108,13 @@ def create_storage_adapter_app(
     binding = StorageAdapterHttpBinding(adapter)
     app = FastAPI(title=service, version="1", openapi_url="/v1/openapi.json")
 
-    @app.get("/health/live", response_model=HealthResponse, tags=["health"])
+    @app.get("/health/live", response_model=HealthOut, tags=["health"])
     def live() -> dict[str, str]:
         return {"service": service, "status": "ok"}
 
     @app.get(
         "/health/ready",
-        response_model=HealthResponse,
+        response_model=HealthOut,
         responses={503: {"model": StorageAdapterError}},
         tags=["health"],
     )

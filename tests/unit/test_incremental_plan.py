@@ -141,7 +141,7 @@ def test_incremental_checkpoint_has_canonical_identity() -> None:
         (_ordered(0, "pending.txt", 2),),
     ).checkpoint
     payload = json.loads(incremental_volume_planner_checkpoint_bytes(checkpoint))
-    assert payload["schema"] == "incremental-volume-planner-checkpoint/v1"
+    assert payload["format"] == "incremental-volume-planner-checkpoint/v1"
     assert payload["content_identity"] is None
 
 

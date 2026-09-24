@@ -141,7 +141,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `review0-sampler-lib` | [GET /v1/sampler](../../authorities/review0-sampler-lib/process-protocol-operations/get-v1-sampler.md#pa-6ea64e494e) |
 | `review0-sampler-lib` | [POST /v1/sample](../../authorities/review0-sampler-lib/process-protocol-operations/post-v1-sample.md#pa-d0df33979f) |
 | `review0-sampler-lib` | [generated:review0-sampler protocol](../../authorities/review0-sampler-lib/process-protocol/generated-review0-sampler-protocol.md#pa-d86e074ca4) |
-| `review0-sampler-lib` | [generated:review0-sampler: ErrorResponse](../../authorities/review0-sampler-lib/process-protocol-schemas/generated-review0-sampler-errorresponse.md#pa-16fd7356b5) |
+| `review0-sampler-lib` | [generated:review0-sampler: ErrorOut](../../authorities/review0-sampler-lib/process-protocol-schemas/generated-review0-sampler-errorout.md#pa-5a6001b3fa) |
 | `review0-sampler-lib` | [generated:review0-sampler: SamplerConformanceResult](../../authorities/review0-sampler-lib/process-protocol-schemas/generated-review0-sampler-samplerconformanceresult.md#pa-932bea4afa) |
 | `review0-sampler-lib` | [generated:review0-sampler: SamplerDescriptor](../../authorities/review0-sampler-lib/process-protocol-schemas/generated-review0-sampler-samplerdescriptor.md#pa-2f907bb902) |
 | `review0-sampler-lib` | [generated:review0-sampler: SamplerRequest](../../authorities/review0-sampler-lib/process-protocol-schemas/generated-review0-sampler-samplerrequest.md#pa-fb7e863ec7) |
@@ -203,7 +203,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-observer-support` | [generated:stove0-observer: ContentObservationInvocation](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-contentobservationinvocation.md#pa-02a5ab9de6) |
 | `stove0-observer-support` | [generated:stove0-observer: ContentObservationRequest](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-contentobservationrequest.md#pa-03a67912f3) |
 | `stove0-observer-support` | [generated:stove0-observer: ContentObservationResult](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-contentobservationresult.md#pa-af3cd3b255) |
-| `stove0-observer-support` | [generated:stove0-observer: ErrorResponse](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-errorresponse.md#pa-104a8ddb73) |
+| `stove0-observer-support` | [generated:stove0-observer: ErrorOut](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-errorout.md#pa-9044fefe31) |
 | `stove0-observer-support` | [generated:stove0-observer: ObserverConformanceResult](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observerconformanceresult.md#pa-1b9cb8a9bb) |
 | `stove0-observer-support` | [generated:stove0-observer: ObserverContract](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observercontract.md#pa-638a161bb5) |
 | `stove0-observer-support` | [generated:stove0-observer: ObserverDescriptor](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observerdescriptor.md#pa-d9eedee78b) |
@@ -213,7 +213,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-target-support` | [POST /v1/preflight](../../authorities/stove0-target-support/process-protocol-operations/post-v1-preflight.md#pa-46db2efb30) |
 | `stove0-target-support` | [PUT /v1/jobs/{job_id}](../../authorities/stove0-target-support/process-protocol-operations/put-v1-jobs-job-id.md#pa-02ea72597b) |
 | `stove0-target-support` | [generated:stove0-target protocol](../../authorities/stove0-target-support/process-protocol/generated-stove0-target-protocol.md#pa-192c712a44) |
-| `stove0-target-support` | [generated:stove0-target: ErrorResponse](../../authorities/stove0-target-support/process-protocol-schemas/generated-stove0-target-errorresponse.md#pa-dca134936c) |
+| `stove0-target-support` | [generated:stove0-target: ErrorOut](../../authorities/stove0-target-support/process-protocol-schemas/generated-stove0-target-errorout.md#pa-c134bf2c04) |
 | `stove0-target-support` | [generated:stove0-target: OperationContract](../../authorities/stove0-target-support/process-protocol-schemas/generated-stove0-target-operationcontract.md#pa-018bb7213f) |
 | `stove0-target-support` | [generated:stove0-target: TargetConformanceResult](../../authorities/stove0-target-support/process-protocol-schemas/generated-stove0-target-targetconformanceresult.md#pa-8088daece5) |
 | `stove0-target-support` | [generated:stove0-target: TargetDescriptor](../../authorities/stove0-target-support/process-protocol-schemas/generated-stove0-target-targetdescriptor.md#pa-89cf33b80f) |

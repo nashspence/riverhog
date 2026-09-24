@@ -53,7 +53,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
 | <a id="s-aaf1e8caff"></a>`usage` | <a id="s-c5c5df30c2"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-2722416d28"></a>`2` | <a id="s-303387abee"></a>all: `"empty"` | <a id="s-73a2628894"></a>all: `"noncontractual-usage-diagnostic"` |
-| <a id="s-7b746c07e3"></a>`operational` | <a id="s-74a3935d93"></a>`{"kind":"application-error"}` | <a id="s-22a3d271f2"></a>`1` | <a id="s-5ddef711e6"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-805d8f7e48"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
+| <a id="s-7b746c07e3"></a>`operational` | <a id="s-74a3935d93"></a>`{"kind":"application-error"}` | <a id="s-22a3d271f2"></a>`1` | <a id="s-5ddef711e6"></a>human: `"empty"`; json: [http-api-contracts.ErrorOut](../../http-api-contracts/python/http-api-contracts-errorout.md) | <a id="s-805d8f7e48"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Progression, limits, and lifecycle
 
@@ -235,7 +235,7 @@ false
 
 ### `/external_contract/cli/a-riverhog-cli/commands/app/commands/key/commands/create/result_contract`
 
-<!-- exact-contract-value: 8119195326613668084f9c46909756b3acbc59d3b8cfdf5a7b30f2781c67cabd -->
+<!-- exact-contract-value: e4191a8e53afe045e8a4ab389ae6af3faa36ad7ec813734dcf6b5af6e75fd194 -->
 
 ```json
 {
@@ -266,7 +266,7 @@ false
       "stdout": {
         "human": "empty",
         "json": {
-          "identity": "http-api-contracts.ErrorResponse",
+          "identity": "http-api-contracts.ErrorOut",
           "kind": "python-model",
           "schema": {
             "$defs": {
@@ -314,7 +314,7 @@ false
             "required": [
               "error"
             ],
-            "title": "ErrorResponse",
+            "title": "ErrorOut",
             "type": "object"
           }
         }

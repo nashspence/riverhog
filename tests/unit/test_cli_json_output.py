@@ -6,7 +6,7 @@ import a_riverhog_cli.main
 from a_riverhog_cli.cli_support import emit
 from a_riverhog_cli.main import app
 from pytest import CaptureFixture
-from riverhog_api.schemas.collections import ListCollectionsResponse
+from riverhog_api.schemas.collections import ListCollectionsOut
 from typer.testing import CliRunner
 
 
@@ -44,7 +44,7 @@ def test_collection_list_json_emits_the_api_response_without_a_second_model(
             }
         ],
     }
-    assert ListCollectionsResponse.model_validate(payload).model_dump(mode="json") == payload
+    assert ListCollectionsOut.model_validate(payload).model_dump(mode="json") == payload
     calls: list[dict[str, object]] = []
 
     class FakeClient:

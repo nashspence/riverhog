@@ -59,8 +59,8 @@ if str(_SCRIPT_DIRECTORY) not in sys.path:
 contract_atlas = importlib.import_module("contract_atlas")
 qualification_source = importlib.import_module("qualification_source")
 
-SCHEMA = "riverhog-operation-qualification/v1"
-TIMING_SCHEMA = "riverhog-operation-timings/v1"
+FORMAT = "riverhog-operation-qualification/v1"
+TIMING_FORMAT = "riverhog-operation-timings/v1"
 HTTP_METHODS = frozenset({"delete", "get", "patch", "post", "put"})
 SUPPORTED_ROUTE_METHODS = HTTP_METHODS | {"head"}
 SOURCE_SHA_PATTERN = "0123456789abcdef"
@@ -821,17 +821,17 @@ def _contract_freeze_identity(path: Path = CONTRACT_FREEZE) -> dict[str, object]
     ) as exc:
         raise QualificationError("contract-freeze extent authority is unavailable") from exc
     if (
-        atlas.root.get("schema") != contract_atlas.ROOT_SCHEMA
-        or extents.get("schema") != "riverhog-extent-contract/v1"
+        atlas.root.get("format") != contract_atlas.ROOT_FORMAT
+        or extents.get("format") != "riverhog-extent-contract/v1"
         or any(coverage.get(key) != 0 for key in ("missing", "duplicate", "stale", "undecided"))
         or coverage.get("classified") != coverage.get("discovered")
         or not isinstance(extents.get("sha256"), str)
     ):
         raise QualificationError("contract-freeze extent authority is incomplete")
     return {
-        "schema": atlas.root["schema"],
+        "format": atlas.root["format"],
         "projection_sha256": hashlib.sha256(content).hexdigest(),
-        "extent_schema": extents["schema"],
+        "extent_format": extents["format"],
         "extent_sha256": extents["sha256"],
         "extent_decisions": coverage["classified"],
     }
@@ -906,7 +906,7 @@ def _load_operation_timings(
         raise QualificationError("operation timing evidence is unavailable or invalid") from exc
     if (
         not isinstance(payload, dict)
-        or payload.get("schema") != TIMING_SCHEMA
+        or payload.get("format") != TIMING_FORMAT
         or payload.get("source_sha") != source_sha
         or payload.get("pytest_exit_status") != 0
     ):
@@ -967,7 +967,7 @@ def _load_operation_timings(
             f"official-client operations lack client wall timings: {missing_client}"
         )
     return {
-        "schema": TIMING_SCHEMA,
+        "format": TIMING_FORMAT,
         "source_sha": source_sha,
         "source_checkout": checkout,
         "event_cursor_restarts": payload.get("event_cursor_restarts", []),
@@ -1073,7 +1073,7 @@ def evidence(*, source_sha: str, timings: Path) -> dict[str, object]:
         source_sha=source_sha,
     )
     payload: dict[str, object] = {
-        "schema": SCHEMA,
+        "format": FORMAT,
         "source_sha": source_sha,
         "generated_at": utc_timestamp_now(),
         "summary": _summary(matrix),

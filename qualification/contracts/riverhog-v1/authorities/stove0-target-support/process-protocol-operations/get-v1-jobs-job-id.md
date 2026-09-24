@@ -16,7 +16,7 @@ Exact externally visible contract owned by this contract element.
 <a id="s-bc8de15cff"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-395852106c"></a>`error_schema` | `"ErrorResponse"` |
+| <a id="s-395852106c"></a>`error_schema` | `"ErrorOut"` |
 | <a id="s-4d97d84a6b"></a>`errors` | `[{"code":"bad_request","status":400},{"code":"unauthorized","status":401},{"code":"job_not_found","status":404},{"code":"target_failed","status":500}]` |
 | <a id="s-aaadd92710"></a>`method` | `"GET"` |
 | <a id="s-73ee050335"></a>`path` | `"/v1/jobs/{job_id}"` |
@@ -57,11 +57,11 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: df0392abf514c5bb8b5b56663fb3e0a5c308ecd37b4a74cad4d92437a43de791 -->
+<!-- exact-contract-value: cda97978c4213576c773afe8811b2d8b474f03e9ba63d2fdf806b15de15105a8 -->
 
 ```json
 {
-  "error_schema": "ErrorResponse",
+  "error_schema": "ErrorOut",
   "errors": [
     {
       "code": "bad_request",

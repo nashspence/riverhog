@@ -9,7 +9,7 @@ from urllib.parse import quote
 
 import httpx
 from http_api_contracts import (
-    HealthResponse as HealthResponse,
+    HealthOut as HealthOut,
 )
 from http_api_contracts import (
     parse_error_payload,
@@ -77,13 +77,11 @@ class RiverhogFtpSpoolClient:
     def close(self) -> None:
         self._http.close()
 
-    def ftp_spool_health_live(self) -> HealthResponse:
-        return HealthResponse.model_validate(self._json("GET", "/health/live", authenticated=False))
+    def ftp_spool_health_live(self) -> HealthOut:
+        return HealthOut.model_validate(self._json("GET", "/health/live", authenticated=False))
 
-    def ftp_spool_health_ready(self) -> HealthResponse:
-        return HealthResponse.model_validate(
-            self._json("GET", "/health/ready", authenticated=False)
-        )
+    def ftp_spool_health_ready(self) -> HealthOut:
+        return HealthOut.model_validate(self._json("GET", "/health/ready", authenticated=False))
 
     def get_ftp_spool_status(
         self,

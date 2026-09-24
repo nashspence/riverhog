@@ -40,11 +40,11 @@ from stove0_operator_contracts import (
     AdmissionPolicyCatalogView,
     AdmissionPolicyStatus,
     AdmissionView,
-    EvaluationReviewIn,
-    SchedulerRunIn,
+    EvaluationReviewRequest,
+    OperatorWorkflowPreviewRequest,
+    SchedulerRunRequest,
     Stove0EventPage,
-    WorkCreateIn,
-    WorkflowPreviewIn,
+    WorkCreateRequest,
 )
 from stove0_protocol import (
     ArtifactSelection,
@@ -937,11 +937,11 @@ def test_every_stove0_operation_publishes_an_exact_response_schema() -> None:
 
 def test_stove0_request_bodies_have_one_shared_public_contract_owner() -> None:
     expected = {
-        "create_work": ("request", WorkCreateIn),
-        "preview_workflow": ("request", WorkflowPreviewIn),
+        "create_work": ("request", WorkCreateRequest),
+        "preview_workflow": ("request", OperatorWorkflowPreviewRequest),
         "create_evaluation": ("definition", EvaluationDefinition),
-        "review_evaluation_variant": ("request", EvaluationReviewIn),
-        "run_scheduler": ("request", SchedulerRunIn),
+        "review_evaluation_variant": ("request", EvaluationReviewRequest),
+        "run_scheduler": ("request", SchedulerRunRequest),
     }
     actual = {
         route.operation_id: (
@@ -957,7 +957,7 @@ def test_stove0_request_bodies_have_one_shared_public_contract_owner() -> None:
 
 
 def test_workflow_request_accepts_the_complete_exact_input_set() -> None:
-    request = WorkflowPreviewIn(
+    request = OperatorWorkflowPreviewRequest(
         recipe_id="fixture.recipe/v1",
         inputs=tuple(_collection_root(index) for index in range(1, 1002)),
     )
@@ -990,14 +990,14 @@ def test_scheduler_work_failures_are_operator_visible(
 
 def test_stove0_openapi_uses_conventional_errors_health_and_paging() -> None:
     schema = create_app(_composition()).openapi()
-    assert schema["components"]["schemas"]["HealthResponse"] == {
+    assert schema["components"]["schemas"]["HealthOut"] == {
         "additionalProperties": False,
         "properties": {
             "service": {"minLength": 1, "title": "Service", "type": "string"},
             "status": {"const": "ok", "title": "Status", "type": "string"},
         },
         "required": ["service", "status"],
-        "title": "HealthResponse",
+        "title": "HealthOut",
         "type": "object",
     }
     for path in ("/v1/work", "/v1/evaluations"):

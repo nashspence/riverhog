@@ -9,6 +9,7 @@
     "policies": 5,
     "test_links": 33
   },
+  "format": "riverhog-implementation-policy-witnesses/v1",
   "policies": [
     {
       "applies_when": "An external state-changing effect and its database acceptance cannot be committed atomically.",
@@ -131,6 +132,5 @@
         "tests/integration/test_catalog_schema_postgres.py::test_postgres_tag_history_cleanup_serializes_its_row_work_budget"
       ]
     }
-  ],
-  "schema": "riverhog-implementation-policy-witnesses/v1"
+  ]
 }

@@ -50,7 +50,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
 | <a id="s-63b3f510ac"></a>`usage` | <a id="s-768ef59fa1"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-fb3ccb2a61"></a>`2` | <a id="s-0aa1b51028"></a>all: `"empty"` | <a id="s-717b0d0a0e"></a>all: `"noncontractual-usage-diagnostic"` |
-| <a id="s-8dda433012"></a>`operational` | <a id="s-1555b840c7"></a>`{"kind":"application-error"}` | <a id="s-9c04a002d4"></a>`1` | <a id="s-79cc7164bf"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-a038d5a5b5"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
+| <a id="s-8dda433012"></a>`operational` | <a id="s-1555b840c7"></a>`{"kind":"application-error"}` | <a id="s-9c04a002d4"></a>`1` | <a id="s-79cc7164bf"></a>human: `"empty"`; json: [http-api-contracts.ErrorOut](../../http-api-contracts/python/http-api-contracts-errorout.md) | <a id="s-a038d5a5b5"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 | <a id="s-c7687ae947"></a>`audit-issues` | <a id="s-18d32d25df"></a>`{"kind":"local-audit-problem-count-positive"}` | <a id="s-ed7664acc3"></a>`1` | <a id="s-c041b77747"></a>human: `"noncontractual-presentation-of-command-result"`; json: [a-riverhog-cli-local-audit-result/v1](#s-12934f8fa8) | <a id="s-7c612016c2"></a>all: `"empty"` |
 
 ### Local structured outputs
@@ -202,7 +202,7 @@ false
 
 ### `/external_contract/cli/a-riverhog-cli/commands/local/commands/audit/result_contract`
 
-<!-- exact-contract-value: 155a29ab61e8d18693f4f9895db87137ac399b169675b523f1d06c41cd5fa058 -->
+<!-- exact-contract-value: 70b12c33defe26b5fb3de8278d33a3c2b720664a09b68033e9384da75782daec -->
 
 ```json
 {
@@ -233,7 +233,7 @@ false
       "stdout": {
         "human": "empty",
         "json": {
-          "identity": "http-api-contracts.ErrorResponse",
+          "identity": "http-api-contracts.ErrorOut",
           "kind": "python-model",
           "schema": {
             "$defs": {
@@ -281,7 +281,7 @@ false
             "required": [
               "error"
             ],
-            "title": "ErrorResponse",
+            "title": "ErrorOut",
             "type": "object"
           }
         }

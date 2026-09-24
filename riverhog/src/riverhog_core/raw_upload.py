@@ -57,7 +57,7 @@ from riverhog_core.throughput import (
 )
 from riverhog_core.write_segments import WriteSegmentPlan, iter_write_segments
 
-RAW_UPLOAD_CHECKPOINT_SCHEMA = "raw-upload-checkpoint/v1"
+RAW_UPLOAD_CHECKPOINT_FORMAT = "raw-upload-checkpoint/v1"
 RAW_VOLUME_CONTENT_TYPE = "application/vnd.riverhog.raw-segment+age"
 _SEGMENT_ID_RE = re.compile(r"segment-[0-9a-f]{64}")
 _SHA256_RE = re.compile(r"[0-9a-f]{64}")
@@ -96,7 +96,7 @@ class RawUploadCheckpoint:
         ordered = tuple(sorted(self.archive_parts, key=lambda current: current.number))
         return canonical_json_bytes(
             {
-                "schema": RAW_UPLOAD_CHECKPOINT_SCHEMA,
+                "format": RAW_UPLOAD_CHECKPOINT_FORMAT,
                 "collection_id": self.collection_id,
                 "volume_id": self.volume_id,
                 "object_path": self.object_path,
@@ -134,10 +134,10 @@ class RawUploadCheckpoint:
             payload = json.loads(content)
         except json.JSONDecodeError as exc:
             raise ValueError("raw upload checkpoint is not valid JSON") from exc
-        if not isinstance(payload, dict) or payload.get("schema") != RAW_UPLOAD_CHECKPOINT_SCHEMA:
-            raise ValueError("raw upload checkpoint schema mismatch")
+        if not isinstance(payload, dict) or payload.get("format") != RAW_UPLOAD_CHECKPOINT_FORMAT:
+            raise ValueError("raw upload checkpoint format mismatch")
         expected_fields = {
-            "schema",
+            "format",
             "collection_id",
             "volume_id",
             "object_path",

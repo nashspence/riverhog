@@ -37,13 +37,13 @@ List Collection Provenance
 
 | Status | Description | Media type | Schema | Declared error codes |
 |---|---|---|---|---|
-| <a id="s-2344bff45a"></a>`200` | Successful Response | application/json | [ListCollectionFileProvenanceResponse](../http-schemas/schemas-listcollectionfileprovenanceresponse.md) | not declared |
-| <a id="s-8811cb31bd"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
-| <a id="s-a393e79bde"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
-| <a id="s-ccc2989c40"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
-| <a id="s-9f7ea1c86b"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
-| <a id="s-19c644a1f9"></a>`409` | Conflict | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `invalid_state` |
-| <a id="s-d9cbd5449c"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
+| <a id="s-2344bff45a"></a>`200` | Successful Response | application/json | [ListCollectionFileProvenanceOut](../http-schemas/schemas-listcollectionfileprovenanceout.md) | not declared |
+| <a id="s-8811cb31bd"></a>`400` | Bad Request | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `bad_request` |
+| <a id="s-a393e79bde"></a>`401` | Unauthorized | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `unauthorized` |
+| <a id="s-ccc2989c40"></a>`403` | Forbidden | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `forbidden` |
+| <a id="s-9f7ea1c86b"></a>`404` | Not Found | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `not_found` |
+| <a id="s-19c644a1f9"></a>`409` | Conflict | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `invalid_state` |
+| <a id="s-d9cbd5449c"></a>`500` | Internal Server Error | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -94,8 +94,8 @@ Exact evidence groups for this contract element:
 
 - [schemas: BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)
 - [schemas: BrowseQuery](../http-schemas/schemas-browsequery.md)
-- [schemas: ErrorResponse](../http-schemas/schemas-errorresponse.md)
-- [schemas: ListCollectionFileProvenanceResponse](../http-schemas/schemas-listcollectionfileprovenanceresponse.md)
+- [schemas: ErrorOut](../http-schemas/schemas-errorout.md)
+- [schemas: ListCollectionFileProvenanceOut](../http-schemas/schemas-listcollectionfileprovenanceout.md)
 - [schemas: ProvenanceStatus](../http-schemas/schemas-provenancestatus.md)
 
 ## Governing policies
@@ -188,7 +188,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 943a63ed6b6675bf19283acf2967a96923f5118dca33f2f91932f4978f4dbd48 -->
+<!-- exact-contract-value: 1909bdbe0033af611359a0ef9b6d17b809d56a0d70aca246ea766db03c828565 -->
 
 ```json
 {
@@ -308,7 +308,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ListCollectionFileProvenanceResponse"
+            "$ref": "#/components/schemas/ListCollectionFileProvenanceOut"
           }
         }
       },
@@ -318,7 +318,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -331,7 +331,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -344,7 +344,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -357,7 +357,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -370,7 +370,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -383,7 +383,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },

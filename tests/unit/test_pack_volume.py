@@ -201,8 +201,8 @@ def test_rendered_pack_is_standard_tar_with_embedded_verified_index() -> None:
         index_bytes = archive.extractfile(PACK_INDEX_PATH).read()  # type: ignore[union-attr]
     assert hashlib.sha256(index_bytes).hexdigest() == plan.index_sha256
     parsed = json.loads(index_bytes)
-    assert set(parsed) == {"schema", "volume", "tree", "files"}
-    assert parsed["schema"] == "riverhog-pack-index/v1"
+    assert set(parsed) == {"format", "volume", "tree", "files"}
+    assert parsed["format"] == "riverhog-pack-index/v1"
     assert parsed["volume"] == {"id": plan.volume_id, "sequence": 3}
     assert [row["path"] for row in parsed["files"]] == sorted(contents)
     assert all(
@@ -233,7 +233,7 @@ def test_pack_index_and_upload_plan_are_canonical_json() -> None:
     plan = plan_pack_volume([_file("schema.txt", content)], sequence=0)
     index = json.loads(plan.index_bytes)
     upload_plan = {
-        "schema": "pack-upload-plan/v1",
+        "format": "pack-upload-plan/v1",
         "volume_id": plan.volume_id,
         "plaintext_bytes": plan.plaintext_bytes,
         "units": [
@@ -252,7 +252,7 @@ def test_pack_index_and_upload_plan_are_canonical_json() -> None:
         ],
     }
 
-    assert index["schema"] == "riverhog-pack-index/v1"
+    assert index["format"] == "riverhog-pack-index/v1"
     assert canonical_json_bytes(upload_plan)
 
 
@@ -270,5 +270,5 @@ def test_server_pack_plan_recipe_round_trips() -> None:
     )
     payload = pack_volume_plan_payload(plan)
     rebuilt = parse_pack_volume_plan(canonical_json_bytes(payload))
-    assert payload["schema"] == "pack-volume-plan/v1"
+    assert payload["format"] == "pack-volume-plan/v1"
     assert rebuilt == plan

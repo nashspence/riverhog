@@ -58,7 +58,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
 | <a id="s-9ff2d2471a"></a>`usage` | <a id="s-12a1209d2b"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-de48af96a0"></a>`2` | <a id="s-06d89c85f2"></a>all: `"empty"` | <a id="s-15eec2d1d0"></a>all: `"noncontractual-usage-diagnostic"` |
-| <a id="s-7ce3cb2bc4"></a>`operational` | <a id="s-a06e7d44c7"></a>`{"kind":"application-error"}` | <a id="s-0c923b88ff"></a>`1` | <a id="s-0063d1ac6e"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-0184186fe1"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
+| <a id="s-7ce3cb2bc4"></a>`operational` | <a id="s-a06e7d44c7"></a>`{"kind":"application-error"}` | <a id="s-0c923b88ff"></a>`1` | <a id="s-0063d1ac6e"></a>human: `"empty"`; json: [http-api-contracts.ErrorOut](../../http-api-contracts/python/http-api-contracts-errorout.md) | <a id="s-0184186fe1"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Progression, limits, and lifecycle
 
@@ -335,7 +335,7 @@ false
 
 ### `/external_contract/cli/a-riverhog-cli/commands/collection/commands/provenance/commands/list/result_contract`
 
-<!-- exact-contract-value: df81ab92b33488dc4dade04c2714df76b8146a3996d6cc7ac51a4cd99c54ce0d -->
+<!-- exact-contract-value: 9b501ab73a4a04c0043ac279858940c52b7e7833d46ddec2adc32fe4653687e1 -->
 
 ```json
 {
@@ -366,7 +366,7 @@ false
       "stdout": {
         "human": "empty",
         "json": {
-          "identity": "http-api-contracts.ErrorResponse",
+          "identity": "http-api-contracts.ErrorOut",
           "kind": "python-model",
           "schema": {
             "$defs": {
@@ -414,7 +414,7 @@ false
             "required": [
               "error"
             ],
-            "title": "ErrorResponse",
+            "title": "ErrorOut",
             "type": "object"
           }
         }
@@ -444,7 +444,7 @@ false
           "operation_id": "list_collection_provenance",
           "path": "/v1/collections/{collection_id}/provenance/files",
           "schema": {
-            "$ref": "#/components/schemas/ListCollectionFileProvenanceResponse"
+            "$ref": "#/components/schemas/ListCollectionFileProvenanceOut"
           },
           "status": "200"
         }

@@ -67,7 +67,7 @@ def create_app(*, token: str, target: ReviewMaterializeTargetService) -> FastAPI
 
 
 _CLI_RESULT_CONTRACT = {
-    "schema": "riverhog-cli-result-contract/v1",
+    "format": "riverhog-cli-result-contract/v1",
     "identity_prefix": "a-review0-materializer-cli-result",
     "default_profile": "runtime",
     "profiles": {

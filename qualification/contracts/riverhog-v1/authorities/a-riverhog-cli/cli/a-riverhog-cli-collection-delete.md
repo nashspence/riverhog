@@ -54,7 +54,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
 | <a id="s-37187d9b6d"></a>`usage` | <a id="s-fd9d286bd8"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-405132d3e5"></a>`2` | <a id="s-d909b70208"></a>all: `"empty"` | <a id="s-de4f443825"></a>all: `"noncontractual-usage-diagnostic"` |
-| <a id="s-3594cb69f9"></a>`operational` | <a id="s-4b2bdd5c2a"></a>`{"kind":"application-error"}` | <a id="s-bac5e5cea3"></a>`1` | <a id="s-183882aed3"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-91898424bb"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
+| <a id="s-3594cb69f9"></a>`operational` | <a id="s-4b2bdd5c2a"></a>`{"kind":"application-error"}` | <a id="s-bac5e5cea3"></a>`1` | <a id="s-183882aed3"></a>human: `"empty"`; json: [http-api-contracts.ErrorOut](../../http-api-contracts/python/http-api-contracts-errorout.md) | <a id="s-91898424bb"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 | <a id="s-7e44ee15fd"></a>`blocked` | <a id="s-e79c6cb9d5"></a>`{"kind":"plan-reported-blockers"}` | <a id="s-0016f8b4d3"></a>`1` | <a id="s-a88bfc212f"></a>human: `"noncontractual-presentation-of-command-result"` | <a id="s-a85b207bd7"></a>human: `"empty"` |
 | <a id="s-2caa076e61"></a>`confirmation-declined` | <a id="s-ee158c42f4"></a>`{"kind":"interactive-confirmation-mismatch"}` | <a id="s-faee914191"></a>`1` | <a id="s-bcd9b5dfd0"></a>human: `"noncontractual-presentation-of-command-result"` | <a id="s-9527bac7e3"></a>human: `"noncontractual-diagnostic"` |
 
@@ -233,7 +233,7 @@ false
 
 ### `/external_contract/cli/a-riverhog-cli/commands/collection/commands/delete/result_contract`
 
-<!-- exact-contract-value: 274750ff5b0dc8cc7d6c04c73506979f364d0b735c31792eda8e681fd3242773 -->
+<!-- exact-contract-value: 941743fe02a0da539384fb9533dca7d0079a9cf7075bc860a5085e7b51379328 -->
 
 ```json
 {
@@ -264,7 +264,7 @@ false
       "stdout": {
         "human": "empty",
         "json": {
-          "identity": "http-api-contracts.ErrorResponse",
+          "identity": "http-api-contracts.ErrorOut",
           "kind": "python-model",
           "schema": {
             "$defs": {
@@ -312,7 +312,7 @@ false
             "required": [
               "error"
             ],
-            "title": "ErrorResponse",
+            "title": "ErrorOut",
             "type": "object"
           }
         }

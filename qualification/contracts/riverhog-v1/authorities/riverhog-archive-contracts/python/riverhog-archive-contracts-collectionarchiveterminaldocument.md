@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-02b399b148"></a>`kind`: `"class"`
-- <a id="s-787e3a245b"></a>`signature`: `"'(archive_generation: \\'str\\', archive_tree_sha256: \\'str\\', sequence: \\'int\\', kind: \"Literal[\\'terminal\\']\" = \\'terminal\\', schema: \\'str\\' = \\'collection-archive-terminal/v1\\') -> None'"`
+- <a id="s-787e3a245b"></a>`signature`: `"'(archive_generation: \\'str\\', archive_tree_sha256: \\'str\\', sequence: \\'int\\', kind: \"Literal[\\'terminal\\']\" = \\'terminal\\', format: \\'str\\' = \\'collection-archive-terminal/v1\\') -> None'"`
 
 #### Dataclass fields
 
@@ -32,7 +32,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-f7183fbb5c"></a>`archive_tree_sha256` | `'str'` | `required` |
 | <a id="s-228e783aac"></a>`sequence` | `'int'` | `required` |
 | <a id="s-5da90164e4"></a>`kind` | `"Literal['terminal']"` | `'terminal'` |
-| <a id="s-8cbd3a82cd"></a>`schema` | `'str'` | `'collection-archive-terminal/v1'` |
+| <a id="s-8cbd3a82cd"></a>`format` | `'str'` | `'collection-archive-terminal/v1'` |
 
 ## Maintained corroboration
 
@@ -70,7 +70,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6fe06988104ce4695bbb3a2ddfbf6abccef7bb65776e752b63cd84f62505ebea -->
+<!-- exact-contract-value: 368c183c0bd0d4f29c1289e4c71b04f1e15fd22707b94e1683453de8f7e5687f -->
 
 ```json
 {
@@ -98,12 +98,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       {
         "default": "'collection-archive-terminal/v1'",
-        "name": "schema",
+        "name": "format",
         "type": "'str'"
       }
     ],
     "kind": "class",
-    "signature": "'(archive_generation: \\'str\\', archive_tree_sha256: \\'str\\', sequence: \\'int\\', kind: \"Literal[\\'terminal\\']\" = \\'terminal\\', schema: \\'str\\' = \\'collection-archive-terminal/v1\\') -> None'"
+    "signature": "'(archive_generation: \\'str\\', archive_tree_sha256: \\'str\\', sequence: \\'int\\', kind: \"Literal[\\'terminal\\']\" = \\'terminal\\', format: \\'str\\' = \\'collection-archive-terminal/v1\\') -> None'"
   },
   "distribution": "riverhog-archive-contracts",
   "module": "riverhog_archive_contracts",

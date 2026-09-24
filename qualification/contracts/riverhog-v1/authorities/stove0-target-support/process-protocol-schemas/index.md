@@ -6,7 +6,7 @@ Structured values exchanged by a process protocol.
 
 ## Contract elements
 
-- [ErrorResponse](generated-stove0-target-errorresponse.md)
+- [ErrorOut](generated-stove0-target-errorout.md)
 - [OperationContract](generated-stove0-target-operationcontract.md)
 - [TargetConformanceResult](generated-stove0-target-targetconformanceresult.md)
 - [TargetDescriptor](generated-stove0-target-targetdescriptor.md)

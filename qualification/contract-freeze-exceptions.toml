@@ -1,4 +1,4 @@
-schema = "riverhog-contract-freeze-exceptions/v1"
+format = "riverhog-contract-freeze-exceptions/v1"
 
 # This audit-only overlay may resolve only identities discovered
 # independently from release artifacts and implementation. It never defines the

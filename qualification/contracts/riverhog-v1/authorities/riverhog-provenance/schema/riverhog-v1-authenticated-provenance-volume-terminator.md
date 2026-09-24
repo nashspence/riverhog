@@ -19,7 +19,7 @@ Exact externally visible contract owned by this contract element.
 - <a id="s-de133b2f0e"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-terminal-v1.schema.json"`
 - <a id="s-9e561beee4"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
 - <a id="s-4bd3515c88"></a>`additionalProperties`: `false`
-- <a id="s-f41155c31a"></a>`required`: `["schema","archive_generation","archive_tree_sha256","sequence","kind"]`
+- <a id="s-f41155c31a"></a>`required`: `["format","archive_generation","archive_tree_sha256","sequence","kind"]`
 - <a id="s-832bea469a"></a>`title`: `"Riverhog v1 authenticated provenance-volume terminator"`
 
 ### Fields
@@ -28,8 +28,8 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-05d816de8d"></a>`archive_generation` | yes | [sha256](#s-0018c16833) |  |
 | <a id="s-8ae66dd16b"></a>`archive_tree_sha256` | yes | [sha256](#s-0018c16833) |  |
+| <a id="s-34deb9366f"></a>`format` | yes | const="riverhog-provenance-terminal/v1" |  |
 | <a id="s-22621b37e7"></a>`kind` | yes | const="terminal" |  |
-| <a id="s-3aa13d4fcd"></a>`schema` | yes | const="riverhog-provenance-terminal/v1" |  |
 | <a id="s-6ce6f4fbfb"></a>`sequence` | yes | type="string"; not=(const="0000000000000000000000000000000000000000000000000000000000000000"); pattern="^[0-9a-f]{64}$" |  |
 
 ### Definitions
@@ -82,7 +82,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0adc252e32d2acdca092eeb7a30601d8ce840fa83722504eb594598f501ee97d -->
+<!-- exact-contract-value: ccd02b67ef917326a5657fcf04777c5a926be5808b318df97d606bfc37fbdedc -->
 
 ```json
 {
@@ -102,11 +102,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     "archive_tree_sha256": {
       "$ref": "#/$defs/sha256"
     },
+    "format": {
+      "const": "riverhog-provenance-terminal/v1"
+    },
     "kind": {
       "const": "terminal"
-    },
-    "schema": {
-      "const": "riverhog-provenance-terminal/v1"
     },
     "sequence": {
       "not": {
@@ -117,7 +117,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   },
   "required": [
-    "schema",
+    "format",
     "archive_generation",
     "archive_tree_sha256",
     "sequence",

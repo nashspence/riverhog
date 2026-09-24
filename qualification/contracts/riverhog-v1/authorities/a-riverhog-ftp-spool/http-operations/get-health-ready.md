@@ -22,8 +22,8 @@ Health Ready
 
 | Status | Description | Media type | Schema | Declared error codes |
 |---|---|---|---|---|
-| <a id="s-5ec720d17c"></a>`200` | Successful Response | application/json | [HealthResponse](../http-schemas/schemas-healthresponse.md) | not declared |
-| <a id="s-7365e90bf3"></a>`503` | Service Unavailable | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | not declared |
+| <a id="s-5ec720d17c"></a>`200` | Successful Response | application/json | [HealthOut](../http-schemas/schemas-healthout.md) | not declared |
+| <a id="s-7365e90bf3"></a>`503` | Service Unavailable | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | not declared |
 
 ## Maintained corroboration
 
@@ -33,8 +33,8 @@ Health Ready
 
 ### Referenced contract elements
 
-- [schemas: ErrorResponse](../http-schemas/schemas-errorresponse.md)
-- [schemas: HealthResponse](../http-schemas/schemas-healthresponse.md)
+- [schemas: ErrorOut](../http-schemas/schemas-errorout.md)
+- [schemas: HealthOut](../http-schemas/schemas-healthout.md)
 
 ## Governing policies
 
@@ -101,7 +101,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c5a83083cc68c7be90fca357f6175e9d367fac4c1974f79b086e3231ff83c5ac -->
+<!-- exact-contract-value: 6c8313fe6360479663f4d2198360aaa3e889927670ffc30558995ef4de235814 -->
 
 ```json
 {
@@ -111,7 +111,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/HealthResponse"
+            "$ref": "#/components/schemas/HealthOut"
           }
         }
       },
@@ -121,7 +121,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },

@@ -24,5 +24,5 @@ def test_raw_volume_plan_is_canonical_restart_state() -> None:
     ]
     for plan in plans:
         payload = raw_volume_plan_payload(plan)
-        assert payload["schema"] == "raw-volume-plan/v1"
+        assert payload["format"] == "raw-volume-plan/v1"
         assert parse_raw_volume_plan(raw_volume_plan_bytes(plan)) == plan

@@ -70,7 +70,7 @@ from tests.support.qualification.database_selector_plans import (
 )
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
 
-SCHEMA = "riverhog-database-qualification/v1"
+FORMAT = "riverhog-database-qualification/v1"
 CARDINALITIES = (4096, 65536)
 PAGE_STREAM_CHUNK_ROWS = 100
 MAX_PAGE_STREAM_PEAK_BYTES = 32 * 1024 * 1024
@@ -971,7 +971,7 @@ def build_evidence(database_url: str, *, source_sha: str) -> dict[str, object]:
     _compare_cardinalities(measurements, cases=cases)
     applications = sorted({application for application, _operation in _DATABASE_PLAN_OPERATIONS})
     return {
-        "schema": SCHEMA,
+        "format": FORMAT,
         "source_sha": source_sha,
         "generated_at": utc_timestamp_now(),
         "cardinalities": list(CARDINALITIES),

@@ -9,7 +9,7 @@ Declared public imports and their selected exact structural contracts.
 ### `a_riverhog_ftp_spool_client`
 
 - [FtpSpoolApiError](a-riverhog-ftp-spool-client-ftpspoolapierror.md)
-- [HealthResponse](a-riverhog-ftp-spool-client-healthresponse.md)
+- [HealthOut](a-riverhog-ftp-spool-client-healthout.md)
 - [RiverhogFtpSpoolClient](a-riverhog-ftp-spool-client-riverhogftpspoolclient.md)
   - [__enter__](a-riverhog-ftp-spool-client-riverhogftpspoolclient-enter.md)
   - [__exit__](a-riverhog-ftp-spool-client-riverhogftpspoolclient-exit.md)

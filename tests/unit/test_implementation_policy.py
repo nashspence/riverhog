@@ -29,7 +29,7 @@ def test_checked_implementation_policy_is_scoped_and_executable() -> None:
 
     assert ARTIFACT.read_text(encoding="utf-8") == rendered
     projection = json.loads(rendered)
-    assert projection["schema"] == "riverhog-implementation-policy-witnesses/v1"
+    assert projection["format"] == "riverhog-implementation-policy-witnesses/v1"
     assert projection["authority"] == "implementation-correctness"
     assert projection["coverage"] == {
         "classifications": {

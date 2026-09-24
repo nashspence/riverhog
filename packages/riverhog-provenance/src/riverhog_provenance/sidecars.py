@@ -17,7 +17,7 @@ from .journal import (
     verify_payload_binding,
 )
 from .segmented_archive import (
-    PROVENANCE_TERMINAL_SCHEMA,
+    PROVENANCE_TERMINAL_FORMAT,
     ProvenanceRootDocument,
     ProvenanceTerminalDocument,
     ProvenanceVolumeDocument,
@@ -212,7 +212,7 @@ def _load_segmented_set(root_path: Path) -> _ValidatedSegmentedSet:
             raise ProvenanceValidationError("provenance sequence is not valid JSON") from exc
         if not isinstance(value, dict):
             raise ProvenanceValidationError("provenance sequence is not an object")
-        if value.get("schema") == PROVENANCE_TERMINAL_SCHEMA:
+        if value.get("format") == PROVENANCE_TERMINAL_FORMAT:
             terminal = ProvenanceTerminalDocument.from_json_bytes(metadata)
             if (
                 terminal.sequence != sequence

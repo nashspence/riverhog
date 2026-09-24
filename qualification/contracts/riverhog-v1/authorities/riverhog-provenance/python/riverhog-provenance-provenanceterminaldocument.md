@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-4f020bbea7"></a>`kind`: `"class"`
-- <a id="s-8925fc373b"></a>`signature`: `"'(archive_generation: \\'str\\', archive_tree_sha256: \\'str\\', sequence: \\'int\\', kind: \"Literal[\\'terminal\\']\" = \\'terminal\\', schema: \\'str\\' = \\'riverhog-provenance-terminal/v1\\') -> None'"`
+- <a id="s-8925fc373b"></a>`signature`: `"'(archive_generation: \\'str\\', archive_tree_sha256: \\'str\\', sequence: \\'int\\', kind: \"Literal[\\'terminal\\']\" = \\'terminal\\', format: \\'str\\' = \\'riverhog-provenance-terminal/v1\\') -> None'"`
 
 #### Dataclass fields
 
@@ -32,7 +32,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-75a53efc6e"></a>`archive_tree_sha256` | `'str'` | `required` |
 | <a id="s-e5c8eff3da"></a>`sequence` | `'int'` | `required` |
 | <a id="s-c10bedec76"></a>`kind` | `"Literal['terminal']"` | `'terminal'` |
-| <a id="s-63a03ebea6"></a>`schema` | `'str'` | `'riverhog-provenance-terminal/v1'` |
+| <a id="s-63a03ebea6"></a>`format` | `'str'` | `'riverhog-provenance-terminal/v1'` |
 
 ## Maintained corroboration
 
@@ -70,7 +70,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5f8df1299631103e37be6ed89f8644bcacccd46b3a3fb454c8adf07ad6edb2f6 -->
+<!-- exact-contract-value: 0380b1a8949062ed76f5e29bfad0db710179bd5d4ba08140ee27a2553906aab0 -->
 
 ```json
 {
@@ -98,12 +98,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       {
         "default": "'riverhog-provenance-terminal/v1'",
-        "name": "schema",
+        "name": "format",
         "type": "'str'"
       }
     ],
     "kind": "class",
-    "signature": "'(archive_generation: \\'str\\', archive_tree_sha256: \\'str\\', sequence: \\'int\\', kind: \"Literal[\\'terminal\\']\" = \\'terminal\\', schema: \\'str\\' = \\'riverhog-provenance-terminal/v1\\') -> None'"
+    "signature": "'(archive_generation: \\'str\\', archive_tree_sha256: \\'str\\', sequence: \\'int\\', kind: \"Literal[\\'terminal\\']\" = \\'terminal\\', format: \\'str\\' = \\'riverhog-provenance-terminal/v1\\') -> None'"
   },
   "distribution": "riverhog-provenance",
   "module": "riverhog_provenance",

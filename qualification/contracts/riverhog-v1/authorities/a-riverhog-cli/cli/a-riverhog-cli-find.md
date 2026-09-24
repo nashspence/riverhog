@@ -57,7 +57,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
 | <a id="s-924caff14f"></a>`usage` | <a id="s-f36319c70e"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-a5ddde5073"></a>`2` | <a id="s-541f592cb6"></a>all: `"empty"` | <a id="s-681cba3f0e"></a>all: `"noncontractual-usage-diagnostic"` |
-| <a id="s-2026528a09"></a>`operational` | <a id="s-101144e5ab"></a>`{"kind":"application-error"}` | <a id="s-7451199ff5"></a>`1` | <a id="s-194bd17b49"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-3e9ddb000b"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
+| <a id="s-2026528a09"></a>`operational` | <a id="s-101144e5ab"></a>`{"kind":"application-error"}` | <a id="s-7451199ff5"></a>`1` | <a id="s-194bd17b49"></a>human: `"empty"`; json: [http-api-contracts.ErrorOut](../../http-api-contracts/python/http-api-contracts-errorout.md) | <a id="s-3e9ddb000b"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Progression, limits, and lifecycle
 
@@ -317,7 +317,7 @@ false
 
 ### `/external_contract/cli/a-riverhog-cli/commands/find/result_contract`
 
-<!-- exact-contract-value: 7ca05fd68707e89bd173fee356e2848023afbb59fc36f7eafd4cdd75d665f0fe -->
+<!-- exact-contract-value: 78ee4edae6b4278fda68072dee8b16ac28478269e40cb5159a2cae88d3f7076c -->
 
 ```json
 {
@@ -348,7 +348,7 @@ false
       "stdout": {
         "human": "empty",
         "json": {
-          "identity": "http-api-contracts.ErrorResponse",
+          "identity": "http-api-contracts.ErrorOut",
           "kind": "python-model",
           "schema": {
             "$defs": {
@@ -396,7 +396,7 @@ false
             "required": [
               "error"
             ],
-            "title": "ErrorResponse",
+            "title": "ErrorOut",
             "type": "object"
           }
         }
@@ -426,7 +426,7 @@ false
           "operation_id": "search",
           "path": "/v1/search",
           "schema": {
-            "$ref": "#/components/schemas/SearchResponse"
+            "$ref": "#/components/schemas/SearchOut"
           },
           "status": "200"
         }

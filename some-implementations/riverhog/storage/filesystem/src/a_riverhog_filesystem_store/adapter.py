@@ -55,8 +55,8 @@ from riverhog_storage_adapter_protocol import (
 )
 from time_formats import format_utc_timestamp, utc_now
 
-_WRITE_SCHEMA = "riverhog-filesystem-write/v1"
-_OBJECT_SCHEMA = "riverhog-filesystem-object/v1"
+_WRITE_FORMAT = "riverhog-filesystem-write/v1"
+_OBJECT_FORMAT = "riverhog-filesystem-object/v1"
 _SEGMENT_DATABASE = "segments.sqlite3"
 _DEFAULT_SEGMENT_BYTES = 64 * 1024 * 1024
 _DEFAULT_READ_CHUNK_BYTES = 8 * 1024 * 1024
@@ -299,7 +299,7 @@ class _WriteState:
     @classmethod
     def from_json(cls, raw: dict[str, Any]) -> Self:
         expected = {
-            "schema",
+            "format",
             "token",
             "object_path",
             "expected_bytes",
@@ -308,7 +308,7 @@ class _WriteState:
             "placement_policy",
             "created_at",
         }
-        if set(raw) != expected or raw.get("schema") != _WRITE_SCHEMA:
+        if set(raw) != expected or raw.get("format") != _WRITE_FORMAT:
             raise RuntimeError("filesystem write state has an invalid shape")
         token = raw["token"]
         object_path = raw["object_path"]
@@ -338,7 +338,7 @@ class _WriteState:
 
     def as_json(self) -> dict[str, Any]:
         return {
-            "schema": _WRITE_SCHEMA,
+            "format": _WRITE_FORMAT,
             "token": self.token,
             "object_path": self.object_path,
             "expected_bytes": self.expected_bytes,
@@ -382,7 +382,7 @@ class _ObjectRecord:
     @classmethod
     def from_json(cls, raw: dict[str, Any]) -> Self:
         expected = {
-            "schema",
+            "format",
             "object_path",
             "revision",
             "entity_token",
@@ -395,7 +395,7 @@ class _ObjectRecord:
             "segment_count",
             "segment_sequence_sha256",
         }
-        if set(raw) != expected or raw.get("schema") != _OBJECT_SCHEMA:
+        if set(raw) != expected or raw.get("format") != _OBJECT_FORMAT:
             raise RuntimeError("filesystem object metadata has an invalid shape")
         assertions = raw["required_identity_assertions"]
         placement_policy = raw["placement_policy"]
@@ -429,7 +429,7 @@ class _ObjectRecord:
 
     def as_json(self) -> dict[str, Any]:
         return {
-            "schema": _OBJECT_SCHEMA,
+            "format": _OBJECT_FORMAT,
             "object_path": self.object_path,
             "revision": self.revision,
             "entity_token": self.entity_token,
@@ -1612,7 +1612,7 @@ class FilesystemStorageAdapter:
     def _small_revision(request: SmallObjectWriteRequest) -> str:
         identity = json.dumps(
             {
-                "schema": "riverhog-filesystem-small-object-revision/v1",
+                "format": "riverhog-filesystem-small-object-revision/v1",
                 "object_path": request.object_path,
                 "stored_bytes": request.stored_bytes,
                 "stored_sha256": request.stored_sha256,

@@ -57,7 +57,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
 | <a id="s-bca946889e"></a>`usage` | <a id="s-3f52bc2629"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-0227cacf06"></a>`2` | <a id="s-c0e865fe27"></a>all: `"empty"` | <a id="s-09c15dd07c"></a>all: `"noncontractual-usage-diagnostic"` |
-| <a id="s-039675e272"></a>`operational` | <a id="s-99bc3edab4"></a>`{"kind":"application-error"}` | <a id="s-853dbc984a"></a>`1` | <a id="s-2d3c5d2fd8"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-ecb7e4fbb1"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
+| <a id="s-039675e272"></a>`operational` | <a id="s-99bc3edab4"></a>`{"kind":"application-error"}` | <a id="s-853dbc984a"></a>`1` | <a id="s-2d3c5d2fd8"></a>human: `"empty"`; json: [http-api-contracts.ErrorOut](../../http-api-contracts/python/http-api-contracts-errorout.md) | <a id="s-ecb7e4fbb1"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Progression, limits, and lifecycle
 
@@ -317,7 +317,7 @@ false
 
 ### `/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/list/result_contract`
 
-<!-- exact-contract-value: ba750654628b1a810d9aa9e785e49506a348124a15fa3de8e0c0fa79c4bfbcb8 -->
+<!-- exact-contract-value: 0d1fabbe3f2c3fcd9802597c24043fbc9ba297dc6cdfced21d91dd4b3fa3a6a7 -->
 
 ```json
 {
@@ -348,7 +348,7 @@ false
       "stdout": {
         "human": "empty",
         "json": {
-          "identity": "http-api-contracts.ErrorResponse",
+          "identity": "http-api-contracts.ErrorOut",
           "kind": "python-model",
           "schema": {
             "$defs": {
@@ -396,7 +396,7 @@ false
             "required": [
               "error"
             ],
-            "title": "ErrorResponse",
+            "title": "ErrorOut",
             "type": "object"
           }
         }
@@ -426,7 +426,7 @@ false
           "operation_id": "list_collection_upload_sessions",
           "path": "/v1/collection-upload-sessions",
           "schema": {
-            "$ref": "#/components/schemas/ListCollectionUploadSessionsResponse"
+            "$ref": "#/components/schemas/ListCollectionUploadSessionsOut"
           },
           "status": "200"
         }

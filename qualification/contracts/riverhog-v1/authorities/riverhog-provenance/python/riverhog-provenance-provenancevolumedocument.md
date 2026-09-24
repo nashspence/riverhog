@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-882817c891"></a>`kind`: `"class"`
-- <a id="s-c17ff2b5ca"></a>`signature`: `"\"(archive_generation: 'str', archive_tree_sha256: 'str', sequence: 'int', payload: 'ProvenancePayloadIdentity', first_file_order: 'int \| None' = None, file_count: 'int \| None' = None, journal_id: 'str \| None' = None, journal_offset: 'int \| None' = None, journal_bytes: 'int \| None' = None, journal_sha256: 'str \| None' = None, schema: 'str' = 'riverhog-provenance-volume/v1') -> None\""`
+- <a id="s-c17ff2b5ca"></a>`signature`: `"\"(archive_generation: 'str', archive_tree_sha256: 'str', sequence: 'int', payload: 'ProvenancePayloadIdentity', first_file_order: 'int \| None' = None, file_count: 'int \| None' = None, journal_id: 'str \| None' = None, journal_offset: 'int \| None' = None, journal_bytes: 'int \| None' = None, journal_sha256: 'str \| None' = None, format: 'str' = 'riverhog-provenance-volume/v1') -> None\""`
 
 #### Dataclass fields
 
@@ -38,7 +38,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-ed57ad7096"></a>`journal_offset` | `'int \| None'` | `None` |
 | <a id="s-1eae6d8438"></a>`journal_bytes` | `'int \| None'` | `None` |
 | <a id="s-2ca4805c9a"></a>`journal_sha256` | `'str \| None'` | `None` |
-| <a id="s-2c2e0878b1"></a>`schema` | `'str'` | `'riverhog-provenance-volume/v1'` |
+| <a id="s-2c2e0878b1"></a>`format` | `'str'` | `'riverhog-provenance-volume/v1'` |
 
 ## Maintained corroboration
 
@@ -76,7 +76,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d2ccf2501f0ea7de41427ec5cbaa4617ab892b4dee87dab735ebf0249b389e76 -->
+<!-- exact-contract-value: c86e31c36bb1371c0976476b178b59a860f06c469d9f2b98dbd9845bf3ee5384 -->
 
 ```json
 {
@@ -134,12 +134,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       {
         "default": "'riverhog-provenance-volume/v1'",
-        "name": "schema",
+        "name": "format",
         "type": "'str'"
       }
     ],
     "kind": "class",
-    "signature": "\"(archive_generation: 'str', archive_tree_sha256: 'str', sequence: 'int', payload: 'ProvenancePayloadIdentity', first_file_order: 'int | None' = None, file_count: 'int | None' = None, journal_id: 'str | None' = None, journal_offset: 'int | None' = None, journal_bytes: 'int | None' = None, journal_sha256: 'str | None' = None, schema: 'str' = 'riverhog-provenance-volume/v1') -> None\""
+    "signature": "\"(archive_generation: 'str', archive_tree_sha256: 'str', sequence: 'int', payload: 'ProvenancePayloadIdentity', first_file_order: 'int | None' = None, file_count: 'int | None' = None, journal_id: 'str | None' = None, journal_offset: 'int | None' = None, journal_bytes: 'int | None' = None, journal_sha256: 'str | None' = None, format: 'str' = 'riverhog-provenance-volume/v1') -> None\""
   },
   "distribution": "riverhog-provenance",
   "module": "riverhog_provenance",

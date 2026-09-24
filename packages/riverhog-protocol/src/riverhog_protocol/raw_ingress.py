@@ -9,7 +9,7 @@ from dataclasses import dataclass
 
 from riverhog_protocol.paths import validate_canonical_relpath
 
-RAW_SOURCE_DIGEST_SUMMARY_SCHEMA = "raw-source-digest-summary/v1"
+RAW_SOURCE_DIGEST_SUMMARY_FORMAT = "raw-source-digest-summary/v1"
 RAW_SOURCE_DIGEST_BATCH_MAX = 1024
 _SHA256_RE = re.compile(r"[0-9a-f]{64}")
 _COMMITMENT_SEED = hashlib.sha256(b"riverhog-ordered-raw-parts/v1\0").digest()
@@ -77,7 +77,7 @@ class RawSourceDigestSummary:
     part_plaintext_bytes: int
     part_count: int
     ordered_part_sha256: str
-    schema: str = RAW_SOURCE_DIGEST_SUMMARY_SCHEMA
+    format: str = RAW_SOURCE_DIGEST_SUMMARY_FORMAT
 
     def __post_init__(self) -> None:
         validate_canonical_relpath(self.path)
@@ -89,8 +89,8 @@ class RawSourceDigestSummary:
             or _SHA256_RE.fullmatch(self.ordered_part_sha256) is None
         ):
             raise ValueError("raw source digest SHA-256 is invalid")
-        if self.schema != RAW_SOURCE_DIGEST_SUMMARY_SCHEMA:
-            raise ValueError("raw source digest summary schema mismatch")
+        if self.format != RAW_SOURCE_DIGEST_SUMMARY_FORMAT:
+            raise ValueError("raw source digest summary format mismatch")
 
 
 def raw_volume_part_span(
@@ -120,7 +120,7 @@ def raw_volume_part_span(
 
 __all__ = [
     "RAW_SOURCE_DIGEST_BATCH_MAX",
-    "RAW_SOURCE_DIGEST_SUMMARY_SCHEMA",
+    "RAW_SOURCE_DIGEST_SUMMARY_FORMAT",
     "RawSourceDigestSummary",
     "advance_raw_part_commitment",
     "ordered_raw_part_commitment",

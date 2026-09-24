@@ -6,7 +6,7 @@ Structured values exchanged by a process protocol.
 
 ## Contract elements
 
-- [ErrorResponse](generated-review0-sampler-errorresponse.md)
+- [ErrorOut](generated-review0-sampler-errorout.md)
 - [SamplerConformanceResult](generated-review0-sampler-samplerconformanceresult.md)
 - [SamplerDescriptor](generated-review0-sampler-samplerdescriptor.md)
 - [SamplerRequest](generated-review0-sampler-samplerrequest.md)

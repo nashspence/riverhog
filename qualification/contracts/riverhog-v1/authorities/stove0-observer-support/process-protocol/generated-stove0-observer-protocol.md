@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-91230d9f6f"></a>`authorities · http_operations` | `"http_binding.operations"` |
 | <a id="s-97fdac27e7"></a>`authorities · semantic_acceptance` | `"semantic_acceptance"` |
 | <a id="s-0c79c0ec56"></a>`authorities · structural_models` | `"schemas"` |
-| <a id="s-d5ea9dbeda"></a>`bundle_sha256` | `"f5f2de3b928b05817e84d0aa6b6d39c27e933e732ce94c4524784ee83e4a5a6b"` |
+| <a id="s-d5ea9dbeda"></a>`bundle_sha256` | `"063be160931ce3c915271a7422a682d2d6e3a0f0c991085f2541ae379554c994"` |
 | <a id="s-30491cc055"></a>`compatibility · contract_identity` | `"canonical-json-sha256"` |
 | <a id="s-8476a6bdf5"></a>`compatibility · unknown_fields` | `"reject"` |
 | <a id="s-2f76b229b5"></a>`compatibility · unknown_protocol_revision` | `"reject"` |
@@ -42,7 +42,7 @@ Exact externally visible contract owned by this contract element.
 - [generated:stove0-observer: ContentObservationInvocation](../process-protocol-schemas/generated-stove0-observer-contentobservationinvocation.md)
 - [generated:stove0-observer: ContentObservationRequest](../process-protocol-schemas/generated-stove0-observer-contentobservationrequest.md)
 - [generated:stove0-observer: ContentObservationResult](../process-protocol-schemas/generated-stove0-observer-contentobservationresult.md)
-- [generated:stove0-observer: ErrorResponse](../process-protocol-schemas/generated-stove0-observer-errorresponse.md)
+- [generated:stove0-observer: ErrorOut](../process-protocol-schemas/generated-stove0-observer-errorout.md)
 - [generated:stove0-observer: ObserverConformanceResult](../process-protocol-schemas/generated-stove0-observer-observerconformanceresult.md)
 - [generated:stove0-observer: ObserverContract](../process-protocol-schemas/generated-stove0-observer-observercontract.md)
 - [generated:stove0-observer: ObserverDescriptor](../process-protocol-schemas/generated-stove0-observer-observerdescriptor.md)
@@ -93,10 +93,10 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/protocol_schemas/generated:stove0-observer/bundle_sha256`
 
-<!-- exact-contract-value: 4a70dddfdddbaa2a9403330612667c6f523bdb25e5444ea298b795320ba183b8 -->
+<!-- exact-contract-value: f9697ef963d26992d65ddd43a2e08f55327b3fe76c7073971aaf340a5761578d -->
 
 ```json
-"f5f2de3b928b05817e84d0aa6b6d39c27e933e732ce94c4524784ee83e4a5a6b"
+"063be160931ce3c915271a7422a682d2d6e3a0f0c991085f2541ae379554c994"
 ```
 
 ### `/external_contract/protocol_schemas/generated:stove0-observer/compatibility`

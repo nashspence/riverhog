@@ -19,7 +19,7 @@ Exact externally visible contract owned by this contract element.
 - <a id="s-161c46ee86"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-bindings-v1.schema.json"`
 - <a id="s-beb0521d6e"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
 - <a id="s-389d942af1"></a>`additionalProperties`: `false`
-- <a id="s-2be9600819"></a>`required`: `["schema","first_file_order","files"]`
+- <a id="s-2be9600819"></a>`required`: `["format","first_file_order","files"]`
 - <a id="s-bfaa76465d"></a>`title`: `"Riverhog v1 bounded provenance file bindings"`
 
 ### Fields
@@ -28,7 +28,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-f6fb3fdf31"></a>`files` | yes | type="array"; items=([file](#s-25211fe36a)); maxItems=512; minItems=1; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"ordered-provenance-volume-sequence","reason":"bounded-provenance-binding-volume"} |  |
 | <a id="s-809fd78862"></a>`first_file_order` | yes | type="integer"; minimum=0 |  |
-| <a id="s-14600985bd"></a>`schema` | yes | const="riverhog-provenance-bindings/v1" |  |
+| <a id="s-c1bab53142"></a>`format` | yes | const="riverhog-provenance-bindings/v1" |  |
 
 ### Definitions
 
@@ -166,7 +166,7 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d7110f2ea76191dcd77d5912a2b2c88ed991997815350f60d93fb40a42c5abc8 -->
+<!-- exact-contract-value: d8d093fa890638035184ed4d327b82fe5ec1b6adc6ba9574a1020e21427d3734 -->
 
 ```json
 {
@@ -278,12 +278,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       "minimum": 0,
       "type": "integer"
     },
-    "schema": {
+    "format": {
       "const": "riverhog-provenance-bindings/v1"
     }
   },
   "required": [
-    "schema",
+    "format",
     "first_file_order",
     "files"
   ],

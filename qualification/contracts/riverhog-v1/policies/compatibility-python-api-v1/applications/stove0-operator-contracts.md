@@ -48,8 +48,8 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-operator-contracts` | [stove0_operator_contracts.EvaluationPage](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-evaluationpage.md#pa-488caef597) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.EvaluationPage.from_page](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-evaluationpage-from-page.md#pa-ae170fff0d) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.EvaluationPhase](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-evaluationphase.md#pa-7425858bc3) |
-| `stove0-operator-contracts` | [stove0_operator_contracts.EvaluationReviewIn](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-evaluationreviewin.md#pa-e62ff7e6b4) |
-| `stove0-operator-contracts` | [stove0_operator_contracts.EvaluationReviewIn.meaningful](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-evaluationreviewin-meaningful.md#pa-ca7bd71b6d) |
+| `stove0-operator-contracts` | [stove0_operator_contracts.EvaluationReviewRequest](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-evaluationreviewrequest.md#pa-bbd8ee757a) |
+| `stove0-operator-contracts` | [stove0_operator_contracts.EvaluationReviewRequest.meaningful](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-evaluationreviewrequest-meaningful.md#pa-2b30345f23) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.EvaluationReviewView](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-evaluationreviewview.md#pa-d3d4bba199) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.EvaluationReviewView.meaningful](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-evaluationreviewview-meaningful.md#pa-f7e438c48f) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.EvaluationSort](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-evaluationsort.md#pa-857488ee04) |
@@ -67,6 +67,8 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-operator-contracts` | [stove0_operator_contracts.JoinAdmittedEventData](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-joinadmittedeventdata.md#pa-c1c198151d) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.JoinAdmittedEventData.__getitem__](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-joinadmittedeventdata-getitem.md#pa-bd4b8d2d4e) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.JoinAdmittedEventData.get](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-joinadmittedeventdata-get.md#pa-8205d059a4) |
+| `stove0-operator-contracts` | [stove0_operator_contracts.OperatorWorkflowPreviewRequest](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-operatorworkflowpreviewrequest.md#pa-3575d742f2) |
+| `stove0-operator-contracts` | [stove0_operator_contracts.OperatorWorkflowPreviewRequest.canonical_inputs](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-operatorworkflowpreviewrequest-canonical-inputs.md#pa-b803fe7d65) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.RecipeCatalogView](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-recipecatalogview.md#pa-40779a14ee) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.RecipeView](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-recipeview.md#pa-97ffd5ad4f) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.RecipeView.exact_digest](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-recipeview-exact-digest.md#pa-9577231946) |
@@ -79,7 +81,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-operator-contracts` | [stove0_operator_contracts.SchedulerPruning](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-schedulerpruning.md#pa-56a4c0121a) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.SchedulerRole](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-schedulerrole.md#pa-b38f7268af) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.SchedulerRun](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-schedulerrun.md#pa-324752f5b0) |
-| `stove0-operator-contracts` | [stove0_operator_contracts.SchedulerRunIn](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-schedulerrunin.md#pa-1b5efcf60b) |
+| `stove0-operator-contracts` | [stove0_operator_contracts.SchedulerRunRequest](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-schedulerrunrequest.md#pa-aa43a769e6) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.SchedulerStatus](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-schedulerstatus.md#pa-23dd0659f0) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.SchedulerWorkBatch](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-schedulerworkbatch.md#pa-fe676e9736) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.SortOrder](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-sortorder.md#pa-4c64140cd3) |
@@ -95,8 +97,8 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-operator-contracts` | [stove0_operator_contracts.WORK_CREATED](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-work-created.md#pa-b73ce19a47) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.WORK_UPDATED](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-work-updated.md#pa-6ffe8754c3) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.WorkClaimView](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-workclaimview.md#pa-968ca8b933) |
-| `stove0-operator-contracts` | [stove0_operator_contracts.WorkCreateIn](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-workcreatein.md#pa-566c0baa8d) |
-| `stove0-operator-contracts` | [stove0_operator_contracts.WorkCreateIn.canonical_inputs](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-workcreatein-canonical-inputs.md#pa-ba87393d9b) |
+| `stove0-operator-contracts` | [stove0_operator_contracts.WorkCreateRequest](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-workcreaterequest.md#pa-14ec24428e) |
+| `stove0-operator-contracts` | [stove0_operator_contracts.WorkCreateRequest.canonical_inputs](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-workcreaterequest-canonical-inputs.md#pa-7193deb083) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.WorkCreatedEvent](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-workcreatedevent.md#pa-8a2b43ce0a) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.WorkCreatedEvent.exact_subject](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-workcreatedevent-exact-subject.md#pa-f5884793ce) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.WorkCreatedEventData](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-workcreatedeventdata.md#pa-9fb09b1892) |
@@ -117,8 +119,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-operator-contracts` | [stove0_operator_contracts.WorkView](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-workview.md#pa-198c4952db) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.WorkView.exact_identity](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-workview-exact-identity.md#pa-5d71c0b66a) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.WorkView.from_record](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-workview-from-record.md#pa-34d998c722) |
-| `stove0-operator-contracts` | [stove0_operator_contracts.WorkflowPreviewIn](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-workflowpreviewin.md#pa-acc4cce580) |
-| `stove0-operator-contracts` | [stove0_operator_contracts.WorkflowPreviewIn.canonical_inputs](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-workflowpreviewin-canonical-inputs.md#pa-271ea180c2) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.parse_stove0_event](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-parse-stove0-event.md#pa-77c76f75a1) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.stove0_event](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-stove0-event.md#pa-c639f0be7c) |
 | `stove0-operator-contracts` | [stove0_operator_contracts.validate_evaluation_child_shape](../../../authorities/stove0-operator-contracts/python/stove0-operator-contracts-validate-evaluation-child-shape.md#pa-f4bc83e91a) |

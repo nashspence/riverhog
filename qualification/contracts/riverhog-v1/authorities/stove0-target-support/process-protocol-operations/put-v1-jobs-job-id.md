@@ -16,7 +16,7 @@ Exact externally visible contract owned by this contract element.
 <a id="s-f02f594197"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-ae4a1c5ca2"></a>`error_schema` | `"ErrorResponse"` |
+| <a id="s-ae4a1c5ca2"></a>`error_schema` | `"ErrorOut"` |
 | <a id="s-0d3ef617f1"></a>`errors` | `[{"code":"invalid_target_request","status":400},{"code":"unauthorized","status":401},{"code":"request_too_large","status":413},{"code":"job_identity_mismatch","status":409},{"code":"target_descriptor_mismatch","status":409},{"code":"operation_contract_mismatch","status":409},{"code":"job_request_mismatch","status":409},{"code":"target_runtime_mismatch","status":409},{"code":"unsupported_operation","status":400},{"code":"target_failed","status":500}]` |
 | <a id="s-10df3c4a05"></a>`method` | `"PUT"` |
 | <a id="s-81cff57a99"></a>`path` | `"/v1/jobs/{job_id}"` |
@@ -57,11 +57,11 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 281d9dd5abfe0c43922671ea59d40def721bf6fb969d094cf1324687b935dca0 -->
+<!-- exact-contract-value: 035d0489009f492fcb4c8b192c6c64c38a0f95a0c7a173fdf4051e6e1c2afdde -->
 
 ```json
 {
-  "error_schema": "ErrorResponse",
+  "error_schema": "ErrorOut",
   "errors": [
     {
       "code": "invalid_target_request",

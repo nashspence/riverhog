@@ -52,7 +52,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
 | <a id="s-92a5dbb585"></a>`usage` | <a id="s-f1d086a35a"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-920e1c3a69"></a>`2` | <a id="s-2bef59ac59"></a>all: `"empty"` | <a id="s-15ace53b02"></a>all: `"noncontractual-usage-diagnostic"` |
-| <a id="s-b13496a2ba"></a>`operational` | <a id="s-90080bea76"></a>`{"kind":"application-error"}` | <a id="s-d9705315df"></a>`1` | <a id="s-5bbe344385"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-eedac9565f"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
+| <a id="s-b13496a2ba"></a>`operational` | <a id="s-90080bea76"></a>`{"kind":"application-error"}` | <a id="s-d9705315df"></a>`1` | <a id="s-5bbe344385"></a>human: `"empty"`; json: [http-api-contracts.ErrorOut](../../http-api-contracts/python/http-api-contracts-errorout.md) | <a id="s-eedac9565f"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 | <a id="s-42fbbb05ce"></a>`terminal-job-failure` | <a id="s-8c56cc5320"></a>`{"kind":"archive-copy-state","state":"failed"}` | <a id="s-1fd498bf28"></a>`1` | <a id="s-b65ca98287"></a>human: `"noncontractual-presentation-of-command-result"`; json: [HTTP get_archive_copy_job response 200](../../riverhog/http-operations/get-v1-archive-copy-jobs-collection-id-destination-store.md#s-0ec025bfd6) | <a id="s-ea1a1f14d1"></a>all: `"empty"` |
 
 ### Progression, limits, and lifecycle
@@ -212,7 +212,7 @@ false
 
 ### `/external_contract/cli/a-riverhog-cli/commands/archive/commands/copy-job/commands/watch/result_contract`
 
-<!-- exact-contract-value: 263f4ab2131b2ffb6299e9e24600e7f3be45478ae3782c334e1f5804d4d83dce -->
+<!-- exact-contract-value: 5de9efec865e7485aea97c9576fccebe937b2e12e965dc6c491c9ae0fa3b6459 -->
 
 ```json
 {
@@ -243,7 +243,7 @@ false
       "stdout": {
         "human": "empty",
         "json": {
-          "identity": "http-api-contracts.ErrorResponse",
+          "identity": "http-api-contracts.ErrorOut",
           "kind": "python-model",
           "schema": {
             "$defs": {
@@ -291,7 +291,7 @@ false
             "required": [
               "error"
             ],
-            "title": "ErrorResponse",
+            "title": "ErrorOut",
             "type": "object"
           }
         }

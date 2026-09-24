@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-ec1f592ee7"></a>`kind`: `"method"`
-- <a id="s-754fccf94e"></a>`signature`: `"\"(self) -> 'HealthResponse'\""`
+- <a id="s-754fccf94e"></a>`signature`: `"\"(self) -> 'HealthOut'\""`
 
 ## Maintained corroboration
 
@@ -61,13 +61,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6d97a5bd41fba0ef4398f808f35fc24a80f29fcbd6ec3ca3721ab804a0ad5c61 -->
+<!-- exact-contract-value: 9702c0dde64973361e8a0ae50004ee1f05d25b5035cac07d523cfe5a56319d47 -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self) -> 'HealthResponse'\""
+    "signature": "\"(self) -> 'HealthOut'\""
   },
   "distribution": "stove0-api-client",
   "module": "stove0_api_client",

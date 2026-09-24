@@ -86,7 +86,7 @@ def create_app(*, token: str, target: ReviewRcloneEffectTargetService) -> FastAP
 
 
 _CLI_RESULT_CONTRACT = {
-    "schema": "riverhog-cli-result-contract/v1",
+    "format": "riverhog-cli-result-contract/v1",
     "identity_prefix": "a-review0-rclone-target-cli-result",
     "default_profile": "runtime",
     "profiles": {

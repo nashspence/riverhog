@@ -24,18 +24,18 @@ Preview Workflow
 
 | Media type | Schema |
 |---|---|
-| application/json | [WorkflowPreviewIn](../http-schemas/schemas-workflowpreviewin.md) |
+| application/json | [OperatorWorkflowPreviewRequest](../http-schemas/schemas-operatorworkflowpreviewrequest.md) |
 
 ### Responses
 
 | Status | Description | Media type | Schema | Declared error codes |
 |---|---|---|---|---|
 | <a id="s-9a578ffce8"></a>`200` | Successful Response | application/json | [WorkflowPreview](../http-schemas/schemas-workflowpreview.md) | not declared |
-| <a id="s-9654b11c29"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
-| <a id="s-8d8b02934d"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
-| <a id="s-6df672a261"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
-| <a id="s-a7a8b1cf22"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
-| <a id="s-de214b2a39"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
+| <a id="s-9654b11c29"></a>`400` | Bad Request | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `bad_request` |
+| <a id="s-8d8b02934d"></a>`401` | Unauthorized | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `unauthorized` |
+| <a id="s-6df672a261"></a>`403` | Forbidden | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `forbidden` |
+| <a id="s-a7a8b1cf22"></a>`404` | Not Found | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `not_found` |
+| <a id="s-de214b2a39"></a>`500` | Internal Server Error | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `internal_error` |
 
 ## Maintained corroboration
 
@@ -46,9 +46,9 @@ Preview Workflow
 
 ### Referenced contract elements
 
-- [schemas: ErrorResponse](../http-schemas/schemas-errorresponse.md)
+- [schemas: ErrorOut](../http-schemas/schemas-errorout.md)
+- [schemas: OperatorWorkflowPreviewRequest](../http-schemas/schemas-operatorworkflowpreviewrequest.md)
 - [schemas: WorkflowPreview](../http-schemas/schemas-workflowpreview.md)
-- [schemas: WorkflowPreviewIn](../http-schemas/schemas-workflowpreviewin.md)
 
 ## Governing policies
 
@@ -129,7 +129,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2bd6bf55143cb3633bab8d5737fd546ea576021ca8d4032b5e3eade795111e6d -->
+<!-- exact-contract-value: d294b9e28b8cc65230de953a94cc3d5b20786bdf4c458c786dcdecd2c2d8f224 -->
 
 ```json
 {
@@ -138,7 +138,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "content": {
       "application/json": {
         "schema": {
-          "$ref": "#/components/schemas/WorkflowPreviewIn"
+          "$ref": "#/components/schemas/OperatorWorkflowPreviewRequest"
         }
       }
     },
@@ -159,7 +159,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -172,7 +172,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -185,7 +185,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -198,7 +198,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -211,7 +211,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },

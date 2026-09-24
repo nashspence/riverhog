@@ -26,7 +26,7 @@ from review0_sampler_lib.conformance import SamplerConformanceResult
 SAMPLER_SCHEMA_BUNDLE_FORMAT: Final = "review0-sampler-schema-bundle/v1"
 
 _CLI_RESULT_CONTRACT = {
-    "schema": "riverhog-cli-result-contract/v1",
+    "format": "riverhog-cli-result-contract/v1",
     "identity_prefix": "review0-sampler-schemas-cli-result",
     "default_profile": "machine-report",
     "profiles": {

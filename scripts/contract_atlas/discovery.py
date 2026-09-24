@@ -8,7 +8,7 @@ from pathlib import PurePosixPath
 from typing import cast
 
 from .model import (
-    DETECTOR_CLOSURE_SCHEMA,
+    DETECTOR_CLOSURE_FORMAT,
     QUALIFICATION_ROUTES,
     ContractAtlasError,
     ContractElement,
@@ -1106,7 +1106,7 @@ def _detector_meta_closure(
     for channel in channels:
         detector_bindings[str(channel["detector"])].append(str(channel["id"]))
     return {
-        "schema": DETECTOR_CLOSURE_SCHEMA,
+        "format": DETECTOR_CLOSURE_FORMAT,
         "detector_bindings": {
             key: sorted(value) for key, value in sorted(detector_bindings.items())
         },
@@ -1318,8 +1318,8 @@ def _validate_authority_registry(
     trace: Mapping[str, object],
 ) -> Sequence[Mapping[str, object]]:
     registry = cast(Mapping[str, object], trace["authority_registry"])
-    if registry.get("schema") != "riverhog-contract-authority-registry/v1":
-        raise ContractAtlasError("contract authority registry has another schema")
+    if registry.get("format") != "riverhog-contract-authority-registry/v1":
+        raise ContractAtlasError("contract authority registry has another format")
     declared = cast(Sequence[Mapping[str, object]], registry["declared_authorities"])
     declared_ids = [str(item["id"]) for item in declared]
     if len(declared_ids) != len(set(declared_ids)) or any(

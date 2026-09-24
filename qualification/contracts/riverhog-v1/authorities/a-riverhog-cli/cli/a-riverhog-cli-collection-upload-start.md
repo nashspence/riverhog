@@ -59,7 +59,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
 | <a id="s-0cf374bbc3"></a>`usage` | <a id="s-1f69e3b093"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-0d89937f5c"></a>`2` | <a id="s-712eff801e"></a>all: `"empty"` | <a id="s-503250f3ed"></a>all: `"noncontractual-usage-diagnostic"` |
-| <a id="s-3d02017f68"></a>`operational` | <a id="s-8136c3cd3f"></a>`{"kind":"application-error"}` | <a id="s-f29d6ef6cb"></a>`1` | <a id="s-1c191cd822"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-961df9af26"></a>human: `"noncontractual-diagnostic-or-progress"`; json: `"noncontractual-progress"` |
+| <a id="s-3d02017f68"></a>`operational` | <a id="s-8136c3cd3f"></a>`{"kind":"application-error"}` | <a id="s-f29d6ef6cb"></a>`1` | <a id="s-1c191cd822"></a>human: `"empty"`; json: [http-api-contracts.ErrorOut](../../http-api-contracts/python/http-api-contracts-errorout.md) | <a id="s-961df9af26"></a>human: `"noncontractual-diagnostic-or-progress"`; json: `"noncontractual-progress"` |
 | <a id="s-ec3f2ab723"></a>`custody-timeout` | <a id="s-f63b96260e"></a>`{"kind":"custody-deadline-expired","state":"not-finalized"}` | <a id="s-3ff724abe4"></a>`124` | <a id="s-a13f5879ba"></a>all: `"empty"` | <a id="s-3791f3309a"></a>all: `"noncontractual-progress"` |
 
 ### Progression, limits, and lifecycle
@@ -387,7 +387,7 @@ false
 
 ### `/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/result_contract`
 
-<!-- exact-contract-value: 808a366a6cd275c3ae7a62b2cf3f5636e4625ec46244e48fa1a073f0566d5be0 -->
+<!-- exact-contract-value: 1a867ccbb3ee1f829a168a29807aa8cd01ea515c711ee4402b22a2b2c85ef44f -->
 
 ```json
 {
@@ -418,7 +418,7 @@ false
       "stdout": {
         "human": "empty",
         "json": {
-          "identity": "http-api-contracts.ErrorResponse",
+          "identity": "http-api-contracts.ErrorOut",
           "kind": "python-model",
           "schema": {
             "$defs": {
@@ -466,7 +466,7 @@ false
             "required": [
               "error"
             ],
-            "title": "ErrorResponse",
+            "title": "ErrorOut",
             "type": "object"
           }
         }

@@ -13,17 +13,17 @@ from typing import cast
 from riverhog_canonical_json import CanonicalJsonError
 from riverhog_canonical_json import canonical_json_bytes as jcs_bytes
 
-ROOT_SCHEMA = "riverhog-contract-machine-closure/v1"
-ATLAS_SCHEMA = "riverhog-contract-human-atlas/v1"
-CONTRACT_IDENTITY_SCHEMA = "riverhog-v1-semantic-contract/v1"
-COVERAGE_IDENTITY_SCHEMA = "riverhog-v1-discovery-coverage/v1"
-TRACE_IDENTITY_SCHEMA = "riverhog-v1-source-proof-trace/v1"
-REPRESENTATION_IDENTITY_SCHEMA = "riverhog-v1-human-atlas-representation/v1"
-DETECTOR_CLOSURE_SCHEMA = "riverhog-contract-detector-closure/v1"
+ROOT_FORMAT = "riverhog-contract-machine-closure/v1"
+ATLAS_FORMAT = "riverhog-contract-human-atlas/v1"
+CONTRACT_IDENTITY_FORMAT = "riverhog-v1-semantic-contract/v1"
+COVERAGE_IDENTITY_FORMAT = "riverhog-v1-discovery-coverage/v1"
+TRACE_IDENTITY_FORMAT = "riverhog-v1-source-proof-trace/v1"
+REPRESENTATION_IDENTITY_FORMAT = "riverhog-v1-human-atlas-representation/v1"
+DETECTOR_CLOSURE_FORMAT = "riverhog-contract-detector-closure/v1"
 ATLAS_DIRECTORY = "riverhog-v1"
 # Reading-size target before the collapsed exact-JSON fallback, not a v1 contract extent.
 AUDIT_PRIMARY_CONTENT_TARGET_BYTES = 128 * 1024
-RELATIONSHIP_SCHEMA = "riverhog-contract-human-relationships/v1"
+RELATIONSHIP_FORMAT = "riverhog-contract-human-relationships/v1"
 
 _SCHEMA_MAPPING_KEYWORDS = frozenset(
     {"$defs", "definitions", "dependentSchemas", "patternProperties", "properties"}
@@ -194,7 +194,7 @@ def _semantic_identity(
     """Return semantic contract identity without boundary-governance evidence."""
 
     return {
-        "schema": CONTRACT_IDENTITY_SCHEMA,
+        "format": CONTRACT_IDENTITY_FORMAT,
         "series": projection["series"],
         "external_contract": projection["external_contract"],
         "policies": policies,

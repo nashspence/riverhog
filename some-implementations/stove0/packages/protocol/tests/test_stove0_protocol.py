@@ -136,6 +136,13 @@ def test_embedded_identity_references_preserve_riverhog_identity_values() -> Non
     assert recipe_ref.to_identity() == recipe
     with pytest.raises(ValidationError):
         RecipeIdentityRef(id=recipe.id, revision=recipe.revision, sha256=recipe.sha256)
+    long_revision = "1" + "0" * 4300
+    long_recipe = RecipeIdentity.from_mapping(
+        {"id": recipe.id, "revision": long_revision, "sha256": recipe.sha256}
+    )
+    long_ref = RecipeIdentityRef.from_identity(long_recipe)
+    assert long_ref.model_dump(mode="json")["revision"] == long_revision
+    assert long_ref.to_identity() == long_recipe
     assert OperationIdentityRef.from_identity(operation).to_identity() == operation
 
 

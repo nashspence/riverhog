@@ -232,7 +232,7 @@ jobs:
               -H 'Accept: application/octet-stream' \
               "repos/${{ github.repository }}/releases/assets/${asset_ids[0]}" > "$manifest"
             jq --exit-status --arg tag "$tag" \
-              '.schema == "riverhog-release/v1" and .tag == $tag' "$manifest" >/dev/null
+              '.format == "riverhog-release/v1" and .tag == $tag' "$manifest" >/dev/null
             canonical="$manifest.canonical"
             mise x -- python -m json.tool --sort-keys --indent 2 "$manifest" "$canonical"
             cmp --silent "$manifest" "$canonical"
@@ -320,12 +320,12 @@ jobs:
             --slurpfile freeze qualification/contracts/riverhog-v1.json '
             $freeze[0].projection.external_contract.extents.sha256 as $extent
             | ($extent | test("^[0-9a-f]{64}$"))
-            and .schema == "riverhog-operation-qualification/v1"
+            and .format == "riverhog-operation-qualification/v1"
             and .source_sha == $sha
             and .summary.operations == (.operations | length)
             and .qualification.extent_contract.status == "passed"
-            and .qualification.extent_contract.schema == "riverhog-contract-machine-closure/v1"
-            and .qualification.extent_contract.extent_schema == "riverhog-extent-contract/v1"
+            and .qualification.extent_contract.format == "riverhog-contract-machine-closure/v1"
+            and .qualification.extent_contract.extent_format == "riverhog-extent-contract/v1"
             and .qualification.extent_contract.extent_decisions > 0
             and .qualification.extent_contract.projection_sha256 == $contract
             and .qualification.extent_contract.extent_sha256 == $extent
@@ -334,7 +334,7 @@ jobs:
             and .qualification.bounded_state_access.status == "passed"
             and .qualification.event_cursor_restart_resume.status == "passed"
             and .qualification.provider_backed_lifecycles.status == "linked"
-            and .performance.local_api.schema == "riverhog-operation-timings/v1"
+            and .performance.local_api.format == "riverhog-operation-timings/v1"
             and .performance.local_api.source_sha == $sha
             and (.summary.applications | keys == ["a-riverhog-ftp-spool", "riverhog", "stove0"])
             and (.summary.classifications | keys == [
@@ -352,7 +352,7 @@ jobs:
         run: |
           jq --exit-status --arg sha "$SOURCE_SHA" '
             . as $root
-            | .schema == "riverhog-database-qualification/v1"
+            | .format == "riverhog-database-qualification/v1"
             and .source_sha == $sha
             and .cardinalities == [4096, 65536]
             and .selector_contract.applications == ["riverhog", "stove0"]
@@ -439,7 +439,7 @@ jobs:
             --arg database_evidence_sha256 "$(sha256sum "$DATABASE_SUMMARY" | cut -d ' ' -f 1)" \
             --arg release_evidence_sha256 "$(sha256sum "$RELEASE_SUMMARY" | cut -d ' ' -f 1)" \
             '{
-              schema: "riverhog-release-qualification/v1",
+              format: "riverhog-release-qualification/v1",
               ref: $ref,
               qualification_mode: $qualification_mode,
               source_sha: $sha,

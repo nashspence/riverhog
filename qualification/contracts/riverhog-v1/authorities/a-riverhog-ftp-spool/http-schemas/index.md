@@ -7,7 +7,7 @@ Supporting HTTP data definitions; these are not callable operations.
 ## Contract elements
 
 - [ErrorBody](schemas-errorbody.md)
-- [ErrorResponse](schemas-errorresponse.md)
+- [ErrorOut](schemas-errorout.md)
 - [HTTPValidationError](schemas-httpvalidationerror.md)
-- [HealthResponse](schemas-healthresponse.md)
+- [HealthOut](schemas-healthout.md)
 - [ValidationError](schemas-validationerror.md)

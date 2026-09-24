@@ -201,7 +201,7 @@ def test_canonical_archive_capabilities_against_garage_adapter(tmp_path: Path) -
             == ciphertext
         )
 
-        manifest_plaintext = b'{"schema":"collection-archive-manifest/v1"}'
+        manifest_plaintext = b'{"format":"collection-archive-manifest/v1"}'
         archive_root_sha256 = hashlib.sha256(manifest_plaintext).hexdigest()
         manifest_content = encrypt_age_scrypt(
             manifest_plaintext,

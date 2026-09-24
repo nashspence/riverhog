@@ -486,7 +486,7 @@ def test_gogurt_failure_evidence_is_bounded_to_status_and_listener_logs(
                 "returncode": 0,
             }
         ],
-        "schema": "gogurt-native-lifecycle-trace/v1",
+        "format": "gogurt-native-lifecycle-trace/v1",
     }
     assert "private state" not in "".join(
         path.read_text(encoding="utf-8") for path in evidence.iterdir()

@@ -20,9 +20,9 @@ from riverhog_canonical_json import (
     require_canonical_json,
 )
 
-COLLECTION_ARCHIVE_MANIFEST_SCHEMA = "collection-archive-manifest/v1"
-COLLECTION_ARCHIVE_VOLUME_SCHEMA = "collection-archive-volume/v1"
-COLLECTION_ARCHIVE_TERMINAL_SCHEMA = "collection-archive-terminal/v1"
+COLLECTION_ARCHIVE_MANIFEST_FORMAT = "collection-archive-manifest/v1"
+COLLECTION_ARCHIVE_VOLUME_FORMAT = "collection-archive-volume/v1"
+COLLECTION_ARCHIVE_TERMINAL_FORMAT = "collection-archive-terminal/v1"
 ARCHIVE_PACK_FILES_MAX = 50_000
 ARCHIVE_VOLUME_PARTS_MAX = 1024
 ARCHIVE_ROOT_DOCUMENT_BYTES_MAX = 64 * 1024
@@ -31,7 +31,7 @@ ARCHIVE_SEQUENCE_BITS = 256
 ARCHIVE_SEQUENCE_HEX_WIDTH = ARCHIVE_SEQUENCE_BITS // 4
 ARCHIVE_ENCRYPTION_FORMAT = "age-v1-scrypt"
 AGE_UPLOAD_STATE_FORMAT = "age-v1-scrypt-resumable"
-PACK_INDEX_SCHEMA = "riverhog-pack-index/v1"
+PACK_INDEX_FORMAT = "riverhog-pack-index/v1"
 PART_DIGEST_FORMAT = "sha256"
 SELECTIVE_READ_FORMAT = "age-chunk-range/v1"
 
@@ -485,11 +485,11 @@ class CollectionArchiveVolumeDocument:
     archive_generation: str
     archive_tree_sha256: str
     volume: ArchiveVolume
-    schema: str = COLLECTION_ARCHIVE_VOLUME_SCHEMA
+    format: str = COLLECTION_ARCHIVE_VOLUME_FORMAT
 
     def __post_init__(self) -> None:
-        if self.schema != COLLECTION_ARCHIVE_VOLUME_SCHEMA:
-            raise ArchiveManifestError("collection archive volume schema is unsupported")
+        if self.format != COLLECTION_ARCHIVE_VOLUME_FORMAT:
+            raise ArchiveManifestError("collection archive volume format is unsupported")
         _sha256(self.archive_generation, "collection archive generation")
         _sha256(self.archive_tree_sha256, "collection archive volume tree sha256")
         if not isinstance(self.volume, (PackArchiveVolume, SegmentArchiveVolume)):
@@ -499,11 +499,11 @@ class CollectionArchiveVolumeDocument:
     def from_mapping(cls, value: object) -> CollectionArchiveVolumeDocument:
         row = _mapping(
             value,
-            {"schema", "archive_generation", "archive_tree_sha256", "volume"},
+            {"format", "archive_generation", "archive_tree_sha256", "volume"},
             "collection archive volume",
         )
-        if row["schema"] != COLLECTION_ARCHIVE_VOLUME_SCHEMA:
-            raise ArchiveManifestError("collection archive volume schema is unsupported")
+        if row["format"] != COLLECTION_ARCHIVE_VOLUME_FORMAT:
+            raise ArchiveManifestError("collection archive volume format is unsupported")
         raw = row["volume"]
         if not isinstance(raw, Mapping):
             raise ArchiveManifestError("collection archive volume is invalid")
@@ -532,7 +532,7 @@ class CollectionArchiveVolumeDocument:
 
     def to_mapping(self) -> dict[str, object]:
         return {
-            "schema": self.schema,
+            "format": self.format,
             "archive_generation": self.archive_generation,
             "archive_tree_sha256": self.archive_tree_sha256,
             "volume": self.volume.to_mapping(),
@@ -553,11 +553,11 @@ class CollectionArchiveTerminalDocument:
     archive_tree_sha256: str
     sequence: int
     kind: Literal["terminal"] = "terminal"
-    schema: str = COLLECTION_ARCHIVE_TERMINAL_SCHEMA
+    format: str = COLLECTION_ARCHIVE_TERMINAL_FORMAT
 
     def __post_init__(self) -> None:
-        if self.schema != COLLECTION_ARCHIVE_TERMINAL_SCHEMA or self.kind != "terminal":
-            raise ArchiveManifestError("collection archive terminal schema is unsupported")
+        if self.format != COLLECTION_ARCHIVE_TERMINAL_FORMAT or self.kind != "terminal":
+            raise ArchiveManifestError("collection archive terminal format is unsupported")
         _sha256(self.archive_generation, "collection archive generation")
         _sha256(self.archive_tree_sha256, "collection archive terminal tree sha256")
         _positive_int(self.sequence, "collection archive terminal sequence")
@@ -567,7 +567,7 @@ class CollectionArchiveTerminalDocument:
     def from_mapping(cls, value: object) -> CollectionArchiveTerminalDocument:
         row = _mapping(
             value,
-            {"schema", "archive_generation", "archive_tree_sha256", "sequence", "kind"},
+            {"format", "archive_generation", "archive_tree_sha256", "sequence", "kind"},
             "collection archive terminal",
         )
         return cls(
@@ -579,7 +579,7 @@ class CollectionArchiveTerminalDocument:
                 row["sequence"], "collection archive terminal sequence"
             ),
             kind=str(row["kind"]),  # type: ignore[arg-type]
-            schema=str(row["schema"]),
+            format=str(row["format"]),
         )
 
     @classmethod
@@ -598,7 +598,7 @@ class CollectionArchiveTerminalDocument:
 
     def to_mapping(self) -> dict[str, object]:
         return {
-            "schema": self.schema,
+            "format": self.format,
             "archive_generation": self.archive_generation,
             "archive_tree_sha256": self.archive_tree_sha256,
             "sequence": format_archive_sequence(self.sequence),
@@ -826,11 +826,11 @@ class CollectionArchiveManifest:
     tree: CollectionTreeIdentity
     ordered_volume_sha256: str
     provenance: ArchiveProvenanceIdentity | None = None
-    schema: str = COLLECTION_ARCHIVE_MANIFEST_SCHEMA
+    format: str = COLLECTION_ARCHIVE_MANIFEST_FORMAT
 
     def __post_init__(self) -> None:
-        if self.schema != COLLECTION_ARCHIVE_MANIFEST_SCHEMA:
-            raise ArchiveManifestError("collection archive manifest schema is unsupported")
+        if self.format != COLLECTION_ARCHIVE_MANIFEST_FORMAT:
+            raise ArchiveManifestError("collection archive manifest format is unsupported")
         _sha256(self.archive_generation, "collection archive generation")
         if not isinstance(self.tree, CollectionTreeIdentity):
             raise ArchiveManifestError("collection archive tree is invalid")
@@ -844,18 +844,18 @@ class CollectionArchiveManifest:
     def from_mapping(cls, value: object) -> CollectionArchiveManifest:
         if not isinstance(value, Mapping):
             raise ArchiveManifestError("collection archive manifest is not a mapping")
-        expected = {"schema", "archive_generation", "format", "tree", "volume_sequence"}
+        expected = {"format", "archive_generation", "storage_profile", "tree", "volume_sequence"}
         if set(value) not in (expected, expected | {"provenance"}):
             raise ArchiveManifestError("collection archive manifest fields are invalid")
-        if value.get("schema") != COLLECTION_ARCHIVE_MANIFEST_SCHEMA:
-            raise ArchiveManifestError("collection archive manifest schema is unsupported")
-        if value.get("format") != {
+        if value.get("format") != COLLECTION_ARCHIVE_MANIFEST_FORMAT:
+            raise ArchiveManifestError("collection archive manifest format is unsupported")
+        if value.get("storage_profile") != {
             "encryption": ARCHIVE_ENCRYPTION_FORMAT,
-            "pack_index": PACK_INDEX_SCHEMA,
+            "pack_index": PACK_INDEX_FORMAT,
             "part_digest": PART_DIGEST_FORMAT,
             "selective_read": SELECTIVE_READ_FORMAT,
         }:
-            raise ArchiveManifestError("collection archive format is unsupported")
+            raise ArchiveManifestError("collection archive storage profile is unsupported")
         volume_sequence = _mapping(
             value.get("volume_sequence"),
             {"sha256"},
@@ -905,11 +905,11 @@ class CollectionArchiveManifest:
 
     def to_mapping(self) -> dict[str, object]:
         value: dict[str, object] = {
-            "schema": self.schema,
+            "format": self.format,
             "archive_generation": self.archive_generation,
-            "format": {
+            "storage_profile": {
                 "encryption": ARCHIVE_ENCRYPTION_FORMAT,
-                "pack_index": PACK_INDEX_SCHEMA,
+                "pack_index": PACK_INDEX_FORMAT,
                 "part_digest": PART_DIGEST_FORMAT,
                 "selective_read": SELECTIVE_READ_FORMAT,
             },

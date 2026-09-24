@@ -36,7 +36,7 @@ _BYTE_FACTORS = {
 
 
 _CLI_RESULT_CONTRACT = {
-    "schema": "riverhog-cli-result-contract/v1",
+    "format": "riverhog-cli-result-contract/v1",
     "identity_prefix": "a-riverhog-filesystem-store-cli-result",
     "default_profile": "runtime",
     "profiles": {

@@ -9,7 +9,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | Authority | Contract element |
 |---|---|
 | `a-riverhog-ftp-spool-client` | [a_riverhog_ftp_spool_client.FtpSpoolApiError](../../../authorities/a-riverhog-ftp-spool-client/python/a-riverhog-ftp-spool-client-ftpspoolapierror.md#pa-0575695132) |
-| `a-riverhog-ftp-spool-client` | [a_riverhog_ftp_spool_client.HealthResponse](../../../authorities/a-riverhog-ftp-spool-client/python/a-riverhog-ftp-spool-client-healthresponse.md#pa-97ec22abef) |
+| `a-riverhog-ftp-spool-client` | [a_riverhog_ftp_spool_client.HealthOut](../../../authorities/a-riverhog-ftp-spool-client/python/a-riverhog-ftp-spool-client-healthout.md#pa-10f51bc576) |
 | `a-riverhog-ftp-spool-client` | [a_riverhog_ftp_spool_client.RiverhogFtpSpoolClient](../../../authorities/a-riverhog-ftp-spool-client/python/a-riverhog-ftp-spool-client-riverhogftpspoolclient.md#pa-2755eec2b3) |
 | `a-riverhog-ftp-spool-client` | [a_riverhog_ftp_spool_client.RiverhogFtpSpoolClient.__enter__](../../../authorities/a-riverhog-ftp-spool-client/python/a-riverhog-ftp-spool-client-riverhogftpspoolclient-enter.md#pa-38a37af713) |
 | `a-riverhog-ftp-spool-client` | [a_riverhog_ftp_spool_client.RiverhogFtpSpoolClient.__exit__](../../../authorities/a-riverhog-ftp-spool-client/python/a-riverhog-ftp-spool-client-riverhogftpspoolclient-exit.md#pa-eb621a1ede) |

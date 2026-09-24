@@ -22,16 +22,16 @@ from .discovery import (
 from .dossier_rendering import _cli_authority_reference, _pretty_json
 from .model import (
     ATLAS_DIRECTORY,
-    ATLAS_SCHEMA,
+    ATLAS_FORMAT,
     AUDIT_PRIMARY_CONTENT_TARGET_BYTES,
-    COVERAGE_IDENTITY_SCHEMA,
+    COVERAGE_IDENTITY_FORMAT,
     INTERFACE_LABELS,
     INTERFACE_REGISTRY,
     QUALIFICATION_ROUTES,
-    RELATIONSHIP_SCHEMA,
-    REPRESENTATION_IDENTITY_SCHEMA,
-    ROOT_SCHEMA,
-    TRACE_IDENTITY_SCHEMA,
+    RELATIONSHIP_FORMAT,
+    REPRESENTATION_IDENTITY_FORMAT,
+    ROOT_FORMAT,
+    TRACE_IDENTITY_FORMAT,
     GeneratedDocument,
     NavigationIdentity,
     _decode_unsafe_integers,
@@ -76,7 +76,7 @@ __all__ = [
     "AUDIT_PRIMARY_CONTENT_TARGET_BYTES",
     "INTERFACE_LABELS",
     "INTERFACE_REGISTRY",
-    "RELATIONSHIP_SCHEMA",
+    "RELATIONSHIP_FORMAT",
     "NavigationIdentity",
     "_anchor_id",
     "_cli_authority_reference",
@@ -219,12 +219,12 @@ def build_atlas(
         normalized_projection, policies, projection_integer_paths
     )
     coverage_identity = {
-        "schema": COVERAGE_IDENTITY_SCHEMA,
+        "format": COVERAGE_IDENTITY_FORMAT,
         "discovery": discovery,
         "elements": elements,
     }
     trace_identity = {
-        "schema": TRACE_IDENTITY_SCHEMA,
+        "format": TRACE_IDENTITY_FORMAT,
         "trace": normalized_trace,
         "unsafe_integer_paths": trace_integer_paths,
         "sources": source_index,
@@ -257,7 +257,7 @@ def build_atlas(
             bytes=cast(int, document["bytes"]),
         )
     representation_identity = {
-        "schema": REPRESENTATION_IDENTITY_SCHEMA,
+        "format": REPRESENTATION_IDENTITY_FORMAT,
         "documents": documents,
         "relationships": relationship,
     }
@@ -266,9 +266,9 @@ def build_atlas(
     counts["source_authorities"] = len(source_index)
     counts["atlas_documents"] = len(documents)
     root: dict[str, object] = {
-        "schema": ROOT_SCHEMA,
+        "format": ROOT_FORMAT,
         "series": normalized_projection["series"],
-        "projection_schema": normalized_projection["schema"],
+        "projection_format": normalized_projection["format"],
         "policies": policies,
         "projection": normalized_projection,
         "projection_unsafe_integer_paths": projection_integer_paths,
@@ -280,7 +280,7 @@ def build_atlas(
         "counts": counts,
         "identities": identities,
         "atlas": {
-            "schema": ATLAS_SCHEMA,
+            "format": ATLAS_FORMAT,
             "directory": ATLAS_DIRECTORY,
             "root": f"{ATLAS_DIRECTORY}/index.md",
             "documents": documents,
@@ -302,8 +302,8 @@ def load_atlas(path: Path) -> ContractAtlas:
         root = cast(dict[str, object], json.loads(path.read_bytes()))
     except (OSError, json.JSONDecodeError) as exc:
         raise ContractAtlasError(f"machine closure is unavailable: {path}") from exc
-    if root.get("schema") != ROOT_SCHEMA:
-        raise ContractAtlasError(f"unexpected machine closure schema: {root.get('schema')}")
+    if root.get("format") != ROOT_FORMAT:
+        raise ContractAtlasError(f"unexpected machine closure format: {root.get('format')}")
     files: dict[str, bytes] = {}
     for relative in _atlas_paths(root):
         try:

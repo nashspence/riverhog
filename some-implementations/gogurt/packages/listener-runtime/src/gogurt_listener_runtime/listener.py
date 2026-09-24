@@ -47,9 +47,9 @@ from gogurt_listener_runtime.platform import (
     ListenerRuntimePaths,
 )
 
-LISTENER_CONFIG_SCHEMA = "gogurt-listener-config/v1"
-LISTENER_HEARTBEAT_SCHEMA = "gogurt-listener-heartbeat/v1"
-LISTENER_STATUS_SCHEMA = "gogurt-listener-status/v1"
+LISTENER_CONFIG_FORMAT = "gogurt-listener-config/v1"
+LISTENER_HEARTBEAT_FORMAT = "gogurt-listener-heartbeat/v1"
+LISTENER_STATUS_FORMAT = "gogurt-listener-status/v1"
 LISTENER_STATE_SCHEMA = 1
 LISTENER_MAX_ATTEMPTS = 3
 LISTENER_RETRY_SECONDS = (5.0, 30.0)
@@ -162,7 +162,7 @@ class ListenerConfig:
 
     def payload(self) -> dict[str, object]:
         return {
-            "schema": LISTENER_CONFIG_SCHEMA,
+            "format": LISTENER_CONFIG_FORMAT,
             "executable": str(self.executable),
             "routes_file": str(self.routes_file),
             "actions_dir": str(self.actions_dir) if self.actions_dir is not None else None,
@@ -195,7 +195,7 @@ class ListenerConfig:
         except (FileNotFoundError, json.JSONDecodeError, UnicodeError) as exc:
             raise ListenerError(f"invalid Gogurt listener config: {path}") from exc
         expected = {
-            "schema",
+            "format",
             "executable",
             "routes_file",
             "actions_dir",
@@ -207,8 +207,8 @@ class ListenerConfig:
         }
         if not isinstance(raw, dict) or set(raw) != expected:
             raise ListenerError(f"invalid Gogurt listener config fields: {path}")
-        if raw["schema"] != LISTENER_CONFIG_SCHEMA:
-            raise ListenerError(f"Gogurt listener config schema is invalid: {path}")
+        if raw["format"] != LISTENER_CONFIG_FORMAT:
+            raise ListenerError(f"Gogurt listener config format is invalid: {path}")
         if raw["autorun"] is not True:
             raise ListenerError("installed Gogurt listener config must explicitly enable autorun")
         interval = _listener_interval(raw["interval_seconds"])
@@ -862,7 +862,7 @@ class ListenerRuntime:
             runtime_diagnostic = self._runtime_diagnostic
             mount_attention = list(self._mount_attention)
         payload = {
-            "schema": LISTENER_HEARTBEAT_SCHEMA,
+            "format": LISTENER_HEARTBEAT_FORMAT,
             "runtime_version": self.product_version,
             "pid": os.getpid(),
             "started_at": _now_text(self.started_at),
@@ -1191,7 +1191,7 @@ def _heartbeat_timestamp(value: object, *, field: str) -> float:
 
 def _validate_heartbeat(value: object) -> dict[str, object]:
     expected = {
-        "schema",
+        "format",
         "runtime_version",
         "pid",
         "started_at",
@@ -1205,8 +1205,8 @@ def _validate_heartbeat(value: object) -> dict[str, object]:
     }
     if not isinstance(value, dict) or set(value) != expected:
         raise ListenerError("Gogurt listener heartbeat fields are invalid")
-    if value["schema"] != LISTENER_HEARTBEAT_SCHEMA:
-        raise ListenerError("Gogurt listener heartbeat schema is invalid")
+    if value["format"] != LISTENER_HEARTBEAT_FORMAT:
+        raise ListenerError("Gogurt listener heartbeat format is invalid")
     if not isinstance(value["runtime_version"], str):
         raise ListenerError("Gogurt listener heartbeat runtime version is invalid")
     _validated_product_version(value["runtime_version"])
@@ -1373,7 +1373,7 @@ def listener_status(
         healthy = heartbeat_age is not None and heartbeat_age <= max(10, interval * 3)
         health = "healthy" if healthy else "stale"
     return {
-        "schema": LISTENER_STATUS_SCHEMA,
+        "format": LISTENER_STATUS_FORMAT,
         "manager_version": expected_product_version,
         "platform": sys.platform,
         "installed": native.installed,

@@ -16,7 +16,7 @@ Exact externally visible contract owned by this contract element.
 <a id="s-f0c398f5f6"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-62bd1349a5"></a>`error_schema` | `"ErrorResponse"` |
+| <a id="s-62bd1349a5"></a>`error_schema` | `"ErrorOut"` |
 | <a id="s-e5d2f7aede"></a>`errors` | `[{"code":"invalid_observation_request","status":400},{"code":"unauthorized","status":401},{"code":"request_too_large","status":413},{"code":"observer_failed","status":500}]` |
 | <a id="s-d5ba2223c6"></a>`method` | `"POST"` |
 | <a id="s-7c53238d9d"></a>`path` | `"/v1/observe"` |
@@ -57,11 +57,11 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 156b955cbed35171dc8df5fe572a1f8a2ab7711104a34286bf1b00908e143e36 -->
+<!-- exact-contract-value: c344ca939c0d00db944a060539c29b2f6e85130532410427c4c0e0324ead2bca -->
 
 ```json
 {
-  "error_schema": "ErrorResponse",
+  "error_schema": "ErrorOut",
   "errors": [
     {
       "code": "invalid_observation_request",

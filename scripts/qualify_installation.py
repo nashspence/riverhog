@@ -31,7 +31,7 @@ import release
 import release_installation as installation
 
 ROOT = Path(__file__).resolve().parents[1]
-SCHEMA = "riverhog-installation-qualification/v1"
+FORMAT = "riverhog-installation-qualification/v1"
 EVENT_SUBJECT = "1"
 NATIVE_TRACE_INTERVAL_SECONDS = 1.0
 NATIVE_TRACE_EVENT_LIMIT = 128
@@ -1173,7 +1173,7 @@ def _retain_gogurt_failure_evidence(
             (evidence_dir / f"{phase}-native-transitions.json").write_text(
                 json.dumps(
                     {
-                        "schema": "gogurt-native-lifecycle-trace/v1",
+                        "format": "gogurt-native-lifecycle-trace/v1",
                         "events": native_transitions,
                     },
                     indent=2,
@@ -1986,7 +1986,7 @@ def qualify(
             server.server_close()
             thread.join(timeout=5)
     return {
-        "schema": SCHEMA,
+        "format": FORMAT,
         "source_sha": source_sha,
         "version": version,
         "uv": tools["uv"],

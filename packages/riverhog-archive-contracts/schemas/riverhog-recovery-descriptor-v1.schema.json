@@ -4,9 +4,9 @@
   "title": "Riverhog v1 recovery descriptor",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "encryption", "root"],
+  "required": ["format", "encryption", "root"],
   "properties": {
-    "schema": {"const": "riverhog-recovery-descriptor/v1"},
+    "format": {"const": "riverhog-recovery-descriptor/v1"},
     "encryption": {
       "type": "object",
       "additionalProperties": false,

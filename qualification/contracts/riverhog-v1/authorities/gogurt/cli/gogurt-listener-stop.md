@@ -64,7 +64,7 @@ Applies to: completed · stdout (json).
 
 - <a id="s-9ad1f9da7e"></a>`type`: `"object"`
 - <a id="s-5677827007"></a>`additionalProperties`: `false`
-- <a id="s-c0b9bd00a3"></a>`required`: `["schema","manager_version","platform","installed","enabled","running","health","config_file","state_dir","executable","mounted_volume_provider","listener_host_provider","heartbeat_age_seconds","heartbeat","dispatches","mount_attention","diagnostic"]`
+- <a id="s-c0b9bd00a3"></a>`required`: `["format","manager_version","platform","installed","enabled","running","health","config_file","state_dir","executable","mounted_volume_provider","listener_host_provider","heartbeat_age_seconds","heartbeat","dispatches","mount_attention","diagnostic"]`
 
 ##### Fields
 
@@ -75,6 +75,7 @@ Applies to: completed · stdout (json).
 | <a id="s-d28b7eb8f6"></a>`dispatches` | yes | type="object" |  |
 | <a id="s-0fd4b353b6"></a>`enabled` | yes | type="boolean" |  |
 | <a id="s-48f0c38df6"></a>`executable` | yes | type=["string","null"] |  |
+| <a id="s-1037b42596"></a>`format` | yes | const="gogurt-listener-status/v1" |  |
 | <a id="s-b89840ef3e"></a>`health` | yes | enum=["absent","stopped","failed","starting","healthy","stale"] |  |
 | <a id="s-1644a51ba3"></a>`heartbeat` | yes | type=["object","null"] |  |
 | <a id="s-fab6694148"></a>`heartbeat_age_seconds` | yes | type=["number","null"]; minimum=0 |  |
@@ -85,7 +86,6 @@ Applies to: completed · stdout (json).
 | `mounted_volume_provider` | yes | [See field `mounted_volume_provider`](#s-8e4fcebe46) |  |
 | <a id="s-cafecbe18d"></a>`platform` | yes | type="string" |  |
 | <a id="s-3a03d9b4eb"></a>`running` | yes | type="boolean" |  |
-| <a id="s-0383182bd5"></a>`schema` | yes | const="gogurt-listener-status/v1" |  |
 | <a id="s-1be6ca5932"></a>`state_dir` | yes | type="string" |  |
 
 ##### <a id="s-aedc58d84b"></a>field `listener_host_provider`
@@ -292,7 +292,7 @@ false
 
 ### `/external_contract/cli/gogurt/commands/listener/commands/stop/result_contract`
 
-<!-- exact-contract-value: fd4bdcd55b539778ccbd792cdb3e2abdd01eea7b07c03d495afa01db10fddd38 -->
+<!-- exact-contract-value: a9baf65aa48ea8ec2a4bd3b097debbb2e931fdca6067fe26adc1f1a22f4b6941 -->
 
 ```json
 {
@@ -400,6 +400,9 @@ false
                   "null"
                 ]
               },
+              "format": {
+                "const": "gogurt-listener-status/v1"
+              },
               "health": {
                 "enum": [
                   "absent",
@@ -498,15 +501,12 @@ false
               "running": {
                 "type": "boolean"
               },
-              "schema": {
-                "const": "gogurt-listener-status/v1"
-              },
               "state_dir": {
                 "type": "string"
               }
             },
             "required": [
-              "schema",
+              "format",
               "manager_version",
               "platform",
               "installed",

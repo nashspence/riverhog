@@ -528,7 +528,7 @@ def test_listener_cli_has_matching_human_and_json_lifecycle_surfaces(
         executable=lambda: Path(sys.executable),
     )
     payload = {
-        "schema": "gogurt-listener-status/v1",
+        "format": "gogurt-listener-status/v1",
         "manager_version": "1.0.0",
         "heartbeat": {"runtime_version": "an-earlier-gogurt-build"},
         "platform": "linux",

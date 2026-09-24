@@ -1,4 +1,4 @@
-schema = "riverhog-release/v1"
+format = "riverhog-release/v1"
 series = "v1"
 release_branch = "release/v1"
 tag_template = "v{version}"
@@ -78,7 +78,7 @@ provider_qualification_runtime = "provider-qualification"
 
 [governance.boundary_freeze]
 status = "frozen"
-protected_boundary_sha256 = "2c02c5abcfd2d250b803cf3869bddfffcf2312eec88d115168a3be97ab0dc3e6"
+protected_boundary_sha256 = "96fdc4f35e98ce5c8ca6b29a7ba32ec1eeb67374920e6e9feda851ff1d4d5dcf"
 protected_components = [
   "config-validation",
   "gogurt",
@@ -187,7 +187,7 @@ configuration = "Accepted v1 configuration remains valid throughout v1 unless an
 licensing = "Each continuing first-party Python distribution and OCI repository published in v1 retains every SPDX license alternative granted when that coordinate first shipped in v1; withdrawing a baseline grant requires a new major version."
 
 [state]
-schema = "riverhog-durable-state-inventory/v1"
+format = "riverhog-durable-state-inventory/v1"
 
 [[state.owners]]
 id = "riverhog-catalog"
@@ -286,9 +286,9 @@ evidence = [
 ]
 
 [artifacts.notices]
-schema = "riverhog-artifact-notices/v1"
+format = "riverhog-artifact-notices/v1"
 directory = "notices"
-format = "tar.gz"
+archive_format = "tar.gz"
 basis = "exact-artifact-contents"
 required_for = ["wheel", "image"]
 

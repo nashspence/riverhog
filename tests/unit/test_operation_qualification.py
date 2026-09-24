@@ -131,7 +131,7 @@ def observed_operation_evidence(
     timings.write_text(
         json.dumps(
             {
-                "schema": "riverhog-operation-timings/v1",
+                "format": "riverhog-operation-timings/v1",
                 "source_sha": source_sha,
                 "source_checkout": {"start": source_state, "finish": source_state},
                 "pytest_exit_status": 0,
@@ -152,7 +152,7 @@ def test_exact_sha_evidence_contains_only_generated_current_rows(
     matrix = module.operation_matrix()
     operations = payload["operations"]
 
-    assert payload["schema"] == "riverhog-operation-qualification/v1"
+    assert payload["format"] == "riverhog-operation-qualification/v1"
     assert payload["source_sha"] == source_sha
     assert payload["summary"]["operations"] == len(operations)
     assert payload["summary"]["matrix_sha256"] == module._matrix_sha256(module.operation_matrix())
@@ -172,8 +172,8 @@ def test_exact_sha_evidence_contains_only_generated_current_rows(
     )
     extent = payload["qualification"]["extent_contract"]
     assert extent["status"] == "passed"
-    assert extent["schema"] == "riverhog-contract-machine-closure/v1"
-    assert extent["extent_schema"] == "riverhog-extent-contract/v1"
+    assert extent["format"] == "riverhog-contract-machine-closure/v1"
+    assert extent["extent_format"] == "riverhog-extent-contract/v1"
     assert extent["extent_decisions"] > 0
     assert len(extent["projection_sha256"]) == 64
     assert len(extent["extent_sha256"]) == 64
@@ -567,7 +567,7 @@ def test_operation_evidence_rejects_an_incomplete_extent_authority(tmp_path: Pat
     authority.write_text(
         json.dumps(
             {
-                "schema": "riverhog-contract-machine-closure/v1",
+                "format": "riverhog-contract-machine-closure/v1",
                 "atlas": {"directory": "riverhog-v1", "documents": []},
             }
         )
@@ -614,7 +614,7 @@ def test_timing_evidence_fails_closed_on_missing_local_operation(tmp_path: Path)
     timings.write_text(
         json.dumps(
             {
-                "schema": "riverhog-operation-timings/v1",
+                "format": "riverhog-operation-timings/v1",
                 "source_sha": source_sha,
                 "source_checkout": {
                     "start": {"head": source_sha, "clean": True},

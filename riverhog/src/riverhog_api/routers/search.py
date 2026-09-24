@@ -16,14 +16,14 @@ from riverhog_api.browse import (
 )
 from riverhog_api.deps import ContainerDep
 from riverhog_api.routing import RiverhogRouter
-from riverhog_api.schemas.search import SearchFileOut, SearchResponse
+from riverhog_api.schemas.search import SearchFileOut, SearchOut
 
 router = RiverhogRouter(tags=["search"])
 
 
 @router.get(
     "/search",
-    response_model=SearchResponse,
+    response_model=SearchOut,
     openapi_extra=mutable_browse_operation(),
 )
 def search(
@@ -35,7 +35,7 @@ def search(
     sort: Annotated[SearchSort, Query()] = "file_ref",
     order: Annotated[SortOrder, Query()] = "asc",
     collection: Annotated[CollectionIdParameter | None, Query()] = None,
-) -> SearchResponse:
+) -> SearchOut:
     selectors = canonical_selectors(q=q, sort=sort, order=order, collection=collection)
     position = page_position(
         container,
@@ -60,7 +60,7 @@ def search(
         selectors=selectors,
     )
     files = cast(list[dict[str, object]], payload["files"])
-    return SearchResponse.model_validate(
+    return SearchOut.model_validate(
         {
             **payload,
             "files": [SearchFileOut.model_validate(record) for record in files],

@@ -29,8 +29,8 @@ from riverhog_api.schemas.provenance import (
     CollectionFileProvenanceDetailOut,
     CollectionFileProvenanceTraceOut,
     CollectionProvenanceVerificationJobOut,
-    ListCollectionFileProvenanceResponse,
-    ListProvenanceJournalAgentsResponse,
+    ListCollectionFileProvenanceOut,
+    ListProvenanceJournalAgentsOut,
 )
 
 router = RiverhogRouter(tags=["provenance"])
@@ -78,7 +78,7 @@ _PROVENANCE_JOURNAL_RESPONSE: dict[int | str, dict[str, Any]] = {
 
 @router.get(
     "/collections/{collection_id}/provenance/files",
-    response_model=ListCollectionFileProvenanceResponse,
+    response_model=ListCollectionFileProvenanceOut,
     openapi_extra=mutable_browse_operation(),
 )
 def list_collection_provenance(
@@ -270,7 +270,7 @@ def _parse_range(value: str | None, total_bytes: int) -> tuple[int, int]:
 
 @router.get(
     "/collections/{collection_id}/provenance/journals/{journal_id}/agents",
-    response_model=ListProvenanceJournalAgentsResponse,
+    response_model=ListProvenanceJournalAgentsOut,
     openapi_extra=mutable_browse_operation(),
 )
 def list_collection_provenance_journal_agents(

@@ -239,7 +239,7 @@ def test_binding_client_and_conformance_share_the_exact_two_endpoint_contract() 
         if value is not None
     }
     assert referenced <= set(bundle["schemas"])
-    assert "ErrorResponse" in referenced
+    assert "ErrorOut" in referenced
 
 
 def test_sampler_conformance_result_revalidates_portable_intent_schema() -> None:

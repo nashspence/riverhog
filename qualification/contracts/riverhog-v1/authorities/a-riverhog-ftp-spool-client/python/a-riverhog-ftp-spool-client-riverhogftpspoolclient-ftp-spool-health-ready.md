@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-f6685ab252"></a>`kind`: `"method"`
-- <a id="s-39d93b6e27"></a>`signature`: `"\"(self) -> 'HealthResponse'\""`
+- <a id="s-39d93b6e27"></a>`signature`: `"\"(self) -> 'HealthOut'\""`
 
 ## Maintained corroboration
 
@@ -60,13 +60,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 372c0dbfb886f4fec8d1e09dbf8f9e960c7aee1b9e85167e27039ed83c3ba73b -->
+<!-- exact-contract-value: 4c6eb182ca831e5c270c0bc2a4b77f3701832768e37deba520b40b893ec5b2e8 -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self) -> 'HealthResponse'\""
+    "signature": "\"(self) -> 'HealthOut'\""
   },
   "distribution": "a-riverhog-ftp-spool-client",
   "module": "a_riverhog_ftp_spool_client",

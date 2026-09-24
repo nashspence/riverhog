@@ -8,7 +8,7 @@ Declared public imports and their selected exact structural contracts.
 
 ### `stove0_api_client`
 
-- [HealthResponse](stove0-api-client-healthresponse.md)
+- [HealthOut](stove0-api-client-healthout.md)
 - [Stove0ApiClient](stove0-api-client-stove0apiclient.md)
   - [__enter__](stove0-api-client-stove0apiclient-enter.md)
   - [__exit__](stove0-api-client-stove0apiclient-exit.md)

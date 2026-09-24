@@ -34,12 +34,12 @@ List Collection Provenance Journal Agents
 
 | Status | Description | Media type | Schema | Declared error codes |
 |---|---|---|---|---|
-| <a id="s-6a06a8f5f7"></a>`200` | Successful Response | application/json | [ListProvenanceJournalAgentsResponse](../http-schemas/schemas-listprovenancejournalagentsresponse.md) | not declared |
-| <a id="s-7f8c2842c8"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
-| <a id="s-8367bab14b"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
-| <a id="s-dd302a913b"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
-| <a id="s-568a8c94b2"></a>`404` | Not Found | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `not_found` |
-| <a id="s-247c508009"></a>`500` | Internal Server Error | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `internal_error` |
+| <a id="s-6a06a8f5f7"></a>`200` | Successful Response | application/json | [ListProvenanceJournalAgentsOut](../http-schemas/schemas-listprovenancejournalagentsout.md) | not declared |
+| <a id="s-7f8c2842c8"></a>`400` | Bad Request | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `bad_request` |
+| <a id="s-8367bab14b"></a>`401` | Unauthorized | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `unauthorized` |
+| <a id="s-dd302a913b"></a>`403` | Forbidden | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `forbidden` |
+| <a id="s-568a8c94b2"></a>`404` | Not Found | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `not_found` |
+| <a id="s-247c508009"></a>`500` | Internal Server Error | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
 
@@ -89,8 +89,8 @@ Exact evidence groups for this contract element:
 ### Referenced contract elements
 
 - [schemas: BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)
-- [schemas: ErrorResponse](../http-schemas/schemas-errorresponse.md)
-- [schemas: ListProvenanceJournalAgentsResponse](../http-schemas/schemas-listprovenancejournalagentsresponse.md)
+- [schemas: ErrorOut](../http-schemas/schemas-errorout.md)
+- [schemas: ListProvenanceJournalAgentsOut](../http-schemas/schemas-listprovenancejournalagentsout.md)
 
 ## Governing policies
 
@@ -182,7 +182,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: eb827ce37b3aaaa194c7545b484e9307b72f3e523c20ea349e1ab2cf92c2ea8e -->
+<!-- exact-contract-value: f9468140b2bf67084c4b070e587e25817c7669631d4306e7c4a20c0b6b314177 -->
 
 ```json
 {
@@ -251,7 +251,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ListProvenanceJournalAgentsResponse"
+            "$ref": "#/components/schemas/ListProvenanceJournalAgentsOut"
           }
         }
       },
@@ -261,7 +261,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -274,7 +274,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -287,7 +287,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -300,7 +300,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },
@@ -313,7 +313,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/ErrorResponse"
+            "$ref": "#/components/schemas/ErrorOut"
           }
         }
       },

@@ -55,7 +55,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | Identity | Selected by | Exit status | stdout | stderr |
 |---|---|---|---|---|
 | <a id="s-7ed865f32d"></a>`usage` | <a id="s-c9b329b556"></a>`{"kind":"parser-rejected-invocation"}` | <a id="s-d6491add65"></a>`2` | <a id="s-28741966de"></a>all: `"empty"` | <a id="s-b49d384f47"></a>all: `"noncontractual-usage-diagnostic"` |
-| <a id="s-16b73d996e"></a>`operational` | <a id="s-e48aee2777"></a>`{"kind":"application-error"}` | <a id="s-3a40a27ff7"></a>`1` | <a id="s-b4570b71b8"></a>human: `"empty"`; json: [http-api-contracts.ErrorResponse](../../http-api-contracts/python/http-api-contracts-errorresponse.md) | <a id="s-c43d050141"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
+| <a id="s-16b73d996e"></a>`operational` | <a id="s-e48aee2777"></a>`{"kind":"application-error"}` | <a id="s-3a40a27ff7"></a>`1` | <a id="s-b4570b71b8"></a>human: `"empty"`; json: [http-api-contracts.ErrorOut](../../http-api-contracts/python/http-api-contracts-errorout.md) | <a id="s-c43d050141"></a>human: `"noncontractual-diagnostic"`; json: `"empty"` |
 
 ### Progression, limits, and lifecycle
 
@@ -270,7 +270,7 @@ false
 
 ### `/external_contract/cli/a-riverhog-cli/commands/collection/commands/tag/commands/add/result_contract`
 
-<!-- exact-contract-value: f87aa96f469c6c17a693043b12d99a9827dab2e082c5fee065b5c42a98a4725b -->
+<!-- exact-contract-value: 9844023f2809583e1332ef8b0a1308045dbf504cd723d15bc89feefa0a326802 -->
 
 ```json
 {
@@ -301,7 +301,7 @@ false
       "stdout": {
         "human": "empty",
         "json": {
-          "identity": "http-api-contracts.ErrorResponse",
+          "identity": "http-api-contracts.ErrorOut",
           "kind": "python-model",
           "schema": {
             "$defs": {
@@ -349,7 +349,7 @@ false
             "required": [
               "error"
             ],
-            "title": "ErrorResponse",
+            "title": "ErrorOut",
             "type": "object"
           }
         }

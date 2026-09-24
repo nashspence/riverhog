@@ -90,13 +90,16 @@ def _visible_text(value: object, label: str, *, maximum: int = 500) -> str:
 
 
 def _uint(value: object, label: str) -> int:
-    if isinstance(value, bool):
+    if type(value) is int:
+        parsed = value
+    elif type(value) is str:
+        try:
+            parsed = parse_scalar("nonnegative", value)
+        except ValueError as exc:
+            raise ValueError(f"{label} must be a canonical non-negative integer") from exc
+    else:
         raise ValueError(f"{label} must be a non-negative integer")
-    try:
-        parsed = int(str(value))
-    except (TypeError, ValueError) as exc:
-        raise ValueError(f"{label} must be a non-negative integer") from exc
-    if parsed < 0 or str(parsed) != str(value):
+    if parsed < 0:
         raise ValueError(f"{label} must be a canonical non-negative integer")
     return parsed
 

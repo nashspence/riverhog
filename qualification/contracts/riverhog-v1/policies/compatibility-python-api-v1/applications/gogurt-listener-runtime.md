@@ -10,11 +10,11 @@ These are the indexed contract-element applications. Each link reaches the polic
 |---|---|
 | `gogurt-listener-runtime` | [gogurt_listener_runtime.GOGURT_LISTENER_HOST_PROVIDER_BINDING_FORMAT](../../../authorities/gogurt-listener-runtime/python/gogurt-listener-runtime-gogurt-listener-host-provider-binding-format.md#pa-2da39d1ca8) |
 | `gogurt-listener-runtime` | [gogurt_listener_runtime.GOGURT_LISTENER_HOST_PROVIDER_ENTRY_POINT_GROUP](../../../authorities/gogurt-listener-runtime/python/gogurt-listener-runtime-gogurt-listener-host-provider-entry-point-group.md#pa-6ad185d19a) |
-| `gogurt-listener-runtime` | [gogurt_listener_runtime.LISTENER_CONFIG_SCHEMA](../../../authorities/gogurt-listener-runtime/python/gogurt-listener-runtime-listener-config-schema.md#pa-5b63ef2909) |
-| `gogurt-listener-runtime` | [gogurt_listener_runtime.LISTENER_HEARTBEAT_SCHEMA](../../../authorities/gogurt-listener-runtime/python/gogurt-listener-runtime-listener-heartbeat-schema.md#pa-06210b5cf5) |
+| `gogurt-listener-runtime` | [gogurt_listener_runtime.LISTENER_CONFIG_FORMAT](../../../authorities/gogurt-listener-runtime/python/gogurt-listener-runtime-listener-config-format.md#pa-75d4409290) |
+| `gogurt-listener-runtime` | [gogurt_listener_runtime.LISTENER_HEARTBEAT_FORMAT](../../../authorities/gogurt-listener-runtime/python/gogurt-listener-runtime-listener-heartbeat-format.md#pa-c4bff37f28) |
 | `gogurt-listener-runtime` | [gogurt_listener_runtime.LISTENER_OPERATIONS](../../../authorities/gogurt-listener-runtime/python/gogurt-listener-runtime-listener-operations.md#pa-93dbd52a7e) |
 | `gogurt-listener-runtime` | [gogurt_listener_runtime.LISTENER_STATE_SCHEMA](../../../authorities/gogurt-listener-runtime/python/gogurt-listener-runtime-listener-state-schema.md#pa-571c8278bb) |
-| `gogurt-listener-runtime` | [gogurt_listener_runtime.LISTENER_STATUS_SCHEMA](../../../authorities/gogurt-listener-runtime/python/gogurt-listener-runtime-listener-status-schema.md#pa-1b0c940c00) |
+| `gogurt-listener-runtime` | [gogurt_listener_runtime.LISTENER_STATUS_FORMAT](../../../authorities/gogurt-listener-runtime/python/gogurt-listener-runtime-listener-status-format.md#pa-b7e22060d7) |
 | `gogurt-listener-runtime` | [gogurt_listener_runtime.ListenerAdapter](../../../authorities/gogurt-listener-runtime/python/gogurt-listener-runtime-listeneradapter.md#pa-b42c5b9664) |
 | `gogurt-listener-runtime` | [gogurt_listener_runtime.ListenerAdapter.process_is_running](../../../authorities/gogurt-listener-runtime/python/gogurt-listener-runtime-listeneradapter-process-is-running.md#pa-11b1c52e01) |
 | `gogurt-listener-runtime` | [gogurt_listener_runtime.ListenerAdapter.register](../../../authorities/gogurt-listener-runtime/python/gogurt-listener-runtime-listeneradapter-register.md#pa-0538a9e7ee) |

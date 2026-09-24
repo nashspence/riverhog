@@ -30,7 +30,7 @@ OBSERVER_CONFORMANCE_RESULT: Literal["stove0-observer-conformance-result/v1"] = 
 )
 
 _CLI_RESULT_CONTRACT: dict[str, object] = {
-    "schema": "riverhog-cli-result-contract/v1",
+    "format": "riverhog-cli-result-contract/v1",
     "identity_prefix": "stove0-observer-conformance-cli-result",
     "default_profile": "machine-report",
     "profiles": {

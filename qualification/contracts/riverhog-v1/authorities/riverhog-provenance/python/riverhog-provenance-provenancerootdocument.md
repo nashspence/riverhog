@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-8131f3cdb1"></a>`kind`: `"class"`
-- <a id="s-30e23f79e5"></a>`signature`: `"\"(archive_generation: 'str', archive_tree_sha256: 'str', ordered_volume_sha256: 'str', schema: 'str' = 'riverhog-provenance-root/v1') -> None\""`
+- <a id="s-30e23f79e5"></a>`signature`: `"\"(archive_generation: 'str', archive_tree_sha256: 'str', ordered_volume_sha256: 'str', format: 'str' = 'riverhog-provenance-root/v1') -> None\""`
 
 #### Dataclass fields
 
@@ -31,7 +31,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-a50dad90b9"></a>`archive_generation` | `'str'` | `required` |
 | <a id="s-bfb9ed07c2"></a>`archive_tree_sha256` | `'str'` | `required` |
 | <a id="s-a9aaca8d7f"></a>`ordered_volume_sha256` | `'str'` | `required` |
-| <a id="s-03b66ef0bf"></a>`schema` | `'str'` | `'riverhog-provenance-root/v1'` |
+| <a id="s-03b66ef0bf"></a>`format` | `'str'` | `'riverhog-provenance-root/v1'` |
 
 ## Maintained corroboration
 
@@ -69,7 +69,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9e7830e5c365a31c45f62aa5a3a0fc5cc8bbf6fddd64193f4d7e98dc48f5b219 -->
+<!-- exact-contract-value: 968c1c3a0656e6782cf1d53ebc0b0b3aa0af3b6c6c30753c2dd6ffb0cd678229 -->
 
 ```json
 {
@@ -92,12 +92,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       {
         "default": "'riverhog-provenance-root/v1'",
-        "name": "schema",
+        "name": "format",
         "type": "'str'"
       }
     ],
     "kind": "class",
-    "signature": "\"(archive_generation: 'str', archive_tree_sha256: 'str', ordered_volume_sha256: 'str', schema: 'str' = 'riverhog-provenance-root/v1') -> None\""
+    "signature": "\"(archive_generation: 'str', archive_tree_sha256: 'str', ordered_volume_sha256: 'str', format: 'str' = 'riverhog-provenance-root/v1') -> None\""
   },
   "distribution": "riverhog-provenance",
   "module": "riverhog_provenance",

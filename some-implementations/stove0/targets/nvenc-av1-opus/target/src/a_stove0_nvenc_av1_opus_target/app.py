@@ -18,7 +18,7 @@ import uvicorn
 from fastapi import Depends, FastAPI, Request, Response
 from fastapi.concurrency import run_in_threadpool
 from fastapi.security import HTTPBearer
-from http_api_contracts import ErrorResponse, HealthResponse, error_payload, operation_openapi
+from http_api_contracts import ErrorOut, HealthOut, error_payload, operation_openapi
 from stove0_target_support import (
     TARGET_HTTP_OPERATIONS,
     TargetHttpBinding,
@@ -66,14 +66,14 @@ def _create_app(
 
     app = FastAPI(title=service, version="1", lifespan=lifespan, openapi_url="/v1/openapi.json")
 
-    @app.get("/health/live", response_model=HealthResponse, tags=["health"])
+    @app.get("/health/live", response_model=HealthOut, tags=["health"])
     def live() -> dict[str, str]:
         return {"service": service, "status": "ok"}
 
     @app.get(
         "/health/ready",
-        response_model=HealthResponse,
-        responses={503: {"model": ErrorResponse}},
+        response_model=HealthOut,
+        responses={503: {"model": ErrorOut}},
         tags=["health"],
     )
     def ready() -> Response:
@@ -145,7 +145,7 @@ def _secret(prefix: str) -> str:
 
 
 _CLI_RESULT_CONTRACT = {
-    "schema": "riverhog-cli-result-contract/v1",
+    "format": "riverhog-cli-result-contract/v1",
     "identity_prefix": "a-stove0-nvenc-av1-opus-target-cli-result",
     "default_profile": "runtime",
     "profiles": {

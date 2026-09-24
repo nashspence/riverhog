@@ -25,13 +25,13 @@ from .discovery import (
 from .dossier_rendering import _local_contract_references, _pretty_json
 from .model import (
     ATLAS_DIRECTORY,
-    COVERAGE_IDENTITY_SCHEMA,
+    COVERAGE_IDENTITY_FORMAT,
     INTERFACE_REGISTRY,
     QUALIFICATION_ROUTES,
-    RELATIONSHIP_SCHEMA,
-    REPRESENTATION_IDENTITY_SCHEMA,
-    ROOT_SCHEMA,
-    TRACE_IDENTITY_SCHEMA,
+    RELATIONSHIP_FORMAT,
+    REPRESENTATION_IDENTITY_FORMAT,
+    ROOT_FORMAT,
+    TRACE_IDENTITY_FORMAT,
     ContractAtlas,
     ContractAtlasError,
     _semantic_identity,
@@ -177,8 +177,8 @@ def validate_atlas(
     """Recompute closure, ownership, roll-up, source, policy, and identity proofs."""
 
     root = atlas.root
-    if root.get("schema") != ROOT_SCHEMA:
-        raise ContractAtlasError(f"unexpected machine closure schema: {root.get('schema')}")
+    if root.get("format") != ROOT_FORMAT:
+        raise ContractAtlasError(f"unexpected machine closure format: {root.get('format')}")
     paths = _atlas_paths(root)
     if paths != set(atlas.files):
         raise ContractAtlasError("machine-referenced atlas files differ from the bundle contents")
@@ -345,8 +345,8 @@ def validate_atlas(
                     f"atlas dossier does not render its complete contract value: {item['id']}"
                 )
     operation_qualification = cast(Mapping[str, object], trace_value["operation_qualification"])
-    if operation_qualification.get("schema") != "riverhog-operation-qualification/v1":
-        raise ContractAtlasError("operation qualification evidence has another schema")
+    if operation_qualification.get("format") != "riverhog-operation-qualification/v1":
+        raise ContractAtlasError("operation qualification evidence has another format")
     qualification_records = cast(
         Sequence[Mapping[str, object]],
         operation_qualification["records"],
@@ -655,8 +655,8 @@ def validate_atlas(
 
     atlas_metadata = cast(Mapping[str, object], root["atlas"])
     relationship = cast(Mapping[str, object], atlas_metadata["relationships"])
-    if relationship.get("schema") != RELATIONSHIP_SCHEMA:
-        raise ContractAtlasError("atlas relationship navigation has an unexpected schema")
+    if relationship.get("format") != RELATIONSHIP_FORMAT:
+        raise ContractAtlasError("atlas relationship navigation has an unexpected format")
     if component_descriptions is not None:
         expected_relationship = _relationship_model(
             projection_value, elements, component_descriptions
@@ -1033,12 +1033,12 @@ def validate_atlas(
         cast(Sequence[str], root["projection_unsafe_integer_paths"]),
     )
     coverage_identity = {
-        "schema": COVERAGE_IDENTITY_SCHEMA,
+        "format": COVERAGE_IDENTITY_FORMAT,
         "discovery": discovery,
         "elements": elements,
     }
     trace_identity = {
-        "schema": TRACE_IDENTITY_SCHEMA,
+        "format": TRACE_IDENTITY_FORMAT,
         "trace": trace_value,
         "unsafe_integer_paths": root["trace_unsafe_integer_paths"],
         "sources": source_index,
@@ -1047,7 +1047,7 @@ def validate_atlas(
         },
     }
     representation_identity = {
-        "schema": REPRESENTATION_IDENTITY_SCHEMA,
+        "format": REPRESENTATION_IDENTITY_FORMAT,
         "documents": atlas_metadata["documents"],
         "relationships": relationship,
     }

@@ -4,9 +4,9 @@
   "title": "Riverhog v1 bounded provenance volume",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "archive_generation", "archive_tree_sha256", "sequence", "payload"],
+  "required": ["format", "archive_generation", "archive_tree_sha256", "sequence", "payload"],
   "properties": {
-    "schema": {"const": "riverhog-provenance-volume/v1"},
+    "format": {"const": "riverhog-provenance-volume/v1"},
     "archive_generation": {"$ref": "#/$defs/sha256"},
     "archive_tree_sha256": {"$ref": "#/$defs/sha256"},
     "sequence": {"$ref": "#/$defs/sequence"},

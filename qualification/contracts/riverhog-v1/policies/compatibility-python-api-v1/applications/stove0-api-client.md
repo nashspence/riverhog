@@ -8,7 +8,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 
 | Authority | Contract element |
 |---|---|
-| `stove0-api-client` | [stove0_api_client.HealthResponse](../../../authorities/stove0-api-client/python/stove0-api-client-healthresponse.md#pa-39ff579dc4) |
+| `stove0-api-client` | [stove0_api_client.HealthOut](../../../authorities/stove0-api-client/python/stove0-api-client-healthout.md#pa-ede693620b) |
 | `stove0-api-client` | [stove0_api_client.Stove0ApiClient](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient.md#pa-d5b95f3f9a) |
 | `stove0-api-client` | [stove0_api_client.Stove0ApiClient.__enter__](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-enter.md#pa-7ce12493df) |
 | `stove0-api-client` | [stove0_api_client.Stove0ApiClient.__exit__](../../../authorities/stove0-api-client/python/stove0-api-client-stove0apiclient-exit.md#pa-851d9425d2) |

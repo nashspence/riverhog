@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-68eb69d9af"></a>`kind`: `"class"`
-- <a id="s-8e67e400cc"></a>`signature`: `"\"(encryption: 'CollectionEncryptionBinding', root: 'ArchiveRootCiphertextIdentity', schema: 'str' = 'riverhog-recovery-descriptor/v1') -> None\""`
+- <a id="s-8e67e400cc"></a>`signature`: `"\"(encryption: 'CollectionEncryptionBinding', root: 'ArchiveRootCiphertextIdentity', format: 'str' = 'riverhog-recovery-descriptor/v1') -> None\""`
 
 #### Dataclass fields
 
@@ -30,7 +30,7 @@ Exact externally visible contract owned by this contract element.
 |---|---|---|
 | <a id="s-0613215bfc"></a>`encryption` | `'CollectionEncryptionBinding'` | `required` |
 | <a id="s-8f752a2801"></a>`root` | `'ArchiveRootCiphertextIdentity'` | `required` |
-| <a id="s-2e44a13a84"></a>`schema` | `'str'` | `'riverhog-recovery-descriptor/v1'` |
+| <a id="s-2e44a13a84"></a>`format` | `'str'` | `'riverhog-recovery-descriptor/v1'` |
 
 ## Maintained corroboration
 
@@ -66,7 +66,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 90e27d73e7656240e6da6becd56f94bbcf477f0ed0d06ed95403fa950dc15d3f -->
+<!-- exact-contract-value: 86a4a290e187ad8d2c5e82489f05a6a9f1445cc8668c16c75cfca467c4bf0252 -->
 
 ```json
 {
@@ -84,12 +84,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       {
         "default": "'riverhog-recovery-descriptor/v1'",
-        "name": "schema",
+        "name": "format",
         "type": "'str'"
       }
     ],
     "kind": "class",
-    "signature": "\"(encryption: 'CollectionEncryptionBinding', root: 'ArchiveRootCiphertextIdentity', schema: 'str' = 'riverhog-recovery-descriptor/v1') -> None\""
+    "signature": "\"(encryption: 'CollectionEncryptionBinding', root: 'ArchiveRootCiphertextIdentity', format: 'str' = 'riverhog-recovery-descriptor/v1') -> None\""
   },
   "distribution": "riverhog-archive-contracts",
   "module": "riverhog_archive_contracts",

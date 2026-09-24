@@ -66,7 +66,7 @@ _RECOVERED_TAGS_OUTPUT = {
 }
 
 _CLI_RESULT_CONTRACT = {
-    "schema": "riverhog-cli-result-contract/v1",
+    "format": "riverhog-cli-result-contract/v1",
     "identity_prefix": "a-riverhog-recovery-tool-cli-result",
     "default_profile": "recovery",
     "profiles": {

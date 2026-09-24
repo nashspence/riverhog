@@ -22,7 +22,7 @@ from riverhog_core.retrieval_cache_receipts import (
     retrieval_cache_receipt_payload,
 )
 
-_WRITE_SCHEMA = "archive-cache-mirror-write/v1"
+_WRITE_FORMAT = "archive-cache-mirror-write/v1"
 _LOG = logging.getLogger(__name__)
 
 
@@ -317,7 +317,7 @@ def _encode_write_token(
 ) -> str:
     return json.dumps(
         {
-            "schema": _WRITE_SCHEMA,
+            "format": _WRITE_FORMAT,
             "content_type": content_type,
             "metadata": dict(sorted(metadata.items())),
             "archive": _session_payload(archive_session),
@@ -335,8 +335,8 @@ def _decode_write_token(
         payload = json.loads(session.write_token)
     except json.JSONDecodeError as exc:
         raise ValueError("archive-cache mirror write token is invalid") from exc
-    if not isinstance(payload, dict) or payload.get("schema") != _WRITE_SCHEMA:
-        raise ValueError("archive-cache mirror write-token schema mismatch")
+    if not isinstance(payload, dict) or payload.get("format") != _WRITE_FORMAT:
+        raise ValueError("archive-cache mirror write-token format mismatch")
     archive = _session_from_payload(payload.get("archive"), label="archive")
     admission = _admission_from_payload(payload.get("cache"))
     content_type = str(payload.get("content_type") or "").strip()

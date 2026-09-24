@@ -21,7 +21,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-cc3673cdeb"></a>`authorities · http_operations` | `"http_binding.operations"` |
 | <a id="s-1d737f3aa2"></a>`authorities · semantic_acceptance` | `"semantic_acceptance"` |
 | <a id="s-43d11b7c9d"></a>`authorities · structural_models` | `"schemas"` |
-| <a id="s-cd25dd0347"></a>`bundle_sha256` | `"046616a2439706339e32b0f318661852a748fd6f26e1ae9de5c53d1f766913f7"` |
+| <a id="s-cd25dd0347"></a>`bundle_sha256` | `"00347b9b17db9e2e24d59447d5e5a1629a60a47ca70a1465e51afcd043989361"` |
 | <a id="s-c08d2f9d50"></a>`format` | `"review0-sampler-schema-bundle/v1"` |
 | <a id="s-772400cd68"></a>`protocol` | `"review0-sampler/v1"` |
 | <a id="s-8bdb330a36"></a>`semantic_acceptance · kind` | `"request-bound-result"` |
@@ -33,7 +33,7 @@ Exact externally visible contract owned by this contract element.
 
 - [GET /v1/sampler](../process-protocol-operations/get-v1-sampler.md)
 - [POST /v1/sample](../process-protocol-operations/post-v1-sample.md)
-- [generated:review0-sampler: ErrorResponse](../process-protocol-schemas/generated-review0-sampler-errorresponse.md)
+- [generated:review0-sampler: ErrorOut](../process-protocol-schemas/generated-review0-sampler-errorout.md)
 - [generated:review0-sampler: SamplerConformanceResult](../process-protocol-schemas/generated-review0-sampler-samplerconformanceresult.md)
 - [generated:review0-sampler: SamplerDescriptor](../process-protocol-schemas/generated-review0-sampler-samplerdescriptor.md)
 - [generated:review0-sampler: SamplerRequest](../process-protocol-schemas/generated-review0-sampler-samplerrequest.md)
@@ -84,10 +84,10 @@ The following JSON is the complete value owned at each machine-authority pointer
 
 ### `/external_contract/protocol_schemas/generated:review0-sampler/bundle_sha256`
 
-<!-- exact-contract-value: 9879b4dc764aa1feabe9775febf0d2890732e7c6f5fca1a057ed98c733399b90 -->
+<!-- exact-contract-value: b7c11ae1f807ef2d9fcd360c626e1ef143b089d26527d4c4e5e07de789205bab -->
 
 ```json
-"046616a2439706339e32b0f318661852a748fd6f26e1ae9de5c53d1f766913f7"
+"00347b9b17db9e2e24d59447d5e5a1629a60a47ca70a1465e51afcd043989361"
 ```
 
 ### `/external_contract/protocol_schemas/generated:review0-sampler/format`

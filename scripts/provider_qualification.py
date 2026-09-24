@@ -28,11 +28,11 @@ from typing import Any, Protocol, cast
 from riverhog_canonical_json import canonical_json_bytes
 from time_formats import epoch_ns_from_datetime, format_utc_timestamp, parse_utc_timestamp
 
-CONFIG_SCHEMA = "riverhog-provider-qualification-config/v1"
-PLAN_SCHEMA = "riverhog-provider-qualification-infrastructure-plan/v1"
-CORPUS_SCHEMA = "riverhog-provider-qualification-corpus/v1"
-CHECKPOINT_SCHEMA = "riverhog-provider-qualification-checkpoint/v1"
-EVIDENCE_SCHEMA = "riverhog-provider-qualification-evidence/v1"
+CONFIG_FORMAT = "riverhog-provider-qualification-config/v1"
+PLAN_FORMAT = "riverhog-provider-qualification-infrastructure-plan/v1"
+CORPUS_FORMAT = "riverhog-provider-qualification-corpus/v1"
+CHECKPOINT_FORMAT = "riverhog-provider-qualification-checkpoint/v1"
+EVIDENCE_FORMAT = "riverhog-provider-qualification-evidence/v1"
 QUALIFICATION_MARKER = "riverhog-provider-qualification"
 QUALIFICATION_PASSPHRASE_ID = "qualification-key-v1"
 ADAPTER_STORED_SHA256_ASSERTION = "riverhog-adapter-stored-sha256"
@@ -245,7 +245,7 @@ class InfrastructurePlan:
 
     def as_dict(self) -> dict[str, object]:
         return {
-            "schema": PLAN_SCHEMA,
+            "format": PLAN_FORMAT,
             "config_sha256": self.config_sha256,
             "ready": self.ready,
             "blocked": self.blocked,
@@ -269,7 +269,7 @@ class CorpusManifest:
 
     def as_dict(self) -> dict[str, object]:
         return {
-            "schema": CORPUS_SCHEMA,
+            "format": CORPUS_FORMAT,
             "profile": self.profile,
             "files": [asdict(item) for item in self.files],
             "bytes": self.bytes,
@@ -314,7 +314,7 @@ class QualificationCheckpoint:
 
     def as_dict(self, *, include_digest: bool = True) -> dict[str, object]:
         payload: dict[str, object] = {
-            "schema": CHECKPOINT_SCHEMA,
+            "format": CHECKPOINT_FORMAT,
             "run_id": self.run_id,
             "source_sha": self.source_sha,
             "source_ref": self.source_ref,
@@ -416,8 +416,8 @@ def load_config(path: Path) -> QualificationConfig:
         raw = tomllib.loads(content.decode("utf-8"))
     except (OSError, UnicodeError, tomllib.TOMLDecodeError) as exc:
         raise QualificationError(f"cannot load qualification config: {exc}") from exc
-    if raw.get("schema") != CONFIG_SCHEMA:
-        raise QualificationError(f"qualification config schema must be {CONFIG_SCHEMA}")
+    if raw.get("format") != CONFIG_FORMAT:
+        raise QualificationError(f"qualification config format must be {CONFIG_FORMAT}")
     namespace_prefix = _expect_string(raw, "namespace_prefix", label="config").strip("/")
     if _PREFIX_RE.fullmatch(namespace_prefix) is None or "//" in namespace_prefix:
         raise QualificationError("namespace_prefix must be a canonical relative object prefix")
@@ -476,7 +476,7 @@ def load_config(path: Path) -> QualificationConfig:
     if len(set(name_envs)) != len(name_envs):
         raise QualificationError("each qualification bucket must use a distinct name_env")
     structural = {
-        "schema": CONFIG_SCHEMA,
+        "format": CONFIG_FORMAT,
         "namespace_prefix": namespace_prefix,
         "retention": {
             "aws_deep_archive_expiration_days": aws_expiration_days,
@@ -1826,8 +1826,8 @@ def load_corpus_manifest(path: Path) -> CorpusManifest:
         payload = json.loads(path.read_bytes())
     except (OSError, ValueError) as exc:
         raise QualificationError(f"cannot load corpus manifest: {exc}") from exc
-    if not isinstance(payload, dict) or payload.get("schema") != CORPUS_SCHEMA:
-        raise QualificationError(f"corpus manifest schema must be {CORPUS_SCHEMA}")
+    if not isinstance(payload, dict) or payload.get("format") != CORPUS_FORMAT:
+        raise QualificationError(f"corpus manifest format must be {CORPUS_FORMAT}")
     raw_files = payload.get("files")
     if not isinstance(raw_files, list):
         raise QualificationError("corpus manifest files must be a list")
@@ -2004,8 +2004,8 @@ def load_checkpoint(path: Path) -> QualificationCheckpoint:
         payload = json.loads(path.read_bytes())
     except (OSError, ValueError) as exc:
         raise QualificationError(f"cannot load qualification checkpoint: {exc}") from exc
-    if not isinstance(payload, dict) or payload.get("schema") != CHECKPOINT_SCHEMA:
-        raise QualificationError(f"checkpoint schema must be {CHECKPOINT_SCHEMA}")
+    if not isinstance(payload, dict) or payload.get("format") != CHECKPOINT_FORMAT:
+        raise QualificationError(f"checkpoint format must be {CHECKPOINT_FORMAT}")
     try:
         history = tuple(
             PhaseRecord(
@@ -2156,7 +2156,7 @@ def evidence_from_checkpoint(checkpoint: QualificationCheckpoint) -> dict[str, o
         assertion for assertions in required_by_phase.values() for assertion in assertions
     )
     return {
-        "schema": EVIDENCE_SCHEMA,
+        "format": EVIDENCE_FORMAT,
         "run_id": checkpoint.run_id,
         "source_sha": checkpoint.source_sha,
         "source_ref": checkpoint.source_ref,
@@ -4099,7 +4099,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             resolved = resolve_buckets(config, os.environ) if args.resolve else ()
             _print_json(
                 {
-                    "schema": CONFIG_SCHEMA,
+                    "format": CONFIG_FORMAT,
                     "config_sha256": config.config_sha256,
                     "buckets": [bucket.logical_name for bucket in config.buckets],
                     "resolved": bool(resolved),
@@ -4132,7 +4132,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 config,
             )
             _cleanup_b2_namespace(checkpoint, buckets, os.environ)
-            _print_json({"cleaned": True, "schema": CHECKPOINT_SCHEMA})
+            _print_json({"cleaned": True, "format": CHECKPOINT_FORMAT})
             return 0
         if args.command == "runtime-env":
             config = load_config(args.config)
@@ -4146,7 +4146,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 values=os.environ,
                 output=args.output,
             )
-            _print_json({"written": True, "schema": CONFIG_SCHEMA})
+            _print_json({"written": True, "format": CONFIG_FORMAT})
             return 0
         if args.command == "operate":
             config = load_config(args.config)

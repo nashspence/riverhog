@@ -20,7 +20,7 @@ Exact externally visible contract owned by this contract element.
 - <a id="s-edab20a12b"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/schemas/collection-archive-terminal-v1.schema.json"`
 - <a id="s-93bda210a2"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
 - <a id="s-b2fe1e65e6"></a>`additionalProperties`: `false`
-- <a id="s-71849fbcf8"></a>`required`: `["schema","archive_generation","archive_tree_sha256","sequence","kind"]`
+- <a id="s-71849fbcf8"></a>`required`: `["format","archive_generation","archive_tree_sha256","sequence","kind"]`
 - <a id="s-c5d4fb8739"></a>`title`: `"Riverhog v1 authenticated archive-volume terminator"`
 
 ### Fields
@@ -29,8 +29,8 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-0cad81e76e"></a>`archive_generation` | yes | [sha256](#s-58fcc75c8a) |  |
 | <a id="s-6108f7d82d"></a>`archive_tree_sha256` | yes | [sha256](#s-58fcc75c8a) |  |
+| <a id="s-f815489583"></a>`format` | yes | const="collection-archive-terminal/v1" |  |
 | <a id="s-814acfeac2"></a>`kind` | yes | const="terminal" |  |
-| <a id="s-7a9a2071e4"></a>`schema` | yes | const="collection-archive-terminal/v1" |  |
 | <a id="s-c9a5588471"></a>`sequence` | yes | type="string"; not=(const="0000000000000000000000000000000000000000000000000000000000000000"); pattern="^[0-9a-f]{64}$" |  |
 
 ### Definitions
@@ -83,7 +83,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5c1f9e18d46186672c66a5798bae3eb362c1e8b9d8668c1dae2d67fe5836c8db -->
+<!-- exact-contract-value: b84c5fbd995e7896f0769cc9ac7cd51e9ca6b50c892074ab9786290a5810ea87 -->
 
 ```json
 {
@@ -104,11 +104,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     "archive_tree_sha256": {
       "$ref": "#/$defs/sha256"
     },
+    "format": {
+      "const": "collection-archive-terminal/v1"
+    },
     "kind": {
       "const": "terminal"
-    },
-    "schema": {
-      "const": "collection-archive-terminal/v1"
     },
     "sequence": {
       "not": {
@@ -119,7 +119,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   },
   "required": [
-    "schema",
+    "format",
     "archive_generation",
     "archive_tree_sha256",
     "sequence",

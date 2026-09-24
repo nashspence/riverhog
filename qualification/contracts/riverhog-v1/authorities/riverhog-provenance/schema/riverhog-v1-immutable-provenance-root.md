@@ -19,7 +19,7 @@ Exact externally visible contract owned by this contract element.
 - <a id="s-580bd3e8f6"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/schemas/riverhog-provenance-root-v1.schema.json"`
 - <a id="s-109fc739da"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
 - <a id="s-f6f0f83de3"></a>`additionalProperties`: `false`
-- <a id="s-caf8e7a4f6"></a>`required`: `["schema","archive_generation","archive_tree_sha256","volume_sequence"]`
+- <a id="s-caf8e7a4f6"></a>`required`: `["format","archive_generation","archive_tree_sha256","volume_sequence"]`
 - <a id="s-b9218f09af"></a>`title`: `"Riverhog v1 immutable provenance root"`
 
 ### Fields
@@ -28,7 +28,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-7f4eddd0b4"></a>`archive_generation` | yes | [sha256](#s-99767cd030) |  |
 | <a id="s-d1c893d5e9"></a>`archive_tree_sha256` | yes | [sha256](#s-99767cd030) |  |
-| <a id="s-1e57c64c67"></a>`schema` | yes | const="riverhog-provenance-root/v1" |  |
+| <a id="s-91dba28e3e"></a>`format` | yes | const="riverhog-provenance-root/v1" |  |
 | `volume_sequence` | yes | [See field `volume_sequence`](#s-b3f3b7c709) |  |
 
 ### Definitions
@@ -92,7 +92,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0eb6342ee7df1508833103be13d0a2cce27af43f40106bf135e49c7456445827 -->
+<!-- exact-contract-value: 62aee778953c6fa194b557dcc15dcd2755f60e60980fed09812cdeb9b9a77dc4 -->
 
 ```json
 {
@@ -112,7 +112,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "archive_tree_sha256": {
       "$ref": "#/$defs/sha256"
     },
-    "schema": {
+    "format": {
       "const": "riverhog-provenance-root/v1"
     },
     "volume_sequence": {
@@ -129,7 +129,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   },
   "required": [
-    "schema",
+    "format",
     "archive_generation",
     "archive_tree_sha256",
     "volume_sequence"

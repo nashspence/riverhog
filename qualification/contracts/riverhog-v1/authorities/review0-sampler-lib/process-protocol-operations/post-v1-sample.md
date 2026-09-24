@@ -16,7 +16,7 @@ Exact externally visible contract owned by this contract element.
 <a id="s-fabb69fb87"></a>
 | Concern | Contract |
 |---|---|
-| <a id="s-ccb5b0fe41"></a>`error_schema` | `"ErrorResponse"` |
+| <a id="s-ccb5b0fe41"></a>`error_schema` | `"ErrorOut"` |
 | <a id="s-3896d94b12"></a>`errors` | `[{"code":"invalid_sampler_request","status":400},{"code":"unauthorized","status":401},{"code":"sampler_changed","status":409},{"code":"request_too_large","status":413},{"code":"sampler_failed","status":500}]` |
 | <a id="s-ffe2729598"></a>`method` | `"POST"` |
 | <a id="s-25024c3b1b"></a>`path` | `"/v1/sample"` |
@@ -57,11 +57,11 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1c0180c581eee21eabe97630b38aa4214136fddc48ce967ab4812ce73350cf33 -->
+<!-- exact-contract-value: 33c521aff39308e554a00b22a6382ecd60d0788bbd5d6688b26b8b1eb943c2ef -->
 
 ```json
 {
-  "error_schema": "ErrorResponse",
+  "error_schema": "ErrorOut",
   "errors": [
     {
       "code": "invalid_sampler_request",

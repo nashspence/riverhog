@@ -31,7 +31,7 @@ _STATE_STATUS_OUTPUT = {
 }
 
 _CLI_RESULT_CONTRACT = {
-    "schema": "riverhog-cli-result-contract/v1",
+    "format": "riverhog-cli-result-contract/v1",
     "identity_prefix": "a-riverhog-event-relay-cli-result",
     "default_profile": "state-human-json",
     "profiles": {

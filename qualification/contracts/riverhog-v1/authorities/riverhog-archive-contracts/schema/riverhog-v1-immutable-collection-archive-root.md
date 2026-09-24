@@ -20,7 +20,7 @@ Exact externally visible contract owned by this contract element.
 - <a id="s-161d22fcb6"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/schemas/collection-archive-manifest-v1.schema.json"`
 - <a id="s-fff8ac27cc"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
 - <a id="s-5ad4418e63"></a>`additionalProperties`: `false`
-- <a id="s-76e3db406c"></a>`required`: `["schema","archive_generation","format","tree","volume_sequence"]`
+- <a id="s-76e3db406c"></a>`required`: `["format","archive_generation","storage_profile","tree","volume_sequence"]`
 - <a id="s-59b7295b1c"></a>`title`: `"Riverhog v1 immutable collection archive root"`
 
 ### Fields
@@ -28,9 +28,9 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-191b5cabb5"></a>`archive_generation` | yes | [sha256](#s-e2bfff1bf6) |  |
-| `format` | yes | [See field `format`](#s-aa139f3599) |  |
+| <a id="s-aa139f3599"></a>`format` | yes | const="collection-archive-manifest/v1" |  |
 | <a id="s-c57132ccc2"></a>`provenance` | no | [provenance](#s-7606eb291c) |  |
-| <a id="s-664ff9b8bc"></a>`schema` | yes | const="collection-archive-manifest/v1" |  |
+| `storage_profile` | yes | [See field `storage_profile`](#s-c05c8a5832) |  |
 | <a id="s-d428c80832"></a>`tree` | yes | [tree](#s-9c81514a27) |  |
 | `volume_sequence` | yes | [See field `volume_sequence`](#s-86c4eff453) |  |
 
@@ -43,20 +43,20 @@ Exact externally visible contract owned by this contract element.
 - [sha256](#s-e2bfff1bf6)
 - [tree](#s-9c81514a27)
 
-### <a id="s-aa139f3599"></a>field `format`
+### <a id="s-c05c8a5832"></a>field `storage_profile`
 
-- <a id="s-274be8988f"></a>`type`: `"object"`
-- <a id="s-8d9fd6da51"></a>`additionalProperties`: `false`
-- <a id="s-79f8fc04af"></a>`required`: `["encryption","pack_index","part_digest","selective_read"]`
+- <a id="s-6b11fe085d"></a>`type`: `"object"`
+- <a id="s-d893c23142"></a>`additionalProperties`: `false`
+- <a id="s-f6e3a5cc08"></a>`required`: `["encryption","pack_index","part_digest","selective_read"]`
 
 #### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-df551ff2ba"></a>`encryption` | yes | const="age-v1-scrypt" |  |
-| <a id="s-25d8185a0b"></a>`pack_index` | yes | const="riverhog-pack-index/v1" |  |
-| <a id="s-6a37720ef3"></a>`part_digest` | yes | const="sha256" |  |
-| <a id="s-579b119f8f"></a>`selective_read` | yes | const="age-chunk-range/v1" |  |
+| <a id="s-36aa1e1d78"></a>`encryption` | yes | const="age-v1-scrypt" |  |
+| <a id="s-972143cd89"></a>`pack_index` | yes | const="riverhog-pack-index/v1" |  |
+| <a id="s-9954d0b8f6"></a>`part_digest` | yes | const="sha256" |  |
+| <a id="s-575d46f7d5"></a>`selective_read` | yes | const="age-chunk-range/v1" |  |
 
 ### <a id="s-86c4eff453"></a>field `volume_sequence`
 
@@ -170,7 +170,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 99705c651b1d19738b5c330dff862ed820e6961a086c06bb9c6c22fa4b744b08 -->
+<!-- exact-contract-value: 6f3b23911cd74f4710819572c60631386201fe7c28abc72fa90714011ec89e95 -->
 
 ```json
 {
@@ -269,6 +269,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$ref": "#/$defs/sha256"
     },
     "format": {
+      "const": "collection-archive-manifest/v1"
+    },
+    "provenance": {
+      "$ref": "#/$defs/provenance"
+    },
+    "storage_profile": {
       "additionalProperties": false,
       "properties": {
         "encryption": {
@@ -292,12 +298,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "provenance": {
-      "$ref": "#/$defs/provenance"
-    },
-    "schema": {
-      "const": "collection-archive-manifest/v1"
-    },
     "tree": {
       "$ref": "#/$defs/tree"
     },
@@ -315,9 +315,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   },
   "required": [
-    "schema",
-    "archive_generation",
     "format",
+    "archive_generation",
+    "storage_profile",
     "tree",
     "volume_sequence"
   ],

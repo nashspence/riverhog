@@ -12,7 +12,7 @@ from types import ModuleType
 from typing import Any
 
 import pytest
-from http_api_contracts import ErrorResponse
+from http_api_contracts import ErrorOut
 from jsonschema import Draft202012Validator
 from typer.testing import CliRunner
 
@@ -242,8 +242,8 @@ def test_a_riverhog_cli_json_failure_matches_its_discovered_contract(
     assert captured.err == ""
     authority = outcome["stdout"]["json"]
     assert isinstance(authority, Mapping)
-    assert authority["identity"] == "http-api-contracts.ErrorResponse"
-    assert ErrorResponse.model_validate_json(captured.out).error.code == "error"
+    assert authority["identity"] == "http-api-contracts.ErrorOut"
+    assert ErrorOut.model_validate_json(captured.out).error.code == "error"
 
 
 def test_gogurt_json_failure_matches_its_discovered_contract(

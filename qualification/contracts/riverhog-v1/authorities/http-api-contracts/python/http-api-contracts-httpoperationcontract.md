@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-f6586f5a41"></a>`kind`: `"class"`
-- <a id="s-8779856aba"></a>`signature`: `"'(method: \"Literal[\\'GET\\', \\'POST\\', \\'PUT\\', \\'DELETE\\', \\'PATCH\\']\", path: \\'str\\', request_type: \\'object \| None\\' = None, response_type: \\'object \| None\\' = None, request_kind: \\'HttpBodyKind\\' = \\'none\\', response_kind: \\'HttpBodyKind\\' = \\'json\\', success_statuses: \\'tuple[int, ...]\\' = (200,), errors: \\'tuple[HttpErrorContract, ...]\\' = (), path_parameters: \\'tuple[HttpPathParameterContract, ...]\\' = (), response_headers: \\'tuple[HttpResponseHeaderContract, ...]\\' = (), error_type: \\'type[BaseModel]\\' = <class \\'http_api_contracts.ErrorResponse\\'>) -> None'"`
+- <a id="s-8779856aba"></a>`signature`: `"'(method: \"Literal[\\'GET\\', \\'POST\\', \\'PUT\\', \\'DELETE\\', \\'PATCH\\']\", path: \\'str\\', request_type: \\'object \| None\\' = None, response_type: \\'object \| None\\' = None, request_kind: \\'HttpBodyKind\\' = \\'none\\', response_kind: \\'HttpBodyKind\\' = \\'json\\', success_statuses: \\'tuple[int, ...]\\' = (200,), errors: \\'tuple[HttpErrorContract, ...]\\' = (), path_parameters: \\'tuple[HttpPathParameterContract, ...]\\' = (), response_headers: \\'tuple[HttpResponseHeaderContract, ...]\\' = (), error_type: \\'type[BaseModel]\\' = <class \\'http_api_contracts.ErrorOut\\'>) -> None'"`
 
 #### Dataclass fields
 
@@ -38,7 +38,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-846a9bb9ab"></a>`errors` | `'tuple[HttpErrorContract, ...]'` | `()` |
 | <a id="s-3b92073354"></a>`path_parameters` | `'tuple[HttpPathParameterContract, ...]'` | `()` |
 | <a id="s-e63129c26b"></a>`response_headers` | `'tuple[HttpResponseHeaderContract, ...]'` | `()` |
-| <a id="s-45f1ec21d4"></a>`error_type` | `'type[BaseModel]'` | `<class 'http_api_contracts.ErrorResponse'>` |
+| <a id="s-45f1ec21d4"></a>`error_type` | `'type[BaseModel]'` | `<class 'http_api_contracts.ErrorOut'>` |
 
 ## Maintained corroboration
 
@@ -75,7 +75,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b3123f489d4d2f618b0f8a05cab4c3525454360f14b319b9b84aa8c2c736395f -->
+<!-- exact-contract-value: 2ea74fe5a47948f068f2f043f06812bfed091f09253960f3718424906736bb60 -->
 
 ```json
 {
@@ -132,13 +132,13 @@ The following JSON is the complete value owned at each machine-authority pointer
         "type": "'tuple[HttpResponseHeaderContract, ...]'"
       },
       {
-        "default": "<class 'http_api_contracts.ErrorResponse'>",
+        "default": "<class 'http_api_contracts.ErrorOut'>",
         "name": "error_type",
         "type": "'type[BaseModel]'"
       }
     ],
     "kind": "class",
-    "signature": "'(method: \"Literal[\\'GET\\', \\'POST\\', \\'PUT\\', \\'DELETE\\', \\'PATCH\\']\", path: \\'str\\', request_type: \\'object | None\\' = None, response_type: \\'object | None\\' = None, request_kind: \\'HttpBodyKind\\' = \\'none\\', response_kind: \\'HttpBodyKind\\' = \\'json\\', success_statuses: \\'tuple[int, ...]\\' = (200,), errors: \\'tuple[HttpErrorContract, ...]\\' = (), path_parameters: \\'tuple[HttpPathParameterContract, ...]\\' = (), response_headers: \\'tuple[HttpResponseHeaderContract, ...]\\' = (), error_type: \\'type[BaseModel]\\' = <class \\'http_api_contracts.ErrorResponse\\'>) -> None'"
+    "signature": "'(method: \"Literal[\\'GET\\', \\'POST\\', \\'PUT\\', \\'DELETE\\', \\'PATCH\\']\", path: \\'str\\', request_type: \\'object | None\\' = None, response_type: \\'object | None\\' = None, request_kind: \\'HttpBodyKind\\' = \\'none\\', response_kind: \\'HttpBodyKind\\' = \\'json\\', success_statuses: \\'tuple[int, ...]\\' = (200,), errors: \\'tuple[HttpErrorContract, ...]\\' = (), path_parameters: \\'tuple[HttpPathParameterContract, ...]\\' = (), response_headers: \\'tuple[HttpResponseHeaderContract, ...]\\' = (), error_type: \\'type[BaseModel]\\' = <class \\'http_api_contracts.ErrorOut\\'>) -> None'"
   },
   "distribution": "http-api-contracts",
   "module": "http_api_contracts",

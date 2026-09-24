@@ -69,7 +69,7 @@ Applies to: completed · stdout (json).
 
 - <a id="s-7c4d5a45e0"></a>`type`: `"object"`
 - <a id="s-186f931ba1"></a>`additionalProperties`: `false`
-- <a id="s-f6ccd8269c"></a>`required`: `["schema","manager_version","platform","installed","enabled","running","health","config_file","state_dir","executable","mounted_volume_provider","listener_host_provider","heartbeat_age_seconds","heartbeat","dispatches","mount_attention","diagnostic"]`
+- <a id="s-f6ccd8269c"></a>`required`: `["format","manager_version","platform","installed","enabled","running","health","config_file","state_dir","executable","mounted_volume_provider","listener_host_provider","heartbeat_age_seconds","heartbeat","dispatches","mount_attention","diagnostic"]`
 
 ##### Fields
 
@@ -80,6 +80,7 @@ Applies to: completed · stdout (json).
 | <a id="s-8267878f09"></a>`dispatches` | yes | type="object" |  |
 | <a id="s-1e2bf2635f"></a>`enabled` | yes | type="boolean" |  |
 | <a id="s-c54eaf916d"></a>`executable` | yes | type=["string","null"] |  |
+| <a id="s-768c31af23"></a>`format` | yes | const="gogurt-listener-status/v1" |  |
 | <a id="s-61623b449b"></a>`health` | yes | enum=["absent","stopped","failed","starting","healthy","stale"] |  |
 | <a id="s-a115d01cdc"></a>`heartbeat` | yes | type=["object","null"] |  |
 | <a id="s-5e7ad6e708"></a>`heartbeat_age_seconds` | yes | type=["number","null"]; minimum=0 |  |
@@ -90,7 +91,6 @@ Applies to: completed · stdout (json).
 | `mounted_volume_provider` | yes | [See field `mounted_volume_provider`](#s-3bfffd0c85) |  |
 | <a id="s-9a23fb5710"></a>`platform` | yes | type="string" |  |
 | <a id="s-4a4806218f"></a>`running` | yes | type="boolean" |  |
-| <a id="s-2bb0273176"></a>`schema` | yes | const="gogurt-listener-status/v1" |  |
 | <a id="s-c19e6c6200"></a>`state_dir` | yes | type="string" |  |
 
 ##### <a id="s-1f4c5285a6"></a>field `listener_host_provider`
@@ -412,7 +412,7 @@ false
 
 ### `/external_contract/cli/gogurt/commands/listener/commands/install/result_contract`
 
-<!-- exact-contract-value: 4e34ac269ce5889a02f4fa34b3f882f41621b2f7419a4cc73aa0e578182fddb9 -->
+<!-- exact-contract-value: 19bc40695d6f1b1f383bace3c1dd597a265f7314300cc4778b913e4e8faf4861 -->
 
 ```json
 {
@@ -520,6 +520,9 @@ false
                   "null"
                 ]
               },
+              "format": {
+                "const": "gogurt-listener-status/v1"
+              },
               "health": {
                 "enum": [
                   "absent",
@@ -618,15 +621,12 @@ false
               "running": {
                 "type": "boolean"
               },
-              "schema": {
-                "const": "gogurt-listener-status/v1"
-              },
               "state_dir": {
                 "type": "string"
               }
             },
             "required": [
-              "schema",
+              "format",
               "manager_version",
               "platform",
               "installed",

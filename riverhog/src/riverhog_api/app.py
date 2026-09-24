@@ -44,7 +44,7 @@ from riverhog_api.routers.retrieval import router as retrieval_router
 from riverhog_api.routers.search import router as search_router
 from riverhog_api.routers.tags import router as tags_router
 from riverhog_api.routers.workflows import router as workflows_router
-from riverhog_api.schemas.common import ErrorResponse, HealthResponse
+from riverhog_api.schemas.common import ErrorOut, HealthOut
 
 _LOG = logging.getLogger(__name__)
 
@@ -409,14 +409,14 @@ def create_app(
             content=error_payload(code="internal_error", message="internal server error"),
         )
 
-    @app.get("/health/live", response_model=HealthResponse, tags=["health"])
+    @app.get("/health/live", response_model=HealthOut, tags=["health"])
     async def health_live() -> dict[str, str]:
         return {"service": "riverhog", "status": "ok"}
 
     @app.get(
         "/health/ready",
-        response_model=HealthResponse,
-        responses={503: {"model": ErrorResponse}},
+        response_model=HealthOut,
+        responses={503: {"model": ErrorOut}},
         tags=["health"],
     )
     async def health_ready() -> dict[str, str]:
@@ -447,7 +447,7 @@ def create_app(
 
 
 _CLI_RESULT_CONTRACT = {
-    "schema": "riverhog-cli-result-contract/v1",
+    "format": "riverhog-cli-result-contract/v1",
     "identity_prefix": "riverhog-api-cli-result",
     "default_profile": "runtime",
     "profiles": {

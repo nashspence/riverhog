@@ -12,7 +12,7 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-EXCEPTION_SCHEMA = "riverhog-contract-freeze-exceptions/v1"
+EXCEPTION_FORMAT = "riverhog-contract-freeze-exceptions/v1"
 ENVIRONMENT_NAME = re.compile(r"^[A-Za-z][A-Za-z0-9_]+$")
 CONFIGURATION_LIKE_NAME = re.compile(r"^[A-Z][A-Z0-9_]+$")
 PROJECT_CONFIGURATION_NAME = re.compile(
@@ -693,10 +693,10 @@ def load_exceptions(path: Path) -> dict[str, list[dict[str, str]]]:
     """Load the narrow audit overlay without allowing it to define candidates."""
 
     document = tomllib.loads(path.read_text(encoding="utf-8"))
-    if set(document) != {"schema", "resolution"}:
+    if set(document) != {"format", "resolution"}:
         raise DiscoveryError("contract-freeze exception overlay has unexpected fields")
-    if document["schema"] != EXCEPTION_SCHEMA:
-        raise DiscoveryError("contract-freeze exception overlay has another schema")
+    if document["format"] != EXCEPTION_FORMAT:
+        raise DiscoveryError("contract-freeze exception overlay has another format")
     values = document["resolution"]
     if not isinstance(values, list):
         raise DiscoveryError("contract-freeze resolution exceptions must be a list")
@@ -721,7 +721,7 @@ def load_exceptions(path: Path) -> dict[str, list[dict[str, str]]]:
 
 __all__ = [
     "DiscoveryError",
-    "EXCEPTION_SCHEMA",
+    "EXCEPTION_FORMAT",
     "discover_configuration_documents",
     "discover_environment_reads",
     "load_exceptions",
