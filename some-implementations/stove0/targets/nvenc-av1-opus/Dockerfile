@@ -1,3 +1,5 @@
+ARG UBUNTU_APT_SNAPSHOT=20260924T160000Z
+
 FROM jdxcode/mise:2026.7.13@sha256:7fe9145156e33f95f7712632dbadb418592ed0f60fb46e5bcc8c113d372ad8a3 AS mise
 
 FROM python:3.12-slim@sha256:090ba77e2958f6af52a5341f788b50b032dd4ca28377d2893dcf1ecbdfdfe203 AS locked-tools
@@ -13,6 +15,8 @@ RUN mise trust mise.toml \
 
 FROM nvidia/cuda:13.0.0-devel-ubuntu24.04@sha256:1e8ac7a54c184a1af8ef2167f28fa98281892a835c981ebcddb1fad04bdd452d AS ffmpeg-build
 
+ARG UBUNTU_APT_SNAPSHOT
+
 ARG SOURCE_DATE_EPOCH=0
 ARG FFMPEG_REF=8885116f4dbe10527d4e7a14dc691b07e3915d55
 ARG NV_CODEC_HEADERS_REF=33a9ede8d9914299d9262539c576a15bd0a19621
@@ -21,8 +25,8 @@ ARG FFMPEG_CUDA_FLAGS="--cuda-gpu-arch=sm_120 -O2"
 ENV DEBIAN_FRONTEND=noninteractive \
     SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH}
 
-RUN sed -i 's@security.ubuntu.com@archive.ubuntu.com@g' /etc/apt/sources.list.d/ubuntu.sources \
- && apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update --snapshot "${UBUNTU_APT_SNAPSHOT}" \
+ && apt-get install -y --no-install-recommends --snapshot "${UBUNTU_APT_SNAPSHOT}" \
     build-essential ca-certificates clang-20 git make pkg-config yasm nasm \
     libfreetype6-dev libharfbuzz-dev libfontconfig1-dev libfribidi-dev \
     libopus-dev zlib1g-dev \
@@ -123,6 +127,8 @@ RUN uv sync --frozen --package a-stove0-nvenc-av1-opus-target --package a-review
 
 FROM nvidia/cuda:13.0.0-runtime-ubuntu24.04@sha256:95318efecfd68ab3d109da5277863257b06137c84f34a87f38de970d5cd035d3
 
+ARG UBUNTU_APT_SNAPSHOT
+
 ARG SOURCE_DATE_EPOCH=0
 ENV DEBIAN_FRONTEND=noninteractive \
     PATH=/opt/venv/bin:$PATH \
@@ -130,8 +136,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
     SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH}
 
-RUN sed -i 's@security.ubuntu.com@archive.ubuntu.com@g' /etc/apt/sources.list.d/ubuntu.sources \
- && apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update --snapshot "${UBUNTU_APT_SNAPSHOT}" \
+ && apt-get install -y --no-install-recommends --snapshot "${UBUNTU_APT_SNAPSHOT}" \
     ca-certificates fonts-dejavu-core mkvtoolnix python3 tini zstd \
     libfontconfig1 libfreetype6 libfribidi0 libharfbuzz0b libopus0 \
  && ln -s /usr/bin/python3 /usr/local/bin/python3 \
