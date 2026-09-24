@@ -88,14 +88,27 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-riverhog-event-relay` | [a-riverhog-event-relay:configuration:event-relay-config configuration](../../authorities/a-riverhog-event-relay/configuration/a-riverhog-event-relay-configuration-event-relay-config-configuration.md#pa-ca7fafedd1) |
 | `a-riverhog-filesystem-store` | [a-riverhog-filesystem-store](../../authorities/a-riverhog-filesystem-store/cli/a-riverhog-filesystem-store.md#pa-fbb9880eb6) |
 | `a-riverhog-filesystem-store` | [a-riverhog-filesystem-store-materialize](../../authorities/a-riverhog-filesystem-store/cli/a-riverhog-filesystem-store-materialize.md#pa-5610cfe99f) |
+| `a-riverhog-ftp-spool` | [GET /v1/sources/{source_id}/events](../../authorities/a-riverhog-ftp-spool/http-operations/get-v1-sources-source-id-events.md#pa-98a19bfc5b) |
 | `a-riverhog-ftp-spool` | [GET /v1/status](../../authorities/a-riverhog-ftp-spool/http-operations/get-v1-status.md#pa-4c16dde080) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool.md#pa-e5a62b5f62) |
+| `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool events](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-events.md#pa-172aa041c3) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool flush](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-flush.md#pa-e6c41ebd7f) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool listen](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-listen.md#pa-2ea1d0d5dd) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool serve](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-serve.md#pa-2a682abfe1) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool status](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-status.md#pa-71bd161250) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool:configuration:ftp-spool-config configuration](../../authorities/a-riverhog-ftp-spool/configuration/a-riverhog-ftp-spool-configuration-ftp-spool-config-configuration.md#pa-e70c151a7c) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool:configuration:source-config configuration](../../authorities/a-riverhog-ftp-spool/configuration/a-riverhog-ftp-spool-configuration-source-config-configuration.md#pa-ed4e2be1c8) |
+| `a-riverhog-ftp-spool` | [schemas: AttemptFailedEvent](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-attemptfailedevent.md#pa-c8f6afcca8) |
+| `a-riverhog-ftp-spool` | [schemas: AttemptFailedPayload](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-attemptfailedpayload.md#pa-892bdd15fb) |
+| `a-riverhog-ftp-spool` | [schemas: BrowsePageToken](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-browsepagetoken.md#pa-8a17e6d6d0) |
+| `a-riverhog-ftp-spool` | [schemas: ClaimPublishedEvent](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-claimpublishedevent.md#pa-89b3cc1e9b) |
+| `a-riverhog-ftp-spool` | [schemas: ClaimPublishedPayload](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-claimpublishedpayload.md#pa-926643e561) |
+| `a-riverhog-ftp-spool` | [schemas: ClaimRegisteredEvent](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-claimregisteredevent.md#pa-34da4015eb) |
+| `a-riverhog-ftp-spool` | [schemas: ClaimRegisteredPayload](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-claimregisteredpayload.md#pa-2bfa9245e9) |
+| `a-riverhog-ftp-spool` | [schemas: CustodyReadyEvent](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-custodyreadyevent.md#pa-3565026435) |
+| `a-riverhog-ftp-spool` | [schemas: CustodyReadyPayload](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-custodyreadypayload.md#pa-308b1ac6f4) |
+| `a-riverhog-ftp-spool` | [schemas: FtpEventPage](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-ftpeventpage.md#pa-2d13662503) |
+| `a-riverhog-ftp-spool` | [schemas: FtpSpoolStatus](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-ftpspoolstatus.md#pa-997bbdab65) |
 | `a-riverhog-recovery-tool` | [a-riverhog-recovery-tool](../../authorities/a-riverhog-recovery-tool/cli/a-riverhog-recovery-tool.md#pa-489b7704cf) |
 | `a-riverhog-windows-provenance-contract-lib` | [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-object-id.json](../../authorities/a-riverhog-windows-provenance-contract-lib/schema/https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-windows-o-1ecc3df38c.md#pa-ed705d281a) |
 | `a-stove0-cli` | [stove0](../../authorities/a-stove0-cli/cli/stove0.md#pa-56cef3f197) |

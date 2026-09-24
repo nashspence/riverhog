@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-ce7994c359"></a>`kind`: `"method"`
-- <a id="s-af39b797ff"></a>`signature`: `"\"(self, *, page_size: 'int' = 25, page_token: 'str \| None' = None) -> 'dict[str, Any]'\""`
+- <a id="s-af39b797ff"></a>`signature`: `"\"(self, *, page_size: 'int' = 25, page_token: 'str \| None' = None) -> 'FtpSpoolStatus'\""`
 
 ## Maintained corroboration
 
@@ -48,7 +48,7 @@ Exact externally visible contract owned by this contract element.
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [python:a-riverhog-ftp-spool-client:a_riverhog_ftp_spool_client](../../../evidence/sources/authorities.md#src-3caa0330b6) — [some-implementations/riverhog/ingress/ftp-api-client/src/a\_riverhog\_ftp\_spool\_client/\_\_init\_\_.py](../../../../../../some-implementations/riverhog/ingress/ftp-api-client/src/a_riverhog_ftp_spool_client/__init__.py)
-- **Client method:** [some-implementations/riverhog/ingress/ftp-api-client/src/a\_riverhog\_ftp\_spool\_client/client.py::RiverhogFtpSpoolClient.get\_ftp\_spool\_status](../../../../../../some-implementations/riverhog/ingress/ftp-api-client/src/a_riverhog_ftp_spool_client/client.py#L86)
+- **Client method:** [some-implementations/riverhog/ingress/ftp-api-client/src/a\_riverhog\_ftp\_spool\_client/client.py::RiverhogFtpSpoolClient.get\_ftp\_spool\_status](../../../../../../some-implementations/riverhog/ingress/ftp-api-client/src/a_riverhog_ftp_spool_client/client.py#L89)
 
 ### Machine authority
 
@@ -61,13 +61,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 058cb6718210d707f4b7c6ad79a7ed7c4e0718716a09d1d711eac036f7cec44e -->
+<!-- exact-contract-value: 3f3a6481be79774b06b2cf0a2c802679e313e79c890efcf772a946586aa7ffa7 -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, *, page_size: 'int' = 25, page_token: 'str | None' = None) -> 'dict[str, Any]'\""
+    "signature": "\"(self, *, page_size: 'int' = 25, page_token: 'str | None' = None) -> 'FtpSpoolStatus'\""
   },
   "distribution": "a-riverhog-ftp-spool-client",
   "module": "a_riverhog_ftp_spool_client",

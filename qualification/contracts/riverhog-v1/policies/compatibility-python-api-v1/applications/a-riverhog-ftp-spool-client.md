@@ -8,7 +8,10 @@ These are the indexed contract-element applications. Each link reaches the polic
 
 | Authority | Contract element |
 |---|---|
+| `a-riverhog-ftp-spool-client` | [a_riverhog_ftp_spool_client.FtpEventPage](../../../authorities/a-riverhog-ftp-spool-client/python/a-riverhog-ftp-spool-client-ftpeventpage.md#pa-481a5c8441) |
+| `a-riverhog-ftp-spool-client` | [a_riverhog_ftp_spool_client.FtpEventPage.require_progress_after](../../../authorities/a-riverhog-ftp-spool-client/python/a-riverhog-ftp-spool-client-ftpeventpage-require-progress-after.md#pa-4f80284580) |
 | `a-riverhog-ftp-spool-client` | [a_riverhog_ftp_spool_client.FtpSpoolApiError](../../../authorities/a-riverhog-ftp-spool-client/python/a-riverhog-ftp-spool-client-ftpspoolapierror.md#pa-0575695132) |
+| `a-riverhog-ftp-spool-client` | [a_riverhog_ftp_spool_client.FtpSpoolStatus](../../../authorities/a-riverhog-ftp-spool-client/python/a-riverhog-ftp-spool-client-ftpspoolstatus.md#pa-38e73783b7) |
 | `a-riverhog-ftp-spool-client` | [a_riverhog_ftp_spool_client.HealthOut](../../../authorities/a-riverhog-ftp-spool-client/python/a-riverhog-ftp-spool-client-healthout.md#pa-10f51bc576) |
 | `a-riverhog-ftp-spool-client` | [a_riverhog_ftp_spool_client.RiverhogFtpSpoolClient](../../../authorities/a-riverhog-ftp-spool-client/python/a-riverhog-ftp-spool-client-riverhogftpspoolclient.md#pa-2755eec2b3) |
 | `a-riverhog-ftp-spool-client` | [a_riverhog_ftp_spool_client.RiverhogFtpSpoolClient.__enter__](../../../authorities/a-riverhog-ftp-spool-client/python/a-riverhog-ftp-spool-client-riverhogftpspoolclient-enter.md#pa-38a37af713) |
@@ -18,4 +21,5 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-riverhog-ftp-spool-client` | [a_riverhog_ftp_spool_client.RiverhogFtpSpoolClient.ftp_spool_health_live](../../../authorities/a-riverhog-ftp-spool-client/python/a-riverhog-ftp-spool-client-riverhogftpspoolclient-ftp-spool-health-live.md#pa-ccac5e0ce7) |
 | `a-riverhog-ftp-spool-client` | [a_riverhog_ftp_spool_client.RiverhogFtpSpoolClient.ftp_spool_health_ready](../../../authorities/a-riverhog-ftp-spool-client/python/a-riverhog-ftp-spool-client-riverhogftpspoolclient-ftp-spool-health-ready.md#pa-1f7ceed6d8) |
 | `a-riverhog-ftp-spool-client` | [a_riverhog_ftp_spool_client.RiverhogFtpSpoolClient.get_ftp_spool_status](../../../authorities/a-riverhog-ftp-spool-client/python/a-riverhog-ftp-spool-client-riverhogftpspoolclient-get-ftp-spool-status.md#pa-f40b8ee8b8) |
+| `a-riverhog-ftp-spool-client` | [a_riverhog_ftp_spool_client.RiverhogFtpSpoolClient.list_ftp_spool_events](../../../authorities/a-riverhog-ftp-spool-client/python/a-riverhog-ftp-spool-client-riverhogftpspoolclient-list-ftp-spool-events.md#pa-ed38ca7bdc) |
 | `a-riverhog-ftp-spool-client` | [a_riverhog_ftp_spool_client.RiverhogFtpSpoolClient.run_ftp_spool_pass](../../../authorities/a-riverhog-ftp-spool-client/python/a-riverhog-ftp-spool-client-riverhogftpspoolclient-run-ftp-spool-pass.md#pa-0dd9551fc4) |

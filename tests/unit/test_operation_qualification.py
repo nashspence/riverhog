@@ -277,6 +277,7 @@ def test_release_disposable_selection_satisfies_current_observation_requirements
     assert {(item["application"], item["operation_id"]) for item in local["operations"]} == {
         ("riverhog", "list_lifecycle_events"),
         ("stove0", "list_events"),
+        ("a-riverhog-ftp-spool", "list_ftp_spool_events"),
     }
     assert all(item["status"] == "passed" for item in local["operations"])
     assert all(f"/blob/{source_sha}/" in item["assertion_source"] for item in local["operations"])
@@ -310,7 +311,7 @@ def test_release_disposable_selection_satisfies_current_observation_requirements
         assert partial["local_api_process_restart"]["status"] == "not_established"
     invalid_witnesses = [None, [*witnesses, witnesses[0]]]
     for field, value in (
-        ("application", "a-riverhog-ftp-spool"),
+        ("application", "unrelated-app"),
         ("operation_id", "unknown"),
         ("test_nodeid", "tests/unit/test_operation_lifecycle_api.py::unrelated_test"),
     ):

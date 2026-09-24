@@ -67,9 +67,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [openapi:a-riverhog-ftp-spool](../../../evidence/sources/authorities.md#src-fdb5f95db7) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [openapi:a-riverhog-ftp-spool](../../../evidence/sources/authorities.md#src-fdb5f95db7) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L349)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [some-implementations/riverhog/ingress/ftp/src/a\_riverhog\_ftp\_spool/app.py::create\_app.&lt;locals&gt;.run\_pass](../../../../../../some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/app.py#L283)
+- **Handler:** [some-implementations/riverhog/ingress/ftp/src/a\_riverhog\_ftp\_spool/app.py::create\_app.&lt;locals&gt;.run\_pass](../../../../../../some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/app.py#L317)
 
 ### Structural operation bindings
 
@@ -88,7 +88,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "a-riverhog-ftp-spool",
       "result_identity": "a-riverhog-ftp-spool-cli-result/run/v1",
       "source": {
-        "line": 389,
+        "line": 440,
         "module": "a_riverhog_ftp_spool.app",
         "path": "some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/app.py",
         "symbol": "_run_command"
@@ -103,7 +103,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "a_riverhog_ftp_spool_client.RiverhogFtpSpoolClient.run_ftp_spool_pass",
       "source": {
-        "line": 97,
+        "line": 115,
         "module": "a_riverhog_ftp_spool_client.client",
         "path": "some-implementations/riverhog/ingress/ftp-api-client/src/a_riverhog_ftp_spool_client/client.py",
         "symbol": "RiverhogFtpSpoolClient.run_ftp_spool_pass"

@@ -10,6 +10,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 |---|---|
 | `a-riverhog-ftp-spool` | [a_riverhog_ftp_spool.FtpSpool](../../../authorities/a-riverhog-ftp-spool/python/a-riverhog-ftp-spool-ftpspool.md#pa-2c2728dffc) |
 | `a-riverhog-ftp-spool` | [a_riverhog_ftp_spool.FtpSpool.accept_completed_file](../../../authorities/a-riverhog-ftp-spool/python/a-riverhog-ftp-spool-ftpspool-accept-completed-file.md#pa-cb04b0c985) |
+| `a-riverhog-ftp-spool` | [a_riverhog_ftp_spool.FtpSpool.event_page](../../../authorities/a-riverhog-ftp-spool/python/a-riverhog-ftp-spool-ftpspool-event-page.md#pa-fbfc2ca4e6) |
 | `a-riverhog-ftp-spool` | [a_riverhog_ftp_spool.FtpSpool.flush](../../../authorities/a-riverhog-ftp-spool/python/a-riverhog-ftp-spool-ftpspool-flush.md#pa-01777100a8) |
 | `a-riverhog-ftp-spool` | [a_riverhog_ftp_spool.FtpSpool.run_once](../../../authorities/a-riverhog-ftp-spool/python/a-riverhog-ftp-spool-ftpspool-run-once.md#pa-c3f060e13b) |
 | `a-riverhog-ftp-spool` | [a_riverhog_ftp_spool.FtpSpool.status](../../../authorities/a-riverhog-ftp-spool/python/a-riverhog-ftp-spool-ftpspool-status.md#pa-fbedaaed74) |

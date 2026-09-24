@@ -12,9 +12,10 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-riverhog-cli` | [a-riverhog-cli app key create](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-create.md#pa-e079551311) |
 | `a-riverhog-cli` | [a-riverhog-cli collection upload start](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-upload-start.md#pa-c3cff7cb75) |
 | `a-riverhog-filesystem-store` | [a-riverhog-filesystem-store-materialize](../../authorities/a-riverhog-filesystem-store/cli/a-riverhog-filesystem-store-materialize.md#pa-cb3846edb7) |
-| `a-riverhog-ftp-spool` | [GET /v1/status](../../authorities/a-riverhog-ftp-spool/http-operations/get-v1-status.md#pa-4aaaf8c17a) |
 | `a-riverhog-ftp-spool` | [POST /v1/run](../../authorities/a-riverhog-ftp-spool/http-operations/post-v1-run.md#pa-591ccf3e13) |
 | `a-riverhog-ftp-spool` | [POST /v1/sources/{source_id}/flush](../../authorities/a-riverhog-ftp-spool/http-operations/post-v1-sources-source-id-flush.md#pa-4ee4ea0c4c) |
+| `a-riverhog-ftp-spool` | [schemas: ClaimRegisteredPayload](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-claimregisteredpayload.md#pa-0b44ca866f) |
+| `a-riverhog-ftp-spool` | [schemas: CustodyReadyPayload](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-custodyreadypayload.md#pa-c4b0e2c78d) |
 | `a-riverhog-ftp-spool` | [schemas: ErrorBody](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-errorbody.md#pa-24ec92c55f) |
 | `a-riverhog-ftp-spool` | [schemas: HTTPValidationError](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-httpvalidationerror.md#pa-ac60aff257) |
 | `a-riverhog-ftp-spool` | [schemas: ValidationError](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-validationerror.md#pa-1bbb29f7ef) |

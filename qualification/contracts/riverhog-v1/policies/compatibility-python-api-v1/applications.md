@@ -21,8 +21,8 @@ Choose an authority to inspect this policy's indexed contract-element applicatio
 | [a-review0-rclone-target](applications/a-review0-rclone-target.md) | 11 |
 | [a-riverhog-aws-store](applications/a-riverhog-aws-store.md) | 7 |
 | [a-riverhog-filesystem-store](applications/a-riverhog-filesystem-store.md) | 21 |
-| [a-riverhog-ftp-spool](applications/a-riverhog-ftp-spool.md) | 13 |
-| [a-riverhog-ftp-spool-client](applications/a-riverhog-ftp-spool-client.md) | 11 |
+| [a-riverhog-ftp-spool](applications/a-riverhog-ftp-spool.md) | 14 |
+| [a-riverhog-ftp-spool-client](applications/a-riverhog-ftp-spool-client.md) | 15 |
 | [a-riverhog-linux-provenance-contract-lib](applications/a-riverhog-linux-provenance-contract-lib.md) | 4 |
 | [a-riverhog-macos-provenance-contract-lib](applications/a-riverhog-macos-provenance-contract-lib.md) | 4 |
 | [a-riverhog-recovery-tool](applications/a-riverhog-recovery-tool.md) | 7 |

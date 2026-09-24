@@ -110,6 +110,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-riverhog-filesystem-store` | [a-riverhog-filesystem-store-materialize](../../authorities/a-riverhog-filesystem-store/cli/a-riverhog-filesystem-store-materialize.md#pa-49b98a91af) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool.md#pa-04676086ff) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool check-config](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-check-config.md#pa-dd0e313330) |
+| `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool events](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-events.md#pa-9d04a77257) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool flush](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-flush.md#pa-c6186dbe54) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool listen](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-listen.md#pa-967aa4bb16) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool run](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-run.md#pa-bba5ad7683) |

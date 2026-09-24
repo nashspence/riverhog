@@ -195,6 +195,7 @@ _NON_PLAN_QUERY_OPERATIONS = {
     ("riverhog", "list_catalog_sync_collections"): {"cursor", "limit"},
     ("riverhog", "trace_collection_file_provenance"): {"page_size", "page_token"},
     ("a-riverhog-ftp-spool", "get_ftp_spool_status"): {"page_size", "page_token"},
+    ("a-riverhog-ftp-spool", "list_ftp_spool_events"): {"after", "limit"},
     ("stove0", "get_artifact_selection"): {"continuation"},
     ("stove0", "get_recipe"): {"revision"},
     ("stove0", "get_target_execution_inputs"): {"continuation"},

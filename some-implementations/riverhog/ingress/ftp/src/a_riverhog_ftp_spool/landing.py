@@ -10,6 +10,7 @@ import shutil
 import sqlite3
 import stat
 import threading
+import uuid
 from bisect import bisect_right
 from collections.abc import Mapping, Sequence
 from contextlib import closing
@@ -17,6 +18,16 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from a_riverhog_ftp_spool_client.events import (
+    ATTEMPT_FAILED,
+    CLAIM_PUBLISHED,
+    CLAIM_REGISTERED,
+    CUSTODY_READY,
+    FtpEventPage,
+    FtpLifecycleEvent,
+    validate_ftp_event,
+)
+from lifecycle_events import lifecycle_event
 from riverhog_canonical_json import CanonicalJsonError, canonical_json_bytes
 from riverhog_client import ApiClient
 from riverhog_client.producer import CollectionProducer, ProducedCollection, ProducerFile
@@ -98,6 +109,10 @@ class ClaimCollision(FtpSpoolError):
     pass
 
 
+class FtpEventCursorChanged(ValueError):
+    """A cursor belongs to another source or a previous source-state generation."""
+
+
 class FtpSpool:
     """Move completed inputs into bounded scratch until Riverhog finalizes them.
 
@@ -140,9 +155,17 @@ class FtpSpool:
         self._control_root(source).mkdir(mode=0o700, parents=True, exist_ok=True)
         with closing(self._open_state(source)) as connection:
             version = int(connection.execute("PRAGMA user_version").fetchone()[0])
-            if version not in {0, 2}:
+            if version not in {0, 3}:
                 raise FtpSpoolError("unsupported FTP spool operational-state revision")
             connection.executescript(FTP_OPERATIONAL_STATE_DDL)
+            event_generation = _state_value(connection, "event_generation")
+            if event_generation is None:
+                count = int(
+                    connection.execute("SELECT COUNT(*) FROM lifecycle_events").fetchone()[0]
+                )
+                if count:
+                    raise FtpSpoolError("FTP event history has no source generation")
+                _set_state_value(connection, "event_generation", uuid.uuid4().hex)
             claim_count = _state_value(connection, "claim_count")
             claim_bytes = _state_value(connection, "claim_bytes")
             if claim_count is None or claim_bytes is None:
@@ -184,6 +207,113 @@ class FtpSpool:
                 raise FtpSpoolError("FTP completion log changed outside adapter custody")
             elif stored_offset is None or int(stored_offset) < header_bytes:
                 raise FtpSpoolError("FTP completion cursor is invalid")
+
+    def event_page(
+        self,
+        source_id: str,
+        *,
+        after: str | None,
+        limit: int,
+    ) -> FtpEventPage:
+        """Read a bounded source feed; events remain for the lifetime of source state."""
+        source = self.config.source(source_id)
+        if not 1 <= limit <= 100:
+            raise ValueError("FTP event page limit must be between 1 and 100")
+        with closing(self._open_state(source)) as connection:
+            generation = _state_value(connection, "event_generation")
+            if generation is None:
+                raise FtpSpoolError("FTP event history has no source generation")
+            sequence = _parse_event_cursor(after, source_id=source_id, generation=generation)
+            greatest = int(
+                connection.execute(
+                    "SELECT COALESCE(MAX(sequence), 0) FROM lifecycle_events"
+                ).fetchone()[0]
+            )
+            if sequence > greatest:
+                raise ValueError("FTP event cursor is ahead of this source")
+            rows = connection.execute(
+                "SELECT sequence, event_json FROM lifecycle_events "
+                "WHERE sequence > ? ORDER BY sequence LIMIT ?",
+                (sequence, limit + 1),
+            ).fetchall()
+        selected = rows[:limit]
+        return FtpEventPage(
+            events=[validate_ftp_event(json.loads(str(row[1]))) for row in selected],
+            next_cursor=_event_cursor(
+                source_id,
+                generation,
+                int(selected[-1][0]) if selected else sequence,
+            ),
+            has_more=len(rows) > limit,
+        )
+
+    def _record_claim_event(
+        self,
+        source: SourceConfig,
+        manifest: Mapping[str, object],
+        *,
+        event_type: str,
+        details: Mapping[str, object] | None = None,
+        connection: sqlite3.Connection | None = None,
+    ) -> None:
+        if connection is None:
+            with closing(self._open_state(source)) as current:
+                self._record_claim_event(
+                    source,
+                    manifest,
+                    event_type=event_type,
+                    details=details,
+                    connection=current,
+                )
+                current.commit()
+            return
+        claim_id = str(manifest["claim_id"])
+        payload: dict[str, object] = {
+            "source_id": source.id,
+            "claim_id": claim_id,
+            "source_event_id": str(manifest["source_event_id"]),
+        }
+        if event_type in {CLAIM_REGISTERED, CUSTODY_READY}:
+            files = _file_rows(manifest)
+            payload.update(
+                file_count=len(files), bytes=sum(int(str(row["bytes"])) for row in files)
+            )
+        payload.update(details or {})
+        repeatable = event_type == ATTEMPT_FAILED
+        event_id = (
+            None
+            if repeatable
+            else hashlib.sha256(
+                f"a-riverhog-ftp-spool-event/v1\0{source.id}\0{claim_id}\0{event_type}".encode()
+            ).hexdigest()
+        )
+        event: FtpLifecycleEvent = validate_ftp_event(
+            lifecycle_event(
+                type=event_type,
+                subject=claim_id,
+                payload=payload,
+                event_id=event_id,
+            )
+        )
+        encoded = event.model_dump_json(exclude_none=True)
+        if repeatable:
+            connection.execute(
+                "INSERT INTO lifecycle_events(event_id, event_json) VALUES (?, ?)",
+                (event.id, encoded),
+            )
+            return
+        connection.execute(
+            "INSERT OR IGNORE INTO lifecycle_events(event_id, event_json) VALUES (?, ?)",
+            (event.id, encoded),
+        )
+        existing = connection.execute(
+            "SELECT event_json FROM lifecycle_events WHERE event_id = ?", (event.id,)
+        ).fetchone()
+        if existing is None:
+            raise FtpSpoolError("FTP lifecycle event was not recorded")
+        prior = validate_ftp_event(json.loads(str(existing[0])))
+        if (prior.type, prior.subject, prior.payload) != (event.type, event.subject, event.payload):
+            raise ClaimCollision("FTP lifecycle event identity changed during replay")
 
     def run_once(self, source_ids: Sequence[str] | None = None) -> dict[str, object]:
         with self._custody_pass_lock:
@@ -821,6 +951,12 @@ class FtpSpool:
                 if current_generation != discovery_generation:
                     raise FtpSpoolError("FTP completion authority changed during admission")
                 _set_state_value(connection, "completion_offset", str(discovery_offset))
+            self._record_claim_event(
+                source,
+                manifest,
+                event_type=CLAIM_REGISTERED,
+                connection=connection,
+            )
             connection.commit()
         return ordinal
 
@@ -1201,11 +1337,40 @@ class FtpSpool:
                 sidecar_destination = sidecar_root / relative
                 sidecar_destination.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
                 os.rename(sidecar, sidecar_destination)
+        self._record_claim_event(source, manifest, event_type=CUSTODY_READY)
         return manifest
 
     def _publish_claim(self, source: SourceConfig, claim_root: Path) -> ProducedCollection:
+        try:
+            return self._publish_claim_once(source, claim_root)
+        except Exception as exc:
+            if self._claim_record(source, claim_root.name) is not None:
+                self._record_claim_event(
+                    source,
+                    self._registered_claim_manifest(source, claim_root.name),
+                    event_type=ATTEMPT_FAILED,
+                    details={"error_type": type(exc).__name__[:160]},
+                )
+            raise
+
+    def _record_publication(
+        self, source: SourceConfig, claim_id: str, receipt: ProducedCollection
+    ) -> None:
+        self._record_claim_event(
+            source,
+            self._registered_claim_manifest(source, claim_id),
+            event_type=CLAIM_PUBLISHED,
+            details={
+                "collection_id": str(receipt.collection_id),
+                "archive_root_sha256": receipt.archive_root_sha256,
+                "content_identity": receipt.content_identity,
+            },
+        )
+
+    def _publish_claim_once(self, source: SourceConfig, claim_root: Path) -> ProducedCollection:
         durable_receipt = self._durable_receipt(source, claim_root.name)
         if durable_receipt is not None:
+            self._record_publication(source, claim_root.name, durable_receipt)
             self._finish_claim_cleanup(source, claim_root.name)
             return durable_receipt
         manifest = self._reconcile_claim(source, claim_root)
@@ -1255,6 +1420,7 @@ class FtpSpool:
         }
         _write_json(claim_root / _RECEIPT, receipt_payload)
         _write_json(self._receipt_path(source, claim_root.name), receipt_payload)
+        self._record_publication(source, claim_root.name, receipt)
         self._finish_claim_cleanup(source, claim_root.name)
         return receipt
 
@@ -1469,6 +1635,35 @@ def _portable_binding(value: ArchiveFileProvenanceRecord) -> dict[str, object]:
     else:
         row["omission_reason"] = value.omission_reason
     return row
+
+
+def _event_cursor(source_id: str, generation: str, sequence: int) -> str:
+    return f"{source_id}~{generation}~{sequence}"
+
+
+def _parse_event_cursor(
+    value: str | None,
+    *,
+    source_id: str,
+    generation: str,
+) -> int:
+    if value is None or value == "0":
+        return 0
+    parts = value.split("~")
+    if len(parts) != 3 or len(value) > 220:
+        raise ValueError("FTP event cursor is malformed")
+    cursor_source, cursor_generation, raw_sequence = parts
+    if cursor_source != source_id or cursor_generation != generation:
+        raise FtpEventCursorChanged("FTP event cursor belongs to another source state")
+    if (
+        not raw_sequence.isascii()
+        or not raw_sequence.isdecimal()
+        or str(int(raw_sequence)) != raw_sequence
+        or len(raw_sequence) > 19
+        or int(raw_sequence) > 2**63 - 1
+    ):
+        raise ValueError("FTP event cursor is malformed")
+    return int(raw_sequence)
 
 
 def _state_value(connection: sqlite3.Connection, key: str) -> str | None:

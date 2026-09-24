@@ -3,5 +3,13 @@ from a_riverhog_ftp_spool_client.client import (
     HealthOut,
     RiverhogFtpSpoolClient,
 )
+from a_riverhog_ftp_spool_client.events import FtpEventPage
+from a_riverhog_ftp_spool_client.status import FtpSpoolStatus
 
-__all__ = ["FtpSpoolApiError", "HealthOut", "RiverhogFtpSpoolClient"]
+__all__ = [
+    "FtpEventPage",
+    "FtpSpoolApiError",
+    "FtpSpoolStatus",
+    "HealthOut",
+    "RiverhogFtpSpoolClient",
+]

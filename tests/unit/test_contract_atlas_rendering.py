@@ -129,7 +129,7 @@ def test_http_semantics_are_owned_once_and_operation_bindings_remain_structural(
     http_operations = [item for item in elements if item["interface"] == "http-operations"]
     qualified = {tuple(item["details"]["qualification_key"]): item for item in http_operations}
 
-    assert len(records) == len(http_operations) == len(qualified) == 148
+    assert len(records) == len(http_operations) == len(qualified) == 149
     assert not any(item["interface"] == "operation" for item in elements)
     assert root["counts"]["by_authority"]["riverhog"] == 372
     assert (

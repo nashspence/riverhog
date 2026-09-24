@@ -30,6 +30,7 @@ Exact externally visible contract owned by this contract element.
 
 - [__enter__](a-riverhog-ftp-spool-client-riverhogftpspoolclient-enter.md)
 - [ftp_spool_health_live](a-riverhog-ftp-spool-client-riverhogftpspoolclient-ftp-spool-health-live.md)
+- [list_ftp_spool_events](a-riverhog-ftp-spool-client-riverhogftpspoolclient-list-ftp-spool-events.md)
 - [flush_ftp_spool_source](a-riverhog-ftp-spool-client-riverhogftpspoolclient-flush-ftp-spool-source.md)
 - [__exit__](a-riverhog-ftp-spool-client-riverhogftpspoolclient-exit.md)
 - [ftp_spool_health_ready](a-riverhog-ftp-spool-client-riverhogftpspoolclient-ftp-spool-health-ready.md)

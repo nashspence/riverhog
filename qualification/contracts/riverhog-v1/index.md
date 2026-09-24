@@ -4,7 +4,7 @@
 
 This generated snapshot accounts for the externally exposed surfaces discovered from this repository revision. Discovery means inclusion; no separate acceptance decision is required.
 
-Included contract elements: **4218** · Extent decisions: **2081**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
+Included contract elements: **4239** · Extent decisions: **2111**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
 
 ## Audit references
 
@@ -91,18 +91,18 @@ Included contract elements: **4218** · Extent decisions: **2081**. Complete acc
   - [Python](authorities/a-riverhog-filesystem-store/python/index.md) (21)
 
 - **[a-riverhog-ftp-spool](authorities/a-riverhog-ftp-spool/index.md)** [📦](authorities/a-riverhog-ftp-spool/evidence-gaps.md) — FTP upload spool and ingestion adapter for Riverhog.
-  - **[HTTP Operations](authorities/a-riverhog-ftp-spool/http-operations/index.md)** [📦](authorities/a-riverhog-ftp-spool/http-operations/evidence-gaps.md) (5)
-  - [HTTP Schemas](authorities/a-riverhog-ftp-spool/http-schemas/index.md) (5)
+  - **[HTTP Operations](authorities/a-riverhog-ftp-spool/http-operations/index.md)** [📦](authorities/a-riverhog-ftp-spool/http-operations/evidence-gaps.md) (6)
+  - **[HTTP Schemas](authorities/a-riverhog-ftp-spool/http-schemas/index.md)** [📦](authorities/a-riverhog-ftp-spool/http-schemas/evidence-gaps.md) (19)
   - [HTTP Service Declaration](authorities/a-riverhog-ftp-spool/http-service-declaration/index.md) (1)
   - [HTTP Security Schemes](authorities/a-riverhog-ftp-spool/http-security-schemes/index.md) (1)
-  - [CLI](authorities/a-riverhog-ftp-spool/cli/index.md) (7)
+  - [CLI](authorities/a-riverhog-ftp-spool/cli/index.md) (8)
   - [Configuration Documents](authorities/a-riverhog-ftp-spool/configuration/index.md) (2)
   - [Configuration Environment](authorities/a-riverhog-ftp-spool/configuration-environment/index.md) (3)
-  - [Python](authorities/a-riverhog-ftp-spool/python/index.md) (13)
+  - [Python](authorities/a-riverhog-ftp-spool/python/index.md) (14)
 
 - [a-riverhog-ftp-spool-client](authorities/a-riverhog-ftp-spool-client/index.md) — Client for the Riverhog FTP upload spool.
   - [Configuration Environment](authorities/a-riverhog-ftp-spool-client/configuration-environment/index.md) (5)
-  - [Python](authorities/a-riverhog-ftp-spool-client/python/index.md) (11)
+  - [Python](authorities/a-riverhog-ftp-spool-client/python/index.md) (15)
 
 - [a-riverhog-ftp-spool-custody](authorities/a-riverhog-ftp-spool-custody/index.md) — FTP upload spool and ingestion adapter for Riverhog.
   - [Durable State](authorities/a-riverhog-ftp-spool-custody/durable-state/index.md) (6)

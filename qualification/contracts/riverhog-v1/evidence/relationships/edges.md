@@ -60,11 +60,13 @@ Each row is one declared relationship. Its endpoints link to their exact node re
 | <a id="re-77d45a3e60"></a>[a-riverhog-filesystem-store](nodes.md#rn-b69efa5ec4) | `depends-on` | [time-formats](nodes.md#rn-71d1153198) | `required` |
 | <a id="re-b72621fdaa"></a>[a-riverhog-ftp-spool](nodes.md#rn-507e6fb957) | `depends-on` | [a-riverhog-ftp-spool-client](nodes.md#rn-b9a37d9110) | `required` |
 | <a id="re-a0e6e938c9"></a>[a-riverhog-ftp-spool](nodes.md#rn-507e6fb957) | `depends-on` | [http-api-contracts](nodes.md#rn-f59c7f4102) | `required` |
+| <a id="re-7cc98ac16e"></a>[a-riverhog-ftp-spool](nodes.md#rn-507e6fb957) | `depends-on` | [lifecycle-events](nodes.md#rn-30af2d1593) | `required` |
 | <a id="re-c5ef9725cd"></a>[a-riverhog-ftp-spool](nodes.md#rn-507e6fb957) | `depends-on` | [riverhog-canonical-json](nodes.md#rn-f55ab6c77b) | `required` |
 | <a id="re-4257efe937"></a>[a-riverhog-ftp-spool](nodes.md#rn-507e6fb957) | `depends-on` | [riverhog-client](nodes.md#rn-8e5274344f) | `required` |
 | <a id="re-68e1ffdfc5"></a>[a-riverhog-ftp-spool](nodes.md#rn-507e6fb957) | `depends-on` | [riverhog-protocol](nodes.md#rn-20dbb0d5c0) | `required` |
 | <a id="re-172501fd52"></a>[a-riverhog-ftp-spool](nodes.md#rn-507e6fb957) | `depends-on` | [riverhog-provenance](nodes.md#rn-728e08e7c4) | `required` |
 | <a id="re-bea1e2bea7"></a>[a-riverhog-ftp-spool-client](nodes.md#rn-b9a37d9110) | `depends-on` | [http-api-contracts](nodes.md#rn-f59c7f4102) | `required` |
+| <a id="re-833e923649"></a>[a-riverhog-ftp-spool-client](nodes.md#rn-b9a37d9110) | `depends-on` | [lifecycle-events](nodes.md#rn-30af2d1593) | `required` |
 | <a id="re-7b865904bb"></a>[a-riverhog-linux-provenance-contract-lib](nodes.md#rn-803b482d12) | `depends-on` | [riverhog-provenance-contracts](nodes.md#rn-6066820038) | `required` |
 | <a id="re-2de0784a2d"></a>[a-riverhog-linux-provenance-observer](nodes.md#rn-84baf121e9) | `depends-on` | [a-riverhog-linux-provenance-contract-lib](nodes.md#rn-803b482d12) | `required` |
 | <a id="re-31e5ef7936"></a>[a-riverhog-linux-provenance-observer](nodes.md#rn-84baf121e9) | `depends-on` | [riverhog-provenance](nodes.md#rn-728e08e7c4) | `required` |

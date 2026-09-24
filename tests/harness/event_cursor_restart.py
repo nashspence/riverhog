@@ -6,6 +6,7 @@ server, production database, mutation-lifecycle, or consumer-checkpoint proof.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import runpy
 import sys
@@ -95,10 +96,71 @@ def exercise(application: str, phase: str, root: Path) -> dict[str, object]:
                 composition.work.create_or_resume(work)
                 return work.work_id
 
+        elif application == "a-riverhog-ftp-spool":
+            from a_riverhog_ftp_spool.app import FtpSpoolComposition, create_app
+            from a_riverhog_ftp_spool.config import FtpSpoolConfig, SourceConfig
+            from a_riverhog_ftp_spool.landing import FtpSpool
+            from a_riverhog_ftp_spool_client import RiverhogFtpSpoolClient
+            from a_riverhog_ftp_spool_client.events import CLAIM_REGISTERED
+
+            class _RiverhogApi:
+                def close(self) -> None:
+                    pass
+
+                def list_archive_stores(self, *, page_size: int) -> dict[str, object]:
+                    del page_size
+                    return {"items": []}
+
+            source = SourceConfig(
+                id="cursor-fixture",
+                root=root / "ftp-landing",
+                ingest_source="ftp:cursor-fixture",
+                provenance="omit",
+                provenance_omission_reason="Fixture has no host provenance.",
+            )
+            config = FtpSpoolConfig(
+                host_id="cursor-fixture",
+                riverhog_base_url="https://riverhog.invalid",
+                riverhog_token="riverhog-token",
+                api_token="ftp-test-token",
+                sources=(source,),
+            )
+            owner = FtpSpool(_RiverhogApi(), config)  # type: ignore[arg-type]
+            app = create_app(FtpSpoolComposition(config, owner.api, owner))
+            transport = cleanup.enter_context(
+                TestClient(app, headers={"Authorization": "Bearer ftp-test-token"})
+            )
+            api = RiverhogFtpSpoolClient(
+                "http://testserver", "ftp-test-token", allow_insecure_http=True
+            )
+            api._http = TimeoutNeutralTestClient(transport)
+            cleanup.callback(api.close)
+
+            def page(*, after: str | None = None, limit: int = 100):
+                return api.list_ftp_spool_events(source.id, after=after, limit=limit)
+
+            def emit(number: int) -> str:
+                claim_id = hashlib.sha256(f"cursor-fixture:{number}".encode()).hexdigest()
+                owner._record_claim_event(
+                    source,
+                    {
+                        "claim_id": claim_id,
+                        "source_event_id": f"cursor-fixture:{number}",
+                        "files": [{"bytes": number}],
+                    },
+                    event_type=CLAIM_REGISTERED,
+                )
+                return claim_id
+
         else:
             raise ValueError(f"unknown event fixture: {application}")
 
-        operation_id = app.openapi()["paths"]["/v1/events"]["get"]["operationId"]
+        path = (
+            "/v1/sources/{source_id}/events"
+            if application == "a-riverhog-ftp-spool"
+            else "/v1/events"
+        )
+        operation_id = app.openapi()["paths"][path]["get"]["operationId"]
         if phase == "prepare":
             subjects = [emit(number) for number in range(1, 4)]
             return {

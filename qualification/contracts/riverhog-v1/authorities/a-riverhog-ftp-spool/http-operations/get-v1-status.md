@@ -25,27 +25,19 @@ Status
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
 | <a id="s-22b8e9be0c"></a>`page_size` | query | no | `25` | type="integer"; minimum=1; maximum=100; title="Page Size" |
-| <a id="s-d56b465250"></a>`page_token` | query | no | not declared | anyOf=[(type="string"; maxLength=120; minLength=1); (type="null")]; title="Page Token" |
+| <a id="s-d56b465250"></a>`page_token` | query | no | not declared | anyOf=[([BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)); (type="null")]; title="Page Token" |
 
 ### Responses
 
 | Status | Description | Media type | Schema | Declared error codes |
 |---|---|---|---|---|
-| <a id="s-9461dfcf79"></a>`200` | Successful Response | application/json | type="object"; additionalProperties=(any JSON value); title="Response Get Ftp Spool Status" | not declared |
+| <a id="s-9461dfcf79"></a>`200` | Successful Response | application/json | [FtpSpoolStatus](../http-schemas/schemas-ftpspoolstatus.md) | not declared |
 | <a id="s-550c9b0b45"></a>`400` | Bad Request | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `bad_request` |
 | <a id="s-2f174f4cd6"></a>`401` | Unauthorized | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `unauthorized` |
 | <a id="s-93845e0d8a"></a>`403` | Forbidden | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `forbidden` |
 | <a id="s-ff5cecd357"></a>`500` | Internal Server Error | application/json | [ErrorOut](../http-schemas/schemas-errorout.md) | `internal_error` |
 
 ### Progression, limits, and lifecycle
-
-#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
-
-Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"a-riverhog-ftp-spool"}; maximum=null; reason="no-declared-semantic-maximum"
-
-| Applies to | Contract | Bounds or reason |
-|---|---|---|
-| <a id="s-b52068b2d3"></a>[response 200 · content · application/json](#s-9461dfcf79) | `cardinality · entries · operational_policy` | shared above |
 
 #### [extent-rule/route-progression/v1](../../extent-contract/extent/extent-rule-route-progression.md#p-6b76b527cb)
 
@@ -57,12 +49,11 @@ Shared facts for every subject below: progression={"default_page_size":25,"kind"
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
-Shared facts for every subject below: minimum=1; reason="schema-maximum"
+Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-9882dd735b"></a>[parameter page_size](#s-22b8e9be0c) | `value · schema-value · contract_max` | maximum=100 |
-| <a id="s-1dcfce02c0"></a>[parameter page_token · string value](#s-d56b465250) | `length · characters · contract_max` | maximum=120 |
+| <a id="s-9882dd735b"></a>[parameter page_size](#s-22b8e9be0c) | `value · schema-value · contract_max` | shared above |
 
 ### Evidence gaps
 
@@ -82,7 +73,7 @@ Required by: [extent-rule/route-progression/v1](../../extent-contract/extent/ext
 
 Exact evidence groups for this contract element:
 
-- [a-riverhog-ftp-spool-status-progression/v1](../../../evidence/qualifications/a-riverhog-ftp-spool-status-progression-v1/index.md)
+- [a-riverhog-ftp-spool-read-collection-progression/v1](../../../evidence/qualifications/a-riverhog-ftp-spool-read-collection-progression-v1/index.md)
 
 ## Maintained corroboration
 
@@ -93,14 +84,15 @@ Exact evidence groups for this contract element:
 
 ### Referenced contract elements
 
+- [schemas: BrowsePageToken](../http-schemas/schemas-browsepagetoken.md)
 - [schemas: ErrorOut](../http-schemas/schemas-errorout.md)
+- [schemas: FtpSpoolStatus](../http-schemas/schemas-ftpspoolstatus.md)
 
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
 - <a id="pa-54016ca0e2"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
-- <a id="pa-4aaaf8c17a"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 - <a id="pa-10323a440b"></a>[extent-rule/route-progression/v1](../../extent-contract/extent/extent-rule-route-progression.md#p-6b76b527cb)
 - <a id="pa-4c16dde080"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
@@ -114,9 +106,9 @@ Exact evidence groups for this contract element:
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [openapi:a-riverhog-ftp-spool](../../../evidence/sources/authorities.md#src-fdb5f95db7) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
+- [openapi:a-riverhog-ftp-spool](../../../evidence/sources/authorities.md#src-fdb5f95db7) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L349)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [some-implementations/riverhog/ingress/ftp/src/a\_riverhog\_ftp\_spool/app.py::create\_app.&lt;locals&gt;.status](../../../../../../some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/app.py#L270)
+- **Handler:** [some-implementations/riverhog/ingress/ftp/src/a\_riverhog\_ftp\_spool/app.py::create\_app.&lt;locals&gt;.status](../../../../../../some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/app.py#L274)
 
 ### Structural operation bindings
 
@@ -135,7 +127,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "a-riverhog-ftp-spool",
       "result_identity": "a-riverhog-ftp-spool-cli-result/status/v1",
       "source": {
-        "line": 395,
+        "line": 446,
         "module": "a_riverhog_ftp_spool.app",
         "path": "some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/app.py",
         "symbol": "_status_command"
@@ -150,7 +142,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "a_riverhog_ftp_spool_client.RiverhogFtpSpoolClient.get_ftp_spool_status",
       "source": {
-        "line": 86,
+        "line": 89,
         "module": "a_riverhog_ftp_spool_client.client",
         "path": "some-implementations/riverhog/ingress/ftp-api-client/src/a_riverhog_ftp_spool_client/client.py",
         "symbol": "RiverhogFtpSpoolClient.get_ftp_spool_status"
@@ -169,7 +161,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     "page_size_parameter": "page_size",
     "page_token_parameter": "page_token"
   },
-  "response_authority": "http-json"
+  "response_authority": "canonical-document"
 }
 ```
 
@@ -186,7 +178,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 93a29d33335333bea8d278280c2874ec7c6638d77f144207355bdf39667323cd -->
+<!-- exact-contract-value: 1fb14ba2e396d277d4f8e618ccf09c7ec594349a2725a645c257839332dcd15f -->
 
 ```json
 {
@@ -211,9 +203,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "schema": {
         "anyOf": [
           {
-            "maxLength": 120,
-            "minLength": 1,
-            "type": "string"
+            "$ref": "#/components/schemas/BrowsePageToken"
           },
           {
             "type": "null"
@@ -228,9 +218,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "additionalProperties": true,
-            "title": "Response Get Ftp Spool Status",
-            "type": "object"
+            "$ref": "#/components/schemas/FtpSpoolStatus"
           }
         }
       },

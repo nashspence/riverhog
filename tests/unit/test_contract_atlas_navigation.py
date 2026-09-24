@@ -301,7 +301,7 @@ def test_cli_dossiers_expose_exact_result_and_failure_contracts() -> None:
     cli_elements = [item for item in checked.root["elements"] if item["interface"] == "cli"]
     executable = [item for item in cli_elements if item.get("details", {}).get("executable")]
 
-    assert len(executable) == 153
+    assert len(executable) == 154
     assert len({item["details"]["result_identity"] for item in executable}) == len(executable)
     assert {
         tuple(item["details"]["command_path"])
@@ -661,7 +661,7 @@ def test_every_recorded_qualification_follows_exact_ordinary_selection_paths() -
         }
         for item in elements
     }
-    assert sum(bool(ids) for ids in expected.values()) == 81
+    assert sum(bool(ids) for ids in expected.values()) == 84
     root_path = root["atlas"]["root"]
     root_page = checked.files[root_path].decode()
     for authority in {item["authority"] for item in elements}:

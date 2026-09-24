@@ -1,12 +1,12 @@
-# a-riverhog-ftp-spool-status-progression/v1
+# a-riverhog-ftp-spool-read-collection-progression/v1
 
 [Atlas](../../../index.md) · [Reference navigation](../index.md)
 
-<a id="e-5707b3a2d3-782492885f"></a>
+<a id="e-5707b3a2d3-fbcfee75b3"></a>
 Recorded owner: `a-riverhog-ftp-spool`.
 
-- [Affected contract elements (1)](contracts.md)
-- [Candidate tests and reviewed scopes (17)](tests.md)
+- [Affected contract elements (4)](contracts.md)
+- [Candidate tests and reviewed scopes (21)](tests.md)
 
 ## Guarantees still needing evidence
 
@@ -28,6 +28,6 @@ Recorded open-claim keys: `bounded_step`, `forward_progress`, `multiple_segments
 
 - [extent-rule/route-progression/v1](../../../authorities/extent-contract/extent/extent-rule-route-progression.md#p-6b76b527cb)
 
-Recorded reasons: `bounded-route-progression`.
+Recorded reasons: `bounded-route-page`, `bounded-route-progression`.
 
 The policy definitions explain the contract. Candidate tests describe potential evidence; their presence does not establish these group-wide guarantees.

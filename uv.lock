@@ -427,6 +427,7 @@ dependencies = [
     { name = "a-riverhog-ftp-spool-client" },
     { name = "fastapi" },
     { name = "http-api-contracts" },
+    { name = "lifecycle-events" },
     { name = "pydantic" },
     { name = "pyftpdlib" },
     { name = "riverhog-canonical-json" },
@@ -442,6 +443,7 @@ requires-dist = [
     { name = "a-riverhog-ftp-spool-client", editable = "some-implementations/riverhog/ingress/ftp-api-client" },
     { name = "fastapi", specifier = ">=0.111,<1.0" },
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
+    { name = "lifecycle-events", editable = "packages/lifecycle-events" },
     { name = "pydantic", specifier = ">=2.7,<3.0" },
     { name = "pyftpdlib", specifier = ">=2.2,<3.0" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
@@ -459,12 +461,16 @@ source = { editable = "some-implementations/riverhog/ingress/ftp-api-client" }
 dependencies = [
     { name = "http-api-contracts" },
     { name = "httpx" },
+    { name = "lifecycle-events" },
+    { name = "pydantic" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "http-api-contracts", editable = "packages/http-api-contracts" },
     { name = "httpx", specifier = ">=0.27,<1.0" },
+    { name = "lifecycle-events", editable = "packages/lifecycle-events" },
+    { name = "pydantic", specifier = ">=2.7,<3.0" },
 ]
 
 [[package]]

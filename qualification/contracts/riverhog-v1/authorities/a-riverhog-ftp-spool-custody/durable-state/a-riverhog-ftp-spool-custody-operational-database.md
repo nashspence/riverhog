@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-a30d878c25"></a>`id` | `"operational-database"` |
 | <a id="s-41e1afd5b1"></a>`kind` | `"relational-schema"` |
 | <a id="s-bc4deff50d"></a>`unique_indexes` | `[]` |
-| <a id="s-0d88293dad"></a>`user_version` | `2` |
+| <a id="s-0d88293dad"></a>`user_version` | `3` |
 
 <a id="s-9d10de3bf6"></a>
 
@@ -77,6 +77,18 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-0b8258b646"></a>`retryable` | `INTEGER` | no | `—` | {"checks":["(retryable IN (0, 1))"]} |
 | <a id="s-edc8fa5a3a"></a>`attempts` | `INTEGER` | no | `0` | {"checks":["(attempts >= 0)"]} |
 
+<a id="s-054445226e"></a>
+
+### Table: `lifecycle_events`
+
+#### Columns
+
+| Column | Type | Nullable | Default | Other constraints |
+|---|---|---:|---|---|
+| <a id="s-a271ff830f"></a>`sequence` | `INTEGER` | no | `—` | {"primary_key":true} |
+| <a id="s-e9325bb000"></a>`event_id` | `TEXT` | no | `—` | {"unique":true} |
+| <a id="s-e34edb8ed2"></a>`event_json` | `TEXT` | no | `—` | — |
+
 ## Maintained corroboration
 
 ### Related interface records
@@ -110,7 +122,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1513b8c445d9c9243e439461f0647ee8110f5669ec5442e059c2181a0b938f15 -->
+<!-- exact-contract-value: 03ebfe310c63a0d0e1f4e8ea12ce0b66b455dfd790c6fed5bf499bbdf1e73518 -->
 
 ```json
 {
@@ -256,10 +268,36 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "constraints": [],
       "name": "completion_failures"
+    },
+    {
+      "columns": [
+        {
+          "definition": "sequence INTEGER PRIMARY KEY AUTOINCREMENT",
+          "name": "sequence",
+          "nullable": false,
+          "primary_key": true,
+          "type": "INTEGER"
+        },
+        {
+          "definition": "event_id TEXT NOT NULL UNIQUE",
+          "name": "event_id",
+          "nullable": false,
+          "type": "TEXT",
+          "unique": true
+        },
+        {
+          "definition": "event_json TEXT NOT NULL",
+          "name": "event_json",
+          "nullable": false,
+          "type": "TEXT"
+        }
+      ],
+      "constraints": [],
+      "name": "lifecycle_events"
     }
   ],
   "unique_indexes": [],
-  "user_version": 2
+  "user_version": 3
 }
 ```
 

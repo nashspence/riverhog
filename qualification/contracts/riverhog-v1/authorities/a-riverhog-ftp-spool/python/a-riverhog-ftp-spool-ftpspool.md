@@ -29,6 +29,7 @@ Exact externally visible contract owned by this contract element.
 ### Related interface records
 
 - [accept_completed_file](a-riverhog-ftp-spool-ftpspool-accept-completed-file.md)
+- [event_page](a-riverhog-ftp-spool-ftpspool-event-page.md)
 - [flush](a-riverhog-ftp-spool-ftpspool-flush.md)
 - [run_once](a-riverhog-ftp-spool-ftpspool-run-once.md)
 - [status](a-riverhog-ftp-spool-ftpspool-status.md)

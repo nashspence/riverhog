@@ -68,6 +68,10 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 - [GET /v1/status](../http-operations/get-v1-status.md)
 - [a_riverhog_ftp_spool_client.RiverhogFtpSpoolClient.get_ftp_spool_status](../../a-riverhog-ftp-spool-client/python/a-riverhog-ftp-spool-client-riverhogftpspoolclient-get-ftp-spool-status.md)
 
+### Referenced contract elements
+
+- [schemas: FtpSpoolStatus](../http-schemas/schemas-ftpspoolstatus.md)
+
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
@@ -86,7 +90,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 
 - [cli:a-riverhog-ftp-spool](../../../evidence/sources/authorities.md#src-4f9bc5584a) — [some-implementations/riverhog/ingress/ftp/src/a\_riverhog\_ftp\_spool/app.py::&lt;module&gt;](../../../../../../some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/app.py)
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- **Command callback:** [some-implementations/riverhog/ingress/ftp/src/a\_riverhog\_ftp\_spool/app.py::\_status\_command](../../../../../../some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/app.py#L395)
+- **Command callback:** [some-implementations/riverhog/ingress/ftp/src/a\_riverhog\_ftp\_spool/app.py::\_status\_command](../../../../../../some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/app.py#L446)
 
 ### Machine authority
 
@@ -150,7 +154,7 @@ true
 
 ### `/external_contract/cli/a-riverhog-ftp-spool/commands/status/result_contract`
 
-<!-- exact-contract-value: 29ee1bca6d2717627d47a9256714e629bb46070e421f937489fa092e5a012c24 -->
+<!-- exact-contract-value: 9b629e4fb34dfb54f87179981985dd5f61a3ed4c420bb0f37bec0172cf0c5cd1 -->
 
 ```json
 {
@@ -192,9 +196,7 @@ true
           "operation_id": "get_ftp_spool_status",
           "path": "/v1/status",
           "schema": {
-            "additionalProperties": true,
-            "title": "Response Get Ftp Spool Status",
-            "type": "object"
+            "$ref": "#/components/schemas/FtpSpoolStatus"
           },
           "status": "200"
         }

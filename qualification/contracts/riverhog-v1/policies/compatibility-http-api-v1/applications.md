@@ -10,14 +10,29 @@ These are the indexed contract-element applications. Each link reaches the polic
 |---|---|
 | `a-riverhog-ftp-spool` | [GET /health/live](../../authorities/a-riverhog-ftp-spool/http-operations/get-health-live.md#pa-66899beaa9) |
 | `a-riverhog-ftp-spool` | [GET /health/ready](../../authorities/a-riverhog-ftp-spool/http-operations/get-health-ready.md#pa-008e54067d) |
+| `a-riverhog-ftp-spool` | [GET /v1/sources/{source_id}/events](../../authorities/a-riverhog-ftp-spool/http-operations/get-v1-sources-source-id-events.md#pa-ca0c824245) |
 | `a-riverhog-ftp-spool` | [GET /v1/status](../../authorities/a-riverhog-ftp-spool/http-operations/get-v1-status.md#pa-54016ca0e2) |
 | `a-riverhog-ftp-spool` | [POST /v1/run](../../authorities/a-riverhog-ftp-spool/http-operations/post-v1-run.md#pa-e04a47d973) |
 | `a-riverhog-ftp-spool` | [POST /v1/sources/{source_id}/flush](../../authorities/a-riverhog-ftp-spool/http-operations/post-v1-sources-source-id-flush.md#pa-dbf25d69f2) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool HTTP service](../../authorities/a-riverhog-ftp-spool/http-service-declaration/a-riverhog-ftp-spool-http-service.md#pa-38f90c352f) |
+| `a-riverhog-ftp-spool` | [schemas: AttemptFailedEvent](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-attemptfailedevent.md#pa-db1a9a31fa) |
+| `a-riverhog-ftp-spool` | [schemas: AttemptFailedPayload](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-attemptfailedpayload.md#pa-da594a6a85) |
+| `a-riverhog-ftp-spool` | [schemas: BrowsePageToken](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-browsepagetoken.md#pa-d1b375748d) |
+| `a-riverhog-ftp-spool` | [schemas: ClaimPublishedEvent](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-claimpublishedevent.md#pa-22871e31aa) |
+| `a-riverhog-ftp-spool` | [schemas: ClaimPublishedPayload](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-claimpublishedpayload.md#pa-f6b518a223) |
+| `a-riverhog-ftp-spool` | [schemas: ClaimRegisteredEvent](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-claimregisteredevent.md#pa-a71d432bf3) |
+| `a-riverhog-ftp-spool` | [schemas: ClaimRegisteredPayload](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-claimregisteredpayload.md#pa-544a7da810) |
+| `a-riverhog-ftp-spool` | [schemas: CompletionFailureStatus](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-completionfailurestatus.md#pa-c0e9691b1c) |
+| `a-riverhog-ftp-spool` | [schemas: CustodyReadyEvent](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-custodyreadyevent.md#pa-2fa9cfbc4d) |
+| `a-riverhog-ftp-spool` | [schemas: CustodyReadyPayload](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-custodyreadypayload.md#pa-b7a693910a) |
 | `a-riverhog-ftp-spool` | [schemas: ErrorBody](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-errorbody.md#pa-12ba80ad58) |
 | `a-riverhog-ftp-spool` | [schemas: ErrorOut](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-errorout.md#pa-809d40f37f) |
+| `a-riverhog-ftp-spool` | [schemas: FtpEventPage](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-ftpeventpage.md#pa-07c9d59a58) |
+| `a-riverhog-ftp-spool` | [schemas: FtpLifecycleEvent](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-ftplifecycleevent.md#pa-146ea5df88) |
+| `a-riverhog-ftp-spool` | [schemas: FtpSpoolStatus](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-ftpspoolstatus.md#pa-c7db722b86) |
 | `a-riverhog-ftp-spool` | [schemas: HTTPValidationError](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-httpvalidationerror.md#pa-708ca35070) |
 | `a-riverhog-ftp-spool` | [schemas: HealthOut](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-healthout.md#pa-0109b1e053) |
+| `a-riverhog-ftp-spool` | [schemas: SourceStatus](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-sourcestatus.md#pa-6528d2b09a) |
 | `a-riverhog-ftp-spool` | [schemas: ValidationError](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-validationerror.md#pa-b0da1ed38e) |
 | `a-riverhog-ftp-spool` | [securitySchemes: RiverhogFtpSpoolBearer](../../authorities/a-riverhog-ftp-spool/http-security-schemes/securityschemes-riverhogftpspoolbearer.md#pa-79b7fc4d8c) |
 | `riverhog` | [DELETE /v1/apps/{app}/keys/{key_id}/access](../../authorities/riverhog/http-operations/delete-v1-apps-app-keys-key-id-access.md#pa-eb47e0c0cf) |

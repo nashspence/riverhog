@@ -28,7 +28,7 @@ Each group has separate routes to its affected contracts and candidate tests. Te
 | [riverhog-retrieval-work-progression/v1](riverhog-retrieval-work-progression-v1/index.md) | 1 | 2 |
 | [riverhog-read-collection-progression/v1](riverhog-read-collection-progression-v1/index.md) | 54 | 9 |
 | [stove0-read-collection-progression/v1](stove0-read-collection-progression-v1/index.md) | 12 | 3 |
-| [a-riverhog-ftp-spool-status-progression/v1](a-riverhog-ftp-spool-status-progression-v1/index.md) | 1 | 17 |
+| [a-riverhog-ftp-spool-read-collection-progression/v1](a-riverhog-ftp-spool-read-collection-progression-v1/index.md) | 4 | 21 |
 | [riverhog-upload-registration-progression/v1](riverhog-upload-registration-progression-v1/index.md) | 1 | 2 |
 | [riverhog-upload-tag-staging-progression/v1](riverhog-upload-tag-staging-progression-v1/index.md) | 2 | 8 |
 | [riverhog-upload-unit-source-progression/v1](riverhog-upload-unit-source-progression-v1/index.md) | 1 | 3 |

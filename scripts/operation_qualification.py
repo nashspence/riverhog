@@ -29,6 +29,7 @@ from a_riverhog_ftp_spool.app import build_parser as build_adapter_parser
 from a_riverhog_ftp_spool.app import create_app as create_adapter_app
 from a_riverhog_ftp_spool.config import FtpSpoolConfig, SourceConfig
 from a_riverhog_ftp_spool_client import RiverhogFtpSpoolClient
+from a_riverhog_ftp_spool_client.events import FtpEventPage
 from a_stove0_cli import main as a_stove0_cli
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
@@ -84,8 +85,23 @@ class _RiverhogContractApi:
 
 
 class _AdapterContractService:
+    def event_page(self, source_id: str, *, after: str | None, limit: int) -> FtpEventPage:
+        del source_id, after, limit
+        return FtpEventPage(
+            events=[],
+            next_cursor="qualification-source~00000000000000000000000000000001~0",
+            has_more=False,
+        )
+
     def status(self) -> dict[str, object]:
-        return {"format": "a-riverhog-ftp-spool-status/v1", "sources": []}
+        return {
+            "format": "a-riverhog-ftp-spool-status/v1",
+            "provenance_observer": None,
+            "sources": [],
+            "page_size": 25,
+            "next_page_token": None,
+            "snapshot": False,
+        }
 
     def run_once(self) -> dict[str, object]:
         return {"format": "a-riverhog-ftp-spool-pass/v1", "sources": []}

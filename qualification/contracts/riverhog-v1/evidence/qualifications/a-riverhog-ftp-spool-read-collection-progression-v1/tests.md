@@ -1,4 +1,4 @@
-# a-riverhog-ftp-spool-status-progression/v1: candidate tests
+# a-riverhog-ftp-spool-read-collection-progression/v1: candidate tests
 
 [Atlas](../../../index.md) · [Reference navigation](index.md)
 
@@ -8,6 +8,10 @@ A reviewed scope states what a test exercises. A candidate binding without a rev
 
 Candidate commands: [make unit](../../sources/commands.md#q-ce47068f50), [make compose-smoke](../../sources/commands.md#q-413b0b241b).
 
+- [tests/unit/test\_public\_interface\_parity.py::test\_public\_read\_collection\_selectors\_are\_bounded\_and\_frozen](../../../../../../tests/unit/test_public_interface_parity.py) — Candidate binding; no reviewed behavior scope is recorded.
+- [tests/unit/test\_event\_cursor\_restart.py::test\_event\_cursor\_continues\_across\_process\_restart](../../../../../../tests/unit/test_event_cursor_restart.py) — Candidate binding; no reviewed behavior scope is recorded.
+- [some-implementations/riverhog/ingress/ftp/tests/test\_ftp\_spool\_custody.py::test\_lifecycle\_feed\_is\_bounded\_source\_fenced\_and\_replays\_exact\_claim\_events](../../../../../../some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py) — Candidate binding; no reviewed behavior scope is recorded.
+- [some-implementations/riverhog/ingress/ftp/tests/test\_ftp\_spool\_custody.py::test\_durable\_receipt\_replays\_publication\_event\_after\_process\_stop](../../../../../../some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py) — Candidate binding; no reviewed behavior scope is recorded.
 - [some-implementations/riverhog/ingress/ftp/tests/test\_ftp\_spool\_custody.py::test\_status\_pages\_sources\_without\_claiming\_an\_exact\_backlog\_snapshot](../../../../../../some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py) — Candidate binding; no reviewed behavior scope is recorded.
 - [some-implementations/riverhog/ingress/ftp/tests/test\_ftp\_spool\_custody.py::test\_large\_unavailable\_backlog\_is\_bounded\_then\_drains\_exactly\_after\_restart](../../../../../../some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py) — Candidate binding; no reviewed behavior scope is recorded.
 - [some-implementations/riverhog/ingress/ftp/tests/test\_ftp\_spool\_custody.py::test\_completion\_discovery\_progresses\_beyond\_persistent\_prefix\_across\_restart](../../../../../../some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py) — Candidate binding; no reviewed behavior scope is recorded.

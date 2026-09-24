@@ -9,6 +9,8 @@ from a_riverhog_ftp_spool import app as adapter_app
 from a_riverhog_ftp_spool.app import FtpSpoolComposition, create_app
 from a_riverhog_ftp_spool.config import FtpSpoolConfig, SourceConfig
 from a_riverhog_ftp_spool_client import RiverhogFtpSpoolClient
+from a_riverhog_ftp_spool_client.events import FtpEventPage
+from a_riverhog_ftp_spool_client.status import FtpSpoolStatus
 from fastapi.testclient import TestClient
 
 from tests.operation_observer import OperationObserver, TimeoutNeutralTestClient
@@ -26,11 +28,33 @@ class _Riverhog:
 
 
 class _Adapter:
+    def event_page(self, source_id: str, *, after: str | None, limit: int) -> FtpEventPage:
+        assert (source_id, after, limit) == ("camera-a", "0", 100)
+        return FtpEventPage(
+            events=[], next_cursor="camera-a~00000000000000000000000000000001~0", has_more=False
+        )
+
     def status(self, *, page_size: int = 25, page_token: str | None = None) -> dict[str, object]:
         assert (page_size, page_token) == (25, None)
         return {
             "format": "a-riverhog-ftp-spool-status/v1",
-            "sources": [{"id": "camera-a", "claims": 0, "claim_bytes": 0}],
+            "provenance_observer": None,
+            "sources": [
+                {
+                    "id": "camera-a",
+                    "ingest_source": "ftp:camera-a",
+                    "claims": 0,
+                    "claim_bytes": 0,
+                    "close_mode": "stable",
+                    "max_files": 10,
+                    "max_bytes": 1048576,
+                    "provenance": "omit",
+                    "pending_claim_capacity": 128,
+                    "completion_failures": 0,
+                    "completion_failure_capacity": 128,
+                    "oldest_completion_failure": None,
+                }
+            ],
             "page_size": page_size,
             "next_page_token": None,
             "snapshot": False,
@@ -88,6 +112,7 @@ def test_public_openapi_has_one_stable_operation_for_each_official_client_method
     assert operations == {
         "flush_ftp_spool_source",
         "get_ftp_spool_status",
+        "list_ftp_spool_events",
         "run_ftp_spool_pass",
     }
     assert {"ErrorOut", "HealthOut"} <= set(schema["components"]["schemas"])
@@ -104,6 +129,13 @@ def test_management_api_and_client_share_versioned_routes(tmp_path: Path) -> Non
     with TestClient(create_app(_composition(tmp_path))) as api:
         headers = {"Authorization": "Bearer adapter-token"}
         assert api.get("/v1/status", headers=headers).status_code == 200
+        assert (
+            api.get(
+                "/v1/sources/camera-a/events", params={"after": "0"}, headers=headers
+            ).status_code
+            == 200
+        )
+        assert api.get("/v1/sources/camera-a/events", params={"after": "0"}).status_code == 401
         assert api.post("/v1/run", headers=headers).status_code == 200
         assert api.post("/v1/sources/camera-a/flush", headers=headers).status_code == 200
         response = api.get("/v1/status")
@@ -116,6 +148,27 @@ def test_management_api_and_client_share_versioned_routes(tmp_path: Path) -> Non
     def handler(request: httpx.Request) -> httpx.Response:
         requests.append((request.method, request.url.raw_path.decode("ascii")))
         assert request.headers["authorization"] == "Bearer adapter-token"
+        if request.url.path.endswith("/events"):
+            return httpx.Response(
+                200,
+                json={
+                    "events": [],
+                    "next_cursor": "camera-a~00000000000000000000000000000001~0",
+                    "has_more": False,
+                },
+            )
+        if request.url.path == "/v1/status":
+            return httpx.Response(
+                200,
+                json={
+                    "format": "a-riverhog-ftp-spool-status/v1",
+                    "provenance_observer": None,
+                    "sources": [],
+                    "page_size": 17,
+                    "next_page_token": None,
+                    "snapshot": False,
+                },
+            )
         return httpx.Response(200, json={"status": "ok"})
 
     with RiverhogFtpSpoolClient(
@@ -124,11 +177,13 @@ def test_management_api_and_client_share_versioned_routes(tmp_path: Path) -> Non
         transport=httpx.MockTransport(handler),
     ) as client:
         client.get_ftp_spool_status(page_size=17, page_token="camera-a")
+        client.list_ftp_spool_events("camera/a", after="cursor", limit=7)
         client.run_ftp_spool_pass()
         client.flush_ftp_spool_source("camera/a")
 
     assert requests == [
         ("GET", "/v1/status?page_size=17&page_token=camera-a"),
+        ("GET", "/v1/sources/camera%2Fa/events?after=cursor&limit=7"),
         ("POST", "/v1/run"),
         ("POST", "/v1/sources/camera%2Fa/flush"),
     ]
@@ -151,7 +206,8 @@ def test_official_client_positive_disposable_lifecycle(tmp_path: Path) -> None:
         client._http = TimeoutNeutralTestClient(transport, observer=observer)  # type: ignore[assignment]
         assert client.ftp_spool_health_live().status == "ok"
         assert client.ftp_spool_health_ready().status == "ok"
-        assert client.get_ftp_spool_status()["format"] == "a-riverhog-ftp-spool-status/v1"
+        assert client.get_ftp_spool_status().format == "a-riverhog-ftp-spool-status/v1"
+        assert client.list_ftp_spool_events("camera-a", after="0").events == []
         assert client.run_ftp_spool_pass()["format"] == "a-riverhog-ftp-spool-pass/v1"
         assert client.flush_ftp_spool_source("camera-a")["sources"] == ["camera-a"]
         client.close()
@@ -161,6 +217,7 @@ def test_official_client_positive_disposable_lifecycle(tmp_path: Path) -> None:
             "ftp_spool_health_live",
             "ftp_spool_health_ready",
             "get_ftp_spool_status",
+            "list_ftp_spool_events",
             "run_ftp_spool_pass",
             "flush_ftp_spool_source",
         }
@@ -179,8 +236,15 @@ class _OperatorClient:
 
     def get_ftp_spool_status(
         self, *, page_size: int = 25, page_token: str | None = None
-    ) -> dict[str, object]:
-        return _Adapter().status(page_size=page_size, page_token=page_token)
+    ) -> FtpSpoolStatus:
+        return FtpSpoolStatus.model_validate(
+            _Adapter().status(page_size=page_size, page_token=page_token)
+        )
+
+    def list_ftp_spool_events(
+        self, source_id: str, *, after: str | None, limit: int
+    ) -> FtpEventPage:
+        return _Adapter().event_page(source_id, after=after or "0", limit=limit)
 
     def run_ftp_spool_pass(self) -> dict[str, object]:
         return _Adapter().run_once()
@@ -202,3 +266,8 @@ def test_operator_cli_has_human_and_json_views_for_each_management_operation(
         assert adapter_app.main(["--json", *arguments]) == 0
         payload: dict[str, Any] = json.loads(capsys.readouterr().out)
         assert str(payload["format"]).endswith("/v1")
+
+    assert adapter_app.main(["events", "camera-a", "--after", "0"]) == 0
+    assert "next cursor:" in capsys.readouterr().out
+    assert adapter_app.main(["--json", "events", "camera-a", "--after", "0"]) == 0
+    assert json.loads(capsys.readouterr().out)["events"] == []

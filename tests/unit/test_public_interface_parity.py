@@ -517,6 +517,12 @@ READ_COLLECTION_OPERATIONS = {
             "get_target_execution_inputs",
         },
     },
+    "a-riverhog-ftp-spool": {
+        "mutable-browse": {"get_ftp_spool_status"},
+        "cursor-feed": {"list_ftp_spool_events"},
+        "exact-set-page": set(),
+        "exact-authority-page": set(),
+    },
 }
 
 EXACT_RESOURCE_STREAM_OPERATIONS = {
@@ -524,6 +530,7 @@ EXACT_RESOURCE_STREAM_OPERATIONS = {
         "stream_collection_provenance_journal",
     },
     "stove0": set(),
+    "a-riverhog-ftp-spool": set(),
 }
 
 # Every public query selector is intentional and frozen here.  This is broader
@@ -646,6 +653,7 @@ PUBLIC_QUERY_SELECTORS = {
     },
     "a-riverhog-ftp-spool": {
         "get_ftp_spool_status": {"page_size", "page_token"},
+        "list_ftp_spool_events": {"after", "limit"},
     },
 }
 
@@ -727,6 +735,7 @@ def _parameters(operation: dict[str, Any], *, exclude: set[str] | None = None) -
     (
         ("riverhog", create_riverhog_app),
         ("stove0", create_stove0_contract_app),
+        ("a-riverhog-ftp-spool", create_adapter_contract_app),
     ),
 )
 def test_public_read_collection_selectors_are_bounded_and_frozen(

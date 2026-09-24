@@ -8,7 +8,10 @@ These are the indexed contract-element applications. Each link reaches the polic
 
 | Authority | Contract element |
 |---|---|
+| `a-riverhog-ftp-spool` | [GET /v1/sources/{source_id}/events](../../authorities/a-riverhog-ftp-spool/http-operations/get-v1-sources-source-id-events.md#pa-64630ca2df) |
 | `a-riverhog-ftp-spool` | [GET /v1/status](../../authorities/a-riverhog-ftp-spool/http-operations/get-v1-status.md#pa-10323a440b) |
+| `a-riverhog-ftp-spool` | [schemas: FtpEventPage](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-ftpeventpage.md#pa-21c1b87cbe) |
+| `a-riverhog-ftp-spool` | [schemas: FtpSpoolStatus](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-ftpspoolstatus.md#pa-27049362f2) |
 | `riverhog` | [GET /v1/app-key-access](../../authorities/riverhog/http-operations/get-v1-app-key-access.md#pa-d36cf09b03) |
 | `riverhog` | [GET /v1/apps](../../authorities/riverhog/http-operations/get-v1-apps.md#pa-c156c5e29f) |
 | `riverhog` | [GET /v1/apps/{app}/keys](../../authorities/riverhog/http-operations/get-v1-apps-app-keys.md#pa-6c484fd5a1) |

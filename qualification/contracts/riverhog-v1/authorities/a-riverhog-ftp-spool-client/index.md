@@ -4,9 +4,9 @@
 
 Client for the Riverhog FTP upload spool.
 
-Contract elements: **16** · Extent decisions: **1**
+Contract elements: **20** · Extent decisions: **1**
 
 ## Interfaces
 
 - [Configuration Environment](configuration-environment/index.md) (5)
-- [Python](python/index.md) (11)
+- [Python](python/index.md) (15)
