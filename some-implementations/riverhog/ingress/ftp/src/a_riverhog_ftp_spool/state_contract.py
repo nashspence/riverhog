@@ -1,4 +1,4 @@
-"""Canonical durable-state structures owned by the FTP reference adapter."""
+"""Canonical durable-state structures owned by the FTP adapter."""
 
 from __future__ import annotations
 

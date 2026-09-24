@@ -175,7 +175,7 @@ _LOCAL_SYNC_OUTPUT = _cli_local_json(
 )
 
 app = typer.Typer(
-    help="Riverhog CLI reference client for Riverhog.",
+    help="Command-line client for Riverhog.",
     add_completion=False,
 )
 
