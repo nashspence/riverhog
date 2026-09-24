@@ -20,8 +20,8 @@ def test_riverhog_event_list_has_human_and_json_output(monkeypatch) -> None:  # 
                 "time": "2026-08-24T00:00:00Z",
                 "datacontenttype": "application/json",
                 "data": {
-                    "actor": {"app": "riverhog-client"},
-                    "initiator": {"app": "riverhog-client"},
+                    "actor": {"principal_id": "riverhog-client"},
+                    "initiator": {"principal_id": "riverhog-client"},
                     "collection_id": "41",
                     "collection_created_at": "2026-08-24T00:00:00.000000Z",
                     "files_total": 1,

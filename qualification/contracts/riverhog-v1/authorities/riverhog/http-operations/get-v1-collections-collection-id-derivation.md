@@ -19,7 +19,7 @@ Get Collection Derivation
 - <a id="s-a95f759f17"></a>`summary`: `"Get Collection Derivation"`
 - <a id="s-cdad7574a9"></a>`tags`: `["collection-workflows"]`
 - <a id="s-7bb9ec2be5"></a>`x-riverhog-interface`: `"client-only-primitive"`
-- <a id="s-0fd48b995e"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control"]}]`
+- <a id="s-0fd48b995e"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-processing:control"]}]`
 
 ### Parameters
 
@@ -114,7 +114,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7b822c9988654697b91a537e7e539d38a572732ca8bd18b1720ee739b4fd4bc7 -->
+<!-- exact-contract-value: 87bc513e2cd66fcc837bbfc4545cae446147e026b183f6a637b91961ba9b7234 -->
 
 ```json
 {
@@ -230,7 +230,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "x-riverhog-permission-requirements": [
     {
       "any_of": [
-        "collection-transforms:control"
+        "collection-processing:control"
       ]
     }
   ]

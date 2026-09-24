@@ -885,7 +885,7 @@ def test_python_public_import_paths_and_special_methods_are_exact_units() -> Non
     assert lifecycle_enter["unit"] == "member"
     assert lifecycle_enter["contract"]["kind"] == "method"
     assert "self" in lifecycle_enter["contract"]["signature"]
-    assert "riverhog_client.transform.CapabilityApiClient.__getattr__" in surfaces
+    assert "riverhog_client.processing.CapabilityApiClient.__getattr__" in surfaces
     assert "riverhog_storage_adapter_support.FramedContent.__iter__" in surfaces
     assert "stove0_operator_contracts.Stove0EventData.__getitem__" in surfaces
     assert "enum_values" in surfaces["riverhog_provenance.LargeValueDisposition"]["contract"]

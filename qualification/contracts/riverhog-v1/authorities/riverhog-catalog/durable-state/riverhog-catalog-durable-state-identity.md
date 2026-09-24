@@ -47,6 +47,8 @@ Exact externally visible contract owned by this contract element.
 - [collection_files](riverhog-catalog-collection-files.md)
 - [collection_mutable_document_publication_attempts](riverhog-catalog-collection-mutable-document-publication-attempts.md)
 - [collection_mutable_document_reclamations](riverhog-catalog-collection-mutable-document-reclamations.md)
+- [collection_processing_capability_artifacts](riverhog-catalog-collection-processing-capability-artifacts.md)
+- [collection_processing_capabilities](riverhog-catalog-collection-processing-capabilities.md)
 - [collection_processing_claim_artifacts](riverhog-catalog-collection-processing-claim-artifacts.md)
 - [collection_processing_claim_inputs](riverhog-catalog-collection-processing-claim-inputs.md)
 - [collection_processing_claims](riverhog-catalog-collection-processing-claims.md)
@@ -78,8 +80,6 @@ Exact externally visible contract owned by this contract element.
 - [collection_tag_revisions](riverhog-catalog-collection-tag-revisions.md)
 - [collection_tag_visibility](riverhog-catalog-collection-tag-visibility.md)
 - [collection_tags](riverhog-catalog-collection-tags.md)
-- [collection_transform_capability_artifacts](riverhog-catalog-collection-transform-capability-artifacts.md)
-- [collection_transform_capabilities](riverhog-catalog-collection-transform-capabilities.md)
 - [collection_upload_files](riverhog-catalog-collection-upload-files.md)
 - [collection_upload_provenance_validation_facts](riverhog-catalog-collection-upload-provenance-validation-facts.md)
 - [collection_upload_provenance_archive_volumes](riverhog-catalog-collection-upload-provenance-archive-volumes.md)
@@ -95,7 +95,7 @@ Exact externally visible contract owned by this contract element.
 - [collections](riverhog-catalog-collections.md)
 - [ix_collection_processing_claim_artifacts_order](riverhog-catalog-ix-collection-processing-claim-artifacts-order.md)
 - [ix_collection_processing_outcomes_order](riverhog-catalog-ix-collection-processing-outcomes-order.md)
-- [ix_collection_transform_capability_artifacts_order](riverhog-catalog-ix-collection-transform-capability-artifacts-order.md)
+- [ix_collection_processing_capability_artifacts_order](riverhog-catalog-ix-collection-processing-capability-artifacts-order.md)
 - [ix_processing_disposition_outputs_order](riverhog-catalog-ix-processing-disposition-outputs-order.md)
 - [ix_processing_dispositions_order](riverhog-catalog-ix-processing-dispositions-order.md)
 - [key_download_reservations](riverhog-catalog-key-download-reservations.md)
@@ -116,7 +116,7 @@ Exact externally visible contract owned by this contract element.
 - [ux_app_keys_token_sha256](riverhog-catalog-ux-app-keys-token-sha256.md)
 - [ux_collection_archive_object_uploads_sequence](riverhog-catalog-ux-collection-archive-object-uploads-sequence.md)
 - [ux_collection_upload_files_order](riverhog-catalog-ux-collection-upload-files-order.md)
-- [ux_collection_uploads_application_idempotency_key](riverhog-catalog-ux-collection-uploads-application-idempotency-key.md)
+- [ux_collection_uploads_principal_idempotency_key](riverhog-catalog-ux-collection-uploads-principal-idempotency-key.md)
 
 ## Governing policies
 

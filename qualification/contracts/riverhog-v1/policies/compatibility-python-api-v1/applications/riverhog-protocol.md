@@ -210,6 +210,15 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-protocol` | [riverhog_protocol.PortableCollectionInventoryPage.validate_page](../../../authorities/riverhog-protocol/python/riverhog-protocol-portablecollectioninventorypage-validate-page.md#pa-2a97a36159) |
 | `riverhog-protocol` | [riverhog_protocol.PreconditionFailed](../../../authorities/riverhog-protocol/python/riverhog-protocol-preconditionfailed.md#pa-612079b390) |
 | `riverhog-protocol` | [riverhog_protocol.PreconditionRequired](../../../authorities/riverhog-protocol/python/riverhog-protocol-preconditionrequired.md#pa-bfcc381aa1) |
+| `riverhog-protocol` | [riverhog_protocol.PrincipalId](../../../authorities/riverhog-protocol/python/riverhog-protocol-principalid.md#pa-324ef37af5) |
+| `riverhog-protocol` | [riverhog_protocol.ProcessingCapabilityCreateDocument](../../../authorities/riverhog-protocol/python/riverhog-protocol-processingcapabilitycreatedocument.md#pa-35249addc9) |
+| `riverhog-protocol` | [riverhog_protocol.ProcessingCapabilityCreateDocument.__getitem__](../../../authorities/riverhog-protocol/python/riverhog-protocol-processingcapabilitycreatedocument-getitem.md#pa-97c9292ed3) |
+| `riverhog-protocol` | [riverhog_protocol.ProcessingCapabilityCreateDocument.get](../../../authorities/riverhog-protocol/python/riverhog-protocol-processingcapabilitycreatedocument-get.md#pa-cdbfc00a90) |
+| `riverhog-protocol` | [riverhog_protocol.ProcessingCapabilityCreateDocument.validate_capability](../../../authorities/riverhog-protocol/python/riverhog-protocol-processingcapabilitycreatedocument-validate-capability.md#pa-5bff629f05) |
+| `riverhog-protocol` | [riverhog_protocol.ProcessingCapabilityDocument](../../../authorities/riverhog-protocol/python/riverhog-protocol-processingcapabilitydocument.md#pa-f2f53ed612) |
+| `riverhog-protocol` | [riverhog_protocol.ProcessingCapabilityDocument.__getitem__](../../../authorities/riverhog-protocol/python/riverhog-protocol-processingcapabilitydocument-getitem.md#pa-025614d33a) |
+| `riverhog-protocol` | [riverhog_protocol.ProcessingCapabilityDocument.get](../../../authorities/riverhog-protocol/python/riverhog-protocol-processingcapabilitydocument-get.md#pa-a65551f84b) |
+| `riverhog-protocol` | [riverhog_protocol.ProcessingCapabilityDocument.validate_capability](../../../authorities/riverhog-protocol/python/riverhog-protocol-processingcapabilitydocument-validate-capability.md#pa-2634b61363) |
 | `riverhog-protocol` | [riverhog_protocol.ProcessingClaimAbandonDocument](../../../authorities/riverhog-protocol/python/riverhog-protocol-processingclaimabandondocument.md#pa-02b31155c2) |
 | `riverhog-protocol` | [riverhog_protocol.ProcessingClaimAbandonDocument.__getitem__](../../../authorities/riverhog-protocol/python/riverhog-protocol-processingclaimabandondocument-getitem.md#pa-e1379e593f) |
 | `riverhog-protocol` | [riverhog_protocol.ProcessingClaimAbandonDocument.get](../../../authorities/riverhog-protocol/python/riverhog-protocol-processingclaimabandondocument-get.md#pa-05549248be) |
@@ -291,14 +300,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-protocol` | [riverhog_protocol.SearchSort](../../../authorities/riverhog-protocol/python/riverhog-protocol-searchsort.md#pa-e42ae3240c) |
 | `riverhog-protocol` | [riverhog_protocol.ServiceUnavailable](../../../authorities/riverhog-protocol/python/riverhog-protocol-serviceunavailable.md#pa-9a31d33e8f) |
 | `riverhog-protocol` | [riverhog_protocol.SortOrder](../../../authorities/riverhog-protocol/python/riverhog-protocol-sortorder.md#pa-23fbcfdadf) |
-| `riverhog-protocol` | [riverhog_protocol.TransformCapabilityCreateDocument](../../../authorities/riverhog-protocol/python/riverhog-protocol-transformcapabilitycreatedocument.md#pa-eedecf10b4) |
-| `riverhog-protocol` | [riverhog_protocol.TransformCapabilityCreateDocument.__getitem__](../../../authorities/riverhog-protocol/python/riverhog-protocol-transformcapabilitycreatedocument-getitem.md#pa-ad084ab7e8) |
-| `riverhog-protocol` | [riverhog_protocol.TransformCapabilityCreateDocument.get](../../../authorities/riverhog-protocol/python/riverhog-protocol-transformcapabilitycreatedocument-get.md#pa-36198a7e6b) |
-| `riverhog-protocol` | [riverhog_protocol.TransformCapabilityCreateDocument.validate_capability](../../../authorities/riverhog-protocol/python/riverhog-protocol-transformcapabilitycreatedocument-validate-capability.md#pa-cc7450f586) |
-| `riverhog-protocol` | [riverhog_protocol.TransformCapabilityDocument](../../../authorities/riverhog-protocol/python/riverhog-protocol-transformcapabilitydocument.md#pa-eead9e1ca8) |
-| `riverhog-protocol` | [riverhog_protocol.TransformCapabilityDocument.__getitem__](../../../authorities/riverhog-protocol/python/riverhog-protocol-transformcapabilitydocument-getitem.md#pa-31d038761b) |
-| `riverhog-protocol` | [riverhog_protocol.TransformCapabilityDocument.get](../../../authorities/riverhog-protocol/python/riverhog-protocol-transformcapabilitydocument-get.md#pa-70c20204fa) |
-| `riverhog-protocol` | [riverhog_protocol.TransformCapabilityDocument.validate_capability](../../../authorities/riverhog-protocol/python/riverhog-protocol-transformcapabilitydocument-validate-capability.md#pa-efd53a5443) |
 | `riverhog-protocol` | [riverhog_protocol.TransformIntent](../../../authorities/riverhog-protocol/python/riverhog-protocol-transformintent.md#pa-639faa1100) |
 | `riverhog-protocol` | [riverhog_protocol.TransformIntent.as_dict](../../../authorities/riverhog-protocol/python/riverhog-protocol-transformintent-as-dict.md#pa-83d62d5622) |
 | `riverhog-protocol` | [riverhog_protocol.TransformIntent.from_mapping](../../../authorities/riverhog-protocol/python/riverhog-protocol-transformintent-from-mapping.md#pa-4ea662b419) |
@@ -330,5 +331,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-protocol` | [riverhog_protocol.validate_collection_upload_artifact_custody_receipt](../../../authorities/riverhog-protocol/python/riverhog-protocol-validate-collection-upload-artifact-custody-receipt.md#pa-cb7221dbbb) |
 | `riverhog-protocol` | [riverhog_protocol.validate_collection_upload_batch_against_registration_constraints](../../../authorities/riverhog-protocol/python/riverhog-protocol-validate-collection-upload-batch-against-registration-constraints.md#pa-23e8cd082c) |
 | `riverhog-protocol` | [riverhog_protocol.validate_lifecycle_event_cursor](../../../authorities/riverhog-protocol/python/riverhog-protocol-validate-lifecycle-event-cursor.md#pa-a91074daed) |
+| `riverhog-protocol` | [riverhog_protocol.validate_principal_id](../../../authorities/riverhog-protocol/python/riverhog-protocol-validate-principal-id.md#pa-5a7acbccd0) |
 | `riverhog-protocol` | [riverhog_protocol.validate_riverhog_event](../../../authorities/riverhog-protocol/python/riverhog-protocol-validate-riverhog-event.md#pa-fb77422a4f) |
 | `riverhog-protocol` | [riverhog_protocol.verify_derivation_evidence](../../../authorities/riverhog-protocol/python/riverhog-protocol-verify-derivation-evidence.md#pa-4264a3e21e) |

@@ -17,26 +17,32 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-3e08a408c6"></a>`type`: `"object"`
 - <a id="s-0b79164001"></a>`additionalProperties`: `false`
-- <a id="s-7d83a5b1b7"></a>`required`: `["app"]`
+- <a id="s-7d83a5b1b7"></a>`required`: `["principal_id"]`
 - <a id="s-b7b55d1149"></a>`title`: `"RiverhogActor"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3d49c0fa88"></a>`app` | yes | type="string"; maxLength=160; minLength=1; title="App" |  |
 | <a id="s-dc7ca6a622"></a>`key_id` | no | anyOf=[(type="string"; maxLength=300; minLength=1); (type="null")]; title="Key Id" |  |
+| <a id="s-dedbb66501"></a>`principal_id` | yes | [PrincipalId](schemas-principalid.md); maxLength=160 |  |
 
 ### Progression, limits, and lifecycle
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
-Shared facts for every subject below: minimum=1; reason="schema-maximum"
+Shared facts for every subject below: reason="schema-maximum"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field app](#s-3d49c0fa88) | `length · characters · contract_max` | maximum=160 |
-| <a id="s-200905861e"></a>[field key_id · string value](#s-dc7ca6a622) | `length · characters · contract_max` | maximum=300 |
+| <a id="s-200905861e"></a>[field key_id · string value](#s-dc7ca6a622) | `length · characters · contract_max` | maximum=300; minimum=1 |
+| [field principal_id](#s-dedbb66501) | `length · characters · contract_max` | maximum=160 |
+
+## Maintained corroboration
+
+### Referenced contract elements
+
+- [PrincipalId](schemas-principalid.md)
 
 ## Governing policies
 
@@ -68,18 +74,12 @@ Shared facts for every subject below: minimum=1; reason="schema-maximum"
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ae88be9c9fa5a2e60977b689011476674a5c673474d5e841bf78ebb369101905 -->
+<!-- exact-contract-value: e2bb91dce20d755a785a7b4e877b25fb0f5ee4263ed42eaf195eb72916f89eb6 -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
-    "app": {
-      "maxLength": 160,
-      "minLength": 1,
-      "title": "App",
-      "type": "string"
-    },
     "key_id": {
       "anyOf": [
         {
@@ -92,10 +92,14 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       ],
       "title": "Key Id"
+    },
+    "principal_id": {
+      "$ref": "#/components/schemas/PrincipalId",
+      "maxLength": 160
     }
   },
   "required": [
-    "app"
+    "principal_id"
   ],
   "title": "RiverhogActor",
   "type": "object"

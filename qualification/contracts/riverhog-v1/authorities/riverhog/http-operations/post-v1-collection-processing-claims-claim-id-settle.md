@@ -19,7 +19,7 @@ Settle Processing Claim
 - <a id="s-6dd23404b0"></a>`summary`: `"Settle Processing Claim"`
 - <a id="s-76f90acb61"></a>`tags`: `["collection-workflows"]`
 - <a id="s-e496727564"></a>`x-riverhog-interface`: `"client-only-primitive"`
-- <a id="s-bda2663ff0"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control"]}]`
+- <a id="s-bda2663ff0"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-processing:control"]}]`
 
 ### Parameters
 
@@ -137,7 +137,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 12414faef5df650db1dc200235843a9aeaa5b6ec85710bdbbedc144d57ab5a7b -->
+<!-- exact-contract-value: 4678688e2e26f7f48d870782896401f7664677744202d3f005bd20857542f6c6 -->
 
 ```json
 {
@@ -268,7 +268,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "x-riverhog-permission-requirements": [
     {
       "any_of": [
-        "collection-transforms:control"
+        "collection-processing:control"
       ]
     }
   ]

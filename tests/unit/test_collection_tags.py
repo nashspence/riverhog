@@ -15,7 +15,7 @@ from riverhog_core.app_permissions import (
     ALL_RESOURCES,
     CATALOG_READ,
     COLLECTION_TAGS_MANAGE,
-    ApplicationPrincipal,
+    Principal,
     tag_resource,
 )
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
@@ -92,9 +92,9 @@ from tests.unit.db_helpers import sqlite_url
 from tests.unit.test_storage_adapter_archive_store import _VersionedMemoryAdapter
 
 
-def _principal(*tags: str) -> ApplicationPrincipal:
-    return ApplicationPrincipal(
-        app="tag-editor",
+def _principal(*tags: str) -> Principal:
+    return Principal(
+        id="tag-editor",
         key_id="tag-editor-key",
         access=frozenset(
             ApplicationAccess(permission, tag_resource(tag))
@@ -852,8 +852,8 @@ def test_maximum_length_tag_is_a_nonfinal_browse_page(tmp_path: Path) -> None:
         assert revision is not None
         revision.root_sha256 = tag_set.root.root_sha256
         revision.tag_set_identity = tag_set.identity
-    principal = ApplicationPrincipal(
-        app="catalog-reader",
+    principal = Principal(
+        id="catalog-reader",
         key_id="catalog-reader-key",
         access=frozenset({ApplicationAccess(CATALOG_READ, ALL_RESOURCES)}),
     )

@@ -6,7 +6,7 @@ from typing import Any, cast
 
 import pytest
 from pytest import FixtureRequest
-from riverhog_core.app_permissions import ApplicationPrincipal
+from riverhog_core.app_permissions import Principal
 from riverhog_core.catalog_base import Base
 from riverhog_core.catalog_db import SessionFactory
 from riverhog_core.catalog_models import (
@@ -80,7 +80,7 @@ def _collection(
         provenance_identity=None,
         inventory_identity="f" * 64,
         ingest_source="fixture",
-        created_by_app=creator,
+        created_by_principal_id=creator,
         created_by_key_id=None,
         created_at=NOW,
     )
@@ -130,8 +130,8 @@ def _collection(
     )
 
 
-def _principal() -> ApplicationPrincipal:
-    return ApplicationPrincipal(app="stove0", key_id="stove0-key", access=frozenset())
+def _principal() -> Principal:
+    return Principal(id="stove0", key_id="stove0-key", access=frozenset())
 
 
 def _setup(factory: SessionFactory) -> CollectionRootIdentity:
@@ -387,7 +387,7 @@ def test_claim_plan_capabilities_settlement_and_deletion_blocker(
     observer = service.authenticate_capability(str(observer_capability["token"]))
     assert observer_capability["audience"] == "fixture.observer/v1"
     assert observer is not None
-    assert observer.app == f"claim:{claim_id}"
+    assert observer.id == f"claim:{claim_id}"
     assert observer.key_id == "stove0-key"
     assert observer.has_artifact_scope is True
     assert observer.artifact_scope_capability_id == observer_capability["id"]
@@ -426,7 +426,7 @@ def test_claim_plan_capabilities_settlement_and_deletion_blocker(
     first_principal = service.authenticate_capability(str(first["token"]))
     second_principal = service.authenticate_capability(str(second["token"]))
     assert first_principal is not None and second_principal is not None
-    assert first_principal.app == second_principal.app == f"transform:{EXECUTION_ID}"
+    assert first_principal.id == second_principal.id == f"processing:{EXECUTION_ID}"
     assert first_principal.key_id == second_principal.key_id == "stove0-key"
 
     disposition_set = _seal_dispositions(
@@ -454,7 +454,7 @@ def test_claim_plan_capabilities_settlement_and_deletion_blocker(
         _collection(
             session,
             2,
-            creator=f"transform:{EXECUTION_ID}",
+            creator=f"processing:{EXECUTION_ID}",
             root="6" * 64,
             idempotency_key=EXECUTION_ID,
         )
@@ -667,7 +667,7 @@ def test_fenced_restart_refuses_an_existing_execution_output(
         _collection(
             session,
             2,
-            creator=f"transform:{EXECUTION_ID}",
+            creator=f"processing:{EXECUTION_ID}",
             root="6" * 64,
             idempotency_key=EXECUTION_ID,
         )
@@ -724,14 +724,14 @@ def test_expired_execution_upload_remains_a_deletion_blocker(
                 initial_tag_set_identity=(
                     "d99a47346b904680a2b3182b3950c159b297a427edfd0c8a23124b7bfb296ed9"
                 ),
-                ingest_source=f"transform:{EXECUTION_ID}",
+                ingest_source=f"processing:{EXECUTION_ID}",
                 encryption_format="age-v1-scrypt",
                 passphrase_id="fixture-archive-key-v1",
                 provenance_mode="omitted",
                 provenance_omission_reason="fixture",
                 provenance_identity=None,
-                initiated_by_app=f"transform:{EXECUTION_ID}",
-                initiated_by_key_id=f"transform:{EXECUTION_ID}",
+                initiated_by_principal_id=f"processing:{EXECUTION_ID}",
+                initiated_by_key_id="stove0-key",
                 event_context_json=None,
                 state="open",
                 archive_store="hot",
@@ -1037,7 +1037,7 @@ def test_multiple_processing_outcomes_retain_outputs_and_authorize_retirement(
             _collection(
                 session,
                 output_collection_id,
-                creator=f"transform:{execution_id}",
+                creator=f"processing:{execution_id}",
                 root=str(output_collection_id) * 64,
                 idempotency_key=execution_id,
             )

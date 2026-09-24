@@ -4,7 +4,7 @@
 
 <!-- contract-element: http-operations:riverhog:post-v1-collection-processing-claims-clai-1adf6d61a9:1e7eebb7ed -->
 
-Seal Transform Capability Artifacts
+Seal Processing Capability Artifacts
 
 | Audit field | Value |
 |---|---|
@@ -14,12 +14,12 @@ Seal Transform Capability Artifacts
 ## External contract
 
 <a id="s-96e6657254"></a>
-- <a id="s-7d42e7a5fe"></a>`operationId`: `"seal_transform_capability_artifacts"`
+- <a id="s-7d42e7a5fe"></a>`operationId`: `"seal_processing_capability_artifacts"`
 - <a id="s-5e482a2c54"></a>`security`: `[{"HTTPBearer":[]}]`
-- <a id="s-495f2933da"></a>`summary`: `"Seal Transform Capability Artifacts"`
+- <a id="s-495f2933da"></a>`summary`: `"Seal Processing Capability Artifacts"`
 - <a id="s-b57eaa6f41"></a>`tags`: `["collection-workflows"]`
 - <a id="s-9e6762cc73"></a>`x-riverhog-interface`: `"client-only-primitive"`
-- <a id="s-ca6c3ed8bd"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control"]}]`
+- <a id="s-ca6c3ed8bd"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-processing:control"]}]`
 
 ### Parameters
 
@@ -60,7 +60,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Related interface records
 
-- [riverhog_client.ApiClient.seal_transform_capability_artifacts](../../riverhog-client/python/riverhog-client-apiclient-seal-transform-capability-artifacts.md)
+- [riverhog_client.ApiClient.seal_processing_capability_artifacts](../../riverhog-client/python/riverhog-client-apiclient-seal-processing-capability-artifacts.md)
 
 ### Referenced contract elements
 
@@ -87,7 +87,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [riverhog/src/riverhog\_api/routers/workflows.py::seal\_transform\_capability\_artifacts](../../../../../../riverhog/src/riverhog_api/routers/workflows.py#L439)
+- **Handler:** [riverhog/src/riverhog\_api/routers/workflows.py::seal\_processing\_capability\_artifacts](../../../../../../riverhog/src/riverhog_api/routers/workflows.py#L439)
 
 ### Structural operation bindings
 
@@ -105,17 +105,17 @@ This generated record links maintained client, CLI, response-authority, and prov
   "client": "ApiClient",
   "client_bindings": [
     {
-      "public_identity": "riverhog_client.ApiClient.seal_transform_capability_artifacts",
+      "public_identity": "riverhog_client.ApiClient.seal_processing_capability_artifacts",
       "source": {
         "line": 468,
         "module": "riverhog_client.workflows",
         "path": "packages/riverhog-client/src/riverhog_client/workflows.py",
-        "symbol": "CollectionWorkflowMethods.seal_transform_capability_artifacts"
+        "symbol": "CollectionWorkflowMethods.seal_processing_capability_artifacts"
       }
     }
   ],
   "method": "POST",
-  "operation_id": "seal_transform_capability_artifacts",
+  "operation_id": "seal_processing_capability_artifacts",
   "path": "/v1/collection-processing-claims/{claim_id}/capabilities/{capability_id}/artifacts/seal",
   "provider_evidence": null,
   "read_collection": null,
@@ -136,11 +136,11 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6b1216049fe2720b9db7c1bf412923b7bb91d9b0bdefc24993f458372b9149b5 -->
+<!-- exact-contract-value: 43e0d6c622bfcc8770b323eb7b33bcd75ab20018a212e68a9a6d5f52d669f1dd -->
 
 ```json
 {
-  "operationId": "seal_transform_capability_artifacts",
+  "operationId": "seal_processing_capability_artifacts",
   "parameters": [
     {
       "in": "path",
@@ -241,7 +241,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "HTTPBearer": []
     }
   ],
-  "summary": "Seal Transform Capability Artifacts",
+  "summary": "Seal Processing Capability Artifacts",
   "tags": [
     "collection-workflows"
   ],
@@ -249,7 +249,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "x-riverhog-permission-requirements": [
     {
       "any_of": [
-        "collection-transforms:control"
+        "collection-processing:control"
       ]
     }
   ]

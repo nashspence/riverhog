@@ -9,7 +9,7 @@ from dataclasses import replace
 from pathlib import Path
 
 import pytest
-from riverhog_core.app_permissions import ApplicationPrincipal
+from riverhog_core.app_permissions import Principal
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_db import make_session_factory, session_scope
 from riverhog_core.catalog_models import (
@@ -45,8 +45,8 @@ FILES = {"document.txt": b"archive copy service\n", "notes.txt": b"small notes\n
 PACK_ID = f"pack-{0:064x}"
 VOLUME_METADATA_ID = f"volume-metadata-{0:064x}"
 VOLUME_TERMINAL_ID = f"volume-terminal-{1:064x}"
-INITIATOR = ApplicationPrincipal(
-    app="operator",
+INITIATOR = Principal(
+    id="operator",
     key_id="operator-key",
     access=frozenset(),
 )
@@ -245,7 +245,7 @@ def test_archive_copy_preserves_the_independent_object_manifest(
     events = (
         SqlAlchemyLifecycleEventService(config)
         .page(
-            owner_app="operator",
+            owner_principal_id="operator",
             after=None,
             limit=100,
         )
@@ -304,7 +304,7 @@ def test_failed_archive_copy_job_has_terminal_evidence_and_can_restart(
     assert failed["failure"] == "RuntimeError: test transfer failure"
     events = (
         SqlAlchemyLifecycleEventService(config)
-        .page(owner_app="operator", after=None, limit=100)
+        .page(owner_principal_id="operator", after=None, limit=100)
         .events
     )
     assert [event.type.rsplit(".", 1)[-1] for event in events] == [
@@ -686,7 +686,7 @@ def test_archive_copy_cancellation_closes_waiting_job_and_discards_prefix(
     events = (
         SqlAlchemyLifecycleEventService(config)
         .page(
-            owner_app="operator",
+            owner_principal_id="operator",
             after=None,
             limit=100,
         )

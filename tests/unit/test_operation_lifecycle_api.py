@@ -705,7 +705,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     )
     abandoned_claim_id = str(abandoned_claim["id"])
     abandoned_fence = int(abandoned_claim["fence"])
-    read_capability = operator.create_transform_capability(
+    read_capability = operator.create_processing_capability(
         abandoned_claim_id,
         fence=abandoned_fence,
         audience="qualification.observer/v1",
@@ -831,7 +831,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         .path
         == "document.txt"
     )
-    output_capability = operator.create_transform_capability(
+    output_capability = operator.create_processing_capability(
         claim_id,
         fence=claim_fence,
         audience="qualification.target/v1",
@@ -912,7 +912,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         adapter_id="qualification.target/v1",
         adapter_version="1.0.0",
         source_event_id=execution_id,
-        ingest_source=f"transform:{execution_id}",
+        ingest_source=f"processing:{execution_id}",
         source_context={"execution_id": execution_id},
     )
     producer_evidence_path = output_root / PRODUCER_EVIDENCE_PATH
@@ -991,7 +991,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         target.create_or_resume_collection_upload_session(
             hashlib.sha256(b"unauthorized-output").hexdigest(),
             initial_tag_set_identity=_tag_set_identity(),
-            ingest_source=f"transform:{execution_id}",
+            ingest_source=f"processing:{execution_id}",
             provenance_mode="omitted",
             provenance_omission_reason="qualification transform evidence",
         )
@@ -999,7 +999,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         target.create_or_resume_collection_upload_session(
             execution_id,
             initial_tag_set_identity=_tag_set_identity(),
-            ingest_source="transform:another-execution",
+            ingest_source="processing:another-execution",
             provenance_mode="omitted",
             provenance_omission_reason="qualification transform evidence",
         )
@@ -1007,7 +1007,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         target.create_or_resume_collection_upload_session(
             execution_id,
             initial_tag_set_identity=_tag_set_identity(),
-            ingest_source=f"transform:{execution_id}",
+            ingest_source=f"processing:{execution_id}",
             archive_store="primary",
             provenance_mode="omitted",
             provenance_omission_reason="qualification transform evidence",
@@ -1015,14 +1015,14 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     target_session = target.create_or_resume_collection_upload_session(
         execution_id,
         initial_tag_set_identity=_tag_set_identity(),
-        ingest_source=f"transform:{execution_id}",
+        ingest_source=f"processing:{execution_id}",
         provenance_mode="captured",
     )
     output_collection_id = int(target_session["collection_id"])
     replayed_target_session = target.create_or_resume_collection_upload_session(
         execution_id,
         initial_tag_set_identity=_tag_set_identity(),
-        ingest_source=f"transform:{execution_id}",
+        ingest_source=f"processing:{execution_id}",
         provenance_mode="captured",
     )
     assert replayed_target_session["resumed"] is True
@@ -1082,7 +1082,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     replayed_output = target.create_or_resume_collection_upload_session(
         execution_id,
         initial_tag_set_identity=_tag_set_identity(),
-        ingest_source=f"transform:{execution_id}",
+        ingest_source=f"processing:{execution_id}",
         provenance_mode="captured",
     )
     assert replayed_output["state"] == "finalized"

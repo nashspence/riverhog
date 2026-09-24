@@ -19,7 +19,7 @@ Record Processing Claim Dispositions
 - <a id="s-c775017c57"></a>`summary`: `"Record Processing Claim Dispositions"`
 - <a id="s-6dc9be789f"></a>`tags`: `["collection-workflows"]`
 - <a id="s-327c3b7bc9"></a>`x-riverhog-interface`: `"client-only-primitive"`
-- <a id="s-77c18cfab5"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control","collection-transforms:execute"]}]`
+- <a id="s-77c18cfab5"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-processing:control","collection-processing:execute"]}]`
 
 ### Parameters
 
@@ -137,7 +137,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1cb739b89c74bfbac6a3f6eb79d84ff0492345d59fb543c4ae8f101387e9ea14 -->
+<!-- exact-contract-value: 0327db4ec0209fcab4db4de149828fdd8065cb130054d8ad0561fe82e523d05d -->
 
 ```json
 {
@@ -268,8 +268,8 @@ The following JSON is the complete value owned at each machine-authority pointer
   "x-riverhog-permission-requirements": [
     {
       "any_of": [
-        "collection-transforms:control",
-        "collection-transforms:execute"
+        "collection-processing:control",
+        "collection-processing:execute"
       ]
     }
   ]

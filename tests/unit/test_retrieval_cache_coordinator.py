@@ -131,7 +131,7 @@ def _seed_ready_object(
                     provenance_identity=None,
                     inventory_identity="5" * 64,
                     ingest_source=None,
-                    created_by_app="fixture",
+                    created_by_principal_id="fixture",
                     created_by_key_id=None,
                     created_at=now,
                     is_published=True,

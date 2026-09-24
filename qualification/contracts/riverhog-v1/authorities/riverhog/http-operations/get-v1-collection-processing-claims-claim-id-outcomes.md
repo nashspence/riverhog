@@ -19,7 +19,7 @@ List Processing Claim Outcomes
 - <a id="s-a588fae842"></a>`summary`: `"List Processing Claim Outcomes"`
 - <a id="s-5cf61448ac"></a>`tags`: `["collection-workflows"]`
 - <a id="s-ca85553076"></a>`x-riverhog-interface`: `"client-only-primitive"`
-- <a id="s-0e79e80cde"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control"]}]`
+- <a id="s-0e79e80cde"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-processing:control"]}]`
 - <a id="s-45fd234f1c"></a>`x-riverhog-read-collection`: `{"authority":"processing-claim-outcomes","authority_parameter":"identity_sha256","cursor_parameter":"start_ordinal","fixed_limit":128,"kind":"exact-authority-page"}`
 
 ### Parameters
@@ -165,7 +165,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d93afc965fe5264b03c79c4b3a6c95ba554f3fd87762c08733042805922c8ce4 -->
+<!-- exact-contract-value: aef16eca89c24ee07a69c2d36416f0fbcd0c82500a00076f3ec13c01e6a77ce6 -->
 
 ```json
 {
@@ -280,7 +280,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "x-riverhog-permission-requirements": [
     {
       "any_of": [
-        "collection-transforms:control"
+        "collection-processing:control"
       ]
     }
   ],

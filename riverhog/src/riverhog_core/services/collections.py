@@ -18,7 +18,7 @@ from riverhog_protocol.paths import PathNormalizationError, normalize_collection
 from sqlalchemy import asc, desc, exists, func, select, union_all
 from state_schema import read_snapshot
 
-from riverhog_core.app_permissions import CATALOG_READ, ApplicationPrincipal
+from riverhog_core.app_permissions import CATALOG_READ, Principal
 from riverhog_core.browse import bounded_page, keyset_statement
 from riverhog_core.catalog_db import SessionFactory, make_session_factory, session_scope
 from riverhog_core.catalog_models import (
@@ -140,7 +140,7 @@ class SqlAlchemyCollectionService:
         self,
         collection_id: int,
         *,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> CollectionSummary:
         normalized = _normalize_collection_id(collection_id)
         with session_scope(self._session_factory) as session:
@@ -167,7 +167,7 @@ class SqlAlchemyCollectionService:
         tags: Sequence[str] = (),
         sort: str = "id",
         order: str = "asc",
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> CollectionListPage:
         (
             _,
@@ -219,7 +219,7 @@ class SqlAlchemyCollectionService:
         tags: Sequence[str] = (),
         sort: str = "id",
         order: str = "asc",
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> Iterator[CollectionSummary]:
         _, _, _, statement, key_columns = _collection_list_statement(
             q=q,
@@ -244,7 +244,7 @@ class SqlAlchemyCollectionService:
         *,
         page_size: int,
         position: tuple[str | int | bool | bytes | None, ...] | None,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> dict[str, object]:
         normalized = _normalize_collection_id(collection_id)
         with read_snapshot(self._session_factory) as session:
@@ -287,7 +287,7 @@ class SqlAlchemyCollectionService:
         self,
         collection_id: int,
         *,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> Iterator[dict[str, object]]:
         normalized = _normalize_collection_id(collection_id)
         with read_snapshot(self._session_factory) as session:
@@ -317,7 +317,7 @@ def _collection_list_statement(
     tags: Sequence[str],
     sort: str,
     order: str,
-    principal: ApplicationPrincipal | None,
+    principal: Principal | None,
 ) -> tuple[list[Any], str | None, str | None, Any, tuple[Any, ...]]:
     filters, normalized_format, normalized_passphrase_id = _collection_list_filters(
         q=q,
@@ -359,7 +359,7 @@ def _collection_list_filters(
     tags: Sequence[str],
     sort: str,
     order: str,
-    principal: ApplicationPrincipal | None,
+    principal: Principal | None,
 ) -> tuple[list[Any], str | None, str | None]:
     if sort not in _COLLECTION_SORT_FIELDS:
         raise BadRequest(f"sort must be one of {', '.join(sorted(_COLLECTION_SORT_FIELDS))}")

@@ -46,7 +46,7 @@ Choose an authority to inspect this policy's indexed contract-element applicatio
 | [riverhog-archive-contracts](applications/riverhog-archive-contracts.md) | 72 |
 | [riverhog-canonical-json](applications/riverhog-canonical-json.md) | 13 |
 | [riverhog-client](applications/riverhog-client.md) | 268 |
-| [riverhog-protocol](applications/riverhog-protocol.md) | 324 |
+| [riverhog-protocol](applications/riverhog-protocol.md) | 326 |
 | [riverhog-provenance](applications/riverhog-provenance.md) | 105 |
 | [riverhog-provenance-contracts](applications/riverhog-provenance-contracts.md) | 16 |
 | [riverhog-storage-adapter-asgi-support](applications/riverhog-storage-adapter-asgi-support.md) | 1 |

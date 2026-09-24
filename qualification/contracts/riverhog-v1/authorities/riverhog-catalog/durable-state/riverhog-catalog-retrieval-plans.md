@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
 | <a id="s-4746cd74e6"></a>`id` | `VARCHAR` | no | `—` | — |
-| <a id="s-ab1db00bfb"></a>`app` | `VARCHAR` | no | `—` | — |
+| <a id="s-ab1db00bfb"></a>`principal_id` | `VARCHAR` | no | `—` | — |
 | <a id="s-75af01c0c0"></a>`initiated_by_key_id` | `VARCHAR` | yes | `—` | — |
 | <a id="s-1be2709ecf"></a>`idempotency_key` | `VARCHAR` | no | `—` | — |
 | <a id="s-d0add89604"></a>`creation_identity_sha256` | `VARCHAR(64)` | no | `—` | — |
@@ -48,7 +48,7 @@ Exact externally visible contract owned by this contract element.
 | Kind | Name | Exact definition |
 |---|---|---|
 | <a id="s-1ada749bca"></a>`primary-key` | `—` | `PRIMARY KEY (id)` |
-| <a id="s-03ba25055d"></a>`unique` | `uq_retrieval_plans_key_idempotency` | `CONSTRAINT uq_retrieval_plans_key_idempotency UNIQUE (app, initiated_by_key_id, idempotency_key)` |
+| <a id="s-03ba25055d"></a>`unique` | `uq_retrieval_plans_key_idempotency` | `CONSTRAINT uq_retrieval_plans_key_idempotency UNIQUE (principal_id, initiated_by_key_id, idempotency_key)` |
 | <a id="s-34f714e0dd"></a>`check` | `ck_retrieval_plans_state` | `CONSTRAINT ck_retrieval_plans_state CHECK (state IN ('planning','ready','consumed','expired','failed'))` |
 | <a id="s-161ec1b5d5"></a>`check` | `ck_retrieval_plans_lease` | `CONSTRAINT ck_retrieval_plans_lease CHECK (lease_seconds > 0)` |
 | <a id="s-588cdfc014"></a>`check` | `ck_retrieval_plans_restore_policy` | `CONSTRAINT ck_retrieval_plans_restore_policy CHECK (restore_policy IN ('allow','never'))` |
@@ -91,7 +91,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2817beb86d63085cb240382fe39a91358cbd4eb6fc72e55b52b54cd6eb76b1ef -->
+<!-- exact-contract-value: 99bd462bd38386f5a471419d0ded93c102698c8a1dfce90a919473ff19333085 -->
 
 ```json
 {
@@ -103,8 +103,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "VARCHAR"
     },
     {
-      "definition": "app VARCHAR NOT NULL",
-      "name": "app",
+      "definition": "principal_id VARCHAR NOT NULL",
+      "name": "principal_id",
       "nullable": false,
       "type": "VARCHAR"
     },
@@ -233,11 +233,11 @@ The following JSON is the complete value owned at each machine-authority pointer
     },
     {
       "columns": [
-        "app",
+        "principal_id",
         "initiated_by_key_id",
         "idempotency_key"
       ],
-      "definition": "CONSTRAINT uq_retrieval_plans_key_idempotency UNIQUE (app, initiated_by_key_id, idempotency_key)",
+      "definition": "CONSTRAINT uq_retrieval_plans_key_idempotency UNIQUE (principal_id, initiated_by_key_id, idempotency_key)",
       "kind": "unique",
       "name": "uq_retrieval_plans_key_idempotency"
     },

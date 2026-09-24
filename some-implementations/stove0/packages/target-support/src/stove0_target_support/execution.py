@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import threading
 
-from riverhog_client.transform import ClaimedCollectionRuntimeRegistry
+from riverhog_client.processing import ClaimedCollectionRuntimeRegistry
 from stove0_target_protocol import TargetJobRequest, TargetJobStatus
 
 

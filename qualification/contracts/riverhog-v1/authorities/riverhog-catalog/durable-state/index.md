@@ -29,6 +29,8 @@ Persisted structures, schema heads, and v1 transition obligations.
 | [collection_files](riverhog-catalog-collection-files.md) | Relational table |
 | [collection_mutable_document_publication_attempts](riverhog-catalog-collection-mutable-document-publication-attempts.md) | Relational table |
 | [collection_mutable_document_reclamations](riverhog-catalog-collection-mutable-document-reclamations.md) | Relational table |
+| [collection_processing_capabilities](riverhog-catalog-collection-processing-capabilities.md) | Relational table |
+| [collection_processing_capability_artifacts](riverhog-catalog-collection-processing-capability-artifacts.md) | Relational table |
 | [collection_processing_claim_artifacts](riverhog-catalog-collection-processing-claim-artifacts.md) | Relational table |
 | [collection_processing_claim_inputs](riverhog-catalog-collection-processing-claim-inputs.md) | Relational table |
 | [collection_processing_claims](riverhog-catalog-collection-processing-claims.md) | Relational table |
@@ -60,8 +62,6 @@ Persisted structures, schema heads, and v1 transition obligations.
 | [collection_tag_revisions](riverhog-catalog-collection-tag-revisions.md) | Relational table |
 | [collection_tag_visibility](riverhog-catalog-collection-tag-visibility.md) | Relational table |
 | [collection_tags](riverhog-catalog-collection-tags.md) | Relational table |
-| [collection_transform_capabilities](riverhog-catalog-collection-transform-capabilities.md) | Relational table |
-| [collection_transform_capability_artifacts](riverhog-catalog-collection-transform-capability-artifacts.md) | Relational table |
 | [collection_upload_files](riverhog-catalog-collection-upload-files.md) | Relational table |
 | [collection_upload_provenance_archive_volumes](riverhog-catalog-collection-upload-provenance-archive-volumes.md) | Relational table |
 | [collection_upload_provenance_journal_chunks](riverhog-catalog-collection-upload-provenance-journal-chunks.md) | Relational table |
@@ -75,9 +75,9 @@ Persisted structures, schema heads, and v1 transition obligations.
 | [collection_upload_tags](riverhog-catalog-collection-upload-tags.md) | Relational table |
 | [collection_uploads](riverhog-catalog-collection-uploads.md) | Relational table |
 | [collections](riverhog-catalog-collections.md) | Relational table |
+| [ix_collection_processing_capability_artifacts_order](riverhog-catalog-ix-collection-processing-capability-artifacts-order.md) | Unique index |
 | [ix_collection_processing_claim_artifacts_order](riverhog-catalog-ix-collection-processing-claim-artifacts-order.md) | Unique index |
 | [ix_collection_processing_outcomes_order](riverhog-catalog-ix-collection-processing-outcomes-order.md) | Unique index |
-| [ix_collection_transform_capability_artifacts_order](riverhog-catalog-ix-collection-transform-capability-artifacts-order.md) | Unique index |
 | [ix_processing_disposition_outputs_order](riverhog-catalog-ix-processing-disposition-outputs-order.md) | Unique index |
 | [ix_processing_dispositions_order](riverhog-catalog-ix-processing-dispositions-order.md) | Unique index |
 | [key_download_reservations](riverhog-catalog-key-download-reservations.md) | Relational table |
@@ -98,4 +98,4 @@ Persisted structures, schema heads, and v1 transition obligations.
 | [ux_app_keys_token_sha256](riverhog-catalog-ux-app-keys-token-sha256.md) | Unique index |
 | [ux_collection_archive_object_uploads_sequence](riverhog-catalog-ux-collection-archive-object-uploads-sequence.md) | Unique index |
 | [ux_collection_upload_files_order](riverhog-catalog-ux-collection-upload-files-order.md) | Unique index |
-| [ux_collection_uploads_application_idempotency_key](riverhog-catalog-ux-collection-uploads-application-idempotency-key.md) | Unique index |
+| [ux_collection_uploads_principal_idempotency_key](riverhog-catalog-ux-collection-uploads-principal-idempotency-key.md) | Unique index |

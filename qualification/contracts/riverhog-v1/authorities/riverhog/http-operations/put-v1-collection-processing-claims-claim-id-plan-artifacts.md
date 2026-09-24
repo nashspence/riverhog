@@ -19,7 +19,7 @@ Append Processing Claim Artifacts
 - <a id="s-04c5c03d49"></a>`summary`: `"Append Processing Claim Artifacts"`
 - <a id="s-0077427033"></a>`tags`: `["collection-workflows"]`
 - <a id="s-76985cec03"></a>`x-riverhog-interface`: `"client-only-primitive"`
-- <a id="s-7ad2ed3f39"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control"]}]`
+- <a id="s-7ad2ed3f39"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-processing:control"]}]`
 
 ### Parameters
 
@@ -135,7 +135,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 19048850d9df9b30867cae262c730bc01c12efd5eac1fed8cc255aeff7fcb3e9 -->
+<!-- exact-contract-value: 04936cd434bab9f39f215a3ab7be0e14e9a12660dc8a0b5d3099956d6bf6f8d6 -->
 
 ```json
 {
@@ -239,7 +239,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "x-riverhog-permission-requirements": [
     {
       "any_of": [
-        "collection-transforms:control"
+        "collection-processing:control"
       ]
     }
   ]

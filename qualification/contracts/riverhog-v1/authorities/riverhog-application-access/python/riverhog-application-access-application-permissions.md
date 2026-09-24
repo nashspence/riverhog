@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-0206a147c3"></a>`kind`: `"constant"`
-- <a id="s-d40c2a6c34"></a>`value`: `["archives:manage","archives:read","catalog:read","collection-descriptions:manage","collection-tags:manage","collection-transforms:control","collection-transforms:execute","collections:create","collections:delete","events:read","events:read_all","keys:manage","provenance:export","provenance:read","quotas:manage","retrieval:manage"]`
+- <a id="s-d40c2a6c34"></a>`value`: `["archives:manage","archives:read","catalog:read","collection-descriptions:manage","collection-processing:control","collection-processing:execute","collection-tags:manage","collections:create","collections:delete","events:read","events:read_all","keys:manage","provenance:export","provenance:read","quotas:manage","retrieval:manage"]`
 
 ## Governing policies
 
@@ -51,7 +51,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b81857b330b310f1923bb10a053f983c5163f7103464c210e0ae14b75d4a9ba4 -->
+<!-- exact-contract-value: 495e60bf53323268f909575b459d5d03698eec7087487c438792b43e9895f0a9 -->
 
 ```json
 {
@@ -62,9 +62,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "archives:read",
       "catalog:read",
       "collection-descriptions:manage",
+      "collection-processing:control",
+      "collection-processing:execute",
       "collection-tags:manage",
-      "collection-transforms:control",
-      "collection-transforms:execute",
       "collections:create",
       "collections:delete",
       "events:read",

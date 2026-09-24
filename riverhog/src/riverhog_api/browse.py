@@ -12,7 +12,7 @@ from http_api_contracts.browse import (
     BrowseScalar,
     BrowseTokenError,
 )
-from riverhog_core.app_permissions import ApplicationPrincipal
+from riverhog_core.app_permissions import Principal
 from riverhog_protocol.errors import BadRequest
 
 from riverhog_api.deps import ServiceContainer
@@ -29,7 +29,7 @@ def canonical_selectors(**values: object) -> dict[str, object]:
 
 def page_position(
     container: ServiceContainer,
-    principal: ApplicationPrincipal,
+    principal: Principal,
     *,
     operation: str,
     page_token: str | None,
@@ -41,7 +41,7 @@ def page_position(
         return container.browse_tokens.verify(
             page_token,
             operation=operation,
-            principal={"app": principal.app, "key_id": principal.key_id},
+            principal={"principal_id": principal.id, "key_id": principal.key_id},
             selectors=selectors,
         )
     except BrowseTokenError as exc:
@@ -52,7 +52,7 @@ def page_payload(
     payload: Mapping[str, object],
     *,
     container: ServiceContainer,
-    principal: ApplicationPrincipal,
+    principal: Principal,
     operation: str,
     selectors: Mapping[str, object],
 ) -> dict[str, object]:
@@ -63,7 +63,7 @@ def page_payload(
     result["next_page_token"] = (
         container.browse_tokens.issue(
             operation=operation,
-            principal={"app": principal.app, "key_id": principal.key_id},
+            principal={"principal_id": principal.id, "key_id": principal.key_id},
             selectors=selectors,
             position=position,
         )

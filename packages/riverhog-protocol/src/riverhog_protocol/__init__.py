@@ -143,6 +143,8 @@ from riverhog_protocol.collection_workflow_transport import (
     CollectionDerivationResponseDocument,
     CollectionRootIdentityDocument,
     OperationIdentityDocument,
+    ProcessingCapabilityCreateDocument,
+    ProcessingCapabilityDocument,
     ProcessingClaimAbandonDocument,
     ProcessingClaimCreateDocument,
     ProcessingClaimDocument,
@@ -158,8 +160,6 @@ from riverhog_protocol.collection_workflow_transport import (
     ProcessingOutcomeIdentityDocument,
     RecipeIdentityDocument,
     RetirementClaimReferenceDocument,
-    TransformCapabilityCreateDocument,
-    TransformCapabilityDocument,
 )
 from riverhog_protocol.collection_workflows import (
     DERIVATION_DISPOSITION_EVIDENCE_PREFIX,
@@ -227,6 +227,7 @@ from riverhog_protocol.portable_collection import (
     PortableCollectionInventoryPage,
     portable_collection_inventory_identity,
 )
+from riverhog_protocol.principal_ids import PrincipalId, validate_principal_id
 from riverhog_protocol.retrieval_transport import (
     RetrievalFileReferenceDocument,
     RetrievalFileReferenceSetDocument,
@@ -327,6 +328,8 @@ __all__ += [
     "CollectionRootIdentity",
     "CollectionProcessingOutcomeIdentity",
     "CollectionId",
+    "PrincipalId",
+    "validate_principal_id",
     "CollectionIdParameter",
     "DERIVATION_EVIDENCE_PATH",
     "DERIVATION_DISPOSITION_EVIDENCE_PREFIX",
@@ -392,8 +395,8 @@ __all__ += [
     "ProcessingOutcomeIdentityDocument",
     "RecipeIdentityDocument",
     "RetirementClaimReferenceDocument",
-    "TransformCapabilityCreateDocument",
-    "TransformCapabilityDocument",
+    "ProcessingCapabilityCreateDocument",
+    "ProcessingCapabilityDocument",
     "COLLECTION_FINALIZED",
     "COLLECTION_WAKE_EVENT_TYPES",
     "MAX_LIFECYCLE_EVENT_SEQUENCE",

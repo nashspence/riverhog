@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-8d2ac63b02"></a>`kind`: `"method"`
-- <a id="s-9435df7d85"></a>`signature`: `"\"(self, root: 'Path') -> 'TransformWorkspace'\""`
+- <a id="s-9435df7d85"></a>`signature`: `"\"(self, root: 'Path') -> 'ProcessingWorkspace'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2140660a58b8d275fe912699a2bb9bad1a08988f4259d8ee71c22aa8ce772893 -->
+<!-- exact-contract-value: df2d90b6b5ae81ddc782c14d49d34f69fdf83797a22acdb53c062891374451e9 -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, root: 'Path') -> 'TransformWorkspace'\""
+    "signature": "\"(self, root: 'Path') -> 'ProcessingWorkspace'\""
   },
   "distribution": "stove0-target-support",
   "module": "stove0_target_support",

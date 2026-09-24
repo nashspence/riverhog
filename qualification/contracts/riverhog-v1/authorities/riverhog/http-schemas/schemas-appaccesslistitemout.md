@@ -90,7 +90,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-99d8f46218"></a>`permission` | yes | enum=["collection-transforms:control","collection-transforms:execute","events:read","events:read_all","keys:manage","quotas:manage"] |  |
+| <a id="s-99d8f46218"></a>`permission` | yes | enum=["collection-processing:control","collection-processing:execute","events:read","events:read_all","keys:manage","quotas:manage"] |  |
 | <a id="s-8e2da8ff39"></a>`resource` | no | const="*" |  |
 
 ## Maintained corroboration
@@ -129,7 +129,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7bc29c0ddede1e5fd1ca2063d9f2dc96c470b99584e673394ed043ac5cb2c095 -->
+<!-- exact-contract-value: a3a192c6bc551d30426ecf9069c3572ea1613216057ff3044174948d4178efde -->
 
 ```json
 {
@@ -192,8 +192,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "permission": {
               "enum": [
-                "collection-transforms:control",
-                "collection-transforms:execute",
+                "collection-processing:control",
+                "collection-processing:execute",
                 "events:read",
                 "events:read_all",
                 "keys:manage",

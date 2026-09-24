@@ -363,8 +363,8 @@ class CollectionProcessingDispositionOutputRecord(Base):
     )
 
 
-class CollectionTransformCapabilityRecord(Base):
-    __tablename__ = "collection_transform_capabilities"
+class CollectionProcessingCapabilityRecord(Base):
+    __tablename__ = "collection_processing_capabilities"
 
     id: Mapped[str] = mapped_column(String(32), primary_key=True)
     claim_id: Mapped[str] = mapped_column(
@@ -389,15 +389,15 @@ class CollectionTransformCapabilityRecord(Base):
     __table_args__ = (
         CheckConstraint(
             "state IN ('receiving','active','revoked')",
-            name="ck_collection_transform_capabilities_state",
+            name="ck_collection_processing_capabilities_state",
         ),
-        CheckConstraint("fence >= 1", name="ck_collection_transform_capabilities_fence"),
+        CheckConstraint("fence >= 1", name="ck_collection_processing_capabilities_fence"),
         CheckConstraint(
             "artifact_count >= 0 AND artifact_bytes >= 0",
-            name="ck_collection_transform_capabilities_artifact_totals",
+            name="ck_collection_processing_capabilities_artifact_totals",
         ),
         Index(
-            "ix_collection_transform_capabilities_claim_state",
+            "ix_collection_processing_capabilities_claim_state",
             "claim_id",
             "state",
             "expires_at",
@@ -405,12 +405,12 @@ class CollectionTransformCapabilityRecord(Base):
     )
 
 
-class CollectionTransformCapabilityArtifactRecord(Base):
-    __tablename__ = "collection_transform_capability_artifacts"
+class CollectionProcessingCapabilityArtifactRecord(Base):
+    __tablename__ = "collection_processing_capability_artifacts"
 
     capability_id: Mapped[str] = mapped_column(
         String(32),
-        ForeignKey("collection_transform_capabilities.id", ondelete="CASCADE"),
+        ForeignKey("collection_processing_capabilities.id", ondelete="CASCADE"),
         primary_key=True,
     )
     collection_id: Mapped[int] = mapped_column(_COLLECTION_ID_TYPE, primary_key=True)
@@ -421,13 +421,13 @@ class CollectionTransformCapabilityArtifactRecord(Base):
 
     __table_args__ = (
         Index(
-            "ix_collection_transform_capability_artifacts_order",
+            "ix_collection_processing_capability_artifacts_order",
             "capability_id",
             "artifact_order",
             unique=True,
         ),
         Index(
-            "ix_collection_transform_capability_artifacts_collection",
+            "ix_collection_processing_capability_artifacts_collection",
             "collection_id",
             "path",
             "capability_id",
@@ -523,6 +523,6 @@ __all__ = [
     "CollectionProcessingClaimInputRecord",
     "CollectionProcessingClaimRecord",
     "CollectionProcessingOutcomeRecord",
-    "CollectionTransformCapabilityArtifactRecord",
-    "CollectionTransformCapabilityRecord",
+    "CollectionProcessingCapabilityArtifactRecord",
+    "CollectionProcessingCapabilityRecord",
 ]

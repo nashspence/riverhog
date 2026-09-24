@@ -170,7 +170,7 @@ def test_retirement_blocks_an_active_plan_and_reclaims_its_expired_authority(
         session.add(
             RetrievalPlanRecord(
                 id=plan_id,
-                app="reader",
+                principal_id="reader",
                 initiated_by_key_id="key",
                 idempotency_key=plan_id,
                 creation_identity_sha256="d" * 64,

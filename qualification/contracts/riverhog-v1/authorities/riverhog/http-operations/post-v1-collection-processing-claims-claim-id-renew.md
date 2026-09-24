@@ -19,7 +19,7 @@ Renew Processing Claim
 - <a id="s-c1337a9b23"></a>`summary`: `"Renew Processing Claim"`
 - <a id="s-9c58bb1be5"></a>`tags`: `["collection-workflows"]`
 - <a id="s-d8bc2906f5"></a>`x-riverhog-interface`: `"client-only-primitive"`
-- <a id="s-a144c3ea01"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control","collection-transforms:execute"]}]`
+- <a id="s-a144c3ea01"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-processing:control","collection-processing:execute"]}]`
 
 ### Parameters
 
@@ -137,7 +137,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d9e21cabf3030d901480d7b5491d7dc5d695988b36614535234d9f1f42535e9b -->
+<!-- exact-contract-value: dc6dbc5cc873b67684d9c727ddffbf92de4baf861459cf788be1e06f6d360434 -->
 
 ```json
 {
@@ -268,8 +268,8 @@ The following JSON is the complete value owned at each machine-authority pointer
   "x-riverhog-permission-requirements": [
     {
       "any_of": [
-        "collection-transforms:control",
-        "collection-transforms:execute"
+        "collection-processing:control",
+        "collection-processing:execute"
       ]
     }
   ]

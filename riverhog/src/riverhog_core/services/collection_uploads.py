@@ -111,7 +111,7 @@ from riverhog_core.app_permissions import (
     COLLECTION_TAGS_MANAGE,
     COLLECTIONS_CREATE,
     COLLECTIONS_DELETE,
-    ApplicationPrincipal,
+    Principal,
     tag_resource,
 )
 from riverhog_core.archive_manifest import (
@@ -340,7 +340,7 @@ class SqlAlchemyCollectionUploadService:
         tags: Sequence[CollectionTag] = (),
         initial_tag_set_identity: str | None = None,
         archive_store: str | None,
-        initiator: ApplicationPrincipal,
+        initiator: Principal,
         event_context: Mapping[str, object] | None,
         provenance_mode: str = "captured",
         provenance_omission_reason: str | None = None,
@@ -391,7 +391,7 @@ class SqlAlchemyCollectionUploadService:
                 select(CollectionRecord)
                 .options(selectinload(CollectionRecord.archive_copies))
                 .where(
-                    CollectionRecord.created_by_app == initiator.app,
+                    CollectionRecord.created_by_principal_id == initiator.id,
                     CollectionRecord.creation_idempotency_key == key,
                     CollectionRecord.is_published.is_(True),
                 )
@@ -410,7 +410,7 @@ class SqlAlchemyCollectionUploadService:
             upload = session.scalar(
                 select(CollectionUploadRecord)
                 .where(
-                    CollectionUploadRecord.initiated_by_app == initiator.app,
+                    CollectionUploadRecord.initiated_by_principal_id == initiator.id,
                     CollectionUploadRecord.idempotency_key == key,
                 )
                 .with_for_update()
@@ -448,7 +448,7 @@ class SqlAlchemyCollectionUploadService:
                 provenance_omission_reason=normalized_omission_reason,
                 encryption_format=self._config.archive_active_encryption.format,
                 passphrase_id=self._config.archive_active_encryption.passphrase_id,
-                initiated_by_app=initiator.app,
+                initiated_by_principal_id=initiator.id,
                 initiated_by_key_id=initiator.key_id,
                 event_context_json=context_json,
                 state="open",
@@ -470,7 +470,7 @@ class SqlAlchemyCollectionUploadService:
                     incremental_volume_planner_checkpoint_bytes(checkpoint).decode("utf-8")
                 ),
                 derivative_provenance_state=(
-                    "discovering" if initiator.app.startswith("transform:") else "not-required"
+                    "discovering" if initiator.id.startswith("processing:") else "not-required"
                 ),
             )
             session.add(upload)
@@ -495,17 +495,17 @@ class SqlAlchemyCollectionUploadService:
             session.flush()
             return _upload_payload(session, upload, resumed=False)
 
-    def require_access(self, collection_id: int, principal: ApplicationPrincipal) -> None:
+    def require_access(self, collection_id: int, principal: Principal) -> None:
         normalized = _collection_id(collection_id)
         with session_scope(self._session_factory) as session:
             upload = session.get(CollectionUploadRecord, normalized)
             if upload is not None:
-                if upload.initiated_by_app != principal.app:
+                if upload.initiated_by_principal_id != principal.id:
                     raise NotFound(f"collection upload not found: {normalized}")
                 _require_upload_create_access(session, normalized, principal)
                 return
             collection = session.get(CollectionRecord, normalized)
-            if collection is None or collection.created_by_app != principal.app:
+            if collection is None or collection.created_by_principal_id != principal.id:
                 raise NotFound(f"collection upload not found: {normalized}")
             require_collection_create_access(principal, COLLECTIONS_CREATE)
 
@@ -514,7 +514,7 @@ class SqlAlchemyCollectionUploadService:
         collection_id: int,
         tags: Sequence[CollectionTag],
         *,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         normalized = _collection_id(collection_id)
         canonical = _canonical_tag_batch(tags, allow_empty=False)
@@ -525,7 +525,7 @@ class SqlAlchemyCollectionUploadService:
                 .where(CollectionUploadRecord.collection_id == normalized)
                 .with_for_update()
             )
-            if upload is None or upload.initiated_by_app != principal.app:
+            if upload is None or upload.initiated_by_principal_id != principal.id:
                 raise NotFound(f"collection upload not found: {normalized}")
             existing_tag_count = _require_upload_create_access(
                 session,
@@ -572,14 +572,14 @@ class SqlAlchemyCollectionUploadService:
                 "tag_count": existing_tag_count + added,
             }
 
-    def require_read_access(self, collection_id: int, principal: ApplicationPrincipal) -> None:
+    def require_read_access(self, collection_id: int, principal: Principal) -> None:
         """Allow the owning producer or a collection-scoped deletion operator to inspect."""
 
         normalized = _collection_id(collection_id)
         with session_scope(self._session_factory) as session:
             upload = session.get(CollectionUploadRecord, normalized)
             if upload is not None:
-                if upload.initiated_by_app == principal.app:
+                if upload.initiated_by_principal_id == principal.id:
                     _require_upload_create_access(session, normalized, principal)
                     return
                 if _upload_visible_to_deleter(session, upload, principal):
@@ -588,7 +588,7 @@ class SqlAlchemyCollectionUploadService:
             collection = session.get(CollectionRecord, normalized)
             if collection is None:
                 raise NotFound(f"collection upload not found: {normalized}")
-            if collection.created_by_app == principal.app:
+            if collection.created_by_principal_id == principal.id:
                 require_collection_create_access(principal, COLLECTIONS_CREATE)
                 return
             require_collection_access(
@@ -601,7 +601,7 @@ class SqlAlchemyCollectionUploadService:
     def require_discard_access(
         self,
         collection_id: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> None:
         """Require deletion authority scoped to this upload identity."""
 
@@ -663,7 +663,7 @@ class SqlAlchemyCollectionUploadService:
                     value,
                     provenance_mode=upload.provenance_mode,
                     constraints=constraints_document,
-                    allow_server_derived=upload.initiated_by_app.startswith("transform:"),
+                    allow_server_derived=upload.initiated_by_principal_id.startswith("processing:"),
                 )
                 for value in batch_document.files
             )
@@ -1426,7 +1426,7 @@ class SqlAlchemyCollectionUploadService:
         state: str | None,
         sort: str,
         order: str,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         _validate_upload_list(page_size=page_size, sort=sort, order=order)
         with read_snapshot(self._session_factory) as session:
@@ -1473,7 +1473,7 @@ class SqlAlchemyCollectionUploadService:
         state: str | None,
         sort: str,
         order: str,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> Iterator[dict[str, object]]:
         _validate_upload_list(page_size=100, sort=sort, order=order)
         statement, key_columns = _upload_list_statement(
@@ -2495,7 +2495,7 @@ class SqlAlchemyCollectionUploadService:
                     tag_root_sha256=upload.tag_root_sha256,
                     tag_set_identity=upload.tag_set_identity,
                     tag_head_identity=upload.tag_head_identity,
-                    created_by_app=upload.initiated_by_app,
+                    created_by_principal_id=upload.initiated_by_principal_id,
                     created_by_key_id=upload.initiated_by_key_id,
                     created_at=upload.opened_at or now,
                     is_published=False,
@@ -4120,7 +4120,7 @@ def _canonical_tag_batch(
     return tuple(sorted(canonical, key=lambda value: value.encode("utf-8")))
 
 
-def _require_tag_assignment_access(principal: ApplicationPrincipal, tags: Sequence[str]) -> None:
+def _require_tag_assignment_access(principal: Principal, tags: Sequence[str]) -> None:
     for tag in tags:
         if not principal.allows(COLLECTION_TAGS_MANAGE, tag_resource(tag)):
             raise NotFound("collection tag assignment is not available")
@@ -4140,7 +4140,7 @@ def _upload_tag_count(session: Session, collection_id: int) -> int:
 def _require_upload_create_access(
     session: Session,
     collection_id: int,
-    principal: ApplicationPrincipal,
+    principal: Principal,
     *,
     additional_tags: Sequence[CollectionTag] = (),
 ) -> int:
@@ -4201,16 +4201,16 @@ def _collection_upload_creation_identity(
 def _require_transform_output_intent(
     session: Session,
     *,
-    initiator: ApplicationPrincipal,
+    initiator: Principal,
     idempotency_key: str,
     ingest_source: str | None,
     archive_store: str | None,
 ) -> None:
     # The transform namespace is reserved for claim-scoped capability principals.
-    prefix = "transform:"
-    if not initiator.app.startswith(prefix):
+    prefix = "processing:"
+    if not initiator.id.startswith(prefix):
         return
-    execution_id = initiator.app.removeprefix(prefix)
+    execution_id = initiator.id.removeprefix(prefix)
     if _SHA256_RE.fullmatch(execution_id) is None:
         raise Forbidden("transform output collections require a scoped capability")
     claim = session.scalar(
@@ -4228,7 +4228,7 @@ def _require_transform_output_intent(
         raise Forbidden("transform output intent is not active")
     if (
         idempotency_key != execution_id
-        or ingest_source != f"transform:{execution_id}"
+        or ingest_source != f"processing:{execution_id}"
         or archive_store is not None
     ):
         raise Forbidden("collection upload differs from the sealed transform output intent")
@@ -4239,7 +4239,7 @@ def _require_transform_control_paths(
     upload: CollectionUploadRecord,
     files: Sequence[_RegisteredFile],
 ) -> None:
-    if not upload.initiated_by_app.startswith("transform:"):
+    if not upload.initiated_by_principal_id.startswith("processing:"):
         return
     for item in files:
         path = str(item["path"])
@@ -4374,10 +4374,10 @@ def _require_transform_output_disposition_coverage(
     registration deliberately remains resumable construction state.
     """
 
-    prefix = "transform:"
-    if not upload.initiated_by_app.startswith(prefix):
+    prefix = "processing:"
+    if not upload.initiated_by_principal_id.startswith(prefix):
         return
-    execution_id = upload.initiated_by_app.removeprefix(prefix)
+    execution_id = upload.initiated_by_principal_id.removeprefix(prefix)
     claim = session.scalar(
         select(CollectionProcessingClaimRecord).where(
             CollectionProcessingClaimRecord.execution_id == execution_id
@@ -4766,7 +4766,7 @@ def _derivative_claim(
     session: Session,
     upload: CollectionUploadRecord,
 ) -> CollectionProcessingClaimRecord:
-    execution_id = upload.initiated_by_app.removeprefix("transform:")
+    execution_id = upload.initiated_by_principal_id.removeprefix("processing:")
     claim = session.scalar(
         select(CollectionProcessingClaimRecord).where(
             CollectionProcessingClaimRecord.execution_id == execution_id
@@ -6402,7 +6402,7 @@ def _upload_list_statement(
     state: str | None,
     sort: str,
     order: str,
-    principal: ApplicationPrincipal,
+    principal: Principal,
 ) -> tuple[Any, tuple[Any, ...]]:
     if state is not None and state not in _UPLOAD_STATES:
         raise BadRequest("invalid collection upload state")
@@ -6511,14 +6511,14 @@ def _normalize_custody_mode(value: str) -> CollectionUploadCustodyMode:
 def _upload_visible_to_deleter(
     session: Session,
     upload: CollectionUploadRecord,
-    principal: ApplicationPrincipal,
+    principal: Principal,
 ) -> bool:
     del session
     return principal.allows_collection(COLLECTIONS_DELETE, upload.collection_id)
 
 
-def _upload_read_filter(principal: ApplicationPrincipal) -> Any:
-    owner = CollectionUploadRecord.initiated_by_app == principal.app
+def _upload_read_filter(principal: Principal) -> Any:
+    owner = CollectionUploadRecord.initiated_by_principal_id == principal.id
     resources = permission_resources(principal, COLLECTIONS_DELETE)
     if ALL_RESOURCES in resources:
         return true()
@@ -6550,9 +6550,9 @@ def _orphan_discard_plan(
         or 0
     )
     blockers = [] if upload.state == "orphaned" else [f"upload session is {upload.state}"]
-    transform_prefix = "transform:"
-    if upload.initiated_by_app.startswith(transform_prefix):
-        execution_id = upload.initiated_by_app.removeprefix(transform_prefix)
+    processing_prefix = "processing:"
+    if upload.initiated_by_principal_id.startswith(processing_prefix):
+        execution_id = upload.initiated_by_principal_id.removeprefix(processing_prefix)
         claim = session.scalar(
             select(CollectionProcessingClaimRecord).where(
                 CollectionProcessingClaimRecord.execution_id == execution_id

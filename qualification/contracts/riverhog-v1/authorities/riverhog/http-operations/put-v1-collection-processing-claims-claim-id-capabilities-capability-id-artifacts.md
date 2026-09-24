@@ -4,7 +4,7 @@
 
 <!-- contract-element: http-operations:riverhog:put-v1-collection-processing-claims-claim-35a561aa3f:87092575bd -->
 
-Append Transform Capability Artifacts
+Append Processing Capability Artifacts
 
 | Audit field | Value |
 |---|---|
@@ -14,12 +14,12 @@ Append Transform Capability Artifacts
 ## External contract
 
 <a id="s-7fa2a829fd"></a>
-- <a id="s-fef5d56060"></a>`operationId`: `"append_transform_capability_artifacts"`
+- <a id="s-fef5d56060"></a>`operationId`: `"append_processing_capability_artifacts"`
 - <a id="s-3d32ce3f94"></a>`security`: `[{"HTTPBearer":[]}]`
-- <a id="s-3461877a59"></a>`summary`: `"Append Transform Capability Artifacts"`
+- <a id="s-3461877a59"></a>`summary`: `"Append Processing Capability Artifacts"`
 - <a id="s-ce805546ae"></a>`tags`: `["collection-workflows"]`
 - <a id="s-ec4931d918"></a>`x-riverhog-interface`: `"client-only-primitive"`
-- <a id="s-50689e5f28"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control"]}]`
+- <a id="s-50689e5f28"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-processing:control"]}]`
 
 ### Parameters
 
@@ -60,7 +60,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Related interface records
 
-- [riverhog_client.ApiClient.append_transform_capability_artifacts](../../riverhog-client/python/riverhog-client-apiclient-append-transform-capability-artifacts.md)
+- [riverhog_client.ApiClient.append_processing_capability_artifacts](../../riverhog-client/python/riverhog-client-apiclient-append-processing-capability-artifacts.md)
 
 ### Referenced contract elements
 
@@ -87,7 +87,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [riverhog/src/riverhog\_api/routers/workflows.py::append\_transform\_capability\_artifacts](../../../../../../riverhog/src/riverhog_api/routers/workflows.py#L412)
+- **Handler:** [riverhog/src/riverhog\_api/routers/workflows.py::append\_processing\_capability\_artifacts](../../../../../../riverhog/src/riverhog_api/routers/workflows.py#L412)
 
 ### Structural operation bindings
 
@@ -105,17 +105,17 @@ This generated record links maintained client, CLI, response-authority, and prov
   "client": "ApiClient",
   "client_bindings": [
     {
-      "public_identity": "riverhog_client.ApiClient.append_transform_capability_artifacts",
+      "public_identity": "riverhog_client.ApiClient.append_processing_capability_artifacts",
       "source": {
         "line": 441,
         "module": "riverhog_client.workflows",
         "path": "packages/riverhog-client/src/riverhog_client/workflows.py",
-        "symbol": "CollectionWorkflowMethods.append_transform_capability_artifacts"
+        "symbol": "CollectionWorkflowMethods.append_processing_capability_artifacts"
       }
     }
   ],
   "method": "PUT",
-  "operation_id": "append_transform_capability_artifacts",
+  "operation_id": "append_processing_capability_artifacts",
   "path": "/v1/collection-processing-claims/{claim_id}/capabilities/{capability_id}/artifacts",
   "provider_evidence": null,
   "read_collection": null,
@@ -136,11 +136,11 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 919d806868b16b4c4ad965ee965a67a935d6d629dd371bb93af95c7cde77fe6c -->
+<!-- exact-contract-value: 3dbf1fed481e9696fb5db67f0cb6e3f8be26c1a00f9498b505875ac1123a60fd -->
 
 ```json
 {
-  "operationId": "append_transform_capability_artifacts",
+  "operationId": "append_processing_capability_artifacts",
   "parameters": [
     {
       "in": "path",
@@ -241,7 +241,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "HTTPBearer": []
     }
   ],
-  "summary": "Append Transform Capability Artifacts",
+  "summary": "Append Processing Capability Artifacts",
   "tags": [
     "collection-workflows"
   ],
@@ -249,7 +249,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "x-riverhog-permission-requirements": [
     {
       "any_of": [
-        "collection-transforms:control"
+        "collection-processing:control"
       ]
     }
   ]

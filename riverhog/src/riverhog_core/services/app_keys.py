@@ -29,7 +29,7 @@ from riverhog_core.app_permissions import (
     CATALOG_READ,
     QUOTAS_MANAGE,
     ApplicationAccess,
-    ApplicationPrincipal,
+    Principal,
     normalize_access,
 )
 from riverhog_core.browse import bounded_page, keyset_statement, validate_page_size
@@ -115,7 +115,7 @@ class SqlAlchemyAppKeyService:
             session_factory=self._session_factory,
         )
 
-    def authenticate(self, token: str) -> ApplicationPrincipal | None:
+    def authenticate(self, token: str) -> Principal | None:
         if not token:
             return None
         digest = _token_sha256(token)
@@ -128,8 +128,8 @@ class SqlAlchemyAppKeyService:
                 return None
             record.last_used_at = now
             access = tuple(_record_access(session, record.id))
-            return ApplicationPrincipal(
-                app=record.app,
+            return Principal(
+                id=record.app,
                 key_id=record.id,
                 access=frozenset(access),
                 authorization_view_identity=_authorization_view_identity(
@@ -145,7 +145,7 @@ class SqlAlchemyAppKeyService:
         *,
         app: str,
         access: Sequence[ApplicationAccess | tuple[str, str]],
-        grantor: ApplicationPrincipal,
+        grantor: Principal,
         expires_in: timedelta | None = None,
     ) -> dict[str, object]:
         normalized_app = normalize_app_name(app)
@@ -194,7 +194,7 @@ class SqlAlchemyAppKeyService:
         *,
         app: str,
         key_id: str,
-        grantor: ApplicationPrincipal,
+        grantor: Principal,
     ) -> dict[str, object]:
         normalized_app = normalize_app_name(app)
         normalized_key_id = normalize_key_id(key_id)
@@ -272,7 +272,7 @@ class SqlAlchemyAppKeyService:
         app: str,
         key_id: str,
         access: Sequence[ApplicationAccess | tuple[str, str]],
-        grantor: ApplicationPrincipal,
+        grantor: Principal,
     ) -> dict[str, object]:
         normalized_app = normalize_app_name(app)
         normalized_key_id = normalize_key_id(key_id)
@@ -309,7 +309,7 @@ class SqlAlchemyAppKeyService:
         app: str,
         key_id: str,
         access: ApplicationAccess | tuple[str, str],
-        grantor: ApplicationPrincipal,
+        grantor: Principal,
     ) -> dict[str, object]:
         normalized_app = normalize_app_name(app)
         normalized_key_id = normalize_key_id(key_id)

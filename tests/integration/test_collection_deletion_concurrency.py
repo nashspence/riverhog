@@ -9,7 +9,7 @@ from typing import cast
 
 import pytest
 from pydantic import JsonValue
-from riverhog_core.app_permissions import ApplicationPrincipal
+from riverhog_core.app_permissions import Principal
 from riverhog_core.archive_store_registry import ArchiveStoreBinding, ArchiveStoreRegistry
 from riverhog_core.catalog_base import Base
 from riverhog_core.catalog_db import (
@@ -78,13 +78,13 @@ FILE_PATH = "document.txt"
 CONTENT = b"archived document"
 SECOND_FILE_PATH = "second.txt"
 SECOND_CONTENT = b"second archived document"
-DELETER = ApplicationPrincipal(
-    app="riverhog-client",
+DELETER = Principal(
+    id="riverhog-client",
     key_id="client-key",
     access=frozenset(),
 )
-WORKFLOW_PRINCIPAL = ApplicationPrincipal(
-    app="stove0",
+WORKFLOW_PRINCIPAL = Principal(
+    id="stove0",
     key_id="controller",
     access=frozenset(),
 )
@@ -682,9 +682,9 @@ def _seed_derived_output(
                 encryption_format="age-v1-scrypt",
                 passphrase_id="fixture-archive-key-v1",
                 inventory_identity=("3" if output_collection_id == 2 else "4") * 64,
-                ingest_source=f"transform:{execution_id}",
-                created_by_app=f"transform:{execution_id}",
-                created_by_key_id=f"transform:{execution_id}",
+                ingest_source=f"processing:{execution_id}",
+                created_by_principal_id=f"processing:{execution_id}",
+                created_by_key_id="stove0-key",
                 created_at="2026-01-01T00:00:00.000000Z",
                 file_count=5,
                 file_bytes=len(CONTENT) + len(derivation.to_json_bytes()) + 2 + evidence_bytes,
@@ -818,9 +818,9 @@ def _seed_multi_input_derived_output(
                 encryption_format="age-v1-scrypt",
                 passphrase_id="fixture-archive-key-v1",
                 inventory_identity="3" * 64,
-                ingest_source=f"transform:{EXECUTION_ID}",
-                created_by_app=f"transform:{EXECUTION_ID}",
-                created_by_key_id=f"transform:{EXECUTION_ID}",
+                ingest_source=f"processing:{EXECUTION_ID}",
+                created_by_principal_id=f"processing:{EXECUTION_ID}",
+                created_by_key_id="stove0-key",
                 created_at="2026-01-01T00:00:00.000000Z",
                 file_count=6,
                 file_bytes=(
@@ -1040,8 +1040,8 @@ def test_deletion_marker_rejects_processing_claim_started_during_remote_delete(
                 work_id=work_id,
                 work_document=work,
                 work_document_sha256=work_id,
-                principal=ApplicationPrincipal(
-                    app="stove0",
+                principal=Principal(
+                    id="stove0",
                     key_id="controller",
                     access=frozenset(),
                 ),
@@ -1172,7 +1172,7 @@ def test_postgres_exact_output_intent_creation_resumes_one_upload(
             uploads.append(
                 service.create_or_resume(
                     idempotency_key=EXECUTION_ID,
-                    ingest_source=f"transform:{EXECUTION_ID}",
+                    ingest_source=f"processing:{EXECUTION_ID}",
                     archive_store=None,
                     initiator=transform,
                     event_context=None,
@@ -1197,7 +1197,7 @@ def test_postgres_exact_output_intent_creation_resumes_one_upload(
         rows = list(session.scalars(select(CollectionUploadRecord)))
         assert len(rows) == 1
         assert rows[0].idempotency_key == EXECUTION_ID
-        assert rows[0].initiated_by_app == f"transform:{EXECUTION_ID}"
+        assert rows[0].initiated_by_principal_id == f"processing:{EXECUTION_ID}"
 
 
 def test_postgres_concurrent_first_disposition_and_output_create_one_set(

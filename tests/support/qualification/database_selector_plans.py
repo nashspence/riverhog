@@ -8,7 +8,7 @@ from riverhog_core.app_permissions import (
     CATALOG_READ,
     PROVENANCE_READ,
     ApplicationAccess,
-    ApplicationPrincipal,
+    Principal,
 )
 from riverhog_core.browse import keyset_statement
 from riverhog_core.catalog_models import CollectionRecord
@@ -59,8 +59,8 @@ from time_formats import parse_utc_timestamp
 _ROWS = 16384
 _NOW = "2026-08-28T00:00:00.000000Z"
 _EMPTY_TAG_SET_IDENTITY = collection_tag_set_identity(None)
-_READER = ApplicationPrincipal(
-    app="qualification",
+_READER = Principal(
+    id="qualification",
     key_id=None,
     access=frozenset(
         {
@@ -235,7 +235,7 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
                 passphrase_id, provenance_mode, provenance_identity, inventory_identity,
                 archive_generation, archive_root_sha256, catalog_revision, ingest_source,
                 description, description_search, description_revision, description_identity,
-                created_by_app, created_at, file_count, file_bytes
+                created_by_principal_id, created_at, file_count, file_bytes
             )
             SELECT g, 'collection-' || g, {sha}, 'producer-retained', {sha},
                    CASE WHEN g = {rows} THEN 'age-v1-scrypt' ELSE 'age-v1-other' END,
@@ -317,7 +317,7 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
                 initial_tag_set_identity, archive_generation,
                 ingest_source, provenance_mode, provenance_omission_reason,
                 provenance_identity, encryption_format, passphrase_id,
-                initiated_by_app, initiated_by_key_id, event_context_json,
+                initiated_by_principal_id, initiated_by_key_id, event_context_json,
                 state, custody_mode, lease_expires_at, orphaned_at, archive_store,
                 opened_at, last_activity_at, closed_at, archive_phase,
                 archive_phase_updated_at, archive_attempt_count,

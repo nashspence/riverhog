@@ -36,7 +36,7 @@ riverhog-canonical-json = { workspace = true }
 riverhog-provenance-contracts = { workspace = true }
 
 [tool.riverhog.public-api]
-modules = ["riverhog_client", "riverhog_client.transform"]
+modules = ["riverhog_client", "riverhog_client.processing"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/riverhog_client"]

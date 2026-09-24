@@ -27,7 +27,7 @@ from review0_target_contracts import (
     validate_review_materialize_intent,
 )
 from riverhog_client import ProducerFile
-from riverhog_client.transform import TransformWorkspace
+from riverhog_client.processing import ProcessingWorkspace
 from riverhog_protocol import canonical_json_bytes, canonical_json_sha256
 from stove0_protocol import JsonSchemaValidationProfile, OciImageId
 from stove0_target_support import (
@@ -243,7 +243,7 @@ class ReviewTargetServiceBase(PersistentTargetService, ABC):
         self,
         *,
         execution: TargetExecutionRuntime,
-        workspace: TransformWorkspace,
+        workspace: ProcessingWorkspace,
         request: TargetJobRequest,
         publication: TargetCollectionPublication | None,
         artifacts: tuple[OutputArtifact, ...],
@@ -474,7 +474,7 @@ class ReviewTargetServiceBase(PersistentTargetService, ABC):
         request: SamplerRequest,
         *,
         cancellation: threading.Event,
-        workspace: TransformWorkspace,
+        workspace: ProcessingWorkspace,
     ) -> SamplerResult:
         stopped = threading.Event()
 
@@ -556,7 +556,7 @@ def _verify_file(path: Path, expected_bytes: int, expected_sha256: str) -> None:
 
 
 def _verify_output_set(
-    workspace: TransformWorkspace,
+    workspace: ProcessingWorkspace,
     *,
     allowed: set[str],
     required: set[str],

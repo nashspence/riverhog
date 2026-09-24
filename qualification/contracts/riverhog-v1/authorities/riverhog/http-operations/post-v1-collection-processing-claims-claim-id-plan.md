@@ -19,7 +19,7 @@ Seal Processing Claim Plan
 - <a id="s-15527c9a9f"></a>`summary`: `"Seal Processing Claim Plan"`
 - <a id="s-ab7f22e595"></a>`tags`: `["collection-workflows"]`
 - <a id="s-f7733a2f41"></a>`x-riverhog-interface`: `"client-only-primitive"`
-- <a id="s-368a70cc2b"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:execute"]}]`
+- <a id="s-368a70cc2b"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-processing:execute"]}]`
 
 ### Parameters
 
@@ -137,7 +137,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ea0f3a4e74d72badfb51511fadf4c1f1836cf574f012eecf48044750d2efcf0d -->
+<!-- exact-contract-value: 1282836193be9947ca6b84e5690df270367ff4b8f945241f78539545cd3c4439 -->
 
 ```json
 {
@@ -268,7 +268,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "x-riverhog-permission-requirements": [
     {
       "any_of": [
-        "collection-transforms:execute"
+        "collection-processing:execute"
       ]
     }
   ]

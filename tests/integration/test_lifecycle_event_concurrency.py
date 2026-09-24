@@ -66,8 +66,8 @@ def _event_data(collection_id: int) -> dict[str, object]:
         "files_total": 0,
         "bytes_total": 0,
         "archive_root_sha256": f"{collection_id:064x}",
-        "actor": {"app": "riverhog"},
-        "initiator": {"app": "fixture"},
+        "actor": {"principal_id": "riverhog"},
+        "initiator": {"principal_id": "fixture"},
     }
 
 
@@ -82,7 +82,7 @@ def test_event_reads_and_concurrent_context_reapers_do_only_bounded_work(
     second = SqlAlchemyLifecycleEventService(config)
     for ordinal in range(23):
         first.emit(
-            owner_app="fixture",
+            owner_principal_id="fixture",
             type="collection.finalized",
             subject=str(ordinal + 1),
             data=_event_data(ordinal + 1),
@@ -90,7 +90,7 @@ def test_event_reads_and_concurrent_context_reapers_do_only_bounded_work(
             context_expires_at="2000-01-01T00:00:00.000000Z",
         )
     first.emit(
-        owner_app="fixture",
+        owner_principal_id="fixture",
         type="collection.finalized",
         subject="24",
         data=_event_data(24),
@@ -98,7 +98,7 @@ def test_event_reads_and_concurrent_context_reapers_do_only_bounded_work(
         context_expires_at="2999-01-01T00:00:00.000000Z",
     )
 
-    page = first.page(owner_app="fixture", after=None, limit=3)
+    page = first.page(owner_principal_id="fixture", after=None, limit=3)
     assert len(page.events) == 3
     assert all("context" not in event.data for event in page.events)
     with session_scope(make_session_factory(database_url)) as session:

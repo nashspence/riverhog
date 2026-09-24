@@ -292,7 +292,8 @@ def test_stove0_server_consumes_component_boundaries_only_as_protocols_and_calle
     assert not {
         module
         for module in modules
-        if module == "riverhog_client.transform" or module.startswith("riverhog_client.transform.")
+        if module == "riverhog_client.processing"
+        or module.startswith("riverhog_client.processing.")
     }
     assert not imports & {
         "stove0_media_archive_target_contracts",
@@ -331,7 +332,8 @@ def test_caller_packages_do_not_pull_in_author_or_implementation_dependencies() 
     assert not {
         module
         for module in modules
-        if module == "riverhog_client.transform" or module.startswith("riverhog_client.transform.")
+        if module == "riverhog_client.processing"
+        or module.startswith("riverhog_client.processing.")
     }
     assert not imports & {
         "stove0_core",

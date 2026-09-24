@@ -68,6 +68,7 @@ Exact externally visible contract owned by this contract element.
 
 ##### Definitions
 
+- [ApplicationName](#s-dad249adb8)
 - [ArtifactSetIdentityDocument](#s-123d26c6cd)
 - [CollectionId](#s-896ee01c47)
 - [ExactSetIdentityDocument](#s-b2d69f0089)
@@ -78,6 +79,11 @@ Exact externally visible contract owned by this contract element.
 - [ProcessingClaimOutcomeSettlementDocument](#s-e2510804b4)
 - [ProcessingClaimPlanDocument](#s-c3d365e968)
 - [ReceivingSetDocument](#s-9dd4ce27cb)
+
+##### <a id="s-dad249adb8"></a>definition `ApplicationName`
+
+- <a id="s-8e276537ca"></a>`type`: `"string"`
+- <a id="s-1c0981d64f"></a>`pattern`: `"^[a-z0-9]+(?:-[a-z0-9]+)*$"`
 
 ##### <a id="s-123d26c6cd"></a>definition `ArtifactSetIdentityDocument`
 
@@ -159,7 +165,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2df569eeb1"></a>`app` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-2df569eeb1"></a>`app` | yes | [ApplicationName](#s-dad249adb8) |  |
 | <a id="s-3167ec076b"></a>`key_id` | no | anyOf=[(type="string"; maxLength=300; minLength=1); (type="null")]; default=null |  |
 
 ##### <a id="s-e2510804b4"></a>definition `ProcessingClaimOutcomeSettlementDocument`
@@ -285,7 +291,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d687961754784ffab4238d951675d282d76ff716459ac1906828b6ea13f9e7b8 -->
+<!-- exact-contract-value: 91a17fe6ae116a1479ecd37969417d73a66ef49301e302b8e3e75b92604b839a -->
 
 ```json
 {
@@ -293,6 +299,10 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "$defs": {
+        "ApplicationName": {
+          "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "type": "string"
+        },
         "ArtifactSetIdentityDocument": {
           "additionalProperties": false,
           "properties": {
@@ -420,8 +430,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "app": {
-              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "type": "string"
+              "$ref": "#/$defs/ApplicationName"
             },
             "key_id": {
               "anyOf": [

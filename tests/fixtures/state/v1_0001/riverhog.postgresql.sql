@@ -209,7 +209,7 @@ CREATE TABLE collection_uploads (
 	provenance_identity VARCHAR(64),
 	encryption_format VARCHAR NOT NULL,
 	passphrase_id VARCHAR NOT NULL,
-	initiated_by_app VARCHAR NOT NULL,
+	initiated_by_principal_id VARCHAR NOT NULL,
 	initiated_by_key_id VARCHAR,
 	event_context_json TEXT,
 	state VARCHAR NOT NULL,
@@ -313,7 +313,7 @@ CREATE INDEX ix_collection_uploads_search_trgm ON collection_uploads USING gin (
 
 CREATE INDEX ix_collection_uploads_state ON collection_uploads (state, collection_id);
 
-CREATE UNIQUE INDEX ux_collection_uploads_application_idempotency_key ON collection_uploads (initiated_by_app, idempotency_key);
+CREATE UNIQUE INDEX ux_collection_uploads_principal_idempotency_key ON collection_uploads (initiated_by_principal_id, idempotency_key);
 
 CREATE TABLE collections (
 	id BIGSERIAL NOT NULL,
@@ -348,14 +348,14 @@ CREATE TABLE collections (
 	tag_set_identity VARCHAR(64) DEFAULT 'd99a47346b904680a2b3182b3950c159b297a427edfd0c8a23124b7bfb296ed9' NOT NULL,
 	tag_head_identity VARCHAR(64) DEFAULT '0000000000000000000000000000000000000000000000000000000000000000' NOT NULL,
 	tag_mutation_operation_id VARCHAR,
-	created_by_app VARCHAR NOT NULL,
+	created_by_principal_id VARCHAR NOT NULL,
 	created_by_key_id VARCHAR,
 	created_at VARCHAR NOT NULL,
 	is_published BOOLEAN DEFAULT true NOT NULL,
 	file_count BIGINT DEFAULT 0 NOT NULL,
 	file_bytes BIGINT DEFAULT 0 NOT NULL,
 	PRIMARY KEY (id),
-	CONSTRAINT uq_collections_application_idempotency_key UNIQUE (created_by_app, creation_idempotency_key),
+	CONSTRAINT uq_collections_application_idempotency_key UNIQUE (created_by_principal_id, creation_idempotency_key),
 	CONSTRAINT ck_collections_file_count CHECK (file_count >= 0),
 	CONSTRAINT ck_collections_file_bytes CHECK (file_bytes >= 0),
 	CONSTRAINT ck_collections_provenance_mode CHECK (provenance_mode IN ('captured','mixed','omitted')),
@@ -409,7 +409,7 @@ CREATE INDEX ix_collections_search_trgm ON collections USING gin (search_text gi
 CREATE TABLE lifecycle_events (
 	sequence SERIAL NOT NULL,
 	event_id VARCHAR NOT NULL,
-	owner_app VARCHAR NOT NULL,
+	owner_principal_id VARCHAR NOT NULL,
 	subject VARCHAR,
 	event_json TEXT NOT NULL,
 	context_json TEXT,
@@ -420,9 +420,9 @@ CREATE TABLE lifecycle_events (
 
 CREATE INDEX ix_lifecycle_events_context_expiry ON lifecycle_events (context_expires_at, sequence);
 
-CREATE INDEX ix_lifecycle_events_owner_sequence ON lifecycle_events (owner_app, sequence);
+CREATE INDEX ix_lifecycle_events_owner_sequence ON lifecycle_events (owner_principal_id, sequence);
 
-CREATE INDEX ix_lifecycle_events_owner_subject_context ON lifecycle_events (owner_app, subject, context_expires_at);
+CREATE INDEX ix_lifecycle_events_owner_subject_context ON lifecycle_events (owner_principal_id, subject, context_expires_at);
 
 CREATE TABLE retrieval_cache_populations (
 	source_store VARCHAR NOT NULL,
@@ -458,7 +458,7 @@ CREATE TABLE retrieval_cache_store_accounting (
 
 CREATE TABLE retrieval_plans (
 	id VARCHAR NOT NULL,
-	app VARCHAR NOT NULL,
+	principal_id VARCHAR NOT NULL,
 	initiated_by_key_id VARCHAR,
 	idempotency_key VARCHAR NOT NULL,
 	creation_identity_sha256 VARCHAR(64) NOT NULL,
@@ -479,7 +479,7 @@ CREATE TABLE retrieval_plans (
 	segment_commitment_sha256 VARCHAR(64) NOT NULL,
 	etag VARCHAR(64),
 	PRIMARY KEY (id),
-	CONSTRAINT uq_retrieval_plans_key_idempotency UNIQUE (app, initiated_by_key_id, idempotency_key),
+	CONSTRAINT uq_retrieval_plans_key_idempotency UNIQUE (principal_id, initiated_by_key_id, idempotency_key),
 	CONSTRAINT ck_retrieval_plans_state CHECK (state IN ('planning','ready','consumed','expired','failed')),
 	CONSTRAINT ck_retrieval_plans_lease CHECK (lease_seconds > 0),
 	CONSTRAINT ck_retrieval_plans_restore_policy CHECK (restore_policy IN ('allow','never')),
@@ -490,7 +490,7 @@ CREATE TABLE retrieval_plans (
 	CONSTRAINT ck_retrieval_plans_etag_hex CHECK (etag IS NULL OR length(etag) = 64 AND lower(etag) = etag AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(etag, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE INDEX ix_retrieval_plans_owner ON retrieval_plans (app, initiated_by_key_id, id);
+CREATE INDEX ix_retrieval_plans_owner ON retrieval_plans (principal_id, initiated_by_key_id, id);
 
 CREATE TABLE app_key_access_grants (
 	key_id VARCHAR NOT NULL,
@@ -725,7 +725,7 @@ CREATE INDEX ix_collection_provenance_journals_sha256 ON collection_provenance_j
 CREATE TABLE collection_provenance_verifications (
 	collection_id BIGINT NOT NULL,
 	state VARCHAR NOT NULL,
-	requested_by_app VARCHAR NOT NULL,
+	requested_by_principal_id VARCHAR NOT NULL,
 	requested_by_key_id VARCHAR,
 	requested_at VARCHAR NOT NULL,
 	started_at VARCHAR,
@@ -1030,7 +1030,7 @@ CREATE INDEX ix_retrieval_cache_population_claims_object ON retrieval_cache_popu
 CREATE TABLE retrieval_jobs (
 	id VARCHAR NOT NULL,
 	plan_id VARCHAR NOT NULL,
-	app VARCHAR NOT NULL,
+	principal_id VARCHAR NOT NULL,
 	initiated_by_key_id VARCHAR,
 	event_context_json TEXT,
 	state VARCHAR NOT NULL,
@@ -1510,7 +1510,7 @@ CREATE TABLE collection_tag_published_nodes (
 	CONSTRAINT ck_collection_tag_published_nodes_stored_sha256_hex CHECK (length(stored_sha256) = 64 AND lower(stored_sha256) = stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE TABLE collection_transform_capabilities (
+CREATE TABLE collection_processing_capabilities (
 	id VARCHAR(32) NOT NULL,
 	claim_id VARCHAR(64) NOT NULL,
 	fence BIGINT NOT NULL,
@@ -1527,17 +1527,17 @@ CREATE TABLE collection_transform_capabilities (
 	created_at VARCHAR NOT NULL,
 	revoked_at VARCHAR,
 	PRIMARY KEY (id),
-	CONSTRAINT ck_collection_transform_capabilities_state CHECK (state IN ('receiving','active','revoked')),
-	CONSTRAINT ck_collection_transform_capabilities_fence CHECK (fence >= 1),
-	CONSTRAINT ck_collection_transform_capabilities_artifact_totals CHECK (artifact_count >= 0 AND artifact_bytes >= 0),
+	CONSTRAINT ck_collection_processing_capabilities_state CHECK (state IN ('receiving','active','revoked')),
+	CONSTRAINT ck_collection_processing_capabilities_fence CHECK (fence >= 1),
+	CONSTRAINT ck_collection_processing_capabilities_artifact_totals CHECK (artifact_count >= 0 AND artifact_bytes >= 0),
 	FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE CASCADE,
 	UNIQUE (token_sha256),
-	CONSTRAINT ck_collection_transform_capabilities_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_transform_capabilities_token_sha256_hex CHECK (length(token_sha256) = 64 AND lower(token_sha256) = token_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(token_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_collection_transform_capabilities_artifact_set_sha256_hex CHECK (artifact_set_sha256 IS NULL OR length(artifact_set_sha256) = 64 AND lower(artifact_set_sha256) = artifact_set_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_set_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+	CONSTRAINT ck_collection_processing_capabilities_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_collection_processing_capabilities_token_sha256_hex CHECK (length(token_sha256) = 64 AND lower(token_sha256) = token_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(token_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_sha256_f421ad4e24e487cb CHECK (artifact_set_sha256 IS NULL OR length(artifact_set_sha256) = 64 AND lower(artifact_set_sha256) = artifact_set_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_set_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE INDEX ix_collection_transform_capabilities_claim_state ON collection_transform_capabilities (claim_id, state, expires_at);
+CREATE INDEX ix_collection_processing_capabilities_claim_state ON collection_processing_capabilities (claim_id, state, expires_at);
 
 CREATE TABLE collection_upload_provenance_journal_chunks (
 	collection_id BIGINT NOT NULL,
@@ -1726,7 +1726,7 @@ CREATE TABLE collection_tag_publication_frontier (
 
 CREATE INDEX ix_collection_tag_publication_frontier_work ON collection_tag_publication_frontier (collection_id, store, head_identity, published, expanded, node_digest);
 
-CREATE TABLE collection_transform_capability_artifacts (
+CREATE TABLE collection_processing_capability_artifacts (
 	capability_id VARCHAR(32) NOT NULL,
 	collection_id BIGINT NOT NULL,
 	path VARCHAR NOT NULL,
@@ -1737,13 +1737,13 @@ CREATE TABLE collection_transform_capability_artifacts (
 	CONSTRAINT ck_capability_artifacts_bytes CHECK (bytes >= 0),
 	CONSTRAINT ck_capability_artifacts_order CHECK (artifact_order >= 0),
 	CONSTRAINT ck_capability_artifacts_sha256 CHECK (length(sha256) = 64),
-	FOREIGN KEY(capability_id) REFERENCES collection_transform_capabilities (id) ON DELETE CASCADE,
-	CONSTRAINT ck_collection_transform_capability_artifacts_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+	FOREIGN KEY(capability_id) REFERENCES collection_processing_capabilities (id) ON DELETE CASCADE,
+	CONSTRAINT ck_collection_processing_capability_artifacts_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
-CREATE INDEX ix_collection_transform_capability_artifacts_collection ON collection_transform_capability_artifacts (collection_id, path, capability_id);
+CREATE INDEX ix_collection_processing_capability_artifacts_collection ON collection_processing_capability_artifacts (collection_id, path, capability_id);
 
-CREATE UNIQUE INDEX ix_collection_transform_capability_artifacts_order ON collection_transform_capability_artifacts (capability_id, artifact_order);
+CREATE UNIQUE INDEX ix_collection_processing_capability_artifacts_order ON collection_processing_capability_artifacts (capability_id, artifact_order);
 
 CREATE TABLE retrieval_cache_objects (
 	source_store VARCHAR NOT NULL,

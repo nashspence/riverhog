@@ -31,6 +31,7 @@ from riverhog_protocol.collection_workflows import (
 from riverhog_protocol.exact_scalar import NonnegativeDecimal
 from riverhog_protocol.list_controls import ClaimState, ProcessingClaimSort, SortOrder
 from riverhog_protocol.paths import CanonicalRelPath, CollectionId
+from riverhog_protocol.principal_ids import ApplicationName, PrincipalId
 
 SHA256 = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
 ProcessingClaimId = SHA256
@@ -537,7 +538,7 @@ def _default_capability_actions() -> list[CapabilityAction]:
     return ["read-inputs"]
 
 
-class TransformCapabilityCreateDocument(RiverhogWorkflowDocument):
+class ProcessingCapabilityCreateDocument(RiverhogWorkflowDocument):
     fence: NonnegativeDecimal = Field(ge=1)
     audience: str = Field(pattern=r"^[a-z0-9][a-z0-9._:/-]{0,299}$")
     actions: list[CapabilityAction] = Field(
@@ -604,7 +605,7 @@ class ProcessingClaimAbandonDocument(ProcessingClaimFenceDocument):
 
 
 class ProcessingClaimConsumerDocument(RiverhogWorkflowDocument):
-    app: SemanticId
+    app: ApplicationName
     key_id: str | None = Field(default=None, min_length=1, max_length=300)
 
 
@@ -829,8 +830,8 @@ class ProcessingClaimPageDocument(RiverhogWorkflowDocument):
     claims: list[ProcessingClaimDocument]
 
 
-class TransformCapabilityDocument(RiverhogWorkflowDocument):
-    format: Literal["riverhog-transform-capability/v1"]
+class ProcessingCapabilityDocument(RiverhogWorkflowDocument):
+    format: Literal["riverhog-processing-capability/v1"]
     id: str = Field(min_length=1, max_length=160)
     claim_id: ProcessingClaimId
     fence: NonnegativeDecimal = Field(ge=1)
@@ -845,14 +846,14 @@ class TransformCapabilityDocument(RiverhogWorkflowDocument):
         },
     )
     state: Literal["receiving", "active"]
-    principal_app: str = Field(min_length=1, max_length=300)
+    principal_id: PrincipalId = Field(max_length=300)
     expires_at: Timestamp
     artifacts: ArtifactReceivingSetDocument
     token: str = Field(pattern=r"^rhc_[A-Za-z0-9_-]+$")
 
     @model_validator(mode="after")
     def validate_capability(self) -> Self:
-        TransformCapabilityCreateDocument.model_validate(
+        ProcessingCapabilityCreateDocument.model_validate(
             {
                 "fence": format_scalar("nonnegative", self.fence),
                 "audience": self.audience,
@@ -919,8 +920,8 @@ __all__ = [
     "ReceivingSetDocument",
     "RetirementClaimReferenceDocument",
     "RiverhogWorkflowDocument",
-    "TransformCapabilityCreateDocument",
-    "TransformCapabilityDocument",
+    "ProcessingCapabilityCreateDocument",
+    "ProcessingCapabilityDocument",
     "WORK_DOCUMENT_MAX_BYTES",
     "WORKFLOW_SET_BATCH_MAX",
 ]

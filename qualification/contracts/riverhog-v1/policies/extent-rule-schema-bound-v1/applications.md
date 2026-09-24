@@ -292,6 +292,8 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: PortableCollectionHeader](../../authorities/riverhog/http-schemas/schemas-portablecollectionheader.md#pa-dca9d7e94f) |
 | `riverhog` | [schemas: PortableCollectionInventoryAuthority](../../authorities/riverhog/http-schemas/schemas-portablecollectioninventoryauthority.md#pa-6f5179ae85) |
 | `riverhog` | [schemas: PortableCollectionInventoryPage](../../authorities/riverhog/http-schemas/schemas-portablecollectioninventorypage.md#pa-fcf74e7c99) |
+| `riverhog` | [schemas: ProcessingCapabilityCreateDocument](../../authorities/riverhog/http-schemas/schemas-processingcapabilitycreatedocument.md#pa-92f2fb3b62) |
+| `riverhog` | [schemas: ProcessingCapabilityDocument](../../authorities/riverhog/http-schemas/schemas-processingcapabilitydocument.md#pa-49b9e68136) |
 | `riverhog` | [schemas: ProcessingClaimAbandonDocument](../../authorities/riverhog/http-schemas/schemas-processingclaimabandondocument.md#pa-78219c62c2) |
 | `riverhog` | [schemas: ProcessingClaimConsumerDocument](../../authorities/riverhog/http-schemas/schemas-processingclaimconsumerdocument.md#pa-486eeca936) |
 | `riverhog` | [schemas: ProcessingClaimCreateDocument](../../authorities/riverhog/http-schemas/schemas-processingclaimcreatedocument.md#pa-7682685702) |
@@ -327,8 +329,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: SearchFileOut](../../authorities/riverhog/http-schemas/schemas-searchfileout.md#pa-bc30f5420e) |
 | `riverhog` | [schemas: SearchResponse](../../authorities/riverhog/http-schemas/schemas-searchresponse.md#pa-344ca8638f) |
 | `riverhog` | [schemas: TagListOut](../../authorities/riverhog/http-schemas/schemas-taglistout.md#pa-296ec2a9ea) |
-| `riverhog` | [schemas: TransformCapabilityCreateDocument](../../authorities/riverhog/http-schemas/schemas-transformcapabilitycreatedocument.md#pa-afff19aed9) |
-| `riverhog` | [schemas: TransformCapabilityDocument](../../authorities/riverhog/http-schemas/schemas-transformcapabilitydocument.md#pa-1a9f5f1438) |
 | `riverhog` | [schemas: UploadedArchiveRootPublicationOut](../../authorities/riverhog/http-schemas/schemas-uploadedarchiverootpublicationout.md#pa-4e5691949a) |
 | `riverhog-archive-contracts` | [Riverhog v1 authenticated archive-volume terminator](../../authorities/riverhog-archive-contracts/schema/riverhog-v1-authenticated-archive-volume-terminator.md#pa-a60a7ed5d3) |
 | `riverhog-archive-contracts` | [Riverhog v1 bounded immutable archive-volume metadata](../../authorities/riverhog-archive-contracts/schema/riverhog-v1-bounded-immutable-archive-volume-metadata.md#pa-d57db52fb0) |

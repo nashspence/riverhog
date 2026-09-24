@@ -19,7 +19,7 @@ Seal Processing Claim Inputs
 - <a id="s-22bcb81034"></a>`summary`: `"Seal Processing Claim Inputs"`
 - <a id="s-185a108006"></a>`tags`: `["collection-workflows"]`
 - <a id="s-deb1be96bd"></a>`x-riverhog-interface`: `"client-only-primitive"`
-- <a id="s-2cd3af66ec"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control"]}]`
+- <a id="s-2cd3af66ec"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-processing:control"]}]`
 
 ### Parameters
 
@@ -135,7 +135,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 271f8bd738f84cd8663e0bab72678ba07cc373a632b707a5cc4594ff2321a1e6 -->
+<!-- exact-contract-value: ab7d8fa41ddcd14e106a58bf97625f2af1a374232cebe2848a2452e79267ae71 -->
 
 ```json
 {
@@ -239,7 +239,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "x-riverhog-permission-requirements": [
     {
       "any_of": [
-        "collection-transforms:control"
+        "collection-processing:control"
       ]
     }
   ]

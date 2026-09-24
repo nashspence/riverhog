@@ -15,7 +15,7 @@ from riverhog_core.app_permissions import (
     CATALOG_READ,
     COLLECTION_DESCRIPTIONS_MANAGE,
     ApplicationAccess,
-    ApplicationPrincipal,
+    Principal,
 )
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_db import initialize_db, make_session_factory, session_scope
@@ -64,8 +64,8 @@ from tests.unit.db_helpers import sqlite_url
 
 NOW = "2026-09-07T00:00:00.000000Z"
 DESCRIPTION = TypeAdapter(CollectionDescription)
-PRINCIPAL = ApplicationPrincipal(
-    app="catalog-editor",
+PRINCIPAL = Principal(
+    id="catalog-editor",
     key_id="catalog-editor-key",
     access=frozenset(
         {
@@ -228,7 +228,7 @@ def _seed(
                 revision=0,
                 description=None,
             ),
-            created_by_app="fixture",
+            created_by_principal_id="fixture",
             created_at=NOW,
             is_published=True,
             file_count=1,

@@ -160,7 +160,7 @@ class CollectionRecord(Base):
         String(64), default="0" * 64, server_default=text(f"'{'0' * 64}'")
     )
     tag_mutation_operation_id: Mapped[str | None] = mapped_column(String, nullable=True)
-    created_by_app: Mapped[str] = mapped_column(String, default="riverhog")
+    created_by_principal_id: Mapped[str] = mapped_column(String, default="riverhog")
     created_by_key_id: Mapped[str | None] = mapped_column(String, nullable=True)
     created_at: Mapped[str] = mapped_column(String)
     is_published: Mapped[bool] = mapped_column(
@@ -193,7 +193,7 @@ class CollectionRecord(Base):
 
     __table_args__ = (
         UniqueConstraint(
-            "created_by_app",
+            "created_by_principal_id",
             "creation_idempotency_key",
             name="uq_collections_application_idempotency_key",
         ),
@@ -721,7 +721,7 @@ class CollectionProvenanceVerificationRecord(Base):
 
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
     state: Mapped[str] = mapped_column(String)
-    requested_by_app: Mapped[str] = mapped_column(String)
+    requested_by_principal_id: Mapped[str] = mapped_column(String)
     requested_by_key_id: Mapped[str | None] = mapped_column(String, nullable=True)
     requested_at: Mapped[str] = mapped_column(String)
     started_at: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -1724,17 +1724,17 @@ class LifecycleEventRecord(Base):
 
     sequence: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     event_id: Mapped[str] = mapped_column(String, unique=True)
-    owner_app: Mapped[str] = mapped_column(String)
+    owner_principal_id: Mapped[str] = mapped_column(String)
     subject: Mapped[str | None] = mapped_column(String, nullable=True)
     event_json: Mapped[str] = mapped_column(Text)
     context_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     context_expires_at: Mapped[str | None] = mapped_column(String, nullable=True)
 
     __table_args__ = (
-        Index("ix_lifecycle_events_owner_sequence", "owner_app", "sequence"),
+        Index("ix_lifecycle_events_owner_sequence", "owner_principal_id", "sequence"),
         Index(
             "ix_lifecycle_events_owner_subject_context",
-            "owner_app",
+            "owner_principal_id",
             "subject",
             "context_expires_at",
         ),
@@ -1887,7 +1887,7 @@ class RetrievalPlanRecord(Base):
     __tablename__ = "retrieval_plans"
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
-    app: Mapped[str] = mapped_column(String)
+    principal_id: Mapped[str] = mapped_column(String)
     initiated_by_key_id: Mapped[str | None] = mapped_column(String, nullable=True)
     idempotency_key: Mapped[str] = mapped_column(String)
     creation_identity_sha256: Mapped[str] = mapped_column(String(64))
@@ -1909,9 +1909,9 @@ class RetrievalPlanRecord(Base):
     etag: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
     __table_args__ = (
-        Index("ix_retrieval_plans_owner", "app", "initiated_by_key_id", "id"),
+        Index("ix_retrieval_plans_owner", "principal_id", "initiated_by_key_id", "id"),
         UniqueConstraint(
-            "app",
+            "principal_id",
             "initiated_by_key_id",
             "idempotency_key",
             name="uq_retrieval_plans_key_idempotency",
@@ -2045,7 +2045,7 @@ class RetrievalJobRecord(Base):
 
     id: Mapped[str] = mapped_column(String, primary_key=True)
     plan_id: Mapped[str] = mapped_column(String, unique=True)
-    app: Mapped[str] = mapped_column(String)
+    principal_id: Mapped[str] = mapped_column(String)
     initiated_by_key_id: Mapped[str | None] = mapped_column(String, nullable=True)
     event_context_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     state: Mapped[str] = mapped_column(String)
@@ -2395,7 +2395,7 @@ class CollectionUploadRecord(Base):
     provenance_identity: Mapped[str | None] = mapped_column(String(64), nullable=True)
     encryption_format: Mapped[str] = mapped_column(String, nullable=False)
     passphrase_id: Mapped[str] = mapped_column(String, nullable=False)
-    initiated_by_app: Mapped[str] = mapped_column(String, default="riverhog")
+    initiated_by_principal_id: Mapped[str] = mapped_column(String, default="riverhog")
     initiated_by_key_id: Mapped[str | None] = mapped_column(String, nullable=True)
     event_context_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     state: Mapped[str] = mapped_column(String, default="open")
@@ -2523,8 +2523,8 @@ class CollectionUploadRecord(Base):
     )
     __table_args__ = (
         Index(
-            "ux_collection_uploads_application_idempotency_key",
-            "initiated_by_app",
+            "ux_collection_uploads_principal_idempotency_key",
+            "initiated_by_principal_id",
             "idempotency_key",
             unique=True,
         ),

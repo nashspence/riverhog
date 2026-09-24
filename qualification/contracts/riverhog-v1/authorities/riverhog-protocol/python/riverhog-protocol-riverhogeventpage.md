@@ -57,6 +57,7 @@ Exact externally visible contract owned by this contract element.
 - [CollectionFinalizedEvent](#s-dcb5f23831)
 - [CollectionId](#s-3b7d7e3c2c)
 - [LifecycleEventCursor](#s-99b2d14f05)
+- [PrincipalId](#s-26dc5f6284)
 - [RetrievalCanceledData](#s-8f780dd62d)
 - [RetrievalCanceledEvent](#s-e80951e313)
 - [RetrievalCompletedData](#s-e680525602)
@@ -333,6 +334,11 @@ Exact externally visible contract owned by this contract element.
 - <a id="s-fd1803775d"></a>`maxLength`: `19`
 - <a id="s-9e4214b970"></a>`minLength`: `1`
 - <a id="s-967f676da4"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)$"`
+
+##### <a id="s-26dc5f6284"></a>definition `PrincipalId`
+
+- <a id="s-c00aa6f1e9"></a>`type`: `"string"`
+- <a id="s-bdd25d3b74"></a>`pattern`: `"^(?:[a-z0-9]+(?:-[a-z0-9]+)*\|claim:[0-9a-f]{64}\|processing:[0-9a-f]{64})$"`
 
 ##### <a id="s-8f780dd62d"></a>definition `RetrievalCanceledData`
 
@@ -658,14 +664,14 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-5670f78f7d"></a>`type`: `"object"`
 - <a id="s-268c8df8e0"></a>`additionalProperties`: `false`
-- <a id="s-c53cac5a10"></a>`required`: `["app"]`
+- <a id="s-c53cac5a10"></a>`required`: `["principal_id"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c35d213589"></a>`app` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-87ad259a07"></a>`key_id` | no | anyOf=[(type="string"; maxLength=300; minLength=1); (type="null")]; default=null |  |
+| <a id="s-747b21f7c9"></a>`principal_id` | yes | [PrincipalId](#s-26dc5f6284); maxLength=160 |  |
 
 ##### <a id="s-56c61376dd"></a>definition `RiverhogEventCause`
 
@@ -740,7 +746,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0757b0351f189b15fc203c09b2b87dd51708957dc59cf30ce059e02a8878ae3b -->
+<!-- exact-contract-value: 5520be8a91f3b937d14f14930c01b5e040bdec5b16e173b8b047a70905324ef9 -->
 
 ```json
 {
@@ -1499,6 +1505,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "maxLength": 19,
           "minLength": 1,
           "pattern": "^(?:0|[1-9][0-9]*)$",
+          "type": "string"
+        },
+        "PrincipalId": {
+          "pattern": "^(?:[a-z0-9]+(?:-[a-z0-9]+)*|claim:[0-9a-f]{64}|processing:[0-9a-f]{64})$",
           "type": "string"
         },
         "RetrievalCanceledData": {
@@ -2678,11 +2688,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "RiverhogActor": {
           "additionalProperties": false,
           "properties": {
-            "app": {
-              "maxLength": 160,
-              "minLength": 1,
-              "type": "string"
-            },
             "key_id": {
               "anyOf": [
                 {
@@ -2695,10 +2700,14 @@ The following JSON is the complete value owned at each machine-authority pointer
                 }
               ],
               "default": null
+            },
+            "principal_id": {
+              "$ref": "#/$defs/PrincipalId",
+              "maxLength": 160
             }
           },
           "required": [
-            "app"
+            "principal_id"
           ],
           "type": "object"
         },

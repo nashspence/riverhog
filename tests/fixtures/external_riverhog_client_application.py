@@ -18,9 +18,9 @@ from riverhog_client import (
     hash_raw_source_chunks,
 )
 
-assert not any(name.startswith("riverhog_client.transform") for name in sys.modules)
+assert not any(name.startswith("riverhog_client.processing") for name in sys.modules)
 
-from riverhog_client.transform import (  # noqa: E402 - validates the explicit boundary
+from riverhog_client.processing import (  # noqa: E402 - validates the explicit boundary
     CapabilityApiClient,
     ClaimedCollectionReader,
     ClaimedCollectionRuntimeRegistry,

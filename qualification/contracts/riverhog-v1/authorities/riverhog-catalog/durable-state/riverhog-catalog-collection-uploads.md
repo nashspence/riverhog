@@ -43,7 +43,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-fcdf5468b0"></a>`provenance_identity` | `VARCHAR(64)` | yes | `—` | — |
 | <a id="s-cf3fd3647f"></a>`encryption_format` | `VARCHAR` | no | `—` | — |
 | <a id="s-df9f183a81"></a>`passphrase_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-7c4a26463e"></a>`initiated_by_app` | `VARCHAR` | no | `—` | — |
+| <a id="s-7c4a26463e"></a>`initiated_by_principal_id` | `VARCHAR` | no | `—` | — |
 | <a id="s-4c1b9b3d15"></a>`initiated_by_key_id` | `VARCHAR` | yes | `—` | — |
 | <a id="s-972dedc121"></a>`event_context_json` | `TEXT` | yes | `—` | — |
 | <a id="s-f5fbb248e8"></a>`state` | `VARCHAR` | no | `—` | — |
@@ -174,7 +174,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e19f4f305201ca55cac1d01a8679ee867392ef4cbec7d8dd8bc4fc072cbaf035 -->
+<!-- exact-contract-value: 2479a5584a8dc76f868b064736e99efd6a4a4b4d06c619bf6a90f1bfc7a570cb -->
 
 ```json
 {
@@ -314,8 +314,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "VARCHAR"
     },
     {
-      "definition": "initiated_by_app VARCHAR NOT NULL",
-      "name": "initiated_by_app",
+      "definition": "initiated_by_principal_id VARCHAR NOT NULL",
+      "name": "initiated_by_principal_id",
       "nullable": false,
       "type": "VARCHAR"
     },

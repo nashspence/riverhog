@@ -14,7 +14,7 @@ from sqlalchemy import Table, and_, case, delete, func, or_, select, update
 from sqlalchemy.orm import Session
 from time_formats import format_utc_timestamp, utc_now
 
-from riverhog_core.app_permissions import ApplicationPrincipal
+from riverhog_core.app_permissions import Principal
 from riverhog_core.archive_safety import ARCHIVE_DATA_LOSS_WARNING
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_base import Base
@@ -103,7 +103,7 @@ class SqlAlchemyCollectionDeletionService:
         self,
         collection_id: int,
         *,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
         retirement_claim_id: str | None = None,
     ) -> dict[str, object]:
         normalized_id = _normalize_collection_id_or_raise(collection_id)
@@ -139,7 +139,7 @@ class SqlAlchemyCollectionDeletionService:
         collection_id: int,
         *,
         challenge: str,
-        initiator: ApplicationPrincipal,
+        initiator: Principal,
         event_context: dict[str, object] | None = None,
         retirement_claim_id: str | None = None,
     ) -> dict[str, object]:
@@ -210,7 +210,7 @@ class SqlAlchemyCollectionDeletionService:
                 if blockers:
                     raise Conflict("collection deletion is blocked: " + "; ".join(blockers))
                 plan[_EXECUTION_KEY] = {
-                    "app": initiator.app,
+                    "app": initiator.id,
                     "key_id": initiator.key_id,
                     "event_context_json": normalized_context_json,
                 }
@@ -705,8 +705,8 @@ class SqlAlchemyCollectionDeletionService:
                         "remote_storage_bytes": cast(int, plan["remote_storage_bytes"]),
                     },
                     terminal=True,
-                    initiator=ApplicationPrincipal(
-                        app=str(execution["app"]),
+                    initiator=Principal(
+                        id=str(execution["app"]),
                         key_id=(
                             str(execution["key_id"])
                             if execution.get("key_id") is not None

@@ -11,21 +11,21 @@ from typing import Any
 import httpx
 import pytest
 from riverhog_client import ApiClient
-from riverhog_client.producer import (
-    CollectionProducer,
-    ProducedCollection,
-    ProducerArtifactIdentity,
-    ProducerFile,
-    ProducerStream,
-)
-from riverhog_client.transform import (
+from riverhog_client.processing import (
     ClaimedCollectionReader,
     ClaimedCollectionRuntime,
     CollectionTransformRuntime,
     DerivedCollectionReceipt,
     DerivedCollectionSpec,
     DerivedCollectionWriter,
-    TransformWorkspace,
+    ProcessingWorkspace,
+)
+from riverhog_client.producer import (
+    CollectionProducer,
+    ProducedCollection,
+    ProducerArtifactIdentity,
+    ProducerFile,
+    ProducerStream,
 )
 from riverhog_protocol import (
     CollectionUploadUnitAssignmentDocument,
@@ -1065,7 +1065,7 @@ def test_producer_rejects_empty_iterable_before_opening_construction() -> None:
             producer_app="fixture-transform",
             adapter_id="test-transform/v1",
             adapter_version="1",
-            ingest_source="transform:test",
+            ingest_source="processing:test",
         ).publish_inputs(iter(()), source_event_id="empty")
 
     assert api.session_calls == 0
@@ -1089,7 +1089,7 @@ def test_producer_stream_has_no_shared_filesystem_and_is_snapshot_verified(
         producer_app="stove0-worker",
         adapter_id="test-transform/v1",
         adapter_version="1",
-        ingest_source="transform:test",
+        ingest_source="processing:test",
     ).publish_inputs((stream,), source_event_id="event-1")
 
     assert receipt.collection_id == 7
@@ -1129,7 +1129,7 @@ def test_producer_streams_bounded_batches_without_limiting_collection_size(
         producer_app="stove0-worker",
         adapter_id="test-transform/v1",
         adapter_version="1",
-        ingest_source="transform:test",
+        ingest_source="processing:test",
     ).publish_inputs(streams(), source_event_id="event-many")
 
     assert receipt.collection_id == 7
@@ -1187,7 +1187,7 @@ def test_producer_streams_exact_provenance_binding_and_journal(
         producer_app="fixture-transform",
         adapter_id="test-transform/v1",
         adapter_version="1",
-        ingest_source="transform:test",
+        ingest_source="processing:test",
         provenance_mode="captured",
     ).publish_inputs(
         (
@@ -1405,7 +1405,7 @@ def test_producer_stream_rejects_mutation_between_hash_and_upload(
             producer_app="stove0-worker",
             adapter_id="test-transform/v1",
             adapter_version="1",
-            ingest_source="transform:test",
+            ingest_source="processing:test",
         ).publish_inputs((stream,), source_event_id="event-1")
 
 
@@ -1443,7 +1443,7 @@ def test_producer_file_rejects_mutation_between_hash_and_upload(
             producer_app="stove0-worker",
             adapter_id="test-transform/v1",
             adapter_version="1",
-            ingest_source="transform:test",
+            ingest_source="processing:test",
         ).publish(
             (ProducerFile(source=source, path="video/output.mkv"),),
             source_event_id="event-1",
@@ -1477,7 +1477,7 @@ def test_derived_writer_binds_outputs_to_dispositions(
             captured["finish"] = kwargs
             return ProducedCollection(44, "e" * 64, "f" * 64, {"state": "finalized"})
 
-    import riverhog_client.transform.writer as module
+    import riverhog_client.processing.writer as module
 
     monkeypatch.setattr(module, "IncrementalCollectionProducer", StubProducer)
     writer = DerivedCollectionWriter(
@@ -1629,15 +1629,15 @@ def test_workspace_requires_explicit_protected_storage(tmp_path: Path) -> None:
     root.mkdir(mode=0o700)
     root.chmod(0o700)
 
-    with TransformWorkspace.open(
+    with ProcessingWorkspace.open(
         root,
         execution_id=EXECUTION_ID,
         declared_protection="memory-backed",
     ) as workspace:
-        marker = json.loads((workspace.root / ".riverhog-transform-workspace.json").read_text())
+        marker = json.loads((workspace.root / ".riverhog-processing-workspace.json").read_text())
         assert marker["declared_protection"] == "memory-backed"
         with pytest.raises(ValueError, match="protection declaration"):
-            TransformWorkspace.open(
+            ProcessingWorkspace.open(
                 root,
                 execution_id=EXECUTION_ID,
                 declared_protection="encrypted-at-rest",
@@ -1656,7 +1656,7 @@ def test_workspace_requires_explicit_protected_storage(tmp_path: Path) -> None:
 
 
 def test_capability_client_refreshes_workers_without_closing_active_delegate() -> None:
-    from riverhog_client.transform import CapabilityApiClient
+    from riverhog_client.processing import CapabilityApiClient
 
     class Client:
         def __init__(self, value: str) -> None:
@@ -1711,7 +1711,7 @@ def test_capability_refresh_does_not_mutate_collection_liveness(runtime_type: ty
 
 
 def test_runtime_registry_applies_refresh_arriving_before_target_start() -> None:
-    from riverhog_client.transform import ClaimedCollectionRuntimeRegistry
+    from riverhog_client.processing import ClaimedCollectionRuntimeRegistry
 
     class Runtime:
         def __init__(self) -> None:
@@ -1754,7 +1754,7 @@ def test_runtime_rejects_empty_capability_without_environment_fallback() -> None
 
 
 def test_runtime_registry_cleans_up_failed_pending_refresh() -> None:
-    from riverhog_client.transform import ClaimedCollectionRuntimeRegistry
+    from riverhog_client.processing import ClaimedCollectionRuntimeRegistry
 
     class FailingRuntime:
         def refresh_capability(self, _token: str) -> None:

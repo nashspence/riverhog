@@ -13,7 +13,7 @@ from pydantic import TypeAdapter
 from riverhog_api.app import create_app
 from riverhog_api.schemas.collections import CollectionTagSelectorBatch
 from riverhog_client.client import ApiClient
-from riverhog_core.app_permissions import CATALOG_READ, ApplicationAccess, ApplicationPrincipal
+from riverhog_core.app_permissions import CATALOG_READ, ApplicationAccess, Principal
 from riverhog_core.domain.models import CollectionListPage
 from typer.testing import CliRunner
 
@@ -67,14 +67,14 @@ def test_client_and_cli_send_large_valid_selectors_in_a_json_body(
 def test_http_search_accepts_the_full_selector_domain(
     valid_large_tags: list[str],
 ) -> None:
-    principal = ApplicationPrincipal(
-        app="reader",
+    principal = Principal(
+        id="reader",
         key_id="reader-key",
         access=frozenset({ApplicationAccess(CATALOG_READ)}),
     )
 
     class Keys:
-        def authenticate(self, token: str) -> ApplicationPrincipal | None:
+        def authenticate(self, token: str) -> Principal | None:
             return principal if token == "reader-token" else None
 
     class Collections:
@@ -172,14 +172,14 @@ def test_tag_membership_selector_uses_json_through_client_cli_and_http(
         api.close()
     assert received == [tag, tag]
 
-    principal = ApplicationPrincipal(
-        app="reader",
+    principal = Principal(
+        id="reader",
         key_id="reader-key",
         access=frozenset({ApplicationAccess(CATALOG_READ)}),
     )
 
     class Keys:
-        def authenticate(self, token: str) -> ApplicationPrincipal | None:
+        def authenticate(self, token: str) -> Principal | None:
             return principal if token == "reader-token" else None
 
     class Tags:

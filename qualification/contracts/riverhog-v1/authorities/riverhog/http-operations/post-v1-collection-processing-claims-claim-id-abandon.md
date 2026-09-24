@@ -19,7 +19,7 @@ Abandon Processing Claim
 - <a id="s-a3d8926008"></a>`summary`: `"Abandon Processing Claim"`
 - <a id="s-565da535f4"></a>`tags`: `["collection-workflows"]`
 - <a id="s-0a7677668e"></a>`x-riverhog-interface`: `"client-only-primitive"`
-- <a id="s-6fcec40ff7"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control"]}]`
+- <a id="s-6fcec40ff7"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-processing:control"]}]`
 
 ### Parameters
 
@@ -137,7 +137,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 43ce05dff837add1732f89d045cedf2b023833f2ff92b53e93ee0890dad1a5b8 -->
+<!-- exact-contract-value: a6b7275360c7050047e897efa5226ab445d4801d06e09adc32cbee0e88e5feea -->
 
 ```json
 {
@@ -268,7 +268,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "x-riverhog-permission-requirements": [
     {
       "any_of": [
-        "collection-transforms:control"
+        "collection-processing:control"
       ]
     }
   ]

@@ -47,7 +47,7 @@ def test_bootstrap_and_application_keys_enforce_permissions_immediately(
                 encryption_format="age-v1-scrypt",
                 passphrase_id="fixture-archive-key-v1",
                 inventory_identity="1" * 64,
-                created_by_app="fixture",
+                created_by_principal_id="fixture",
                 created_at="2026-07-24T00:00:00.000000Z",
             )
         )
@@ -81,7 +81,7 @@ def test_bootstrap_and_application_keys_enforce_permissions_immediately(
 
     @api.get("/catalog")
     def catalog(principal: CatalogReader) -> dict[str, str]:
-        return {"app": principal.app}
+        return {"app": principal.id}
 
     async def exercise() -> None:
         bootstrap_headers = {"Authorization": "Bearer bootstrap-token"}

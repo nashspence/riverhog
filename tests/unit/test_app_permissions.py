@@ -11,7 +11,7 @@ from riverhog_application_access import (
     access_covers,
     normalize_access,
 )
-from riverhog_core.app_permissions import ApplicationPrincipal
+from riverhog_core.app_permissions import Principal
 
 TAG_RESOURCE = "tag:camera/front"
 
@@ -59,8 +59,8 @@ def test_collection_creation_and_tag_management_support_tag_scope() -> None:
 
 
 def test_unrestricted_delegation_does_not_grant_operational_authority() -> None:
-    grantor = ApplicationPrincipal(
-        app="bootstrap",
+    grantor = Principal(
+        id="bootstrap",
         key_id=None,
         access=frozenset(),
         unrestricted_delegation=True,

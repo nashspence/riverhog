@@ -11,7 +11,7 @@ from review0_target_lib import (
     SamplerRegistration,
     review_options_schema,
 )
-from riverhog_client.transform import TransformWorkspace
+from riverhog_client.processing import ProcessingWorkspace
 from stove0_target_support import (
     DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
     OutputArtifact,
@@ -60,7 +60,7 @@ class ReviewMaterializeTargetService(ReviewTargetServiceBase):
         self,
         *,
         execution: TargetExecutionRuntime,
-        workspace: TransformWorkspace,
+        workspace: ProcessingWorkspace,
         request: TargetJobRequest,
         publication: TargetCollectionPublication | None,
         artifacts: tuple[OutputArtifact, ...],

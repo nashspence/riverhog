@@ -87,7 +87,7 @@ One canonical public application-access request or response grant.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e49c189b6a"></a>`permission` | yes | enum=["collection-transforms:control","collection-transforms:execute","events:read","events:read_all","keys:manage","quotas:manage"] |  |
+| <a id="s-e49c189b6a"></a>`permission` | yes | enum=["collection-processing:control","collection-processing:execute","events:read","events:read_all","keys:manage","quotas:manage"] |  |
 | <a id="s-f29b6433d2"></a>`resource` | no | const="*" |  |
 
 ## Maintained corroboration
@@ -124,7 +124,7 @@ One canonical public application-access request or response grant.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1a73b17eccc32820fbe81fb1c4cb779b83cc4fcd6728aa1f4ca5e5b8223d8484 -->
+<!-- exact-contract-value: d2861284d46096968ba4115794b62df8058ef069bb7ee38e8b64e88d5c36a8d3 -->
 
 ```json
 {
@@ -187,8 +187,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "properties": {
             "permission": {
               "enum": [
-                "collection-transforms:control",
-                "collection-transforms:execute",
+                "collection-processing:control",
+                "collection-processing:execute",
                 "events:read",
                 "events:read_all",
                 "keys:manage",

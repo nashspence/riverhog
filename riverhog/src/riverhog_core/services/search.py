@@ -16,7 +16,7 @@ from sqlalchemy import asc, desc, select
 from sqlalchemy.sql.elements import ColumnElement
 from state_schema import read_snapshot
 
-from riverhog_core.app_permissions import CATALOG_READ, ApplicationPrincipal
+from riverhog_core.app_permissions import CATALOG_READ, Principal
 from riverhog_core.artifact_access import artifact_scope_filter
 from riverhog_core.browse import bounded_page, keyset_statement, validate_page_size
 from riverhog_core.catalog_db import SessionFactory, make_session_factory
@@ -51,7 +51,7 @@ class SqlAlchemySearchService:
         sort: str,
         order: str,
         collection: int | None = None,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> dict[str, object]:
         validate_page_size(page_size)
         if sort not in _SORT_FIELDS:
@@ -120,7 +120,7 @@ class SqlAlchemySearchService:
         sort: str,
         order: str,
         collection: int | None = None,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> Iterator[dict[str, object]]:
         if sort not in _SORT_FIELDS:
             raise BadRequest(f"sort must be one of {', '.join(sorted(_SORT_FIELDS))}")
@@ -155,7 +155,7 @@ def _search_statement(
     collection: int | None,
     sort: str,
     order: str,
-    principal: ApplicationPrincipal | None,
+    principal: Principal | None,
 ) -> tuple[int | None, str | None, list[ColumnElement[bool]], Any, tuple[Any, ...]]:
     normalized_collection, query, filters = _search_filters(
         q=q,
@@ -198,7 +198,7 @@ def _search_filters(
     *,
     q: str | None,
     collection: int | None,
-    principal: ApplicationPrincipal | None,
+    principal: Principal | None,
 ) -> tuple[int | None, str | None, list[ColumnElement[bool]]]:
     normalized_collection: int | None = None
     if collection:

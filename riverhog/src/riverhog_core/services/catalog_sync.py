@@ -39,7 +39,7 @@ from sqlalchemy.sql.elements import ColumnElement
 from state_schema import read_snapshot
 from time_formats import format_utc_timestamp, utc_now
 
-from riverhog_core.app_permissions import CATALOG_READ, ApplicationPrincipal
+from riverhog_core.app_permissions import CATALOG_READ, Principal
 from riverhog_core.catalog_db import SessionFactory, make_session_factory, session_scope
 from riverhog_core.catalog_events import catalog_event_projection
 from riverhog_core.catalog_models import (
@@ -146,7 +146,7 @@ class SqlAlchemyCatalogSyncService:
         self._page_size_max = config.catalog_sync_page_size_max
         self._history_reap_batch_size = config.catalog_sync_history_reap_batch_size
 
-    def checkpoint(self, *, principal: ApplicationPrincipal) -> CatalogSyncCheckpoint:
+    def checkpoint(self, *, principal: Principal) -> CatalogSyncCheckpoint:
         view = _authorization_view(principal)
         principal_identity = _principal_identity(principal)
         visible = collection_access_filter(
@@ -190,7 +190,7 @@ class SqlAlchemyCatalogSyncService:
         *,
         cursor: str,
         limit: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> CatalogSyncCollectionPage:
         self._validate_limit(limit)
         view = _authorization_view(principal)
@@ -276,7 +276,7 @@ class SqlAlchemyCatalogSyncService:
         *,
         cursor: str,
         limit: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> CatalogSyncChangePage:
         self._validate_limit(limit)
         view = _authorization_view(principal)
@@ -994,23 +994,23 @@ def _catalog_change_revision_statement(
     )
 
 
-def _authorization_view(principal: ApplicationPrincipal) -> str:
+def _authorization_view(principal: Principal) -> str:
     if principal.authorization_view_identity is not None:
         return principal.authorization_view_identity
     return hashlib.sha256(
         canonical_json_bytes(
             {
                 "access": sorted([[item.permission, item.resource] for item in principal.access]),
-                "app": principal.app,
+                "principal_id": principal.id,
                 "key_id": principal.key_id,
             }
         )
     ).hexdigest()
 
 
-def _principal_identity(principal: ApplicationPrincipal) -> str:
+def _principal_identity(principal: Principal) -> str:
     return hashlib.sha256(
-        canonical_json_bytes({"app": principal.app, "key_id": principal.key_id})
+        canonical_json_bytes({"principal_id": principal.id, "key_id": principal.key_id})
     ).hexdigest()
 
 

@@ -32,7 +32,7 @@ from time_formats import format_utc_timestamp, utc_now, utc_timestamp_now
 from riverhog_core.app_permissions import (
     CATALOG_READ,
     COLLECTION_TAGS_MANAGE,
-    ApplicationPrincipal,
+    Principal,
     tag_resource,
 )
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
@@ -235,7 +235,7 @@ class SqlAlchemyCollectionTagService:
         operation_id: str,
         expected_revision: int,
         expected_tag_set_identity: str,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         return self._mutate(
             collection_id,
@@ -255,7 +255,7 @@ class SqlAlchemyCollectionTagService:
         operation_id: str,
         expected_revision: int,
         expected_tag_set_identity: str,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         return self._mutate(
             collection_id,
@@ -276,7 +276,7 @@ class SqlAlchemyCollectionTagService:
         operation_id: str,
         expected_revision: int,
         expected_tag_set_identity: str,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         normalized_id = _normalize_collection_id_or_raise(collection_id)
         canonical_tag = validate_collection_tag(tag)
@@ -364,7 +364,7 @@ class SqlAlchemyCollectionTagService:
                     result_head_identity=head.head_identity,
                     changed=changed,
                     state="pending" if changed else "succeeded",
-                    initiated_by_app=principal.app,
+                    initiated_by_app=principal.id,
                     initiated_by_key_id=principal.key_id,
                     created_at=now,
                     updated_at=now,
@@ -1167,7 +1167,7 @@ class SqlAlchemyCollectionTagService:
         position: tuple[str | int | bool | bytes | None, ...] | None,
         expected_revision: int,
         expected_tag_set_identity: str,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         normalized = _normalize_collection_id_or_raise(collection_id)
         validate_page_size(page_size)
@@ -1227,7 +1227,7 @@ class SqlAlchemyCollectionTagService:
         page_size: int,
         position: tuple[str | int | bool | bytes | None, ...] | None,
         q: str | None,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         validate_page_size(page_size)
         query = text_search_key(q.strip()) if q is not None and q.strip() else None
@@ -1261,7 +1261,7 @@ class SqlAlchemyCollectionTagService:
         tag: str,
         revision: int,
         tag_set_identity: str,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         normalized = _normalize_collection_id_or_raise(collection_id)
         canonical = validate_collection_tag(tag)
@@ -1287,7 +1287,7 @@ class SqlAlchemyCollectionTagService:
 def _tag_list_statement(
     *,
     query: str | None,
-    principal: ApplicationPrincipal | None,
+    principal: Principal | None,
 ) -> tuple[Select[Any], tuple[object, ...]]:
     """Return the bounded global-tag projection and its canonical key."""
 

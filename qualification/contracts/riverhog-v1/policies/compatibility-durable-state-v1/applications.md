@@ -48,6 +48,8 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-catalog` | [riverhog-catalog: collection_files](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-collection-files.md#pa-b0e8e799d5) |
 | `riverhog-catalog` | [riverhog-catalog: collection_mutable_document_publication_attempts](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-collection-mutable-document-publication-attempts.md#pa-22a45f126f) |
 | `riverhog-catalog` | [riverhog-catalog: collection_mutable_document_reclamations](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-collection-mutable-document-reclamations.md#pa-e65f3a7a9c) |
+| `riverhog-catalog` | [riverhog-catalog: collection_processing_capabilities](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-collection-processing-capabilities.md#pa-f193262762) |
+| `riverhog-catalog` | [riverhog-catalog: collection_processing_capability_artifacts](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-collection-processing-capability-artifacts.md#pa-40d70582ad) |
 | `riverhog-catalog` | [riverhog-catalog: collection_processing_claim_artifacts](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-collection-processing-claim-artifacts.md#pa-010e4505a1) |
 | `riverhog-catalog` | [riverhog-catalog: collection_processing_claim_inputs](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-collection-processing-claim-inputs.md#pa-9a8c73c63f) |
 | `riverhog-catalog` | [riverhog-catalog: collection_processing_claims](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-collection-processing-claims.md#pa-6d54a43a1d) |
@@ -79,8 +81,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-catalog` | [riverhog-catalog: collection_tag_revisions](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-collection-tag-revisions.md#pa-383ee92707) |
 | `riverhog-catalog` | [riverhog-catalog: collection_tag_visibility](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-collection-tag-visibility.md#pa-e069ecb4ba) |
 | `riverhog-catalog` | [riverhog-catalog: collection_tags](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-collection-tags.md#pa-84b97f0ea7) |
-| `riverhog-catalog` | [riverhog-catalog: collection_transform_capabilities](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-collection-transform-capabilities.md#pa-809faecf8f) |
-| `riverhog-catalog` | [riverhog-catalog: collection_transform_capability_artifacts](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-collection-transform-capability-artifacts.md#pa-81b064ca58) |
 | `riverhog-catalog` | [riverhog-catalog: collection_upload_files](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-collection-upload-files.md#pa-560dc6d600) |
 | `riverhog-catalog` | [riverhog-catalog: collection_upload_provenance_archive_volumes](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-collection-upload-provenance-archive-volumes.md#pa-66db23ce6d) |
 | `riverhog-catalog` | [riverhog-catalog: collection_upload_provenance_journal_chunks](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-collection-upload-provenance-journal-chunks.md#pa-406ebf0228) |
@@ -94,9 +94,9 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-catalog` | [riverhog-catalog: collection_upload_tags](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-collection-upload-tags.md#pa-974531ca57) |
 | `riverhog-catalog` | [riverhog-catalog: collection_uploads](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-collection-uploads.md#pa-7ab1888163) |
 | `riverhog-catalog` | [riverhog-catalog: collections](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-collections.md#pa-c708654bd9) |
+| `riverhog-catalog` | [riverhog-catalog: ix_collection_processing_capability_artifacts_order](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-ix-collection-processing-capability-artifacts-order.md#pa-31e955ea05) |
 | `riverhog-catalog` | [riverhog-catalog: ix_collection_processing_claim_artifacts_order](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-ix-collection-processing-claim-artifacts-order.md#pa-7434fd1a7a) |
 | `riverhog-catalog` | [riverhog-catalog: ix_collection_processing_outcomes_order](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-ix-collection-processing-outcomes-order.md#pa-a49ca06944) |
-| `riverhog-catalog` | [riverhog-catalog: ix_collection_transform_capability_artifacts_order](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-ix-collection-transform-capability-artifacts-order.md#pa-47662b3342) |
 | `riverhog-catalog` | [riverhog-catalog: ix_processing_disposition_outputs_order](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-ix-processing-disposition-outputs-order.md#pa-f658d39af2) |
 | `riverhog-catalog` | [riverhog-catalog: ix_processing_dispositions_order](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-ix-processing-dispositions-order.md#pa-2cc13d70bb) |
 | `riverhog-catalog` | [riverhog-catalog: key_download_reservations](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-key-download-reservations.md#pa-ba48ff03ed) |
@@ -117,7 +117,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-catalog` | [riverhog-catalog: ux_app_keys_token_sha256](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-ux-app-keys-token-sha256.md#pa-3c416c81b9) |
 | `riverhog-catalog` | [riverhog-catalog: ux_collection_archive_object_uploads_sequence](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-ux-collection-archive-object-uploads-sequence.md#pa-f8651ed18a) |
 | `riverhog-catalog` | [riverhog-catalog: ux_collection_upload_files_order](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-ux-collection-upload-files-order.md#pa-6de2428404) |
-| `riverhog-catalog` | [riverhog-catalog: ux_collection_uploads_application_idempotency_key](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-ux-collection-uploads-application-idempotency-key.md#pa-51c5d75cb9) |
+| `riverhog-catalog` | [riverhog-catalog: ux_collection_uploads_principal_idempotency_key](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-ux-collection-uploads-principal-idempotency-key.md#pa-5a0bc9d80b) |
 | `riverhog-provenance-installation` | [riverhog-provenance-installation durable state](../../authorities/riverhog-provenance-installation/durable-state/riverhog-provenance-installation-durable-state.md#pa-7845ed3800) |
 | `stove0-control` | [stove0-control durable-state identity](../../authorities/stove0-control/durable-state/stove0-control-durable-state-identity.md#pa-443b48ffb4) |
 | `stove0-control` | [stove0-control: ix_stove0_selection_members_continuation](../../authorities/stove0-control/durable-state/stove0-control-ix-stove0-selection-members-continuation.md#pa-32e00fce9f) |

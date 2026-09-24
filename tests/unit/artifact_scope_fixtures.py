@@ -4,12 +4,12 @@ import hashlib
 import json
 from collections.abc import Iterable
 
-from riverhog_core.app_permissions import ApplicationAccess, ApplicationPrincipal
+from riverhog_core.app_permissions import ApplicationAccess, Principal
 from riverhog_core.catalog_db import make_session_factory, session_scope
 from riverhog_core.catalog_workflow_models import (
+    CollectionProcessingCapabilityArtifactRecord,
+    CollectionProcessingCapabilityRecord,
     CollectionProcessingClaimRecord,
-    CollectionTransformCapabilityArtifactRecord,
-    CollectionTransformCapabilityRecord,
 )
 
 _NOW = "2026-08-28T00:00:00Z"
@@ -21,7 +21,7 @@ def persisted_artifact_scope(
     *,
     access: Iterable[ApplicationAccess],
     artifacts: Iterable[tuple[int, str, int, str]],
-) -> ApplicationPrincipal:
+) -> Principal:
     """Install the same persisted artifact authority used by production capabilities."""
 
     members = tuple(artifacts)
@@ -50,7 +50,7 @@ def persisted_artifact_scope(
         )
         session.flush()
         session.add(
-            CollectionTransformCapabilityRecord(
+            CollectionProcessingCapabilityRecord(
                 id=capability_id,
                 claim_id=claim_id,
                 fence=1,
@@ -64,7 +64,7 @@ def persisted_artifact_scope(
         )
         session.flush()
         session.add_all(
-            CollectionTransformCapabilityArtifactRecord(
+            CollectionProcessingCapabilityArtifactRecord(
                 capability_id=capability_id,
                 collection_id=collection_id,
                 path=path,
@@ -74,8 +74,8 @@ def persisted_artifact_scope(
             )
             for artifact_order, (collection_id, path, byte_count, sha256) in enumerate(members)
         )
-    return ApplicationPrincipal(
-        app=f"claim:{claim_id}",
+    return Principal(
+        id=f"claim:{claim_id}",
         key_id="fixture-key",
         access=frozenset(access),
         artifact_scope_capability_id=capability_id,

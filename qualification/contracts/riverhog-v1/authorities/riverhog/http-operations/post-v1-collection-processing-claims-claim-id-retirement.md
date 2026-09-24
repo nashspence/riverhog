@@ -19,7 +19,7 @@ Begin Processing Claim Retirement
 - <a id="s-7c8b16b5b3"></a>`summary`: `"Begin Processing Claim Retirement"`
 - <a id="s-aa07bf3f6d"></a>`tags`: `["collection-workflows"]`
 - <a id="s-924f8b1ce5"></a>`x-riverhog-interface`: `"client-only-primitive"`
-- <a id="s-ea94e04955"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:control"]}]`
+- <a id="s-ea94e04955"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-processing:control"]}]`
 
 ### Parameters
 
@@ -137,7 +137,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 72b9b9e09a0b9c9fa15af8169d0041f06cee4631c3e672cc6246e8361618d6ed -->
+<!-- exact-contract-value: 10abb491cba5a26f287592e3ca67474c9ea239ea0e556099dd6215c5d7876fdf -->
 
 ```json
 {
@@ -268,7 +268,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "x-riverhog-permission-requirements": [
     {
       "any_of": [
-        "collection-transforms:control"
+        "collection-processing:control"
       ]
     }
   ]

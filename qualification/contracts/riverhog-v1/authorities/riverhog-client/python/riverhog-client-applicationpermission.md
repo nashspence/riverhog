@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-d74da0cc96"></a>`kind`: `"type-alias"`
-- <a id="s-8fdbcc2f3c"></a>`value`: `"typing.Literal['*', 'catalog:read', 'retrieval:manage', 'collections:create', 'collection-descriptions:manage', 'collection-transforms:control', 'collection-transforms:execute', 'collection-tags:manage', 'collections:delete', 'archives:read', 'archives:manage', 'keys:manage', 'quotas:manage', 'events:read', 'events:read_all', 'provenance:read', 'provenance:export']"`
+- <a id="s-8fdbcc2f3c"></a>`value`: `"typing.Literal['*', 'catalog:read', 'retrieval:manage', 'collections:create', 'collection-descriptions:manage', 'collection-processing:control', 'collection-processing:execute', 'collection-tags:manage', 'collections:delete', 'archives:read', 'archives:manage', 'keys:manage', 'quotas:manage', 'events:read', 'events:read_all', 'provenance:read', 'provenance:export']"`
 
 ## Governing policies
 
@@ -51,13 +51,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ab9ddde8a05878f8260ea2e84000d8873d23288199e785e1c053e1a44893674c -->
+<!-- exact-contract-value: 141d3a4428701b975b1debb1aecf891bc4072688c89ef53ef4a4a83181b91791 -->
 
 ```json
 {
   "contract": {
     "kind": "type-alias",
-    "value": "typing.Literal['*', 'catalog:read', 'retrieval:manage', 'collections:create', 'collection-descriptions:manage', 'collection-transforms:control', 'collection-transforms:execute', 'collection-tags:manage', 'collections:delete', 'archives:read', 'archives:manage', 'keys:manage', 'quotas:manage', 'events:read', 'events:read_all', 'provenance:read', 'provenance:export']"
+    "value": "typing.Literal['*', 'catalog:read', 'retrieval:manage', 'collections:create', 'collection-descriptions:manage', 'collection-processing:control', 'collection-processing:execute', 'collection-tags:manage', 'collections:delete', 'archives:read', 'archives:manage', 'keys:manage', 'quotas:manage', 'events:read', 'events:read_all', 'provenance:read', 'provenance:export']"
   },
   "distribution": "riverhog-client",
   "module": "riverhog_client",

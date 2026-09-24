@@ -24,7 +24,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e3e65ac8a5"></a>`app` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="App" |  |
+| <a id="s-e3e65ac8a5"></a>`app` | yes | [ApplicationName](schemas-applicationname.md) |  |
 | <a id="s-560dbaafaf"></a>`key_id` | no | anyOf=[(type="string"; maxLength=300; minLength=1); (type="null")]; title="Key Id" |  |
 
 ### Progression, limits, and lifecycle
@@ -36,6 +36,12 @@ Shared facts for every subject below: maximum=300; minimum=1; reason="schema-max
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | <a id="s-16ba0f0f0e"></a>[field key_id · string value](#s-560dbaafaf) | `length · characters · contract_max` | shared above |
+
+## Maintained corroboration
+
+### Referenced contract elements
+
+- [ApplicationName](schemas-applicationname.md)
 
 ## Governing policies
 
@@ -67,16 +73,14 @@ Shared facts for every subject below: maximum=300; minimum=1; reason="schema-max
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7cd765d2f05f41f51d27802da1d22e63f901cd257453447ccce3a8705be74d9b -->
+<!-- exact-contract-value: 6a53049bcc570b3fb381f3f4f2b10420a63d91a618e2724c3e019fff67b91117 -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
     "app": {
-      "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-      "title": "App",
-      "type": "string"
+      "$ref": "#/components/schemas/ApplicationName"
     },
     "key_id": {
       "anyOf": [

@@ -13,7 +13,7 @@ from riverhog_core.app_permissions import (
     CATALOG_READ,
     RETRIEVAL_MANAGE,
     ApplicationAccess,
-    ApplicationPrincipal,
+    Principal,
 )
 from riverhog_core.archive_store_registry import ArchiveStoreBinding, ArchiveStoreRegistry
 from riverhog_core.catalog_db import initialize_db, make_session_factory, session_scope
@@ -445,11 +445,11 @@ def _creator():
         ALL_RESOURCES,
         COLLECTIONS_CREATE,
         ApplicationAccess,
-        ApplicationPrincipal,
+        Principal,
     )
 
-    return ApplicationPrincipal(
-        app="uploader",
+    return Principal(
+        id="uploader",
         key_id="key-1",
         access=frozenset({ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES)}),
     )
@@ -464,7 +464,7 @@ def _ready_job(
 ) -> dict[str, object]:
     plan = service.plan(((collection_id, path),))
     return service.create(
-        app="reader",
+        principal_id="reader",
         key_id=key_id,
         plan_id=str(plan["id"]),
         plan_etag=str(plan["etag"]),
@@ -480,7 +480,7 @@ def _drive_requested(
         if current["state"] != "requested":
             return current
         assert service.process_due() == 1
-        current = service.get(app="reader", job_id=str(job["id"]))
+        current = service.get(principal_id="reader", job_id=str(job["id"]))
     raise AssertionError("retrieval did not converge in bounded test steps")
 
 
@@ -496,13 +496,13 @@ def test_immediate_retrieval_reads_only_the_selected_pack_member_range(
 
     plan = service.plan(((collection_id, "target.bin"),))
     job = service.create(
-        app="reader",
+        principal_id="reader",
         plan_id=str(plan["id"]),
         plan_etag=str(plan["etag"]),
     )
     assert job["state"] == "ready"
     chunks, byte_count, sha256 = service.content(
-        app="reader",
+        principal_id="reader",
         job_id=str(job["id"]),
         collection_id=collection_id,
         path="target.bin",
@@ -513,7 +513,7 @@ def test_immediate_retrieval_reads_only_the_selected_pack_member_range(
     assert sha256 == hashlib.sha256(files["target.bin"]).hexdigest()
     assert len(ranges.requests) == 1
     assert ranges.requests[0][2] < sum(len(value) for value in files.values())
-    assert service.acknowledge(app="reader", job_id=str(job["id"]))["state"] == "completed"
+    assert service.acknowledge(principal_id="reader", job_id=str(job["id"]))["state"] == "completed"
 
 
 def test_retrieval_plan_creation_replays_after_a_lost_response(tmp_path: Path) -> None:
@@ -565,7 +565,7 @@ def test_retrieval_plan_accepts_the_exact_capability_artifact(tmp_path: Path) ->
     plan = service.plan(((collection_id, "selected.bin"),), principal=principal)
 
     page = service.list_plan_files(
-        app=principal.app,
+        principal_id=principal.id,
         key_id=principal.key_id,
         plan_id=str(plan["id"]),
         etag=str(plan["etag"]),
@@ -592,7 +592,7 @@ def test_raw_retrieval_reassembles_verified_parts_in_file_order(tmp_path: Path) 
     )
     job = _ready_job(service, collection_id, "large.bin")
     chunks, byte_count, sha256 = service.content(
-        app="reader",
+        principal_id="reader",
         job_id=str(job["id"]),
         collection_id=collection_id,
         path="large.bin",
@@ -619,7 +619,7 @@ def test_raw_head_middle_and_tail_ranges_read_only_overlapping_bounded_parts(
     for offset in (0, len(content) // 2, len(content) - size):
         ranges.requests.clear()
         chunks, byte_count, sha256 = service.content(
-            app="reader",
+            principal_id="reader",
             job_id=str(job["id"]),
             collection_id=collection_id,
             path="large.bin",
@@ -660,13 +660,13 @@ def test_retrieval_plan_resumes_across_more_than_two_internal_segment_pages(
         service._cache,
         session_factory=service._session_factory,
     )
-    plan = restarted.advance_plan(app="", plan_id=str(plan["id"]))
+    plan = restarted.advance_plan(principal_id="", plan_id=str(plan["id"]))
     assert plan["state"] == "planning"
     with session_scope(service._session_factory) as session:
         assert len(session.scalars(select(RetrievalPlanObjectRecord)).all()) == 64
         assert len(session.scalars(select(RetrievalPlanPlacementRecord)).all()) == 64
 
-    plan = restarted.advance_plan(app="", plan_id=str(plan["id"]))
+    plan = restarted.advance_plan(principal_id="", plan_id=str(plan["id"]))
     assert plan["state"] == "ready"
     assert plan["file_count"] == 1
     assert plan["etag"]
@@ -675,7 +675,7 @@ def test_retrieval_plan_resumes_across_more_than_two_internal_segment_pages(
         assert len(session.scalars(select(RetrievalPlanPlacementRecord)).all()) == segment_count
 
     page = restarted.list_plan_files(
-        app="",
+        principal_id="",
         plan_id=str(plan["id"]),
         etag=str(plan["etag"]),
         start_ordinal=0,
@@ -686,7 +686,7 @@ def test_retrieval_plan_resumes_across_more_than_two_internal_segment_pages(
     assert [item["path"] for item in page["files"]] == ["many-segments.bin"]
     with pytest.raises(PreconditionFailed):
         restarted.list_plan_files(
-            app="",
+            principal_id="",
             plan_id=str(plan["id"]),
             etag="0" * 64,
             start_ordinal=0,
@@ -694,20 +694,20 @@ def test_retrieval_plan_resumes_across_more_than_two_internal_segment_pages(
         )
 
     job = restarted.create(
-        app="reader",
+        principal_id="reader",
         plan_id=str(plan["id"]),
         plan_etag=str(plan["etag"]),
     )
     assert job["state"] == "ready"
     retried = restarted.create(
-        app="reader",
+        principal_id="reader",
         plan_id=str(plan["id"]),
         plan_etag=str(plan["etag"]),
     )
     assert retried["id"] == job["id"]
     with pytest.raises(Conflict, match="event context"):
         restarted.create(
-            app="reader",
+            principal_id="reader",
             plan_id=str(plan["id"]),
             plan_etag=str(plan["etag"]),
             event_context={"changed": True},
@@ -744,11 +744,11 @@ def test_retrieval_plan_failure_is_durable_and_does_not_skip_a_missing_segment(
         assert missing is not None
         session.delete(missing)
 
-    failed = service.advance_plan(app="", plan_id=str(plan["id"]))
+    failed = service.advance_plan(principal_id="", plan_id=str(plan["id"]))
 
     assert failed["state"] == "failed"
     assert failed["failure"] == "retrieval plan placement order is not canonical"
-    assert service.get_plan(app="", plan_id=str(plan["id"])) == failed
+    assert service.get_plan(principal_id="", plan_id=str(plan["id"])) == failed
 
 
 def test_restore_required_job_caches_ciphertext_then_serves_logical_range(
@@ -772,14 +772,14 @@ def test_restore_required_job_caches_ciphertext_then_serves_logical_range(
     cached_plan = service.plan(((collection_id, "target.bin"),))
     assert cached_plan["requires_restore"] is False
     cached_job = service.create(
-        app="reader",
+        principal_id="reader",
         plan_id=str(cached_plan["id"]),
         plan_etag=str(cached_plan["etag"]),
     )
     assert cached_job["state"] == "ready"
 
     chunks, _bytes, _sha256 = service.content(
-        app="reader",
+        principal_id="reader",
         job_id=str(job["id"]),
         collection_id=collection_id,
         path="target.bin",
@@ -801,7 +801,7 @@ def test_restore_is_not_requested_until_cache_placement_is_admitted(tmp_path: Pa
 
     assert service.process_due() == 1
 
-    pending = service.get(app="reader", job_id=str(job["id"]))
+    pending = service.get(principal_id="reader", job_id=str(job["id"]))
     assert pending["state"] == "requested"
     assert store.prepare_calls == 0
 
@@ -817,14 +817,14 @@ def test_restore_waits_until_every_required_object_has_cache_admission(tmp_path:
     )
     plan = service.plan(((collection_id, "large.bin"),))
     job = service.create(
-        app="reader",
+        principal_id="reader",
         plan_id=str(plan["id"]),
         plan_etag=str(plan["etag"]),
     )
 
     assert service.process_due() == 1
 
-    pending = service.get(app="reader", job_id=str(job["id"]))
+    pending = service.get(principal_id="reader", job_id=str(job["id"]))
     assert pending["state"] == "requested"
     assert cache.admission_calls == 1
     assert store.prepare_calls == 1
@@ -843,7 +843,7 @@ def test_restore_work_resumes_after_restart_one_exact_object_per_step(tmp_path: 
     )
     plan = service.plan(((collection_id, "two-objects.bin"),))
     job = service.create(
-        app="reader",
+        principal_id="reader",
         plan_id=str(plan["id"]),
         plan_etag=str(plan["etag"]),
     )
@@ -877,13 +877,13 @@ def test_retrieval_reserves_and_attributes_the_planned_range_bytes(
     )
     plan = service.plan(((collection_id, "target.bin"),))
     job = service.create(
-        app="reader",
+        principal_id="reader",
         key_id="reader-key",
         plan_id=str(plan["id"]),
         plan_etag=str(plan["etag"]),
     )
     chunks, _bytes, _sha256 = service.content(
-        app="reader",
+        principal_id="reader",
         key_id="reader-key",
         job_id=str(job["id"]),
         collection_id=collection_id,
@@ -911,7 +911,7 @@ def test_cancel_releases_a_ready_job_and_its_download_reservation(tmp_path: Path
     job = _ready_job(service, collection_id, "document.txt", key_id="reader-key")
 
     canceled = service.cancel(
-        app="reader",
+        principal_id="reader",
         key_id="reader-key",
         job_id=str(job["id"]),
     )
@@ -935,7 +935,7 @@ def test_restore_policy_never_is_atomic_and_never_requests_archive_restore(
     assert plan["requires_restore"] is True
     with pytest.raises(Conflict, match="restore_policy is never"):
         service.create(
-            app="reader",
+            principal_id="reader",
             plan_id=str(plan["id"]),
             plan_etag=str(plan["etag"]),
         )
@@ -966,7 +966,7 @@ def test_requested_retrieval_converges_after_its_pending_timeout(tmp_path: Path)
 
     assert service.process_due() == 1
     failed = service.get(
-        app="reader",
+        principal_id="reader",
         key_id="reader-key",
         job_id=str(requested["id"]),
     )
@@ -988,7 +988,7 @@ def test_ready_retrieval_renewal_extends_its_cache_lease(tmp_path: Path) -> None
     ready = _drive_requested(service, requested)
 
     renewed = service.renew(
-        app="reader",
+        principal_id="reader",
         job_id=str(ready["id"]),
         lease=timedelta(hours=36),
     )
@@ -1016,13 +1016,13 @@ def test_cache_status_list_and_show_respect_catalog_group_access(tmp_path: Path)
     )
     requested = _ready_job(service, collection_id, "document.txt")
     _drive_requested(service, requested)
-    permitted = ApplicationPrincipal(
-        app="indexer",
+    permitted = Principal(
+        id="indexer",
         key_id="indexer-key",
         access=frozenset({ApplicationAccess(CATALOG_READ, f"tag:{TAG}")}),
     )
-    denied = ApplicationPrincipal(
-        app="outsider",
+    denied = Principal(
+        id="outsider",
         key_id="outsider-key",
         access=frozenset({ApplicationAccess(CATALOG_READ, "tag:other")}),
     )
@@ -1125,7 +1125,7 @@ def test_cache_sweep_removes_an_unleased_verified_object(tmp_path: Path) -> None
     )
     requested = _ready_job(service, collection_id, "document.txt")
     ready = _drive_requested(service, requested)
-    completed = service.acknowledge(app="reader", job_id=str(ready["id"]))
+    completed = service.acknowledge(principal_id="reader", job_id=str(ready["id"]))
 
     assert completed["state"] == "completed"
     assert service.sweep() == 1

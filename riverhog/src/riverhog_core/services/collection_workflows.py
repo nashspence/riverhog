@@ -38,6 +38,7 @@ from riverhog_protocol.collection_workflows import (
     canonical_json_sha256,
 )
 from riverhog_protocol.errors import BadRequest, Conflict, Forbidden, InvalidState, NotFound
+from riverhog_protocol.principal_ids import validate_application_name
 from riverhog_protocol.transport import COLLECTION_DELETION_BLOCKER_CATEGORY_SAMPLE_MAX
 from sqlalchemy import and_, asc, delete, desc, func, literal, or_, select
 from sqlalchemy.exc import IntegrityError
@@ -49,13 +50,13 @@ from time_formats import format_utc_timestamp, parse_utc_timestamp, utc_now, utc
 
 from riverhog_core.app_permissions import (
     CATALOG_READ,
-    COLLECTION_TRANSFORMS_EXECUTE,
+    COLLECTION_PROCESSING_EXECUTE,
     COLLECTIONS_CREATE,
     PROVENANCE_EXPORT,
     PROVENANCE_READ,
     RETRIEVAL_MANAGE,
     ApplicationAccess,
-    ApplicationPrincipal,
+    Principal,
     collection_resource,
 )
 from riverhog_core.browse import bounded_page, keyset_statement, validate_page_size
@@ -69,6 +70,8 @@ from riverhog_core.catalog_models import (
 )
 from riverhog_core.catalog_workflow_models import (
     CollectionDerivationRecord,
+    CollectionProcessingCapabilityArtifactRecord,
+    CollectionProcessingCapabilityRecord,
     CollectionProcessingClaimArtifactRecord,
     CollectionProcessingClaimInputRecord,
     CollectionProcessingClaimRecord,
@@ -76,8 +79,6 @@ from riverhog_core.catalog_workflow_models import (
     CollectionProcessingDispositionRecord,
     CollectionProcessingDispositionSetRecord,
     CollectionProcessingOutcomeRecord,
-    CollectionTransformCapabilityArtifactRecord,
-    CollectionTransformCapabilityRecord,
 )
 from riverhog_core.checkpoint_sha256 import CheckpointSHA256
 from riverhog_core.runtime_config import RuntimeConfig
@@ -121,9 +122,13 @@ class SqlAlchemyCollectionWorkflowService:
         work_document_sha256: str,
         lease_seconds: int = _DEFAULT_LEASE_SECONDS,
         purpose: str = "collection-work/v1",
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         lease = _lease_seconds(lease_seconds)
+        try:
+            consumer_app = validate_application_name(principal.id)
+        except ValueError as exc:
+            raise BadRequest("processing claim consumer must use an application name") from exc
         normalized_work_id = _sha256(work_id, "work identity")
         normalized_purpose = _visible(purpose, "claim purpose", maximum=160)
         encoded_work, normalized_work = _json_document(
@@ -140,7 +145,7 @@ class SqlAlchemyCollectionWorkflowService:
         claim_id = canonical_json_sha256(
             {
                 "format": "riverhog-processing-claim-identity/v1",
-                "consumer_app": principal.app,
+                "consumer_app": consumer_app,
                 "purpose": normalized_purpose,
                 "work_id": normalized_work_id,
             }
@@ -180,7 +185,7 @@ class SqlAlchemyCollectionWorkflowService:
             claim = CollectionProcessingClaimRecord(
                 id=claim_id,
                 work_id=normalized_work_id,
-                consumer_app=principal.app,
+                consumer_app=consumer_app,
                 consumer_key_id=principal.key_id,
                 purpose=normalized_purpose,
                 work_document_json=canonical_json_bytes(normalized_work).decode("utf-8"),
@@ -227,7 +232,7 @@ class SqlAlchemyCollectionWorkflowService:
         fence: int,
         start_ordinal: int,
         inputs: Sequence[CollectionRootIdentity],
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         """Append one bounded, retry-safe canonical input-root batch."""
 
@@ -294,7 +299,7 @@ class SqlAlchemyCollectionWorkflowService:
         claim_id: str,
         *,
         fence: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         with session_scope(self._session_factory) as session:
             claim = _owned_claim(session, claim_id, principal, lock=True)
@@ -315,7 +320,7 @@ class SqlAlchemyCollectionWorkflowService:
         *,
         identity_sha256: str,
         start_ordinal: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         start = _page_start(start_ordinal)
         with read_snapshot(self._session_factory) as session:
@@ -356,7 +361,7 @@ class SqlAlchemyCollectionWorkflowService:
         fence: int,
         start_ordinal: int,
         artifacts: Sequence[CollectionArtifactIdentity],
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         values = tuple(artifacts)
         _bounded_batch(values, "artifact")
@@ -416,7 +421,7 @@ class SqlAlchemyCollectionWorkflowService:
         claim_id: str,
         *,
         fence: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         with session_scope(self._session_factory) as session:
             claim = _owned_claim(session, claim_id, principal, lock=True)
@@ -437,7 +442,7 @@ class SqlAlchemyCollectionWorkflowService:
         *,
         identity_sha256: str,
         start_ordinal: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         start = _page_start(start_ordinal)
         with read_snapshot(self._session_factory) as session:
@@ -472,7 +477,7 @@ class SqlAlchemyCollectionWorkflowService:
         self,
         claim_id: str,
         *,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         with session_scope(self._session_factory) as session:
             return _claim_payload(session, _claim_actor(session, claim_id, principal))
@@ -485,7 +490,7 @@ class SqlAlchemyCollectionWorkflowService:
         state: str | None = None,
         sort: str = "updated_at",
         order: str = "desc",
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         validate_page_size(page_size)
         if sort not in _CLAIM_SORT_NAMES or order not in _SORT_ORDERS:
@@ -526,7 +531,7 @@ class SqlAlchemyCollectionWorkflowService:
         state: str | None = None,
         sort: str = "updated_at",
         order: str = "desc",
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> Iterator[dict[str, object]]:
         if sort not in _CLAIM_SORT_NAMES or order not in _SORT_ORDERS:
             raise BadRequest("claim sorting is invalid")
@@ -547,7 +552,7 @@ class SqlAlchemyCollectionWorkflowService:
         *,
         fence: int,
         lease_seconds: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         lease = _lease_seconds(lease_seconds)
         with session_scope(self._session_factory) as session:
@@ -567,7 +572,7 @@ class SqlAlchemyCollectionWorkflowService:
         *,
         fence: int,
         lease_seconds: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         """Advance an active claim to a fresh fencing generation for retry.
 
@@ -602,7 +607,7 @@ class SqlAlchemyCollectionWorkflowService:
         operation_sha256: str,
         retirement_policy: str,
         retirement_grace_seconds: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         normalized_execution_id = _sha256(execution_id, "execution identity")
         evidence_bytes, evidence = _json_document(
@@ -684,15 +689,15 @@ class SqlAlchemyCollectionWorkflowService:
         audience: str,
         actions: Sequence[str],
         ttl_seconds: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         ttl = _lease_seconds(ttl_seconds)
         normalized_actions = tuple(sorted(set(str(item) for item in actions)))
         if not normalized_actions or not set(normalized_actions).issubset(_CAPABILITY_ACTIONS):
-            raise BadRequest("transform capability actions are invalid")
+            raise BadRequest("processing capability actions are invalid")
         normalized_audience = str(audience)
         if _CAPABILITY_AUDIENCE.fullmatch(normalized_audience) is None:
-            raise BadRequest("transform capability audience is invalid")
+            raise BadRequest("processing capability audience is invalid")
         with session_scope(self._session_factory) as session:
             claim = _owned_claim(session, claim_id, principal, lock=True)
             _require_live_claim(claim, fence=fence)
@@ -703,7 +708,7 @@ class SqlAlchemyCollectionWorkflowService:
             expiry = min(claim_expiry, requested_expiry)
             token = "rhc_" + secrets.token_urlsafe(32)
             now = utc_timestamp_now()
-            capability = CollectionTransformCapabilityRecord(
+            capability = CollectionProcessingCapabilityRecord(
                 id=secrets.token_hex(16),
                 claim_id=claim.id,
                 fence=claim.fence,
@@ -719,14 +724,14 @@ class SqlAlchemyCollectionWorkflowService:
             claim.updated_at = now
             session.flush()
             return {
-                "format": "riverhog-transform-capability/v1",
+                "format": "riverhog-processing-capability/v1",
                 "id": capability.id,
                 "claim_id": claim.id,
                 "fence": format_scalar("nonnegative", claim.fence),
                 "audience": capability.audience,
                 "actions": list(normalized_actions),
                 "state": "receiving",
-                "principal_app": _capability_app(claim, normalized_actions),
+                "principal_id": _capability_principal_id(claim, normalized_actions),
                 "expires_at": capability.expires_at,
                 "artifacts": {
                     "state": "receiving",
@@ -745,7 +750,7 @@ class SqlAlchemyCollectionWorkflowService:
         fence: int,
         start_ordinal: int,
         artifacts: Sequence[CollectionArtifactIdentity],
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         values = tuple(artifacts)
         _bounded_batch(values, "capability artifact")
@@ -764,10 +769,10 @@ class SqlAlchemyCollectionWorkflowService:
             for value in values:
                 if ordinal < capability.artifact_count:
                     current = session.scalar(
-                        select(CollectionTransformCapabilityArtifactRecord).where(
-                            CollectionTransformCapabilityArtifactRecord.capability_id
+                        select(CollectionProcessingCapabilityArtifactRecord).where(
+                            CollectionProcessingCapabilityArtifactRecord.capability_id
                             == capability.id,
-                            CollectionTransformCapabilityArtifactRecord.artifact_order == ordinal,
+                            CollectionProcessingCapabilityArtifactRecord.artifact_order == ordinal,
                         )
                     )
                     if (
@@ -784,13 +789,13 @@ class SqlAlchemyCollectionWorkflowService:
                     )
                 _validate_claim_artifacts(session, claim, (value,))
                 existing = session.get(
-                    CollectionTransformCapabilityArtifactRecord,
+                    CollectionProcessingCapabilityArtifactRecord,
                     (capability.id, value.collection.collection_id, value.path),
                 )
                 if existing is not None:
                     raise Conflict("capability artifact is already staged")
                 session.add(
-                    CollectionTransformCapabilityArtifactRecord(
+                    CollectionProcessingCapabilityArtifactRecord(
                         capability_id=capability.id,
                         collection_id=value.collection.collection_id,
                         path=value.path,
@@ -814,7 +819,7 @@ class SqlAlchemyCollectionWorkflowService:
         capability_id: str,
         *,
         fence: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         with session_scope(self._session_factory) as session:
             claim = _owned_claim(session, claim_id, principal, lock=True)
@@ -843,16 +848,16 @@ class SqlAlchemyCollectionWorkflowService:
             claim.updated_at = capability.artifacts_sealed_at
             return _capability_artifact_set_payload(capability)
 
-    def authenticate_capability(self, token: str) -> ApplicationPrincipal | None:
+    def authenticate_capability(self, token: str) -> Principal | None:
         supplied = token.strip()
         if not supplied.startswith("rhc_"):
             return None
         digest = hashlib.sha256(supplied.encode("utf-8")).hexdigest()
         with session_scope(self._session_factory) as session:
             capability = session.scalar(
-                select(CollectionTransformCapabilityRecord).where(
-                    CollectionTransformCapabilityRecord.token_sha256 == digest,
-                    CollectionTransformCapabilityRecord.state == "active",
+                select(CollectionProcessingCapabilityRecord).where(
+                    CollectionProcessingCapabilityRecord.token_sha256 == digest,
+                    CollectionProcessingCapabilityRecord.state == "active",
                 )
             )
             if capability is None or _expired(capability.expires_at):
@@ -869,14 +874,14 @@ class SqlAlchemyCollectionWorkflowService:
             if "write-output" in actions and claim.plan_sealed_at is None:
                 return None
             grants: set[ApplicationAccess] = set()
-            grants.add(ApplicationAccess(COLLECTION_TRANSFORMS_EXECUTE))
+            grants.add(ApplicationAccess(COLLECTION_PROCESSING_EXECUTE))
             if "read-inputs" in actions:
                 representative_collection_id = session.scalar(
-                    select(CollectionTransformCapabilityArtifactRecord.collection_id)
+                    select(CollectionProcessingCapabilityArtifactRecord.collection_id)
                     .where(
-                        CollectionTransformCapabilityArtifactRecord.capability_id == capability.id
+                        CollectionProcessingCapabilityArtifactRecord.capability_id == capability.id
                     )
-                    .order_by(CollectionTransformCapabilityArtifactRecord.artifact_order)
+                    .order_by(CollectionProcessingCapabilityArtifactRecord.artifact_order)
                     .limit(1)
                 )
                 if representative_collection_id is None:
@@ -891,20 +896,20 @@ class SqlAlchemyCollectionWorkflowService:
                     }
                 )
             if "write-output" in actions:
-                grants.add(ApplicationAccess(COLLECTION_TRANSFORMS_EXECUTE))
+                grants.add(ApplicationAccess(COLLECTION_PROCESSING_EXECUTE))
                 grants.add(ApplicationAccess(COLLECTIONS_CREATE))
-            app = _capability_app(claim, actions)
+            principal_id = _capability_principal_id(claim, actions)
             has_artifact_scope = session.scalar(
-                select(CollectionTransformCapabilityArtifactRecord.capability_id)
-                .where(CollectionTransformCapabilityArtifactRecord.capability_id == capability.id)
+                select(CollectionProcessingCapabilityArtifactRecord.capability_id)
+                .where(CollectionProcessingCapabilityArtifactRecord.capability_id == capability.id)
                 .limit(1)
             )
             if "read-inputs" in actions and has_artifact_scope is None:
                 return None
-            return ApplicationPrincipal(
-                app=app,
+            return Principal(
+                id=principal_id,
                 # Preserve the initiating key for download-budget attribution and
-                # revocation while the synthetic app keeps claim-scoped ownership
+                # revocation while the delegated principal keeps claim-scoped ownership
                 # stable across capability refreshes.
                 key_id=claim.consumer_key_id,
                 access=frozenset(grants),
@@ -917,7 +922,7 @@ class SqlAlchemyCollectionWorkflowService:
         *,
         fence: int,
         dispositions: Sequence[ArtifactDisposition],
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         """Insert one bounded idempotent disposition batch in any arrival order."""
 
@@ -978,7 +983,7 @@ class SqlAlchemyCollectionWorkflowService:
         *,
         fence: int,
         outputs: Sequence[ArtifactDispositionOutput],
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         """Insert one bounded idempotent source-to-output edge batch."""
 
@@ -1066,7 +1071,7 @@ class SqlAlchemyCollectionWorkflowService:
         claim_id: str,
         *,
         fence: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         """Begin bounded restartable sealing of one exact relational set."""
 
@@ -1107,7 +1112,7 @@ class SqlAlchemyCollectionWorkflowService:
         self,
         claim_id: str,
         *,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         with session_scope(self._session_factory) as session:
             claim = _claim_actor(session, claim_id, principal)
@@ -1122,7 +1127,7 @@ class SqlAlchemyCollectionWorkflowService:
         *,
         identity_sha256: str,
         start_ordinal: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         start = _page_start(start_ordinal)
         expected = _sha256(identity_sha256, "disposition set identity")
@@ -1160,7 +1165,7 @@ class SqlAlchemyCollectionWorkflowService:
         *,
         identity_sha256: str,
         start_ordinal: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         start = _page_start(start_ordinal)
         expected = _sha256(identity_sha256, "disposition set identity")
@@ -1290,7 +1295,7 @@ class SqlAlchemyCollectionWorkflowService:
         outcome_claim_id: str | None = None,
         outcome_fence: int | None = None,
         outcome_id: str | None = None,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         try:
             document = CollectionDerivation.from_mapping(derivation)
@@ -1347,9 +1352,9 @@ class SqlAlchemyCollectionWorkflowService:
             )
             if output is None:
                 raise NotFound(f"derived collection not found: {output_collection_id}")
-            expected_app = f"transform:{claim.execution_id}"
+            expected_principal_id = f"processing:{claim.execution_id}"
             if (
-                output.created_by_app != expected_app
+                output.created_by_principal_id != expected_principal_id
                 or output.creation_idempotency_key != claim.execution_id
             ):
                 raise Conflict("derived collection was not created by the sealed output intent")
@@ -1404,7 +1409,7 @@ class SqlAlchemyCollectionWorkflowService:
         fence: int,
         retirement_policy: str,
         retirement_grace_seconds: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         """Seal, then close, the durable exact outcome identity."""
 
@@ -1484,7 +1489,7 @@ class SqlAlchemyCollectionWorkflowService:
         *,
         identity_sha256: str,
         start_ordinal: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         start = _page_start(start_ordinal)
         with read_snapshot(self._session_factory) as session:
@@ -1522,14 +1527,14 @@ class SqlAlchemyCollectionWorkflowService:
         self,
         collection_id: int,
         *,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         with session_scope(self._session_factory) as session:
             record = session.get(CollectionDerivationRecord, int(collection_id))
             if record is None:
                 raise NotFound(f"collection derivation not found: {collection_id}")
             claim = session.get(CollectionProcessingClaimRecord, record.claim_id)
-            if claim is None or claim.consumer_app != principal.app:
+            if claim is None or claim.consumer_app != principal.id:
                 raise NotFound(f"collection derivation not found: {collection_id}")
             return {
                 "collection_id": format_scalar("sequence63", record.collection_id),
@@ -1542,7 +1547,7 @@ class SqlAlchemyCollectionWorkflowService:
         claim_id: str,
         *,
         fence: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         with session_scope(self._session_factory) as session:
             claim = _owned_claim(session, claim_id, principal, lock=True)
@@ -1621,7 +1626,7 @@ class SqlAlchemyCollectionWorkflowService:
         *,
         fence: int,
         reason: str,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         """Terminate active collection work that will not produce an output.
 
@@ -1660,7 +1665,7 @@ class SqlAlchemyCollectionWorkflowService:
         claim_id: str,
         *,
         fence: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         with session_scope(self._session_factory) as session:
             claim = _owned_claim(session, claim_id, principal, lock=True)
@@ -1721,14 +1726,14 @@ def _claim_list_statement(
     state: str | None,
     sort: str,
     order: str,
-    principal: ApplicationPrincipal,
+    principal: Principal,
 ) -> tuple[
     list[ColumnElement[bool]],
     Select[tuple[CollectionProcessingClaimRecord]],
     tuple[Any, ...],
 ]:
     filters: list[ColumnElement[bool]] = [
-        CollectionProcessingClaimRecord.consumer_app == principal.app
+        CollectionProcessingClaimRecord.consumer_app == principal.id
     ]
     if state:
         filters.append(CollectionProcessingClaimRecord.state == state)
@@ -1800,10 +1805,10 @@ def _require_same_claim(
     purpose: str,
     work_document_json: str,
     work_document_sha256: str,
-    principal: ApplicationPrincipal,
+    principal: Principal,
 ) -> None:
     if (
-        claim.consumer_app != principal.app
+        claim.consumer_app != principal.id
         or claim.work_id != work_id
         or claim.purpose != purpose
         or claim.work_document_json != work_document_json
@@ -1869,16 +1874,16 @@ def _transform_output_exists(
 ) -> bool:
     if claim.execution_id is None:
         return False
-    execution_app = f"transform:{claim.execution_id}"
+    execution_principal_id = f"processing:{claim.execution_id}"
     finalized = session.scalar(
         select(func.count())
         .select_from(CollectionRecord)
-        .where(CollectionRecord.created_by_app == execution_app)
+        .where(CollectionRecord.created_by_principal_id == execution_principal_id)
     )
     uploading = session.scalar(
         select(func.count())
         .select_from(CollectionUploadRecord)
-        .where(CollectionUploadRecord.initiated_by_app == execution_app)
+        .where(CollectionUploadRecord.initiated_by_principal_id == execution_principal_id)
     )
     return bool(int(finalized or 0) or int(uploading or 0))
 
@@ -1907,14 +1912,14 @@ def _require_no_transform_output(
         )
 
 
-def _capability_app(
+def _capability_principal_id(
     claim: CollectionProcessingClaimRecord,
     actions: Sequence[str],
 ) -> str:
     if "write-output" in actions:
         if claim.execution_id is None:
             raise InvalidState("write capability has no sealed execution identity")
-        return f"transform:{claim.execution_id}"
+        return f"processing:{claim.execution_id}"
     return f"claim:{claim.id}"
 
 
@@ -2018,17 +2023,17 @@ def _owned_capability(
     session: Session,
     claim: CollectionProcessingClaimRecord,
     capability_id: str,
-) -> CollectionTransformCapabilityRecord:
-    capability = session.get(CollectionTransformCapabilityRecord, capability_id)
+) -> CollectionProcessingCapabilityRecord:
+    capability = session.get(CollectionProcessingCapabilityRecord, capability_id)
     if capability is None or capability.claim_id != claim.id or capability.fence != claim.fence:
-        raise NotFound(f"transform capability not found: {capability_id}")
+        raise NotFound(f"processing capability not found: {capability_id}")
     return capability
 
 
 def _capability_artifact_identity(
     session: Session,
     claim: CollectionProcessingClaimRecord,
-    row: CollectionTransformCapabilityArtifactRecord,
+    row: CollectionProcessingCapabilityArtifactRecord,
 ) -> CollectionArtifactIdentity:
     input_row = session.get(
         CollectionProcessingClaimInputRecord,
@@ -2050,16 +2055,16 @@ def _last_capability_artifact_identity(
     capability_id: str,
 ) -> CollectionArtifactIdentity | None:
     row = session.scalar(
-        select(CollectionTransformCapabilityArtifactRecord)
-        .where(CollectionTransformCapabilityArtifactRecord.capability_id == capability_id)
-        .order_by(CollectionTransformCapabilityArtifactRecord.artifact_order.desc())
+        select(CollectionProcessingCapabilityArtifactRecord)
+        .where(CollectionProcessingCapabilityArtifactRecord.capability_id == capability_id)
+        .order_by(CollectionProcessingCapabilityArtifactRecord.artifact_order.desc())
         .limit(1)
     )
     return _capability_artifact_identity(session, claim, row) if row is not None else None
 
 
 def _capability_artifact_set_payload(
-    capability: CollectionTransformCapabilityRecord,
+    capability: CollectionProcessingCapabilityRecord,
 ) -> dict[str, object]:
     identity = (
         {
@@ -2178,7 +2183,7 @@ def _require_active_generation(
 def _claim_actor(
     session: Session,
     claim_id: str,
-    principal: ApplicationPrincipal,
+    principal: Principal,
     *,
     require_write: bool = False,
 ) -> CollectionProcessingClaimRecord:
@@ -2186,11 +2191,11 @@ def _claim_actor(
     claim = session.get(CollectionProcessingClaimRecord, normalized_id)
     if claim is None:
         raise NotFound(f"collection processing claim not found: {claim_id}")
-    if claim.consumer_app == principal.app:
+    if claim.consumer_app == principal.id:
         return claim
     capability_id = principal.artifact_scope_capability_id
     capability = (
-        session.get(CollectionTransformCapabilityRecord, capability_id)
+        session.get(CollectionProcessingCapabilityRecord, capability_id)
         if capability_id is not None
         else None
     )
@@ -2203,7 +2208,7 @@ def _claim_actor(
     ):
         raise NotFound(f"collection processing claim not found: {claim_id}")
     actions = tuple(sorted(set(json.loads(capability.actions_json))))
-    if principal.app != _capability_app(claim, actions) or (
+    if principal.id != _capability_principal_id(claim, actions) or (
         require_write and "write-output" not in actions
     ):
         raise NotFound(f"collection processing claim not found: {claim_id}")
@@ -2215,7 +2220,7 @@ def _claim_execution_actor(
     claim_id: str,
     *,
     fence: int,
-    principal: ApplicationPrincipal,
+    principal: Principal,
 ) -> CollectionProcessingClaimRecord:
     claim = _claim_actor(session, claim_id, principal, require_write=True)
     _require_live_claim(claim, fence=fence)
@@ -3025,13 +3030,13 @@ def _collection_root(
 def _owned_claim(
     session: Session,
     claim_id: str,
-    principal: ApplicationPrincipal,
+    principal: Principal,
     *,
     lock: bool = False,
 ) -> CollectionProcessingClaimRecord:
     statement = select(CollectionProcessingClaimRecord).where(
         CollectionProcessingClaimRecord.id == claim_id,
-        CollectionProcessingClaimRecord.consumer_app == principal.app,
+        CollectionProcessingClaimRecord.consumer_app == principal.id,
     )
     if lock:
         statement = statement.with_for_update()
@@ -3149,9 +3154,9 @@ def _require_live_claim(claim: CollectionProcessingClaimRecord, *, fence: int) -
 def _revoke_capabilities(session: Session, claim_id: str, *, now: str) -> None:
     rows = list(
         session.scalars(
-            select(CollectionTransformCapabilityRecord).where(
-                CollectionTransformCapabilityRecord.claim_id == claim_id,
-                CollectionTransformCapabilityRecord.state == "active",
+            select(CollectionProcessingCapabilityRecord).where(
+                CollectionProcessingCapabilityRecord.claim_id == claim_id,
+                CollectionProcessingCapabilityRecord.state == "active",
             )
         )
     )
@@ -3205,13 +3210,15 @@ def processing_claim_blockers(
     """Return active workflow claims that must block collection deletion."""
 
     now = utc_timestamp_now()
-    execution_app = literal("transform:") + CollectionProcessingClaimRecord.execution_id
+    execution_principal_id = literal("processing:") + CollectionProcessingClaimRecord.execution_id
     finalized_output_exists = (
-        select(CollectionRecord.id).where(CollectionRecord.created_by_app == execution_app).exists()
+        select(CollectionRecord.id)
+        .where(CollectionRecord.created_by_principal_id == execution_principal_id)
+        .exists()
     )
     output_upload_exists = (
         select(CollectionUploadRecord.collection_id)
-        .where(CollectionUploadRecord.initiated_by_app == execution_app)
+        .where(CollectionUploadRecord.initiated_by_principal_id == execution_principal_id)
         .exists()
     )
     claimed_input = (
@@ -3226,7 +3233,7 @@ def processing_claim_blockers(
         select(CollectionRecord.id)
         .where(
             CollectionRecord.id == collection_id,
-            CollectionRecord.created_by_app == execution_app,
+            CollectionRecord.created_by_principal_id == execution_principal_id,
         )
         .exists()
     )
@@ -3285,10 +3292,10 @@ def require_retirement_exemption(
     *,
     claim_id: str,
     collection_id: int,
-    principal: ApplicationPrincipal,
+    principal: Principal,
 ) -> dict[str, object]:
     claim = session.get(CollectionProcessingClaimRecord, claim_id)
-    if claim is None or claim.consumer_app != principal.app or claim.state != "retiring":
+    if claim is None or claim.consumer_app != principal.id or claim.state != "retiring":
         raise Forbidden("retirement claim does not authorize collection deletion")
     input_row = session.get(CollectionProcessingClaimInputRecord, (claim_id, collection_id))
     direct_output_ready = claim.output_collection_id is not None

@@ -53,7 +53,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-4c9a0c0e4c"></a>`tag_set_identity` | `VARCHAR(64)` | no | `'d99a47346b904680a2b3182b3950c159b297a427edfd0c8a23124b7bfb296ed9'` | — |
 | <a id="s-23c54b34d5"></a>`tag_head_identity` | `VARCHAR(64)` | no | `'0000000000000000000000000000000000000000000000000000000000000000'` | — |
 | <a id="s-2e0a1127de"></a>`tag_mutation_operation_id` | `VARCHAR` | yes | `—` | — |
-| <a id="s-d7f5ace036"></a>`created_by_app` | `VARCHAR` | no | `—` | — |
+| <a id="s-d7f5ace036"></a>`created_by_principal_id` | `VARCHAR` | no | `—` | — |
 | <a id="s-8e1c717c10"></a>`created_by_key_id` | `VARCHAR` | yes | `—` | — |
 | <a id="s-34f6a271c0"></a>`created_at` | `VARCHAR` | no | `—` | — |
 | <a id="s-b8e779dcc6"></a>`is_published` | `BOOLEAN` | no | `true` | — |
@@ -65,7 +65,7 @@ Exact externally visible contract owned by this contract element.
 | Kind | Name | Exact definition |
 |---|---|---|
 | <a id="s-a77d7bc5f1"></a>`primary-key` | `—` | `PRIMARY KEY (id)` |
-| <a id="s-3f1ce690b9"></a>`unique` | `uq_collections_application_idempotency_key` | `CONSTRAINT uq_collections_application_idempotency_key UNIQUE (created_by_app, creation_idempotency_key)` |
+| <a id="s-3f1ce690b9"></a>`unique` | `uq_collections_application_idempotency_key` | `CONSTRAINT uq_collections_application_idempotency_key UNIQUE (created_by_principal_id, creation_idempotency_key)` |
 | <a id="s-98ec8eb1b1"></a>`check` | `ck_collections_file_count` | `CONSTRAINT ck_collections_file_count CHECK (file_count >= 0)` |
 | <a id="s-6be6d760af"></a>`check` | `ck_collections_file_bytes` | `CONSTRAINT ck_collections_file_bytes CHECK (file_bytes >= 0)` |
 | <a id="s-6074530449"></a>`check` | `ck_collections_provenance_mode` | `CONSTRAINT ck_collections_provenance_mode CHECK (provenance_mode IN ('captured','mixed','omitted'))` |
@@ -134,7 +134,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e742175ee76b92855fc1a153992c3e9204aafe9832c4feb00f89dfa8890e9502 -->
+<!-- exact-contract-value: 8d15fa2a77ec21c66b0b8096de1f671fdd5bf2c5d238486e62082fff72a300ce -->
 
 ```json
 {
@@ -341,8 +341,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "VARCHAR"
     },
     {
-      "definition": "created_by_app VARCHAR NOT NULL",
-      "name": "created_by_app",
+      "definition": "created_by_principal_id VARCHAR NOT NULL",
+      "name": "created_by_principal_id",
       "nullable": false,
       "type": "VARCHAR"
     },
@@ -390,10 +390,10 @@ The following JSON is the complete value owned at each machine-authority pointer
     },
     {
       "columns": [
-        "created_by_app",
+        "created_by_principal_id",
         "creation_idempotency_key"
       ],
-      "definition": "CONSTRAINT uq_collections_application_idempotency_key UNIQUE (created_by_app, creation_idempotency_key)",
+      "definition": "CONSTRAINT uq_collections_application_idempotency_key UNIQUE (created_by_principal_id, creation_idempotency_key)",
       "kind": "unique",
       "name": "uq_collections_application_idempotency_key"
     },

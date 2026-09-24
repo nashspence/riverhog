@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 |---|---|---:|---|---|
 | <a id="s-3ac7e44768"></a>`sequence` | `SERIAL` | no | `—` | — |
 | <a id="s-884731af6c"></a>`event_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-2e0b94d2ef"></a>`owner_app` | `VARCHAR` | no | `—` | — |
+| <a id="s-2e0b94d2ef"></a>`owner_principal_id` | `VARCHAR` | no | `—` | — |
 | <a id="s-e59568dd7c"></a>`subject` | `VARCHAR` | yes | `—` | — |
 | <a id="s-dbd374c071"></a>`event_json` | `TEXT` | no | `—` | — |
 | <a id="s-cefb50b33c"></a>`context_json` | `TEXT` | yes | `—` | — |
@@ -69,7 +69,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 19581ffe20f074c4cb3ecc33f3c352f7e82ed8bc1f1eb748c52a56403f5016e5 -->
+<!-- exact-contract-value: b4796026a4c086acf22889a6078d43b2d99f475cba99fc1290f7e12b0c812efd -->
 
 ```json
 {
@@ -87,8 +87,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "VARCHAR"
     },
     {
-      "definition": "owner_app VARCHAR NOT NULL",
-      "name": "owner_app",
+      "definition": "owner_principal_id VARCHAR NOT NULL",
+      "name": "owner_principal_id",
       "nullable": false,
       "type": "VARCHAR"
     },

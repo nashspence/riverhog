@@ -19,9 +19,9 @@ from riverhog_protocol.collection_workflow_transport import (
     ArtifactDispositionSetDocument,
     CapabilityAction,
     CollectionDerivationResponseDocument,
+    ProcessingCapabilityDocument,
     ProcessingClaimDocument,
     ProcessingOutcomePageDocument,
-    TransformCapabilityDocument,
 )
 from riverhog_protocol.collection_workflows import (
     ArtifactDisposition,
@@ -100,7 +100,7 @@ class RiverhogApi(Protocol):
 
     def get_processing_claim(self, claim_id: str) -> ProcessingClaimDocument: ...
 
-    def create_transform_capability(
+    def create_processing_capability(
         self,
         claim_id: str,
         *,
@@ -109,7 +109,7 @@ class RiverhogApi(Protocol):
         actions: Sequence[CapabilityAction] = ("read-inputs",),
         artifacts: Iterable[Mapping[str, Any]],
         ttl_seconds: int = 900,
-    ) -> TransformCapabilityDocument: ...
+    ) -> ProcessingCapabilityDocument: ...
 
     def seal_processing_claim_plan(
         self,
@@ -498,11 +498,11 @@ class Stove0RiverhogClient:
             actions=actions,
             artifacts=(_artifact_identity(item) for item in inputs),
         )
-        principal = capability.get("principal_app")
+        principal = capability.get("principal_id")
         expected_principal = (
             f"claim:{claim.claim_id}"
             if envelope.workflow_plan.result_kind == "external-effect"
-            else f"transform:{execution_id}"
+            else f"processing:{execution_id}"
         )
         if principal != expected_principal:
             raise RuntimeError("Riverhog target capability has an unexpected principal")
@@ -898,8 +898,8 @@ class Stove0RiverhogClient:
         audience: str,
         actions: Sequence[CapabilityAction],
         artifacts: Iterable[CollectionArtifactIdentity],
-    ) -> TransformCapabilityDocument:
-        payload = self.api.create_transform_capability(
+    ) -> ProcessingCapabilityDocument:
+        payload = self.api.create_processing_capability(
             claim.claim_id,
             fence=claim.fence,
             audience=audience,
@@ -967,7 +967,7 @@ def _claim_binding(value: ProcessingClaimDocument | Mapping[str, Any]) -> ClaimB
     )
 
 
-def _token(value: TransformCapabilityDocument | Mapping[str, Any]) -> str:
+def _token(value: ProcessingCapabilityDocument | Mapping[str, Any]) -> str:
     return _text(value.get("token"), "capability token")
 
 

@@ -50,7 +50,7 @@ from riverhog_core.app_permissions import (
     PROVENANCE_EXPORT,
     PROVENANCE_READ,
     ApplicationAccess,
-    ApplicationPrincipal,
+    Principal,
 )
 from riverhog_core.artifact_access import artifact_scope_filter, require_artifact_scope
 from riverhog_core.browse import bounded_page, keyset_statement, validate_page_size
@@ -78,8 +78,8 @@ _SORT_FIELDS = closed_literal_values(ProvenanceSort)
 _STATUS_VALUES = closed_literal_values(ProvenanceStatus)
 _SORT_ORDERS = closed_literal_values(SortOrder)
 _PROVENANCE_JOURNAL_CHUNK_BYTES = 1024 * 1024
-_INTERNAL_VERIFIER = ApplicationPrincipal(
-    app="riverhog-provenance-verifier",
+_INTERNAL_VERIFIER = Principal(
+    id="riverhog-provenance-verifier",
     key_id=None,
     access=frozenset({ApplicationAccess("*", ALL_RESOURCES)}),
 )
@@ -108,7 +108,7 @@ class SqlAlchemyProvenanceService:
         status: str | None,
         sort: str,
         order: str,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, Any]:
         collection_id = _collection_id(collection_id)
         _page_options(page_size, sort, order)
@@ -160,7 +160,7 @@ class SqlAlchemyProvenanceService:
         status: str | None,
         sort: str,
         order: str,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> Iterator[dict[str, Any]]:
         collection_id = _collection_id(collection_id)
         _page_options(100, sort, order)
@@ -187,7 +187,7 @@ class SqlAlchemyProvenanceService:
         collection_id: int,
         path: str,
         *,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, Any]:
         collection_id = _collection_id(collection_id)
         path = _path(path)
@@ -201,7 +201,7 @@ class SqlAlchemyProvenanceService:
         *,
         page_size: int,
         position: tuple[str | int | bool | bytes | None, ...] | None,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, Any]:
         collection_id = _collection_id(collection_id)
         path = _path(path)
@@ -239,7 +239,7 @@ class SqlAlchemyProvenanceService:
         collection_id: int,
         path: str,
         *,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> Iterator[dict[str, Any]]:
         collection_id = _collection_id(collection_id)
         path = _path(path)
@@ -265,7 +265,7 @@ class SqlAlchemyProvenanceService:
         collection_id: int,
         journal_id: str,
         *,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> tuple[int, str]:
         collection_id = _collection_id(collection_id)
         with read_snapshot(self._session_factory) as session:
@@ -292,7 +292,7 @@ class SqlAlchemyProvenanceService:
         collection_id: int,
         journal_id: str,
         *,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> Iterator[bytes]:
         """Yield one exact journal in bounded database chunks."""
 
@@ -325,7 +325,7 @@ class SqlAlchemyProvenanceService:
         *,
         offset: int,
         size: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> Iterator[bytes]:
         """Yield one exact bounded range without reading preceding journal bytes."""
 
@@ -368,7 +368,7 @@ class SqlAlchemyProvenanceService:
         *,
         page_size: int,
         position: tuple[str | int | bool | bytes | None, ...] | None,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, Any]:
         collection_id = _collection_id(collection_id)
         validate_page_size(page_size)
@@ -408,7 +408,7 @@ class SqlAlchemyProvenanceService:
         collection_id: int,
         journal_id: str,
         *,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> Iterator[dict[str, object]]:
         collection_id = _collection_id(collection_id)
         with read_snapshot(self._session_factory) as session:
@@ -429,7 +429,7 @@ class SqlAlchemyProvenanceService:
         self,
         collection_id: int,
         *,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, Any]:
         collection_id = _collection_id(collection_id)
         if principal.has_artifact_scope:
@@ -442,7 +442,7 @@ class SqlAlchemyProvenanceService:
                 record = CollectionProvenanceVerificationRecord(
                     collection_id=collection_id,
                     state="queued",
-                    requested_by_app=principal.app,
+                    requested_by_principal_id=principal.id,
                     requested_by_key_id=principal.key_id,
                     requested_at=now,
                     next_attempt_at=now,
@@ -455,7 +455,7 @@ class SqlAlchemyProvenanceService:
                 session.flush()
             elif record.state in {"failed", "canceled"}:
                 record.state = "queued"
-                record.requested_by_app = principal.app
+                record.requested_by_principal_id = principal.id
                 record.requested_by_key_id = principal.key_id
                 record.requested_at = now
                 record.started_at = None
@@ -476,7 +476,7 @@ class SqlAlchemyProvenanceService:
         self,
         collection_id: int,
         *,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, Any]:
         collection_id = _collection_id(collection_id)
         if principal.has_artifact_scope:
@@ -492,7 +492,7 @@ class SqlAlchemyProvenanceService:
         self,
         collection_id: int,
         *,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, Any]:
         collection_id = _collection_id(collection_id)
         if principal.has_artifact_scope:
@@ -1896,7 +1896,7 @@ def _canonical_text_order(session: Session, column: Any) -> Any:
 def _provenance_file_statement(
     *,
     collection_id: int,
-    principal: ApplicationPrincipal,
+    principal: Principal,
     q: str | None,
     status: str | None,
     sort: str,
@@ -1954,7 +1954,7 @@ def _provenance_file_position(
 def _authorized_collection(
     session: Session,
     collection_id: int,
-    principal: ApplicationPrincipal,
+    principal: Principal,
     *,
     permission: str = PROVENANCE_READ,
 ) -> CollectionRecord:
@@ -1973,7 +1973,7 @@ def _shown_file(
     session: Session,
     collection_id: int,
     path: str,
-    principal: ApplicationPrincipal,
+    principal: Principal,
 ) -> dict[str, Any]:
     collection = _authorized_collection(session, collection_id, principal)
     require_artifact_scope(session, principal, collection_id, path)
@@ -2135,7 +2135,7 @@ def _require_readable_journal(
     session: Session,
     collection_id: int,
     journal_id: str,
-    principal: ApplicationPrincipal,
+    principal: Principal,
 ) -> None:
     _authorized_collection(session, collection_id, principal)
     if not _journal_is_in_artifact_scope(session, collection_id, journal_id, principal):
@@ -2148,7 +2148,7 @@ def _journal_is_in_artifact_scope(
     session: Session,
     collection_id: int,
     journal_id: str,
-    principal: ApplicationPrincipal,
+    principal: Principal,
 ) -> bool:
     if not principal.has_artifact_scope:
         return True

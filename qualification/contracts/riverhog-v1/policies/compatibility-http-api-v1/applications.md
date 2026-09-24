@@ -299,6 +299,9 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: PortableCollectionHeader](../../authorities/riverhog/http-schemas/schemas-portablecollectionheader.md#pa-986ff2fef4) |
 | `riverhog` | [schemas: PortableCollectionInventoryAuthority](../../authorities/riverhog/http-schemas/schemas-portablecollectioninventoryauthority.md#pa-e2dbaab34b) |
 | `riverhog` | [schemas: PortableCollectionInventoryPage](../../authorities/riverhog/http-schemas/schemas-portablecollectioninventorypage.md#pa-eb8f31d873) |
+| `riverhog` | [schemas: PrincipalId](../../authorities/riverhog/http-schemas/schemas-principalid.md#pa-1803179734) |
+| `riverhog` | [schemas: ProcessingCapabilityCreateDocument](../../authorities/riverhog/http-schemas/schemas-processingcapabilitycreatedocument.md#pa-3e9f992b9c) |
+| `riverhog` | [schemas: ProcessingCapabilityDocument](../../authorities/riverhog/http-schemas/schemas-processingcapabilitydocument.md#pa-ba35750fdd) |
 | `riverhog` | [schemas: ProcessingClaimAbandonDocument](../../authorities/riverhog/http-schemas/schemas-processingclaimabandondocument.md#pa-505edf644c) |
 | `riverhog` | [schemas: ProcessingClaimConsumerDocument](../../authorities/riverhog/http-schemas/schemas-processingclaimconsumerdocument.md#pa-77c286d2a4) |
 | `riverhog` | [schemas: ProcessingClaimCreateDocument](../../authorities/riverhog/http-schemas/schemas-processingclaimcreatedocument.md#pa-39d69490d3) |
@@ -381,8 +384,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: SortOrder](../../authorities/riverhog/http-schemas/schemas-sortorder.md#pa-06d33399f2) |
 | `riverhog` | [schemas: TagListOut](../../authorities/riverhog/http-schemas/schemas-taglistout.md#pa-02587bdb94) |
 | `riverhog` | [schemas: TagSummaryOut](../../authorities/riverhog/http-schemas/schemas-tagsummaryout.md#pa-0203b3c2ec) |
-| `riverhog` | [schemas: TransformCapabilityCreateDocument](../../authorities/riverhog/http-schemas/schemas-transformcapabilitycreatedocument.md#pa-2ed8d5b8fd) |
-| `riverhog` | [schemas: TransformCapabilityDocument](../../authorities/riverhog/http-schemas/schemas-transformcapabilitydocument.md#pa-a1a95069be) |
 | `riverhog` | [schemas: UploadedArchiveCopyOut](../../authorities/riverhog/http-schemas/schemas-uploadedarchivecopyout.md#pa-8d34102f41) |
 | `riverhog` | [schemas: UploadedArchiveRootPublicationOut](../../authorities/riverhog/http-schemas/schemas-uploadedarchiverootpublicationout.md#pa-bfbbbd186c) |
 | `riverhog` | [schemas: ValidationError](../../authorities/riverhog/http-schemas/schemas-validationerror.md#pa-0a55ea5e9f) |

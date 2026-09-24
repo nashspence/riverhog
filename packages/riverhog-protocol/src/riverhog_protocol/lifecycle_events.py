@@ -18,6 +18,7 @@ from pydantic import (
 
 from riverhog_protocol.list_controls import ArchiveCopyJobState
 from riverhog_protocol.paths import CollectionId, normalize_collection_id
+from riverhog_protocol.principal_ids import PrincipalId
 from riverhog_protocol.storage_names import ArchiveStoreName
 
 RIVERHOG_EVENT_TYPE_PREFIX = "io.riverhog.riverhog."
@@ -84,7 +85,7 @@ class RiverhogEventModel(BaseModel):
 
 
 class RiverhogActor(RiverhogEventModel):
-    app: str = Field(min_length=1, max_length=160)
+    principal_id: PrincipalId = Field(max_length=160)
     key_id: str | None = Field(default=None, min_length=1, max_length=300)
 
 

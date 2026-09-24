@@ -14,7 +14,7 @@ from riverhog_protocol import (
 )
 from riverhog_protocol.lifecycle_events import RiverhogEventPage
 
-from riverhog_core.app_permissions import ApplicationAccess, ApplicationPrincipal
+from riverhog_core.app_permissions import ApplicationAccess, Principal
 from riverhog_core.domain.models import (
     ArchiveStoreListPage,
     ArchiveStoreSummary,
@@ -31,7 +31,7 @@ class CollectionService(Protocol):
         self,
         collection_id: int,
         *,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> CollectionSummary: ...
     def list(
         self,
@@ -44,7 +44,7 @@ class CollectionService(Protocol):
         tags: Sequence[str] = (),
         sort: str = "id",
         order: str = "asc",
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> CollectionListPage: ...
     def iter_collections(
         self,
@@ -55,7 +55,7 @@ class CollectionService(Protocol):
         tags: Sequence[str] = (),
         sort: str = "id",
         order: str = "asc",
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> Iterator[CollectionSummary]: ...
     def list_archive_copies(
         self,
@@ -63,13 +63,13 @@ class CollectionService(Protocol):
         *,
         page_size: int,
         position: BrowsePosition,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> JsonObject: ...
     def iter_archive_copies(
         self,
         collection_id: int,
         *,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> Iterator[JsonObject]: ...
 
 
@@ -80,7 +80,7 @@ class CollectionDescriptionService(Protocol):
         *,
         description: str | None,
         expected_identity: str,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> JsonObject: ...
 
     def requeue_interrupted_for_startup(self, *, limit: int = 100) -> int: ...
@@ -99,7 +99,7 @@ class ProvenanceService(Protocol):
         status: str | None,
         sort: str,
         order: str,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> JsonObject: ...
     def iter_files(
         self,
@@ -109,14 +109,14 @@ class ProvenanceService(Protocol):
         status: str | None,
         sort: str,
         order: str,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> Iterator[JsonObject]: ...
     def show_file(
         self,
         collection_id: int,
         path: str,
         *,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> JsonObject: ...
     def trace_file(
         self,
@@ -125,28 +125,28 @@ class ProvenanceService(Protocol):
         *,
         page_size: int,
         position: BrowsePosition,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> JsonObject: ...
     def iter_trace_file(
         self,
         collection_id: int,
         path: str,
         *,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> Iterator[JsonObject]: ...
     def journal_metadata(
         self,
         collection_id: int,
         journal_id: str,
         *,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> tuple[int, str]: ...
     def iter_journal(
         self,
         collection_id: int,
         journal_id: str,
         *,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> Iterator[bytes]: ...
     def iter_journal_range(
         self,
@@ -155,7 +155,7 @@ class ProvenanceService(Protocol):
         *,
         offset: int,
         size: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> Iterator[bytes]: ...
     def list_journal_agents(
         self,
@@ -164,32 +164,32 @@ class ProvenanceService(Protocol):
         *,
         page_size: int,
         position: BrowsePosition,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> JsonObject: ...
     def iter_journal_agents(
         self,
         collection_id: int,
         journal_id: str,
         *,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> Iterator[JsonObject]: ...
     def request_verification(
         self,
         collection_id: int,
         *,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> JsonObject: ...
     def get_verification(
         self,
         collection_id: int,
         *,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> JsonObject: ...
     def cancel_verification(
         self,
         collection_id: int,
         *,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> JsonObject: ...
     def requeue_interrupted_verifications_for_startup(self) -> int: ...
     def process_due_verifications(self, *, limit: int = 1) -> int: ...
@@ -202,7 +202,7 @@ class CollectionTagService(Protocol):
         page_size: int,
         position: BrowsePosition,
         q: str | None,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> JsonObject: ...
     def list_collection(
         self,
@@ -212,7 +212,7 @@ class CollectionTagService(Protocol):
         position: BrowsePosition,
         expected_revision: int,
         expected_tag_set_identity: str,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> JsonObject: ...
     def contains(
         self,
@@ -221,7 +221,7 @@ class CollectionTagService(Protocol):
         tag: str,
         revision: int,
         tag_set_identity: str,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> JsonObject: ...
     def add(
         self,
@@ -231,7 +231,7 @@ class CollectionTagService(Protocol):
         operation_id: str,
         expected_revision: int,
         expected_tag_set_identity: str,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> JsonObject: ...
     def remove(
         self,
@@ -241,7 +241,7 @@ class CollectionTagService(Protocol):
         operation_id: str,
         expected_revision: int,
         expected_tag_set_identity: str,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> JsonObject: ...
     def requeue_interrupted_for_startup(self, *, limit: int = 100) -> int: ...
     def process_due(self, *, limit: int = 1) -> int: ...
@@ -252,7 +252,7 @@ class CollectionDeletionService(Protocol):
         self,
         collection_id: int,
         *,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
         retirement_claim_id: str | None = None,
     ) -> JsonObject: ...
     def delete(
@@ -260,7 +260,7 @@ class CollectionDeletionService(Protocol):
         collection_id: int,
         *,
         challenge: str,
-        initiator: ApplicationPrincipal,
+        initiator: Principal,
         event_context: dict[str, object] | None = None,
         retirement_claim_id: str | None = None,
     ) -> JsonObject: ...
@@ -268,20 +268,20 @@ class CollectionDeletionService(Protocol):
 
 
 class CatalogSyncService(Protocol):
-    def checkpoint(self, *, principal: ApplicationPrincipal) -> CatalogSyncCheckpoint: ...
+    def checkpoint(self, *, principal: Principal) -> CatalogSyncCheckpoint: ...
     def collections(
         self,
         *,
         cursor: str,
         limit: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> CatalogSyncCollectionPage: ...
     def changes(
         self,
         *,
         cursor: str,
         limit: int,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> CatalogSyncChangePage: ...
     def reap_expired_history(self, *, limit: int | None = None) -> int: ...
 
@@ -294,7 +294,7 @@ class RetrievalService(Protocol):
         self,
         collection_id: int,
         *,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> tuple[
         PortableCollectionHeader,
         Iterator[PortableCollectionFile],
@@ -309,12 +309,12 @@ class RetrievalService(Protocol):
         cursor: str | None,
         limit: int,
         expected_identity: str | None,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> PortableCollectionInventoryPage: ...
     def cache_status(
         self,
         *,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> JsonObject: ...
     def list_cache_objects(
         self,
@@ -331,7 +331,7 @@ class RetrievalService(Protocol):
         expires_after: str | None = None,
         sort: str,
         order: str,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> JsonObject: ...
     def iter_cache_objects(
         self,
@@ -346,7 +346,7 @@ class RetrievalService(Protocol):
         expires_after: str | None = None,
         sort: str,
         order: str,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> Iterator[JsonObject]: ...
     def get_cache_object(
         self,
@@ -354,7 +354,7 @@ class RetrievalService(Protocol):
         collection_id: int,
         source_store: str,
         object_id: str,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> JsonObject: ...
     def plan(
         self,
@@ -363,26 +363,26 @@ class RetrievalService(Protocol):
         idempotency_key: str | None = None,
         lease: timedelta | None = None,
         restore_policy: str = "allow",
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> JsonObject: ...
     def get_plan(
         self,
         *,
-        app: str,
+        principal_id: str,
         plan_id: str,
         key_id: str | None = None,
     ) -> JsonObject: ...
     def advance_plan(
         self,
         *,
-        app: str,
+        principal_id: str,
         plan_id: str,
         key_id: str | None = None,
     ) -> JsonObject: ...
     def list_plan_files(
         self,
         *,
-        app: str,
+        principal_id: str,
         plan_id: str,
         etag: str,
         start_ordinal: int,
@@ -392,18 +392,18 @@ class RetrievalService(Protocol):
     def create(
         self,
         *,
-        app: str,
+        principal_id: str,
         key_id: str | None = None,
         plan_id: str,
         plan_etag: str,
         event_context: dict[str, object] | None = None,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> JsonObject: ...
-    def get(self, *, app: str, job_id: str, key_id: str | None = None) -> JsonObject: ...
+    def get(self, *, principal_id: str, job_id: str, key_id: str | None = None) -> JsonObject: ...
     def renew(
         self,
         *,
-        app: str,
+        principal_id: str,
         job_id: str,
         lease: timedelta,
         key_id: str | None = None,
@@ -411,21 +411,21 @@ class RetrievalService(Protocol):
     def acknowledge(
         self,
         *,
-        app: str,
+        principal_id: str,
         job_id: str,
         key_id: str | None = None,
     ) -> JsonObject: ...
     def cancel(
         self,
         *,
-        app: str,
+        principal_id: str,
         job_id: str,
         key_id: str | None = None,
     ) -> JsonObject: ...
     def content_metadata(
         self,
         *,
-        app: str,
+        principal_id: str,
         job_id: str,
         collection_id: int,
         path: str,
@@ -434,7 +434,7 @@ class RetrievalService(Protocol):
     def content(
         self,
         *,
-        app: str,
+        principal_id: str,
         job_id: str,
         collection_id: int,
         path: str,
@@ -448,13 +448,13 @@ class RetrievalService(Protocol):
 
 
 class AppKeyService(Protocol):
-    def authenticate(self, token: str) -> ApplicationPrincipal | None: ...
+    def authenticate(self, token: str) -> Principal | None: ...
     def create(
         self,
         *,
         app: str,
         access: Sequence[ApplicationAccess | tuple[str, str]],
-        grantor: ApplicationPrincipal,
+        grantor: Principal,
         expires_in: timedelta | None = None,
     ) -> JsonObject: ...
     def rotate(
@@ -462,7 +462,7 @@ class AppKeyService(Protocol):
         *,
         app: str,
         key_id: str,
-        grantor: ApplicationPrincipal,
+        grantor: Principal,
     ) -> JsonObject: ...
     def revoke(self, *, app: str, key_id: str) -> JsonObject: ...
     def replace_access(
@@ -471,7 +471,7 @@ class AppKeyService(Protocol):
         app: str,
         key_id: str,
         access: Sequence[ApplicationAccess | tuple[str, str]],
-        grantor: ApplicationPrincipal,
+        grantor: Principal,
     ) -> JsonObject: ...
     def add_access(
         self,
@@ -479,7 +479,7 @@ class AppKeyService(Protocol):
         app: str,
         key_id: str,
         access: ApplicationAccess | tuple[str, str],
-        grantor: ApplicationPrincipal,
+        grantor: Principal,
     ) -> JsonObject: ...
     def remove_access(
         self,
@@ -558,7 +558,7 @@ class LifecycleEventService(Protocol):
     def page(
         self,
         *,
-        owner_app: str | None,
+        owner_principal_id: str | None,
         after: str | None,
         limit: int,
     ) -> RiverhogEventPage: ...
@@ -575,7 +575,7 @@ class SearchService(Protocol):
         sort: str,
         order: str,
         collection: int | None = None,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> JsonObject: ...
     def iter_files(
         self,
@@ -584,7 +584,7 @@ class SearchService(Protocol):
         sort: str,
         order: str,
         collection: int | None = None,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> Iterator[JsonObject]: ...
 
 
@@ -596,7 +596,7 @@ class ArchiveCopyJobService(Protocol):
         *,
         destination_store: str,
         source_store: str | None = None,
-        initiator: ApplicationPrincipal,
+        initiator: Principal,
         event_context: dict[str, object] | None = None,
     ) -> JsonObject: ...
     def get(
@@ -604,14 +604,14 @@ class ArchiveCopyJobService(Protocol):
         collection_id: int,
         *,
         destination_store: str,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> JsonObject: ...
     def cancel(
         self,
         collection_id: int,
         *,
         destination_store: str,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> JsonObject: ...
     def list(
         self,
@@ -622,7 +622,7 @@ class ArchiveCopyJobService(Protocol):
         sort: str,
         order: str,
         state: str | None = None,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> JsonObject: ...
     def iter_jobs(
         self,
@@ -631,7 +631,7 @@ class ArchiveCopyJobService(Protocol):
         sort: str,
         order: str,
         state: str | None = None,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> Iterator[JsonObject]: ...
     def process_due(self, *, limit: int = 1) -> int: ...
 
@@ -646,7 +646,7 @@ class ArchiveStoreService(Protocol):
         self,
         store: str,
         *,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> ArchiveStoreSummary: ...
     def list(
         self,
@@ -656,7 +656,7 @@ class ArchiveStoreService(Protocol):
         q: str | None,
         sort: str,
         order: str,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> ArchiveStoreListPage: ...
     def iter_stores(
         self,
@@ -664,5 +664,5 @@ class ArchiveStoreService(Protocol):
         q: str | None,
         sort: str,
         order: str,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> Iterator[ArchiveStoreSummary]: ...

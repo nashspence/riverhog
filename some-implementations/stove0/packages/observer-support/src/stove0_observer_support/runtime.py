@@ -8,12 +8,12 @@ from pathlib import Path
 from typing import Any, Protocol, Self
 
 from riverhog_client import ApiClient
-from riverhog_client.transform import (
+from riverhog_client.processing import (
     CapabilityApiClient,
     ClaimedArtifact,
     ClaimedCollectionReader,
     ClaimedRetrieval,
-    TransformWorkspace,
+    ProcessingWorkspace,
 )
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 from stove0_observer_protocol import (
@@ -204,11 +204,11 @@ class ContentObservationRuntime:
             artifact = dict(self.subjects())[subject]
             return retrieval.read_bytes(artifact, maximum_bytes=maximum_bytes)
 
-    def open_workspace(self, root: Path) -> TransformWorkspace:
+    def open_workspace(self, root: Path) -> ProcessingWorkspace:
         """Open a request-bound workspace under its declared protection."""
 
         self.heartbeat()
-        return TransformWorkspace.open(
+        return ProcessingWorkspace.open(
             root,
             execution_id=self.request.request_id,
             declared_protection=self.declared_workspace_protection,
@@ -218,7 +218,7 @@ class ContentObservationRuntime:
         self,
         subject: ArtifactSubject,
         *,
-        workspace: TransformWorkspace,
+        workspace: ProcessingWorkspace,
         relative_path: str | None = None,
         **prepare_kwargs: Any,
     ) -> Path:

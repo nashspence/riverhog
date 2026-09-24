@@ -10,7 +10,7 @@ from riverhog_core.app_permissions import (
     KEYS_MANAGE,
     RETRIEVAL_MANAGE,
     ApplicationAccess,
-    ApplicationPrincipal,
+    Principal,
 )
 from riverhog_core.catalog_db import initialize_db, make_session_factory, session_scope
 from riverhog_core.catalog_models import (
@@ -25,8 +25,8 @@ from riverhog_protocol.errors import DownloadAllowanceExceeded
 
 from tests.unit.db_helpers import sqlite_url
 
-BOOTSTRAP = ApplicationPrincipal(
-    app="bootstrap",
+BOOTSTRAP = Principal(
+    id="bootstrap",
     key_id=None,
     access=frozenset({ApplicationAccess(KEYS_MANAGE)}),
     unrestricted_delegation=True,

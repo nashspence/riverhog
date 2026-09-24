@@ -4,7 +4,7 @@
 
 This generated snapshot accounts for the externally exposed surfaces discovered from this repository revision. Discovery means inclusion; no separate acceptance decision is required.
 
-Included contract elements: **4211** · Extent decisions: **1996**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
+Included contract elements: **4214** · Extent decisions: **1996**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
 
 ## Audit references
 
@@ -205,7 +205,7 @@ Included contract elements: **4211** · Extent decisions: **1996**. Complete acc
 
 - **[riverhog](authorities/riverhog/index.md)** [📦](authorities/riverhog/evidence-gaps.md) — The Riverhog service API and its maintained cross-interface operation parity.
   - **[HTTP Operations](authorities/riverhog/http-operations/index.md)** [📦](authorities/riverhog/http-operations/evidence-gaps.md) (109)
-  - **[HTTP Schemas](authorities/riverhog/http-schemas/index.md)** [📦](authorities/riverhog/http-schemas/evidence-gaps.md) (257)
+  - **[HTTP Schemas](authorities/riverhog/http-schemas/index.md)** [📦](authorities/riverhog/http-schemas/evidence-gaps.md) (258)
   - [HTTP Service Declaration](authorities/riverhog/http-service-declaration/index.md) (1)
   - [HTTP Security Schemes](authorities/riverhog/http-security-schemes/index.md) (1)
 
@@ -231,7 +231,7 @@ Included contract elements: **4211** · Extent decisions: **1996**. Complete acc
 
 - [riverhog-protocol](authorities/riverhog-protocol/index.md) — Canonical Riverhog wire and identity contracts.
   - [Schemas](authorities/riverhog-protocol/schema/index.md) (1)
-  - [Python](authorities/riverhog-protocol/python/index.md) (324)
+  - [Python](authorities/riverhog-protocol/python/index.md) (326)
 
 - **[riverhog-provenance](authorities/riverhog-provenance/index.md)** [📦](authorities/riverhog-provenance/evidence-gaps.md) — Portable Riverhog v1 per-file provenance journals and validation.
   - **[Schemas](authorities/riverhog-provenance/schema/index.md)** [📦](authorities/riverhog-provenance/schema/evidence-gaps.md) (7)

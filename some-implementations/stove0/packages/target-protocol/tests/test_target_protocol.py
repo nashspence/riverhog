@@ -65,7 +65,7 @@ def test_operation_contract_models_are_importable_without_runtime_support() -> N
     forbidden = {
         "httpx",
         "riverhog_client",
-        "riverhog_client.transform",
+        "riverhog_client.processing",
         "stove0_target_support",
     }
     code = (

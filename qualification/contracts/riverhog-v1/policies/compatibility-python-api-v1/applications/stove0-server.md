@@ -135,7 +135,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-server` | [stove0_core.RiverhogApi.abandon_processing_claim](../../../authorities/stove0-server/python/stove0-core-riverhogapi-abandon-processing-claim.md#pa-5b932c6730) |
 | `stove0-server` | [stove0_core.RiverhogApi.begin_processing_claim_retirement](../../../authorities/stove0-server/python/stove0-core-riverhogapi-begin-processing-claim-retirement.md#pa-9fb623a3cb) |
 | `stove0-server` | [stove0_core.RiverhogApi.create_or_resume_processing_claim](../../../authorities/stove0-server/python/stove0-core-riverhogapi-create-or-resume-processing-claim.md#pa-5b2628d722) |
-| `stove0-server` | [stove0_core.RiverhogApi.create_transform_capability](../../../authorities/stove0-server/python/stove0-core-riverhogapi-create-transform-capability.md#pa-5a02da1f4b) |
+| `stove0-server` | [stove0_core.RiverhogApi.create_processing_capability](../../../authorities/stove0-server/python/stove0-core-riverhogapi-create-processing-capability.md#pa-1fff9b3ead) |
 | `stove0-server` | [stove0_core.RiverhogApi.delete_collection](../../../authorities/stove0-server/python/stove0-core-riverhogapi-delete-collection.md#pa-21e0cf2f2f) |
 | `stove0-server` | [stove0_core.RiverhogApi.get_collection](../../../authorities/stove0-server/python/stove0-core-riverhogapi-get-collection.md#pa-7989be8744) |
 | `stove0-server` | [stove0_core.RiverhogApi.get_collection_derivation](../../../authorities/stove0-server/python/stove0-core-riverhogapi-get-collection-derivation.md#pa-015c9ba9a5) |

@@ -4,7 +4,7 @@
 
 <!-- contract-element: http-operations:riverhog:post-v1-collection-processing-claims-clai-dfec4c2ebf:fcf08c4438 -->
 
-Create Transform Capability
+Create Processing Capability
 
 | Audit field | Value |
 |---|---|
@@ -14,12 +14,12 @@ Create Transform Capability
 ## External contract
 
 <a id="s-14e8cf6a72"></a>
-- <a id="s-7b539cd145"></a>`operationId`: `"create_transform_capability"`
+- <a id="s-7b539cd145"></a>`operationId`: `"create_processing_capability"`
 - <a id="s-90b4519db2"></a>`security`: `[{"HTTPBearer":[]}]`
-- <a id="s-33f526a015"></a>`summary`: `"Create Transform Capability"`
+- <a id="s-33f526a015"></a>`summary`: `"Create Processing Capability"`
 - <a id="s-c708c0b93d"></a>`tags`: `["collection-workflows"]`
 - <a id="s-1b4d56b8de"></a>`x-riverhog-interface`: `"client-only-primitive"`
-- <a id="s-a5cde85b2f"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-transforms:execute"]}]`
+- <a id="s-a5cde85b2f"></a>`x-riverhog-permission-requirements`: `[{"any_of":["collection-processing:execute"]}]`
 
 ### Parameters
 
@@ -33,13 +33,13 @@ Create Transform Capability
 
 | Media type | Schema |
 |---|---|
-| application/json | [TransformCapabilityCreateDocument](../http-schemas/schemas-transformcapabilitycreatedocument.md) |
+| application/json | [ProcessingCapabilityCreateDocument](../http-schemas/schemas-processingcapabilitycreatedocument.md) |
 
 ### Responses
 
 | Status | Description | Media type | Schema | Declared error codes |
 |---|---|---|---|---|
-| <a id="s-3f274725a6"></a>`200` | Successful Response | application/json | [TransformCapabilityDocument](../http-schemas/schemas-transformcapabilitydocument.md) | not declared |
+| <a id="s-3f274725a6"></a>`200` | Successful Response | application/json | [ProcessingCapabilityDocument](../http-schemas/schemas-processingcapabilitydocument.md) | not declared |
 | <a id="s-59c01857ab"></a>`400` | Bad Request | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `bad_request` |
 | <a id="s-27b74b90dd"></a>`401` | Unauthorized | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `unauthorized` |
 | <a id="s-77e87db659"></a>`403` | Forbidden | application/json | [ErrorResponse](../http-schemas/schemas-errorresponse.md) | `forbidden` |
@@ -61,13 +61,13 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Related interface records
 
-- [riverhog_client.ApiClient.create_transform_capability](../../riverhog-client/python/riverhog-client-apiclient-create-transform-capability.md)
+- [riverhog_client.ApiClient.create_processing_capability](../../riverhog-client/python/riverhog-client-apiclient-create-processing-capability.md)
 
 ### Referenced contract elements
 
 - [schemas: ErrorResponse](../http-schemas/schemas-errorresponse.md)
-- [schemas: TransformCapabilityCreateDocument](../http-schemas/schemas-transformcapabilitycreatedocument.md)
-- [schemas: TransformCapabilityDocument](../http-schemas/schemas-transformcapabilitydocument.md)
+- [schemas: ProcessingCapabilityCreateDocument](../http-schemas/schemas-processingcapabilitycreatedocument.md)
+- [schemas: ProcessingCapabilityDocument](../http-schemas/schemas-processingcapabilitydocument.md)
 
 ## Governing policies
 
@@ -88,7 +88,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [riverhog/src/riverhog\_api/routers/workflows.py::create\_transform\_capability](../../../../../../riverhog/src/riverhog_api/routers/workflows.py#L389)
+- **Handler:** [riverhog/src/riverhog\_api/routers/workflows.py::create\_processing\_capability](../../../../../../riverhog/src/riverhog_api/routers/workflows.py#L389)
 
 ### Structural operation bindings
 
@@ -106,17 +106,17 @@ This generated record links maintained client, CLI, response-authority, and prov
   "client": "ApiClient",
   "client_bindings": [
     {
-      "public_identity": "riverhog_client.ApiClient.create_transform_capability",
+      "public_identity": "riverhog_client.ApiClient.create_processing_capability",
       "source": {
         "line": 399,
         "module": "riverhog_client.workflows",
         "path": "packages/riverhog-client/src/riverhog_client/workflows.py",
-        "symbol": "CollectionWorkflowMethods.create_transform_capability"
+        "symbol": "CollectionWorkflowMethods.create_processing_capability"
       }
     }
   ],
   "method": "POST",
-  "operation_id": "create_transform_capability",
+  "operation_id": "create_processing_capability",
   "path": "/v1/collection-processing-claims/{claim_id}/capabilities",
   "provider_evidence": null,
   "read_collection": null,
@@ -137,11 +137,11 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8f17e09c060afbe39816756ab2472803b37c48f658bfdbe3674013e7d93fef49 -->
+<!-- exact-contract-value: 5f5eccb340789190e47fdb31c79eac03c65231090eb707ef3df73c6262849867 -->
 
 ```json
 {
-  "operationId": "create_transform_capability",
+  "operationId": "create_processing_capability",
   "parameters": [
     {
       "in": "path",
@@ -158,7 +158,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "content": {
       "application/json": {
         "schema": {
-          "$ref": "#/components/schemas/TransformCapabilityCreateDocument"
+          "$ref": "#/components/schemas/ProcessingCapabilityCreateDocument"
         }
       }
     },
@@ -169,7 +169,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "content": {
         "application/json": {
           "schema": {
-            "$ref": "#/components/schemas/TransformCapabilityDocument"
+            "$ref": "#/components/schemas/ProcessingCapabilityDocument"
           }
         }
       },
@@ -260,7 +260,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "HTTPBearer": []
     }
   ],
-  "summary": "Create Transform Capability",
+  "summary": "Create Processing Capability",
   "tags": [
     "collection-workflows"
   ],
@@ -268,7 +268,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "x-riverhog-permission-requirements": [
     {
       "any_of": [
-        "collection-transforms:execute"
+        "collection-processing:execute"
       ]
     }
   ]

@@ -20,6 +20,7 @@ from riverhog_application_access import (
     permission_resources,
     tag_resource,
 )
+from riverhog_protocol import PrincipalId
 
 TAG = "場所/Camera"
 
@@ -101,6 +102,17 @@ def test_application_public_identities_accept_only_canonical_values(value: str) 
 def test_application_name_rejects_aliases(value: str) -> None:
     with pytest.raises(ValidationError):
         TypeAdapter(ApplicationName).validate_python(value, strict=True)
+
+
+def test_principal_id_distinguishes_registered_apps_from_delegated_claims() -> None:
+    adapter = TypeAdapter(PrincipalId)
+    for value in ("media-indexer", f"claim:{'a' * 64}", f"processing:{'b' * 64}"):
+        assert adapter.validate_python(value, strict=True) == value
+    for value in ("media_indexer", f"transform:{'b' * 64}", f"claim:{'G' * 64}"):
+        with pytest.raises(ValidationError):
+            adapter.validate_python(value, strict=True)
+    with pytest.raises(ValidationError):
+        TypeAdapter(ApplicationName).validate_python(f"claim:{'a' * 64}", strict=True)
 
 
 @pytest.mark.parametrize("value", ("ABCDEF0123456789", "short", " 0123456789abcdef"))

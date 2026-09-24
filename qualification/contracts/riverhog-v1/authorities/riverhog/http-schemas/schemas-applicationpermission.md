@@ -16,7 +16,7 @@ Exact externally visible contract owned by this contract element.
 <a id="s-7455dc9b56"></a>
 
 - <a id="s-18fcf1e938"></a>`type`: `"string"`
-- <a id="s-04647b6fab"></a>`enum`: `["*","catalog:read","retrieval:manage","collections:create","collection-descriptions:manage","collection-transforms:control","collection-transforms:execute","collection-tags:manage","collections:delete","archives:read","archives:manage","keys:manage","quotas:manage","events:read","events:read_all","provenance:read","provenance:export"]`
+- <a id="s-04647b6fab"></a>`enum`: `["*","catalog:read","retrieval:manage","collections:create","collection-descriptions:manage","collection-processing:control","collection-processing:execute","collection-tags:manage","collections:delete","archives:read","archives:manage","keys:manage","quotas:manage","events:read","events:read_all","provenance:read","provenance:export"]`
 
 ## Governing policies
 
@@ -45,7 +45,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 57f5bd75d2d765c41017200a7e93d1c2d601d563e9e965b28339b25a6a2440eb -->
+<!-- exact-contract-value: 97a870f538f5910936ce30be8665e843c155e3ee3b61f7e92ed822391ac61726 -->
 
 ```json
 {
@@ -55,8 +55,8 @@ The following JSON is the complete value owned at each machine-authority pointer
     "retrieval:manage",
     "collections:create",
     "collection-descriptions:manage",
-    "collection-transforms:control",
-    "collection-transforms:execute",
+    "collection-processing:control",
+    "collection-processing:execute",
     "collection-tags:manage",
     "collections:delete",
     "archives:read",

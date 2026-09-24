@@ -18,7 +18,7 @@ from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 from time_formats import format_utc_timestamp, parse_utc_timestamp, utc_now
 
-from riverhog_core.app_permissions import ApplicationPrincipal
+from riverhog_core.app_permissions import Principal
 from riverhog_core.catalog_db import SessionFactory, make_session_factory, session_scope
 from riverhog_core.catalog_models import (
     CollectionRecord,
@@ -64,7 +64,7 @@ class SqlAlchemyLifecycleEventService:
     def emit(
         self,
         *,
-        owner_app: str,
+        owner_principal_id: str,
         type: str,
         subject: str | None,
         data: Mapping[str, Any] | None = None,
@@ -82,7 +82,7 @@ class SqlAlchemyLifecycleEventService:
         )
         record = LifecycleEventRecord(
             event_id=event.id,
-            owner_app=owner_app,
+            owner_principal_id=owner_principal_id,
             subject=subject,
             event_json=event.model_dump_json(exclude_none=True),
             context_json=context_json,
@@ -98,7 +98,7 @@ class SqlAlchemyLifecycleEventService:
     def page(
         self,
         *,
-        owner_app: str | None,
+        owner_principal_id: str | None,
         after: str | None,
         limit: int,
     ) -> RiverhogEventPage:
@@ -108,8 +108,10 @@ class SqlAlchemyLifecycleEventService:
         current_text = format_utc_timestamp(utc_now())
         with session_scope(self._session_factory) as session:
             statement = select(LifecycleEventRecord).where(LifecycleEventRecord.sequence > cursor)
-            if owner_app is not None:
-                statement = statement.where(LifecycleEventRecord.owner_app == owner_app)
+            if owner_principal_id is not None:
+                statement = statement.where(
+                    LifecycleEventRecord.owner_principal_id == owner_principal_id
+                )
             rows = list(
                 session.scalars(
                     statement.order_by(LifecycleEventRecord.sequence.asc()).limit(limit + 1)
@@ -170,7 +172,7 @@ class SqlAlchemyLifecycleEventService:
         collection_id: int,
         details: Mapping[str, Any] | None = None,
         terminal: bool = False,
-        initiator: ApplicationPrincipal | None = None,
+        initiator: Principal | None = None,
         event_context_json: str | None = None,
         session: Session | None = None,
     ) -> RiverhogLifecycleEvent | None:
@@ -190,30 +192,30 @@ class SqlAlchemyLifecycleEventService:
         if upload is None and collection is None:
             return None
         if initiator is not None:
-            owner_app = initiator.app
+            owner_principal_id = initiator.id
             owner_key_id = initiator.key_id
             context_json = event_context_json
         elif upload is not None:
-            owner_app = upload.initiated_by_app
+            owner_principal_id = upload.initiated_by_principal_id
             owner_key_id = upload.initiated_by_key_id
             context_json = upload.event_context_json
         else:
             assert collection is not None
-            owner_app = collection.created_by_app
+            owner_principal_id = collection.created_by_principal_id
             owner_key_id = collection.created_by_key_id
             context_json = None
         expires_at = terminal_context_expiry(self._config) if terminal else None
         if expires_at is not None and context_json is not None:
             self.expire_context(
-                owner_app=owner_app,
+                owner_principal_id=owner_principal_id,
                 subject=str(collection_id),
                 expires_at=expires_at,
                 session=session,
             )
         data: dict[str, Any] = {
             "collection_id": format_scalar("sequence63", collection_id),
-            "actor": actor_data(app="riverhog"),
-            "initiator": actor_data(app=owner_app, key_id=owner_key_id),
+            "actor": actor_data(principal_id="riverhog"),
+            "initiator": actor_data(principal_id=owner_principal_id, key_id=owner_key_id),
         }
         if collection is not None:
             data["collection_created_at"] = collection.created_at
@@ -221,7 +223,7 @@ class SqlAlchemyLifecycleEventService:
             data["collection_created_at"] = upload.opened_at
         data.update(details or {})
         return self.emit(
-            owner_app=owner_app,
+            owner_principal_id=owner_principal_id,
             type=type,
             subject=str(collection_id),
             data=data,
@@ -242,7 +244,7 @@ class SqlAlchemyLifecycleEventService:
         expires_at = terminal_context_expiry(self._config) if terminal else None
         if expires_at is not None and job.event_context_json is not None:
             self.expire_context(
-                owner_app=job.app,
+                owner_principal_id=job.principal_id,
                 subject=job.id,
                 expires_at=expires_at,
                 session=session,
@@ -259,8 +261,8 @@ class SqlAlchemyLifecycleEventService:
             "retrieval_id": job.id,
             "collection_ids": [format_scalar("sequence63", item) for item in collection_ids],
             "state": job.state,
-            "actor": actor_data(app="riverhog"),
-            "initiator": actor_data(app=job.app, key_id=job.initiated_by_key_id),
+            "actor": actor_data(principal_id="riverhog"),
+            "initiator": actor_data(principal_id=job.principal_id, key_id=job.initiated_by_key_id),
         }
         if len(collection_ids) == 1:
             collection_id = collection_ids[0]
@@ -270,7 +272,7 @@ class SqlAlchemyLifecycleEventService:
                 data["collection_created_at"] = collection.created_at
         data.update(details or {})
         return self.emit(
-            owner_app=job.app,
+            owner_principal_id=job.principal_id,
             type=type,
             subject=job.id,
             data=data,
@@ -282,7 +284,7 @@ class SqlAlchemyLifecycleEventService:
     def expire_context(
         self,
         *,
-        owner_app: str,
+        owner_principal_id: str,
         subject: str,
         expires_at: str,
         session: Session,
@@ -290,7 +292,7 @@ class SqlAlchemyLifecycleEventService:
         session.execute(
             update(LifecycleEventRecord)
             .where(
-                LifecycleEventRecord.owner_app == owner_app,
+                LifecycleEventRecord.owner_principal_id == owner_principal_id,
                 LifecycleEventRecord.subject == subject,
                 LifecycleEventRecord.context_json.is_not(None),
                 LifecycleEventRecord.context_expires_at.is_(None),
@@ -299,8 +301,8 @@ class SqlAlchemyLifecycleEventService:
         )
 
 
-def actor_data(*, app: str, key_id: str | None = None) -> dict[str, str]:
-    payload = {"app": app}
+def actor_data(*, principal_id: str, key_id: str | None = None) -> dict[str, str]:
+    payload = {"principal_id": principal_id}
     if key_id is not None:
         payload["key_id"] = key_id
     return payload
