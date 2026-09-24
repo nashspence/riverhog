@@ -114,7 +114,7 @@ def _seed_ready_object(
     stored_bytes: int = 60,
     leased: bool = False,
 ) -> None:
-    now = "2026-08-08T00:00:00.000000Z"
+    now = "2026-08-08T00:00:00.000000000Z"
     with session_scope(factory) as session:  # type: ignore[arg-type]
         if session.get(CollectionRecord, 1) is None:
             session.add(
@@ -200,7 +200,7 @@ def _seed_ready_object(
                     source_store="deep",
                     collection_id=1,
                     object_id=object_id,
-                    expires_at="2026-09-08T00:00:00.000000Z",
+                    expires_at="2026-09-08T00:00:00.000000000Z",
                 )
             )
 
@@ -498,7 +498,7 @@ def test_population_survives_one_shared_owner_and_is_reclaimed_after_the_last(
     with session_scope(factory) as session:  # type: ignore[arg-type]
         population = session.get(RetrievalCachePopulationRecord, ("deep", 1, "volume-0"))
         assert population is not None
-        population.updated_at = "2000-01-01T00:00:00.000000Z"
+        population.updated_at = "2000-01-01T00:00:00.000000000Z"
     assert cache.reap_abandoned_populations() == 0
     assert local.abort_calls == []
 

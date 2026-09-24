@@ -16,7 +16,12 @@ from riverhog_protocol.lifecycle_events import (
 )
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
-from time_formats import format_utc_timestamp, parse_utc_timestamp, utc_now
+from time_formats import (
+    add_utc_timestamp,
+    format_utc_timestamp,
+    utc_now,
+    utc_timestamp_now,
+)
 
 from riverhog_core.app_permissions import Principal
 from riverhog_core.catalog_db import SessionFactory, make_session_factory, session_scope
@@ -47,8 +52,8 @@ def decode_event_context(raw: str | None) -> dict[str, Any] | None:
 
 
 def terminal_context_expiry(config: RuntimeConfig, *, terminal_at: str | None = None) -> str:
-    current = parse_utc_timestamp(terminal_at) if terminal_at is not None else utc_now()
-    return format_utc_timestamp(current + config.event_context_retention)
+    current = terminal_at if terminal_at is not None else utc_timestamp_now()
+    return add_utc_timestamp(current, config.event_context_retention)
 
 
 class SqlAlchemyLifecycleEventService:

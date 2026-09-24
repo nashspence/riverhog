@@ -72,7 +72,7 @@ class _Adapter:
             verified_content_type=request.content_type,
             verified_identity_assertions=request.required_identity_assertions,
             verified_placement=request.placement,
-            completed_at="2026-08-25T00:00:00.000000Z",
+            completed_at="2026-08-25T00:00:00.000000000Z",
         )
 
 

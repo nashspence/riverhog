@@ -46,7 +46,15 @@ from sqlalchemy.orm import Session, aliased
 from sqlalchemy.sql import Select
 from sqlalchemy.sql.elements import ColumnElement
 from state_schema import read_snapshot
-from time_formats import format_utc_timestamp, parse_utc_timestamp, utc_now, utc_timestamp_now
+from time_formats import (
+    epoch_ns_from_datetime,
+    format_utc_ns,
+    format_utc_timestamp,
+    parse_utc_timestamp,
+    utc_epoch_ns_now,
+    utc_now,
+    utc_timestamp_now,
+)
 
 from riverhog_core.app_permissions import (
     CATALOG_READ,
@@ -704,7 +712,7 @@ class SqlAlchemyCollectionWorkflowService:
             if "write-output" in normalized_actions and claim.plan_sealed_at is None:
                 raise Conflict("write-output capability requires a sealed execution plan")
             claim_expiry = parse_utc_timestamp(claim.expires_at)
-            requested_expiry = utc_now() + timedelta(seconds=ttl)
+            requested_expiry = epoch_ns_from_datetime(utc_now() + timedelta(seconds=ttl))
             expiry = min(claim_expiry, requested_expiry)
             token = "rhc_" + secrets.token_urlsafe(32)
             now = utc_timestamp_now()
@@ -716,7 +724,7 @@ class SqlAlchemyCollectionWorkflowService:
                 token_sha256=hashlib.sha256(token.encode("utf-8")).hexdigest(),
                 actions_json=json.dumps(list(normalized_actions), separators=(",", ":")),
                 state="receiving",
-                expires_at=format_utc_timestamp(expiry),
+                expires_at=format_utc_ns(expiry),
                 created_at=now,
             )
             session.add(capability)
@@ -1611,10 +1619,10 @@ class SqlAlchemyCollectionWorkflowService:
                 _collection_root(session, claim.output_collection_id)
             else:
                 _require_outcome_retirement_coverage(session, claim)
-            eligible_at = parse_utc_timestamp(claim.settled_at) + timedelta(
-                seconds=claim.retirement_grace_seconds
+            eligible_at = parse_utc_timestamp(claim.settled_at) + (
+                claim.retirement_grace_seconds * 1_000_000_000
             )
-            if utc_now() < eligible_at:
+            if utc_epoch_ns_now() < eligible_at:
                 return _claim_payload(session, claim)
             claim.state = "retiring"
             claim.updated_at = utc_timestamp_now()
@@ -3166,7 +3174,7 @@ def _revoke_capabilities(session: Session, claim_id: str, *, now: str) -> None:
 
 
 def _expired(value: str) -> bool:
-    return parse_utc_timestamp(value) <= utc_now()
+    return parse_utc_timestamp(value) <= utc_epoch_ns_now()
 
 
 def _lease_seconds(value: int) -> int:

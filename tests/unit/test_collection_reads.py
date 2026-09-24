@@ -26,7 +26,7 @@ from sqlalchemy.orm import sessionmaker
 
 from tests.unit.db_helpers import sqlite_url
 
-NOW = "2026-01-01T00:00:00.000000Z"
+NOW = "2026-01-01T00:00:00.000000000Z"
 
 
 def _seed_collections(database: Path, *, count: int) -> tuple[RuntimeConfig, Engine]:

@@ -80,8 +80,8 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
         "deployed_implementation": 1,
         "application": 6,
         "component": 29,
-        "reusable_library": 33,
-        "internal_build_unit": 3,
+        "reusable_library": 34,
+        "internal_build_unit": 2,
     }
     assert {project.name for project in projects} >= {
         "riverhog-client",

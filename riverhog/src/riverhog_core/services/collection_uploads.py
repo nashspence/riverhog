@@ -104,7 +104,14 @@ from riverhog_provenance.journal import (
 from sqlalchemy import and_, asc, case, desc, exists, func, insert, or_, select, true
 from sqlalchemy.orm import Session, selectinload
 from state_schema import read_snapshot
-from time_formats import format_utc_timestamp, parse_utc_timestamp, utc_now, utc_timestamp_now
+from time_formats import (
+    add_utc_timestamp,
+    format_utc_timestamp,
+    parse_utc_timestamp,
+    utc_epoch_ns_now,
+    utc_now,
+    utc_timestamp_now,
+)
 
 from riverhog_core.app_permissions import (
     ALL_RESOURCES,
@@ -4222,7 +4229,7 @@ def _require_transform_output_intent(
         claim is None
         or claim.state != "active"
         or claim.plan_sealed_at is None
-        or parse_utc_timestamp(claim.expires_at) <= utc_now()
+        or parse_utc_timestamp(claim.expires_at) <= utc_epoch_ns_now()
         or initiator.key_id != claim.consumer_key_id
     ):
         raise Forbidden("transform output intent is not active")
@@ -6561,7 +6568,7 @@ def _orphan_discard_plan(
         if (
             claim is not None
             and claim.state == "active"
-            and parse_utc_timestamp(claim.expires_at) > utc_now()
+            and parse_utc_timestamp(claim.expires_at) > utc_epoch_ns_now()
         ):
             blockers.append("owning processing claim remains active until " + claim.expires_at)
     return {
@@ -6584,8 +6591,8 @@ def _orphan_discard_plan(
 
 
 def _custody_lease_expiry(config: RuntimeConfig, *, now: str | None = None) -> str:
-    current = parse_utc_timestamp(now) if now is not None else utc_now()
-    return format_utc_timestamp(current + config.collection_upload_custody_lease)
+    current = now if now is not None else utc_timestamp_now()
+    return add_utc_timestamp(current, config.collection_upload_custody_lease)
 
 
 def _touch_upload(

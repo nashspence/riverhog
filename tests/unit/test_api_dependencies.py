@@ -81,7 +81,7 @@ def test_startup_rejects_a_persisted_key_id_without_its_secret(tmp_path: Path) -
                 provenance_identity=None,
                 inventory_identity="b" * 64,
                 created_by_principal_id="fixture",
-                created_at="2026-08-24T00:00:00.000000Z",
+                created_at="2026-08-24T00:00:00.000000000Z",
             )
         )
 
@@ -110,7 +110,7 @@ def test_startup_rejects_an_uploaded_copy_without_recovery_descriptor(tmp_path: 
                 provenance_identity=None,
                 inventory_identity="b" * 64,
                 created_by_principal_id="fixture",
-                created_at="2026-08-24T00:00:00.000000Z",
+                created_at="2026-08-24T00:00:00.000000000Z",
             )
         )
         session.add(
@@ -119,8 +119,8 @@ def test_startup_rejects_an_uploaded_copy_without_recovery_descriptor(tmp_path: 
                 store="archive",
                 state="uploaded",
                 archive_storage_prefix="archives/fixture",
-                last_uploaded_at="2026-08-24T00:00:00.000000Z",
-                last_verified_at="2026-08-24T00:00:00.000000Z",
+                last_uploaded_at="2026-08-24T00:00:00.000000000Z",
+                last_verified_at="2026-08-24T00:00:00.000000000Z",
             )
         )
 

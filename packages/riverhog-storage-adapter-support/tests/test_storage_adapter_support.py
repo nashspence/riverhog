@@ -212,7 +212,7 @@ class MemoryAdapter:
             verified_content_type=created.content_type,
             verified_identity_assertions=request.required_identity_assertions,
             verified_placement=request.expected_placement,
-            completed_at="2026-08-21T00:00:00.000000Z",
+            completed_at="2026-08-21T00:00:00.000000000Z",
         )
 
     def find_completed_write(
@@ -236,7 +236,7 @@ class MemoryAdapter:
             verified_content_type=content_type,
             verified_identity_assertions=metadata,
             verified_placement=placement,
-            completed_at="2026-08-21T00:00:00.000000Z",
+            completed_at="2026-08-21T00:00:00.000000000Z",
         )
 
     def abort_write(self, session: WriteSession) -> None:
@@ -270,7 +270,7 @@ class MemoryAdapter:
                 verified_content_type=existing_content_type,
                 verified_identity_assertions=request.required_identity_assertions,
                 verified_placement=request.placement,
-                completed_at="2026-08-21T00:00:00.000000Z",
+                completed_at="2026-08-21T00:00:00.000000000Z",
             )
         self.objects[request.object_path] = (
             content,
@@ -289,7 +289,7 @@ class MemoryAdapter:
             verified_content_type=request.content_type,
             verified_identity_assertions=request.required_identity_assertions,
             verified_placement=request.placement,
-            completed_at="2026-08-21T00:00:00.000000Z",
+            completed_at="2026-08-21T00:00:00.000000000Z",
         )
 
     def head_object(self, request: ObjectHeadRequest) -> ObjectMetadataReceipt | None:
@@ -312,7 +312,7 @@ class MemoryAdapter:
             ),
             observed_identity_assertions=metadata,
             verified_placement=request.expected_placement,
-            completed_at="2026-08-21T00:00:00.000000Z",
+            completed_at="2026-08-21T00:00:00.000000000Z",
         )
 
     def read_object(self, request: ObjectReadRequest) -> ObjectReadStream:

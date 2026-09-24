@@ -571,12 +571,14 @@ source = { editable = "some-implementations/riverhog/provenance/observers/window
 dependencies = [
     { name = "a-riverhog-windows-provenance-contract-lib" },
     { name = "riverhog-provenance" },
+    { name = "time-formats" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "a-riverhog-windows-provenance-contract-lib", editable = "some-implementations/riverhog/provenance/contracts/windows" },
     { name = "riverhog-provenance", editable = "packages/riverhog-provenance" },
+    { name = "time-formats", editable = "packages/time-formats" },
 ]
 
 [[package]]
@@ -2362,6 +2364,7 @@ dependencies = [
     { name = "riverhog-canonical-json" },
     { name = "riverhog-protocol" },
     { name = "riverhog-provenance-contracts" },
+    { name = "time-formats" },
 ]
 
 [package.metadata]
@@ -2373,6 +2376,7 @@ requires-dist = [
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
+    { name = "time-formats", editable = "packages/time-formats" },
 ]
 
 [[package]]
@@ -2385,6 +2389,7 @@ dependencies = [
     { name = "pydantic" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts" },
+    { name = "time-formats" },
 ]
 
 [package.metadata]
@@ -2394,6 +2399,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.12,<3.0" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
+    { name = "time-formats", editable = "packages/time-formats" },
 ]
 
 [[package]]
@@ -2405,6 +2411,7 @@ dependencies = [
     { name = "referencing" },
     { name = "riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts" },
+    { name = "time-formats" },
 ]
 
 [package.metadata]
@@ -2413,6 +2420,7 @@ requires-dist = [
     { name = "referencing", specifier = ">=0.37,<0.38" },
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
+    { name = "time-formats", editable = "packages/time-formats" },
 ]
 
 [[package]]
@@ -2873,6 +2881,7 @@ dependencies = [
     { name = "stove0-protocol" },
     { name = "stove0-recipe-config" },
     { name = "stove0-target-protocol" },
+    { name = "time-formats" },
 ]
 
 [package.metadata]
@@ -2885,6 +2894,7 @@ requires-dist = [
     { name = "stove0-protocol", editable = "some-implementations/stove0/packages/protocol" },
     { name = "stove0-recipe-config", editable = "some-implementations/stove0/packages/recipe-config" },
     { name = "stove0-target-protocol", editable = "some-implementations/stove0/packages/target-protocol" },
+    { name = "time-formats", editable = "packages/time-formats" },
 ]
 
 [[package]]
@@ -3047,6 +3057,12 @@ requires-dist = [
 name = "time-formats"
 version = "0.1.0"
 source = { editable = "packages/time-formats" }
+dependencies = [
+    { name = "pydantic" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pydantic", specifier = ">=2.12,<3.0" }]
 
 [[package]]
 name = "tomlkit"

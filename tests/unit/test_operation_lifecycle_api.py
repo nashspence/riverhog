@@ -650,7 +650,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     with session_scope(container.session_factory) as database:
         record = database.get(CollectionUploadRecord, orphaned_id)
         assert record is not None
-        record.lease_expires_at = "2020-01-01T00:00:00.000000Z"
+        record.lease_expires_at = "2020-01-01T00:00:00.000000000Z"
     assert container.collection_uploads.reap_expired_custody_transfers() == 1
     discard_plan = operator.plan_collection_upload_discard(orphaned_id)
     assert discard_plan["status"] == "ready"

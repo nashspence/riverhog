@@ -119,7 +119,7 @@ class PlatformBackend(ABC):
         """
         if not request.policy.include_access_time:
             return
-        from .common import format_utc_ns
+        from time_formats import format_utc_ns
 
         for timestamp in collection.timestamps:
             if timestamp.get("kind") == "accessed":

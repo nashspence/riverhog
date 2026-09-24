@@ -49,7 +49,7 @@ from sqlalchemy import select
 
 from tests.unit.db_helpers import sqlite_url
 
-NOW = "2026-09-07T00:00:00.000000Z"
+NOW = "2026-09-07T00:00:00.000000000Z"
 PRINCIPAL = Principal(
     id="indexer",
     key_id="indexer-key",
@@ -284,9 +284,9 @@ def test_catalog_sync_history_reaper_advances_only_a_bounded_expired_prefix(
         events = list(
             session.scalars(select(CatalogEventRecord).order_by(CatalogEventRecord.revision))
         )
-        events[0].committed_at = "2026-01-01T00:00:00.000000Z"
-        events[1].committed_at = "2026-01-02T00:00:00.000000Z"
-        events[2].committed_at = "2026-09-07T00:00:00.000000Z"
+        events[0].committed_at = "2026-01-01T00:00:00.000000000Z"
+        events[1].committed_at = "2026-01-02T00:00:00.000000000Z"
+        events[2].committed_at = "2026-09-07T00:00:00.000000000Z"
     monkeypatch.setattr(
         catalog_sync_service,
         "utc_now",

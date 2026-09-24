@@ -495,7 +495,7 @@ def test_failed_lowest_candidate_is_delayed_and_does_not_starve_the_next() -> No
         for intent in intents:
             row = session.get(_AdmissionCandidateRow, intent.admission_id)
             assert row is not None
-            row.next_attempt_at = "2020-01-01T00:00:00.000000Z"
+            row.next_attempt_at = "2020-01-01T00:00:00.000000000Z"
 
     first = service.advance(limit=1)
     assert [failure.event_id for failure in first.failures] == [f"admission:{failing.admission_id}"]

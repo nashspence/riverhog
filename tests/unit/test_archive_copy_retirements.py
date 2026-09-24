@@ -69,7 +69,7 @@ def _set_current_description(
                     provider_revision="description-revision",
                     stored_bytes=128,
                     stored_sha256="f" * 64,
-                    published_at="2026-08-08T00:00:00.000000Z",
+                    published_at="2026-08-08T00:00:00.000000000Z",
                 )
             )
     return document
@@ -178,9 +178,9 @@ def test_retirement_blocks_an_active_plan_and_reclaims_its_expired_authority(
                 request_json='[{"collection_id":1,"path":"document.txt"}]',
                 lease_seconds=3600,
                 restore_policy="allow",
-                created_at="2026-08-08T00:00:00.000000Z",
-                ready_at="2026-08-08T00:00:00.000000Z",
-                expires_at="2099-08-08T00:00:00.000000Z",
+                created_at="2026-08-08T00:00:00.000000000Z",
+                ready_at="2026-08-08T00:00:00.000000000Z",
+                expires_at="2099-08-08T00:00:00.000000000Z",
                 failure=None,
                 next_file_order=1,
                 next_placement_sequence=0,
@@ -216,7 +216,7 @@ def test_retirement_blocks_an_active_plan_and_reclaims_its_expired_authority(
     with session_scope(make_session_factory(config.database_url)) as session:
         plan = session.get(RetrievalPlanRecord, plan_id)
         assert plan is not None
-        plan.expires_at = "2020-08-08T00:00:00.000000Z"
+        plan.expires_at = "2020-08-08T00:00:00.000000000Z"
 
     ready = service.plan(COLLECTION_ID, store="deep")
     assert ready["status"] == "ready"
@@ -250,7 +250,7 @@ def test_retirement_blocks_description_replacement_and_the_last_current_replica(
         collection.pending_description = "Updated camera archive"
         collection.pending_description_revision = 2
         collection.pending_description_identity = "e" * 64
-        collection.description_next_attempt_at = "2026-08-08T00:00:00.000000Z"
+        collection.description_next_attempt_at = "2026-08-08T00:00:00.000000000Z"
 
     active_replacement = service.plan(COLLECTION_ID, store="deep")
     assert active_replacement["status"] == "blocked"
@@ -295,7 +295,7 @@ def test_retirement_deletes_description_only_after_another_current_replica_exist
             description=None,
         )
         publication.state = "pending"
-        publication.next_attempt_at = "2026-08-08T00:00:00.000000Z"
+        publication.next_attempt_at = "2026-08-08T00:00:00.000000000Z"
         publication.object_path = None
         publication.provider_revision = None
         publication.stored_bytes = None

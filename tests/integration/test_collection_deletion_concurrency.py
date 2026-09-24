@@ -209,7 +209,7 @@ def _seed(database_url: str) -> None:
                 encryption_format="age-v1-scrypt",
                 passphrase_id="fixture-archive-key-v1",
                 inventory_identity="0" * 64,
-                created_at="2026-01-01T00:00:00.000000Z",
+                created_at="2026-01-01T00:00:00.000000000Z",
             )
         )
         session.add(
@@ -225,8 +225,8 @@ def _seed(database_url: str) -> None:
             store="deep",
             state="uploaded",
             archive_storage_prefix="archives/opaque-docs",
-            last_uploaded_at="2026-07-18T00:00:00.000000Z",
-            last_verified_at="2026-07-18T00:00:00.000000Z",
+            last_uploaded_at="2026-07-18T00:00:00.000000000Z",
+            last_verified_at="2026-07-18T00:00:00.000000000Z",
         )
         session.add(copy)
         for order, (object_id, kind, relative_path, stored_bytes) in enumerate(
@@ -248,8 +248,8 @@ def _seed(database_url: str) -> None:
                     stored_bytes=stored_bytes,
                     sha256=chr(ord("a") + order) * 64,
                     stored_sha256="def0"[order] * 64,
-                    uploaded_at="2026-07-18T00:00:00.000000Z",
-                    verified_at="2026-07-18T00:00:00.000000Z",
+                    uploaded_at="2026-07-18T00:00:00.000000000Z",
+                    verified_at="2026-07-18T00:00:00.000000000Z",
                 )
             )
         session.add(
@@ -290,7 +290,7 @@ def _add_tag_publication(
             head_provider_revision="fixture-tag-head-revision",
             head_stored_bytes=128,
             head_stored_sha256="f" * 64,
-            published_at="2026-07-18T00:00:00.000000Z",
+            published_at="2026-07-18T00:00:00.000000000Z",
         )
     )
 
@@ -308,7 +308,7 @@ def _seed_second_input(database_url: str) -> CollectionRootIdentity:
                 encryption_format="age-v1-scrypt",
                 passphrase_id="fixture-archive-key-v1",
                 inventory_identity="1" * 64,
-                created_at="2026-01-01T00:00:00.000000Z",
+                created_at="2026-01-01T00:00:00.000000000Z",
             )
         )
         session.add(
@@ -324,8 +324,8 @@ def _seed_second_input(database_url: str) -> CollectionRootIdentity:
             store="deep",
             state="uploaded",
             archive_storage_prefix="archives/opaque-second",
-            last_uploaded_at="2026-07-18T00:00:00.000000Z",
-            last_verified_at="2026-07-18T00:00:00.000000Z",
+            last_uploaded_at="2026-07-18T00:00:00.000000000Z",
+            last_verified_at="2026-07-18T00:00:00.000000000Z",
         )
         session.add(copy)
         for order, (object_id, kind, relative_path) in enumerate(
@@ -347,8 +347,8 @@ def _seed_second_input(database_url: str) -> CollectionRootIdentity:
                     stored_bytes=10,
                     sha256=("f" if object_id == "manifest" else "e") * 64,
                     stored_sha256=("9" if object_id == "manifest" else "8") * 64,
-                    uploaded_at="2026-07-18T00:00:00.000000Z",
-                    verified_at="2026-07-18T00:00:00.000000Z",
+                    uploaded_at="2026-07-18T00:00:00.000000000Z",
+                    verified_at="2026-07-18T00:00:00.000000000Z",
                 )
             )
         session.add(
@@ -685,7 +685,7 @@ def _seed_derived_output(
                 ingest_source=f"processing:{execution_id}",
                 created_by_principal_id=f"processing:{execution_id}",
                 created_by_key_id="stove0-key",
-                created_at="2026-01-01T00:00:00.000000Z",
+                created_at="2026-01-01T00:00:00.000000000Z",
                 file_count=5,
                 file_bytes=len(CONTENT) + len(derivation.to_json_bytes()) + 2 + evidence_bytes,
             )
@@ -719,8 +719,8 @@ def _seed_derived_output(
                 store="deep",
                 state="uploaded",
                 archive_storage_prefix=f"archives/derived-{output_collection_id}",
-                last_uploaded_at="2026-01-01T00:00:00.000000Z",
-                last_verified_at="2026-01-01T00:00:00.000000Z",
+                last_uploaded_at="2026-01-01T00:00:00.000000000Z",
+                last_verified_at="2026-01-01T00:00:00.000000000Z",
             )
         )
         session.add(
@@ -735,8 +735,8 @@ def _seed_derived_output(
                 stored_bytes=2,
                 sha256="1" * 64,
                 stored_sha256="0" * 64,
-                uploaded_at="2026-01-01T00:00:00.000000Z",
-                verified_at="2026-01-01T00:00:00.000000Z",
+                uploaded_at="2026-01-01T00:00:00.000000000Z",
+                verified_at="2026-01-01T00:00:00.000000000Z",
             )
         )
     return derivation
@@ -821,7 +821,7 @@ def _seed_multi_input_derived_output(
                 ingest_source=f"processing:{EXECUTION_ID}",
                 created_by_principal_id=f"processing:{EXECUTION_ID}",
                 created_by_key_id="stove0-key",
-                created_at="2026-01-01T00:00:00.000000Z",
+                created_at="2026-01-01T00:00:00.000000000Z",
                 file_count=6,
                 file_bytes=(
                     len(CONTENT)
@@ -866,8 +866,8 @@ def _seed_multi_input_derived_output(
             store="deep",
             state="uploaded",
             archive_storage_prefix="archives/derived-multi",
-            last_uploaded_at="2026-01-01T00:00:00.000000Z",
-            last_verified_at="2026-01-01T00:00:00.000000Z",
+            last_uploaded_at="2026-01-01T00:00:00.000000000Z",
+            last_verified_at="2026-01-01T00:00:00.000000000Z",
         )
         session.add(copy)
         copy.objects.append(
@@ -882,8 +882,8 @@ def _seed_multi_input_derived_output(
                 stored_bytes=2,
                 sha256="1" * 64,
                 stored_sha256="0" * 64,
-                uploaded_at="2026-01-01T00:00:00.000000Z",
-                verified_at="2026-01-01T00:00:00.000000Z",
+                uploaded_at="2026-01-01T00:00:00.000000000Z",
+                verified_at="2026-01-01T00:00:00.000000000Z",
             )
         )
     return derivation

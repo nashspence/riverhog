@@ -707,11 +707,11 @@ def test_read_preparation_mechanics_remain_adapter_private() -> None:
 
         def prepare(self, **kwargs: Any) -> ReadReadiness:
             self.calls.append(("prepare", kwargs["objects"]))
-            return ReadRequested(estimated_ready_at="2026-01-03T00:00:00.000000Z")
+            return ReadRequested(estimated_ready_at="2026-01-03T00:00:00.000000000Z")
 
         def status(self, **kwargs: Any) -> ReadReadiness:
             self.calls.append(("status", kwargs["objects"]))
-            return ReadReady(available_until="2026-01-04T00:00:00.000000Z")
+            return ReadReady(available_until="2026-01-04T00:00:00.000000000Z")
 
         def cleanup(self, **kwargs: Any) -> None:
             self.calls.append(("cleanup", kwargs["objects"]))

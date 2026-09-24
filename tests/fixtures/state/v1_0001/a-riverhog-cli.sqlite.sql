@@ -41,7 +41,7 @@ INSERT INTO desired_collections VALUES(
     'cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc',
     NULL,
     1,
-    '2026-01-01T00:00:00.000000Z',
+    '2026-01-01T00:00:00.000000000Z',
     0
 );
 CREATE TABLE desired_collection_tags (
@@ -82,7 +82,7 @@ CREATE TABLE retrieval_jobs (
 INSERT INTO retrieval_jobs VALUES(
     'fixture-retrieval',
     'ready',
-    '2026-01-01T00:00:00.000000Z'
+    '2026-01-01T00:00:00.000000000Z'
 );
 CREATE TABLE retrieval_job_files (
     retrieval_job_id TEXT NOT NULL,

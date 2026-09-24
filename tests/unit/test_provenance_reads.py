@@ -36,7 +36,7 @@ from tests.provenance_observer import native_provenance_observer
 from tests.unit.artifact_scope_fixtures import persisted_artifact_scope
 from tests.unit.db_helpers import sqlite_url
 
-NOW = "2026-01-01T00:00:00.000000Z"
+NOW = "2026-01-01T00:00:00.000000000Z"
 READER = Principal(
     id="reader",
     key_id="reader-key",

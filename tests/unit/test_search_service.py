@@ -29,8 +29,8 @@ def _seed(path: Path) -> None:
                 tag_sha256=TAG_SHA256,
                 tag=TAG,
                 search_text=TAG,
-                created_at="2026-01-01T00:00:00.000000Z",
-                updated_at="2026-01-01T00:00:00.000000Z",
+                created_at="2026-01-01T00:00:00.000000000Z",
+                updated_at="2026-01-01T00:00:00.000000000Z",
                 collection_count=1,
             )
         )
@@ -45,7 +45,7 @@ def _seed(path: Path) -> None:
                 passphrase_id="fixture-archive-key-v1",
                 inventory_identity="1" * 64,
                 created_by_principal_id="fixture",
-                created_at="2026-01-01T00:00:00.000000Z",
+                created_at="2026-01-01T00:00:00.000000000Z",
                 file_count=3,
                 file_bytes=68,
             )
@@ -54,7 +54,7 @@ def _seed(path: Path) -> None:
             CollectionTagMembershipRecord(
                 collection_id=1,
                 tag_sha256=TAG_SHA256,
-                added_at="2026-01-01T00:00:00.000000Z",
+                added_at="2026-01-01T00:00:00.000000000Z",
             )
         )
         session.add_all(

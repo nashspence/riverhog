@@ -48,7 +48,7 @@ def test_bootstrap_and_application_keys_enforce_permissions_immediately(
                 passphrase_id="fixture-archive-key-v1",
                 inventory_identity="1" * 64,
                 created_by_principal_id="fixture",
-                created_at="2026-07-24T00:00:00.000000Z",
+                created_at="2026-07-24T00:00:00.000000000Z",
             )
         )
     service = SqlAlchemyAppKeyService(config)

@@ -199,7 +199,7 @@ class _Adapter:
             verified_content_type=request.content_type,
             verified_identity_assertions=request.required_identity_assertions,
             verified_placement=request.placement,
-            completed_at="2026-08-21T00:00:00.000000Z",
+            completed_at="2026-08-21T00:00:00.000000000Z",
         )
 
     def read_object(self, request: ObjectReadRequest) -> ObjectReadStream:
@@ -241,7 +241,7 @@ class _Adapter:
             verified_content_type=content_type,
             verified_identity_assertions=identity_assertions,
             verified_placement=placement,
-            completed_at="2026-08-21T00:00:00.000000Z",
+            completed_at="2026-08-21T00:00:00.000000000Z",
         )
 
 
@@ -305,7 +305,7 @@ def test_cache_receipt_and_range_read_do_not_reread_completed_content() -> None:
         revision="version-1",
         entity_token="entity",
         bytes=len(content),
-        completed_at="2026-08-21T00:00:00.000000Z",
+        completed_at="2026-08-21T00:00:00.000000000Z",
     )
     receipt = cache.receipt(completed=completed, stored_sha256=None)
 

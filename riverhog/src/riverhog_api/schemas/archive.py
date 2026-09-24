@@ -14,6 +14,7 @@ from riverhog_protocol import (
     CollectionId,
     SortOrder,
 )
+from time_formats import CanonicalUtcTimestamp
 
 from riverhog_api.schemas.common import RiverhogModel
 
@@ -68,8 +69,8 @@ class _ArchiveCopyBase(RiverhogModel):
     storage_prefix: ObjectPath | None
     object_count: int = Field(ge=0)
     stored_bytes: int = Field(ge=0)
-    last_uploaded_at: str | None
-    last_verified_at: str | None
+    last_uploaded_at: CanonicalUtcTimestamp | None
+    last_verified_at: CanonicalUtcTimestamp | None
     archive_root: _ArchiveRootPublication
 
 
@@ -84,8 +85,8 @@ class UploadedArchiveCopyOut(_ArchiveCopyBase):
     storage_prefix: ObjectPath
     object_count: int = Field(ge=1)
     stored_bytes: int = Field(ge=1)
-    last_uploaded_at: str
-    last_verified_at: str
+    last_uploaded_at: CanonicalUtcTimestamp
+    last_verified_at: CanonicalUtcTimestamp
     failure: None
     archive_root: UploadedArchiveRootPublicationOut
 
@@ -136,10 +137,10 @@ class ArchiveCopyJobOut(RiverhogModel):
     initiated_by_app: ApplicationName
     initiated_by_key_id: ApplicationKeyId | None
     state: ArchiveCopyJobState
-    requested_at: str
-    ready_at: str | None
-    expires_at: str | None
-    finished_at: str | None
+    requested_at: CanonicalUtcTimestamp
+    ready_at: CanonicalUtcTimestamp | None
+    expires_at: CanonicalUtcTimestamp | None
+    finished_at: CanonicalUtcTimestamp | None
     failure: str | None = Field(min_length=1)
 
     @model_validator(mode="after")
@@ -177,14 +178,14 @@ class RetireArchiveCopyRequest(ArchiveCopyRetirementRequest):
 
 class ArchiveCopyRetirementTargetOut(RiverhogModel):
     store: ArchiveStoreName
-    last_verified_at: str
+    last_verified_at: CanonicalUtcTimestamp
     remote_storage_bytes: int
     object_count: int
 
 
 class ArchiveCopyRetirementRetainedOut(RiverhogModel):
     store: ArchiveStoreName
-    last_verified_at: str
+    last_verified_at: CanonicalUtcTimestamp
     remote_storage_bytes: int
 
 
@@ -214,7 +215,7 @@ class ArchiveCopyRetirementPlanOut(RiverhogModel):
     collection_id: CollectionId
     store: ArchiveStoreName
     warning: str
-    expires_at: str
+    expires_at: CanonicalUtcTimestamp
     challenge: str | None
     target_copy: ArchiveCopyRetirementTargetOut
     retained_copies: list[ArchiveCopyRetirementRetainedOut]

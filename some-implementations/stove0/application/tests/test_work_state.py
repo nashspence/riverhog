@@ -1359,8 +1359,8 @@ def test_sql_operational_retention_prunes_only_complete_expired_components(
         expected_revision=parent.revision - 1,
         replacement=parent,
     )
-    old = "2000-01-01T00:00:00.000000Z"
-    cutoff = "2001-01-01T00:00:00.000000Z"
+    old = "2000-01-01T00:00:00.000000000Z"
+    cutoff = "2001-01-01T00:00:00.000000000Z"
     with store.engine.begin() as connection:
         connection.execute(
             text("UPDATE stove0_work_records SET updated_at = :old WHERE work_id = :work_id"),
@@ -1408,8 +1408,8 @@ def test_sql_operational_retention_scans_bounded_pages_without_parsing_all_work(
             )
         )
         store.create(WorkRecord(work=work, phase="canceled"))
-    old = "2000-01-01T00:00:00.000000Z"
-    cutoff = "2001-01-01T00:00:00.000000Z"
+    old = "2000-01-01T00:00:00.000000000Z"
+    cutoff = "2001-01-01T00:00:00.000000000Z"
     with store.engine.begin() as connection:
         connection.execute(text("UPDATE stove0_work_records SET updated_at = :old"), {"old": old})
 

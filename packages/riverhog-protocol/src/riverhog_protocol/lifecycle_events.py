@@ -15,6 +15,7 @@ from pydantic import (
     field_validator,
     model_validator,
 )
+from time_formats import CanonicalUtcTimestamp
 
 from riverhog_protocol.list_controls import ArchiveCopyJobState
 from riverhog_protocol.paths import CollectionId, normalize_collection_id
@@ -110,7 +111,7 @@ class RiverhogEventData(RiverhogEventModel):
 
 class CollectionEventData(RiverhogEventData):
     collection_id: CollectionId
-    collection_created_at: str = Field(min_length=1, max_length=64)
+    collection_created_at: CanonicalUtcTimestamp
 
     @model_validator(mode="after")
     def validate_collection(self) -> Self:
@@ -161,7 +162,7 @@ class RetrievalEventData(RiverhogEventData):
     collection_ids: list[CollectionId] = Field(min_length=1)
     state: RetrievalState
     collection_id: CollectionId | None = None
-    collection_created_at: str | None = Field(default=None, min_length=1, max_length=64)
+    collection_created_at: CanonicalUtcTimestamp | None = None
 
     @model_validator(mode="after")
     def validate_collections(self) -> Self:
@@ -186,7 +187,7 @@ class RetrievalRequestedData(RetrievalEventData):
 
 class RetrievalReadyData(RetrievalEventData):
     state: Literal["ready"]
-    expires_at: str = Field(min_length=1, max_length=64)
+    expires_at: CanonicalUtcTimestamp
 
 
 class RetrievalRenewedData(RetrievalReadyData):

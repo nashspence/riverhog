@@ -48,7 +48,7 @@ def harness(tmp_path: Path) -> Harness:
             session,
             change="created",
             collection_id=COLLECTION_ID,
-            occurred_at="2026-07-18T00:00:00.000000Z",
+            occurred_at="2026-07-18T00:00:00.000000000Z",
             inventory_identity=collection.inventory_identity,
             before_tags=(),
             after_tags=(),

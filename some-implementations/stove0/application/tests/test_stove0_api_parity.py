@@ -403,9 +403,9 @@ class _LifecycleAdmission:
             intent=self.intent,
             state="intent",
             attempt_count=0,
-            next_attempt_at="2026-01-01T00:00:00Z",
-            created_at="2026-01-01T00:00:00Z",
-            updated_at="2026-01-01T00:00:00Z",
+            next_attempt_at="2026-01-01T00:00:00.000000000Z",
+            created_at="2026-01-01T00:00:00.000000000Z",
+            updated_at="2026-01-01T00:00:00.000000000Z",
         )
 
     def _status(self) -> AdmissionPolicyStatus:
@@ -417,7 +417,7 @@ class _LifecycleAdmission:
             authorization_view_identity="7" * 64,
             baseline_mode="observe",
             through_revision="0",
-            updated_at="2026-01-01T00:00:00Z",
+            updated_at="2026-01-01T00:00:00.000000000Z",
         )
 
 

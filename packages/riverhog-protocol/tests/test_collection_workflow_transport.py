@@ -199,9 +199,9 @@ def test_processing_claim_projection_rejects_impossible_state_evidence() -> None
         "purpose": "fixture",
         "state": "active",
         "fence": "1",
-        "expires_at": "2026-08-24T00:15:00.000000Z",
-        "created_at": "2026-08-24T00:00:00.000000Z",
-        "updated_at": "2026-08-24T00:00:00.000000Z",
+        "expires_at": "2026-08-24T00:15:00.000000000Z",
+        "created_at": "2026-08-24T00:00:00.000000000Z",
+        "updated_at": "2026-08-24T00:00:00.000000000Z",
         "work_document": work_document,
         "work_document_sha256": canonical_json_sha256(work_document),
         "inputs": {"state": "receiving", "count": "0", "identity": None},
@@ -214,7 +214,7 @@ def test_processing_claim_projection_rejects_impossible_state_evidence() -> None
     abandoned = {
         **active,
         "state": "abandoned",
-        "abandoned_at": "2026-08-24T00:01:00.000000Z",
+        "abandoned_at": "2026-08-24T00:01:00.000000000Z",
         "abandonment_reason": "target reported inapplicable",
     }
     assert ProcessingClaimDocument.model_validate(abandoned).state == "abandoned"

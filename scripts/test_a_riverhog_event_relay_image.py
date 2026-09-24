@@ -49,7 +49,7 @@ class SmokePeer:
                             "id": "a-riverhog-event-relay-smoke-event",
                             "source": "urn:riverhog:smoke",
                             "type": "io.riverhog.smoke",
-                            "time": "2026-08-14T00:00:00.000000Z",
+                            "time": "2026-08-14T00:00:00.000000000Z",
                             "datacontenttype": "application/json",
                             "data": {"proof": "container-entrypoint"},
                         }

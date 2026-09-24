@@ -6,8 +6,8 @@ from collections.abc import Mapping
 from datetime import datetime
 from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
-from time_formats import format_utc_timestamp, parse_utc_timestamp, utc_now
+from pydantic import BaseModel, ConfigDict, Field
+from time_formats import CanonicalUtcTimestamp, format_utc_timestamp, utc_now
 
 CLOUDEVENTS_JSON_CONTENT_TYPE = "application/cloudevents+json"
 MAX_EVENT_CONTEXT_BYTES = 4096
@@ -37,18 +37,9 @@ class CloudEvent(BaseModel):
     source: str = Field(min_length=1)
     type: str = Field(min_length=1)
     subject: str | None = Field(default=None, min_length=1)
-    time: str
+    time: CanonicalUtcTimestamp
     datacontenttype: Literal["application/json"] = "application/json"
     data: dict[str, Any] = Field(default_factory=dict)
-
-    @field_validator("time")
-    @classmethod
-    def validate_time(cls, value: str) -> str:
-        normalized = value.strip()
-        if not normalized.endswith("Z"):
-            raise ValueError("CloudEvent time must be a UTC timestamp ending in Z")
-        parse_utc_timestamp(normalized)
-        return normalized
 
 
 class EventPage(BaseModel):

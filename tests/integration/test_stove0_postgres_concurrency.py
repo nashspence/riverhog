@@ -1585,8 +1585,8 @@ def test_postgres_concurrent_operational_pruning_converges_exactly_once(
 ) -> None:
     first, second = stores
     terminal = first.create(WorkRecord(work=_work(), phase="canceled"))
-    old = "2000-01-01T00:00:00.000000Z"
-    cutoff = "2001-01-01T00:00:00.000000Z"
+    old = "2000-01-01T00:00:00.000000000Z"
+    cutoff = "2001-01-01T00:00:00.000000000Z"
     with first.engine.begin() as connection:
         connection.execute(
             text("UPDATE stove0_work_records SET updated_at = :old"),

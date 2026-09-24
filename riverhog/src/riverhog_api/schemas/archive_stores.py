@@ -5,6 +5,7 @@ from typing import Literal
 from http_api_contracts import BrowsePageToken
 from pydantic import Field
 from riverhog_protocol import ArchiveStoreName, ArchiveStoreSort, SortOrder
+from time_formats import CanonicalUtcTimestamp
 
 from riverhog_api.schemas.common import RiverhogModel
 
@@ -12,8 +13,8 @@ from riverhog_api.schemas.common import RiverhogModel
 class ArchiveDownloadAllowanceOut(RiverhogModel):
     store: ArchiveStoreName
     state: Literal["open", "closed"]
-    month_started_at: str
-    resets_at: str
+    month_started_at: CanonicalUtcTimestamp
+    resets_at: CanonicalUtcTimestamp
     allowance_bytes: int
     safety_buffer_bytes: int
     effective_limit_bytes: int

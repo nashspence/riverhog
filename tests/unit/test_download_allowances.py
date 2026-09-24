@@ -107,8 +107,8 @@ def test_download_allowance_accounts_remote_bytes_and_releases_reservation(
     assert status.accounted_bytes == 5
     assert status.reserved_bytes == 0
     assert status.remaining_bytes == 85
-    assert status.month_started_at == "2026-07-01T00:00:00.000000Z"
-    assert status.resets_at == "2026-08-01T00:00:00.000000Z"
+    assert status.month_started_at == "2026-07-01T00:00:00.000000000Z"
+    assert status.resets_at == "2026-08-01T00:00:00.000000000Z"
 
 
 def test_download_allowance_counts_partial_reads_and_retries(
@@ -231,10 +231,10 @@ def test_download_allowance_resets_by_utc_month_and_protects_crossing_reads(
     assert b"".join(crossing) == b"ten-bytes!"
 
     status = service.get_statuses()[0]
-    assert status.month_started_at == "2026-08-01T00:00:00.000000Z"
+    assert status.month_started_at == "2026-08-01T00:00:00.000000000Z"
     assert status.accounted_bytes == 30
     assert status.reserved_bytes == 0
-    assert status.resets_at == "2026-09-01T00:00:00.000000Z"
+    assert status.resets_at == "2026-09-01T00:00:00.000000000Z"
 
 
 def test_download_allowance_is_a_no_op_for_an_unconfigured_store(
@@ -268,7 +268,7 @@ def test_key_quota_starts_blocked_then_reserves_and_accounts_actual_remote_bytes
             key_id=key_id,
             job_id="blocked-job",
             expected_bytes=1,
-            expires_at="2026-07-20T00:00:00.000000Z",
+            expires_at="2026-07-20T00:00:00.000000000Z",
         )
 
     assigned = service.set_key_quota(app="review", key_id=key_id, monthly_bytes=20)
@@ -278,7 +278,7 @@ def test_key_quota_starts_blocked_then_reserves_and_accounts_actual_remote_bytes
         key_id=key_id,
         job_id="job-1",
         expected_bytes=10,
-        expires_at="2026-07-20T00:00:00.000000Z",
+        expires_at="2026-07-20T00:00:00.000000000Z",
     )
     reserved = service.get_key_quota(key_id=key_id)
     assert reserved["reserved_bytes"] == 10
@@ -322,7 +322,7 @@ def test_store_allowance_and_key_quota_reject_without_consuming_each_other(
         key_id=key_id,
         job_id="store-blocked",
         expected_bytes=100,
-        expires_at="2026-07-20T00:00:00.000000Z",
+        expires_at="2026-07-20T00:00:00.000000000Z",
     )
 
     with pytest.raises(DownloadAllowanceExceeded, match="archive store deep"):
@@ -375,7 +375,7 @@ def test_key_quota_release_and_database_list_projection(tmp_path: Path) -> None:
         key_id=str(alpha["id"]),
         job_id="job-2",
         expected_bytes=8,
-        expires_at="2026-07-20T00:00:00.000000Z",
+        expires_at="2026-07-20T00:00:00.000000000Z",
     )
     service.release_retrieval(job_id="job-2")
 

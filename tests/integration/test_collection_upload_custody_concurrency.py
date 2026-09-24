@@ -335,8 +335,8 @@ def test_postgres_upload_protects_a_reused_tag_root_before_its_first_commit(
             metrics = _reap_unreferenced_tag_history(
                 session,
                 limit=1,
-                cleanup_before="9999-12-31T23:59:59.999999Z",
-                cleanup_started_at="9999-12-31T23:59:59.999999Z",
+                cleanup_before="9999-12-31T23:59:59.999999000Z",
+                cleanup_started_at="9999-12-31T23:59:59.999999000Z",
             )
             assert metrics.changed_rows == 0
         with session_scope(factory) as session:
@@ -369,8 +369,8 @@ def test_postgres_upload_reuse_fails_before_commit_after_reclamation_claim(
         metrics = _reap_unreferenced_tag_history(
             session,
             limit=1,
-            cleanup_before="9999-12-31T23:59:59.999999Z",
-            cleanup_started_at="9999-12-31T23:59:59.999999Z",
+            cleanup_before="9999-12-31T23:59:59.999999000Z",
+            cleanup_started_at="9999-12-31T23:59:59.999999000Z",
         )
         assert metrics.changed_rows == 1
     with pytest.raises(ServiceUnavailable, match="being reclaimed"):
@@ -400,7 +400,7 @@ def _expire(database_url: str, collection_id: int) -> None:
     with session_scope(make_session_factory(database_url)) as session:
         upload = session.get(CollectionUploadRecord, collection_id)
         assert upload is not None
-        upload.lease_expires_at = "2000-01-01T00:00:00.000000Z"
+        upload.lease_expires_at = "2000-01-01T00:00:00.000000000Z"
 
 
 def _race(

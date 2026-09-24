@@ -148,8 +148,8 @@ def test_postgres_current_v1_fixture_validates_and_restarts(
                 "INSERT INTO collection_tags "
                 "(tag_sha256, tag, search_text, created_at, updated_at, collection_count) "
                 "VALUES (:id, 'fixture', 'fixture', "
-                "'2026-01-01T00:00:00.000000Z', "
-                "'2026-01-01T00:00:00.000000Z', 0)"
+                "'2026-01-01T00:00:00.000000000Z', "
+                "'2026-01-01T00:00:00.000000000Z', 0)"
             ),
             {"id": "0" * 64},
         )
@@ -264,7 +264,7 @@ def test_postgres_catalog_revisions_serialize_commit_and_restart(
                     inventory_identity=identity,
                     archive_root_sha256=identity,
                     created_by_principal_id="fixture",
-                    created_at="2026-09-07T00:00:00.000000Z",
+                    created_at="2026-09-07T00:00:00.000000000Z",
                     is_published=True,
                     file_count=0,
                     file_bytes=0,
@@ -283,7 +283,7 @@ def test_postgres_catalog_revisions_serialize_commit_and_restart(
                 session,
                 change="created",
                 collection_id=collection_id,
-                occurred_at="2026-09-07T00:00:00.000000Z",
+                occurred_at="2026-09-07T00:00:00.000000000Z",
                 inventory_identity=f"{collection_id:064x}",
                 before_tags=(),
                 after_tags=(),
@@ -336,7 +336,7 @@ def test_postgres_tag_history_cleanup_serializes_its_row_work_budget(
             CollectionTagNodeRecord(
                 digest=digest,
                 encoded=f"node-{index}".encode(),
-                created_at="2026-09-08T00:00:00.000000Z",
+                created_at="2026-09-08T00:00:00.000000000Z",
             )
             for index, digest in enumerate(digests, start=1)
         )
@@ -396,7 +396,7 @@ def test_postgres_tag_mutation_protects_an_aba_root_before_its_first_commit(
     with session_scope(factory) as session:
         retired = session.get(CollectionTagRevisionRecord, (1, 1))
         assert retired is not None and retired.root_sha256 == initial_root
-        retired.cleanup_started_at = "2026-01-01T00:00:00.000000Z"
+        retired.cleanup_started_at = "2026-01-01T00:00:00.000000000Z"
 
     entered = threading.Event()
     release = threading.Event()
@@ -433,8 +433,8 @@ def test_postgres_tag_mutation_protects_an_aba_root_before_its_first_commit(
             metrics = _reap_unreferenced_tag_history(
                 session,
                 limit=100,
-                cleanup_before="2026-02-01T00:00:00.000000Z",
-                cleanup_started_at="2026-02-01T00:00:00.000000Z",
+                cleanup_before="2026-02-01T00:00:00.000000000Z",
+                cleanup_started_at="2026-02-01T00:00:00.000000000Z",
             )
             assert metrics.changed_rows > 0
         with session_scope(factory) as session:
@@ -560,7 +560,7 @@ def test_postgres_replica_description_claim_excludes_primary_writer(
         publication = session.get(CollectionDescriptionPublicationRecord, (1, "archive"))
         assert publication is not None
         publication.state = "pending"
-        publication.next_attempt_at = "2026-09-07T00:00:00.000000Z"
+        publication.next_attempt_at = "2026-09-07T00:00:00.000000000Z"
 
     store.delay_next_description = True
     with ThreadPoolExecutor(max_workers=1) as executor:
@@ -582,7 +582,7 @@ def test_postgres_replica_description_claim_excludes_primary_writer(
             )
             assert collection is not None and collection.pending_description_revision == 2
             assert attempt is not None and attempt.document_revision == 1
-            collection.description_next_attempt_at = "2026-09-07T00:00:00.000000Z"
+            collection.description_next_attempt_at = "2026-09-07T00:00:00.000000000Z"
         store.resume.set()
         assert replica.result(timeout=10) == 1
 
@@ -648,8 +648,8 @@ def test_postgres_mutable_replica_attempt_serializes_reconciliation_before_newer
                 store="mirror",
                 state="uploaded",
                 archive_storage_prefix="archives/mirror/1",
-                last_uploaded_at="2026-09-07T00:00:00.000000Z",
-                last_verified_at="2026-09-07T00:00:00.000000Z",
+                last_uploaded_at="2026-09-07T00:00:00.000000000Z",
+                last_verified_at="2026-09-07T00:00:00.000000000Z",
             )
         )
         session.add(
@@ -705,7 +705,7 @@ def test_postgres_mutable_replica_attempt_serializes_reconciliation_before_newer
         publication = session.get(CollectionDescriptionPublicationRecord, (1, "mirror"))
         assert attempt is not None and attempt.document_revision == 2
         assert publication is not None and publication.desired_revision == 3
-        publication.next_attempt_at = "2026-09-07T00:00:00.000000Z"
+        publication.next_attempt_at = "2026-09-07T00:00:00.000000000Z"
 
     def advance() -> int:
         worker = SqlAlchemyCollectionDescriptionService(
@@ -796,8 +796,8 @@ def test_postgres_reused_tag_node_gc_and_publication_workers_converge(
         gc = session.get(CollectionTagNodeGcRecord, (1, "archive", digest))
         publication = session.get(CollectionTagPublicationRecord, (1, "archive"))
         assert gc is not None and publication is not None
-        gc.next_attempt_at = "2026-09-07T00:00:00.000000Z"
-        publication.next_attempt_at = "2026-09-07T00:00:00.000000Z"
+        gc.next_attempt_at = "2026-09-07T00:00:00.000000000Z"
+        publication.next_attempt_at = "2026-09-07T00:00:00.000000000Z"
 
     def advance() -> int:
         worker = SqlAlchemyCollectionTagService(
@@ -902,7 +902,7 @@ def test_postgres_archive_sequence_state_round_trips_full_v1_domain(
                     uploaded_bytes=0,
                     uploaded_units=0,
                     total_units=0,
-                    updated_at="2026-01-01T00:00:00.000000Z",
+                    updated_at="2026-01-01T00:00:00.000000000Z",
                     sealed_at=None,
                 )
             )

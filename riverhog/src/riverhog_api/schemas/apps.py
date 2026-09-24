@@ -19,6 +19,7 @@ from riverhog_protocol import (
     ApplicationSort,
     SortOrder,
 )
+from time_formats import CanonicalUtcTimestamp
 
 from riverhog_api.schemas.common import RiverhogModel
 
@@ -27,7 +28,7 @@ class AppSummaryOut(RiverhogModel):
     name: ApplicationName
     keys: int
     active_keys: int
-    last_used_at: str | None
+    last_used_at: CanonicalUtcTimestamp | None
 
 
 class AppListOut(RiverhogModel):
@@ -52,7 +53,7 @@ class AppAccessListItemOut(AppAccessOut):
     app: ApplicationName
     key_id: ApplicationKeyId
     key_status: Literal["active", "expired", "revoked"]
-    created_at: str
+    created_at: CanonicalUtcTimestamp
 
 
 class AppAccessListFiltersOut(RiverhogModel):
@@ -85,10 +86,10 @@ class AppKeyOut(RiverhogModel):
     access: ApplicationAccessGrantSet
     monthly_download_quota_bytes: MonthlyDownloadQuotaBytes | None
     status: Literal["active", "expired", "revoked"]
-    created_at: str
-    expires_at: str | None
-    revoked_at: str | None
-    last_used_at: str | None
+    created_at: CanonicalUtcTimestamp
+    expires_at: CanonicalUtcTimestamp | None
+    revoked_at: CanonicalUtcTimestamp | None
+    last_used_at: CanonicalUtcTimestamp | None
 
     @model_validator(mode="after")
     def validate_status_evidence(self) -> Self:

@@ -44,6 +44,7 @@ from stove0_target_protocol import (
     TargetPlan,
     TargetSettlementAuthority,
 )
+from time_formats import CanonicalUtcTimestamp
 
 from stove0_operator_contracts.http_errors import STOVE0_HTTP_ERROR_AUTHORITY
 
@@ -166,7 +167,7 @@ class AdmissionPolicyStatus(OperatorModel):
     authorization_view_identity: Sha256 | None = None
     baseline_mode: Literal["observe", "backfill"]
     through_revision: str = Field(pattern=r"^(?:0|[1-9][0-9]*)$")
-    updated_at: str = Field(min_length=1, max_length=40)
+    updated_at: CanonicalUtcTimestamp
 
     @model_validator(mode="after")
     def exact_policy(self) -> Self:
@@ -267,10 +268,10 @@ class AdmissionView(OperatorModel):
     preview_sha256: Sha256 | None = None
     work_id: Sha256 | None = None
     attempt_count: int = Field(ge=0)
-    next_attempt_at: str | None = Field(default=None, min_length=1, max_length=40)
+    next_attempt_at: CanonicalUtcTimestamp | None = None
     failure: str | None = Field(default=None, min_length=1, max_length=1000)
-    created_at: str = Field(min_length=1, max_length=40)
-    updated_at: str = Field(min_length=1, max_length=40)
+    created_at: CanonicalUtcTimestamp
+    updated_at: CanonicalUtcTimestamp
 
     @model_validator(mode="after")
     def exact_stage(self) -> Self:
@@ -781,7 +782,7 @@ class EvaluationReviewView(OperatorModel):
     rating: int | None = Field(default=None, ge=1, le=5)
     note: CanonicalVisibleText | None = Field(default=None, max_length=4000)
     updated_by: str = Field(min_length=1, max_length=160)
-    updated_at: str = Field(min_length=1, max_length=40)
+    updated_at: CanonicalUtcTimestamp
 
     @model_validator(mode="after")
     def meaningful(self) -> Self:

@@ -129,7 +129,7 @@ def test_context_expiry_targets_owner_and_subject_in_sql(tmp_path: Path) -> None
         data=_finalized_event_data(2, "alpha"),
         context_json='{"route":"desktop"}',
     )
-    expires_at = "2026-08-02T00:00:00.000000Z"
+    expires_at = "2026-08-02T00:00:00.000000000Z"
     with session_scope(make_session_factory(config.database_url)) as session:
         events.expire_context(
             owner_principal_id="alpha",
@@ -159,7 +159,7 @@ def test_event_page_omits_expired_context_without_performing_cleanup(tmp_path: P
         subject="1",
         data=_finalized_event_data(1, "alpha"),
         context_json='{"route":"phone"}',
-        context_expires_at="2000-01-01T00:00:00.000000Z",
+        context_expires_at="2000-01-01T00:00:00.000000000Z",
     )
 
     page = events.page(owner_principal_id="alpha", after=None, limit=1)
@@ -169,7 +169,7 @@ def test_event_page_omits_expired_context_without_performing_cleanup(tmp_path: P
     with session_scope(make_session_factory(config.database_url)) as session:
         record = session.query(LifecycleEventRecord).one()
         assert record.context_json == '{"route":"phone"}'
-        assert record.context_expires_at == "2000-01-01T00:00:00.000000Z"
+        assert record.context_expires_at == "2000-01-01T00:00:00.000000000Z"
 
 
 def test_expired_context_reclamation_is_bounded_and_restartable(tmp_path: Path) -> None:
@@ -186,7 +186,7 @@ def test_expired_context_reclamation_is_bounded_and_restartable(tmp_path: Path) 
             subject=subject,
             data=_finalized_event_data(int(subject), "alpha"),
             context_json='{"route":"phone"}',
-            context_expires_at="2000-01-01T00:00:00.000000Z",
+            context_expires_at="2000-01-01T00:00:00.000000000Z",
         )
     events.emit(
         owner_principal_id="alpha",
@@ -194,7 +194,7 @@ def test_expired_context_reclamation_is_bounded_and_restartable(tmp_path: Path) 
         subject="4",
         data=_finalized_event_data(4, "alpha"),
         context_json='{"route":"desktop"}',
-        context_expires_at="2999-01-01T00:00:00.000000Z",
+        context_expires_at="2999-01-01T00:00:00.000000000Z",
     )
 
     assert events.reap_expired_contexts() == 2
