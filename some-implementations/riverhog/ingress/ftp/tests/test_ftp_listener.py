@@ -40,13 +40,23 @@ def _listener(root: Path) -> Iterator[tuple[str, int]]:
         max_connections_per_ip=8,
     )
     address = server.socket.getsockname()[:2]
-    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    stop = threading.Event()
+
+    def serve() -> None:
+        try:
+            while not stop.is_set():
+                server.ioloop.loop(timeout=0.1, blocking=False)
+        finally:
+            server.close_all()
+
+    thread = threading.Thread(target=serve, daemon=True)
     thread.start()
     try:
         yield str(address[0]), int(address[1])
     finally:
-        server.close_all()
+        stop.set()
         thread.join(timeout=5)
+        assert not thread.is_alive()
 
 
 def _login(address: tuple[str, int]) -> FTP:
