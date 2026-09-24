@@ -174,7 +174,7 @@ class MemoryAdapter:
                 expected_bytes=request.expected_bytes,
                 expected_content_type=request.expected_content_type,
                 required_identity_assertions=request.required_identity_assertions,
-                expected_placement=request.expected_placement,
+                expected_placement_policy=request.expected_placement_policy,
             )
         )
         if completed is not None:
@@ -202,7 +202,7 @@ class MemoryAdapter:
             created.content_type,
             created.required_identity_assertions,
             "version-1",
-            created.placement,
+            created.placement_policy,
         )
         return CompletedObjectReceipt(
             object_path=request.session.object_path,
@@ -211,7 +211,7 @@ class MemoryAdapter:
             stored_bytes=len(content),
             verified_content_type=created.content_type,
             verified_identity_assertions=request.required_identity_assertions,
-            verified_placement=request.expected_placement,
+            verified_placement_policy=request.expected_placement_policy,
             completed_at="2026-08-21T00:00:00.000000000Z",
         )
 
@@ -222,7 +222,7 @@ class MemoryAdapter:
         stored = self.objects.get(request.object_path)
         if stored is None:
             return None
-        content, content_type, metadata, revision, placement = stored
+        content, content_type, metadata, revision, placement_policy = stored
         if (
             content_type != request.expected_content_type
             or metadata != request.required_identity_assertions
@@ -235,7 +235,7 @@ class MemoryAdapter:
             stored_bytes=len(content),
             verified_content_type=content_type,
             verified_identity_assertions=metadata,
-            verified_placement=placement,
+            verified_placement_policy=placement_policy,
             completed_at="2026-08-21T00:00:00.000000000Z",
         )
 
@@ -269,7 +269,7 @@ class MemoryAdapter:
                 stored_sha256=hashlib.sha256(existing_content).hexdigest(),
                 verified_content_type=existing_content_type,
                 verified_identity_assertions=request.required_identity_assertions,
-                verified_placement=request.placement,
+                verified_placement_policy=request.placement_policy,
                 completed_at="2026-08-21T00:00:00.000000000Z",
             )
         self.objects[request.object_path] = (
@@ -277,7 +277,7 @@ class MemoryAdapter:
             request.content_type,
             request.required_identity_assertions,
             "small-version",
-            request.placement,
+            request.placement_policy,
         )
         self.small_objects.add(request.object_path)
         return ImmutableObjectReceipt(
@@ -288,7 +288,7 @@ class MemoryAdapter:
             stored_sha256=hashlib.sha256(content).hexdigest(),
             verified_content_type=request.content_type,
             verified_identity_assertions=request.required_identity_assertions,
-            verified_placement=request.placement,
+            verified_placement_policy=request.placement_policy,
             completed_at="2026-08-21T00:00:00.000000000Z",
         )
 
@@ -296,9 +296,9 @@ class MemoryAdapter:
         stored = self.objects.get(request.object.object_path)
         if stored is None:
             return None
-        content, content_type, metadata, revision, placement = stored
-        if placement != request.expected_placement:
-            raise RuntimeError("different placement")
+        content, content_type, metadata, revision, placement_policy = stored
+        if placement_policy != request.expected_placement_policy:
+            raise RuntimeError("different placement policy")
         return ObjectMetadataReceipt(
             object_path=request.object.object_path,
             revision=revision,
@@ -311,7 +311,7 @@ class MemoryAdapter:
                 else None
             ),
             observed_identity_assertions=metadata,
-            verified_placement=request.expected_placement,
+            verified_placement_policy=request.expected_placement_policy,
             completed_at="2026-08-21T00:00:00.000000000Z",
         )
 
@@ -399,7 +399,7 @@ def test_client_preserves_write_segment_receipts_and_declares_body_lengths() -> 
                 expected_bytes=11,
                 content_type="application/octet-stream",
                 required_identity_assertions={"riverhog-format": "riverhog-pack-volume/v1"},
-                placement="archive",
+                placement_policy="archive_default",
             )
         )
         first = client.write_segment(session=created, number=1, stored_bytes=5, content=b"first")
@@ -415,7 +415,7 @@ def test_client_preserves_write_segment_receipts_and_declares_body_lengths() -> 
                 expected_bytes=11,
                 expected_content_type="application/octet-stream",
                 required_identity_assertions={"riverhog-format": "riverhog-pack-volume/v1"},
-                expected_placement="archive",
+                expected_placement_policy="archive_default",
             )
         )
         recovered = client.find_completed_write(
@@ -424,7 +424,7 @@ def test_client_preserves_write_segment_receipts_and_declares_body_lengths() -> 
                 expected_bytes=11,
                 expected_content_type="application/octet-stream",
                 required_identity_assertions={"riverhog-format": "riverhog-pack-volume/v1"},
-                expected_placement="archive",
+                expected_placement_policy="archive_default",
             )
         )
 
@@ -461,7 +461,7 @@ def test_http_write_traversal_crosses_pages_and_process_restart() -> None:
                 expected_bytes=segment_count,
                 content_type="application/octet-stream",
                 required_identity_assertions={"riverhog-format": "many-segments/v1"},
-                placement="archive",
+                placement_policy="archive_default",
             )
         )
         for number in range(1, segment_count + 1):
@@ -496,7 +496,7 @@ def test_http_write_traversal_crosses_pages_and_process_restart() -> None:
                 expected_bytes=segment_count,
                 expected_content_type="application/octet-stream",
                 required_identity_assertions={"riverhog-format": "many-segments/v1"},
-                expected_placement="archive",
+                expected_placement_policy="archive_default",
             )
         )
         assert completed.stored_bytes == segment_count
@@ -631,7 +631,7 @@ def test_client_streams_declared_segment_chunks_without_transfer_encoding() -> N
                 expected_bytes=9,
                 content_type="application/octet-stream",
                 required_identity_assertions={"riverhog-format": "fixture/v1"},
-                placement="archive",
+                placement_policy="archive_default",
             )
         )
         receipt = client.write_segment(
@@ -664,7 +664,7 @@ def test_small_object_and_exact_range_round_trip() -> None:
                 required_identity_assertions={
                     "archive-guidance-format": "encrypted-archive-readme-v1"
                 },
-                placement="immediate",
+                placement_policy="immediate_default",
                 mode="create_only",
                 stored_bytes=len(content),
                 stored_sha256=hashlib.sha256(content).hexdigest(),
@@ -674,7 +674,7 @@ def test_small_object_and_exact_range_round_trip() -> None:
         metadata = client.head_object(
             ObjectHeadRequest(
                 object=ObjectLocator(object_path="README.md"),
-                expected_placement="immediate",
+                expected_placement_policy="immediate_default",
             )
         )
         ranged = b"".join(
@@ -790,7 +790,7 @@ def test_adapter_implementation_value_error_is_a_server_fault() -> None:
         expected_bytes=1,
         content_type="application/octet-stream",
         required_identity_assertions={"riverhog-format": "fixture/v1"},
-        placement="archive",
+        placement_policy="archive_default",
     )
     response = StorageAdapterHttpBinding(FaultingAdapter()).handle(
         "POST",
@@ -825,7 +825,7 @@ def test_binding_enforces_advertised_write_segment_limits() -> None:
                 expected_bytes=10,
                 content_type="application/octet-stream",
                 required_identity_assertions={"riverhog-format": "fixture/v1"},
-                placement="archive",
+                placement_policy="archive_default",
             )
         )
         with pytest.raises(StorageAdapterProtocolError, match="byte limit"):
@@ -912,9 +912,11 @@ def test_client_surfaces_the_closed_adapter_error() -> None:
 
     request = ObjectHeadRequest(
         object=ObjectLocator(object_path="archives/id/object"),
-        expected_placement="archive",
+        expected_placement_policy="archive_default",
     )
-    duplicate = b'{"expected_placement":"archive",' + request.model_dump_json().encode()[1:]
+    duplicate = (
+        b'{"expected_placement_policy":"archive_default",' + request.model_dump_json().encode()[1:]
+    )
     assert binding.handle("POST", "/v1/objects/head", duplicate).status == 400
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -937,7 +939,7 @@ def test_client_surfaces_the_closed_adapter_error() -> None:
     try:
         request = ObjectHeadRequest(
             object=ObjectLocator(object_path="missing"),
-            expected_placement="immediate",
+            expected_placement_policy="immediate_default",
         )
         assert client.head_object(request) is None
         with pytest.raises(StorageAdapterProtocolError, match="not found"):

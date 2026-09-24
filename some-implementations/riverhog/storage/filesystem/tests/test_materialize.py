@@ -49,7 +49,7 @@ def _put(adapter: FilesystemStorageAdapter, path: str, payload: bytes) -> None:
             object_path=path,
             content_type="application/octet-stream",
             required_identity_assertions={"riverhog-object": path},
-            placement="archive",
+            placement_policy="archive_default",
             mode="create_only",
             stored_bytes=len(payload),
             stored_sha256=hashlib.sha256(payload).hexdigest(),
@@ -90,7 +90,7 @@ def _put_segmented(
         expected_bytes=len(payload),
         content_type="application/octet-stream",
         required_identity_assertions={"riverhog-object": path},
-        placement="archive",
+        placement_policy="archive_default",
     )
     session = adapter.begin_write(request)
     for number, segment in enumerate(segments, start=1):
@@ -107,7 +107,7 @@ def _put_segmented(
             expected_bytes=len(payload),
             expected_content_type=request.content_type,
             required_identity_assertions=request.required_identity_assertions,
-            expected_placement=request.placement,
+            expected_placement_policy=request.placement_policy,
         )
     )
 
@@ -581,7 +581,7 @@ def test_materializes_current_revision_across_segments_and_copy_chunks(
                 object_path=path,
                 content_type="application/octet-stream",
                 required_identity_assertions={"riverhog-object": path},
-                placement="archive",
+                placement_policy="archive_default",
                 mode="replace_current",
                 expected_current_stored_sha256=hashlib.sha256(old).hexdigest(),
                 stored_bytes=len(current),
@@ -748,7 +748,7 @@ def test_incomplete_and_no_current_objects_are_not_materialized(tmp_path: Path) 
             expected_bytes=64 * 1024,
             content_type="application/octet-stream",
             required_identity_assertions={"riverhog-object": "incomplete"},
-            placement="archive",
+            placement_policy="archive_default",
         )
     )
     adapter.close()

@@ -22,7 +22,7 @@ from riverhog_storage_adapter_protocol import (
     ObjectHeadRequest,
     ObjectLocator,
     ObjectMetadataReceipt,
-    ObjectPlacement,
+    ObjectPlacementPolicy,
     ObjectReadReceipt,
     ObjectReadRequest,
     ObjectReadStream,
@@ -49,8 +49,8 @@ _MAXIMUM_PART_COUNT = 10_000
 _DEFAULT_READ_CHUNK_BYTES = 8 * 1024 * 1024
 _DEFAULT_WRITE_CHUNK_BYTES = 1024 * 1024
 _STORED_SHA256_METADATA = f"{ADAPTER_PRIVATE_ASSERTION_PREFIX}stored-sha256"
-_PLACEMENT_METADATA = f"{ADAPTER_PRIVATE_ASSERTION_PREFIX}placement"
-_RESERVED_METADATA = frozenset({_STORED_SHA256_METADATA, _PLACEMENT_METADATA})
+_PLACEMENT_POLICY_METADATA = f"{ADAPTER_PRIVATE_ASSERTION_PREFIX}placement-policy"
+_RESERVED_METADATA = frozenset({_STORED_SHA256_METADATA, _PLACEMENT_POLICY_METADATA})
 _TRAVERSAL_DOMAIN = b"riverhog-s3-write-segment-traversal/v1\x00"
 _COMPLETION_DOMAIN = b"riverhog-storage-write-segment-sequence/v1\x00"
 
@@ -111,6 +111,8 @@ def _segments_can_complete(
 
 @dataclass(frozen=True, slots=True)
 class S3StorageAdapterConfig:
+    """Map placement policies to S3 storage classes, independently of read mode."""
+
     implementation_id: str
     implementation_version: str
     bucket: str
@@ -219,7 +221,7 @@ class S3StorageAdapter:
             )
         metadata = self._stored_metadata(
             request.required_identity_assertions,
-            placement=request.placement,
+            placement_policy=request.placement_policy,
         )
         provider_request: dict[str, Any] = {
             "Bucket": self._config.bucket,
@@ -227,7 +229,7 @@ class S3StorageAdapter:
             "ContentType": request.content_type,
             "Metadata": metadata,
         }
-        if storage_class := self._storage_class(request.placement):
+        if storage_class := self._storage_class(request.placement_policy):
             provider_request["StorageClass"] = storage_class
         response = cast(dict[str, Any], self._client.create_multipart_upload(**provider_request))
         upload_id = str(response.get("UploadId", ""))
@@ -342,7 +344,7 @@ class S3StorageAdapter:
             expected_bytes=request.expected_bytes,
             expected_content_type=request.expected_content_type,
             required_identity_assertions=request.required_identity_assertions,
-            expected_placement=request.expected_placement,
+            expected_placement_policy=request.expected_placement_policy,
         )
         recovered = self.find_completed_write(lookup)
         if recovered is not None:
@@ -405,7 +407,7 @@ class S3StorageAdapter:
                 expected_bytes=request.expected_bytes,
                 expected_content_type=request.expected_content_type,
                 required_identity_assertions=request.required_identity_assertions,
-                expected_placement=request.expected_placement,
+                expected_placement_policy=request.expected_placement_policy,
             )
         )
         if completed is None:
@@ -435,12 +437,12 @@ class S3StorageAdapter:
                 "identity_conflict",
                 "object already exists with a different content type",
             )
-        self._validate_placement(head, request.expected_placement)
+        self._validate_placement_policy(head, request.expected_placement_policy)
         return self._completed_receipt(
             request.object_path,
             head,
             verified_identity_assertions=request.required_identity_assertions,
-            verified_placement=request.expected_placement,
+            verified_placement_policy=request.expected_placement_policy,
         )
 
     def abort_write(self, session: WriteSession) -> None:
@@ -495,7 +497,7 @@ class S3StorageAdapter:
             )
         metadata = self._stored_metadata(
             request.required_identity_assertions,
-            placement=request.placement,
+            placement_policy=request.placement_policy,
             stored_sha256=request.stored_sha256,
         )
         provider_request: dict[str, Any] = {
@@ -506,7 +508,7 @@ class S3StorageAdapter:
             "ContentType": request.content_type,
             "Metadata": metadata,
         }
-        if storage_class := self._storage_class(request.placement):
+        if storage_class := self._storage_class(request.placement_policy):
             provider_request["StorageClass"] = storage_class
         try:
             self._put_small_multipart(
@@ -541,21 +543,21 @@ class S3StorageAdapter:
             request.object_path,
             persisted,
             verified_identity_assertions=request.required_identity_assertions,
-            verified_placement=request.placement,
+            verified_placement_policy=request.placement_policy,
         )
         if (
             receipt.stored_bytes != request.stored_bytes
             or receipt.stored_sha256 != request.stored_sha256
         ):
             raise RuntimeError("persisted S3 object differs from its input")
-        self._validate_placement(persisted, request.placement)
+        self._validate_placement_policy(persisted, request.placement_policy)
         return receipt
 
     def head_object(self, request: ObjectHeadRequest) -> ObjectMetadataReceipt | None:
         head = self._head(request.object.object_path, revision=request.object.revision)
         if head is None:
             return None
-        self._validate_placement(head, request.expected_placement)
+        self._validate_placement_policy(head, request.expected_placement_policy)
         metadata = _normalized_metadata(head)
         stored_sha256 = metadata.get(_STORED_SHA256_METADATA)
         if stored_sha256 is not None and not _valid_sha256(stored_sha256):
@@ -572,7 +574,7 @@ class S3StorageAdapter:
             observed_identity_assertions={
                 key: value for key, value in metadata.items() if key not in _RESERVED_METADATA
             },
-            verified_placement=request.expected_placement,
+            verified_placement_policy=request.expected_placement_policy,
             completed_at=_provider_timestamp(head),
         )
 
@@ -698,10 +700,10 @@ class S3StorageAdapter:
     ) -> tuple[tuple[str, str | None], ...]:
         return tuple((self._key(item.object_path), item.revision) for item in request.objects)
 
-    def _storage_class(self, placement: ObjectPlacement) -> str | None:
+    def _storage_class(self, placement_policy: ObjectPlacementPolicy) -> str | None:
         return (
             self._config.archive_storage_class
-            if placement == "archive"
+            if placement_policy == "archive_default"
             else self._config.immediate_storage_class
         )
 
@@ -709,24 +711,26 @@ class S3StorageAdapter:
         self,
         identity: dict[str, str],
         *,
-        placement: ObjectPlacement,
+        placement_policy: ObjectPlacementPolicy,
         stored_sha256: str | None = None,
     ) -> dict[str, str]:
-        metadata = {**identity, _PLACEMENT_METADATA: placement}
+        metadata = {**identity, _PLACEMENT_POLICY_METADATA: placement_policy}
         if stored_sha256 is not None:
             metadata[_STORED_SHA256_METADATA] = stored_sha256
         return metadata
 
-    def _validate_placement(self, head: dict[str, Any], expected: ObjectPlacement) -> None:
+    def _validate_placement_policy(
+        self, head: dict[str, Any], expected: ObjectPlacementPolicy
+    ) -> None:
         metadata = _normalized_metadata(head)
-        if marker := metadata.get(_PLACEMENT_METADATA):
+        if marker := metadata.get(_PLACEMENT_POLICY_METADATA):
             if marker != expected:
-                raise RuntimeError("S3 object placement marker differs from its request")
+                raise RuntimeError("S3 object placement policy marker differs from its request")
             return
         expected_class = (self._storage_class(expected) or "STANDARD").upper()
         actual_class = str(head.get("StorageClass") or "STANDARD").upper()
         if expected_class != actual_class:
-            raise RuntimeError("S3 object storage placement differs from its request")
+            raise RuntimeError("S3 object storage placement policy differs from its request")
 
     def _matching_small_receipt(
         self,
@@ -741,12 +745,12 @@ class S3StorageAdapter:
             return None
         if _provider_content_type(head) != request.content_type:
             return None
-        self._validate_placement(head, request.placement)
+        self._validate_placement_policy(head, request.placement_policy)
         receipt = self._immutable_receipt(
             request.object_path,
             head,
             verified_identity_assertions=request.required_identity_assertions,
-            verified_placement=request.placement,
+            verified_placement_policy=request.placement_policy,
         )
         # Stable required identity assertions, rather than incidental stored
         # bytes, define reconciliation identity.  This permits an interrupted
@@ -836,7 +840,7 @@ class S3StorageAdapter:
         head: dict[str, Any],
         *,
         verified_identity_assertions: dict[str, str],
-        verified_placement: ObjectPlacement,
+        verified_placement_policy: ObjectPlacementPolicy,
     ) -> CompletedObjectReceipt:
         return CompletedObjectReceipt(
             object_path=object_path,
@@ -845,7 +849,7 @@ class S3StorageAdapter:
             stored_bytes=int(str(head["ContentLength"])),
             verified_content_type=_provider_content_type(head),
             verified_identity_assertions=verified_identity_assertions,
-            verified_placement=verified_placement,
+            verified_placement_policy=verified_placement_policy,
             completed_at=_provider_timestamp(head),
         )
 
@@ -855,7 +859,7 @@ class S3StorageAdapter:
         head: dict[str, Any],
         *,
         verified_identity_assertions: dict[str, str],
-        verified_placement: ObjectPlacement,
+        verified_placement_policy: ObjectPlacementPolicy,
     ) -> ImmutableObjectReceipt:
         stored_sha256 = _normalized_metadata(head).get(_STORED_SHA256_METADATA, "")
         if not _valid_sha256(stored_sha256):
@@ -868,7 +872,7 @@ class S3StorageAdapter:
             stored_sha256=stored_sha256,
             verified_content_type=_provider_content_type(head),
             verified_identity_assertions=verified_identity_assertions,
-            verified_placement=verified_placement,
+            verified_placement_policy=verified_placement_policy,
             completed_at=_provider_timestamp(head),
         )
 

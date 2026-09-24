@@ -138,7 +138,7 @@ class ArchiveRootPublisher:
                     "riverhog-plaintext-sha256": metadata_sha256,
                     "riverhog-volume-sequence": sequence_token,
                 },
-                placement="immediate",
+                placement_policy="immediate_default",
             )
             sealed_metadata.append(
                 SealedArchiveVolumeMetadata(
@@ -180,7 +180,7 @@ class ArchiveRootPublisher:
                 "riverhog-plaintext-sha256": plaintext_sha256,
                 "riverhog-tree-sha256": str(tree["sha256"]),
             },
-            placement="immediate",
+            placement_policy="immediate_default",
         )
         if receipt.object_path != object_path or receipt.stored_bytes <= 0:
             raise RuntimeError("immutable root store returned an inconsistent receipt")
@@ -231,7 +231,7 @@ class ArchiveRootPublisher:
                 "riverhog-plaintext-sha256": metadata_sha256,
                 "riverhog-volume-sequence": sequence_token,
             },
-            placement="immediate",
+            placement_policy="immediate_default",
         )
         return SealedArchiveVolumeMetadata(
             sequence=sequence,
@@ -276,7 +276,7 @@ class ArchiveRootPublisher:
                 "riverhog-plaintext-sha256": metadata_sha256,
                 "riverhog-volume-sequence": sequence_token,
             },
-            placement="immediate",
+            placement_policy="immediate_default",
         )
         return SealedArchiveVolumeMetadata(
             sequence=sequence,
@@ -318,7 +318,7 @@ class ArchiveRootPublisher:
                 "riverhog-plaintext-sha256": plaintext_sha256,
                 "riverhog-tree-sha256": authority.tree_sha256,
             },
-            placement="immediate",
+            placement_policy="immediate_default",
         )
         if receipt.object_path != object_path or receipt.stored_bytes <= 0:
             raise RuntimeError("immutable root store returned an inconsistent receipt")

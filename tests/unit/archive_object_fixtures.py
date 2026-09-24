@@ -95,7 +95,7 @@ from riverhog_provenance import (
     update_ordered_volume_commitment,
     validate_journal,
 )
-from riverhog_storage_adapter_protocol import ObjectPlacement
+from riverhog_storage_adapter_protocol import ObjectPlacementPolicy
 from sqlalchemy.orm import Session
 
 from tests.provenance_observer import native_provenance_observer
@@ -1058,10 +1058,10 @@ class MemoryArchiveStore:
         content: bytes,
         content_type: str,
         required_identity_assertions: dict[str, str],
-        placement: ObjectPlacement,
+        placement_policy: ObjectPlacementPolicy,
     ) -> ImmutableObjectReceipt:
         _ = content_type
-        assert placement == "immediate"
+        assert placement_policy == "immediate_default"
         existing = self.objects.get(object_path)
         if existing is not None:
             if self.object_metadata.get(object_path) != required_identity_assertions:

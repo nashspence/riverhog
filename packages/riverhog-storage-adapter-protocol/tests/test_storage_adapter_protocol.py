@@ -68,11 +68,14 @@ def test_exact_storage_byte_count_has_string_wire_and_schema() -> None:
         expected_bytes=2**64 + 1,
         content_type="application/octet-stream",
         required_identity_assertions={},
-        placement="archive",
+        placement_policy="archive_default",
     )
     encoded = request.model_dump_json().encode()
     assert WriteStartRequest.model_validate_json(encoded) == request
     schema = WriteStartRequest.model_json_schema()
+    policy_schema = schema["properties"]["placement_policy"]
+    assert policy_schema["enum"] == ["archive_default", "immediate_default"]
+    assert "does not establish archive membership or read readiness" in policy_schema["description"]
     validator = Draft202012Validator(schema)
     validator.validate(json.loads(encoded))
 
@@ -134,7 +137,7 @@ def test_identity_assertion_runtime_and_schema_share_exact_bounds() -> None:
         object_path="objects/item",
         content_type="application/octet-stream",
         required_identity_assertions=exact,
-        placement="immediate",
+        placement_policy="immediate_default",
         mode="create_only",
         stored_bytes=0,
         stored_sha256="a" * 64,
@@ -147,7 +150,7 @@ def test_identity_assertion_runtime_and_schema_share_exact_bounds() -> None:
             object_path="objects/item",
             content_type="application/octet-stream",
             required_identity_assertions={"x": exact["x"] + "a"},
-            placement="immediate",
+            placement_policy="immediate_default",
             mode="create_only",
             stored_bytes=0,
             stored_sha256="a" * 64,
@@ -157,7 +160,7 @@ def test_identity_assertion_runtime_and_schema_share_exact_bounds() -> None:
             object_path="objects/item",
             content_type="application/octet-stream",
             required_identity_assertions={f"k{index}": "v" for index in range(65)},
-            placement="immediate",
+            placement_policy="immediate_default",
             mode="create_only",
             stored_bytes=0,
             stored_sha256="a" * 64,
@@ -167,14 +170,14 @@ def test_identity_assertion_runtime_and_schema_share_exact_bounds() -> None:
 def test_validated_port_rejects_direct_response_and_stream_drift() -> None:
     head_request = ObjectHeadRequest(
         object=ObjectLocator(object_path="objects/item", revision="revision-1"),
-        expected_placement="immediate",
+        expected_placement_policy="immediate_default",
     )
     invalid_head = ObjectMetadataReceipt(
         object_path="objects/other",
         revision="revision-1",
         stored_bytes=1,
         observed_identity_assertions={},
-        verified_placement="immediate",
+        verified_placement_policy="immediate_default",
         completed_at="2026-08-25T00:00:00.000000000Z",
     )
     head_adapter = cast(
@@ -286,7 +289,7 @@ def test_write_completion_precondition_is_bounded_opaque_and_not_access_authorit
         expected_bytes=12,
         expected_content_type="application/vnd.riverhog.pack+age",
         required_identity_assertions={"Riverhog-Format": "riverhog-pack-volume/v1"},
-        expected_placement="archive",
+        expected_placement_policy="archive_default",
     )
 
     assert request.required_identity_assertions == {"riverhog-format": "riverhog-pack-volume/v1"}
@@ -314,7 +317,7 @@ def test_completed_write_attestation_binds_exact_identity_and_placement() -> Non
         expected_bytes=12,
         expected_content_type="application/vnd.riverhog.pack+age",
         required_identity_assertions={"riverhog-format": "riverhog-pack-volume/v1"},
-        expected_placement="archive",
+        expected_placement_policy="archive_default",
     )
     receipt = CompletedObjectReceipt(
         object_path=request.object_path,
@@ -323,7 +326,7 @@ def test_completed_write_attestation_binds_exact_identity_and_placement() -> Non
         stored_bytes=12,
         verified_content_type=request.expected_content_type,
         verified_identity_assertions=request.required_identity_assertions,
-        verified_placement=request.expected_placement,
+        verified_placement_policy=request.expected_placement_policy,
         completed_at="2026-08-25T00:00:00.000000000Z",
     )
 
@@ -340,7 +343,7 @@ def test_completed_write_attestation_binds_exact_identity_and_placement() -> Non
         expected_bytes=12,
         expected_content_type=request.expected_content_type,
         required_identity_assertions=request.required_identity_assertions,
-        expected_placement=request.expected_placement,
+        expected_placement_policy=request.expected_placement_policy,
     )
     validate_completed_write_response(completion, receipt)
     with pytest.raises(ValueError, match="receipt differs"):
@@ -365,10 +368,10 @@ def test_completed_write_attestation_binds_exact_identity_and_placement() -> Non
             request,
             receipt.model_copy(update={"verified_content_type": "application/octet-stream"}),
         )
-    with pytest.raises(ValueError, match="placement"):
+    with pytest.raises(ValueError, match="placement policy"):
         validate_completed_write_response(
             request,
-            receipt.model_copy(update={"verified_placement": "immediate"}),
+            receipt.model_copy(update={"verified_placement_policy": "immediate_default"}),
         )
 
 
@@ -377,7 +380,7 @@ def test_small_object_digest_does_not_apply_to_resumable_writes() -> None:
         object_path="README.md",
         content_type="text/markdown",
         required_identity_assertions={"archive-guidance-format": "encrypted-archive-readme-v1"},
-        placement="immediate",
+        placement_policy="immediate_default",
         mode="create_only",
         stored_bytes=0,
         stored_sha256="b" * 64,
@@ -396,7 +399,7 @@ def test_required_identity_assertions_is_bounded_canonical_and_opaque() -> None:
             "Riverhog-Plan-Sha256": "a" * 64,
             "riverhog-format": "riverhog-raw-volume/v1",
         },
-        placement="archive",
+        placement_policy="archive_default",
     )
 
     assert list(request.required_identity_assertions) == [
@@ -416,7 +419,7 @@ def test_required_identity_assertions_is_bounded_canonical_and_opaque() -> None:
             expected_bytes=1,
             content_type="application/octet-stream",
             required_identity_assertions={"identity": "x" * (16 * 1024 + 1)},
-            placement="archive",
+            placement_policy="archive_default",
         )
     with pytest.raises(ValidationError, match="adapter-private namespace"):
         WriteStartRequest(
@@ -426,7 +429,7 @@ def test_required_identity_assertions_is_bounded_canonical_and_opaque() -> None:
             required_identity_assertions={
                 f"{ADAPTER_PRIVATE_ASSERTION_PREFIX}private": "not-public"
             },
-            placement="archive",
+            placement_policy="archive_default",
         )
 
 
@@ -461,7 +464,7 @@ def test_write_completion_binds_the_immutable_session_length() -> None:
             expected_bytes=1,
             expected_content_type="application/octet-stream",
             required_identity_assertions={"identity": "exact"},
-            expected_placement="archive",
+            expected_placement_policy="archive_default",
         )
 
 
@@ -490,7 +493,7 @@ def test_revision_and_deletion_modes_preserve_versioned_and_unversioned_targets(
             object_path="metadata/head",
             content_type="application/octet-stream",
             required_identity_assertions={"identity": "exact"},
-            placement="immediate",
+            placement_policy="immediate_default",
             mode="create_only",
             expected_current_stored_sha256="a" * 64,
             stored_bytes=1,
@@ -515,7 +518,7 @@ def test_object_metadata_keeps_large_object_digest_optional() -> None:
         object_path="archives/id/volumes/pack.tar.age",
         stored_bytes=100,
         observed_identity_assertions={"riverhog-format": "riverhog-pack-volume/v1"},
-        verified_placement="archive",
+        verified_placement_policy="archive_default",
         completed_at="2026-08-21T00:00:00.000000000Z",
     )
 
@@ -605,7 +608,7 @@ def test_response_validators_bind_exact_requests_and_closed_readiness_states() -
         expected_bytes=1,
         content_type="application/octet-stream",
         required_identity_assertions={"riverhog-format": "fixture/v1"},
-        placement="archive",
+        placement_policy="archive_default",
     )
     session = WriteSession(
         object_path=start.object_path,
@@ -633,14 +636,14 @@ def test_response_validators_bind_exact_requests_and_closed_readiness_states() -
 
     head_request = ObjectHeadRequest(
         object=ObjectLocator(object_path=start.object_path, revision="revision-1"),
-        expected_placement="archive",
+        expected_placement_policy="archive_default",
     )
     metadata = ObjectMetadataReceipt(
         object_path=start.object_path,
         revision="revision-1",
         stored_bytes=1,
         observed_identity_assertions=start.required_identity_assertions,
-        verified_placement="archive",
+        verified_placement_policy="archive_default",
         completed_at="2026-08-25T00:00:00.000000000Z",
     )
     validate_object_metadata_response(head_request, metadata)
@@ -689,7 +692,7 @@ def test_listed_write_segments_allow_sparse_restart_state_but_completion_does_no
             expected_bytes=1,
             expected_content_type="application/octet-stream",
             required_identity_assertions={"identity": "exact"},
-            expected_placement="archive",
+            expected_placement_policy="archive_default",
         )
     with pytest.raises(ValueError, match="count limit"):
         validate_write_segment_page_response(
@@ -746,7 +749,7 @@ def test_segment_constraints_are_shared_by_listing_and_completion() -> None:
         expected_bytes=5,
         expected_content_type="application/octet-stream",
         required_identity_assertions={},
-        expected_placement="archive",
+        expected_placement_policy="archive_default",
     )
     too_many = completion.model_copy(
         update={"completion": completion.completion.model_copy(update={"segment_count": 3})}
@@ -760,7 +763,7 @@ def test_small_write_and_head_success_bind_exact_storage_predicates() -> None:
         object_path="objects/item",
         content_type="application/octet-stream",
         required_identity_assertions={"identity": "exact"},
-        placement="immediate",
+        placement_policy="immediate_default",
         mode="create_only",
         stored_bytes=1,
         stored_sha256="a" * 64,
@@ -771,7 +774,7 @@ def test_small_write_and_head_success_bind_exact_storage_predicates() -> None:
         stored_sha256=request.stored_sha256,
         verified_content_type=request.content_type,
         verified_identity_assertions=request.required_identity_assertions,
-        verified_placement=request.placement,
+        verified_placement_policy=request.placement_policy,
         completed_at="2026-08-25T00:00:00.000000000Z",
     )
 
@@ -779,7 +782,7 @@ def test_small_write_and_head_success_bind_exact_storage_predicates() -> None:
     with pytest.raises(ValueError, match="immutable-object receipt"):
         validate_small_object_response(
             request,
-            receipt.model_copy(update={"verified_placement": "archive"}),
+            receipt.model_copy(update={"verified_placement_policy": "archive_default"}),
         )
     with pytest.raises(ValueError, match="immutable-object receipt"):
         validate_small_object_response(
@@ -794,16 +797,16 @@ def test_small_write_and_head_success_bind_exact_storage_predicates() -> None:
 
     head = ObjectHeadRequest(
         object=ObjectLocator(object_path=request.object_path),
-        expected_placement="immediate",
+        expected_placement_policy="immediate_default",
     )
     metadata = ObjectMetadataReceipt(
         object_path=request.object_path,
         stored_bytes=1,
         observed_identity_assertions=request.required_identity_assertions,
-        verified_placement="archive",
+        verified_placement_policy="archive_default",
         completed_at="2026-08-25T00:00:00.000000000Z",
     )
-    with pytest.raises(ValueError, match="metadata placement"):
+    with pytest.raises(ValueError, match="metadata placement policy"):
         validate_object_metadata_response(head, metadata)
 
 

@@ -49,7 +49,7 @@ def _start(path: str, size: int):
         expected_bytes=size,
         content_type="application/octet-stream",
         required_identity_assertions={"riverhog-object": path},
-        placement="immediate",
+        placement_policy="immediate_default",
     )
 
 
@@ -123,7 +123,7 @@ def test_resumable_write_survives_restart_and_supports_exact_reads(tmp_path: Pat
                 expected_bytes=len(payload),
                 expected_content_type=request.content_type,
                 required_identity_assertions=request.required_identity_assertions,
-                expected_placement="immediate",
+                expected_placement_policy="immediate_default",
             )
         )
         assert receipt.stored_bytes == len(payload)
@@ -136,7 +136,7 @@ def test_resumable_write_survives_restart_and_supports_exact_reads(tmp_path: Pat
                 expected_bytes=len(payload),
                 expected_content_type=request.content_type,
                 required_identity_assertions=request.required_identity_assertions,
-                expected_placement="immediate",
+                expected_placement_policy="immediate_default",
             )
         )
         assert recovered == receipt
@@ -144,7 +144,7 @@ def test_resumable_write_survives_restart_and_supports_exact_reads(tmp_path: Pat
         head = adapter.head_object(
             ObjectHeadRequest(
                 object=ObjectLocator(object_path=request.object_path),
-                expected_placement="immediate",
+                expected_placement_policy="immediate_default",
             )
         )
         assert head is not None
@@ -216,7 +216,7 @@ def test_segment_traversal_is_bounded_exact_and_restartable(tmp_path: Path) -> N
                 expected_bytes=expected_bytes,
                 expected_content_type=request.content_type,
                 required_identity_assertions=request.required_identity_assertions,
-                expected_placement=request.placement,
+                expected_placement_policy=request.placement_policy,
             )
         )
         assert completed.stored_bytes == expected_bytes
@@ -274,7 +274,7 @@ def test_small_object_create_replace_revision_and_delete(tmp_path: Path) -> None
             object_path="metadata/root.json",
             content_type="application/json",
             required_identity_assertions={"authority": "first"},
-            placement="immediate",
+            placement_policy="immediate_default",
             mode="create_only",
             stored_bytes=len(first_payload),
             stored_sha256=hashlib.sha256(first_payload).hexdigest(),
@@ -330,7 +330,7 @@ def test_small_object_create_replace_revision_and_delete(tmp_path: Path) -> None
                     object_path=first.object_path,
                     revision=first.revision,
                 ),
-                expected_placement="immediate",
+                expected_placement_policy="immediate_default",
             )
         )
         assert old is not None and old.stored_sha256 == first.stored_sha256
@@ -351,7 +351,7 @@ def test_small_object_create_replace_revision_and_delete(tmp_path: Path) -> None
                         object_path=first.object_path,
                         revision=first.revision,
                     ),
-                    expected_placement="immediate",
+                    expected_placement_policy="immediate_default",
                 )
             )
             is None
@@ -360,7 +360,7 @@ def test_small_object_create_replace_revision_and_delete(tmp_path: Path) -> None
             adapter.head_object(
                 ObjectHeadRequest(
                     object=ObjectLocator(object_path=second.object_path),
-                    expected_placement="immediate",
+                    expected_placement_policy="immediate_default",
                 )
             )
             is not None
@@ -376,7 +376,7 @@ def test_fenced_current_removal_then_exact_reclamation_removes_payload(
         object_path="archives/collection/tags/nodes/obsolete.age",
         content_type="application/octet-stream",
         required_identity_assertions={"authority": "tag-node"},
-        placement="immediate",
+        placement_policy="immediate_default",
         mode="create_only",
         stored_bytes=len(payload),
         stored_sha256=hashlib.sha256(payload).hexdigest(),
@@ -394,7 +394,7 @@ def test_fenced_current_removal_then_exact_reclamation_removes_payload(
             adapter.head_object(
                 ObjectHeadRequest(
                     object=ObjectLocator(object_path=receipt.object_path),
-                    expected_placement="immediate",
+                    expected_placement_policy="immediate_default",
                 )
             )
             is None
@@ -406,7 +406,7 @@ def test_fenced_current_removal_then_exact_reclamation_removes_payload(
                         object_path=receipt.object_path,
                         revision=receipt.revision,
                     ),
-                    expected_placement="immediate",
+                    expected_placement_policy="immediate_default",
                 )
             )
             is not None
@@ -429,7 +429,7 @@ def test_fenced_current_removal_then_exact_reclamation_removes_payload(
                         object_path=receipt.object_path,
                         revision=receipt.revision,
                     ),
-                    expected_placement="immediate",
+                    expected_placement_policy="immediate_default",
                 )
             )
             is None
@@ -446,7 +446,7 @@ def test_delete_prefix_and_immediate_read_status(tmp_path: Path) -> None:
                     object_path=path,
                     content_type="application/octet-stream",
                     required_identity_assertions={"path": path},
-                    placement="immediate",
+                    placement_policy="immediate_default",
                     mode="create_only",
                     stored_bytes=len(payload),
                     stored_sha256=hashlib.sha256(payload).hexdigest(),
@@ -458,7 +458,7 @@ def test_delete_prefix_and_immediate_read_status(tmp_path: Path) -> None:
             adapter.head_object(
                 ObjectHeadRequest(
                     object=ObjectLocator(object_path="other/c"),
-                    expected_placement="immediate",
+                    expected_placement_policy="immediate_default",
                 )
             )
             is not None
@@ -538,7 +538,7 @@ def test_segment_replay_and_completion_replay_are_exact(tmp_path: Path) -> None:
             expected_bytes=len(content),
             expected_content_type=request.content_type,
             required_identity_assertions=request.required_identity_assertions,
-            expected_placement=request.placement,
+            expected_placement_policy=request.placement_policy,
         )
         altered_completion = completion.model_copy(
             update={
@@ -584,7 +584,7 @@ def test_completion_does_not_reread_the_completed_payload(
                 expected_bytes=len(content),
                 expected_content_type=request.content_type,
                 required_identity_assertions=request.required_identity_assertions,
-                expected_placement=request.placement,
+                expected_placement_policy=request.placement_policy,
             )
         )
         assert receipt.entity_token == receipt.revision
@@ -616,7 +616,7 @@ def test_free_space_rejection_happens_before_small_payload_is_consumed(tmp_path:
             object_path="small",
             content_type="application/octet-stream",
             required_identity_assertions={"kind": "small"},
-            placement="immediate",
+            placement_policy="immediate_default",
             mode="create_only",
             stored_bytes=1,
             stored_sha256=hashlib.sha256(b"x").hexdigest(),
@@ -635,7 +635,7 @@ def test_all_versions_delete_reclaims_payload(tmp_path: Path) -> None:
             object_path="first",
             content_type="application/octet-stream",
             required_identity_assertions={"kind": "first"},
-            placement="immediate",
+            placement_policy="immediate_default",
             mode="create_only",
             stored_bytes=len(payload),
             stored_sha256=hashlib.sha256(payload).hexdigest(),
@@ -657,7 +657,7 @@ def test_zero_byte_small_object_round_trips(tmp_path: Path) -> None:
         object_path="empty",
         content_type="application/octet-stream",
         required_identity_assertions={"kind": "empty"},
-        placement="immediate",
+        placement_policy="immediate_default",
         mode="create_only",
         stored_bytes=0,
         stored_sha256=empty_sha256,
@@ -700,7 +700,7 @@ def test_out_of_order_segments_complete_in_logical_number_order(tmp_path: Path) 
                 expected_bytes=request.expected_bytes,
                 expected_content_type=request.content_type,
                 required_identity_assertions=request.required_identity_assertions,
-                expected_placement=request.placement,
+                expected_placement_policy=request.placement_policy,
             )
         )
         with adapter.read_object(
@@ -760,7 +760,7 @@ def test_physical_allocation_failure_maps_to_507_before_payload(
             object_path="small-no-space",
             content_type="application/octet-stream",
             required_identity_assertions={"kind": "small"},
-            placement="immediate",
+            placement_policy="immediate_default",
             mode="create_only",
             stored_bytes=1,
             stored_sha256=hashlib.sha256(b"x").hexdigest(),
@@ -789,7 +789,7 @@ def test_streamed_read_holds_deletion_until_closed(tmp_path: Path) -> None:
         object_path="held-read",
         content_type="application/octet-stream",
         required_identity_assertions={"kind": "held-read"},
-        placement="immediate",
+        placement_policy="immediate_default",
         mode="create_only",
         stored_bytes=len(payload),
         stored_sha256=hashlib.sha256(payload).hexdigest(),
@@ -822,7 +822,7 @@ def test_streamed_read_holds_deletion_until_closed(tmp_path: Path) -> None:
             adapter.head_object(
                 ObjectHeadRequest(
                     object=ObjectLocator(object_path=request.object_path),
-                    expected_placement="immediate",
+                    expected_placement_policy="immediate_default",
                 )
             )
             is None
@@ -846,7 +846,7 @@ def test_stale_completion_does_not_abort_a_newer_active_session(tmp_path: Path) 
             expected_bytes=len(payload),
             expected_content_type=first_request.content_type,
             required_identity_assertions=first_request.required_identity_assertions,
-            expected_placement=first_request.placement,
+            expected_placement_policy=first_request.placement_policy,
         )
         first_receipt = adapter.complete_write(first_completion)
 
@@ -877,7 +877,7 @@ def test_restart_finalizes_revision_installed_before_current_pointer(tmp_path: P
         expected_bytes=len(payload),
         expected_content_type=request.content_type,
         required_identity_assertions=request.required_identity_assertions,
-        expected_placement=request.placement,
+        expected_placement_policy=request.placement_policy,
     )
     original_write_text_atomic = adapter._write_text_atomic
 
@@ -900,7 +900,7 @@ def test_restart_finalizes_revision_installed_before_current_pointer(tmp_path: P
                 expected_bytes=len(payload),
                 expected_content_type=request.content_type,
                 required_identity_assertions=request.required_identity_assertions,
-                expected_placement=request.placement,
+                expected_placement_policy=request.placement_policy,
             )
         )
         assert completed is not None

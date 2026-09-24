@@ -269,7 +269,7 @@ def _small_request(
         object_path="archives/collection/manifest.age",
         content_type=content_type,
         required_identity_assertions={"riverhog-logical-identity": identity},
-        placement="immediate",
+        placement_policy="immediate_default",
         mode="create_only",
         stored_bytes=len(content),
         stored_sha256=hashlib.sha256(content).hexdigest(),
@@ -292,7 +292,7 @@ def test_small_object_retry_uses_exact_identity_without_rereading_ciphertext() -
     assert first.stored_sha256 == hashlib.sha256(first_content).hexdigest()
     assert first.verified_content_type == "application/octet-stream"
     assert first.verified_identity_assertions == {"riverhog-logical-identity": "logical/v1"}
-    assert first.verified_placement == "immediate"
+    assert first.verified_placement_policy == "immediate_default"
 
 
 def test_small_object_rejects_a_changed_logical_identity() -> None:
@@ -417,7 +417,7 @@ def test_resumable_write_reconciles_segments_and_lost_completion() -> None:
         expected_bytes=adapter.descriptor().minimum_nonfinal_segment_bytes + 6,
         content_type="application/octet-stream",
         required_identity_assertions={"riverhog-plan-sha256": "a" * 64},
-        placement="archive",
+        placement_policy="archive_default",
     )
     session = adapter.begin_write(create)
     first_content = b"f" * adapter.descriptor().minimum_nonfinal_segment_bytes
@@ -464,7 +464,7 @@ def test_resumable_write_reconciles_segments_and_lost_completion() -> None:
         expected_bytes=len(first_content) + 6,
         expected_content_type=create.content_type,
         required_identity_assertions=create.required_identity_assertions,
-        expected_placement=create.placement,
+        expected_placement_policy=create.placement_policy,
     )
     altered_completion = completion.model_copy(
         update={
@@ -490,7 +490,7 @@ def test_resumable_write_reconciles_segments_and_lost_completion() -> None:
                 expected_bytes=first.stored_bytes,
                 expected_content_type=create.content_type,
                 required_identity_assertions=create.required_identity_assertions,
-                expected_placement=create.placement,
+                expected_placement_policy=create.placement_policy,
             )
         )
         == first
@@ -499,7 +499,7 @@ def test_resumable_write_reconciles_segments_and_lost_completion() -> None:
     assert head["StorageClass"] == "DEEP_ARCHIVE"
     assert first.verified_content_type == create.content_type
     assert head["Metadata"] == {
-        "riverhog-adapter-placement": "archive",
+        "riverhog-adapter-placement-policy": "archive_default",
         "riverhog-plan-sha256": "a" * 64,
     }
     with pytest.raises(StorageAdapterRejection) as raised:
@@ -509,7 +509,7 @@ def test_resumable_write_reconciles_segments_and_lost_completion() -> None:
                 expected_bytes=first.stored_bytes,
                 expected_content_type="application/vnd.example.other",
                 required_identity_assertions=create.required_identity_assertions,
-                expected_placement=create.placement,
+                expected_placement_policy=create.placement_policy,
             )
         )
     assert raised.value.code == "identity_conflict"
@@ -524,7 +524,7 @@ def test_resumable_write_lists_sparse_provider_state_after_restart() -> None:
             expected_bytes=adapter.descriptor().minimum_nonfinal_segment_bytes,
             content_type="application/octet-stream",
             required_identity_assertions={"riverhog-plan-sha256": "a" * 64},
-            placement="archive",
+            placement_policy="archive_default",
         )
     )
     persisted_session = WriteSession.model_validate_json(session.model_dump_json())
@@ -556,7 +556,7 @@ def test_identity_assertions_are_inert_while_placement_remains_explicit() -> Non
             expected_bytes=1,
             content_type="application/octet-stream",
             required_identity_assertions=identity,
-            placement="immediate",
+            placement_policy="immediate_default",
         )
     )
     archive = adapter.begin_write(
@@ -565,18 +565,18 @@ def test_identity_assertions_are_inert_while_placement_remains_explicit() -> Non
             expected_bytes=1,
             content_type="application/octet-stream",
             required_identity_assertions=identity,
-            placement="archive",
+            placement_policy="archive_default",
         )
     )
 
     immediate_request = client.uploads[immediate.write_token]["request"]
     archive_request = client.uploads[archive.write_token]["request"]
     assert immediate_request["Metadata"] == {
-        "riverhog-adapter-placement": "immediate",
+        "riverhog-adapter-placement-policy": "immediate_default",
         **identity,
     }
     assert archive_request["Metadata"] == {
-        "riverhog-adapter-placement": "archive",
+        "riverhog-adapter-placement-policy": "archive_default",
         **identity,
     }
     assert "StorageClass" not in immediate_request
@@ -628,13 +628,13 @@ def test_metadata_head_hides_adapter_markers_but_keeps_opaque_identity() -> None
                 object_path="archives/collection/manifest.age",
                 revision=receipt.revision,
             ),
-            expected_placement="immediate",
+            expected_placement_policy="immediate_default",
         )
     )
 
     assert head is not None
     assert head.observed_identity_assertions == {"riverhog-logical-identity": "logical/v1"}
-    assert head.verified_placement == "immediate"
+    assert head.verified_placement_policy == "immediate_default"
     assert head.stored_sha256 == hashlib.sha256(content).hexdigest()
 
 
@@ -717,11 +717,25 @@ def test_read_preparation_mechanics_remain_adapter_private() -> None:
             self.calls.append(("cleanup", kwargs["objects"]))
 
     preparation = Preparation()
+    client = _FakeS3Client()
     adapter = S3StorageAdapter(
-        _FakeS3Client(),
+        client,
         _config(read_mode="restore_required"),
         read_preparation=preparation,
     )
+    placement_session = adapter.begin_write(
+        WriteStartRequest(
+            object_path="archives/collection/immediate-policy.age",
+            expected_bytes=1,
+            content_type="application/octet-stream",
+            required_identity_assertions={},
+            placement_policy="immediate_default",
+        )
+    )
+    provider_request = client.uploads[placement_session.write_token]["request"]
+    assert provider_request["Metadata"]["riverhog-adapter-placement-policy"] == "immediate_default"
+    assert "StorageClass" not in provider_request
+    assert adapter.descriptor().read_mode == "restore_required"
     request = ReadPreparationRequest(
         objects=(ObjectLocator(object_path="archives/collection/volume.age", revision="v1"),)
     )
@@ -750,7 +764,7 @@ def test_lost_begin_response_reconciles_the_exact_nonterminal_write() -> None:
             expected_bytes=1,
             content_type="application/octet-stream",
             required_identity_assertions={"riverhog-plan-sha256": "a" * 64},
-            placement="archive",
+            placement_policy="archive_default",
         )
     )
 
@@ -761,7 +775,7 @@ def test_lost_begin_response_reconciles_the_exact_nonterminal_write() -> None:
             expected_bytes=1,
             content_type="application/octet-stream",
             required_identity_assertions={"riverhog-plan-sha256": "a" * 64},
-            placement="archive",
+            placement_policy="archive_default",
         )
     )
 

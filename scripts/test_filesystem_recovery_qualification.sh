@@ -127,7 +127,7 @@ docker run --rm \
 from a_riverhog_filesystem_store import FilesystemStorageAdapter, FilesystemStorageAdapterConfig
 from riverhog_storage_adapter_protocol import WriteStartRequest
 with FilesystemStorageAdapter(FilesystemStorageAdapterConfig(root=Path("/var/lib/riverhog-filesystem"), minimum_free_bytes=0)) as adapter:
-    adapter.begin_write(WriteStartRequest(object_path="archives/incomplete/payload.age", expected_bytes=65536, content_type="application/octet-stream", required_identity_assertions={"qualification":"incomplete"}, placement="archive"))'
+    adapter.begin_write(WriteStartRequest(object_path="archives/incomplete/payload.age", expected_bytes=65536, content_type="application/octet-stream", required_identity_assertions={"qualification":"incomplete"}, placement_policy="archive_default"))'
 
 chmod 0777 "${proof_root}"
 install -d -m 0777 \

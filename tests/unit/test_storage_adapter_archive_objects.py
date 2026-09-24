@@ -122,7 +122,7 @@ class _Adapter:
         self,
         request: WriteCompleteRequest,
     ) -> CompletedObjectReceipt:
-        assert request.expected_placement == "archive"
+        assert request.expected_placement_policy == "archive_default"
         assert request.required_identity_assertions == {"riverhog-format": "volume/v1"}
         return self._completed(request)
 
@@ -130,7 +130,7 @@ class _Adapter:
         self,
         request: CompletedWriteLookupRequest,
     ) -> CompletedObjectReceipt | None:
-        assert request.expected_placement == "archive"
+        assert request.expected_placement_policy == "archive_default"
         return self._completed(request)
 
     def abort_write(self, session: WriteSession) -> None:
@@ -151,7 +151,7 @@ class _Adapter:
             stored_sha256=hashlib.sha256(content).hexdigest(),
             verified_content_type=request.content_type,
             verified_identity_assertions=request.required_identity_assertions,
-            verified_placement=request.placement,
+            verified_placement_policy=request.placement_policy,
             completed_at="2026-08-21T00:00:00.000000000Z",
         )
 
@@ -184,7 +184,7 @@ class _Adapter:
             stored_bytes=11,
             verified_content_type=request.expected_content_type,
             verified_identity_assertions=request.required_identity_assertions,
-            verified_placement=request.expected_placement,
+            verified_placement_policy=request.expected_placement_policy,
             completed_at="2026-08-21T00:00:00.000000000Z",
         )
 
@@ -212,7 +212,7 @@ def test_existing_object_ports_preserve_adapter_receipts_and_generic_placement()
         expected_metadata={"riverhog-format": "volume/v1"},
     )
 
-    assert adapter.created is not None and adapter.created.placement == "archive"
+    assert adapter.created is not None and adapter.created.placement_policy == "archive_default"
     assert page.segments == segments
     assert completed.revision == "version-volume"
     assert completed.entity_token == "entity-volume"
@@ -233,9 +233,9 @@ def test_existing_object_ports_preserve_adapter_receipts_and_generic_placement()
         content=content,
         content_type="application/octet-stream",
         required_identity_assertions={"riverhog-format": "manifest/v1"},
-        placement="immediate",
+        placement_policy="immediate_default",
     )
-    assert adapter.small is not None and adapter.small.placement == "immediate"
+    assert adapter.small is not None and adapter.small.placement_policy == "immediate_default"
     assert receipt.revision == "version-small"
     assert receipt.stored_sha256 == hashlib.sha256(content).hexdigest()
 
@@ -285,7 +285,9 @@ def test_completed_receipts_must_attest_the_exact_requested_storage_predicates()
             self,
             request: WriteCompleteRequest,
         ) -> CompletedObjectReceipt:
-            return self._completed(request).model_copy(update={"verified_placement": "immediate"})
+            return self._completed(request).model_copy(
+                update={"verified_placement_policy": "immediate_default"}
+            )
 
     store = StorageAdapterArchiveResumableObjectStore(
         _FalseAttestationAdapter()  # type: ignore[arg-type]
@@ -300,7 +302,7 @@ def test_completed_receipts_must_attest_the_exact_requested_storage_predicates()
     page = store.list_segments(session=session, cursor=CoreWriteSegmentCursor())
     assert page.segments == (segment,)
     assert page.completion is not None
-    with pytest.raises(ValueError, match="placement"):
+    with pytest.raises(ValueError, match="placement policy"):
         store.complete_write(
             session=session,
             completion=page.completion,

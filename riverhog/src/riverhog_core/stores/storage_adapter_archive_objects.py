@@ -6,7 +6,7 @@ from collections.abc import Iterator
 from riverhog_storage_adapter_protocol import (
     CompletedWriteLookupRequest,
     ObjectLocator,
-    ObjectPlacement,
+    ObjectPlacementPolicy,
     ObjectReadRequest,
     SmallObjectWriteRequest,
     StorageAdapterPort,
@@ -46,10 +46,10 @@ class StorageAdapterArchiveResumableObjectStore:
         self,
         adapter: StorageAdapterPort,
         *,
-        placement: ObjectPlacement = "archive",
+        placement_policy: ObjectPlacementPolicy = "archive_default",
     ) -> None:
         self._adapter = validated_storage_adapter(adapter)
-        self._placement = placement
+        self._placement_policy = placement_policy
 
     def write_constraints(self) -> ResumableWriteConstraints:
         descriptor = self._adapter.descriptor()
@@ -73,7 +73,7 @@ class StorageAdapterArchiveResumableObjectStore:
                 expected_bytes=expected_bytes,
                 content_type=content_type,
                 required_identity_assertions=metadata,
-                placement=self._placement,
+                placement_policy=self._placement_policy,
             )
         )
         return _write_session(session)
@@ -136,7 +136,7 @@ class StorageAdapterArchiveResumableObjectStore:
             expected_bytes=expected_bytes,
             expected_content_type=expected_content_type,
             required_identity_assertions=expected_metadata,
-            expected_placement=self._placement,
+            expected_placement_policy=self._placement_policy,
         )
         try:
             receipt = self._adapter.complete_write(request)
@@ -164,7 +164,7 @@ class StorageAdapterArchiveResumableObjectStore:
             expected_bytes=expected_bytes,
             expected_content_type=expected_content_type,
             required_identity_assertions=expected_metadata,
-            expected_placement=self._placement,
+            expected_placement_policy=self._placement_policy,
         )
         try:
             receipt = self._adapter.find_completed_write(request)
@@ -198,7 +198,7 @@ class StorageAdapterImmutableArchiveObjectStore:
         content: bytes,
         content_type: str,
         required_identity_assertions: dict[str, str],
-        placement: ObjectPlacement,
+        placement_policy: ObjectPlacementPolicy,
     ) -> ImmutableObjectReceipt:
         if not object_path or not content or not content_type:
             raise ValueError("immutable archive object identity and content are required")
@@ -208,7 +208,7 @@ class StorageAdapterImmutableArchiveObjectStore:
                     object_path=object_path,
                     content_type=content_type,
                     required_identity_assertions=required_identity_assertions,
-                    placement=placement,
+                    placement_policy=placement_policy,
                     mode="create_only",
                     stored_bytes=len(content),
                     stored_sha256=hashlib.sha256(content).hexdigest(),

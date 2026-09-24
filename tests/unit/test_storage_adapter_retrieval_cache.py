@@ -14,7 +14,7 @@ from riverhog_storage_adapter_protocol import (
     DeleteObjectRequest,
     ImmutableObjectReceipt,
     ObjectLocator,
-    ObjectPlacement,
+    ObjectPlacementPolicy,
     ObjectReadReceipt,
     ObjectReadRequest,
     ObjectReadStream,
@@ -161,7 +161,7 @@ class _Adapter:
             request.session.object_path,
             content_type=request.expected_content_type,
             identity_assertions=request.required_identity_assertions,
-            placement=request.expected_placement,
+            placement_policy=request.expected_placement_policy,
         )
 
     def find_completed_write(
@@ -174,7 +174,7 @@ class _Adapter:
             request.object_path,
             content_type=request.expected_content_type,
             identity_assertions=request.required_identity_assertions,
-            placement=request.expected_placement,
+            placement_policy=request.expected_placement_policy,
         )
 
     def abort_write(self, session: AdapterWriteSession) -> None:
@@ -185,7 +185,7 @@ class _Adapter:
         request: SmallObjectWriteRequest,
         content: bytes,
     ) -> ImmutableObjectReceipt:
-        assert request.placement == "immediate"
+        assert request.placement_policy == "immediate_default"
         assert len(content) == request.stored_bytes
         assert hashlib.sha256(content).hexdigest() == request.stored_sha256
         self.objects[request.object_path] = content
@@ -198,7 +198,7 @@ class _Adapter:
             stored_sha256=request.stored_sha256,
             verified_content_type=request.content_type,
             verified_identity_assertions=request.required_identity_assertions,
-            verified_placement=request.placement,
+            verified_placement_policy=request.placement_policy,
             completed_at="2026-08-21T00:00:00.000000000Z",
         )
 
@@ -231,7 +231,7 @@ class _Adapter:
         *,
         content_type: str,
         identity_assertions: dict[str, str],
-        placement: ObjectPlacement,
+        placement_policy: ObjectPlacementPolicy,
     ) -> AdapterCompletedObjectReceipt:
         return AdapterCompletedObjectReceipt(
             object_path=object_path,
@@ -240,7 +240,7 @@ class _Adapter:
             stored_bytes=len(self.objects[object_path]),
             verified_content_type=content_type,
             verified_identity_assertions=identity_assertions,
-            verified_placement=placement,
+            verified_placement_policy=placement_policy,
             completed_at="2026-08-21T00:00:00.000000000Z",
         )
 
@@ -288,7 +288,7 @@ def test_cache_hydration_preserves_bounded_overlapping_uploads_without_reread(
     assert adapter.objects[receipt.object_path] == content
     assert adapter.reads == 0
     assert receipt.stored_sha256 == hashlib.sha256(content).hexdigest()
-    assert adapter.created is not None and adapter.created.placement == "immediate"
+    assert adapter.created is not None and adapter.created.placement_policy == "immediate_default"
     assert "operation=retrieval_cache_hydration" in caplog.messages[-1]
     assert "raw-000001" not in caplog.messages[-1]
 
@@ -342,7 +342,7 @@ def test_cache_mirror_uses_deterministic_immediate_object_and_exact_deletion() -
     )
 
     assert session.object_path.startswith("objects/")
-    assert adapter.created is not None and adapter.created.placement == "immediate"
+    assert adapter.created is not None and adapter.created.placement_policy == "immediate_default"
     assert adapter.created.required_identity_assertions["riverhog-source-store"] == "deep"
 
     adapter.objects[session.object_path] = b"cached"

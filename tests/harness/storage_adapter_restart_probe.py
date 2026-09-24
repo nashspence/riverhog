@@ -70,7 +70,7 @@ def prepare(path: Path) -> None:
         expected_bytes=expected_bytes,
         content_type="application/octet-stream",
         required_identity_assertions={"riverhog-conformance": "restart-continuation/v1"},
-        placement="immediate",
+        placement_policy="immediate_default",
     )
     abort_request = request.model_copy(update={"object_path": f"{prefix}/aborted.bin"})
     active_sessions: list[WriteSession] = []
@@ -156,7 +156,7 @@ def resume(path: Path) -> dict[str, object]:
             expected_bytes=first_segment_bytes + len(_SECOND_SEGMENT),
             expected_content_type=request.content_type,
             required_identity_assertions=request.required_identity_assertions,
-            expected_placement=request.placement,
+            expected_placement_policy=request.placement_policy,
         )
         completed = client.complete_write(completion)
         validate_completed_write_response(completion, completed)
@@ -166,7 +166,7 @@ def resume(path: Path) -> dict[str, object]:
                 expected_bytes=completion.expected_bytes,
                 expected_content_type=request.content_type,
                 required_identity_assertions=request.required_identity_assertions,
-                expected_placement=request.placement,
+                expected_placement_policy=request.placement_policy,
             )
         )
         if recovered != completed:
