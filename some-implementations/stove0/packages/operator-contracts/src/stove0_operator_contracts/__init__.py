@@ -6,7 +6,7 @@ from collections.abc import Mapping, Sequence
 from typing import Annotated, Any, Literal, Self
 
 from http_api_contracts import BrowsePageToken, CanonicalVisibleText
-from lifecycle_events import CloudEvent, cloud_event
+from lifecycle_events import LifecycleEvent, lifecycle_event
 from pydantic import (
     BaseModel,
     ConfigDict,
@@ -490,7 +490,6 @@ class SchedulerRunRequest(OperatorModel):
     work_limit: int = Field(default=25, ge=1, le=100)
 
 
-STOVE0_EVENT_SOURCE: Literal["urn:riverhog:stove0"] = "urn:riverhog:stove0"
 WORK_CREATED: Literal["io.riverhog.stove0.work.created"] = "io.riverhog.stove0.work.created"
 WORK_UPDATED: Literal["io.riverhog.stove0.work.updated"] = "io.riverhog.stove0.work.updated"
 BRANCH_SET_ADMITTED: Literal["io.riverhog.stove0.branch-set.admitted"] = (
@@ -577,53 +576,52 @@ class EvaluationUpdatedEventData(EvaluationCreatedEventData):
     revision: int = Field(ge=2)
 
 
-class Stove0CloudEvent(CloudEvent):
+class Stove0Event(LifecycleEvent):
     model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
 
-    source: Literal["urn:riverhog:stove0"]
     subject: str = Field(min_length=1)
-    data: Any
+    payload: Any
 
     @model_validator(mode="after")
     def exact_subject(self) -> Self:
         identity = (
-            self.data.evaluation_id
-            if isinstance(self.data, EvaluationCreatedEventData)
-            else self.data.work_id
+            self.payload.evaluation_id
+            if isinstance(self.payload, EvaluationCreatedEventData)
+            else self.payload.work_id
         )
         if self.subject != identity:
             raise ValueError("Stove0 event subject differs from its data identity")
         return self
 
 
-class WorkCreatedEvent(Stove0CloudEvent):
+class WorkCreatedEvent(Stove0Event):
     type: Literal["io.riverhog.stove0.work.created"]
-    data: WorkCreatedEventData
+    payload: WorkCreatedEventData
 
 
-class WorkUpdatedEvent(Stove0CloudEvent):
+class WorkUpdatedEvent(Stove0Event):
     type: Literal["io.riverhog.stove0.work.updated"]
-    data: WorkUpdatedEventData
+    payload: WorkUpdatedEventData
 
 
-class BranchSetAdmittedEvent(Stove0CloudEvent):
+class BranchSetAdmittedEvent(Stove0Event):
     type: Literal["io.riverhog.stove0.branch-set.admitted"]
-    data: BranchSetAdmittedEventData
+    payload: BranchSetAdmittedEventData
 
 
-class JoinAdmittedEvent(Stove0CloudEvent):
+class JoinAdmittedEvent(Stove0Event):
     type: Literal["io.riverhog.stove0.join.admitted"]
-    data: JoinAdmittedEventData
+    payload: JoinAdmittedEventData
 
 
-class EvaluationCreatedEvent(Stove0CloudEvent):
+class EvaluationCreatedEvent(Stove0Event):
     type: Literal["io.riverhog.stove0.evaluation.created"]
-    data: EvaluationCreatedEventData
+    payload: EvaluationCreatedEventData
 
 
-class EvaluationUpdatedEvent(Stove0CloudEvent):
+class EvaluationUpdatedEvent(Stove0Event):
     type: Literal["io.riverhog.stove0.evaluation.updated"]
-    data: EvaluationUpdatedEventData
+    payload: EvaluationUpdatedEventData
 
 
 type Stove0LifecycleEvent = Annotated[
@@ -647,13 +645,12 @@ def stove0_event(
     *,
     type: Stove0EventType,
     subject: str,
-    data: Mapping[str, Any],
+    payload: Mapping[str, Any],
 ) -> Stove0LifecycleEvent:
-    event = cloud_event(
-        source=STOVE0_EVENT_SOURCE,
+    event = lifecycle_event(
         type=type,
         subject=subject,
-        data=data,
+        payload=payload,
     )
     return parse_stove0_event(event.model_dump(mode="python", exclude_none=True))
 
@@ -958,11 +955,10 @@ __all__ = [
     "SchedulerRunRequest",
     "SchedulerStatus",
     "SchedulerWorkBatch",
-    "STOVE0_EVENT_SOURCE",
     "STOVE0_EVENT_TYPES",
     "STOVE0_HTTP_ERROR_AUTHORITY",
     "SortOrder",
-    "Stove0CloudEvent",
+    "Stove0Event",
     "Stove0EventData",
     "Stove0EventPage",
     "Stove0EventType",

@@ -482,7 +482,7 @@ def list_events(
     _call(
         state,
         lambda: state.client.list_events(after=after, limit=limit).model_dump(mode="json"),
-        table=("events", ("id", "type", "subject", "time")),
+        table=("events", ("id", "type", "subject", "occurred_at")),
     )
 
 

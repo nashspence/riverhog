@@ -3,13 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from lifecycle_events.models import (
-    CLOUDEVENTS_JSON_CONTENT_TYPE,
     MAX_EVENT_CONTEXT_BYTES,
-    CloudEvent,
     EventContext,
     EventPage,
-    caused_event,
-    cloud_event,
+    LifecycleEvent,
+    lifecycle_event,
     normalize_event_context,
 )
 from lifecycle_events.sqlite_store import (
@@ -33,16 +31,14 @@ def __getattr__(name: str) -> Any:
 
 
 __all__ = [
-    "CLOUDEVENTS_JSON_CONTENT_TYPE",
     "MAX_EVENT_CONTEXT_BYTES",
-    "CloudEvent",
+    "LifecycleEvent",
     "EventContext",
     "EventPage",
     "LifecycleEventClient",
     "SQLiteEventCursorStore",
     "SQLiteLifecycleEventLog",
-    "caused_event",
-    "cloud_event",
+    "lifecycle_event",
     "create_lifecycle_event_schema",
     "normalize_event_context",
 ]

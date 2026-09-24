@@ -41,14 +41,11 @@ WINDOWS_TASK_XML_NAMESPACE = "http://schemas.microsoft.com/windows/2004/02/mit/t
 RIVERHOG_EVENT_PAGE = {
     "events": [
         {
-            "specversion": "1.0",
             "id": "00000000-0000-4000-8000-000000000497",
-            "source": "https://qualification.invalid/riverhog",
             "type": "io.riverhog.riverhog.collection.finalized",
             "subject": EVENT_SUBJECT,
-            "time": "2026-08-14T00:00:00.000000000Z",
-            "datacontenttype": "application/json",
-            "data": {
+            "occurred_at": "2026-08-14T00:00:00.000000000Z",
+            "payload": {
                 "actor": {"principal_id": "riverhog-installation-qualification"},
                 "initiator": {"principal_id": "riverhog-installation-qualification"},
                 "collection_id": "1",
@@ -66,14 +63,11 @@ STOVE0_WORK_ID = "a" * 64
 STOVE0_EVENT_PAGE = {
     "events": [
         {
-            "specversion": "1.0",
             "id": "00000000-0000-4000-8000-000000000498",
-            "source": "urn:riverhog:stove0",
             "type": "io.riverhog.stove0.work.created",
             "subject": STOVE0_WORK_ID,
-            "time": "2026-08-14T00:00:00.000000000Z",
-            "datacontenttype": "application/json",
-            "data": {
+            "occurred_at": "2026-08-14T00:00:00.000000000Z",
+            "payload": {
                 "work_id": STOVE0_WORK_ID,
                 "phase": "eligible",
                 "parent_work_id": None,

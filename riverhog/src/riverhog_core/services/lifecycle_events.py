@@ -4,7 +4,7 @@ import json
 from collections.abc import Mapping
 from typing import Any
 
-from lifecycle_events import CloudEvent, cloud_event, normalize_event_context
+from lifecycle_events import LifecycleEvent, lifecycle_event, normalize_event_context
 from riverhog_canonical_json import format_scalar
 from riverhog_protocol.lifecycle_events import (
     RIVERHOG_EVENT_TYPE_PREFIX,
@@ -78,11 +78,10 @@ class SqlAlchemyLifecycleEventService:
         session: Session | None = None,
     ) -> RiverhogLifecycleEvent:
         event = validate_riverhog_event(
-            cloud_event(
-                source=self._config.event_source,
+            lifecycle_event(
                 type=normalize_riverhog_event_type(type),
                 subject=subject,
-                data=data,
+                payload=data,
             )
         )
         record = LifecycleEventRecord(
@@ -126,13 +125,13 @@ class SqlAlchemyLifecycleEventService:
         selected = rows[:limit]
         events: list[RiverhogLifecycleEvent] = []
         for row in selected:
-            event = CloudEvent.model_validate_json(row.event_json)
+            event = LifecycleEvent.model_validate_json(row.event_json)
             if row.context_json is not None and (
                 row.context_expires_at is None or row.context_expires_at > current_text
             ):
-                data = dict(event.data)
+                data = dict(event.payload)
                 data["context"] = decode_event_context(row.context_json)
-                event = event.model_copy(update={"data": data})
+                event = event.model_copy(update={"payload": data})
             events.append(validate_riverhog_event(event))
         return RiverhogEventPage(
             events=events,

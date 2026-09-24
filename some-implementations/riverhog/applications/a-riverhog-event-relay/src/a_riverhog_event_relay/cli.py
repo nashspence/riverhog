@@ -130,7 +130,7 @@ _CLI_RESULT_CONTRACT = {
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(
         prog="a-riverhog-event-relay",
-        description="Relay durable CloudEvents logs to webhooks.",
+        description="Translate native lifecycle events to CloudEvents webhooks.",
     )
     result.add_argument(
         "--version",

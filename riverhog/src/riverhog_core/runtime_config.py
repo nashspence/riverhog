@@ -184,7 +184,6 @@ class RuntimeConfig:
     retrieval_restore_poll_interval: timedelta = field(default_factory=lambda: timedelta(minutes=5))
     retrieval_estimated_latency: timedelta = field(default_factory=lambda: timedelta(hours=48))
     public_base_url: str | None = None
-    event_source: str = "urn:riverhog"
     event_context_retention: timedelta = field(default_factory=lambda: timedelta(days=30))
     event_context_reap_batch_size: int = 100
     browse_token_signing_key: str = field(default="", repr=False)
@@ -227,8 +226,6 @@ class RuntimeConfig:
             raise ValueError("RIVERHOG_CATALOG_SYNC_PAGE_SIZE_MAX must be within the v1 wire bound")
         if self.catalog_sync_history_reap_batch_size < 1:
             raise ValueError("RIVERHOG_CATALOG_SYNC_HISTORY_REAP_BATCH_SIZE must be positive")
-        if not self.event_source.strip():
-            raise ValueError("RIVERHOG_EVENT_SOURCE must not be blank")
         if self.event_context_retention.total_seconds() <= 0:
             raise ValueError("RIVERHOG_EVENT_CONTEXT_RETENTION must be > 0")
         if self.event_context_reap_batch_size < 1:
@@ -649,7 +646,6 @@ def load_runtime_config() -> RuntimeConfig:
     if not browse_token_signing_key:
         raise ValueError("RIVERHOG_BROWSE_TOKEN_SIGNING_KEY is required")
     return RuntimeConfig(
-        event_source=os.getenv("RIVERHOG_EVENT_SOURCE", "urn:riverhog").strip(),
         event_context_retention=parse_duration(
             os.getenv("RIVERHOG_EVENT_CONTEXT_RETENTION", "30d")
         ),

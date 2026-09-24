@@ -1273,8 +1273,8 @@ def test_unified_state_store_is_restart_safe_and_compare_and_swap(tmp_path: Path
         "io.riverhog.stove0.work.created",
         "io.riverhog.stove0.work.updated",
     ]
-    assert events[0].data["work_id"] == created.work_id
-    assert events[1].data["revision"] == claimed.revision
+    assert events[0].payload["work_id"] == created.work_id
+    assert events[1].payload["revision"] == claimed.revision
 
     with pytest.raises(ConcurrentWorkUpdate, match="stale stove0 work revision"):
         store.compare_and_swap(

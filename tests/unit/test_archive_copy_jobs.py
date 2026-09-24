@@ -640,7 +640,7 @@ def test_archive_copy_preserves_the_independent_object_manifest(
         "requested",
         "completed",
     ]
-    assert events[-1].data["context"] == {"workflow": "promotion"}
+    assert events[-1].payload["context"] == {"workflow": "promotion"}
     transfer_messages = [message for message in caplog.messages if "transfer operation=" in message]
     assert any("operation=archive_copy_segment" in message for message in transfer_messages)
     assert sum("operation=archive_copy_object" in message for message in transfer_messages) == 4

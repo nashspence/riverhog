@@ -45,13 +45,10 @@ class SmokePeer:
                 if after == "0":
                     events = [
                         {
-                            "specversion": "1.0",
                             "id": "a-riverhog-event-relay-smoke-event",
-                            "source": "urn:riverhog:smoke",
                             "type": "io.riverhog.smoke",
-                            "time": "2026-08-14T00:00:00.000000000Z",
-                            "datacontenttype": "application/json",
-                            "data": {"proof": "container-entrypoint"},
+                            "occurred_at": "2026-08-14T00:00:00.000000000Z",
+                            "payload": {"proof": "container-entrypoint"},
                         }
                     ]
                     next_cursor = "1"

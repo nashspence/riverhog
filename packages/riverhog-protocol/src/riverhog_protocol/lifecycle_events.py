@@ -1,10 +1,10 @@
-"""Typed Riverhog lifecycle vocabulary over the generic CloudEvents envelope."""
+"""Typed Riverhog native lifecycle-event vocabulary."""
 
 from __future__ import annotations
 
 from typing import Annotated, Any, Literal, Self
 
-from lifecycle_events.models import CloudEvent, EventContext, normalize_event_context
+from lifecycle_events.models import EventContext, LifecycleEvent, normalize_event_context
 from pydantic import (
     AfterValidator,
     BaseModel,
@@ -90,17 +90,9 @@ class RiverhogActor(RiverhogEventModel):
     key_id: str | None = Field(default=None, min_length=1, max_length=300)
 
 
-class RiverhogEventCause(RiverhogEventModel):
-    id: str = Field(min_length=1, max_length=300)
-    source: str = Field(min_length=1, max_length=1000)
-    type: str = Field(min_length=1, max_length=300)
-    subject: str | None = Field(default=None, min_length=1, max_length=1000)
-
-
 class RiverhogEventData(RiverhogEventModel):
     actor: RiverhogActor
     initiator: RiverhogActor
-    cause: RiverhogEventCause | None = None
     context: EventContext | None = None
 
     @field_validator("context")
@@ -217,89 +209,89 @@ class RetrievalFailedData(RetrievalEventData):
     error: str = Field(min_length=1, max_length=16384)
 
 
-class RiverhogCloudEvent(CloudEvent):
+class RiverhogEvent(LifecycleEvent):
     model_config = ConfigDict(extra="forbid", frozen=True, strict=True)
-    data: Any
+    payload: Any
 
     @model_validator(mode="after")
     def validate_subject_identity(self) -> Self:
-        if isinstance(self.data, CollectionEventData):
-            if self.subject != str(self.data.collection_id):
+        if isinstance(self.payload, CollectionEventData):
+            if self.subject != str(self.payload.collection_id):
                 raise ValueError("collection event subject differs from its collection identity")
-        elif isinstance(self.data, RetrievalEventData):
-            if self.subject != self.data.retrieval_id:
+        elif isinstance(self.payload, RetrievalEventData):
+            if self.subject != self.payload.retrieval_id:
                 raise ValueError("retrieval event subject differs from its retrieval identity")
         return self
 
 
-class CollectionFinalizedEvent(RiverhogCloudEvent):
+class CollectionFinalizedEvent(RiverhogEvent):
     type: Literal["io.riverhog.riverhog.collection.finalized"]
-    data: CollectionFinalizedData
+    payload: CollectionFinalizedData
 
 
-class CollectionDeletedEvent(RiverhogCloudEvent):
+class CollectionDeletedEvent(RiverhogEvent):
     type: Literal["io.riverhog.riverhog.collection.deleted"]
-    data: CollectionDeletedData
+    payload: CollectionDeletedData
 
 
-class ArchiveCopyJobRequestedEvent(RiverhogCloudEvent):
+class ArchiveCopyJobRequestedEvent(RiverhogEvent):
     type: Literal["io.riverhog.riverhog.archive_copy_job.requested"]
-    data: ArchiveCopyJobRequestedData
+    payload: ArchiveCopyJobRequestedData
 
 
-class ArchiveCopyJobCompletedEvent(RiverhogCloudEvent):
+class ArchiveCopyJobCompletedEvent(RiverhogEvent):
     type: Literal["io.riverhog.riverhog.archive_copy_job.completed"]
-    data: ArchiveCopyJobCompletedData
+    payload: ArchiveCopyJobCompletedData
 
 
-class ArchiveCopyJobFailedEvent(RiverhogCloudEvent):
+class ArchiveCopyJobFailedEvent(RiverhogEvent):
     type: Literal["io.riverhog.riverhog.archive_copy_job.failed"]
-    data: ArchiveCopyJobFailedData
+    payload: ArchiveCopyJobFailedData
 
 
-class ArchiveCopyJobCanceledEvent(RiverhogCloudEvent):
+class ArchiveCopyJobCanceledEvent(RiverhogEvent):
     type: Literal["io.riverhog.riverhog.archive_copy_job.canceled"]
-    data: ArchiveCopyJobCanceledData
+    payload: ArchiveCopyJobCanceledData
 
 
-class RetrievalRequestedEvent(RiverhogCloudEvent):
+class RetrievalRequestedEvent(RiverhogEvent):
     type: Literal["io.riverhog.riverhog.retrieval.requested"]
-    data: RetrievalRequestedData
+    payload: RetrievalRequestedData
 
 
-class RetrievalReadyEvent(RiverhogCloudEvent):
+class RetrievalReadyEvent(RiverhogEvent):
     type: Literal["io.riverhog.riverhog.retrieval.ready"]
-    data: RetrievalReadyData
+    payload: RetrievalReadyData
 
 
-class RetrievalRenewedEvent(RiverhogCloudEvent):
+class RetrievalRenewedEvent(RiverhogEvent):
     type: Literal["io.riverhog.riverhog.retrieval.renewed"]
-    data: RetrievalRenewedData
+    payload: RetrievalRenewedData
 
 
-class RetrievalCompletedEvent(RiverhogCloudEvent):
+class RetrievalCompletedEvent(RiverhogEvent):
     type: Literal["io.riverhog.riverhog.retrieval.completed"]
-    data: RetrievalCompletedData
+    payload: RetrievalCompletedData
 
 
-class RetrievalCanceledEvent(RiverhogCloudEvent):
+class RetrievalCanceledEvent(RiverhogEvent):
     type: Literal["io.riverhog.riverhog.retrieval.canceled"]
-    data: RetrievalCanceledData
+    payload: RetrievalCanceledData
 
 
-class RetrievalExpiredEvent(RiverhogCloudEvent):
+class RetrievalExpiredEvent(RiverhogEvent):
     type: Literal["io.riverhog.riverhog.retrieval.expired"]
-    data: RetrievalExpiredData
+    payload: RetrievalExpiredData
 
 
-class RetrievalIssueEvent(RiverhogCloudEvent):
+class RetrievalIssueEvent(RiverhogEvent):
     type: Literal["io.riverhog.riverhog.retrieval.issue"]
-    data: RetrievalIssueData
+    payload: RetrievalIssueData
 
 
-class RetrievalFailedEvent(RiverhogCloudEvent):
+class RetrievalFailedEvent(RiverhogEvent):
     type: Literal["io.riverhog.riverhog.retrieval.failed"]
-    data: RetrievalFailedData
+    payload: RetrievalFailedData
 
 
 type RiverhogLifecycleEvent = Annotated[
@@ -344,20 +336,22 @@ def normalize_riverhog_event_type(value: str) -> str:
     return normalized
 
 
-def validate_riverhog_event(value: CloudEvent | dict[str, Any]) -> RiverhogLifecycleEvent:
+def validate_riverhog_event(value: LifecycleEvent | dict[str, Any]) -> RiverhogLifecycleEvent:
     payload = (
-        value.model_dump(mode="json", exclude_none=True) if isinstance(value, CloudEvent) else value
+        value.model_dump(mode="json", exclude_none=True)
+        if isinstance(value, LifecycleEvent)
+        else value
     )
     return _EVENT_ADAPTER.validate_python(payload)
 
 
-def collection_id_for_event(value: CloudEvent | dict[str, Any]) -> int:
+def collection_id_for_event(value: LifecycleEvent | dict[str, Any]) -> int:
     event = validate_riverhog_event(value)
     if event.type not in COLLECTION_WAKE_EVENT_TYPES:
         raise ValueError("Riverhog event is not a collection wake event")
-    if not isinstance(event.data, CollectionEventData):
+    if not isinstance(event.payload, CollectionEventData):
         raise ValueError("Riverhog collection wake event has invalid data")
-    return event.data.collection_id
+    return event.payload.collection_id
 
 
 __all__ = [
@@ -379,7 +373,6 @@ __all__ = [
     "RIVERHOG_EVENT_TYPES",
     "RIVERHOG_EVENT_TYPE_PREFIX",
     "RiverhogActor",
-    "RiverhogEventCause",
     "RiverhogEventPage",
     "RiverhogLifecycleEvent",
     "collection_id_for_event",

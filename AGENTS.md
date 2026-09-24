@@ -6,7 +6,7 @@ Read [README.md](README.md) for the product entrypoint.
 
 Riverhog product code, reusable libraries, supplied applications, and supplied components
 may share focused contracts but never import one another's implementation modules. Runtime
-integration crosses published HTTP and CloudEvents contracts. Supplied applications own their
+integration crosses published HTTP and native lifecycle-event contracts. Supplied applications own their
 interfaces and state without becoming Riverhog authority; independently selectable extensions
 stay separate components. `some-implementations/riverhog/recovery` must remain independent of
 the server, client, and database. Stove0 core remains content-opaque; observers interpret bytes,

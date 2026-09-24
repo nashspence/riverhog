@@ -8,7 +8,7 @@ import anyio
 import httpx
 import pytest
 from fastapi import FastAPI
-from lifecycle_events import cloud_event
+from lifecycle_events import lifecycle_event
 from pydantic import ValidationError
 from riverhog_api.deps import get_container
 from riverhog_api.routers.events import router as events_router
@@ -99,16 +99,15 @@ def test_archive_copy_job_event_type_binds_its_exact_lifecycle_state(
         "state": state,
         **extra,
     }
-    event = cloud_event(
-        source="https://riverhog.invalid/events",
+    event = lifecycle_event(
         type=event_type,
         subject="1",
-        data=data,
+        payload=data,
     )
 
-    assert validate_riverhog_event(event).data.state == state
+    assert validate_riverhog_event(event).payload.state == state
     with pytest.raises(ValidationError):
-        validate_riverhog_event(event.model_copy(update={"data": {**data, "state": "waiting"}}))
+        validate_riverhog_event(event.model_copy(update={"payload": {**data, "state": "waiting"}}))
 
 
 def test_context_expiry_targets_owner_and_subject_in_sql(tmp_path: Path) -> None:
@@ -165,7 +164,7 @@ def test_event_page_omits_expired_context_without_performing_cleanup(tmp_path: P
     page = events.page(owner_principal_id="alpha", after=None, limit=1)
 
     assert len(page.events) == 1
-    assert "context" not in page.events[0].data
+    assert "context" not in page.events[0].payload
     with session_scope(make_session_factory(config.database_url)) as session:
         record = session.query(LifecycleEventRecord).one()
         assert record.context_json == '{"route":"phone"}'

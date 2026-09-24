@@ -2334,12 +2334,12 @@ def _emit(
     event = stove0_event(
         type=type,
         subject=subject,
-        data=data,
+        payload=data,
     )
     encoded = event.model_dump_json(exclude_none=True)
     session.add(
         _EventRow(
-            created_at=event.time,
+            created_at=event.occurred_at,
             event_bytes=_encoded_bytes(encoded),
             event_json=encoded,
         )
