@@ -21,6 +21,7 @@ urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "
 dependencies = [
   "fastapi>=0.111,<1.0",
   "http-api-contracts>=0.1,<0.2",
+  "lifecycle-events>=0.1,<0.2",
   "pyftpdlib>=2.2,<3.0",
   "pydantic>=2.7,<3.0",
   "riverhog-client>=0.1,<0.2",
@@ -37,6 +38,7 @@ a-riverhog-ftp-spool = "a_riverhog_ftp_spool.app:main"
 
 [tool.uv.sources]
 http-api-contracts = { workspace = true }
+lifecycle-events = { workspace = true }
 a-riverhog-ftp-spool-client = { workspace = true }
 riverhog-client = { workspace = true }
 riverhog-canonical-json = { workspace = true }

@@ -16,6 +16,9 @@ from http_api_contracts import (
     safe_http_base_url,
 )
 
+from a_riverhog_ftp_spool_client.events import FtpEventPage
+from a_riverhog_ftp_spool_client.status import FtpSpoolStatus
+
 
 class FtpSpoolApiError(RuntimeError):
     def __init__(
@@ -88,11 +91,26 @@ class RiverhogFtpSpoolClient:
         *,
         page_size: int = 25,
         page_token: str | None = None,
-    ) -> dict[str, Any]:
+    ) -> FtpSpoolStatus:
         params: dict[str, str | int] = {"page_size": page_size}
         if page_token is not None:
             params["page_token"] = page_token
-        return self._json("GET", "/v1/status", params=params)
+        return FtpSpoolStatus.model_validate(self._json("GET", "/v1/status", params=params))
+
+    def list_ftp_spool_events(
+        self,
+        source_id: str,
+        *,
+        after: str | None = None,
+        limit: int = 100,
+    ) -> FtpEventPage:
+        return FtpEventPage.model_validate(
+            self._json(
+                "GET",
+                f"/v1/sources/{quote(source_id, safe='')}/events",
+                params={"after": after or "0", "limit": limit},
+            )
+        )
 
     def run_ftp_spool_pass(self) -> dict[str, Any]:
         return self._json("POST", "/v1/run")

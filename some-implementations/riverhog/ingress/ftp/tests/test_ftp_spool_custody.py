@@ -13,7 +13,14 @@ import a_riverhog_ftp_spool.landing as landing
 import pytest
 from a_riverhog_ftp_spool.completion import CompletionHandoff, completion_log_path
 from a_riverhog_ftp_spool.config import FtpSpoolConfig, SourceConfig
-from a_riverhog_ftp_spool.landing import FtpSpool
+from a_riverhog_ftp_spool.landing import FtpEventCursorChanged, FtpSpool
+from a_riverhog_ftp_spool_client.events import (
+    ATTEMPT_FAILED,
+    CLAIM_PUBLISHED,
+    CLAIM_REGISTERED,
+    CUSTODY_READY,
+)
+from a_riverhog_ftp_spool_client.status import FtpSpoolStatus
 from riverhog_client.producer import ProducedCollection
 from riverhog_provenance import canonical_sidecar_path, create_observation_journal
 
@@ -192,6 +199,75 @@ def test_landing_adapter_reconciles_lost_response_without_releasing_custody(
     )
 
 
+def test_lifecycle_feed_is_bounded_source_fenced_and_replays_exact_claim_events(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    config = _config(tmp_path)
+    source = config.sources[0]
+    _completed_upload(source, "camera/clip.mp4", b"immutable camera payload")
+    _Producer.calls = []
+    _Producer.fail_once = True
+    monkeypatch.setattr(landing, "CollectionProducer", _Producer)
+    adapter = FtpSpool(object(), config)  # type: ignore[arg-type]
+
+    empty = adapter.event_page(source.id, after="0", limit=1)
+    assert empty.events == []
+    assert empty.next_cursor.startswith("camera-a~")
+    assert not empty.has_more
+
+    assert adapter.run_once()["completed"] == 0
+    page = adapter.event_page(source.id, after=empty.next_cursor, limit=1)
+    assert [event.type for event in page.events] == [CLAIM_REGISTERED]
+    assert page.has_more
+    claim_id = page.events[0].subject
+    assert page.events[0].payload.source_id == source.id
+    assert page.events[0].payload.file_count == 1
+    assert page.events[0].payload.bytes == len(b"immutable camera payload")
+    page.require_progress_after(empty.next_cursor)
+
+    custody = adapter.event_page(source.id, after=page.next_cursor, limit=1)
+    assert [event.type for event in custody.events] == [CUSTODY_READY]
+    assert custody.events[0].subject == claim_id
+    assert custody.has_more
+    failed = adapter.event_page(source.id, after=custody.next_cursor, limit=1)
+    assert [event.type for event in failed.events] == [ATTEMPT_FAILED]
+    assert failed.events[0].payload.error_type == "ConnectionError"
+    assert not failed.has_more
+
+    restarted = FtpSpool(object(), config)  # type: ignore[arg-type]
+    assert restarted.event_page(source.id, after=page.next_cursor, limit=100).events == [
+        *custody.events,
+        *failed.events,
+    ]
+    assert restarted.run_once()["completed"] == 1
+    published = restarted.event_page(source.id, after=failed.next_cursor, limit=100)
+    assert [event.type for event in published.events] == [CLAIM_PUBLISHED]
+    assert published.events[0].subject == claim_id
+    assert published.events[0].payload.collection_id == "41"
+    assert published.events[0].payload.archive_root_sha256 == "a" * 64
+    assert published.events[0].payload.content_identity == "b" * 64
+    assert restarted.run_once()["completed"] == 0
+    assert restarted.event_page(source.id, after=published.next_cursor, limit=100).events == []
+
+    with pytest.raises(FtpEventCursorChanged):
+        restarted.event_page(
+            source.id, after=published.next_cursor.replace("camera-a~", "other~"), limit=1
+        )
+    with pytest.raises(ValueError, match="ahead"):
+        restarted.event_page(
+            source.id, after=published.next_cursor.rsplit("~", 1)[0] + "~100", limit=1
+        )
+    with pytest.raises(ValueError, match="malformed"):
+        restarted.event_page(source.id, after="1", limit=1)
+    with pytest.raises(ValueError, match="limit"):
+        restarted.event_page(source.id, after="0", limit=101)
+
+    reset = FtpSpool(object(), _config(tmp_path / "another-state"))  # type: ignore[arg-type]
+    with pytest.raises(FtpEventCursorChanged):
+        reset.event_page(source.id, after=published.next_cursor, limit=1)
+
+
 @pytest.mark.parametrize("claim_root_survives", [False, True])
 def test_durable_receipt_finishes_claim_cleanup_after_process_stop(
     monkeypatch: pytest.MonkeyPatch,
@@ -242,6 +318,42 @@ def test_durable_receipt_finishes_claim_cleanup_after_process_stop(
     assert restarted.status()["sources"][0]["claims"] == 0  # type: ignore[index]
     assert list((source.root / ".a-riverhog-ftp-spool" / "claims").glob("*")) == []
     assert list((source.root / ".a-riverhog-ftp-spool" / "handoffs").glob("*")) == []
+
+
+def test_durable_receipt_replays_publication_event_after_process_stop(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    config = _config(tmp_path)
+    source = config.sources[0].model_copy(update={"max_files": 1})
+    config = config.model_copy(update={"sources": (source,)})
+    _completed_upload(source, "settled.bin", b"settled once")
+    _Producer.calls = []
+    _Producer.fail_once = False
+    monkeypatch.setattr(landing, "CollectionProducer", _Producer)
+    adapter = FtpSpool(object(), config)  # type: ignore[arg-type]
+
+    with monkeypatch.context() as crash:
+
+        def stop_before_event(
+            _source: SourceConfig, _claim_id: str, _receipt: ProducedCollection
+        ) -> None:
+            raise _SimulatedProcessStop
+
+        crash.setattr(adapter, "_record_publication", stop_before_event)
+        with pytest.raises(_SimulatedProcessStop):
+            adapter.run_once()
+
+    before = adapter.event_page(source.id, after="0", limit=100)
+    assert [event.type for event in before.events] == [CLAIM_REGISTERED, CUSTODY_READY]
+    assert len(_Producer.calls) == 1
+    restarted = FtpSpool(object(), config)  # type: ignore[arg-type]
+    assert restarted.run_once()["completed"] == 1
+    after = restarted.event_page(source.id, after=before.next_cursor, limit=100)
+    assert [event.type for event in after.events] == [CLAIM_PUBLISHED]
+    assert len(_Producer.calls) == 1
+    assert restarted.run_once()["completed"] == 0
+    assert restarted.event_page(source.id, after=before.next_cursor, limit=100) == after
 
 
 def test_completion_event_replay_guard_survives_until_exact_log_tip(
@@ -462,6 +574,11 @@ def test_completion_identity_failure_is_durable_and_does_not_block_later_input(
     assert isinstance(failure_status, dict)
     assert failure_status["retryable"] is True
     assert failure_status["reason"]
+    assert failure_status["attempts"] == 0
+    typed_failure = (
+        FtpSpoolStatus.model_validate(first.status()).sources[0].oldest_completion_failure
+    )
+    assert typed_failure is not None and typed_failure.attempts == 0
     assert not good.exists()
 
     restarted = FtpSpool(object(), config)  # type: ignore[arg-type]

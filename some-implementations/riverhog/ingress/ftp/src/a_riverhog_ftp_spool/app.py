@@ -18,14 +18,18 @@ from typing import Annotated
 
 import uvicorn
 from a_riverhog_ftp_spool_client import RiverhogFtpSpoolClient
+from a_riverhog_ftp_spool_client.events import FtpEventPage
+from a_riverhog_ftp_spool_client.status import FtpSpoolStatus
 from fastapi import Depends, FastAPI, Query, Request, Security
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from http_api_contracts import (
+    BrowsePageToken,
     ErrorOut,
     HealthOut,
     apply_openapi_error_contract,
+    cursor_feed_operation,
     error_code_for_status,
     error_payload,
     mutable_browse_operation,
@@ -35,7 +39,7 @@ from riverhog_provenance import resolve_provenance_observer
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from a_riverhog_ftp_spool.config import FtpSpoolConfig, load_config, load_source_config
-from a_riverhog_ftp_spool.landing import FtpSpool
+from a_riverhog_ftp_spool.landing import FtpEventCursorChanged, FtpSpool
 from a_riverhog_ftp_spool.listener import serve_ftp
 
 BEARER = HTTPBearer(auto_error=False, scheme_name="RiverhogFtpSpoolBearer")
@@ -269,6 +273,7 @@ def create_app(composition: FtpSpoolComposition | None = None) -> FastAPI:
 
     @app.get(
         "/v1/status",
+        response_model=FtpSpoolStatus,
         operation_id="get_ftp_spool_status",
         dependencies=[Depends(management_auth)],
         tags=["service"],
@@ -276,9 +281,38 @@ def create_app(composition: FtpSpoolComposition | None = None) -> FastAPI:
     )
     def status(
         page_size: Annotated[int, Query(ge=1, le=100)] = 25,
-        page_token: Annotated[str | None, Query(min_length=1, max_length=120)] = None,
-    ) -> dict[str, object]:
-        return resolved.adapter.status(page_size=page_size, page_token=page_token)
+        page_token: BrowsePageToken | None = None,
+    ) -> FtpSpoolStatus:
+        return FtpSpoolStatus.model_validate(
+            resolved.adapter.status(page_size=page_size, page_token=page_token)
+        )
+
+    @app.get(
+        "/v1/sources/{source_id}/events",
+        response_model=FtpEventPage,
+        operation_id="list_ftp_spool_events",
+        description=(
+            "Each source retains events for the lifetime of its operational state. "
+            "Cursors are bound to that source and state generation; a reset or "
+            "cross-source cursor is rejected rather than silently skipping history."
+        ),
+        dependencies=[Depends(management_auth)],
+        tags=["events"],
+        openapi_extra=cursor_feed_operation(cursor_parameter="after", limit_parameter="limit"),
+    )
+    def events(
+        source_id: str,
+        after: Annotated[str | None, Query(min_length=1, max_length=220)] = None,
+        limit: Annotated[int, Query(ge=1, le=100)] = 100,
+    ) -> FtpEventPage:
+        try:
+            return resolved.adapter.event_page(source_id, after=after, limit=limit)
+        except KeyError as exc:
+            raise FtpSpoolHttpError(404, "not_found", "FTP spool source was not found") from exc
+        except FtpEventCursorChanged as exc:
+            raise FtpSpoolHttpError(409, "event_cursor_changed", str(exc)) from exc
+        except ValueError as exc:
+            raise FtpSpoolHttpError(400, "invalid_event_cursor", str(exc)) from exc
 
     @app.post(
         "/v1/run",
@@ -335,6 +369,18 @@ def _print(payload: Mapping[str, object], *, json_mode: bool) -> None:
         if payload.get("next_page_token") is not None:
             print(f"next page token: {payload['next_page_token']}")
         return
+    events = payload.get("events")
+    if isinstance(events, list):
+        print(f"events: {len(events)}")
+        for event in events:
+            if isinstance(event, Mapping):
+                print(
+                    f"{event.get('occurred_at')} {event.get('type')} "
+                    f"subject={event.get('subject')} id={event.get('id')}"
+                )
+        print(f"next cursor: {payload.get('next_cursor')}")
+        print(f"has more: {'yes' if payload.get('has_more') else 'no'}")
+        return
     print(json.dumps(payload, indent=2, sort_keys=True))
 
 
@@ -371,6 +417,11 @@ def build_parser() -> argparse.ArgumentParser:
     status.add_argument("--page-size", type=int, default=25)
     status.add_argument("--page-token")
     status.set_defaults(func=_status_command)
+    events = sub.add_parser("events", help="show one source's bounded lifecycle-event feed")
+    events.add_argument("source")
+    events.add_argument("--after")
+    events.add_argument("--limit", type=int, default=100)
+    events.set_defaults(func=_events_command)
     sub.add_parser("check-config", help="validate connected FTP spool configuration")
     flush = sub.add_parser("flush", help="explicitly close one source batch")
     flush.add_argument("source")
@@ -397,8 +448,14 @@ def _status_command(args: argparse.Namespace) -> None:
         payload = client.get_ftp_spool_status(
             page_size=args.page_size,
             page_token=args.page_token,
-        )
+        ).model_dump(mode="json")
     _print(payload, json_mode=args.json)
+
+
+def _events_command(args: argparse.Namespace) -> None:
+    with _operator_client(args) as client:
+        page = client.list_ftp_spool_events(args.source, after=args.after, limit=args.limit)
+    _print(page.model_dump(mode="json"), json_mode=args.json)
 
 
 def _flush_command(args: argparse.Namespace) -> None:

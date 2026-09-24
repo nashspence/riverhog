@@ -215,7 +215,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     }
     assert set(external["http_openapi"]) == {"riverhog", "a-riverhog-ftp-spool", "stove0"}
     assert len(external["http_route_supplements"]) == 2
-    assert len(trace["operation_qualification"]["records"]) == 148
+    assert len(trace["operation_qualification"]["records"]) == 149
     assert isinstance(external["python"], dict)
     assert len(external["python"]) == trace["python_registry"]["coverage"]["protected"]
     assert len(external["python"]) > len(trace["python_registry"]["detections"])
@@ -265,7 +265,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "state": 8,
     }
     assert trace["coverage"]["extent_decisions"] == len(extents["decisions"])
-    assert trace["coverage"]["operation_qualification_records"] == 148
+    assert trace["coverage"]["operation_qualification_records"] == 149
     assert trace["python_registry"]["coverage"] == {
         "detected": 64,
         "resolved": len(trace["python_registry"]["resolutions"]),

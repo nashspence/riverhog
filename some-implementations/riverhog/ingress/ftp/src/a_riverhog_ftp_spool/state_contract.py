@@ -41,7 +41,12 @@ CREATE TABLE IF NOT EXISTS completion_failures (
     retryable INTEGER NOT NULL CHECK (retryable IN (0, 1)),
     attempts INTEGER NOT NULL DEFAULT 0 CHECK (attempts >= 0)
 );
-PRAGMA user_version = 2;
+CREATE TABLE IF NOT EXISTS lifecycle_events (
+    sequence INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_id TEXT NOT NULL UNIQUE,
+    event_json TEXT NOT NULL
+);
+PRAGMA user_version = 3;
 """
 
 
@@ -118,7 +123,7 @@ def ftp_custody_state_contract() -> dict[str, object]:
                 "id": "operational-database",
                 "kind": "sql-ddl",
                 "dialect": "sqlite",
-                "user_version": 2,
+                "user_version": 3,
                 "ddl": FTP_OPERATIONAL_STATE_DDL,
             },
             {

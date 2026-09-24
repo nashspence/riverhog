@@ -203,10 +203,18 @@ WITNESSES = (
         gates=("make unit", "make database-qualification", "make compose-smoke"),
     ),
     SegmentedExtentWitness(
-        id="a-riverhog-ftp-spool-status-progression/v1",
+        id="a-riverhog-ftp-spool-read-collection-progression/v1",
         owner="a-riverhog-ftp-spool",
-        reasons=("bounded-route-progression",),
+        reasons=("bounded-route-page", "bounded-route-progression"),
         test_node_ids=(
+            "tests/unit/test_public_interface_parity.py::"
+            "test_public_read_collection_selectors_are_bounded_and_frozen",
+            "tests/unit/test_event_cursor_restart.py::"
+            "test_event_cursor_continues_across_process_restart",
+            "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::"
+            "test_lifecycle_feed_is_bounded_source_fenced_and_replays_exact_claim_events",
+            "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::"
+            "test_durable_receipt_replays_publication_event_after_process_stop",
             "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::"
             "test_status_pages_sources_without_claiming_an_exact_backlog_snapshot",
             "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::"

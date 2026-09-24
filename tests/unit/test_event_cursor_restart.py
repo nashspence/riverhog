@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 
-@pytest.mark.parametrize("application", ["riverhog", "stove0"])
+@pytest.mark.parametrize("application", ["riverhog", "stove0", "a-riverhog-ftp-spool"])
 def test_event_cursor_continues_across_process_restart(application, tmp_path, record_property):
     def run(phase):
         result = subprocess.run(
