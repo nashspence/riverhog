@@ -7,7 +7,7 @@ from collections.abc import Mapping, Sequence
 from typing import cast
 
 from .model import (
-    RELATIONSHIP_SCHEMA,
+    RELATIONSHIP_FORMAT,
     ContractAtlasError,
     RelationshipEdge,
     RelationshipNode,
@@ -257,7 +257,7 @@ def _relationship_model(
     for edge in edges:
         RelationshipEdge(str(edge["type"]), str(edge["source"]), str(edge["target"]))
     return {
-        "schema": RELATIONSHIP_SCHEMA,
+        "format": RELATIONSHIP_FORMAT,
         "center": product_nodes[0],
         "product": product_images[0],
         "nodes": sorted(nodes, key=lambda value: str(value["id"])),

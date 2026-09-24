@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "qualification/policies/implementation-witnesses.json"
-SCHEMA = "riverhog-implementation-policy-witnesses/v1"
+FORMAT = "riverhog-implementation-policy-witnesses/v1"
 CLASSIFICATIONS = frozenset(
     {
         "external_contract",
@@ -275,7 +275,7 @@ def policy_projection(root: Path = ROOT) -> dict[str, object]:
         for witness in WITNESSES
     ]
     return {
-        "schema": SCHEMA,
+        "format": FORMAT,
         "authority": "implementation-correctness",
         "policies": policies,
         "coverage": {
@@ -337,7 +337,7 @@ __all__ = [
     "AuthorityPolicyWitnessError",
     "CLASSIFICATIONS",
     "OUTPUT",
-    "SCHEMA",
+    "FORMAT",
     "WITNESSES",
     "main",
     "policy_projection",

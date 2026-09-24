@@ -25,7 +25,7 @@ SAMPLER_CONFORMANCE_RESULT: Literal["review0-sampler-conformance-result/v1"] = (
 )
 
 _CLI_RESULT_CONTRACT = {
-    "schema": "riverhog-cli-result-contract/v1",
+    "format": "riverhog-cli-result-contract/v1",
     "identity_prefix": "review0-sampler-conformance-cli-result",
     "default_profile": "machine-report",
     "profiles": {

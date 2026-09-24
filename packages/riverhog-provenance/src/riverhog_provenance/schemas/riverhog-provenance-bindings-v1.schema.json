@@ -4,9 +4,9 @@
   "title": "Riverhog v1 bounded provenance file bindings",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "first_file_order", "files"],
+  "required": ["format", "first_file_order", "files"],
   "properties": {
-    "schema": {"const": "riverhog-provenance-bindings/v1"},
+    "format": {"const": "riverhog-provenance-bindings/v1"},
     "first_file_order": {"type": "integer", "minimum": 0},
     "files": {
       "type": "array",

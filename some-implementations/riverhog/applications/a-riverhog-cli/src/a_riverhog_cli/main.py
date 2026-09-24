@@ -18,7 +18,7 @@ from typing import Annotated, Any, Literal, TypedDict, cast
 
 import httpx
 import typer
-from http_api_contracts import ErrorResponse
+from http_api_contracts import ErrorOut
 from riverhog_application_access import ApplicationPermission
 from riverhog_client import (
     COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES,
@@ -111,8 +111,8 @@ from a_riverhog_cli.upload_progress import make_collection_upload_progress
 
 _ERROR_RESPONSE_OUTPUT = {
     "kind": "python-model",
-    "identity": "http-api-contracts.ErrorResponse",
-    "schema": ErrorResponse.model_json_schema(),
+    "identity": "http-api-contracts.ErrorOut",
+    "schema": ErrorOut.model_json_schema(),
 }
 
 
@@ -185,7 +185,7 @@ _CLI_OCCURRENCE_AUTHORITIES = {
 }
 
 _CLI_RESULT_CONTRACT = {
-    "schema": "riverhog-cli-result-contract/v1",
+    "format": "riverhog-cli-result-contract/v1",
     "identity_prefix": "a-riverhog-cli-result",
     "default_profile": "human-json",
     "profiles": {

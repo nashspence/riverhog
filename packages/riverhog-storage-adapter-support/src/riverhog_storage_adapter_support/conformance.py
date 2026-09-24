@@ -39,7 +39,7 @@ STORAGE_ADAPTER_CONFORMANCE_RESULT: Literal["riverhog-storage-adapter-conformanc
 )
 
 _CLI_RESULT_CONTRACT: dict[str, object] = {
-    "schema": "riverhog-cli-result-contract/v1",
+    "format": "riverhog-cli-result-contract/v1",
     "identity_prefix": "riverhog-storage-adapter-conformance-cli-result",
     "default_profile": "machine-report",
     "profiles": {

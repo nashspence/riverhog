@@ -173,7 +173,7 @@ def test_release_resolver_covers_the_exact_runtime_inventory_and_writes_pins(
 
     monkeypatch.setattr(module, "resolve_image", resolve)
     result = module.resolve_release_images(REPO_ROOT / "release.toml", "1.0.0")
-    assert result["schema"] == "riverhog-runtime-image-identities/v1"
+    assert result["format"] == "riverhog-runtime-image-identities/v1"
     assert len(result["images"]) == 13
     assert len(seen) == 13
     env = module.compose_env(result)

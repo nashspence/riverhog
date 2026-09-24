@@ -24,7 +24,7 @@ import stove0_core.persistence as stove0_persistence_module
 from a_riverhog_cli import main as a_riverhog_cli
 from a_riverhog_cli import upload_progress as riverhog_upload_progress
 from a_riverhog_ftp_spool_client import (
-    HealthResponse as FtpSpoolHealthResponse,
+    HealthOut as FtpSpoolHealthOut,
 )
 from a_riverhog_ftp_spool_client import (
     RiverhogFtpSpoolClient,
@@ -40,7 +40,7 @@ from http_api_contracts import (
     safe_http_base_url,
 )
 from http_api_contracts import (
-    HealthResponse as CanonicalHealthResponse,
+    HealthOut as CanonicalHealthOut,
 )
 from pydantic import TypeAdapter, ValidationError
 from riverhog_api.app import create_app as create_riverhog_app
@@ -90,7 +90,7 @@ from riverhog_protocol import (
     SortOrder,
 )
 from riverhog_protocol.errors import BadRequest
-from stove0_api_client import HealthResponse as Stove0HealthResponse
+from stove0_api_client import HealthOut as Stove0HealthOut
 from stove0_api_client import Stove0ApiClient
 from stove0_operator_contracts import (
     STOVE0_HTTP_ERROR_AUTHORITY,
@@ -379,24 +379,24 @@ def test_public_http_health_and_error_schemas_are_conventional(
 ) -> None:
     schema = app_factory().openapi()
     assert schema.get("servers") in (None, [])
-    assert schema["components"]["schemas"]["HealthResponse"] == {
+    assert schema["components"]["schemas"]["HealthOut"] == {
         "additionalProperties": False,
         "properties": {
             "service": {"minLength": 1, "title": "Service", "type": "string"},
             "status": {"const": "ok", "title": "Status", "type": "string"},
         },
         "required": ["service", "status"],
-        "title": "HealthResponse",
+        "title": "HealthOut",
         "type": "object",
     }
     for path in ("/health/live", "/health/ready"):
         response = schema["paths"][path]["get"]["responses"]["200"]
         assert response["content"]["application/json"]["schema"] == {
-            "$ref": "#/components/schemas/HealthResponse"
+            "$ref": "#/components/schemas/HealthOut"
         }
     assert schema["paths"]["/health/ready"]["get"]["responses"]["503"]["content"][
         "application/json"
-    ]["schema"] == {"$ref": "#/components/schemas/ErrorResponse"}
+    ]["schema"] == {"$ref": "#/components/schemas/ErrorOut"}
 
     operations = {
         f"{method.upper()} {path}": operation
@@ -429,7 +429,7 @@ def test_public_http_health_and_error_schemas_are_conventional(
             if not status.isdigit() or int(status) < 400:
                 continue
             assert responses[status]["content"]["application/json"]["schema"] == {
-                "$ref": "#/components/schemas/ErrorResponse"
+                "$ref": "#/components/schemas/ErrorOut"
             }
             assert {
                 (code, ERROR_STATUS_BY_CODE[code]) for code in response["x-riverhog-error-codes"]
@@ -455,12 +455,12 @@ def test_public_http_health_and_error_schemas_are_conventional(
 
 
 def test_official_client_health_models_project_the_exact_http_contract() -> None:
-    expected = create_stove0_contract_app().openapi()["components"]["schemas"]["HealthResponse"]
+    expected = create_stove0_contract_app().openapi()["components"]["schemas"]["HealthOut"]
 
-    assert Stove0HealthResponse is CanonicalHealthResponse
-    assert FtpSpoolHealthResponse is CanonicalHealthResponse
-    assert Stove0HealthResponse.model_json_schema() == expected
-    assert FtpSpoolHealthResponse.model_json_schema() == expected
+    assert Stove0HealthOut is CanonicalHealthOut
+    assert FtpSpoolHealthOut is CanonicalHealthOut
+    assert Stove0HealthOut.model_json_schema() == expected
+    assert FtpSpoolHealthOut.model_json_schema() == expected
 
 
 def test_riverhog_client_exports_the_canonical_public_access_types() -> None:

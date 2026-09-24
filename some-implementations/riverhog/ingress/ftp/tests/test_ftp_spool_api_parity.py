@@ -90,7 +90,7 @@ def test_public_openapi_has_one_stable_operation_for_each_official_client_method
         "get_ftp_spool_status",
         "run_ftp_spool_pass",
     }
-    assert {"ErrorResponse", "HealthResponse"} <= set(schema["components"]["schemas"])
+    assert {"ErrorOut", "HealthOut"} <= set(schema["components"]["schemas"])
     assert all(
         "422" not in operation["responses"]
         for item in schema["paths"].values()

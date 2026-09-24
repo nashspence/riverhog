@@ -13,7 +13,7 @@ from riverhog_canonical_json import (
 
 from riverhog_archive_contracts.archive_manifest import ARCHIVE_ENCRYPTION_FORMAT
 
-RECOVERY_DESCRIPTOR_SCHEMA = "riverhog-recovery-descriptor/v1"
+RECOVERY_DESCRIPTOR_FORMAT = "riverhog-recovery-descriptor/v1"
 RECOVERY_DESCRIPTOR_PATH = "recovery.json"
 
 _PASSPHRASE_ID_RE = re.compile(r"[A-Za-z0-9_-]{16,128}")
@@ -62,16 +62,16 @@ class ArchiveRootCiphertextIdentity:
 class RecoveryDescriptor:
     encryption: CollectionEncryptionBinding
     root: ArchiveRootCiphertextIdentity
-    schema: str = RECOVERY_DESCRIPTOR_SCHEMA
+    format: str = RECOVERY_DESCRIPTOR_FORMAT
 
     def __post_init__(self) -> None:
-        if self.schema != RECOVERY_DESCRIPTOR_SCHEMA:
-            raise RecoveryDescriptorError(f"unsupported recovery schema: {self.schema!r}")
+        if self.format != RECOVERY_DESCRIPTOR_FORMAT:
+            raise RecoveryDescriptorError(f"unsupported recovery format: {self.format!r}")
 
     def to_json_bytes(self) -> bytes:
         return canonical_json_bytes(
             {
-                "schema": self.schema,
+                "format": self.format,
                 "encryption": {
                     "format": self.encryption.format,
                     "passphrase_id": self.encryption.passphrase_id,
@@ -91,7 +91,7 @@ class RecoveryDescriptor:
             value: Any = require_canonical_json(encoded)
         except (UnicodeError, ValueError) as exc:
             raise RecoveryDescriptorError("recovery descriptor JSON is not canonical") from exc
-        if not isinstance(value, dict) or set(value) != {"schema", "encryption", "root"}:
+        if not isinstance(value, dict) or set(value) != {"format", "encryption", "root"}:
             raise RecoveryDescriptorError("recovery descriptor fields are invalid")
         encryption = value.get("encryption")
         root = value.get("root")
@@ -105,7 +105,7 @@ class RecoveryDescriptor:
             raise RecoveryDescriptorError("recovery descriptor root is invalid")
         try:
             descriptor = cls(
-                schema=str(value.get("schema", "")),
+                format=str(value.get("format", "")),
                 encryption=CollectionEncryptionBinding(
                     format=str(encryption.get("format", "")),
                     passphrase_id=str(encryption.get("passphrase_id", "")),

@@ -18,7 +18,7 @@ from a_stove0_media_sampling_contract_lib import (
 from fastapi import Depends, FastAPI, Request, Response
 from fastapi.concurrency import run_in_threadpool
 from fastapi.security import HTTPBearer
-from http_api_contracts import ErrorResponse, HealthResponse, error_payload, operation_openapi
+from http_api_contracts import ErrorOut, HealthOut, error_payload, operation_openapi
 from stove0_observer_protocol import SemanticValidatorRegistry
 from stove0_observer_support import OBSERVER_HTTP_OPERATIONS, ObserverHttpBinding
 
@@ -41,14 +41,14 @@ def create_app(*, token: str, observer: FfprobeSamplingObserver) -> FastAPI:
         title="Stove0 FFprobe sampling observer", version="1", openapi_url="/v1/openapi.json"
     )
 
-    @app.get("/health/live", response_model=HealthResponse, tags=["health"])
+    @app.get("/health/live", response_model=HealthOut, tags=["health"])
     def live() -> dict[str, str]:
         return {"service": SERVICE, "status": "ok"}
 
     @app.get(
         "/health/ready",
-        response_model=HealthResponse,
-        responses={503: {"model": ErrorResponse}},
+        response_model=HealthOut,
+        responses={503: {"model": ErrorOut}},
         tags=["health"],
     )
     def ready() -> Response:
@@ -116,7 +116,7 @@ def _secret() -> str:
 
 
 _CLI_RESULT_CONTRACT = {
-    "schema": "riverhog-cli-result-contract/v1",
+    "format": "riverhog-cli-result-contract/v1",
     "identity_prefix": "a-stove0-ffprobe-sampling-observer-cli-result",
     "default_profile": "runtime",
     "profiles": {

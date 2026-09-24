@@ -26,7 +26,7 @@ from stove0_observer_support.conformance import ObserverConformanceResult
 OBSERVER_SCHEMA_BUNDLE_FORMAT = "stove0-observer-schema-bundle/v1"
 
 _CLI_RESULT_CONTRACT: dict[str, object] = {
-    "schema": "riverhog-cli-result-contract/v1",
+    "format": "riverhog-cli-result-contract/v1",
     "identity_prefix": "stove0-observer-schemas-cli-result",
     "default_profile": "json-or-file",
     "profiles": {

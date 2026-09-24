@@ -115,7 +115,7 @@ def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None
         f"`{owner}`" in settings
         for owner in ("riverhog-client", "a-riverhog-ftp-spool", "stove0-server")
     )
-    assert relationship["schema"] == atlas.RELATIONSHIP_SCHEMA
+    assert relationship["format"] == atlas.RELATIONSHIP_FORMAT
     assert any(item["kind"] == "runtime-image" for item in relationship["nodes"])
     assert any(item["type"] == "implements-protocol" for item in relationship["edges"])
     exact = {item["authority"] for item in root["elements"]}
@@ -128,7 +128,7 @@ def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None
         "## Authorities and interfaces",
     }
     assert set(relationship) == {
-        "schema",
+        "format",
         "center",
         "product",
         "nodes",
@@ -376,8 +376,8 @@ def test_cli_dossiers_expose_exact_result_and_failure_contracts() -> None:
         "(../../riverhog/http-operations/post-v1-collections-search.md#" in list_page
     )
     assert (
-        "json: [http-api-contracts.ErrorResponse]"
-        "(../../http-api-contracts/python/http-api-contracts-errorresponse.md)" in list_page
+        "json: [http-api-contracts.ErrorOut]"
+        "(../../http-api-contracts/python/http-api-contracts-errorout.md)" in list_page
     )
 
     for item in executable:
@@ -608,7 +608,7 @@ def test_navigation_is_representation_only(
     )
 
     changed_representation = {
-        "schema": atlas.REPRESENTATION_IDENTITY_SCHEMA,
+        "format": atlas.REPRESENTATION_IDENTITY_FORMAT,
         "documents": documents,
         "relationships": relationship,
     }

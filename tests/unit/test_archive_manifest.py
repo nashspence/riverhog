@@ -73,7 +73,7 @@ def test_manifest_is_small_immutable_volume_index_not_a_file_listing() -> None:
     )
     payload = json.loads(manifest)
 
-    assert payload["schema"] == "collection-archive-manifest/v1"
+    assert payload["format"] == "collection-archive-manifest/v1"
     assert set(payload["volume_sequence"]) == {"sha256"}
     assert "files" not in payload or isinstance(payload.get("files"), int)
     assert {"a.txt", "b.txt"}.isdisjoint(volumes[0].to_mapping()["volume"])
@@ -99,12 +99,12 @@ def test_v1_construction_vector_fixes_pack_manifest_and_root_identities() -> Non
         packs=((plan, _pack_receipt(plan, contents)),),
     )
 
-    assert plan.plan_sha256 == "6037c2daf2fe30c5edc5250e678057363d8ea95b952b2cc13644136d1b9fe678"
+    assert plan.plan_sha256 == "76a84f1ec48983a67669e7debd0b2be6f8269c96ec520099a0b5dd5adb25420f"
     assert hashlib.sha256(plaintext).hexdigest() == (
-        "e96fa53e1e9c7787171d51af47b7859e72278fe070628b5370513a4629b113bb"
+        "ca351b5e18871fccca687e0847a5c48d7f3a159edaf25410c8b7a31066cb8972"
     )
     assert hashlib.sha256(manifest).hexdigest() == (
-        "a0624b376a289c828c5715f18896ca295ef074279bfefff8580cc0b52e0ca37f"
+        "f2170687f78d86db7e5aefebf7c82c2b1cc11e5926604bcdc641d4549be9d071"
     )
 
 
@@ -246,4 +246,4 @@ def test_manifest_is_canonical_json() -> None:
             packs=((plan, _pack_receipt(plan, {file.path: content})),),
         )
     )
-    assert payload["schema"] == "collection-archive-manifest/v1"
+    assert payload["format"] == "collection-archive-manifest/v1"

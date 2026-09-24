@@ -761,7 +761,7 @@ stove0_compose start controller
 stove0_compose up --detach --wait controller
 
 invoke_code="import json, os, urllib.request
-from stove0_operator_contracts import WorkCreateIn, WorkflowPreviewIn
+from stove0_operator_contracts import WorkCreateRequest, OperatorWorkflowPreviewRequest
 from stove0_protocol import CollectionRootIdentityRef
 receipt = json.loads(os.environ['RIVERHOG_INPUT_RECEIPT'])
 root = CollectionRootIdentityRef.model_validate(receipt)
@@ -778,12 +778,12 @@ def post(path, payload):
     return json.load(urllib.request.urlopen(request, timeout=30))
 preview = post(
     '/v1/workflow-previews',
-    WorkflowPreviewIn(recipe_id='stove0.conformance-media/v1', inputs=(root,)),
+    OperatorWorkflowPreviewRequest(recipe_id='stove0.conformance-media/v1', inputs=(root,)),
 )
 assert preview['state'] == 'ready', preview
 work = post(
     '/v1/work',
-    WorkCreateIn(
+    WorkCreateRequest(
         recipe_id='stove0.conformance-media/v1',
         inputs=(root,),
         preview_sha256=preview['preview_sha256'],

@@ -7,7 +7,7 @@ import a_riverhog_cli.main
 import httpx
 import pytest
 from a_riverhog_cli.main import app
-from riverhog_api.schemas.collections import ListCollectionsResponse
+from riverhog_api.schemas.collections import ListCollectionsOut
 from riverhog_client import ApiClient
 from riverhog_protocol import COLLECTION_TAG_REQUEST_MEMBERS_MAX
 from riverhog_protocol.errors import BadRequest
@@ -30,7 +30,7 @@ def test_collection_list_tag_batch_preserves_the_client_acceptance_boundary(
         assert request.method == "POST"
         assert request.url.path == "/v1/collections:search"
         assert json.loads(request.content)["tags"] == tags
-        payload = ListCollectionsResponse(
+        payload = ListCollectionsOut(
             collections=[],
             page_size=25,
             next_page_token=None,

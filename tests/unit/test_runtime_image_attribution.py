@@ -86,7 +86,7 @@ def test_checked_attribution_text_matches_its_locked_version_and_source_digest()
         metadata_path = Path(source["metadata_path"])
         component = str(source["component"])
         version = str(source["version"])
-        assert source["schema"] == "riverhog-third-party-attribution-source/v1"
+        assert source["format"] == "riverhog-third-party-attribution-source/v1"
         assert metadata_path.parent.parts[-2:] == (component, version)
         assert locked[component] == version
         assert str(source["url"]).startswith("https://")

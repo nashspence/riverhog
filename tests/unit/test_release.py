@@ -554,7 +554,7 @@ def test_published_release_manifest_must_match_regenerated_canonical_bytes(
     module = load_script()
     generated = tmp_path / "generated.json"
     expected = tmp_path / "published.json"
-    payload = {"schema": "riverhog-release/v1", "version": "1.0.0"}
+    payload = {"format": "riverhog-release/v1", "version": "1.0.0"}
     module._write_json(generated, payload)
     module._write_json(expected, payload)
 
@@ -571,7 +571,7 @@ def test_published_release_manifest_comparison_rejects_noncanonical_json(
     module = load_script()
     generated = tmp_path / "generated.json"
     expected = tmp_path / "published.json"
-    payload = {"schema": "riverhog-release/v1", "version": "1.0.0"}
+    payload = {"format": "riverhog-release/v1", "version": "1.0.0"}
     module._write_json(generated, payload)
     expected.write_text(module.json.dumps(payload), encoding="utf-8")
 
@@ -651,9 +651,9 @@ def test_release_plan_is_exact_sha_bound_and_excludes_the_test_image() -> None:
             "gogurt_listener_reference": "gogurt-listener-v1.0.0.md",
         },
         "notices": {
-            "schema": "riverhog-artifact-notices/v1",
+            "format": "riverhog-artifact-notices/v1",
             "directory": "notices",
-            "format": "tar.gz",
+            "archive_format": "tar.gz",
             "basis": "exact-artifact-contents",
             "required_for": ["wheel", "image"],
         },
@@ -710,7 +710,7 @@ def _history_manifest(
     previous: tuple[str, str] | None,
 ) -> dict[str, object]:
     return {
-        "schema": module.RELEASE_SCHEMA,
+        "format": module.RELEASE_FORMAT,
         "version": version,
         "tag": f"v{version}",
         "v1_history": (
@@ -1095,7 +1095,7 @@ def test_artifact_notice_bundle_is_deterministic_and_subject_bound(tmp_path: Pat
         index_stream = archive.extractfile("NOTICE.json")
         assert index_stream is not None
         index = json.loads(index_stream.read())
-    assert index["schema"] == "riverhog-artifact-notices/v1"
+    assert index["format"] == "riverhog-artifact-notices/v1"
     assert index["subject"] == record
 
 
@@ -1216,7 +1216,7 @@ def test_release_evidence_is_complete_and_minisign_verified(
         },
         "runtime_images": {},
     }
-    install_manifest = {"schema": "riverhog-installation/v1"}
+    install_manifest = {"format": "riverhog-installation/v1"}
     (output / "install-manifest.json").write_text(
         module.json.dumps(install_manifest), encoding="utf-8"
     )

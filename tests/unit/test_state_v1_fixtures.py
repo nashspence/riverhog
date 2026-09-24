@@ -149,7 +149,7 @@ def test_provenance_installation_v1_fixture_retains_exact_identity(tmp_path: Pat
 def test_release_inventory_accounts_for_every_v1_state_fixture() -> None:
     release = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
     inventory = release["state"]
-    assert inventory["schema"] == "riverhog-durable-state-inventory/v1"
+    assert inventory["format"] == "riverhog-durable-state-inventory/v1"
     owners = inventory["owners"]
     assert all("classification" not in owner for owner in owners)
     assert all(

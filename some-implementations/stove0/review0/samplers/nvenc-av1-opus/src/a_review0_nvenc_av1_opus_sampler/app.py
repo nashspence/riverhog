@@ -17,7 +17,7 @@ import uvicorn
 from fastapi import Depends, FastAPI, Request, Response
 from fastapi.concurrency import run_in_threadpool
 from fastapi.security import HTTPBearer
-from http_api_contracts import ErrorResponse, HealthResponse, error_payload, operation_openapi
+from http_api_contracts import ErrorOut, HealthOut, error_payload, operation_openapi
 from review0_sampler_lib import (
     SAMPLER_HTTP_OPERATIONS,
     SamplerHttpBinding,
@@ -38,14 +38,14 @@ def create_app(*, token: str, sampler: NvencAv1OpusReviewSampler) -> FastAPI:
     binding = SamplerHttpBinding(sampler)
     app = FastAPI(title=SERVICE, version="1", openapi_url="/v1/openapi.json")
 
-    @app.get("/health/live", response_model=HealthResponse, tags=["health"])
+    @app.get("/health/live", response_model=HealthOut, tags=["health"])
     def live() -> dict[str, str]:
         return {"service": SERVICE, "status": "ok"}
 
     @app.get(
         "/health/ready",
-        response_model=HealthResponse,
-        responses={503: {"model": ErrorResponse}},
+        response_model=HealthOut,
+        responses={503: {"model": ErrorOut}},
         tags=["health"],
     )
     def ready() -> Response:
@@ -128,7 +128,7 @@ def _image_id(prefix: str) -> str:
 
 
 _CLI_RESULT_CONTRACT = {
-    "schema": "riverhog-cli-result-contract/v1",
+    "format": "riverhog-cli-result-contract/v1",
     "identity_prefix": "a-review0-nvenc-av1-opus-sampler-cli-result",
     "default_profile": "runtime",
     "profiles": {

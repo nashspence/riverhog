@@ -9,7 +9,7 @@ from riverhog_canonical_json import canonical_json_bytes as canonical_json_bytes
 
 from riverhog_protocol.paths import validate_canonical_relpath
 
-PACK_UPLOAD_PLAN_SCHEMA = "pack-upload-plan/v1"
+PACK_UPLOAD_PLAN_FORMAT = "pack-upload-plan/v1"
 RESERVED_ARCHIVE_PREFIX = ".riverhog/"
 _SHA256_RE = re.compile(r"[0-9a-f]{64}")
 _PACK_VOLUME_ID_RE = re.compile(r"pack-[0-9a-f]{64}")
@@ -101,7 +101,7 @@ def pack_upload_plan_sha256(
             row = current
         normalized_rows.append(_normalized_unit_row(row, expected_unit=index))
     payload = {
-        "schema": PACK_UPLOAD_PLAN_SCHEMA,
+        "format": PACK_UPLOAD_PLAN_FORMAT,
         "volume_id": volume_id,
         "plaintext_bytes": plaintext_bytes,
         "units": normalized_rows,

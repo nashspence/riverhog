@@ -12,7 +12,7 @@ from typing import Protocol
 from fastapi import Depends, FastAPI, Request, Response
 from fastapi.concurrency import run_in_threadpool
 from fastapi.security import HTTPBearer
-from http_api_contracts import ErrorResponse, HealthResponse, error_payload, operation_openapi
+from http_api_contracts import ErrorOut, HealthOut, error_payload, operation_openapi
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from review0_sampler_client import ReviewSamplerClient
 from stove0_protocol import OciImageId
@@ -109,14 +109,14 @@ def create_target_app(
 
     app = FastAPI(title=title, version="1", lifespan=lifespan, openapi_url="/v1/openapi.json")
 
-    @app.get("/health/live", response_model=HealthResponse, tags=["health"])
+    @app.get("/health/live", response_model=HealthOut, tags=["health"])
     def live() -> dict[str, str]:
         return {"service": service, "status": "ok"}
 
     @app.get(
         "/health/ready",
-        response_model=HealthResponse,
-        responses={503: {"model": ErrorResponse}},
+        response_model=HealthOut,
+        responses={503: {"model": ErrorOut}},
         tags=["health"],
     )
     def ready() -> Response:

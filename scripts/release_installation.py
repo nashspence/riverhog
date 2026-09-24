@@ -22,14 +22,14 @@ from gogurt_listener_runtime.listener import (
     LISTENER_LOG_BACKUPS,
     LISTENER_LOG_BYTES,
     LISTENER_OPERATIONS,
-    LISTENER_STATUS_SCHEMA,
+    LISTENER_STATUS_FORMAT,
 )
 from packaging.markers import Marker, default_environment
 from packaging.requirements import InvalidRequirement, Requirement
 from packaging.tags import Tag, compatible_tags, cpython_tags, mac_platforms
 from packaging.utils import InvalidWheelFilename, canonicalize_name, parse_wheel_filename
 
-INSTALLATION_SCHEMA = "riverhog-installation/v1"
+INSTALLATION_FORMAT = "riverhog-installation/v1"
 INSTALLATION_ROOTS = (
     "gogurt",
     "a-riverhog-cli",
@@ -59,7 +59,7 @@ def listener_release_contract() -> dict[str, object]:
     """Return the portable listener contract; host mechanisms remain provider-owned."""
 
     return {
-        "schema": "gogurt-listener-contract/v1",
+        "format": "gogurt-listener-contract/v1",
         "root": "gogurt",
         "scope": "current-user",
         "resume": "next-login",
@@ -76,7 +76,7 @@ def listener_release_contract() -> dict[str, object]:
             },
             "identity": "persisted-and-reverified-across-restart",
         },
-        "status_schema": LISTENER_STATUS_SCHEMA,
+        "status_schema": LISTENER_STATUS_FORMAT,
         "health": {
             "healthy": "current-heartbeat-valid-global-configuration-and-live-worker",
             "failed": "global-configuration-or-runtime-prevents-dispatch",
@@ -1041,7 +1041,7 @@ def build_installation_artifacts(
         }
     )
     manifest = {
-        "schema": INSTALLATION_SCHEMA,
+        "format": INSTALLATION_FORMAT,
         "version": version,
         "tag": tag,
         "source_sha": source_sha,
@@ -1150,8 +1150,8 @@ def _render_listener_reference(contract: dict[str, object], *, version: str) -> 
 def verify_installation_artifacts(output: Path, manifest: dict[str, Any]) -> None:
     """Verify positive parity between the manifest and every generated artifact."""
 
-    if manifest.get("schema") != INSTALLATION_SCHEMA:
-        raise InstallationError("install manifest uses another schema")
+    if manifest.get("format") != INSTALLATION_FORMAT:
+        raise InstallationError("install manifest uses another format")
     if tuple(manifest.get("platforms", [])) != SUPPORTED_PLATFORMS:
         raise InstallationError("install manifest platform support differs from v1")
     components = manifest.get("components")

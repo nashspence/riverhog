@@ -9,10 +9,10 @@ from typing import TypedDict
 from riverhog_age import UploadState
 from riverhog_archive_contracts import (
     ARCHIVE_ENCRYPTION_FORMAT,
-    COLLECTION_ARCHIVE_MANIFEST_SCHEMA,
-    COLLECTION_ARCHIVE_TERMINAL_SCHEMA,
-    COLLECTION_ARCHIVE_VOLUME_SCHEMA,
-    PACK_INDEX_SCHEMA,
+    COLLECTION_ARCHIVE_MANIFEST_FORMAT,
+    COLLECTION_ARCHIVE_TERMINAL_FORMAT,
+    COLLECTION_ARCHIVE_VOLUME_FORMAT,
+    PACK_INDEX_FORMAT,
     SELECTIVE_READ_FORMAT,
     CollectionArchiveManifest,
     CollectionArchiveTerminalDocument,
@@ -194,7 +194,7 @@ def build_collection_archive_terminal_document(
 ) -> CollectionArchiveTerminalDocument:
     return CollectionArchiveTerminalDocument.from_mapping(
         {
-            "schema": COLLECTION_ARCHIVE_TERMINAL_SCHEMA,
+            "format": COLLECTION_ARCHIVE_TERMINAL_FORMAT,
             "archive_generation": archive_generation,
             "archive_tree_sha256": tree_sha256,
             "sequence": format_archive_sequence(sequence),
@@ -248,11 +248,11 @@ def build_collection_archive_root_manifest(
     if _SHA256_RE.fullmatch(ordered_volume_sha256) is None:
         raise ValueError("archive ordered volume commitment is invalid")
     payload: dict[str, object] = {
-        "schema": COLLECTION_ARCHIVE_MANIFEST_SCHEMA,
+        "format": COLLECTION_ARCHIVE_MANIFEST_FORMAT,
         "archive_generation": archive_generation,
-        "format": {
+        "storage_profile": {
             "encryption": ARCHIVE_ENCRYPTION_FORMAT,
-            "pack_index": PACK_INDEX_SCHEMA,
+            "pack_index": PACK_INDEX_FORMAT,
             "part_digest": "sha256",
             "selective_read": SELECTIVE_READ_FORMAT,
         },
@@ -290,7 +290,7 @@ def _archive_volume_document(
     )
     return CollectionArchiveVolumeDocument.from_mapping(
         {
-            "schema": COLLECTION_ARCHIVE_VOLUME_SCHEMA,
+            "format": COLLECTION_ARCHIVE_VOLUME_FORMAT,
             "archive_generation": archive_generation,
             "archive_tree_sha256": tree_sha256,
             "volume": volume,

@@ -176,10 +176,10 @@ def test_collection_list_separates_logical_total_page_carrier_and_selector_batch
     }
     total = decisions["http:riverhog:operation:list_collections:logical-result"]
     page = decisions[
-        "http:riverhog:components:/schemas/ListCollectionsResponse/properties/collections:cardinality"
+        "http:riverhog:components:/schemas/ListCollectionsOut/properties/collections:cardinality"
     ]
     tags = decisions[
-        "http:riverhog:components:/schemas/ListCollectionsResponse/properties/tags:cardinality"
+        "http:riverhog:components:/schemas/ListCollectionsOut/properties/tags:cardinality"
     ]
     cli_tags = decisions[
         "cli:a-riverhog-cli:a-riverhog-cli:collection:list:parameter:tag:occurrences"

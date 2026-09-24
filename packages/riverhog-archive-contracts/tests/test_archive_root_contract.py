@@ -24,7 +24,7 @@ ONE = "1" * 64
 
 def _volume_mapping() -> dict[str, object]:
     return {
-        "schema": "collection-archive-volume/v1",
+        "format": "collection-archive-volume/v1",
         "archive_generation": ONE,
         "archive_tree_sha256": ZERO,
         "volume": {
@@ -65,9 +65,9 @@ def _manifest_mapping() -> dict[str, object]:
         sequence=1,
     )
     return {
-        "schema": "collection-archive-manifest/v1",
+        "format": "collection-archive-manifest/v1",
         "archive_generation": ONE,
-        "format": {
+        "storage_profile": {
             "encryption": "age-v1-scrypt",
             "pack_index": "riverhog-pack-index/v1",
             "part_digest": "sha256",
@@ -104,7 +104,7 @@ def test_checked_schema_names_the_same_archive_root_contract() -> None:
     path = Path(__file__).parents[1] / "schemas" / "collection-archive-manifest-v1.schema.json"
     schema = json.loads(path.read_text())
 
-    assert schema["properties"]["schema"]["const"] == "collection-archive-manifest/v1"
+    assert schema["properties"]["format"]["const"] == "collection-archive-manifest/v1"
     assert schema["additionalProperties"] is False
     assert "CollectionArchiveManifest" in schema["$comment"]
     Draft202012Validator(schema).validate(_manifest_mapping())
@@ -114,7 +114,7 @@ def test_checked_volume_schema_names_the_same_bounded_volume_contract() -> None:
     path = Path(__file__).parents[1] / "schemas" / "collection-archive-volume-v1.schema.json"
     schema = json.loads(path.read_text())
 
-    assert schema["properties"]["schema"]["const"] == "collection-archive-volume/v1"
+    assert schema["properties"]["format"]["const"] == "collection-archive-volume/v1"
     assert schema["additionalProperties"] is False
     assert "CollectionArchiveVolumeDocument" in schema["$comment"]
     Draft202012Validator(schema).validate(_volume_mapping())

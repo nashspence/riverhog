@@ -49,5 +49,5 @@ def test_raw_source_digest_summary_has_no_resource_growing_member_list() -> None
         ordered_part_sha256=commitment,
     )
 
-    assert summary.schema == "raw-source-digest-summary/v1"
+    assert summary.format == "raw-source-digest-summary/v1"
     assert not hasattr(summary, "part_sha256s")

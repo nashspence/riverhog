@@ -21,8 +21,8 @@ from riverhog_core.domain.archive import (
     VerifiedRawFile,
 )
 
-RAW_FILE_VOLUME_SEQUENCE_SCHEMA = "raw-file-volume-sequence/v1"
-RAW_FILE_VERIFICATION_SCHEMA = "raw-file-verification/v1"
+RAW_FILE_VOLUME_SEQUENCE_FORMAT = "raw-file-volume-sequence/v1"
+RAW_FILE_VERIFICATION_FORMAT = "raw-file-verification/v1"
 _SHA256_RE = re.compile(r"[0-9a-f]{64}")
 
 
@@ -41,7 +41,7 @@ def raw_file_ordered_volume_commitment(
     digest = hashlib.sha256()
     header = canonical_json_bytes(
         {
-            "schema": RAW_FILE_VOLUME_SEQUENCE_SCHEMA,
+            "format": RAW_FILE_VOLUME_SEQUENCE_FORMAT,
             "file": {
                 "path": normalized.path,
                 "bytes": normalized.bytes,
@@ -81,7 +81,7 @@ def raw_file_verification_payload(receipt: VerifiedRawFile) -> dict[str, object]
     if _SHA256_RE.fullmatch(receipt.ordered_volume_sha256) is None or not receipt.verified_at:
         raise ValueError("raw verification receipt identity is invalid")
     return {
-        "schema": RAW_FILE_VERIFICATION_SCHEMA,
+        "format": RAW_FILE_VERIFICATION_FORMAT,
         "path": path,
         "bytes": receipt.bytes,
         "sha256": receipt.sha256,
@@ -147,7 +147,7 @@ def verify_raw_file(
     sequence_digest = hashlib.sha256()
     header = canonical_json_bytes(
         {
-            "schema": RAW_FILE_VOLUME_SEQUENCE_SCHEMA,
+            "format": RAW_FILE_VOLUME_SEQUENCE_FORMAT,
             "file": {
                 "path": normalized_file.path,
                 "bytes": normalized_file.bytes,

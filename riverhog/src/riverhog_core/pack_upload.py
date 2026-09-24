@@ -59,7 +59,7 @@ from riverhog_core.throughput import (
 )
 from riverhog_core.write_segments import WriteSegmentPlan, iter_write_segments
 
-PACK_UPLOAD_CHECKPOINT_SCHEMA = "pack-upload-checkpoint/v1"
+PACK_UPLOAD_CHECKPOINT_FORMAT = "pack-upload-checkpoint/v1"
 PACK_VOLUME_CONTENT_TYPE = "application/vnd.riverhog.pack+age"
 _PACK_VOLUME_ID_RE = re.compile(r"pack-[0-9a-f]{64}")
 TransferTimingObserver = Callable[[TransferTiming], None]
@@ -91,7 +91,7 @@ class PackUploadCheckpoint:
     def to_json(self) -> str:
         ordered_parts = tuple(sorted(self.archive_parts, key=lambda current: current.number))
         payload: dict[str, object] = {
-            "schema": PACK_UPLOAD_CHECKPOINT_SCHEMA,
+            "format": PACK_UPLOAD_CHECKPOINT_FORMAT,
             "collection_id": self.collection_id,
             "volume_id": self.volume_id,
             "object_path": self.object_path,
@@ -124,10 +124,10 @@ class PackUploadCheckpoint:
             payload = json.loads(content)
         except json.JSONDecodeError as exc:
             raise ValueError("pack upload checkpoint is not valid JSON") from exc
-        if not isinstance(payload, dict) or payload.get("schema") != PACK_UPLOAD_CHECKPOINT_SCHEMA:
-            raise ValueError("pack upload checkpoint schema mismatch")
+        if not isinstance(payload, dict) or payload.get("format") != PACK_UPLOAD_CHECKPOINT_FORMAT:
+            raise ValueError("pack upload checkpoint format mismatch")
         expected_fields = {
-            "schema",
+            "format",
             "collection_id",
             "volume_id",
             "object_path",

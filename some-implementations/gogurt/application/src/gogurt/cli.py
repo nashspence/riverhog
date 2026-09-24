@@ -99,7 +99,7 @@ _LISTENER_STATUS_OUTPUT = {
     "schema": {
         "type": "object",
         "required": [
-            "schema",
+            "format",
             "manager_version",
             "platform",
             "installed",
@@ -118,7 +118,7 @@ _LISTENER_STATUS_OUTPUT = {
             "diagnostic",
         ],
         "properties": {
-            "schema": {"const": "gogurt-listener-status/v1"},
+            "format": {"const": "gogurt-listener-status/v1"},
             "manager_version": {"type": "string"},
             "platform": {"type": "string"},
             "installed": {"type": "boolean"},
@@ -147,7 +147,7 @@ app = typer.Typer(
 )
 
 _CLI_RESULT_CONTRACT = {
-    "schema": "riverhog-cli-result-contract/v1",
+    "format": "riverhog-cli-result-contract/v1",
     "identity_prefix": "gogurt-cli-result",
     "default_profile": "human-json",
     "profiles": {

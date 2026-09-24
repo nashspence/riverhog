@@ -177,7 +177,7 @@ def timing_evidence(*, source_sha: str, exit_status: int) -> dict[str, object]:
                 item["client_wall"] = _timing_summary(client_samples)
             operations.append(item)
     return {
-        "schema": "riverhog-operation-timings/v1",
+        "format": "riverhog-operation-timings/v1",
         "source_sha": source_sha,
         "source_checkout": {
             "start": _SOURCE_START,

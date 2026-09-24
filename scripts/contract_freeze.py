@@ -81,10 +81,10 @@ OUTPUT = ROOT / "qualification/contracts/riverhog-v1.json"
 ATLAS_DIRECTORY = ROOT / "qualification/contracts/riverhog-v1"
 LEGACY_TRACE_OUTPUT = ROOT / "qualification/contracts/riverhog-v1-trace.json"
 CONTRACT_FREEZE_EXCEPTIONS = ROOT / "qualification/contract-freeze-exceptions.toml"
-SCHEMA = "riverhog-contract-freeze/v1"
-TRACE_SCHEMA = "riverhog-contract-trace/v1"
-CONFIGURATION_DISCOVERY_SCHEMA = "riverhog-configuration-discovery/v1"
-AUTHORITY_REGISTRY_SCHEMA = "riverhog-contract-authority-registry/v1"
+FORMAT = "riverhog-contract-freeze/v1"
+TRACE_FORMAT = "riverhog-contract-trace/v1"
+CONFIGURATION_DISCOVERY_FORMAT = "riverhog-configuration-discovery/v1"
+AUTHORITY_REGISTRY_FORMAT = "riverhog-contract-authority-registry/v1"
 NONCONTRACTUAL_PROJECTION_AUTHORITIES: tuple[dict[str, object], ...] = (
     {
         "id": "boundary-projection",
@@ -96,12 +96,12 @@ NONCONTRACTUAL_PROJECTION_AUTHORITIES: tuple[dict[str, object], ...] = (
     },
     {
         "id": "contract-projection-envelope",
-        "pointers": ["/schema", "/series"],
+        "pointers": ["/format", "/series"],
         "reason": "Machine projection identity, not an external product promise.",
     },
     {
         "id": "durable-state-registry-envelope",
-        "pointers": ["/external_contract/durable_state/schema"],
+        "pointers": ["/external_contract/durable_state/format"],
         "reason": (
             "Registry format identity; each durable-state promise belongs to its named owner."
         ),
@@ -110,14 +110,14 @@ NONCONTRACTUAL_PROJECTION_AUTHORITIES: tuple[dict[str, object], ...] = (
         "id": "extent-projection-envelope",
         "pointers": [
             "/external_contract/extents/coverage",
-            "/external_contract/extents/schema",
+            "/external_contract/extents/format",
             "/external_contract/extents/sha256",
         ],
         "reason": "Generated coverage and identity metadata, not external extent semantics.",
     },
     {
         "id": "release-publication-envelope",
-        "pointers": ["/external_contract/release/publication/schema"],
+        "pointers": ["/external_contract/release/publication/format"],
         "reason": (
             "Release generator and evidence format metadata; the exact publication promises "
             "belong to the meaningful release interfaces."
@@ -234,7 +234,7 @@ def _protected_boundary(
             }
         )
     return {
-        "schema": "riverhog-protected-boundary/v1",
+        "format": "riverhog-protected-boundary/v1",
         "contract_authorities": boundaries["contract_authorities"],
         "role_kinds": boundaries["role_kinds"],
         "components": [
@@ -780,7 +780,7 @@ def _click_parameter(parameter: Any) -> dict[str, object]:
     return result
 
 
-CLI_RESULT_CONTRACT_SCHEMA = "riverhog-cli-result-contract/v1"
+CLI_RESULT_CONTRACT_FORMAT = "riverhog-cli-result-contract/v1"
 CLI_COMMAND_JSON_OUTPUT = "$command-json-output"
 CLI_OPERATION_APPLICATIONS = {
     "a-riverhog-cli": "riverhog",
@@ -1395,10 +1395,10 @@ def _apply_cli_result_contract(
     declaration = getattr(module, "_CLI_RESULT_CONTRACT", None)
     if not isinstance(declaration, Mapping):
         raise ContractFreezeError(f"CLI has no implementation-owned result contract: {authority}")
-    if declaration.get("schema") != CLI_RESULT_CONTRACT_SCHEMA:
-        raise ContractFreezeError(f"CLI result contract schema is invalid: {authority}")
+    if declaration.get("format") != CLI_RESULT_CONTRACT_FORMAT:
+        raise ContractFreezeError(f"CLI result contract format is invalid: {authority}")
     if set(declaration) != {
-        "schema",
+        "format",
         "identity_prefix",
         "default_profile",
         "profiles",
@@ -2134,7 +2134,7 @@ def _state_contract(config: dict[str, Any]) -> dict[str, object]:
         except state_contract.StateContractError as exc:
             raise ContractFreezeError(str(exc)) from exc
         owners.append(current)
-    return {"schema": config["state"]["schema"], "owners": owners}
+    return {"format": config["state"]["format"], "owners": owners}
 
 
 def _openapi_surfaces() -> dict[str, object]:
@@ -2605,7 +2605,7 @@ def _configuration_registry(
         else []
     )
     return {
-        "schema": CONFIGURATION_DISCOVERY_SCHEMA,
+        "format": CONFIGURATION_DISCOVERY_FORMAT,
         "detector": "implementation-ast-environment-read",
         "detections": detections,
         "resolutions": resolved_detections,
@@ -2686,7 +2686,7 @@ def _configuration_document_registry(
         else []
     )
     return {
-        "schema": CONFIGURATION_DISCOVERY_SCHEMA,
+        "format": CONFIGURATION_DISCOVERY_FORMAT,
         "detector": "release-runtime-configuration-validator",
         "detections": detections,
         "resolutions": resolutions,
@@ -2730,7 +2730,7 @@ def _authority_registry(
     if len(identities) != len(set(identities)):
         raise ContractFreezeError("contract authority registry contains duplicate identities")
     return {
-        "schema": AUTHORITY_REGISTRY_SCHEMA,
+        "format": AUTHORITY_REGISTRY_FORMAT,
         "declaration_source": "release.toml",
         "component_authorities": component_authorities,
         "state_authorities": state_authorities,
@@ -2849,8 +2849,8 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
         len(cast(list[str], link["segmented_extent_witnesses"])) for link in segmented_links
     )
     return {
-        "schema": TRACE_SCHEMA,
-        "contract_schema": projection["schema"],
+        "format": TRACE_FORMAT,
+        "contract_format": projection["format"],
         "boundary_canonical_sha256": _boundary_canonical_sha256(boundaries),
         "contract_projection_sha256": hashlib.sha256(rendered_payload).hexdigest(),
         "sources": sources,
@@ -2878,7 +2878,7 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
         "python_registry": python_registry,
         "console_script_registry": console_script_registry,
         "operation_qualification": {
-            "schema": operation_qualification.SCHEMA,
+            "format": operation_qualification.FORMAT,
             "records": operation_records,
         },
         "coverage": {
@@ -2944,7 +2944,7 @@ def contract_projection() -> dict[str, object]:
     }
     _require_declared_boundary_freeze(config, boundaries)
     return {
-        "schema": SCHEMA,
+        "format": FORMAT,
         "series": "v1",
         "boundaries": boundaries,
         "external_contract": external_contract,
@@ -3091,7 +3091,7 @@ def _write_atlas(atlas: ContractAtlas) -> None:
 def _summary(atlas: ContractAtlas) -> dict[str, object]:
     root = atlas.root
     return {
-        "schema": root["schema"],
+        "format": root["format"],
         "series": root["series"],
         "identities": root["identities"],
         "counts": root["counts"],
@@ -3152,7 +3152,7 @@ def _shown_element(atlas: ContractAtlas, element_id: str) -> dict[str, object]:
         "extent_decisions": [
             decisions[identity] for identity in cast(Sequence[str], element["extent_decision_ids"])
         ],
-        "trace_schema": trace["schema"],
+        "trace_format": trace["format"],
     }
 
 
@@ -3177,7 +3177,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             if OUTPUT.is_file():
                 try:
                     loaded = json.loads(OUTPUT.read_bytes())
-                    if loaded.get("schema") == SCHEMA:
+                    if loaded.get("format") == FORMAT:
                         previous = loaded
                     elif isinstance(loaded.get("projection"), Mapping):
                         # Representation migrations may intentionally make the checked human

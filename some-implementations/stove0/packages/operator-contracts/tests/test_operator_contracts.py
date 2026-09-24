@@ -14,11 +14,11 @@ from stove0_operator_contracts import (
     STOVE0_EVENT_TYPES,
     WORK_CREATED,
     WORK_UPDATED,
-    EvaluationReviewIn,
+    EvaluationReviewRequest,
     EvaluationView,
+    OperatorWorkflowPreviewRequest,
     Stove0EventPage,
-    WorkCreateIn,
-    WorkflowPreviewIn,
+    WorkCreateRequest,
     WorkView,
     parse_stove0_event,
     stove0_event,
@@ -126,15 +126,15 @@ def test_evaluation_projection_adds_and_verifies_the_public_identity() -> None:
 
 
 def test_evaluation_review_request_is_meaningful_and_canonical() -> None:
-    assert EvaluationReviewIn(rating=5).rating == 5
-    assert EvaluationReviewIn(note="use variant a").note == "use variant a"
+    assert EvaluationReviewRequest(rating=5).rating == 5
+    assert EvaluationReviewRequest(note="use variant a").note == "use variant a"
 
     with pytest.raises(ValidationError, match="requires a rating or note"):
-        EvaluationReviewIn()
+        EvaluationReviewRequest()
     with pytest.raises(ValidationError, match="pattern"):
-        EvaluationReviewIn(note=" padded ")
+        EvaluationReviewRequest(note=" padded ")
 
-    schema = EvaluationReviewIn.model_json_schema()
+    schema = EvaluationReviewRequest.model_json_schema()
     assert schema["properties"]["note"]["anyOf"][0] == {
         "maxLength": 4000,
         "minLength": 1,
@@ -163,18 +163,18 @@ def test_operator_requests_share_one_exact_canonical_collection_contract() -> No
             content_identity="4" * 64,
         ),
     )
-    preview = WorkflowPreviewIn(
+    preview = OperatorWorkflowPreviewRequest(
         recipe_id="fixture.recipe/v1",
         inputs=roots,
     )
-    created = WorkCreateIn(
+    created = WorkCreateRequest(
         **preview.model_dump(mode="python"),
         preview_sha256="4" * 64,
     )
 
     assert created.inputs == roots
     with pytest.raises(ValidationError, match="unique and canonically ordered"):
-        WorkflowPreviewIn(recipe_id="fixture.recipe/v1", inputs=tuple(reversed(roots)))
+        OperatorWorkflowPreviewRequest(recipe_id="fixture.recipe/v1", inputs=tuple(reversed(roots)))
 
 
 def test_stove0_events_use_one_closed_typed_operator_vocabulary() -> None:

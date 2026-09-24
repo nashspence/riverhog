@@ -35,7 +35,7 @@ from a_riverhog_filesystem_store.adapter import (
     _SegmentAuthority,
 )
 
-_STATE_SCHEMA = "riverhog-filesystem-materialization-state/v1"
+_STATE_FORMAT = "riverhog-filesystem-materialization-state/v1"
 _COMMITMENT_DOMAIN = b"riverhog-filesystem-materialization-source/v1\0"
 _OPERATION_COMMITMENT_DOMAIN = b"riverhog-filesystem-materialization-operation/v1\0"
 _HEX = frozenset("0123456789abcdef")
@@ -44,8 +44,8 @@ _PRIVATE_DIRECTORY_MODE = 0o700
 _PRIVATE_FILE_MODE = 0o600
 _PROJECTION_BATCH_ROWS = 128
 _CLEANUP_BATCH_ROWS = 512
-_BOOTSTRAP_SCHEMA = "riverhog-filesystem-materialization-bootstrap/v1"
-_COMPLETION_SCHEMA = "riverhog-filesystem-materialization-completion/v1"
+_BOOTSTRAP_FORMAT = "riverhog-filesystem-materialization-bootstrap/v1"
+_COMPLETION_FORMAT = "riverhog-filesystem-materialization-completion/v1"
 _IDENTITY_RECORD_BYTES_MAX = 64 * 1024
 
 
@@ -287,7 +287,7 @@ def _prepare_checkpoint(
     """Publish a complete working checkpoint or resume an exact one."""
 
     expected: dict[str, object] = {
-        "schema": _BOOTSTRAP_SCHEMA,
+        "format": _BOOTSTRAP_FORMAT,
         **_operation_binding(source=source, destination=destination, selection=selection),
     }
     if destination_may_exist:
@@ -354,7 +354,7 @@ def _completion_payload(
     projection: _Projection,
 ) -> dict[str, object]:
     return {
-        "format": _COMPLETION_SCHEMA,
+        "format": _COMPLETION_FORMAT,
         **_operation_binding(source=source, destination=destination, selection=selection),
         "source_projection_sha256": projection.sha256,
         "selected_objects": projection.objects,
@@ -391,7 +391,7 @@ def _read_completion_record(
     if (
         not isinstance(raw, dict)
         or set(raw) != expected_keys
-        or raw.get("format") != _COMPLETION_SCHEMA
+        or raw.get("format") != _COMPLETION_FORMAT
         or any(raw.get(key) != value for key, value in expected_binding.items())
         or not isinstance(raw.get("source_projection_sha256"), str)
         or not _is_hex(str(raw["source_projection_sha256"]), 64)
@@ -907,7 +907,7 @@ def _bind_projection(
     allow_existing_destination: bool = False,
 ) -> None:
     expected = {
-        "schema": _STATE_SCHEMA,
+        "format": _STATE_FORMAT,
         **_operation_binding(source=source, destination=destination, selection=selection),
         "source_projection_sha256": projection.sha256,
     }

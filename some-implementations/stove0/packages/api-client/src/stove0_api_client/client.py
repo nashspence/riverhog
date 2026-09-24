@@ -10,7 +10,7 @@ from urllib.parse import quote
 
 import httpx
 from http_api_contracts import (
-    HealthResponse as HealthResponse,
+    HealthOut as HealthOut,
 )
 from http_api_contracts import (
     closed_literal_values,
@@ -27,19 +27,19 @@ from stove0_operator_contracts import (
     AdmissionView,
     EvaluationPage,
     EvaluationPhase,
-    EvaluationReviewIn,
+    EvaluationReviewRequest,
     EvaluationSort,
     EvaluationView,
+    OperatorWorkflowPreviewRequest,
     RecipeCatalogView,
     RecipeView,
     SchedulerRole,
     SchedulerRun,
-    SchedulerRunIn,
+    SchedulerRunRequest,
     SchedulerStatus,
     SortOrder,
     Stove0EventPage,
-    WorkCreateIn,
-    WorkflowPreviewIn,
+    WorkCreateRequest,
     WorkPage,
     WorkPhase,
     WorkSort,
@@ -128,13 +128,13 @@ class Stove0ApiClient:
             self._client.close()
             self._client = None
 
-    def health_live(self) -> HealthResponse:
-        return HealthResponse.model_validate(
+    def health_live(self) -> HealthOut:
+        return HealthOut.model_validate(
             self._json("health_live", "GET", "/health/live", authenticated=False)
         )
 
-    def health_ready(self) -> HealthResponse:
-        return HealthResponse.model_validate(
+    def health_ready(self) -> HealthOut:
+        return HealthOut.model_validate(
             self._json("health_ready", "GET", "/health/ready", authenticated=False)
         )
 
@@ -261,7 +261,7 @@ class Stove0ApiClient:
         recipe_revision: int | None = None,
         effective_intent: Mapping[str, Any] | None = None,
     ) -> WorkView:
-        request = WorkCreateIn(
+        request = WorkCreateRequest(
             recipe_id=recipe_id,
             preview_sha256=preview_sha256,
             recipe_revision=recipe_revision,
@@ -329,7 +329,7 @@ class Stove0ApiClient:
         recipe_revision: int | None = None,
         effective_intent: Mapping[str, Any] | None = None,
     ) -> WorkflowPreview:
-        request = WorkflowPreviewIn(
+        request = OperatorWorkflowPreviewRequest(
             recipe_id=recipe_id,
             recipe_revision=recipe_revision,
             inputs=tuple(inputs),
@@ -434,7 +434,7 @@ class Stove0ApiClient:
         rating: int | None = None,
         note: str | None = None,
     ) -> EvaluationView:
-        request = EvaluationReviewIn(rating=rating, note=note)
+        request = EvaluationReviewRequest(rating=rating, note=note)
         return EvaluationView.model_validate(
             self._json(
                 "review_evaluation_variant",
@@ -456,7 +456,7 @@ class Stove0ApiClient:
         role: SchedulerRole = "combined",
         work_limit: int = 25,
     ) -> SchedulerRun:
-        request = SchedulerRunIn(
+        request = SchedulerRunRequest(
             role=role,
             work_limit=work_limit,
         )

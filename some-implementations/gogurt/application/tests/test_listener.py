@@ -22,7 +22,7 @@ from gogurt_core.core import load_gogurt_actions, write_gogurt_marker
 from gogurt_core.core import plan_gogurt_action as core_plan_gogurt_action
 from gogurt_core.providers import GogurtProviderReference
 from gogurt_listener_runtime.listener import (
-    LISTENER_CONFIG_SCHEMA,
+    LISTENER_CONFIG_FORMAT,
     ListenerConfig,
     ListenerError,
     ListenerLock,
@@ -185,12 +185,12 @@ def _wait_for_health_value(
     raise AssertionError(f"Gogurt listener did not report {expected}")
 
 
-def test_listener_config_is_schema_versioned_absolute_and_autorun(tmp_path: Path) -> None:
+def test_listener_config_is_format_versioned_absolute_and_autorun(tmp_path: Path) -> None:
     config, paths, _mount, _counter = _fixture(tmp_path)
     config.write(paths.config_file)
 
     payload = json.loads(paths.config_file.read_text(encoding="utf-8"))
-    assert payload["schema"] == LISTENER_CONFIG_SCHEMA
+    assert payload["format"] == LISTENER_CONFIG_FORMAT
     assert payload["autorun"] is True
     assert Path(payload["executable"]).is_absolute()
     assert ListenerConfig.read(paths.config_file) == config
@@ -1826,7 +1826,7 @@ def test_listener_status_reports_health_and_dispatch_attention(tmp_path: Path) -
     config, paths, _mount, _counter = _fixture(tmp_path)
     config.write(paths.config_file)
     heartbeat = {
-        "schema": "gogurt-listener-heartbeat/v1",
+        "format": "gogurt-listener-heartbeat/v1",
         "runtime_version": "an-earlier-gogurt-build",
         "pid": os.getpid(),
         "started_at": "2026-08-14T00:00:00Z",
@@ -1874,7 +1874,7 @@ def test_listener_status_bounds_malformed_heartbeat_representations(
     config, paths, _mount, _counter = _fixture(tmp_path)
     config.write(paths.config_file)
     heartbeat: dict[str, object] = {
-        "schema": "gogurt-listener-heartbeat/v1",
+        "format": "gogurt-listener-heartbeat/v1",
         "runtime_version": importlib.metadata.version("gogurt"),
         "pid": os.getpid(),
         "started_at": "2026-08-14T00:00:00Z",
@@ -1906,7 +1906,7 @@ def test_listener_status_rejects_a_future_heartbeat_as_false_liveness(tmp_path: 
     config, paths, _mount, _counter = _fixture(tmp_path)
     config.write(paths.config_file)
     heartbeat = {
-        "schema": "gogurt-listener-heartbeat/v1",
+        "format": "gogurt-listener-heartbeat/v1",
         "runtime_version": importlib.metadata.version("gogurt"),
         "pid": os.getpid(),
         "started_at": "2026-08-14T00:00:00Z",
@@ -1963,7 +1963,7 @@ def test_listener_status_reports_corrupt_state_without_crashing(tmp_path: Path) 
     paths.heartbeat_file.write_text(
         json.dumps(
             {
-                "schema": "gogurt-listener-heartbeat/v1",
+                "format": "gogurt-listener-heartbeat/v1",
                 "runtime_version": importlib.metadata.version("gogurt"),
                 "pid": os.getpid(),
                 "started_at": "2026-08-14T00:00:00Z",
@@ -2057,7 +2057,7 @@ def test_restarted_native_process_cannot_reuse_a_predecessor_heartbeat(
     paths.heartbeat_file.write_text(
         json.dumps(
             {
-                "schema": "gogurt-listener-heartbeat/v1",
+                "format": "gogurt-listener-heartbeat/v1",
                 "runtime_version": importlib.metadata.version("gogurt"),
                 "pid": 4321,
                 "started_at": "2026-08-14T00:00:00Z",

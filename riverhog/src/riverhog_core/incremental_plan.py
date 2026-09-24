@@ -14,7 +14,7 @@ from riverhog_core.domain.archive import ArchiveFile, PackVolumePlan, RawVolumeP
 from riverhog_core.pack_volume import plan_pack_volume
 from riverhog_core.raw_volume import plan_raw_volumes
 
-INCREMENTAL_VOLUME_PLANNER_CHECKPOINT_SCHEMA = "incremental-volume-planner-checkpoint/v1"
+INCREMENTAL_VOLUME_PLANNER_CHECKPOINT_FORMAT = "incremental-volume-planner-checkpoint/v1"
 _SHA256_RE = re.compile(r"[0-9a-f]{64}")
 _CONTENT_IDENTITY_PREFIX = b'{"files":['
 _CONTENT_IDENTITY_SUFFIX = b'],"format":"riverhog-collection-content/v1"}'
@@ -226,7 +226,7 @@ def incremental_volume_planner_checkpoint_payload(
         content_identity=checkpoint.content_identity,
     )
     return {
-        "schema": INCREMENTAL_VOLUME_PLANNER_CHECKPOINT_SCHEMA,
+        "format": INCREMENTAL_VOLUME_PLANNER_CHECKPOINT_FORMAT,
         "policy": _policy_payload(checkpoint.policy),
         "content_hash_state": checkpoint.content_hash_state,
         "next_file_order": format_scalar("nonnegative", checkpoint.next_file_order),
@@ -262,7 +262,7 @@ def parse_incremental_volume_planner_checkpoint(
     except (UnicodeError, ValueError) as exc:
         raise ValueError("incremental volume planner checkpoint is not canonical JSON") from exc
     expected = {
-        "schema",
+        "format",
         "policy",
         "content_hash_state",
         "next_file_order",
@@ -275,10 +275,10 @@ def parse_incremental_volume_planner_checkpoint(
     }
     if (
         not isinstance(payload, dict)
-        or payload.get("schema") != INCREMENTAL_VOLUME_PLANNER_CHECKPOINT_SCHEMA
+        or payload.get("format") != INCREMENTAL_VOLUME_PLANNER_CHECKPOINT_FORMAT
         or set(payload) != expected
     ):
-        raise ValueError("incremental volume planner checkpoint schema mismatch")
+        raise ValueError("incremental volume planner checkpoint format mismatch")
     policy = _parse_policy(payload.get("policy"))
     raw_pending = payload.get("pending_pack_files")
     if not isinstance(raw_pending, list):

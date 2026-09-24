@@ -23,8 +23,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from http_api_contracts import (
-    ErrorResponse,
-    HealthResponse,
+    ErrorOut,
+    HealthOut,
     apply_openapi_error_contract,
     error_code_for_status,
     error_payload,
@@ -42,7 +42,7 @@ BEARER = HTTPBearer(auto_error=False, scheme_name="RiverhogFtpSpoolBearer")
 LOGGER = logging.getLogger(__name__)
 
 _CLI_RESULT_CONTRACT = {
-    "schema": "riverhog-cli-result-contract/v1",
+    "format": "riverhog-cli-result-contract/v1",
     "identity_prefix": "a-riverhog-ftp-spool-cli-result",
     "default_profile": "operator-human-json",
     "profiles": {
@@ -242,21 +242,21 @@ def create_app(composition: FtpSpoolComposition | None = None) -> FastAPI:
 
     @app.get(
         "/health/live",
-        response_model=HealthResponse,
+        response_model=HealthOut,
         operation_id="ftp_spool_health_live",
         tags=["health"],
     )
-    def health_live() -> HealthResponse:
-        return HealthResponse(service="a-riverhog-ftp-spool", status="ok")
+    def health_live() -> HealthOut:
+        return HealthOut(service="a-riverhog-ftp-spool", status="ok")
 
     @app.get(
         "/health/ready",
-        response_model=HealthResponse,
-        responses={503: {"model": ErrorResponse}},
+        response_model=HealthOut,
+        responses={503: {"model": ErrorOut}},
         operation_id="ftp_spool_health_ready",
         tags=["health"],
     )
-    def health_ready() -> HealthResponse:
+    def health_ready() -> HealthOut:
         try:
             resolved.api.list_archive_stores(page_size=1)
         except Exception as exc:
@@ -265,7 +265,7 @@ def create_app(composition: FtpSpoolComposition | None = None) -> FastAPI:
                 "service_unavailable",
                 "Riverhog archive authority is not ready",
             ) from exc
-        return HealthResponse(service="a-riverhog-ftp-spool", status="ok")
+        return HealthOut(service="a-riverhog-ftp-spool", status="ok")
 
     @app.get(
         "/v1/status",

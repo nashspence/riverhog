@@ -138,13 +138,13 @@ def test_provenance_reads_publish_typed_captured_or_omitted_contracts() -> None:
         "#/components/schemas/CapturedCollectionProvenanceVerification",
         "#/components/schemas/OmittedCollectionProvenanceVerification",
     }
-    listing = schemas["ListCollectionFileProvenanceResponse"]
+    listing = schemas["ListCollectionFileProvenanceOut"]
     assert listing["discriminator"]["propertyName"] == "provenance_mode"
     assert (
         paths["/v1/collections/{collection_id}/provenance/files"]["get"]["responses"]["200"][
             "content"
         ]["application/json"]["schema"]["$ref"]
-        == "#/components/schemas/ListCollectionFileProvenanceResponse"
+        == "#/components/schemas/ListCollectionFileProvenanceOut"
     )
     assert (
         paths["/v1/collections/{collection_id}/provenance/trace/{path}"]["get"]["responses"]["200"][

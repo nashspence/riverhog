@@ -43,7 +43,7 @@ class ProvenanceJournalAgentOut(RiverhogModel):
     agent_id: str
 
 
-class ListProvenanceJournalAgentsResponse(RiverhogModel):
+class ListProvenanceJournalAgentsOut(RiverhogModel):
     collection_id: CollectionId
     journal_id: ProvenanceJournalId
     page_size: int = Field(ge=1, le=100)
@@ -160,7 +160,7 @@ class OmittedCollectionFileProvenancePage(_CollectionFileProvenancePage):
     files: list[OmittedCollectionFileProvenanceOut]
 
 
-class ListCollectionFileProvenanceResponse(
+class ListCollectionFileProvenanceOut(
     RootModel[
         Annotated[
             CapturedCollectionFileProvenancePage

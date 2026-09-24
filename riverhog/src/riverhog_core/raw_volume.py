@@ -10,7 +10,7 @@ from riverhog_protocol.paths import validate_canonical_relpath
 
 from riverhog_core.domain.archive import ArchiveFile, RawVolumePlan
 
-RAW_VOLUME_PLAN_SCHEMA = "raw-volume-plan/v1"
+RAW_VOLUME_PLAN_FORMAT = "raw-volume-plan/v1"
 DEFAULT_RAW_VOLUME_PLAINTEXT_BYTES = 16 * 1024 * 1024 * 1024
 DEFAULT_RAW_PART_PLAINTEXT_BYTES = 64 * 1024 * 1024
 _SHA256_RE = re.compile(r"[0-9a-f]{64}")
@@ -75,7 +75,7 @@ def plan_raw_volumes(
 
 def raw_volume_plan_payload(plan: RawVolumePlan) -> dict[str, object]:
     return {
-        "schema": RAW_VOLUME_PLAN_SCHEMA,
+        "format": RAW_VOLUME_PLAN_FORMAT,
         "volume_id": plan.volume_id,
         "sequence": plan.sequence,
         "source_path": plan.source_path,
@@ -97,10 +97,10 @@ def parse_raw_volume_plan(content: bytes | str) -> RawVolumePlan:
         payload = json.loads(content)
     except (UnicodeError, json.JSONDecodeError) as exc:
         raise ValueError("raw volume plan is not valid JSON") from exc
-    if not isinstance(payload, dict) or payload.get("schema") != RAW_VOLUME_PLAN_SCHEMA:
-        raise ValueError("raw volume plan schema mismatch")
+    if not isinstance(payload, dict) or payload.get("format") != RAW_VOLUME_PLAN_FORMAT:
+        raise ValueError("raw volume plan format mismatch")
     expected = {
-        "schema",
+        "format",
         "volume_id",
         "sequence",
         "source_path",

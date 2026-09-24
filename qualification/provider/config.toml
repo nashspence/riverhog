@@ -1,4 +1,4 @@
-schema = "riverhog-provider-qualification-config/v1"
+format = "riverhog-provider-qualification-config/v1"
 namespace_prefix = "qualification"
 
 [retention]

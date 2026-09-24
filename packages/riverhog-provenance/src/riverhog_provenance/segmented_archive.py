@@ -10,10 +10,10 @@ from typing import Any, Literal, cast
 from .common import canonical_json
 from .journal import ProvenanceValidationError
 
-PROVENANCE_ROOT_SCHEMA = "riverhog-provenance-root/v1"
-PROVENANCE_VOLUME_SCHEMA = "riverhog-provenance-volume/v1"
-PROVENANCE_TERMINAL_SCHEMA = "riverhog-provenance-terminal/v1"
-PROVENANCE_BINDING_SEGMENT_SCHEMA = "riverhog-provenance-bindings/v1"
+PROVENANCE_ROOT_FORMAT = "riverhog-provenance-root/v1"
+PROVENANCE_VOLUME_FORMAT = "riverhog-provenance-volume/v1"
+PROVENANCE_TERMINAL_FORMAT = "riverhog-provenance-terminal/v1"
+PROVENANCE_BINDING_SEGMENT_FORMAT = "riverhog-provenance-bindings/v1"
 PROVENANCE_BINDING_SEGMENT_FILES_MAX = 512
 PROVENANCE_BINDING_SEGMENT_BYTES_MAX = 4 * 1024 * 1024
 PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX = 8 * 1024 * 1024
@@ -67,11 +67,11 @@ class ProvenanceVolumeDocument:
     journal_offset: int | None = None
     journal_bytes: int | None = None
     journal_sha256: str | None = None
-    schema: str = PROVENANCE_VOLUME_SCHEMA
+    format: str = PROVENANCE_VOLUME_FORMAT
 
     def __post_init__(self) -> None:
-        if self.schema != PROVENANCE_VOLUME_SCHEMA:
-            raise ProvenanceValidationError("provenance volume schema is unsupported")
+        if self.format != PROVENANCE_VOLUME_FORMAT:
+            raise ProvenanceValidationError("provenance volume format is unsupported")
         _sha256(self.archive_generation, "archive generation")
         _sha256(self.archive_tree_sha256, "archive tree SHA-256")
         _nonnegative_int(self.sequence, "provenance volume sequence")
@@ -112,7 +112,7 @@ class ProvenanceVolumeDocument:
 
     def to_mapping(self) -> dict[str, object]:
         value: dict[str, object] = {
-            "schema": self.schema,
+            "format": self.format,
             "archive_generation": self.archive_generation,
             "archive_tree_sha256": self.archive_tree_sha256,
             "sequence": format_provenance_sequence(self.sequence),
@@ -144,7 +144,7 @@ class ProvenanceVolumeDocument:
             raise ProvenanceValidationError("provenance volume exceeds its byte limit")
         value = _canonical_object(content, "provenance volume")
         expected = {
-            "schema",
+            "format",
             "archive_generation",
             "archive_tree_sha256",
             "sequence",
@@ -160,14 +160,14 @@ class ProvenanceVolumeDocument:
             bytes=_positive_int(payload_row["bytes"], "provenance payload bytes"),
             sha256=_sha256(payload_row["sha256"], "provenance payload SHA-256"),
         )
-        schema = str(value["schema"])
+        format = str(value["format"])
         archive_generation = str(value["archive_generation"])
         archive_tree_sha256 = str(value["archive_tree_sha256"])
         sequence = parse_provenance_sequence(value["sequence"], "provenance volume sequence")
         if "binding_range" in value:
             row = _mapping(value["binding_range"], {"first_file_order", "file_count"})
             return cls(
-                schema=schema,
+                format=format,
                 archive_generation=archive_generation,
                 archive_tree_sha256=archive_tree_sha256,
                 sequence=sequence,
@@ -179,7 +179,7 @@ class ProvenanceVolumeDocument:
             )
         row = _mapping(value["journal_range"], {"journal_id", "offset", "bytes", "sha256"})
         return cls(
-            schema=schema,
+            format=format,
             archive_generation=archive_generation,
             archive_tree_sha256=archive_tree_sha256,
             sequence=sequence,
@@ -199,11 +199,11 @@ class ProvenanceTerminalDocument:
     archive_tree_sha256: str
     sequence: int
     kind: Literal["terminal"] = "terminal"
-    schema: str = PROVENANCE_TERMINAL_SCHEMA
+    format: str = PROVENANCE_TERMINAL_FORMAT
 
     def __post_init__(self) -> None:
-        if self.schema != PROVENANCE_TERMINAL_SCHEMA or self.kind != "terminal":
-            raise ProvenanceValidationError("provenance terminal schema is unsupported")
+        if self.format != PROVENANCE_TERMINAL_FORMAT or self.kind != "terminal":
+            raise ProvenanceValidationError("provenance terminal format is unsupported")
         _sha256(self.archive_generation, "archive generation")
         _sha256(self.archive_tree_sha256, "archive tree SHA-256")
         _positive_int(self.sequence, "provenance terminal sequence")
@@ -215,7 +215,7 @@ class ProvenanceTerminalDocument:
 
     def to_mapping(self) -> dict[str, object]:
         return {
-            "schema": self.schema,
+            "format": self.format,
             "archive_generation": self.archive_generation,
             "archive_tree_sha256": self.archive_tree_sha256,
             "sequence": format_provenance_sequence(self.sequence),
@@ -235,10 +235,10 @@ class ProvenanceTerminalDocument:
         value = _canonical_object(content, "provenance terminal")
         row = _mapping(
             value,
-            {"schema", "archive_generation", "archive_tree_sha256", "sequence", "kind"},
+            {"format", "archive_generation", "archive_tree_sha256", "sequence", "kind"},
         )
         return cls(
-            schema=str(row["schema"]),
+            format=str(row["format"]),
             archive_generation=str(row["archive_generation"]),
             archive_tree_sha256=str(row["archive_tree_sha256"]),
             sequence=parse_provenance_sequence(row["sequence"], "provenance terminal sequence"),
@@ -251,11 +251,11 @@ class ProvenanceRootDocument:
     archive_generation: str
     archive_tree_sha256: str
     ordered_volume_sha256: str
-    schema: str = PROVENANCE_ROOT_SCHEMA
+    format: str = PROVENANCE_ROOT_FORMAT
 
     def __post_init__(self) -> None:
-        if self.schema != PROVENANCE_ROOT_SCHEMA:
-            raise ProvenanceValidationError("provenance root schema is unsupported")
+        if self.format != PROVENANCE_ROOT_FORMAT:
+            raise ProvenanceValidationError("provenance root format is unsupported")
         _sha256(self.archive_generation, "archive generation")
         _sha256(self.archive_tree_sha256, "archive tree SHA-256")
         _sha256(self.ordered_volume_sha256, "ordered provenance volume SHA-256")
@@ -266,7 +266,7 @@ class ProvenanceRootDocument:
 
     def to_mapping(self) -> dict[str, object]:
         return {
-            "schema": self.schema,
+            "format": self.format,
             "archive_generation": self.archive_generation,
             "archive_tree_sha256": self.archive_tree_sha256,
             "volume_sequence": {
@@ -286,7 +286,7 @@ class ProvenanceRootDocument:
             raise ProvenanceValidationError("provenance root exceeds its byte limit")
         value = _canonical_object(content, "provenance root")
         if set(value) != {
-            "schema",
+            "format",
             "archive_generation",
             "archive_tree_sha256",
             "volume_sequence",
@@ -294,7 +294,7 @@ class ProvenanceRootDocument:
             raise ProvenanceValidationError("provenance root fields are invalid")
         sequence = _mapping(value["volume_sequence"], {"sha256"})
         return cls(
-            schema=str(value["schema"]),
+            format=str(value["format"]),
             archive_generation=str(value["archive_generation"]),
             archive_tree_sha256=str(value["archive_tree_sha256"]),
             ordered_volume_sha256=_sha256(sequence["sha256"], "ordered provenance volume SHA-256"),
@@ -312,7 +312,7 @@ def binding_segment_bytes(
     content = (
         canonical_json(
             {
-                "schema": PROVENANCE_BINDING_SEGMENT_SCHEMA,
+                "format": PROVENANCE_BINDING_SEGMENT_FORMAT,
                 "first_file_order": first_file_order,
                 "files": [dict(item) for item in files],
             }
@@ -358,8 +358,8 @@ def parse_binding_segment(content: bytes) -> tuple[int, list[dict[str, object]]]
         raise ProvenanceValidationError("binding segment exceeds its byte limit")
     value = _canonical_object(content, "provenance binding segment")
     if (
-        set(value) != {"schema", "first_file_order", "files"}
-        or value.get("schema") != PROVENANCE_BINDING_SEGMENT_SCHEMA
+        set(value) != {"format", "first_file_order", "files"}
+        or value.get("format") != PROVENANCE_BINDING_SEGMENT_FORMAT
     ):
         raise ProvenanceValidationError("provenance binding segment fields are invalid")
     files = value["files"]
@@ -455,15 +455,15 @@ def _journal_id(value: object) -> str:
 __all__ = [
     "PROVENANCE_BINDING_SEGMENT_FILES_MAX",
     "PROVENANCE_BINDING_SEGMENT_BYTES_MAX",
-    "PROVENANCE_BINDING_SEGMENT_SCHEMA",
+    "PROVENANCE_BINDING_SEGMENT_FORMAT",
     "PROVENANCE_JOURNAL_SEGMENT_BYTES_MAX",
     "PROVENANCE_ROOT_DOCUMENT_BYTES_MAX",
     "PROVENANCE_VOLUME_DOCUMENT_BYTES_MAX",
-    "PROVENANCE_ROOT_SCHEMA",
+    "PROVENANCE_ROOT_FORMAT",
     "PROVENANCE_SEQUENCE_BITS",
     "PROVENANCE_SEQUENCE_HEX_WIDTH",
-    "PROVENANCE_TERMINAL_SCHEMA",
-    "PROVENANCE_VOLUME_SCHEMA",
+    "PROVENANCE_TERMINAL_FORMAT",
+    "PROVENANCE_VOLUME_FORMAT",
     "ProvenancePayloadIdentity",
     "ProvenanceRootDocument",
     "ProvenanceTerminalDocument",

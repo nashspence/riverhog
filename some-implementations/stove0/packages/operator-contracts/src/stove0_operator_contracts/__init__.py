@@ -435,7 +435,7 @@ def validate_evaluation_state_shape(
         raise ValueError("evaluation review names an unknown variant")
 
 
-class WorkflowPreviewIn(OperatorModel):
+class OperatorWorkflowPreviewRequest(OperatorModel):
     recipe_id: str = Field(min_length=1, max_length=160)
     recipe_revision: int | None = Field(default=None, ge=1)
     inputs: tuple[CollectionRootIdentityRef, ...] = Field(min_length=1)
@@ -454,11 +454,11 @@ class WorkflowPreviewIn(OperatorModel):
         return value
 
 
-class WorkCreateIn(WorkflowPreviewIn):
+class WorkCreateRequest(OperatorWorkflowPreviewRequest):
     preview_sha256: Sha256
 
 
-class EvaluationReviewIn(OperatorModel):
+class EvaluationReviewRequest(OperatorModel):
     model_config = ConfigDict(
         json_schema_extra={
             "anyOf": [
@@ -480,7 +480,7 @@ class EvaluationReviewIn(OperatorModel):
         return self
 
 
-class SchedulerRunIn(OperatorModel):
+class SchedulerRunRequest(OperatorModel):
     role: SchedulerRole = "combined"
     work_limit: int = Field(default=25, ge=1, le=100)
 
@@ -936,7 +936,7 @@ __all__ = [
     "EvaluationPhase",
     "EvaluationSort",
     "EvaluationPage",
-    "EvaluationReviewIn",
+    "EvaluationReviewRequest",
     "EvaluationReviewView",
     "EvaluationUpdatedEvent",
     "EvaluationUpdatedEventData",
@@ -950,7 +950,7 @@ __all__ = [
     "SchedulerPruning",
     "SchedulerRole",
     "SchedulerRun",
-    "SchedulerRunIn",
+    "SchedulerRunRequest",
     "SchedulerStatus",
     "SchedulerWorkBatch",
     "STOVE0_EVENT_SOURCE",
@@ -965,7 +965,7 @@ __all__ = [
     "WORK_CREATED",
     "WORK_UPDATED",
     "WorkClaimView",
-    "WorkCreateIn",
+    "WorkCreateRequest",
     "WorkCreatedEvent",
     "WorkCreatedEventData",
     "WorkFailureView",
@@ -976,7 +976,7 @@ __all__ = [
     "WorkUpdatedEvent",
     "WorkUpdatedEventData",
     "WorkView",
-    "WorkflowPreviewIn",
+    "OperatorWorkflowPreviewRequest",
     "parse_stove0_event",
     "stove0_event",
     "validate_evaluation_child_shape",

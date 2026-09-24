@@ -23,7 +23,7 @@ app = typer.Typer(
 )
 
 _CLI_RESULT_CONTRACT = {
-    "schema": "riverhog-cli-result-contract/v1",
+    "format": "riverhog-cli-result-contract/v1",
     "identity_prefix": "stove0-cli-result",
     "default_profile": "human-json",
     "profiles": {
@@ -69,7 +69,7 @@ _CLI_RESULT_CONTRACT = {
     "output_authorities": {
         "health": {
             "kind": "openapi-schema",
-            "schema": "HealthResponse",
+            "schema": "HealthOut",
         },
         "recipe validate": {
             "kind": "cli-local-json-schema",

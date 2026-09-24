@@ -24,7 +24,7 @@ from riverhog_core.raw_volume import (
     plan_raw_volumes,
 )
 
-COLLECTION_VOLUME_PLAN_SCHEMA = "collection-volume-plan/v1"
+COLLECTION_VOLUME_PLAN_FORMAT = "collection-volume-plan/v1"
 _SHA256_RE = re.compile(r"[0-9a-f]{64}")
 _BYTES_RE = re.compile(r"^(\d+(?:_\d+)*)([kmgt]i?b?|b)?$", re.IGNORECASE)
 
@@ -183,7 +183,7 @@ def _base_payload(
     tree: Mapping[str, object],
 ) -> dict[str, object]:
     return {
-        "schema": COLLECTION_VOLUME_PLAN_SCHEMA,
+        "format": COLLECTION_VOLUME_PLAN_FORMAT,
         "policy": {
             "pack_source_bytes": policy.pack_source_bytes,
             "pack_files": policy.pack_files,

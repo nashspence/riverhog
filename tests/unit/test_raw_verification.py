@@ -87,7 +87,7 @@ def test_raw_file_is_reassembled_and_verified_before_root_publication(
         volumes=(first, second),
     )
     payload = raw_verification.raw_file_verification_payload(verified)
-    assert payload["schema"] == "raw-file-verification/v1"
+    assert payload["format"] == "raw-file-verification/v1"
 
 
 def test_raw_verification_rejects_stored_part_corruption(

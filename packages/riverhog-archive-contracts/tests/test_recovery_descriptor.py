@@ -61,9 +61,9 @@ def test_descriptor_preserves_exact_unbounded_stored_size() -> None:
     "payload",
     [
         {},
-        {"schema": "riverhog-recovery-descriptor/v1", "encryption": {}, "root": {}},
+        {"format": "riverhog-recovery-descriptor/v1", "encryption": {}, "root": {}},
         {
-            "schema": "riverhog-recovery-descriptor/v1",
+            "format": "riverhog-recovery-descriptor/v1",
             "encryption": {"format": "future", "passphrase_id": PASSPHRASE_ID},
             "root": {
                 "path": "manifest.json.age",

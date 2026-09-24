@@ -225,9 +225,7 @@ def test_collection_list_has_a_readable_mutual_http_client_cli_audit_path() -> N
     assert "minimum=1; maximum=100" in parameter
     response = next(line for line in reading_path.splitlines() if "`200` |" in line)
     assert "application/json" in response
-    assert (
-        "[ListCollectionsResponse](../http-schemas/schemas-listcollectionsresponse.md)" in response
-    )
+    assert "[ListCollectionsOut](../http-schemas/schemas-listcollectionsout.md)" in response
     for status, code in (
         (400, "bad_request"),
         (401, "unauthorized"),
@@ -235,7 +233,7 @@ def test_collection_list_has_a_readable_mutual_http_client_cli_audit_path() -> N
         (500, "internal_error"),
     ):
         response = next(line for line in reading_path.splitlines() if f"`{status}` |" in line)
-        assert "[ErrorResponse](../http-schemas/schemas-errorresponse.md)" in response
+        assert "[ErrorOut](../http-schemas/schemas-errorout.md)" in response
         assert f"`{code}`" in response
 
 
@@ -1222,7 +1220,7 @@ def test_http_unknown_fields_survive_at_every_record_level(extra: object) -> Non
 
 def test_schema_references_are_scoped_actionable_and_keep_use_site_constraints() -> None:
     checked = checked_atlas()
-    element, primary = _primary_contract("riverhog", "schemas: ListCollectionsResponse")
+    element, primary = _primary_contract("riverhog", "schemas: ListCollectionsOut")
     fields = primary.split("### Fields", 1)[1].split("### Progression", 1)[0]
     assert "[CollectionSummaryOut](schemas-collectionsummaryout.md)" in fields
     assert "#/components/schemas/CollectionSummaryOut" not in fields

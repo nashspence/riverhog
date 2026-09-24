@@ -4,9 +4,9 @@
   "title": "Riverhog v1 immutable provenance root",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "archive_generation", "archive_tree_sha256", "volume_sequence"],
+  "required": ["format", "archive_generation", "archive_tree_sha256", "volume_sequence"],
   "properties": {
-    "schema": {"const": "riverhog-provenance-root/v1"},
+    "format": {"const": "riverhog-provenance-root/v1"},
     "archive_generation": {"$ref": "#/$defs/sha256"},
     "archive_tree_sha256": {"$ref": "#/$defs/sha256"},
     "volume_sequence": {

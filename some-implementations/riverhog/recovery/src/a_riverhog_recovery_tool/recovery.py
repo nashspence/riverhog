@@ -15,7 +15,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 from riverhog_archive_contracts import (
-    PACK_INDEX_SCHEMA,
+    PACK_INDEX_FORMAT,
     RECOVERY_DESCRIPTOR_PATH,
     ArchiveProvenanceIdentity,
     CollectionArchiveManifest,
@@ -393,7 +393,7 @@ def recover_archive(
                 raise RecoveryError("archive sequence metadata is not valid JSON") from exc
             if not isinstance(metadata_value, dict):
                 raise RecoveryError("archive sequence metadata is not an object")
-            if metadata_value.get("schema") == "collection-archive-terminal/v1":
+            if metadata_value.get("format") == "collection-archive-terminal/v1":
                 terminal = CollectionArchiveTerminalDocument.from_json_bytes(metadata_bytes)
                 if (
                     terminal.archive_generation != manifest.archive_generation
@@ -1058,7 +1058,7 @@ def _recover_provenance(
                 raise RecoveryError("provenance sequence metadata is not valid JSON") from exc
             if not isinstance(metadata_value, dict):
                 raise RecoveryError("provenance sequence metadata is not an object")
-            if metadata_value.get("schema") == "riverhog-provenance-terminal/v1":
+            if metadata_value.get("format") == "riverhog-provenance-terminal/v1":
                 terminal_document = ProvenanceTerminalDocument.from_json_bytes(metadata_bytes)
                 terminal = parse_segmented_provenance_terminal(metadata_bytes)
                 if (
@@ -1386,10 +1386,10 @@ def _parse_pack_index(
     payload = json.loads(content)
     if (
         not isinstance(payload, dict)
-        or payload.get("schema") != PACK_INDEX_SCHEMA
-        or set(payload) != {"schema", "volume", "tree", "files"}
+        or payload.get("format") != PACK_INDEX_FORMAT
+        or set(payload) != {"format", "volume", "tree", "files"}
     ):
-        raise RecoveryError("pack index schema is invalid")
+        raise RecoveryError("pack index format is invalid")
     volume_row = payload.get("volume")
     tree = payload.get("tree")
     raw_files = payload.get("files")

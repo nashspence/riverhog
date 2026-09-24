@@ -1042,7 +1042,7 @@ def test_observer_schema_bundle_is_deterministic_and_self_validating() -> None:
         if value is not None
     }
     assert referenced <= set(first["schemas"])
-    assert "ErrorResponse" in referenced
+    assert "ErrorOut" in referenced
     assert first["schemas"]["ObserverConformanceResult"]["properties"]["format"]["const"] == (
         "stove0-observer-conformance-result/v1"
     )

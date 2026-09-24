@@ -58,11 +58,11 @@ class ErrorBody(HttpApiModel):
     details: dict[str, Any] | None = None
 
 
-class ErrorResponse(HttpApiModel):
+class ErrorOut(HttpApiModel):
     error: ErrorBody
 
 
-class HealthResponse(HttpApiModel):
+class HealthOut(HttpApiModel):
     service: str = Field(min_length=1)
     status: Literal["ok"]
 
@@ -356,7 +356,7 @@ class HttpOperationContract:
     errors: tuple[HttpErrorContract, ...] = ()
     path_parameters: tuple[HttpPathParameterContract, ...] = ()
     response_headers: tuple[HttpResponseHeaderContract, ...] = ()
-    error_type: type[BaseModel] = ErrorResponse
+    error_type: type[BaseModel] = ErrorOut
 
     def __post_init__(self) -> None:
         if not self.path.startswith("/v1/"):
@@ -684,7 +684,7 @@ def error_responses(*codes: str) -> dict[int | str, dict[str, Any]]:
         grouped.setdefault(ERROR_STATUS_BY_CODE[code], []).append(code)
     return {
         status: {
-            "model": ErrorResponse,
+            "model": ErrorOut,
             "x-riverhog-error-codes": sorted(set(status_codes)),
         }
         for status, status_codes in grouped.items()
@@ -760,7 +760,7 @@ def error_payload(
     message: str,
     details: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
-    return ErrorResponse(
+    return ErrorOut(
         error=ErrorBody(
             code=code,
             message=message,
@@ -778,11 +778,11 @@ def apply_openapi_error_contract(
 
     authority = operation_error_authority or DEFAULT_HTTP_ERROR_AUTHORITY
     observed_operations: set[str] = set()
-    error_schema = ErrorResponse.model_json_schema(ref_template="#/components/schemas/{model}")
+    error_schema = ErrorOut.model_json_schema(ref_template="#/components/schemas/{model}")
     definitions = error_schema.pop("$defs", {})
     components = schema.setdefault("components", {}).setdefault("schemas", {})
     components.update(definitions)
-    components["ErrorResponse"] = error_schema
+    components["ErrorOut"] = error_schema
     for path, path_item in schema.get("paths", {}).items():
         if not isinstance(path_item, Mapping):
             continue
@@ -831,9 +831,7 @@ def apply_openapi_error_contract(
                     "description": HTTPStatus(status).phrase,
                     "x-riverhog-error-codes": status_codes,
                     "content": {
-                        "application/json": {
-                            "schema": {"$ref": "#/components/schemas/ErrorResponse"}
-                        }
+                        "application/json": {"schema": {"$ref": "#/components/schemas/ErrorOut"}}
                     },
                 }
     unknown_operations = authority.operation_ids - observed_operations
@@ -868,7 +866,7 @@ def parse_declared_error_payload(
 ) -> tuple[str, str, dict[str, Any]]:
     """Accept one exact remote rejection or fail as an invalid peer response."""
 
-    response = ErrorResponse.model_validate(payload)
+    response = ErrorOut.model_validate(payload)
     if not contract.accepts_error(status=status, code=response.error.code):
         raise ValueError("HTTP peer returned an undeclared error code/status pair")
     return response.error.code, response.error.message, dict(response.error.details or {})
@@ -883,7 +881,7 @@ def parse_operation_error_payload(
 ) -> tuple[str, str, dict[str, Any]]:
     """Accept one exact protocol-owned operation rejection or fail closed."""
 
-    response = ErrorResponse.model_validate(payload)
+    response = ErrorOut.model_validate(payload)
     if not authority.accepts(operation_id, status=status, code=response.error.code):
         raise ValueError("HTTP peer returned an undeclared operation error code/status pair")
     return response.error.code, response.error.message, dict(response.error.details or {})
@@ -910,8 +908,8 @@ __all__ = [
     "Sha256Identity",
     "CanonicalVisibleText",
     "ErrorBody",
-    "ErrorResponse",
-    "HealthResponse",
+    "ErrorOut",
+    "HealthOut",
     "HttpErrorContract",
     "HttpBodyKind",
     "HttpOperationContract",

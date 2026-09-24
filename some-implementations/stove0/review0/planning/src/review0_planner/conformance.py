@@ -24,7 +24,7 @@ _REVIEW_CONTRACT_REPORT_OUTPUT = {
 }
 
 _CLI_RESULT_CONTRACT: dict[str, object] = {
-    "schema": "riverhog-cli-result-contract/v1",
+    "format": "riverhog-cli-result-contract/v1",
     "identity_prefix": "review0-planner-cli-result",
     "default_profile": "machine-report",
     "profiles": {

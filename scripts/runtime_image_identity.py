@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-SCHEMA = "riverhog-runtime-image-identities/v1"
+FORMAT = "riverhog-runtime-image-identities/v1"
 PLATFORM = "linux/amd64"
 OCI_DIGEST = re.compile(r"sha256:[0-9a-f]{64}\Z")
 TAG = re.compile(r"[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}\Z")
@@ -143,7 +143,7 @@ def resolve_release_images(inventory: Path, tag: str) -> dict[str, object]:
         target: resolve_image(str(value["repository"]), tag)
         for target, value in sorted(runtime.items())
     }
-    return {"schema": SCHEMA, "images": records}
+    return {"format": FORMAT, "images": records}
 
 
 def compose_env(identities: dict[str, object]) -> str:

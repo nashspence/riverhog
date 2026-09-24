@@ -26,7 +26,7 @@ from riverhog_api.schemas.provenance import (
     CollectionFileProvenanceDetailOut,
     CollectionFileProvenanceTraceOut,
     CollectionProvenanceVerificationOut,
-    ListCollectionFileProvenanceResponse,
+    ListCollectionFileProvenanceOut,
 )
 from riverhog_api.schemas.retrieval import RetrievalJobOut, RetrievalPlanFileOut
 from riverhog_api.schemas.search import SearchFileOut
@@ -836,7 +836,7 @@ def test_provenance_read_projections_preserve_captured_mixed_and_omitted_truth()
 
     for payload in pages:
         assert (
-            ListCollectionFileProvenanceResponse.model_validate(payload).root.provenance_mode
+            ListCollectionFileProvenanceOut.model_validate(payload).root.provenance_mode
             == payload["provenance_mode"]
         )
 

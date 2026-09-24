@@ -121,8 +121,8 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     assert checked.files == generated.files
     assert module.reassemble_projection(checked) == json.loads(json.dumps(projection))
     assert module.reassemble_trace(checked) == json.loads(json.dumps(trace))
-    assert projection["schema"] == "riverhog-contract-freeze/v1"
-    assert set(projection) == {"schema", "series", "boundaries", "external_contract"}
+    assert projection["format"] == "riverhog-contract-freeze/v1"
+    assert set(projection) == {"format", "series", "boundaries", "external_contract"}
     boundaries = projection["boundaries"]
     assert set(boundaries) == {
         "components",
@@ -227,7 +227,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     release = external["release"]
     assert set(release) == {"compatibility", "publication"}
     publication = release["publication"]
-    assert publication["schema"] == "riverhog-release-publication/v1"
+    assert publication["format"] == "riverhog-release-publication/v1"
     assert len(publication["distributions"]) == 72
     assert len(publication["runtime_images"]) == 13
     assert len(publication["installation_roots"]) == 4
@@ -247,7 +247,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     assert all(
         extents["coverage"][key] == 0 for key in ("missing", "duplicate", "stale", "undecided")
     )
-    assert trace["schema"] == "riverhog-contract-trace/v1"
+    assert trace["format"] == "riverhog-contract-trace/v1"
     assert trace["coverage"]["source_kinds"] == {
         "audit": 1,
         "cli": 29,
@@ -274,7 +274,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "undispositioned": 0,
     }
     authority_registry = trace["authority_registry"]
-    assert authority_registry["schema"] == "riverhog-contract-authority-registry/v1"
+    assert authority_registry["format"] == "riverhog-contract-authority-registry/v1"
     assert {item["id"] for item in authority_registry["declared_authorities"]} == {
         "extent-contract",
         "release",
@@ -375,7 +375,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     } & {item["authority"] for item in checked.root["elements"]}
 
     root = checked.root
-    assert root["schema"] == "riverhog-contract-machine-closure/v1"
+    assert root["format"] == "riverhog-contract-machine-closure/v1"
     assert root["projection"]
     assert root["trace"]
     assert root["counts"]["contract_elements"] == len(root["elements"])
@@ -976,7 +976,7 @@ def test_exception_overlay_cannot_create_or_describe_a_candidate(tmp_path: Path)
     path.write_text(
         "\n".join(
             (
-                'schema = "riverhog-contract-freeze-exceptions/v1"',
+                'format = "riverhog-contract-freeze-exceptions/v1"',
                 "[[resolution]]",
                 'detection_id = "not-detected"',
                 'source_authority_id = "configuration:example"',
@@ -1017,7 +1017,7 @@ def test_removing_resolution_hints_preserves_detection_and_fails_unresolved(
     before = module._environment_detections(projects)
     path = tmp_path / "contract-freeze-exceptions.toml"
     path.write_text(
-        'schema = "riverhog-contract-freeze-exceptions/v1"\nresolution = []\n',
+        'format = "riverhog-contract-freeze-exceptions/v1"\nresolution = []\n',
         encoding="utf-8",
     )
     monkeypatch.setattr(module, "CONTRACT_FREEZE_EXCEPTIONS", path)
@@ -1067,7 +1067,7 @@ def test_audit_commands_route_by_authority_interface_and_dossier(
 
     assert module.main(["summary"]) == 0
     summary = json.loads(capsys.readouterr().out)
-    assert summary["schema"] == "riverhog-contract-machine-closure/v1"
+    assert summary["format"] == "riverhog-contract-machine-closure/v1"
     assert summary["discovery_anomalies"]["missing"] == 0
     assert summary["atlas_root"] == "riverhog-v1/index.md"
 
@@ -1082,4 +1082,4 @@ def test_audit_commands_route_by_authority_interface_and_dossier(
     assert shown["element"] == elements[0]
     assert shown["values"]
     assert shown["sources"]
-    assert shown["trace_schema"] == "riverhog-contract-trace/v1"
+    assert shown["trace_format"] == "riverhog-contract-trace/v1"

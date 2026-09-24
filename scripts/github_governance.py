@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-SCHEMA = "riverhog-github-governance/v1"
+FORMAT = "riverhog-github-governance/v1"
 GOVERNANCE_SCOPES = ("complete", "actions-observable")
 MAIN_RULESET = "Protect main"
 RELEASE_RULESET = "Protect release/v1"
@@ -266,7 +266,7 @@ def check(*, scope: str = "complete") -> dict[str, Any]:
         reviewer_required=False,
     )
     return {
-        "schema": SCHEMA,
+        "format": FORMAT,
         "scope": scope,
         "repository": repository,
         "source_sha": _git_sha(),

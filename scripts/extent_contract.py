@@ -11,7 +11,7 @@ from typing import Any
 
 from riverhog_canonical_json import canonical_json_bytes
 
-SCHEMA = "riverhog-extent-contract/v1"
+FORMAT = "riverhog-extent-contract/v1"
 EXTENT_DECLARATION = "x-riverhog-extent"
 PRINCIPLES: dict[str, object] = {
     "logical_totals": (
@@ -1142,7 +1142,7 @@ def extent_projection(external_contract: Mapping[str, Any]) -> dict[str, object]
     policy_counts = dict(sorted(Counter(str(item["policy"]) for item in ordered).items()))
     owner_counts = dict(sorted(Counter(str(item["owner"]) for item in ordered).items()))
     content = {
-        "schema": SCHEMA,
+        "format": FORMAT,
         "principles": PRINCIPLES,
         "rules": RULES,
         "decisions": ordered,

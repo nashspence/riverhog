@@ -497,7 +497,7 @@ class TagListOut(RiverhogModel):
     tags: list[TagSummaryOut]
 
 
-class ListCollectionsResponse(RiverhogModel):
+class ListCollectionsOut(RiverhogModel):
     page_size: int = Field(ge=1, le=100)
     next_page_token: BrowsePageToken | None
     sort: CollectionSort
@@ -636,14 +636,14 @@ class CollectionUploadSessionFilesRegistrationOut(RiverhogModel):
 CollectionUploadVolumeSummaryOut = CollectionUploadVolumeSummaryDocument
 
 
-class ListCollectionUploadSessionFilesResponse(RiverhogModel):
+class ListCollectionUploadSessionFilesOut(RiverhogModel):
     collection_id: CollectionId
     page_size: int = Field(ge=1, le=100)
     next_page_token: BrowsePageToken | None
     files: list[CollectionUploadFileOut]
 
     @model_validator(mode="after")
-    def validate_custody_receipts(self) -> ListCollectionUploadSessionFilesResponse:
+    def validate_custody_receipts(self) -> ListCollectionUploadSessionFilesOut:
         for item in self.files:
             if item.custody_receipt is not None:
                 validate_collection_upload_artifact_custody_receipt(
@@ -710,7 +710,7 @@ class CollectionUploadListFiltersOut(RiverhogModel):
     state: CollectionUploadState | None
 
 
-class ListCollectionUploadSessionsResponse(RiverhogModel):
+class ListCollectionUploadSessionsOut(RiverhogModel):
     page_size: int = Field(ge=1, le=100)
     next_page_token: BrowsePageToken | None
     sort: CollectionUploadSort

@@ -104,12 +104,12 @@ from stove0_target_protocol import (
 from time_formats import utc_timestamp_now
 
 from stove0_api.schemas import (
-    ErrorResponse,
-    EvaluationReviewIn,
-    HealthResponse,
-    SchedulerRunIn,
-    WorkCreateIn,
-    WorkflowPreviewIn,
+    ErrorOut,
+    EvaluationReviewRequest,
+    HealthOut,
+    OperatorWorkflowPreviewRequest,
+    SchedulerRunRequest,
+    WorkCreateRequest,
 )
 
 type BrowsePageTokenQuery = Annotated[BrowsePageToken | None, Query()]
@@ -505,21 +505,21 @@ def create_app(
 
     @app.get(
         "/health/live",
-        response_model=HealthResponse,
+        response_model=HealthOut,
         operation_id="health_live",
         tags=["health"],
     )
-    def health_live() -> HealthResponse:
-        return HealthResponse(service="stove0", status="ok")
+    def health_live() -> HealthOut:
+        return HealthOut(service="stove0", status="ok")
 
     @app.get(
         "/health/ready",
-        response_model=HealthResponse,
-        responses={503: {"model": ErrorResponse}},
+        response_model=HealthOut,
+        responses={503: {"model": ErrorOut}},
         operation_id="health_ready",
         tags=["health"],
     )
-    def health_ready() -> HealthResponse:
+    def health_ready() -> HealthOut:
         try:
             with composition.state.engine.connect() as connection:
                 connection.execute(text("SELECT 1"))
@@ -528,7 +528,7 @@ def create_app(
                 status_code=503,
                 detail="stove0 state database is not ready",
             ) from exc
-        return HealthResponse(service="stove0", status="ok")
+        return HealthOut(service="stove0", status="ok")
 
     @app.get(
         "/v1/events",
@@ -705,7 +705,7 @@ def create_app(
         operation_id="create_work",
         tags=["work"],
     )
-    def create_work(request: WorkCreateIn) -> WorkView:
+    def create_work(request: WorkCreateRequest) -> WorkView:
         identity = _work_identity(composition, request)
         existing = composition.state.load(identity.work_id)
         if existing is not None:
@@ -819,7 +819,7 @@ def create_app(
         operation_id="preview_workflow",
         tags=["previews"],
     )
-    def preview_workflow(request: WorkflowPreviewIn) -> WorkflowPreview:
+    def preview_workflow(request: OperatorWorkflowPreviewRequest) -> WorkflowPreview:
         return composition.preview.preview(_work_identity(composition, request))
 
     @app.get(
@@ -943,7 +943,7 @@ def create_app(
     def review_evaluation_variant(
         evaluation_id: str,
         variant_id: str,
-        request: EvaluationReviewIn,
+        request: EvaluationReviewRequest,
     ) -> EvaluationView:
         review = EvaluationReview(
             variant_id=variant_id,
@@ -975,7 +975,7 @@ def create_app(
         operation_id="run_scheduler",
         tags=["scheduler"],
     )
-    def run_scheduler_once(request: SchedulerRunIn) -> SchedulerRun:
+    def run_scheduler_once(request: SchedulerRunRequest) -> SchedulerRun:
         return SchedulerRun.model_validate(
             composition.scheduler.run_once(
                 role=request.role,
@@ -992,7 +992,7 @@ def create_app(
 
 def _work_identity(
     composition: Stove0Composition,
-    request: WorkflowPreviewIn,
+    request: OperatorWorkflowPreviewRequest,
 ) -> WorkIdentity:
     for root in request.inputs:
         current = composition.riverhog_api.get_collection(root.collection_id)
@@ -1059,7 +1059,7 @@ def _install_stop_handlers(stop: threading.Event) -> None:
 
 
 _CLI_RESULT_CONTRACT = {
-    "schema": "riverhog-cli-result-contract/v1",
+    "format": "riverhog-cli-result-contract/v1",
     "identity_prefix": "stove0-server-cli-result",
     "default_profile": "runtime",
     "profiles": {

@@ -5,11 +5,11 @@
   "title": "Riverhog v1 immutable collection archive root",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema", "archive_generation", "format", "tree", "volume_sequence"],
+  "required": ["format", "archive_generation", "storage_profile", "tree", "volume_sequence"],
   "properties": {
-    "schema": {"const": "collection-archive-manifest/v1"},
+    "format": {"const": "collection-archive-manifest/v1"},
     "archive_generation": {"$ref": "#/$defs/sha256"},
-    "format": {
+    "storage_profile": {
       "type": "object",
       "additionalProperties": false,
       "required": ["encryption", "pack_index", "part_digest", "selective_read"],
