@@ -197,7 +197,7 @@ def test_installation_artifacts_are_derived_and_mutually_consistent(
                         "gogurt-core",
                         selection["listener_host_distribution"],
                         "gogurt-listener-runtime",
-                        "gogurt-path-volume-support",
+                        "a-gogurt-path-volume-lib",
                         selection["mounted_volume_distribution"],
                     }
                 )

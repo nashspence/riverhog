@@ -16,7 +16,7 @@ classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Langu
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
 dependencies = [
   "riverhog-storage-adapter-asgi-support>=0.1,<0.2",
-  "riverhog-storage-adapter-s3-support>=0.1,<0.2",
+  "a-riverhog-s3-store-lib>=0.1,<0.2",
   "uvicorn[standard]>=0.30,<1.0",
 ]
 
@@ -25,7 +25,7 @@ a-riverhog-b2-store = "a_riverhog_b2_store.app:main"
 
 [tool.uv.sources]
 riverhog-storage-adapter-asgi-support = { workspace = true }
-riverhog-storage-adapter-s3-support = { workspace = true }
+a-riverhog-s3-store-lib = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/a_riverhog_b2_store"]

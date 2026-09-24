@@ -8,6 +8,13 @@ from pathlib import Path
 from typing import Any, cast
 
 import pytest
+from a_riverhog_s3_store_lib import (
+    S3ClientConfig,
+    S3StorageAdapter,
+    S3StorageAdapterConfig,
+    S3TransportTuning,
+    create_s3_client,
+)
 from botocore.exceptions import ClientError
 from riverhog_storage_adapter_protocol import (
     CompletedWriteLookupRequest,
@@ -26,13 +33,6 @@ from riverhog_storage_adapter_protocol import (
     WriteSegmentListRequest,
     WriteSession,
     WriteStartRequest,
-)
-from riverhog_storage_adapter_s3_support import (
-    S3ClientConfig,
-    S3StorageAdapter,
-    S3StorageAdapterConfig,
-    S3TransportTuning,
-    create_s3_client,
 )
 
 
@@ -773,7 +773,7 @@ def test_s3_transport_and_source_boundary_are_adapter_owned() -> None:
     tuning = S3TransportTuning(max_pool_connections=64, max_attempts=9)
     assert tuning.max_pool_connections == 64
 
-    source = Path(__file__).resolve().parents[1] / "src/riverhog_storage_adapter_s3_support"
+    source = Path(__file__).resolve().parents[1] / "src/a_riverhog_s3_store_lib"
     imported: set[str] = set()
     for path in source.glob("*.py"):
         tree = ast.parse(path.read_text(encoding="utf-8"))

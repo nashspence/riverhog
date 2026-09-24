@@ -8,8 +8,8 @@ from typing import Any, cast
 from a_stove0_ffprobe_sampling_observer import FfprobeSamplingObserver
 from a_stove0_ffprobe_sampling_observer import app as observer_app
 from a_stove0_ffprobe_sampling_observer.app import create_app
+from a_stove0_media_sampling_contract_lib import MEDIA_SAMPLING_OBSERVER_CONTRACT
 from fastapi.testclient import TestClient
-from stove0_media_sampling_observer_contracts import MEDIA_SAMPLING_OBSERVER_CONTRACT
 from stove0_observer_protocol import ContentObservationRequest, ContentObservationRequestPayload
 from stove0_observer_support import ContentObservationRuntime
 from stove0_protocol import (

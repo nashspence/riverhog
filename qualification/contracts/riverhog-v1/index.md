@@ -32,6 +32,9 @@ Included contract elements: **4214** · Extent decisions: **1996**. Complete acc
 - [a-gogurt-macos-volume](authorities/a-gogurt-macos-volume/index.md) — macOS mounted-volume provider for Gogurt. Provider for extension: [gogurt.mounted-volume-providers](extensions/extension-point-gogurt-mounted-volume-providers.md).
   - [Python](authorities/a-gogurt-macos-volume/python/index.md) (3)
 
+- [a-gogurt-path-volume-lib](authorities/a-gogurt-path-volume-lib/index.md) — Path-mounted volume library for Gogurt providers.
+  - [Python](authorities/a-gogurt-path-volume-lib/python/index.md) (7)
+
 - [a-gogurt-windows-listener](authorities/a-gogurt-windows-listener/index.md) — Windows Task Scheduler listener for Gogurt. Provider for extension: [gogurt.listener-host-providers](extensions/extension-point-gogurt-listener-host-providers.md).
   - [Configuration Environment](authorities/a-gogurt-windows-listener/configuration-environment/index.md) (3)
   - [Python](authorities/a-gogurt-windows-listener/python/index.md) (16)
@@ -116,6 +119,9 @@ Included contract elements: **4214** · Extent decisions: **1996**. Complete acc
   - [CLI](authorities/a-riverhog-recovery-tool/cli/index.md) (1)
   - [Python](authorities/a-riverhog-recovery-tool/python/index.md) (7)
 
+- [a-riverhog-s3-store-lib](authorities/a-riverhog-s3-store-lib/index.md) — S3 store library for Riverhog storage adapters.
+  - [Python](authorities/a-riverhog-s3-store-lib/python/index.md) (24)
+
 - [a-riverhog-windows-provenance-contract-lib](authorities/a-riverhog-windows-provenance-contract-lib/index.md) — Windows filesystem observation contracts for Riverhog provenance. Provider for extension: [riverhog.provenance-contracts](extensions/extension-point-riverhog-provenance-contracts.md).
   - [Schemas](authorities/a-riverhog-windows-provenance-contract-lib/schema/index.md) (10)
   - [Python](authorities/a-riverhog-windows-provenance-contract-lib/python/index.md) (4)
@@ -132,6 +138,18 @@ Included contract elements: **4214** · Extent decisions: **1996**. Complete acc
   - [CLI](authorities/a-stove0-ffprobe-sampling-observer/cli/index.md) (1)
   - [Configuration Environment](authorities/a-stove0-ffprobe-sampling-observer/configuration-environment/index.md) (8)
   - [Python](authorities/a-stove0-ffprobe-sampling-observer/python/index.md) (4)
+
+- [a-stove0-media-archive-contract-lib](authorities/a-stove0-media-archive-contract-lib/index.md) — Media archive target contracts for Stove0.
+  - [Python](authorities/a-stove0-media-archive-contract-lib/python/index.md) (30)
+
+- [a-stove0-media-archive-lib](authorities/a-stove0-media-archive-lib/index.md) — Media archive projection library for Stove0.
+  - [Python](authorities/a-stove0-media-archive-lib/python/index.md) (24)
+
+- [a-stove0-media-metadata-contract-lib](authorities/a-stove0-media-metadata-contract-lib/index.md) — Media metadata observation contracts for Stove0. Provider for extension: [stove0.observer-semantic-validators](extensions/extension-point-stove0-observer-semantic-validators.md).
+  - [Python](authorities/a-stove0-media-metadata-contract-lib/python/index.md) (19)
+
+- [a-stove0-media-sampling-contract-lib](authorities/a-stove0-media-sampling-contract-lib/index.md) — Media sampling contracts for Stove0. Provider for extension: [stove0.observer-semantic-validators](extensions/extension-point-stove0-observer-semantic-validators.md).
+  - [Python](authorities/a-stove0-media-sampling-contract-lib/python/index.md) (16)
 
 - [a-stove0-nvenc-av1-opus-target](authorities/a-stove0-nvenc-av1-opus-target/index.md) — NVENC AV1 and Opus transformation target for Stove0. Implements protocol: [stove0-target](extensions/process-protocol-stove0-target.md).
   - [CLI](authorities/a-stove0-nvenc-av1-opus-target/cli/index.md) (1)
@@ -158,9 +176,6 @@ Included contract elements: **4214** · Extent decisions: **1996**. Complete acc
 
 - [gogurt-listener-runtime](authorities/gogurt-listener-runtime/index.md) — Portable durable listener runtime and native-platform port for Gogurt.
   - [Python](authorities/gogurt-listener-runtime/python/index.md) (55) — Defines extension: [gogurt.listener-host-providers](extensions/extension-point-gogurt-listener-host-providers.md).
-
-- [gogurt-path-volume-support](authorities/gogurt-path-volume-support/index.md) — Path-mounted volume support shared by Gogurt providers.
-  - [Python](authorities/gogurt-path-volume-support/python/index.md) (7)
 
 - [http-api-contracts](authorities/http-api-contracts/index.md) — Public typed HTTP error, health, client, and operation contracts.
   - [Python](authorities/http-api-contracts/python/index.md) (63)
@@ -254,9 +269,6 @@ Included contract elements: **4214** · Extent decisions: **1996**. Complete acc
 - [riverhog-storage-adapter-protocol](authorities/riverhog-storage-adapter-protocol/index.md) — Provider-neutral opaque-object capability contracts for Riverhog storage adapters.
   - [Python](authorities/riverhog-storage-adapter-protocol/python/index.md) (121) — Defines protocol: [riverhog-storage-adapter](extensions/process-protocol-riverhog-storage-adapter.md).
 
-- [riverhog-storage-adapter-s3-support](authorities/riverhog-storage-adapter-s3-support/index.md) — S3 store support shared by Riverhog storage adapters.
-  - [Python](authorities/riverhog-storage-adapter-s3-support/python/index.md) (24)
-
 - **[riverhog-storage-adapter-support](authorities/riverhog-storage-adapter-support/index.md)** [📦](authorities/riverhog-storage-adapter-support/evidence-gaps.md) — HTTP binding and conformance support for Riverhog storage adapters.
   - [Process Protocol](authorities/riverhog-storage-adapter-support/process-protocol/index.md) (1)
   - [Process Protocol Operations](authorities/riverhog-storage-adapter-support/process-protocol-operations/index.md) (15)
@@ -272,24 +284,12 @@ Included contract elements: **4214** · Extent decisions: **1996**. Complete acc
   - **[HTTP Schemas](authorities/stove0/http-schemas/index.md)** [📦](authorities/stove0/http-schemas/evidence-gaps.md) (137)
   - [HTTP Service Declaration](authorities/stove0/http-service-declaration/index.md) (1)
 
-- [stove0-api-client](authorities/stove0-api-client/index.md) — Official Python client for the Stove0 v1 workflow API.
+- [stove0-api-client](authorities/stove0-api-client/index.md) — Python client for the Stove0 v1 workflow API.
   - [Configuration Environment](authorities/stove0-api-client/configuration-environment/index.md) (5)
   - [Python](authorities/stove0-api-client/python/index.md) (34)
 
 - [stove0-control](authorities/stove0-control/index.md) — Content-opaque transformation application for Riverhog.
   - [Durable State](authorities/stove0-control/durable-state/index.md) (23)
-
-- [stove0-media-archive-target-contracts](authorities/stove0-media-archive-target-contracts/index.md) — Shared media archive target contracts for Stove0.
-  - [Python](authorities/stove0-media-archive-target-contracts/python/index.md) (30)
-
-- [stove0-media-archive-target-support](authorities/stove0-media-archive-target-support/index.md) — Shared media archive projection support for Stove0.
-  - [Python](authorities/stove0-media-archive-target-support/python/index.md) (24)
-
-- [stove0-media-metadata-observer-contracts](authorities/stove0-media-metadata-observer-contracts/index.md) — Shared media metadata observation contracts for Stove0. Provider for extension: [stove0.observer-semantic-validators](extensions/extension-point-stove0-observer-semantic-validators.md).
-  - [Python](authorities/stove0-media-metadata-observer-contracts/python/index.md) (19)
-
-- [stove0-media-sampling-observer-contracts](authorities/stove0-media-sampling-observer-contracts/index.md) — Shared media sampling contracts for Stove0. Provider for extension: [stove0.observer-semantic-validators](extensions/extension-point-stove0-observer-semantic-validators.md).
-  - [Python](authorities/stove0-media-sampling-observer-contracts/python/index.md) (16)
 
 - [stove0-observer-client](authorities/stove0-observer-client/index.md) — Narrow HTTP client for Stove0 content observers.
   - [Python](authorities/stove0-observer-client/python/index.md) (6) — Defines extension: [stove0.observer-semantic-validators](extensions/extension-point-stove0-observer-semantic-validators.md).

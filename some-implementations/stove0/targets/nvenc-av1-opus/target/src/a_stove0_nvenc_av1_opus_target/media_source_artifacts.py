@@ -10,8 +10,8 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any, cast
 
+from a_stove0_media_archive_contract_lib import Av1OpusArchiveIntent
 from pydantic import JsonValue
-from stove0_media_archive_target_contracts import Av1OpusArchiveIntent
 
 from a_stove0_nvenc_av1_opus_target import source_artifacts
 

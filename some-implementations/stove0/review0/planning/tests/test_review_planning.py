@@ -1,6 +1,12 @@
 from __future__ import annotations
 
 import pytest
+from a_stove0_media_sampling_contract_lib import (
+    MEDIA_SAMPLING_OBSERVER_CONTRACT,
+    MediaSamplingArtifactFacts,
+    MediaSamplingFacts,
+    SampleableRange,
+)
 from pydantic import ValidationError
 from review0_planner import (
     ReviewVariant,
@@ -9,12 +15,6 @@ from review0_planner import (
     review_evaluation_definition,
 )
 from review0_target_contracts import REVIEW_MATERIALIZE_OPERATION
-from stove0_media_sampling_observer_contracts import (
-    MEDIA_SAMPLING_OBSERVER_CONTRACT,
-    MediaSamplingArtifactFacts,
-    MediaSamplingFacts,
-    SampleableRange,
-)
 from stove0_protocol import CollectionRootRef, RecipeRef
 
 

@@ -3,13 +3,13 @@ requires = ["hatchling>=1.31.0"]
 build-backend = "hatchling.build"
 
 [project]
-name = "stove0-media-archive-target-support"
+name = "a-stove0-media-archive-lib"
 version = "0.1.0"
-description = "Shared media archive projection support for Stove0."
+description = "Media archive projection library for Stove0."
 requires-python = ">=3.12"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
-readme = { text = "Shared media archive projection support for Stove0.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+readme = { text = "Media archive projection library for Stove0.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
 authors = [{ name = "Nash Spence" }]
 maintainers = [{ name = "Nash Spence" }]
 classifiers = [
@@ -21,8 +21,8 @@ urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "
 dependencies = [
   "pydantic>=2.7,<3.0",
   "riverhog-protocol>=0.1,<0.2",
-  "stove0-media-archive-target-contracts>=0.1,<0.2",
-  "stove0-media-metadata-observer-contracts>=0.1,<0.2",
+  "a-stove0-media-archive-contract-lib>=0.1,<0.2",
+  "a-stove0-media-metadata-contract-lib>=0.1,<0.2",
   "stove0-observer-protocol>=0.1,<0.2",
   "stove0-protocol>=0.1,<0.2",
   "stove0-target-protocol>=0.1,<0.2",
@@ -30,11 +30,11 @@ dependencies = [
 
 [tool.uv.sources]
 riverhog-protocol = { workspace = true }
-stove0-media-archive-target-contracts = { workspace = true }
-stove0-media-metadata-observer-contracts = { workspace = true }
+a-stove0-media-archive-contract-lib = { workspace = true }
+a-stove0-media-metadata-contract-lib = { workspace = true }
 stove0-observer-protocol = { workspace = true }
 stove0-protocol = { workspace = true }
 stove0-target-protocol = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/stove0_media_archive_target_support"]
+packages = ["src/a_stove0_media_archive_lib"]

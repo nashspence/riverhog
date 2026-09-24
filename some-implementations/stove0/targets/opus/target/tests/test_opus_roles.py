@@ -7,6 +7,14 @@ from typing import Any
 
 from a_review0_opus_sampler import OpusReviewSampler
 from a_review0_opus_sampler.app import create_app as create_sampler_app
+from a_stove0_media_archive_contract_lib import (
+    AUDIO_ARCHIVE_OPERATION,
+    METADATA_XMP_ROLE,
+    SOURCE_ARTIFACT_ROLE,
+)
+from a_stove0_media_archive_lib import (
+    MediaArchiveProjection,
+)
 from a_stove0_opus_target import OpusTargetService
 from a_stove0_opus_target import app as opus_app
 from a_stove0_opus_target import target as opus_target
@@ -19,14 +27,6 @@ from review0_sampler_protocol import (
     SamplerWindow,
 )
 from riverhog_protocol import canonical_json_sha256
-from stove0_media_archive_target_contracts import (
-    AUDIO_ARCHIVE_OPERATION,
-    METADATA_XMP_ROLE,
-    SOURCE_ARTIFACT_ROLE,
-)
-from stove0_media_archive_target_support import (
-    MediaArchiveProjection,
-)
 from stove0_target_support import (
     OutputArtifact,
     TargetHttpBinding,

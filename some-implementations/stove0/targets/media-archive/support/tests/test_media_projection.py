@@ -3,7 +3,7 @@ from __future__ import annotations
 import xml.etree.ElementTree as ET
 from typing import get_args
 
-from stove0_media_archive_target_contracts import (
+from a_stove0_media_archive_contract_lib import (
     AUDIO_ARCHIVE_OPERATION,
     AV1_OPUS_ARCHIVE_OPERATION,
     METADATA_XMP_ROLE,
@@ -16,13 +16,13 @@ from stove0_media_archive_target_contracts import (
     MediaProjectionFieldName,
     MediaProjectionPolicy,
 )
-from stove0_media_archive_target_support import (
+from a_stove0_media_archive_lib import (
     MEDIA_FACT_PROJECTION_FIELDS,
     ffmpeg_container_metadata_args,
     render_projection_xmp,
     resolve_media_archive_projection,
 )
-from stove0_media_metadata_observer_contracts import (
+from a_stove0_media_metadata_contract_lib import (
     MEDIA_METADATA_FACTS_SCHEMA,
     MEDIA_METADATA_OBSERVER_CONTRACT,
     MediaArtifactFacts,

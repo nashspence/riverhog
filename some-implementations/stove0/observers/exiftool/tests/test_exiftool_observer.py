@@ -8,11 +8,11 @@ from typing import Any, cast
 from a_stove0_exiftool_observer import ExiftoolObserver
 from a_stove0_exiftool_observer import app as observer_app
 from a_stove0_exiftool_observer.app import create_app
-from fastapi.testclient import TestClient
-from stove0_media_metadata_observer_contracts import (
+from a_stove0_media_metadata_contract_lib import (
     MEDIA_METADATA_OBSERVER_CONTRACT,
     MediaMetadataFacts,
 )
+from fastapi.testclient import TestClient
 from stove0_observer_protocol import ContentObservationRequest, ContentObservationRequestPayload
 from stove0_observer_support import ContentObservationRuntime
 from stove0_protocol import (

@@ -1,1 +1,1 @@
-"""Official stove0 CLI."""
+"""Stove0 CLI."""

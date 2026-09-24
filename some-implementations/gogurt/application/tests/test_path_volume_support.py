@@ -4,14 +4,14 @@ import os
 import stat
 from pathlib import Path
 
-import gogurt_path_volume_support as path_volume_support
+import a_gogurt_path_volume_lib as path_volume_support
 import pytest
-from config_validation import ConfigError
-from gogurt_core.mounts import GogurtRouteMarker
-from gogurt_path_volume_support import (
+from a_gogurt_path_volume_lib import (
     PATH_MARKER_NAME,
     PathMountedVolumeAccess,
 )
+from config_validation import ConfigError
+from gogurt_core.mounts import GogurtRouteMarker
 
 
 def test_path_provider_owns_the_complete_route_line_representation(tmp_path: Path) -> None:

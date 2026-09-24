@@ -108,6 +108,34 @@ RELEASE_ROLES = (
     "internal_build_unit",
     "test_only_artifact",
 )
+# Sharing a library between supplied leaves does not give it family authority.
+# These are the exact supplied distributions that define their family's own
+# API, contracts, extension points, client, runtime, planner, or support layer.
+# Every other supplied distribution must use the a-/an- implementation name.
+FAMILY_MACHINERY_DISTRIBUTIONS = frozenset(
+    {
+        "gogurt",
+        "gogurt-core",
+        "gogurt-listener-runtime",
+        "review0-planner",
+        "review0-sampler-client",
+        "review0-sampler-lib",
+        "review0-sampler-protocol",
+        "review0-target-contracts",
+        "review0-target-lib",
+        "stove0-api-client",
+        "stove0-observer-client",
+        "stove0-observer-protocol",
+        "stove0-observer-support",
+        "stove0-operator-contracts",
+        "stove0-protocol",
+        "stove0-recipe-config",
+        "stove0-server",
+        "stove0-target-client",
+        "stove0-target-protocol",
+        "stove0-target-support",
+    }
+)
 STATE_INVENTORY_SCHEMA = "riverhog-durable-state-inventory/v1"
 PROJECT_README_FOOTER = "\n\nSee the project URL for documentation and releases."
 PROJECT_PEOPLE = [{"name": "Nash Spence"}]
@@ -543,6 +571,23 @@ def _validate_locked_build_inputs(root: Path, uv_lock: dict[str, Any]) -> None:
             raise ReleaseError(f"uv.lock lacks SHA-256 artifacts for {package['name']}")
 
 
+def _validate_supplied_distribution_names(projects: Sequence[Project]) -> None:
+    """Reserve unprefixed names for explicitly reviewed family machinery."""
+
+    supplied_unprefixed = {
+        project.name
+        for project in projects
+        if project.path.startswith("some-implementations/")
+        and not project.name.startswith(("a-", "an-"))
+    }
+    if supplied_unprefixed != FAMILY_MACHINERY_DISTRIBUTIONS:
+        raise ReleaseError(
+            "supplied family machinery differs from the explicit naming registry: "
+            f"unregistered={sorted(supplied_unprefixed - FAMILY_MACHINERY_DISTRIBUTIONS)} "
+            f"missing={sorted(FAMILY_MACHINERY_DISTRIBUTIONS - supplied_unprefixed)}"
+        )
+
+
 def validate_release_contract(root: Path, *, expected_version: str | None = None) -> list[Project]:
     config = _load_config(root)
     if config.get("schema") != RELEASE_SCHEMA:
@@ -717,6 +762,8 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
         supplied_library = project.role == "reusable_library" and supplied_path
         if supplied_path != (supplied_role or supplied_library):
             raise ReleaseError(f"{project.name} path and release role disagree")
+
+    _validate_supplied_distribution_names(projects)
 
     versions = {item.version for item in projects}
     if len(versions) != 1:

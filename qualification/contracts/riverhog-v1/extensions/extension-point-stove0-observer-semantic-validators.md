@@ -14,5 +14,5 @@ Entry-point extension boundary owned by stove0-observer-client.
 
 ## Supplied implementations
 
-- [stove0-media-metadata-observer-contracts](../evidence/relationships/edges.md#re-c903afedb9) — Shared media metadata observation contracts for Stove0.
-- [stove0-media-sampling-observer-contracts](../evidence/relationships/edges.md#re-3deafed4a9) — Shared media sampling contracts for Stove0.
+- [a-stove0-media-metadata-contract-lib](../evidence/relationships/edges.md#re-e78800be91) — Media metadata observation contracts for Stove0.
+- [a-stove0-media-sampling-contract-lib](../evidence/relationships/edges.md#re-3d0b2a3f7a) — Media sampling contracts for Stove0.

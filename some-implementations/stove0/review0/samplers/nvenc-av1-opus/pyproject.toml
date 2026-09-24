@@ -17,7 +17,7 @@ urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "
 dependencies = [
   "fastapi>=0.111,<1.0",
   "http-api-contracts>=0.1,<0.2",
-  "stove0-media-archive-target-contracts>=0.1,<0.2",
+  "a-stove0-media-archive-contract-lib>=0.1,<0.2",
   "review0-target-contracts>=0.1,<0.2",
   "review0-sampler-protocol>=0.1,<0.2",
   "review0-sampler-lib>=0.1,<0.2",
@@ -29,7 +29,7 @@ a-review0-nvenc-av1-opus-sampler = "a_review0_nvenc_av1_opus_sampler.app:main"
 
 [tool.uv.sources]
 http-api-contracts = { workspace = true }
-stove0-media-archive-target-contracts = { workspace = true }
+a-stove0-media-archive-contract-lib = { workspace = true }
 review0-target-contracts = { workspace = true }
 review0-sampler-protocol = { workspace = true }
 review0-sampler-lib = { workspace = true }

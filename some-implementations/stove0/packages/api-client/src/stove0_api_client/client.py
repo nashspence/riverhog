@@ -1,4 +1,4 @@
-"""Official stove0 v1 HTTP client."""
+"""Stove0 v1 HTTP client."""
 
 from __future__ import annotations
 

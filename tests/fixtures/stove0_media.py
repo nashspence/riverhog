@@ -1,10 +1,10 @@
 """Exact public media evidence fixtures shared by maintained target tests."""
 
-from stove0_media_archive_target_contracts import (
+from a_stove0_media_archive_contract_lib import (
     SOURCE_ROLE,
     XMP_SOURCE_ROLE,
 )
-from stove0_media_metadata_observer_contracts import (
+from a_stove0_media_metadata_contract_lib import (
     MEDIA_METADATA_FACTS_SCHEMA,
     MEDIA_METADATA_OBSERVER_CONTRACT,
     MediaArtifactFacts,

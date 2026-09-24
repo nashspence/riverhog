@@ -4,7 +4,7 @@
 
 <!-- contract-element: python-distributions:release:python-distribution-stove0-api-client:6a123d166a -->
 
-Official Python client for the Stove0 v1 workflow API.
+Python client for the Stove0 v1 workflow API.
 
 | Audit field | Value |
 |---|---|
@@ -18,7 +18,7 @@ Official Python client for the Stove0 v1 workflow API.
 |---|---|
 | <a id="s-a89e3100a3"></a>`artifacts` | `[{"coordinate":"dist/stove0_api_client-{version}-py3-none-any.whl","format":"wheel"},{"coordinate":"dist/stove0_api_client-{version}.tar.gz","format":"sdist"}]` |
 | <a id="s-2d20f67164"></a>`channel` | `"github-release"` |
-| <a id="s-b9888c2b34"></a>`description` | `"Official Python client for the Stove0 v1 workflow API."` |
+| <a id="s-b9888c2b34"></a>`description` | `"Python client for the Stove0 v1 workflow API."` |
 | <a id="s-63a90b4cf7"></a>`license_baseline` | `"first-v1-publication"` |
 | <a id="s-06e8c84e58"></a>`license_expression` | `"Apache-2.0"` |
 | <a id="s-18ed427769"></a>`publication_identity` | `{"coordinate":"stove0-api-client","kind":"python-distribution"}` |
@@ -63,7 +63,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0a57190b4c7277d9e9d1cbd026b5c33473cad645a6e8f984f82543a818d64684 -->
+<!-- exact-contract-value: 23f1af0966cbbed1d63a8db3f685128d6c3a4fa9ae8157d7ceed27da62f35793 -->
 
 ```json
 {
@@ -78,7 +78,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     }
   ],
   "channel": "github-release",
-  "description": "Official Python client for the Stove0 v1 workflow API.",
+  "description": "Python client for the Stove0 v1 workflow API.",
   "license_baseline": "first-v1-publication",
   "license_expression": "Apache-2.0",
   "publication_identity": {

@@ -20,7 +20,7 @@ classifiers = [
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
 dependencies = [
   "pydantic>=2.7,<3.0",
-  "stove0-media-sampling-observer-contracts>=0.1,<0.2",
+  "a-stove0-media-sampling-contract-lib>=0.1,<0.2",
   "stove0-protocol>=0.1,<0.2",
   "review0-target-contracts>=0.1,<0.2",
 ]
@@ -29,7 +29,7 @@ dependencies = [
 review0-planner = "review0_planner.conformance:main"
 
 [tool.uv.sources]
-stove0-media-sampling-observer-contracts = { workspace = true }
+a-stove0-media-sampling-contract-lib = { workspace = true }
 stove0-protocol = { workspace = true }
 review0-target-contracts = { workspace = true }
 

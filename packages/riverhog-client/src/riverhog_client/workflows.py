@@ -1,4 +1,4 @@
-"""Official typed client methods for Riverhog collection work primitives."""
+"""Typed client methods for Riverhog collection work primitives."""
 
 from __future__ import annotations
 

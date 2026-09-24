@@ -196,7 +196,7 @@ def test_postgres_retrieval_plan_advances_in_bounded_restartable_steps(
         assert len(session.scalars(select(RetrievalPlanPlacementRecord)).all()) == segment_count
 
 
-def test_postgres_upload_idempotency_is_independent_per_application(
+def test_postgres_upload_idempotency_is_independent_per_principal(
     isolated_database_url: str,
 ) -> None:
     initialize_db(isolated_database_url)
@@ -235,8 +235,8 @@ def test_postgres_upload_idempotency_is_independent_per_application(
     indexes = {
         str(index["name"]): index for index in inspect(engine).get_indexes("collection_uploads")
     }
-    idempotency_index = indexes["ux_collection_uploads_application_idempotency_key"]
-    assert idempotency_index["column_names"] == ["initiated_by_app", "idempotency_key"]
+    idempotency_index = indexes["ux_collection_uploads_principal_idempotency_key"]
+    assert idempotency_index["column_names"] == ["initiated_by_principal_id", "idempotency_key"]
     assert idempotency_index["unique"] is True
     engine.dispose()
 

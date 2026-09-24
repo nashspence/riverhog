@@ -3,13 +3,13 @@ requires = ["hatchling>=1.31.0"]
 build-backend = "hatchling.build"
 
 [project]
-name = "riverhog-storage-adapter-s3-support"
+name = "a-riverhog-s3-store-lib"
 version = "0.1.0"
-description = "S3 store support shared by Riverhog storage adapters."
+description = "S3 store library for Riverhog storage adapters."
 requires-python = ">=3.12"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
-readme = { text = "S3 store support shared by Riverhog storage adapters.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+readme = { text = "S3 store library for Riverhog storage adapters.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
 authors = [{ name = "Nash Spence" }]
 maintainers = [{ name = "Nash Spence" }]
 classifiers = [
@@ -30,4 +30,4 @@ riverhog-storage-adapter-protocol = { workspace = true }
 time-formats = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/riverhog_storage_adapter_s3_support"]
+packages = ["src/a_riverhog_s3_store_lib"]

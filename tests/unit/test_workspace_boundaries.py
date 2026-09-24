@@ -64,13 +64,13 @@ IMPLEMENTATION_OWNERS = {
         REPO / "some-implementations/stove0/observers/ffprobe-sampling/src",
         {"a_stove0_ffprobe_sampling_observer"},
     ),
-    "stove0-media-metadata-observer-contracts": (
+    "a-stove0-media-metadata-contract-lib": (
         REPO / "some-implementations/stove0/observers/contracts/media-metadata/src",
-        {"stove0_media_metadata_observer_contracts"},
+        {"a_stove0_media_metadata_contract_lib"},
     ),
-    "stove0-media-sampling-observer-contracts": (
+    "a-stove0-media-sampling-contract-lib": (
         REPO / "some-implementations/stove0/observers/contracts/media-sampling/src",
-        {"stove0_media_sampling_observer_contracts"},
+        {"a_stove0_media_sampling_contract_lib"},
     ),
     "a-stove0-nvenc-av1-opus-target": (
         REPO / "some-implementations/stove0/targets/nvenc-av1-opus/target/src",
@@ -131,8 +131,8 @@ IMPLEMENTATION_OWNERS = {
     ),
 }
 SHARED_PROVIDER_MODULES = {
-    "stove0-media-metadata-observer-contracts",
-    "stove0-media-sampling-observer-contracts",
+    "a-stove0-media-metadata-contract-lib",
+    "a-stove0-media-sampling-contract-lib",
     "review0-planner",
 }
 ALL_IMPLEMENTATION_MODULES = set().union(
@@ -464,7 +464,7 @@ def test_portable_products_do_not_select_provider_implementations() -> None:
             "a-gogurt-linux-volume",
             "a-gogurt-macos-listener",
             "a-gogurt-macos-volume",
-            "gogurt-path-volume-support",
+            "a-gogurt-path-volume-lib",
             "a-gogurt-windows-listener",
             "a-gogurt-windows-volume",
         }
@@ -477,7 +477,7 @@ def test_portable_products_do_not_select_provider_implementations() -> None:
             "a_gogurt_linux_volume",
             "a_gogurt_macos_listener",
             "a_gogurt_macos_volume",
-            "gogurt_path_volume_support",
+            "a_gogurt_path_volume_lib",
             "a_gogurt_windows_listener",
             "a_gogurt_windows_volume",
         }
@@ -511,7 +511,7 @@ def test_portable_core_listener_runtime_and_platform_dependency_direction_is_exa
         )
     )
     assert gogurt_core_imports.isdisjoint(
-        gogurt_native_roots | {"gogurt_listener_runtime", "gogurt_path_volume_support"}
+        gogurt_native_roots | {"gogurt_listener_runtime", "a_gogurt_path_volume_lib"}
     )
 
     path_volume_config = tomllib.loads(
@@ -543,7 +543,7 @@ def test_portable_core_listener_runtime_and_platform_dependency_direction_is_exa
     )
     assert "gogurt_core" in listener_runtime_imports
     assert listener_runtime_imports.isdisjoint(
-        gogurt_native_roots | {"gogurt", "gogurt_path_volume_support"}
+        gogurt_native_roots | {"gogurt", "a_gogurt_path_volume_lib"}
     )
 
     generic_marker_sources = (
@@ -566,7 +566,7 @@ def test_portable_core_listener_runtime_and_platform_dependency_direction_is_exa
         REPO
         / (
             "some-implementations/gogurt/mounted-volume/path-support/"
-            "src/gogurt_path_volume_support/__init__.py"
+            "src/a_gogurt_path_volume_lib/__init__.py"
         )
     ).read_text(encoding="utf-8")
     assert 'PATH_MARKER_NAME = ".gogurt"' in path_support
@@ -603,7 +603,7 @@ def test_portable_core_listener_runtime_and_platform_dependency_direction_is_exa
         )
         assert declared_project_dependencies(mounted_volume_config) == {
             "gogurt-core",
-            "gogurt-path-volume-support",
+            "a-gogurt-path-volume-lib",
         }
         listener_host_config = tomllib.loads(
             (
@@ -868,10 +868,10 @@ def test_stove0_server_has_only_protocol_and_caller_side_extension_dependencies(
     closure = dependency_closure("stove0-server", graph)
     assert {"riverhog-client", "stove0-observer-client", "stove0-target-client"} <= closure
     assert not closure & {
-        "stove0-media-archive-target-contracts",
-        "stove0-media-archive-target-support",
-        "stove0-media-metadata-observer-contracts",
-        "stove0-media-sampling-observer-contracts",
+        "a-stove0-media-archive-contract-lib",
+        "a-stove0-media-archive-lib",
+        "a-stove0-media-metadata-contract-lib",
+        "a-stove0-media-sampling-contract-lib",
         "stove0-observer-support",
         "review0-planner",
         "review0-target-contracts",
@@ -896,12 +896,12 @@ def test_stove0_control_plane_does_not_import_riverhog_transform_runtime() -> No
 def test_maintained_observer_distributions_do_not_pull_target_authority() -> None:
     _projects, graph = workspace_project_graph()
     expected = {
-        "a-stove0-exiftool-observer": "stove0-media-metadata-observer-contracts",
-        "a-stove0-ffprobe-sampling-observer": "stove0-media-sampling-observer-contracts",
+        "a-stove0-exiftool-observer": "a-stove0-media-metadata-contract-lib",
+        "a-stove0-ffprobe-sampling-observer": "a-stove0-media-sampling-contract-lib",
     }
     forbidden = {
-        "stove0-media-archive-target-contracts",
-        "stove0-media-archive-target-support",
+        "a-stove0-media-archive-contract-lib",
+        "a-stove0-media-archive-lib",
         "review0-planner",
         "review0-target-contracts",
         "stove0-target-client",
@@ -916,18 +916,18 @@ def test_maintained_observer_distributions_do_not_pull_target_authority() -> Non
 
 def test_media_archive_target_contracts_do_not_pull_observer_authority() -> None:
     _projects, graph = workspace_project_graph()
-    closure = dependency_closure("stove0-media-archive-target-contracts", graph)
-    assert "stove0-media-metadata-observer-contracts" not in closure
+    closure = dependency_closure("a-stove0-media-archive-contract-lib", graph)
+    assert "a-stove0-media-metadata-contract-lib" not in closure
 
 
 def test_semantic_contract_distributions_do_not_pull_runtime_support() -> None:
     _projects, graph = workspace_project_graph()
     for distribution in (
-        "stove0-media-metadata-observer-contracts",
-        "stove0-media-sampling-observer-contracts",
-        "stove0-media-archive-target-contracts",
+        "a-stove0-media-metadata-contract-lib",
+        "a-stove0-media-sampling-contract-lib",
+        "a-stove0-media-archive-contract-lib",
         "review0-target-contracts",
-        "stove0-media-archive-target-support",
+        "a-stove0-media-archive-lib",
         "review0-planner",
     ):
         closure = dependency_closure(distribution, graph)

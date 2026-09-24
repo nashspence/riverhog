@@ -182,8 +182,8 @@ def test_extension_surfaces_do_not_depend_on_each_other() -> None:
 
 def test_observer_owned_semantics_do_not_depend_on_target_authority() -> None:
     forbidden = {
-        "stove0_media_archive_target_contracts",
-        "stove0_media_archive_target_support",
+        "a_stove0_media_archive_contract_lib",
+        "a_stove0_media_archive_lib",
         "review0_planner",
         "review0_target_contracts",
         "stove0_target_protocol",
@@ -208,9 +208,9 @@ def test_target_owned_semantics_do_not_depend_on_observer_runtime() -> None:
         item for path in REVIEW_TARGET_CONTRACT_ROOT.rglob("*.py") for item in _import_roots(path)
     }
     assert "stove0_target_protocol" in media_imports
-    assert "stove0_media_metadata_observer_contracts" not in media_imports
+    assert "a_stove0_media_metadata_contract_lib" not in media_imports
     assert "stove0_target_protocol" in review_imports
-    assert "stove0_media_sampling_observer_contracts" not in review_imports
+    assert "a_stove0_media_sampling_contract_lib" not in review_imports
     for imports in (media_imports, review_imports):
         assert "stove0_observer_support" not in imports
         assert "stove0_target_support" not in imports
@@ -226,11 +226,11 @@ def test_only_explicit_support_bridges_join_observer_and_target_semantics() -> N
         item for path in REVIEW_PLANNING_ROOT.rglob("*.py") for item in _import_roots(path)
     }
     assert {
-        "stove0_media_archive_target_contracts",
-        "stove0_media_metadata_observer_contracts",
+        "a_stove0_media_archive_contract_lib",
+        "a_stove0_media_metadata_contract_lib",
     } <= media_imports
     assert {
-        "stove0_media_sampling_observer_contracts",
+        "a_stove0_media_sampling_contract_lib",
         "review0_target_contracts",
     } <= review_imports
     for imports in (media_imports, review_imports):
@@ -244,10 +244,10 @@ def test_protocol_package_is_independent_of_implementations_and_stove0_core() ->
         "stove0_core",
         "stove0_observer_support",
         "stove0_target_support",
-        "stove0_media_archive_target_contracts",
-        "stove0_media_archive_target_support",
-        "stove0_media_metadata_observer_contracts",
-        "stove0_media_sampling_observer_contracts",
+        "a_stove0_media_archive_contract_lib",
+        "a_stove0_media_archive_lib",
+        "a_stove0_media_metadata_contract_lib",
+        "a_stove0_media_sampling_contract_lib",
         "stove0_observer_protocol",
         "review0_planner",
         "review0_target_contracts",
@@ -296,10 +296,10 @@ def test_stove0_server_consumes_component_boundaries_only_as_protocols_and_calle
         or module.startswith("riverhog_client.processing.")
     }
     assert not imports & {
-        "stove0_media_archive_target_contracts",
-        "stove0_media_archive_target_support",
-        "stove0_media_metadata_observer_contracts",
-        "stove0_media_sampling_observer_contracts",
+        "a_stove0_media_archive_contract_lib",
+        "a_stove0_media_archive_lib",
+        "a_stove0_media_metadata_contract_lib",
+        "a_stove0_media_sampling_contract_lib",
         "stove0_observer_support",
         "review0_planner",
         "review0_target_contracts",
@@ -337,10 +337,10 @@ def test_caller_packages_do_not_pull_in_author_or_implementation_dependencies() 
     }
     assert not imports & {
         "stove0_core",
-        "stove0_media_archive_target_contracts",
-        "stove0_media_archive_target_support",
-        "stove0_media_metadata_observer_contracts",
-        "stove0_media_sampling_observer_contracts",
+        "a_stove0_media_archive_contract_lib",
+        "a_stove0_media_archive_lib",
+        "a_stove0_media_metadata_contract_lib",
+        "a_stove0_media_sampling_contract_lib",
         "stove0_observer_support",
         "review0_planner",
         "review0_target_contracts",

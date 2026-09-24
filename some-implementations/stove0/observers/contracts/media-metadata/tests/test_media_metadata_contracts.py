@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import pytest
-from jsonschema import Draft202012Validator
-from pydantic import ValidationError
-from stove0_media_metadata_observer_contracts import (
+from a_stove0_media_metadata_contract_lib import (
     MEDIA_METADATA_FACTS_CONFORMANCE_VECTORS,
     MEDIA_METADATA_FACTS_SEMANTICS,
     MEDIA_METADATA_OBSERVER_CONTRACT,
@@ -13,6 +11,8 @@ from stove0_media_metadata_observer_contracts import (
     MediaMetadataFacts,
     validate_media_metadata_facts,
 )
+from jsonschema import Draft202012Validator
+from pydantic import ValidationError
 from stove0_observer_protocol import ArtifactSubject, CollectionRootRef
 
 

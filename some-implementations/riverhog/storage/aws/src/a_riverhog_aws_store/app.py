@@ -11,14 +11,14 @@ from pathlib import Path
 from typing import Literal
 
 import uvicorn
-from riverhog_storage_adapter_asgi_support import create_storage_adapter_app
-from riverhog_storage_adapter_s3_support import (
+from a_riverhog_s3_store_lib import (
     S3ClientConfig,
     S3StorageAdapter,
     S3StorageAdapterConfig,
     S3TransportTuning,
     create_s3_client,
 )
+from riverhog_storage_adapter_asgi_support import create_storage_adapter_app
 
 from a_riverhog_aws_store.provider import (
     AwsCloudFrontConfig,

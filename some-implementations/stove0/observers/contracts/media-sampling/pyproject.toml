@@ -3,13 +3,13 @@ requires = ["hatchling>=1.31.0"]
 build-backend = "hatchling.build"
 
 [project]
-name = "stove0-media-sampling-observer-contracts"
+name = "a-stove0-media-sampling-contract-lib"
 version = "0.1.0"
-description = "Shared media sampling contracts for Stove0."
+description = "Media sampling contracts for Stove0."
 requires-python = ">=3.12"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
-readme = { text = "Shared media sampling contracts for Stove0.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+readme = { text = "Media sampling contracts for Stove0.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
 authors = [{ name = "Nash Spence" }]
 maintainers = [{ name = "Nash Spence" }]
 classifiers = [
@@ -24,10 +24,10 @@ dependencies = [
 ]
 
 [project.entry-points."stove0.observer-semantic-validators"]
-media-sampling = "stove0_media_sampling_observer_contracts:MEDIA_SAMPLING_SEMANTIC_VALIDATOR"
+media-sampling = "a_stove0_media_sampling_contract_lib:MEDIA_SAMPLING_SEMANTIC_VALIDATOR"
 
 [tool.uv.sources]
 stove0-observer-protocol = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/stove0_media_sampling_observer_contracts"]
+packages = ["src/a_stove0_media_sampling_contract_lib"]

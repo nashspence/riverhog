@@ -4,9 +4,9 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
+from a_gogurt_path_volume_lib import PathMountedVolumeAccess
 from gogurt_core.mounts import GogurtRouteMarker, MountedMarkerObservation
 from gogurt_core.providers import GogurtProviderReference
-from gogurt_path_volume_support import PathMountedVolumeAccess
 
 
 @dataclass(frozen=True, slots=True)

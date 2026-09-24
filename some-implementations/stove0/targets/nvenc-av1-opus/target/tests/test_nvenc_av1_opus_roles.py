@@ -9,6 +9,15 @@ from typing import Any
 import pytest
 from a_review0_nvenc_av1_opus_sampler import NvencAv1OpusReviewSampler
 from a_review0_nvenc_av1_opus_sampler.app import create_app as create_sampler_app
+from a_stove0_media_archive_contract_lib import (
+    AV1_OPUS_ARCHIVE_OPERATION,
+    METADATA_XMP_ROLE,
+    SOURCE_ARTIFACT_ROLE,
+    Av1OpusArchiveIntent,
+)
+from a_stove0_media_archive_lib import (
+    MediaArchiveProjection,
+)
 from a_stove0_nvenc_av1_opus_target import NvencAv1OpusTargetService, source_artifacts
 from a_stove0_nvenc_av1_opus_target import target as nvenc_target
 from a_stove0_nvenc_av1_opus_target.app import create_target_app
@@ -21,15 +30,6 @@ from review0_sampler_protocol import (
     SamplerWindow,
 )
 from riverhog_protocol import canonical_json_sha256
-from stove0_media_archive_target_contracts import (
-    AV1_OPUS_ARCHIVE_OPERATION,
-    METADATA_XMP_ROLE,
-    SOURCE_ARTIFACT_ROLE,
-    Av1OpusArchiveIntent,
-)
-from stove0_media_archive_target_support import (
-    MediaArchiveProjection,
-)
 from stove0_target_support import (
     OutputArtifact,
     TargetHttpBinding,

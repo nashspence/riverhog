@@ -6,6 +6,7 @@ import importlib.metadata
 import os
 from pathlib import Path
 
+from a_stove0_media_archive_contract_lib import AV1_OPUS_ARCHIVE_OPERATION, Av1OpusArchiveIntent
 from review0_sampler_lib import SamplerWorkspace
 from review0_sampler_protocol import (
     SamplerDescriptor,
@@ -18,7 +19,6 @@ from review0_sampler_protocol import (
     SamplerResultPayload,
 )
 from review0_target_contracts import REVIEW_VIDEO_ROLE
-from stove0_media_archive_target_contracts import AV1_OPUS_ARCHIVE_OPERATION, Av1OpusArchiveIntent
 
 from a_review0_nvenc_av1_opus_sampler.common import (
     NvencContentError,

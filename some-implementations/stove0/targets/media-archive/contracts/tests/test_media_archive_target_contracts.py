@@ -3,7 +3,7 @@ from __future__ import annotations
 import math
 
 import pytest
-from stove0_media_archive_target_contracts import (
+from a_stove0_media_archive_contract_lib import (
     AUDIO_ARCHIVE_INTENT_CONFORMANCE_VECTORS,
     AUDIO_ARCHIVE_INTENT_SEMANTICS,
     AUDIO_ARCHIVE_OPERATION,
