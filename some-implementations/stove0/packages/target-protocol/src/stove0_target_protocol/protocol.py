@@ -30,7 +30,7 @@ from stove0_protocol import (
     ArtifactSelection,
     ArtifactSelectionRef,
     BranchWorkBinding,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
     ControllerEvidence,
     JsonSchemaValidationProfile,
     OciImageId,
@@ -259,7 +259,7 @@ class TargetDescriptor(TargetDescriptorPayload):
 class InputArtifact(TargetProtocolModel):
     id: str = Field(pattern=ARTIFACT_ID_PATTERN)
     role: SemanticId
-    collection: CollectionRootRef
+    collection: CollectionRootIdentityRef
     path: str = Field(min_length=1, max_length=4096)
     bytes: int = Field(ge=0)
     sha256: Sha256

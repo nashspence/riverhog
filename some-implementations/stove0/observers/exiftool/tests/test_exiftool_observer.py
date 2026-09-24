@@ -16,8 +16,8 @@ from fastapi.testclient import TestClient
 from stove0_observer_protocol import ContentObservationRequest, ContentObservationRequestPayload
 from stove0_observer_support import ContentObservationRuntime
 from stove0_protocol import (
-    ArtifactSubject,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
+    WorkArtifactSubject,
 )
 
 
@@ -53,7 +53,7 @@ class FixtureRuntime:
 
     def materialize(
         self,
-        _subject: ArtifactSubject,
+        _subject: WorkArtifactSubject,
         *,
         workspace: FixtureWorkspace,
         relative_path: str,
@@ -67,7 +67,7 @@ class FixtureRuntime:
 def _request(observer: ExiftoolObserver) -> ContentObservationRequest:
     descriptor = observer.descriptor()
     support = descriptor.contracts[0]
-    root = CollectionRootRef(
+    root = CollectionRootIdentityRef(
         collection_id=str(1),
         archive_root_sha256=_sha("2"),
         content_identity=_sha("3"),
@@ -80,7 +80,7 @@ def _request(observer: ExiftoolObserver) -> ContentObservationRequest:
             observer_contract_id=support.contract_id,
             observer_contract_sha256=support.contract_sha256,
             subjects=(
-                ArtifactSubject(
+                WorkArtifactSubject(
                     id="camera-primary",
                     role="stove0.media.source/v1",
                     collection=root,
@@ -89,7 +89,7 @@ def _request(observer: ExiftoolObserver) -> ContentObservationRequest:
                     sha256=_sha("4"),
                     media_type="video/quicktime",
                 ),
-                ArtifactSubject(
+                WorkArtifactSubject(
                     id="camera-sidecar",
                     role="stove0.media.source/v1",
                     collection=root,

@@ -31,19 +31,19 @@ from stove0_observer_protocol import ContentObservationRequest, ContentObservati
 from stove0_protocol import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
     ArtifactSelection,
-    ArtifactSubject,
     BranchPlan,
     BranchSetPlan,
     BranchSettlement,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
     ControllerEvidence,
     ControllerEvidencePayload,
     ExecutionEnvelope,
     ExecutionEnvelopePayload,
     JsonSchemaValidationProfile,
-    OperationRef,
-    RecipeRef,
+    OperationIdentityRef,
+    RecipeIdentityRef,
     TargetPlanBinding,
+    WorkArtifactSubject,
     WorkflowPlan,
     WorkflowPlanIntent,
     WorkflowPlanPayload,
@@ -92,7 +92,7 @@ class _AttrDict(dict[str, Any]):
 def _input_selection(work: WorkIdentity) -> ArtifactSelection:
     return ArtifactSelection.seal(
         (
-            ArtifactSubject(
+            WorkArtifactSubject(
                 id="source",
                 role="fixture.source/v1",
                 collection=work.inputs[0],
@@ -154,9 +154,9 @@ def _authorities(
 ) -> tuple[WorkIdentity, WorkflowPlan, TransformPlan, ControllerEvidence]:
     work = WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeRef(id="fixture.recipe/v1", revision=1, sha256=_sha("1")),
+            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision=1, sha256=_sha("1")),
             inputs=(
-                CollectionRootRef(
+                CollectionRootIdentityRef(
                     collection_id=str(1),
                     archive_root_sha256=_sha("2"),
                     content_identity=_sha("3"),
@@ -167,7 +167,7 @@ def _authorities(
     workflow = WorkflowPlan.seal(
         WorkflowPlanPayload(
             work=work,
-            operation=OperationRef(id="fixture.copy/v1", sha256=_sha("4")),
+            operation=OperationIdentityRef(id="fixture.copy/v1", sha256=_sha("4")),
             target_registration_id="fixture-target",
             target_descriptor_sha256=_sha("5"),
             source_collection_retirement_policy=source_collection_retirement_policy,
@@ -210,7 +210,7 @@ def _effect_authorities() -> tuple[WorkIdentity, WorkflowPlan, EffectPlan, Contr
         WorkflowPlanPayload(
             work=work,
             result_kind="external-effect",
-            operation=OperationRef(id="fixture.effect/v1", sha256=_sha("4")),
+            operation=OperationIdentityRef(id="fixture.effect/v1", sha256=_sha("4")),
             target_registration_id="fixture-effect-target",
             target_descriptor_sha256=_sha("5"),
             source_collection_retirement_policy="retain",
@@ -688,7 +688,7 @@ def test_riverhog_adapter_closes_only_the_exact_generic_outcome_set() -> None:
     work, workflow, _target_plan, _evidence = _authorities()
     source_selection = ArtifactSelection.seal(
         (
-            ArtifactSubject(
+            WorkArtifactSubject(
                 id="source",
                 role="fixture.source/v1",
                 collection=work.inputs[0],
@@ -713,14 +713,14 @@ def test_riverhog_adapter_closes_only_the_exact_generic_outcome_set() -> None:
         branches=(branch,),
         selections={source_selection.selection_sha256: source_selection},
     )
-    output_root = CollectionRootRef(
+    output_root = CollectionRootIdentityRef(
         collection_id=str(7),
         archive_root_sha256=_sha("7"),
         content_identity=_sha("8"),
     )
     output_selection = ArtifactSelection.seal(
         (
-            ArtifactSubject(
+            WorkArtifactSubject(
                 id="output",
                 role="fixture.output/v1",
                 collection=output_root,
@@ -887,7 +887,7 @@ def test_synchronous_observation_must_fit_claim_and_capability_lifetime() -> Non
             observer_contract_id="fixture.observe/v1",
             observer_contract_sha256=_sha("d"),
             subjects=(
-                ArtifactSubject(
+                WorkArtifactSubject(
                     id="source",
                     role="fixture.source/v1",
                     collection=work.inputs[0],
@@ -918,7 +918,7 @@ def test_observation_capability_projects_subjects_into_riverhog_artifact_order()
             observer_contract_id="fixture.observe/v1",
             observer_contract_sha256=_sha("d"),
             subjects=(
-                ArtifactSubject(
+                WorkArtifactSubject(
                     id="a-request-id",
                     role="fixture.source/v1",
                     collection=work.inputs[0],
@@ -926,7 +926,7 @@ def test_observation_capability_projects_subjects_into_riverhog_artifact_order()
                     bytes=12,
                     sha256=_sha("e"),
                 ),
-                ArtifactSubject(
+                WorkArtifactSubject(
                     id="z-request-id",
                     role="fixture.source/v1",
                     collection=work.inputs[0],

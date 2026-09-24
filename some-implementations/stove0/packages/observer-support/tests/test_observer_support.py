@@ -55,11 +55,11 @@ from stove0_observer_support import (
     observer_schema_bundle,
 )
 from stove0_protocol import (
-    ArtifactSubject,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
     JsonSchemaValidationProfile,
     SemanticValidationProfile,
     SemanticValidationProfilePayload,
+    WorkArtifactSubject,
     canonical_json_sha256,
 )
 
@@ -271,10 +271,10 @@ def _request(
             observer_contract_id=contract.id,
             observer_contract_sha256=contract.contract_sha256,
             subjects=(
-                ArtifactSubject(
+                WorkArtifactSubject(
                     id="source",
                     role="fixture.source/v1",
-                    collection=CollectionRootRef(
+                    collection=CollectionRootIdentityRef(
                         collection_id=str(1),
                         archive_root_sha256=_sha("1"),
                         content_identity=_sha("2"),
@@ -618,13 +618,13 @@ def test_subject_batch_preference_is_not_a_request_limit() -> None:
             ),
         )
     )
-    root = CollectionRootRef(
+    root = CollectionRootIdentityRef(
         collection_id=str(1),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),
     )
     subjects = tuple(
-        ArtifactSubject(
+        WorkArtifactSubject(
             id=f"source-{index}",
             role="fixture.source/v1",
             collection=root,

@@ -12,13 +12,13 @@ from review0_target_contracts import (
     ReviewSampleWindow,
 )
 from stove0_protocol import (
-    CollectionRootRef,
+    CollectionRootIdentityRef,
     EvaluationDefinition,
     EvaluationDefinitionPayload,
     EvaluationMatrix,
     EvaluationMatrixPayload,
     EvaluationVariant,
-    RecipeRef,
+    RecipeIdentityRef,
 )
 
 
@@ -85,8 +85,8 @@ def evenly_spaced_sample_plan(
 
 def review_evaluation_definition(
     *,
-    recipe: RecipeRef,
-    inputs: tuple[CollectionRootRef, ...],
+    recipe: RecipeIdentityRef,
+    inputs: tuple[CollectionRootIdentityRef, ...],
     sample_plan: ReviewSamplePlan,
     variants: tuple[ReviewVariant, ...],
     purpose: Literal["trial", "evaluation"] = "evaluation",

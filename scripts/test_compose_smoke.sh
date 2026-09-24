@@ -762,9 +762,9 @@ stove0_compose up --detach --wait controller
 
 invoke_code="import json, os, urllib.request
 from stove0_operator_contracts import WorkCreateIn, WorkflowPreviewIn
-from stove0_protocol import CollectionRootRef
+from stove0_protocol import CollectionRootIdentityRef
 receipt = json.loads(os.environ['RIVERHOG_INPUT_RECEIPT'])
-root = CollectionRootRef.model_validate(receipt)
+root = CollectionRootIdentityRef.model_validate(receipt)
 def post(path, payload):
     request = urllib.request.Request(
         'http://127.0.0.1:8080' + path,

@@ -20,18 +20,18 @@ from stove0_observer_protocol import (
 )
 from stove0_protocol import (
     ArtifactSelection,
-    ArtifactSubject,
     BranchDeclaration,
     BranchPlan,
     BranchSetDecision,
     BranchSetPlan,
     BranchWorkBinding,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
     CoordinationBranchPlan,
     JoinDeclaration,
     JoinMemberDeclaration,
     JoinWorkBinding,
-    OperationRef,
+    OperationIdentityRef,
+    WorkArtifactSubject,
     WorkflowPlan,
     WorkflowPlanIntent,
     WorkIdentity,
@@ -100,7 +100,7 @@ class RecipePlanner:
     def create_work(
         self,
         recipe_id: str,
-        roots: Sequence[CollectionRootRef],
+        roots: Sequence[CollectionRootIdentityRef],
         *,
         revision: int | None = None,
         effective_intent: Mapping[str, JsonValue] | None = None,
@@ -402,7 +402,7 @@ class RecipePlanner:
             recipe=recipe.ref,
             effective_intent=effective_intent,
             workflow_intent=WorkflowPlanIntent(
-                operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
+                operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
                 result_kind=operation.result_kind,
                 target_registration_id=route.target_registration_id,
                 target_descriptor_sha256=target.descriptor_sha256,
@@ -442,7 +442,7 @@ class RecipePlanner:
             recipe=parent.recipe,
             effective_intent={**join.intent, **compiled_intent},
             workflow_intent=WorkflowPlanIntent(
-                operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
+                operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
                 result_kind="collection",
                 target_registration_id=join.target_registration_id,
                 target_descriptor_sha256=target.descriptor_sha256,
@@ -488,7 +488,7 @@ class RecipePlanner:
             raise RuntimeError("target execution requires explicit branch or join work")
         return ArtifactSelection.seal(
             tuple(
-                ArtifactSubject(
+                WorkArtifactSubject(
                     id=artifact.id,
                     role=artifact.role,
                     collection=artifact.collection,
@@ -526,7 +526,7 @@ class RecipePlanner:
             raise ValueError("effective target_options must be a JSON object")
         return intent, cast(dict[str, JsonValue], dict(raw_options))
 
-    def operation_contract(self, operation: OperationRef) -> OperationContract:
+    def operation_contract(self, operation: OperationIdentityRef) -> OperationContract:
         contract = self.catalog.operation(operation.id)
         if contract.contract_sha256 != operation.sha256:
             raise RuntimeError("operation contract differs from the sealed identity")
@@ -627,13 +627,13 @@ def _json_pointer_set(document: dict[str, JsonValue], pointer: str, value: JsonV
 def _subjects(
     inventory: Sequence[Mapping[str, object]],
     rules: Sequence[ArtifactRule],
-) -> tuple[ArtifactSubject, ...]:
-    subjects: list[ArtifactSubject] = []
+) -> tuple[WorkArtifactSubject, ...]:
+    subjects: list[WorkArtifactSubject] = []
     for raw in inventory:
         rule = _artifact_rule(str(raw["path"]), rules)
         if rule is None:
             continue
-        root = cast(CollectionRootRef, raw["collection"])
+        root = cast(CollectionRootIdentityRef, raw["collection"])
         byte_count = raw["bytes"]
         if isinstance(byte_count, bool) or not isinstance(byte_count, int):
             raise RuntimeError("Riverhog returned an invalid artifact byte count")
@@ -642,7 +642,7 @@ def _subjects(
             + canonical_json_sha256({"collection_id": root.collection_id, "path": raw["path"]})[:32]
         )
         subjects.append(
-            ArtifactSubject(
+            WorkArtifactSubject(
                 id=artifact_id,
                 role=rule.role,
                 collection=root,
@@ -656,12 +656,12 @@ def _subjects(
 
 
 def _route_artifacts(
-    subjects: tuple[ArtifactSubject, ...],
+    subjects: tuple[WorkArtifactSubject, ...],
     *,
     route: RecipeBranch,
     associations: tuple[ArtifactAssociation, ...],
     observations: tuple[ContentObservationEvidence, ...],
-) -> tuple[ArtifactSubject, ...]:
+) -> tuple[WorkArtifactSubject, ...]:
     if route.primary_role is None:
         if all(
             _predicate_matches(predicate, observations, candidate=()) for predicate in route.when
@@ -677,7 +677,7 @@ def _route_artifacts(
         raise RuntimeError("validated recipe route is missing its artifact association")
     primaries = [subject for subject in subjects if subject.role == route.primary_role]
     associated = [subject for subject in subjects if subject.role in set(route.associated_roles)]
-    selected: dict[str, ArtifactSubject] = {}
+    selected: dict[str, WorkArtifactSubject] = {}
     for primary in primaries:
         candidate = [primary]
         if route.associated_roles:
@@ -721,8 +721,8 @@ def _uncovered_inventory(
         str(raw["path"])
         for raw in inventory
         if (
-            cast(CollectionRootRef, raw["collection"]).collection_id,
-            cast(CollectionRootRef, raw["collection"]).archive_root_sha256,
+            cast(CollectionRootIdentityRef, raw["collection"]).collection_id,
+            cast(CollectionRootIdentityRef, raw["collection"]).archive_root_sha256,
             str(raw["path"]),
             raw["bytes"],
             str(raw["sha256"]),
@@ -834,7 +834,7 @@ def _predicate_matches(
     predicate: FactPredicate,
     observations: Sequence[ContentObservationEvidence],
     *,
-    candidate: Sequence[ArtifactSubject],
+    candidate: Sequence[WorkArtifactSubject],
 ) -> bool:
     matches = [
         evidence.result

@@ -36,22 +36,22 @@ from stove0_observer_protocol import (
 from stove0_protocol import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
     ArtifactSelection,
-    ArtifactSubject,
     BranchPlan,
     BranchSetDecision,
     BranchSetEvaluation,
     BranchSetPlan,
     BranchTargetPreview,
     BranchWorkBinding,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
     CoordinationBranchPlan,
     JoinDeclaration,
     JoinMemberDeclaration,
     JoinWorkBinding,
     JsonSchemaValidationProfile,
-    OperationRef,
-    RecipeRef,
+    OperationIdentityRef,
+    RecipeIdentityRef,
     TargetPlanBinding,
+    WorkArtifactSubject,
     WorkflowPlan,
     WorkflowPlanIntent,
     WorkflowPlanPayload,
@@ -103,8 +103,8 @@ def _sha(character: str) -> str:
     return character * 64
 
 
-def _root() -> CollectionRootRef:
-    return CollectionRootRef(
+def _root() -> CollectionRootIdentityRef:
+    return CollectionRootIdentityRef(
         collection_id=str(1),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),
@@ -114,7 +114,7 @@ def _root() -> CollectionRootRef:
 def _work() -> WorkIdentity:
     return WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeRef(id="fixture.recipe/v1", revision=1, sha256=_sha("3")),
+            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision=1, sha256=_sha("3")),
             inputs=(_root(),),
             effective_intent={"suffix": ".copy"},
         )
@@ -296,7 +296,7 @@ def _target_input_selection(
         return selections[binding.artifact_selection_sha256]
     if not isinstance(binding, JoinWorkBinding):
         raise RuntimeError("fixture target work has no exact input binding")
-    artifacts: list[ArtifactSubject] = []
+    artifacts: list[WorkArtifactSubject] = []
     for member in binding.members:
         selection = selections[member.artifact_selection_sha256]
         for subject in selection.artifacts:
@@ -335,7 +335,7 @@ class FixturePlanning:
         if self.observer is None:
             return ()
         contract, descriptor = self.observer
-        subject = ArtifactSubject(
+        subject = WorkArtifactSubject(
             id="source",
             role="fixture.source/v1",
             collection=_root(),
@@ -367,7 +367,7 @@ class FixturePlanning:
             observations[0].request.subjects
             if observations
             else (
-                ArtifactSubject(
+                WorkArtifactSubject(
                     id="source",
                     role="fixture.source/v1",
                     collection=_root(),
@@ -386,7 +386,7 @@ class FixturePlanning:
             recipe=work.recipe,
             effective_intent=work.effective_intent,
             workflow_intent=WorkflowPlanIntent(
-                operation=OperationRef(
+                operation=OperationIdentityRef(
                     id=self.operation.id,
                     sha256=self.operation.contract_sha256,
                 ),
@@ -429,7 +429,7 @@ class FixturePlanning:
     ) -> ArtifactSelection:
         return _target_input_selection(plan, selections)
 
-    def operation_contract(self, operation: OperationRef) -> OperationContract:
+    def operation_contract(self, operation: OperationIdentityRef) -> OperationContract:
         assert operation.id == self.operation.id
         assert operation.sha256 == self.operation.contract_sha256
         return self.operation
@@ -463,7 +463,7 @@ class ForkJoinPlanning:
         assert not observations
         selection = ArtifactSelection.seal(
             (
-                ArtifactSubject(
+                WorkArtifactSubject(
                     id="source",
                     role="fixture.source/v1",
                     collection=_root(),
@@ -483,7 +483,7 @@ class ForkJoinPlanning:
                 recipe=work.recipe,
                 effective_intent={"branch": branch_id},
                 workflow_intent=WorkflowPlanIntent(
-                    operation=OperationRef(
+                    operation=OperationIdentityRef(
                         id=self.branch_operation.id,
                         sha256=self.branch_operation.contract_sha256,
                     ),
@@ -505,7 +505,7 @@ class ForkJoinPlanning:
             recipe=work.recipe,
             effective_intent={"combine": "exact"},
             workflow_intent=WorkflowPlanIntent(
-                operation=OperationRef(
+                operation=OperationIdentityRef(
                     id=self.join_operation.id,
                     sha256=self.join_operation.contract_sha256,
                 ),
@@ -546,7 +546,7 @@ class ForkJoinPlanning:
     ) -> ArtifactSelection:
         return _target_input_selection(plan, selections)
 
-    def operation_contract(self, operation: OperationRef) -> OperationContract:
+    def operation_contract(self, operation: OperationIdentityRef) -> OperationContract:
         contract = self.operations[operation.id]
         assert operation.sha256 == contract.contract_sha256
         return contract
@@ -563,7 +563,7 @@ class NestedPlanning(FixturePlanning):
         assert not observations
         selection = ArtifactSelection.seal(
             (
-                ArtifactSubject(
+                WorkArtifactSubject(
                     id="source",
                     role="fixture.source/v1",
                     collection=_root(),
@@ -578,7 +578,7 @@ class NestedPlanning(FixturePlanning):
             branch_id="nested",
             decision_sha256=_sha("d"),
             selection=selection,
-            recipe=RecipeRef(id="fixture.child/v1", revision=1, sha256=_sha("5")),
+            recipe=RecipeIdentityRef(id="fixture.child/v1", revision=1, sha256=_sha("5")),
             effective_intent={"suffix": ".copy"},
         )
         leaf = BranchPlan.build(
@@ -589,7 +589,7 @@ class NestedPlanning(FixturePlanning):
             recipe=child_work.recipe,
             effective_intent=child_work.effective_intent,
             workflow_intent=WorkflowPlanIntent(
-                operation=OperationRef(
+                operation=OperationIdentityRef(
                     id=self.operation.id,
                     sha256=self.operation.contract_sha256,
                 ),
@@ -636,7 +636,7 @@ class NestedJoinPlanning(ForkJoinPlanning):
         assert not observations
         selection = ArtifactSelection.seal(
             (
-                ArtifactSubject(
+                WorkArtifactSubject(
                     id="source",
                     role="fixture.source/v1",
                     collection=_root(),
@@ -651,7 +651,7 @@ class NestedJoinPlanning(ForkJoinPlanning):
             branch_id="nested",
             decision_sha256=_sha("d"),
             selection=selection,
-            recipe=RecipeRef(id="fixture.child/v1", revision=1, sha256=_sha("5")),
+            recipe=RecipeIdentityRef(id="fixture.child/v1", revision=1, sha256=_sha("5")),
             effective_intent={},
         )
         child_decision = super().workflow_plan(child_work, ())
@@ -1518,7 +1518,7 @@ def test_retirement_grace_and_deletion_blockers_leave_work_stably_waiting() -> N
     workflow = WorkflowPlan.seal(
         WorkflowPlanPayload(
             work=work,
-            operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
+            operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
             target_descriptor_sha256=target.descriptor_sha256,
             source_collection_retirement_policy="retire-after-verified-output",

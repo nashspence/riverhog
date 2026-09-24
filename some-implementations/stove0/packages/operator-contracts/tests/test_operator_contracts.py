@@ -24,13 +24,13 @@ from stove0_operator_contracts import (
     stove0_event,
 )
 from stove0_protocol import (
-    CollectionRootRef,
+    CollectionRootIdentityRef,
     EvaluationDefinition,
     EvaluationDefinitionPayload,
     EvaluationMatrix,
     EvaluationMatrixPayload,
     EvaluationVariant,
-    RecipeRef,
+    RecipeIdentityRef,
     WorkIdentity,
     WorkPayload,
 )
@@ -39,9 +39,9 @@ from stove0_protocol import (
 def _work() -> WorkIdentity:
     return WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeRef(id="fixture.recipe/v1", revision=1, sha256="1" * 64),
+            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision=1, sha256="1" * 64),
             inputs=(
-                CollectionRootRef(
+                CollectionRootIdentityRef(
                     collection_id=str(1),
                     archive_root_sha256="2" * 64,
                     content_identity="3" * 64,
@@ -58,7 +58,7 @@ def _evaluation() -> EvaluationDefinition:
     return EvaluationDefinition.seal(
         EvaluationDefinitionPayload(
             purpose="trial",
-            recipe=RecipeRef(id="fixture.recipe/v1", revision=1, sha256="1" * 64),
+            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision=1, sha256="1" * 64),
             inputs=_work().inputs,
             matrix=matrix,
         )
@@ -152,12 +152,12 @@ def test_evaluation_review_request_is_meaningful_and_canonical() -> None:
 
 def test_operator_requests_share_one_exact_canonical_collection_contract() -> None:
     roots = (
-        CollectionRootRef(
+        CollectionRootIdentityRef(
             collection_id=str(1),
             archive_root_sha256="1" * 64,
             content_identity="2" * 64,
         ),
-        CollectionRootRef(
+        CollectionRootIdentityRef(
             collection_id=str(2),
             archive_root_sha256="3" * 64,
             content_identity="4" * 64,

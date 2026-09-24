@@ -40,10 +40,10 @@ from riverhog_protocol.portable_collection import PortableCollectionInventoryPag
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 from stove0_observer_protocol import ContentObservationRequest, ObserverRuntimeAuthority
 from stove0_protocol import (
-    ArtifactSubject,
     BranchSetEvaluation,
     ControllerEvidence,
     TargetPlanBinding,
+    WorkArtifactSubject,
     WorkflowPlan,
     WorkflowPreviewRequest,
     WorkIdentity,
@@ -443,7 +443,7 @@ class Stove0RiverhogClient:
         evidence: ControllerEvidence,
         plan: WorkflowPlan,
         target_plan: TargetPlan,
-        inputs: Iterable[ArtifactSubject],
+        inputs: Iterable[WorkArtifactSubject],
     ) -> None:
         envelope = evidence.execution_envelope
         if envelope.workflow_plan != plan:
@@ -479,7 +479,7 @@ class Stove0RiverhogClient:
         claim: ClaimBinding,
         evidence: ControllerEvidence,
         target_plan: TargetPlan,
-        inputs: Iterable[ArtifactSubject],
+        inputs: Iterable[WorkArtifactSubject],
     ) -> TargetInvocationAuthority:
         envelope = evidence.execution_envelope
         if envelope.claim_id != claim.claim_id or envelope.fence != claim.fence:
@@ -920,7 +920,7 @@ class Stove0RiverhogClient:
 
 
 def _artifact_identity(
-    value: ArtifactSubject | InputArtifact,
+    value: WorkArtifactSubject | InputArtifact,
 ) -> CollectionArtifactIdentity:
     return CollectionArtifactIdentity(
         collection=CollectionRootIdentity(

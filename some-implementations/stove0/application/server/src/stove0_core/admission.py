@@ -36,7 +36,7 @@ from stove0_operator_contracts import (
     SchedulerFailure,
     SortOrder,
 )
-from stove0_protocol import CollectionRootRef, WorkflowPreview
+from stove0_protocol import CollectionRootIdentityRef, WorkflowPreview
 from time_formats import format_utc_timestamp, utc_now, utc_timestamp_now
 
 from stove0_core.coordinator import Stove0Coordinator
@@ -633,7 +633,7 @@ class ClassificationAdmissionService:
         work = self.planner.create_work(
             intent.recipe_id,
             (
-                CollectionRootRef.model_validate(
+                CollectionRootIdentityRef.model_validate(
                     {
                         "collection_id": intent.collection.model_dump(mode="json")["collection_id"],
                         "archive_root_sha256": intent.collection.archive_root_sha256,

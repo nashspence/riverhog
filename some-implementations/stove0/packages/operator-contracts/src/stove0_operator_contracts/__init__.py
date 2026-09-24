@@ -25,7 +25,7 @@ from stove0_observer_protocol import ContentObservationRequest, ContentObservati
 from stove0_protocol import (
     ArtifactSelectionPage,
     BranchSetPlan,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
     ControllerEvidence,
     CoordinationSettlement,
     EvaluationDefinition,
@@ -438,14 +438,14 @@ def validate_evaluation_state_shape(
 class WorkflowPreviewIn(OperatorModel):
     recipe_id: str = Field(min_length=1, max_length=160)
     recipe_revision: int | None = Field(default=None, ge=1)
-    inputs: tuple[CollectionRootRef, ...] = Field(min_length=1)
+    inputs: tuple[CollectionRootIdentityRef, ...] = Field(min_length=1)
     effective_intent: dict[str, JsonValue] = Field(default_factory=dict)
 
     @field_validator("inputs")
     @classmethod
     def canonical_inputs(
-        cls, value: tuple[CollectionRootRef, ...]
-    ) -> tuple[CollectionRootRef, ...]:
+        cls, value: tuple[CollectionRootIdentityRef, ...]
+    ) -> tuple[CollectionRootIdentityRef, ...]:
         ordered = tuple(
             sorted(value, key=lambda item: (item.collection_id, item.archive_root_sha256))
         )

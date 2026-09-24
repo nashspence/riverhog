@@ -21,7 +21,6 @@ from stove0_operator_contracts import validate_work_state_shape
 from stove0_protocol import (
     ArtifactSelection,
     ArtifactSelectionRef,
-    ArtifactSubject,
     BranchPlan,
     BranchSetDecision,
     BranchSetPlan,
@@ -34,6 +33,7 @@ from stove0_protocol import (
     JoinPlan,
     Sha256,
     TargetPlanBinding,
+    WorkArtifactSubject,
     WorkflowPlan,
     WorkflowPreview,
     WorkIdentity,
@@ -79,7 +79,7 @@ TerminalPhase = Literal["complete", "inapplicable", "failed", "canceled"]
 AbandonOutcome = Literal["inapplicable", "failed", "canceled"]
 
 
-def _selection_continuation(selection_sha256: str, artifact: ArtifactSubject) -> str:
+def _selection_continuation(selection_sha256: str, artifact: WorkArtifactSubject) -> str:
     return hashlib.sha256(
         b"stove0-artifact-selection-continuation/v1\x00"
         + selection_sha256.encode("ascii")
@@ -375,7 +375,7 @@ class WorkStore(Protocol):
 
     def load_selection_artifact(
         self, selection_sha256: str, artifact_id: str
-    ) -> ArtifactSubject | None: ...
+    ) -> WorkArtifactSubject | None: ...
 
     def record_target_output(self, work_id: str, job_id: str, output: OutputArtifact) -> None: ...
 
@@ -476,9 +476,9 @@ class WorkStore(Protocol):
 
     def selection_artifact_page(
         self, selection_sha256: str, *, continuation: str | None, limit: int
-    ) -> tuple[tuple[ArtifactSubject, ...], str | None, bool]: ...
+    ) -> tuple[tuple[WorkArtifactSubject, ...], str | None, bool]: ...
 
-    def iter_selection_artifacts(self, selection_sha256: str) -> Iterator[ArtifactSubject]: ...
+    def iter_selection_artifacts(self, selection_sha256: str) -> Iterator[WorkArtifactSubject]: ...
 
 
 def _preview_target_expectations(
@@ -714,7 +714,7 @@ class InMemoryWorkStore:
         self,
         selection_sha256: str,
         artifact_id: str,
-    ) -> ArtifactSubject | None:
+    ) -> WorkArtifactSubject | None:
         with self._lock:
             selection = self._selections.get(selection_sha256)
             if selection is None:
@@ -1038,7 +1038,7 @@ class InMemoryWorkStore:
         *,
         continuation: str | None,
         limit: int,
-    ) -> tuple[tuple[ArtifactSubject, ...], str | None, bool]:
+    ) -> tuple[tuple[WorkArtifactSubject, ...], str | None, bool]:
         if limit < 1 or limit > 1000:
             raise ValueError("artifact selection page is invalid")
         with self._lock:
@@ -1065,7 +1065,7 @@ class InMemoryWorkStore:
                 complete,
             )
 
-    def iter_selection_artifacts(self, selection_sha256: str) -> Iterator[ArtifactSubject]:
+    def iter_selection_artifacts(self, selection_sha256: str) -> Iterator[WorkArtifactSubject]:
         with self._lock:
             selection = self._selections.get(selection_sha256)
             artifacts = () if selection is None else selection.artifacts

@@ -104,7 +104,7 @@ from stove0_operator_contracts import (
 from stove0_operator_contracts import (
     SortOrder as Stove0SortOrder,
 )
-from stove0_protocol import CollectionRootRef
+from stove0_protocol import CollectionRootIdentityRef
 from stove0_target_client import TargetCallbackClient
 from stove0_target_protocol import OutputCollectionRef
 
@@ -153,7 +153,7 @@ SUPPORTED_CLIENT_HELPERS = {
             {"collection_id": "1", "path": "camera/clip.mp4"},
         ),
         (
-            CollectionRootRef,
+            CollectionRootIdentityRef,
             {
                 "collection_id": "1",
                 "archive_root_sha256": "a" * 64,

@@ -43,15 +43,15 @@ from stove0_observer_protocol import (
 from stove0_protocol import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
     ArtifactSelection,
-    ArtifactSubject,
     BranchPlan,
     BranchSetDecision,
     BranchSetPlan,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
     CoordinationBranchPlan,
     JsonSchemaValidationProfile,
-    OperationRef,
-    RecipeRef,
+    OperationIdentityRef,
+    RecipeIdentityRef,
+    WorkArtifactSubject,
     WorkflowPlan,
     WorkflowPlanIntent,
     WorkflowPlanPayload,
@@ -96,8 +96,8 @@ def _sha(character: str) -> str:
     return character * 64
 
 
-def _root() -> CollectionRootRef:
-    return CollectionRootRef(
+def _root() -> CollectionRootIdentityRef:
+    return CollectionRootIdentityRef(
         collection_id=str(1),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),
@@ -107,7 +107,7 @@ def _root() -> CollectionRootRef:
 def _work() -> WorkIdentity:
     return WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeRef(id="fixture.recipe/v1", revision=1, sha256=_sha("3")),
+            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision=1, sha256=_sha("3")),
             inputs=(_root(),),
             effective_intent={"suffix": ".copy"},
         )
@@ -151,7 +151,7 @@ def _observation(
     contract: ObserverContract,
     descriptor: ObserverDescriptor,
 ) -> tuple[ContentObservationRequest, ContentObservationResult]:
-    subject = ArtifactSubject(
+    subject = WorkArtifactSubject(
         id="source",
         role="fixture.source/v1",
         collection=_root(),
@@ -253,7 +253,7 @@ def _target_plan(
     if selection is None:
         selection = ArtifactSelection.seal(
             (
-                ArtifactSubject(
+                WorkArtifactSubject(
                     id="source",
                     role="fixture.source/v1",
                     collection=_root(),
@@ -286,7 +286,7 @@ def _branch_decision(
     if selection is None:
         selection = ArtifactSelection.seal(
             (
-                ArtifactSubject(
+                WorkArtifactSubject(
                     id="source",
                     role="fixture.source/v1",
                     collection=_root(),
@@ -304,7 +304,7 @@ def _branch_decision(
         recipe=work.recipe,
         effective_intent=work.effective_intent,
         workflow_intent=WorkflowPlanIntent(
-            operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
+            operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
             target_descriptor_sha256=target.descriptor_sha256,
             source_collection_retirement_policy="retain",
@@ -494,7 +494,7 @@ def test_target_callback_authority_seals_exact_production_and_is_idempotent() ->
 def test_target_production_seal_is_segmented_closes_declarations_and_replays() -> None:
     selection = ArtifactSelection.seal(
         tuple(
-            ArtifactSubject(
+            WorkArtifactSubject(
                 id=f"source-{ordinal}",
                 role="fixture.source/v1",
                 collection=_root(),
@@ -568,7 +568,7 @@ def test_target_production_seal_is_segmented_closes_declarations_and_replays() -
 def test_target_callback_dispositions_cover_multi_input_selection_by_identity() -> None:
     selection = ArtifactSelection.seal(
         (
-            ArtifactSubject(
+            WorkArtifactSubject(
                 id="a-request-first",
                 role="fixture.source/v1",
                 collection=_root(),
@@ -576,7 +576,7 @@ def test_target_callback_dispositions_cover_multi_input_selection_by_identity() 
                 bytes=1,
                 sha256=_sha("4"),
             ),
-            ArtifactSubject(
+            WorkArtifactSubject(
                 id="z-request-last",
                 role="fixture.source/v1",
                 collection=_root(),
@@ -674,7 +674,7 @@ def _nested_branch_decision(work: WorkIdentity) -> BranchSetDecision:
     target = _target(operation)
     selection = ArtifactSelection.seal(
         (
-            ArtifactSubject(
+            WorkArtifactSubject(
                 id="source",
                 role="fixture.source/v1",
                 collection=_root(),
@@ -689,7 +689,7 @@ def _nested_branch_decision(work: WorkIdentity) -> BranchSetDecision:
         branch_id="nested",
         decision_sha256=_sha("d"),
         selection=selection,
-        recipe=RecipeRef(id="fixture.child/v1", revision=1, sha256=_sha("5")),
+        recipe=RecipeIdentityRef(id="fixture.child/v1", revision=1, sha256=_sha("5")),
         effective_intent={"scope": "child"},
     )
     leaf = BranchPlan.build(
@@ -700,7 +700,7 @@ def _nested_branch_decision(work: WorkIdentity) -> BranchSetDecision:
         recipe=child_work.recipe,
         effective_intent=child_work.effective_intent,
         workflow_intent=WorkflowPlanIntent(
-            operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
+            operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
             target_descriptor_sha256=target.descriptor_sha256,
             source_collection_retirement_policy="retain",
@@ -765,7 +765,7 @@ def test_one_record_carries_observation_plan_execution_verification_and_completi
         WorkflowPlanPayload(
             work=work,
             observations=(ContentObservationEvidence(request=request, result=result),),
-            operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
+            operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
             target_descriptor_sha256=target.descriptor_sha256,
             source_collection_retirement_policy="retain",
@@ -947,7 +947,7 @@ def test_new_claim_fence_resets_unsettled_execution_authorities() -> None:
     workflow = WorkflowPlan.seal(
         WorkflowPlanPayload(
             work=work,
-            operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
+            operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
             target_descriptor_sha256=target.descriptor_sha256,
             source_collection_retirement_policy="retain",
@@ -1293,9 +1293,9 @@ def test_sql_runnable_scan_ignores_terminal_history_and_uses_a_keyset(
     for index in range(250):
         identity = WorkIdentity.seal(
             WorkPayload(
-                recipe=RecipeRef(id="fixture.recipe/v1", revision=1, sha256=_sha("3")),
+                recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision=1, sha256=_sha("3")),
                 inputs=(
-                    CollectionRootRef(
+                    CollectionRootIdentityRef(
                         collection_id=str(index + 1),
                         archive_root_sha256=f"{index + 1:064x}",
                         content_identity=_sha("2"),
@@ -1402,7 +1402,7 @@ def test_sql_operational_retention_scans_bounded_pages_without_parsing_all_work(
     for ordinal in range(250):
         work = WorkIdentity.seal(
             WorkPayload(
-                recipe=RecipeRef(id="fixture.recipe/v1", revision=1, sha256=_sha("3")),
+                recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision=1, sha256=_sha("3")),
                 inputs=(_root(),),
                 effective_intent={"ordinal": ordinal},
             )
@@ -1476,7 +1476,7 @@ def test_sql_selection_restart_preserves_canonical_artifact_order(tmp_path: Path
     path = tmp_path / "private" / "stove0.sqlite3"
     selection = ArtifactSelection.seal(
         (
-            ArtifactSubject(
+            WorkArtifactSubject(
                 id="a-request-first",
                 role="fixture.source/v1",
                 collection=_root(),
@@ -1484,7 +1484,7 @@ def test_sql_selection_restart_preserves_canonical_artifact_order(tmp_path: Path
                 bytes=1,
                 sha256=_sha("4"),
             ),
-            ArtifactSubject(
+            WorkArtifactSubject(
                 id="z-request-last",
                 role="fixture.source/v1",
                 collection=_root(),

@@ -40,8 +40,8 @@ from stove0_observer_protocol import (
     ObserverImplementation,
 )
 from stove0_protocol import (
-    ArtifactSubject,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
+    WorkArtifactSubject,
     canonical_json_sha256,
 )
 from stove0_target_protocol import InputArtifact
@@ -51,8 +51,8 @@ def _sha(character: str) -> str:
     return character * 64
 
 
-def _root() -> CollectionRootRef:
-    return CollectionRootRef(
+def _root() -> CollectionRootIdentityRef:
+    return CollectionRootIdentityRef(
         collection_id=str(1),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),
@@ -64,7 +64,7 @@ def _evidence(
     facts: dict[str, tuple[MediaMetadataFact, ...]],
 ) -> tuple[ContentObservationEvidence, ...]:
     subjects = tuple(
-        ArtifactSubject(
+        WorkArtifactSubject(
             id=item.id,
             role=item.role,
             collection=item.collection,

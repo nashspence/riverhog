@@ -29,7 +29,7 @@ from stove0_observer_protocol import (
     canonical_json_bytes,
     canonical_json_sha256,
 )
-from stove0_protocol import ArtifactSelection, ArtifactSubject
+from stove0_protocol import ArtifactSelection, WorkArtifactSubject
 from stove0_target_protocol import (
     InputArtifact,
     TargetInputAuthority,
@@ -226,7 +226,7 @@ def resolve_media_archive_projection(
     if not relevant:
         raise ValueError("media projection requires exact media observation evidence")
     facts_by_artifact: dict[str, tuple[MediaMetadataFact, ...]] = {}
-    subjects_by_artifact: dict[str, ArtifactSubject] = {}
+    subjects_by_artifact: dict[str, WorkArtifactSubject] = {}
     for evidence in relevant:
         facts = MediaMetadataFacts.model_validate(evidence.result.facts)
         fact_ids = {item.artifact_id for item in facts.artifacts}
@@ -327,7 +327,7 @@ def resolve_media_archive_preflight_projection(
     are exactly the target inputs before sealing the projection.
     """
 
-    subjects: dict[str, ArtifactSubject] = {}
+    subjects: dict[str, WorkArtifactSubject] = {}
     for evidence in request.observations:
         if evidence.request.observer_contract_id != MEDIA_METADATA_OBSERVATION_ID:
             continue

@@ -62,12 +62,12 @@ from stove0_observer_support import ContentObservationResultBuilder
 from stove0_protocol import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
     ArtifactSelection,
-    ArtifactSubject,
     BranchSetDecision,
     BranchSettlement,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
     CoordinationBranchPlan,
     JsonSchemaValidationProfile,
+    WorkArtifactSubject,
     resolve_join_plan,
 )
 from stove0_target_protocol import TargetInputRoleCount
@@ -301,7 +301,7 @@ def _conformance_plan(
         observers=cast(ObserverPort, observers),
         targets=cast(TargetPort, ConformanceTargets()),
     )
-    root = CollectionRootRef(
+    root = CollectionRootIdentityRef(
         collection_id=str(11),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),
@@ -401,7 +401,7 @@ def test_installed_catalog_rejects_stale_observer_contract_before_observation() 
     work = planner.create_work(
         stale_recipe.id,
         (
-            CollectionRootRef(
+            CollectionRootIdentityRef(
                 collection_id=str(11),
                 archive_root_sha256=_sha("1"),
                 content_identity=_sha("2"),
@@ -446,7 +446,7 @@ def test_planning_rejects_stale_target_operation_contract_before_preflight() -> 
     work = planner.create_work(
         recipe.id,
         (
-            CollectionRootRef(
+            CollectionRootIdentityRef(
                 collection_id=str(11),
                 archive_root_sha256=_sha("1"),
                 content_identity=_sha("2"),
@@ -497,7 +497,7 @@ def test_planner_seals_exact_nested_subrecipe_tree_without_target_smearing() -> 
     work = planner.create_work(
         parent.id,
         (
-            CollectionRootRef(
+            CollectionRootIdentityRef(
                 collection_id=str(11),
                 archive_root_sha256=_sha("1"),
                 content_identity=_sha("2"),
@@ -555,7 +555,7 @@ def test_recipe_explicitly_rejects_unmatched_primary_and_sidecar_artifacts() -> 
     work = planner.create_work(
         recipe.id,
         (
-            CollectionRootRef(
+            CollectionRootIdentityRef(
                 collection_id=str(11),
                 archive_root_sha256=_sha("1"),
                 content_identity=_sha("2"),
@@ -652,7 +652,7 @@ def test_observer_preference_batches_unbounded_collection_work_without_omission(
         observers=cast(ObserverPort, observers),
         targets=cast(TargetPort, ArchiveTargets()),
     )
-    root = CollectionRootRef(
+    root = CollectionRootIdentityRef(
         collection_id=str(11),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),
@@ -744,7 +744,7 @@ def test_media_observation_evidence_binds_exact_primary_sidecar_selection() -> N
         observers=cast(ObserverPort, observers),
         targets=cast(TargetPort, ArchiveTargets()),
     )
-    root = CollectionRootRef(
+    root = CollectionRootIdentityRef(
         collection_id=str(11),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),
@@ -903,7 +903,7 @@ def test_review_recipe_projects_semantic_intent_and_options_before_preflight() -
         operations=(REVIEW_MATERIALIZE_OPERATION,),
         recipes=(recipe,),
     )
-    root = CollectionRootRef(
+    root = CollectionRootIdentityRef(
         collection_id=str(11),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),
@@ -1089,7 +1089,7 @@ def test_production_planner_resolves_overlapping_branches_into_one_exact_join() 
         observers=cast(ObserverPort, object()),
         targets=cast(TargetPort, ForkJoinTargets()),
     )
-    root = CollectionRootRef(
+    root = CollectionRootIdentityRef(
         collection_id=str(11),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),
@@ -1107,14 +1107,14 @@ def test_production_planner_resolves_overlapping_branches_into_one_exact_join() 
     selections = dict(decision.selection_documents)
     settlements: list[BranchSettlement] = []
     for collection_id, branch in enumerate(decision.plan.branches, start=21):
-        output_root = CollectionRootRef(
+        output_root = CollectionRootIdentityRef(
             collection_id=str(collection_id),
             archive_root_sha256=f"{collection_id % 16:x}" * 64,
             content_identity=f"{(collection_id + 1) % 16:x}" * 64,
         )
         output = ArtifactSelection.seal(
             (
-                ArtifactSubject(
+                WorkArtifactSubject(
                     id=f"{branch.branch_id}-output",
                     role="fixture.branch-output/v1",
                     collection=output_root,
@@ -1236,7 +1236,7 @@ def test_retirement_plan_accepts_overlapping_selections_covering_complete_invent
         ),
     )
     planner = _retirement_planner(recipe)
-    root = CollectionRootRef(
+    root = CollectionRootIdentityRef(
         collection_id=str(11),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),
@@ -1270,7 +1270,7 @@ def test_retirement_plan_rejects_incomplete_inventory_before_target_preflight() 
         ),
     )
     planner = _retirement_planner(recipe)
-    root = CollectionRootRef(
+    root = CollectionRootIdentityRef(
         collection_id=str(11),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),

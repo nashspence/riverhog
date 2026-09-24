@@ -173,48 +173,56 @@ class JsonSchemaValidationProfile(Stove0ProtocolModel):
         return cls(id=schema_id, profile_sha256=canonical_json_sha256(profile), schema=document)
 
 
-class CollectionRootRef(Stove0ProtocolModel):
+class CollectionRootIdentityRef(Stove0ProtocolModel):
+    """Embedded Stove0 reference to the Riverhog collection-root identity."""
+
     collection_id: CollectionId
     archive_root_sha256: Sha256
     content_identity: Sha256
 
     @classmethod
-    def from_identity(cls, value: CollectionRootIdentity) -> CollectionRootRef:
+    def from_identity(cls, value: CollectionRootIdentity) -> CollectionRootIdentityRef:
         return cls.model_validate(value.as_dict())
 
     def to_identity(self) -> CollectionRootIdentity:
         return CollectionRootIdentity.from_mapping(self.model_dump(mode="json"))
 
 
-class RecipeRef(Stove0ProtocolModel):
+class RecipeIdentityRef(Stove0ProtocolModel):
+    """Embedded Stove0 reference to the Riverhog recipe identity."""
+
     id: SemanticId
     revision: int = Field(ge=1)
     sha256: Sha256
 
     @classmethod
-    def from_identity(cls, value: RecipeIdentity) -> RecipeRef:
+    def from_identity(cls, value: RecipeIdentity) -> RecipeIdentityRef:
         return cls(id=value.id, revision=value.revision, sha256=value.sha256)
 
     def to_identity(self) -> RecipeIdentity:
         return RecipeIdentity(**self.model_dump(mode="python"))
 
 
-class OperationRef(Stove0ProtocolModel):
+class OperationIdentityRef(Stove0ProtocolModel):
+    """Embedded Stove0 reference to the Riverhog operation identity."""
+
     id: SemanticId
     sha256: Sha256
 
     @classmethod
-    def from_identity(cls, value: OperationIdentity) -> OperationRef:
+    def from_identity(cls, value: OperationIdentity) -> OperationIdentityRef:
         return cls(id=value.id, sha256=value.sha256)
 
     def to_identity(self) -> OperationIdentity:
         return OperationIdentity(**self.model_dump(mode="python"))
 
 
-class ArtifactSubject(Stove0ProtocolModel):
+class WorkArtifactSubject(Stove0ProtocolModel):
+    """A collection logical file assigned an ID and role within one Stove0 work."""
+
     id: str = Field(pattern=ARTIFACT_ID_PATTERN)
     role: SemanticId
-    collection: CollectionRootRef
+    collection: CollectionRootIdentityRef
     path: str = Field(min_length=1, max_length=4096)
     bytes: int = Field(ge=0)
     sha256: Sha256
@@ -281,8 +289,8 @@ class EvaluationBinding(Stove0ProtocolModel):
 
 class WorkPayload(Stove0ProtocolModel):
     format: Literal["stove0-work/v1"] = WORK_FORMAT
-    recipe: RecipeRef
-    inputs: tuple[CollectionRootRef, ...] = Field(min_length=1)
+    recipe: RecipeIdentityRef
+    inputs: tuple[CollectionRootIdentityRef, ...] = Field(min_length=1)
     effective_intent: dict[str, JsonValue] = Field(default_factory=dict)
     evaluation: EvaluationBinding | None = None
     fork_join: ForkJoinBinding | None = None
@@ -290,8 +298,8 @@ class WorkPayload(Stove0ProtocolModel):
     @field_validator("inputs")
     @classmethod
     def canonical_inputs(
-        cls, value: tuple[CollectionRootRef, ...]
-    ) -> tuple[CollectionRootRef, ...]:
+        cls, value: tuple[CollectionRootIdentityRef, ...]
+    ) -> tuple[CollectionRootIdentityRef, ...]:
         ordered = tuple(
             sorted(value, key=lambda item: (item.collection_id, item.archive_root_sha256))
         )
@@ -468,7 +476,7 @@ class ContentObservationRequestPayload(Stove0ProtocolModel):
     observer_descriptor_sha256: Sha256
     observer_contract_id: SemanticId
     observer_contract_sha256: Sha256
-    subjects: tuple[ArtifactSubject, ...] = Field(min_length=1)
+    subjects: tuple[WorkArtifactSubject, ...] = Field(min_length=1)
     options: dict[str, JsonValue] = Field(default_factory=dict)
     timeout_seconds: int = Field(default=300, ge=1, le=86400)
     maximum_result_bytes: int = Field(default=1024 * 1024, ge=1, le=64 * 1024 * 1024)
@@ -476,7 +484,9 @@ class ContentObservationRequestPayload(Stove0ProtocolModel):
 
     @field_validator("subjects")
     @classmethod
-    def canonical_subjects(cls, value: tuple[ArtifactSubject, ...]) -> tuple[ArtifactSubject, ...]:
+    def canonical_subjects(
+        cls, value: tuple[WorkArtifactSubject, ...]
+    ) -> tuple[WorkArtifactSubject, ...]:
         ids = [item.id for item in value]
         if ids != sorted(ids) or len(ids) != len(set(ids)):
             raise ValueError("observation subjects must be unique and ordered by artifact ID")
@@ -550,7 +560,7 @@ class ContentObservationResultPayload(Stove0ProtocolModel):
     observer: ObserverImplementation
     observer_contract_id: SemanticId
     observer_contract_sha256: Sha256
-    subjects: tuple[ArtifactSubject, ...] = Field(min_length=1)
+    subjects: tuple[WorkArtifactSubject, ...] = Field(min_length=1)
     facts_schema: JsonSchemaValidationProfile | None = None
     facts: dict[str, JsonValue] | None = None
     facts_sha256: Sha256 | None = None
@@ -560,7 +570,9 @@ class ContentObservationResultPayload(Stove0ProtocolModel):
 
     @field_validator("subjects")
     @classmethod
-    def canonical_subjects(cls, value: tuple[ArtifactSubject, ...]) -> tuple[ArtifactSubject, ...]:
+    def canonical_subjects(
+        cls, value: tuple[WorkArtifactSubject, ...]
+    ) -> tuple[WorkArtifactSubject, ...]:
         ids = [item.id for item in value]
         if ids != sorted(ids) or len(ids) != len(set(ids)):
             raise ValueError("observation result subjects must be unique and ordered")
@@ -634,7 +646,7 @@ class WorkflowPlanPayload(Stove0ProtocolModel):
     format: Literal["stove0-workflow-plan/v1"] = WORKFLOW_PLAN_FORMAT
     work: WorkIdentity
     observations: tuple[ContentObservationEvidence, ...] = ()
-    operation: OperationRef
+    operation: OperationIdentityRef
     result_kind: OperationResultKind = "collection"
     target_registration_id: RegistrationId
     target_descriptor_sha256: Sha256
@@ -699,7 +711,7 @@ class WorkflowPlan(WorkflowPlanPayload):
 class WorkflowPlanIntent(Stove0ProtocolModel):
     """Work-independent fields that deterministically materialize a workflow plan."""
 
-    operation: OperationRef
+    operation: OperationIdentityRef
     result_kind: OperationResultKind = "collection"
     target_registration_id: RegistrationId
     target_descriptor_sha256: Sha256
@@ -870,16 +882,16 @@ class EvaluationMatrix(EvaluationMatrixPayload):
 class EvaluationDefinitionPayload(Stove0ProtocolModel):
     format: Literal["stove0-evaluation-definition/v1"] = EVALUATION_DEFINITION_FORMAT
     purpose: Literal["trial", "evaluation"] = "evaluation"
-    recipe: RecipeRef
-    inputs: tuple[CollectionRootRef, ...] = Field(min_length=1)
+    recipe: RecipeIdentityRef
+    inputs: tuple[CollectionRootIdentityRef, ...] = Field(min_length=1)
     common_intent: dict[str, JsonValue] = Field(default_factory=dict)
     matrix: EvaluationMatrix
 
     @field_validator("inputs")
     @classmethod
     def canonical_inputs(
-        cls, value: tuple[CollectionRootRef, ...]
-    ) -> tuple[CollectionRootRef, ...]:
+        cls, value: tuple[CollectionRootIdentityRef, ...]
+    ) -> tuple[CollectionRootIdentityRef, ...]:
         ordered = tuple(
             sorted(value, key=lambda item: (item.collection_id, item.archive_root_sha256))
         )
@@ -1021,11 +1033,11 @@ __all__ = [
     "ObserverDescriptorPayload",
     "ObserverImplementation",
     "ObserverRuntimeAuthority",
-    "OperationRef",
+    "OperationIdentityRef",
     "PreviewOutcome",
     "RIVERHOG_CAPABILITY_TRANSPORT",
     "OCI_IMAGE_ID_PATTERN",
-    "RecipeRef",
+    "RecipeIdentityRef",
     "SourceCollectionRetirementPolicy",
     "SHA256_PATTERN",
     "SemanticId",
@@ -1045,9 +1057,9 @@ __all__ = [
     "WorkflowPlanPayload",
     "WorkflowPreviewRequest",
     "WorkflowPreviewRequestPayload",
-    "ArtifactSubject",
+    "WorkArtifactSubject",
     "BranchWorkBinding",
-    "CollectionRootRef",
+    "CollectionRootIdentityRef",
     "canonical_json_bytes",
     "canonical_json_sha256",
 ]

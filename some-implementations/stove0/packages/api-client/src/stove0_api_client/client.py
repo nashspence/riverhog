@@ -48,7 +48,7 @@ from stove0_operator_contracts import (
 from stove0_protocol import (
     ArtifactSelectionPage,
     BranchSetEvaluation,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
     EvaluationDefinition,
     WorkflowPreview,
 )
@@ -255,7 +255,7 @@ class Stove0ApiClient:
     def create_work(
         self,
         recipe_id: str,
-        inputs: Sequence[CollectionRootRef],
+        inputs: Sequence[CollectionRootIdentityRef],
         *,
         preview_sha256: str,
         recipe_revision: int | None = None,
@@ -324,7 +324,7 @@ class Stove0ApiClient:
     def preview_workflow(
         self,
         recipe_id: str,
-        inputs: Sequence[CollectionRootRef],
+        inputs: Sequence[CollectionRootIdentityRef],
         *,
         recipe_revision: int | None = None,
         effective_intent: Mapping[str, Any] | None = None,

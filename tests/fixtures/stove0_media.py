@@ -22,8 +22,8 @@ from stove0_observer_protocol import (
 )
 from stove0_protocol import (
     ArtifactSelection,
-    ArtifactSubject,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
+    WorkArtifactSubject,
     canonical_json_sha256,
 )
 from stove0_target_protocol import (
@@ -45,7 +45,7 @@ def media_preflight_request(
     sidecar_capture_time: str = "2025:02:03 04:05:06-0800",
     target_options: dict[str, object] | None = None,
 ) -> TargetPreflightRequest:
-    root = CollectionRootRef(
+    root = CollectionRootIdentityRef(
         collection_id="11",
         archive_root_sha256=sha("1"),
         content_identity=sha("2"),
@@ -71,7 +71,7 @@ def media_preflight_request(
         ),
     )
     subjects = tuple(
-        ArtifactSubject(
+        WorkArtifactSubject(
             id=item.id,
             role=item.role,
             collection=item.collection,

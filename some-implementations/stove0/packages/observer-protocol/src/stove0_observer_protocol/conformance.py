@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, field_validator, model_validator
-from stove0_protocol.models import ArtifactSubject, SemanticId, canonical_json_sha256
+from stove0_protocol.models import SemanticId, WorkArtifactSubject, canonical_json_sha256
 
 
 class SemanticConformanceModel(BaseModel):
@@ -15,7 +15,7 @@ class SemanticConformanceModel(BaseModel):
 class SemanticFactsConformanceVector(SemanticConformanceModel):
     id: SemanticId
     accepted: bool
-    subjects: tuple[ArtifactSubject, ...] = Field(min_length=1)
+    subjects: tuple[WorkArtifactSubject, ...] = Field(min_length=1)
     options: dict[str, JsonValue] = Field(default_factory=dict)
     facts: dict[str, JsonValue]
 
@@ -23,8 +23,8 @@ class SemanticFactsConformanceVector(SemanticConformanceModel):
     @classmethod
     def canonical_subjects(
         cls,
-        value: tuple[ArtifactSubject, ...],
-    ) -> tuple[ArtifactSubject, ...]:
+        value: tuple[WorkArtifactSubject, ...],
+    ) -> tuple[WorkArtifactSubject, ...]:
         ids = [subject.id for subject in value]
         if ids != sorted(ids) or len(ids) != len(set(ids)):
             raise ValueError("semantic vector subjects must be unique and ordered")

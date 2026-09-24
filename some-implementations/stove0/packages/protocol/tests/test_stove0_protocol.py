@@ -2,14 +2,18 @@ from __future__ import annotations
 
 import pytest
 from pydantic import ValidationError
+from riverhog_protocol.collection_workflows import (
+    CollectionRootIdentity,
+    OperationIdentity,
+    RecipeIdentity,
+)
 from stove0_protocol import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
     ArtifactSelection,
-    ArtifactSubject,
     BranchPlan,
     BranchSetPlan,
     BranchTargetPreview,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
     ControllerEvidence,
     ControllerEvidencePayload,
     EvaluationDefinition,
@@ -20,9 +24,10 @@ from stove0_protocol import (
     ExecutionEnvelope,
     ExecutionEnvelopePayload,
     JsonSchemaValidationProfile,
-    OperationRef,
-    RecipeRef,
+    OperationIdentityRef,
+    RecipeIdentityRef,
     TargetPlanBinding,
+    WorkArtifactSubject,
     WorkflowPlan,
     WorkflowPlanIntent,
     WorkflowPlanPayload,
@@ -116,8 +121,22 @@ def _sha(character: str) -> str:
     return character * 64
 
 
-def _root(collection_id: int = 1) -> CollectionRootRef:
-    return CollectionRootRef(
+def test_embedded_identity_references_preserve_riverhog_identity_values() -> None:
+    root = CollectionRootIdentity(
+        collection_id=(1 << 63) - 1,
+        archive_root_sha256=_sha("a"),
+        content_identity=_sha("b"),
+    )
+    recipe = RecipeIdentity(id="camera.archive/v1", revision=3, sha256=_sha("c"))
+    operation = OperationIdentity(id="video.archive/v1", sha256=_sha("d"))
+
+    assert CollectionRootIdentityRef.from_identity(root).to_identity() == root
+    assert RecipeIdentityRef.from_identity(recipe).to_identity() == recipe
+    assert OperationIdentityRef.from_identity(operation).to_identity() == operation
+
+
+def _root(collection_id: int = 1) -> CollectionRootIdentityRef:
+    return CollectionRootIdentityRef(
         collection_id=str(collection_id),
         archive_root_sha256=_sha(str(collection_id)),
         content_identity=_sha(chr(ord("a") + collection_id)),
@@ -127,7 +146,7 @@ def _root(collection_id: int = 1) -> CollectionRootRef:
 def _work() -> WorkIdentity:
     return WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeRef(id="camera.archive/v1", revision=3, sha256=_sha("a")),
+            recipe=RecipeIdentityRef(id="camera.archive/v1", revision=3, sha256=_sha("a")),
             inputs=(_root(1), _root(2)),
             effective_intent={"preserve_original": True},
         )
@@ -178,8 +197,8 @@ def test_observer_descriptor_requires_an_oci_image_id() -> None:
         ObserverDescriptorPayload.model_validate(payload)
 
 
-def _subject() -> ArtifactSubject:
-    return ArtifactSubject(
+def _subject() -> WorkArtifactSubject:
+    return WorkArtifactSubject(
         id="camera-source",
         role="camera.source/v1",
         collection=_root(1),
@@ -355,7 +374,7 @@ def test_workflow_target_and_controller_evidence_bind_one_another() -> None:
     descriptor = _descriptor(contract)
     request = _request(work, contract, descriptor)
     observation = _result(request, contract, descriptor)
-    operation = OperationRef(id="video.archive/v1", sha256=_sha("e"))
+    operation = OperationIdentityRef(id="video.archive/v1", sha256=_sha("e"))
     workflow = WorkflowPlan.seal(
         WorkflowPlanPayload(
             work=work,
@@ -443,10 +462,10 @@ def test_observation_request_identity_is_independent_of_claim_generation() -> No
 def test_workflow_preview_and_evaluation_contracts_are_deterministic() -> None:
     work = _work()
     preview_request = WorkflowPreviewRequest.seal(WorkflowPreviewRequestPayload(work=work))
-    operation = OperationRef(id="video.archive/v1", sha256=_sha("e"))
+    operation = OperationIdentityRef(id="video.archive/v1", sha256=_sha("e"))
     selection = ArtifactSelection.seal(
         (
-            ArtifactSubject(
+            WorkArtifactSubject(
                 id="source",
                 role="video.source/v1",
                 collection=work.inputs[0],

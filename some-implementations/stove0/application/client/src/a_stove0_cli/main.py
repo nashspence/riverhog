@@ -14,7 +14,7 @@ from rich.console import Console
 from rich.pretty import Pretty
 from rich.table import Table
 from stove0_api_client import Stove0ApiClient, Stove0ApiError
-from stove0_protocol import CollectionRootRef
+from stove0_protocol import CollectionRootIdentityRef
 from stove0_recipe_config import RecipeCatalog
 
 app = typer.Typer(
@@ -523,8 +523,8 @@ def _document(path: Path | None) -> dict[str, Any]:
     return value
 
 
-def _collection_roots(values: list[str]) -> tuple[CollectionRootRef, ...]:
-    roots: list[CollectionRootRef] = []
+def _collection_roots(values: list[str]) -> tuple[CollectionRootIdentityRef, ...]:
+    roots: list[CollectionRootIdentityRef] = []
     for value in values:
         fields = value.split(":")
         if len(fields) != 3:
@@ -534,7 +534,7 @@ def _collection_roots(values: list[str]) -> tuple[CollectionRootRef, ...]:
         collection_id, archive_root_sha256, content_identity = fields
         try:
             roots.append(
-                CollectionRootRef.model_validate(
+                CollectionRootIdentityRef.model_validate(
                     {
                         "collection_id": collection_id,
                         "archive_root_sha256": archive_root_sha256,

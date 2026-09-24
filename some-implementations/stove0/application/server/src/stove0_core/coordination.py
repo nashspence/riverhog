@@ -6,7 +6,6 @@ from dataclasses import dataclass
 
 from stove0_protocol import (
     ArtifactSelection,
-    ArtifactSubject,
     BranchEffectSettlement,
     BranchOutcome,
     BranchOutcomeState,
@@ -14,13 +13,14 @@ from stove0_protocol import (
     BranchSetEvaluation,
     BranchSetPlan,
     BranchSettlement,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
     CoordinationBranchPlan,
     CoordinationSettlement,
     JoinOutcome,
     JoinOutcomeState,
     JoinPlan,
     JoinSettlement,
+    WorkArtifactSubject,
     branch_work,
     evaluate_branch_set,
     resolve_join_plan,
@@ -349,7 +349,7 @@ def _output_selection(record: WorkRecord, store: WorkStore) -> ArtifactSelection
     root = _collection_root(output)
     return ArtifactSelection.seal(
         tuple(
-            ArtifactSubject(
+            WorkArtifactSubject(
                 id=item.id,
                 role=item.role,
                 collection=root,
@@ -363,8 +363,8 @@ def _output_selection(record: WorkRecord, store: WorkStore) -> ArtifactSelection
     )
 
 
-def _collection_root(output: OutputCollectionRef) -> CollectionRootRef:
-    return CollectionRootRef.model_validate(
+def _collection_root(output: OutputCollectionRef) -> CollectionRootIdentityRef:
+    return CollectionRootIdentityRef.model_validate(
         {
             "collection_id": str(output.collection_id),
             "archive_root_sha256": output.archive_root_sha256,
