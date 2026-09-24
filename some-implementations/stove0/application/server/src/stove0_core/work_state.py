@@ -67,7 +67,7 @@ WorkPhase = Literal[
     "output_finalizing",
     "verifying",
     "settled",
-    "retirement_pending",
+    "source_collection_retirement_pending",
     "coordinating",
     "abandon_pending",
     "complete",
@@ -298,7 +298,7 @@ class WorkRecord(Stove0StateModel):
     target_status: TargetJobStatus | None = None
     output: OutputCollectionRef | None = None
     target_settlement: TargetSettlementAuthority | None = None
-    retirement_remaining: tuple[int, ...] = ()
+    source_collection_retirement_remaining: tuple[int, ...] = ()
     failure: WorkFailure | None = None
     inapplicable: WorkInapplicable | None = None
     abandon_outcome: AbandonOutcome | None = None
@@ -311,7 +311,7 @@ class WorkRecord(Stove0StateModel):
             raise ValueError("work settlement differs from its output collection")
         if (
             self.output is not None
-            and self.phase in {"settled", "retirement_pending", "complete"}
+            and self.phase in {"settled", "source_collection_retirement_pending", "complete"}
             and self.target_settlement is None
         ):
             raise ValueError("settled collection work requires post-root target settlement")
@@ -327,7 +327,7 @@ class WorkRecord(Stove0StateModel):
             coordination_cancel_requested=self.coordination_cancel_requested,
             workflow_plan=self.workflow_plan,
             output=self.output,
-            retirement_remaining=self.retirement_remaining,
+            source_collection_retirement_remaining=self.source_collection_retirement_remaining,
             failure=self.failure,
             inapplicable=self.inapplicable,
             abandon_outcome=self.abandon_outcome,
@@ -1206,7 +1206,7 @@ class Stove0WorkService:
         if record.claim is None or record.phase in {
             "eligible",
             "settled",
-            "retirement_pending",
+            "source_collection_retirement_pending",
             "abandon_pending",
             "complete",
             "inapplicable",
@@ -1232,7 +1232,7 @@ class Stove0WorkService:
             target_request=None,
             target_status=None,
             output=None,
-            retirement_remaining=(),
+            source_collection_retirement_remaining=(),
             failure=None,
             inapplicable=None,
             abandon_outcome=None,
@@ -1542,7 +1542,7 @@ class Stove0WorkService:
             target_settlement=settlement,
         )
 
-    def begin_retirement(
+    def begin_source_collection_retirement(
         self,
         work_id: str,
         collection_ids: Sequence[int],
@@ -1551,28 +1551,30 @@ class Stove0WorkService:
     ) -> WorkRecord:
         record = self._load(work_id, expected_revision)
         if record.phase not in {"settled", "coordinating"}:
-            raise Stove0StateError(f"work cannot begin retirement from {record.phase}")
+            raise Stove0StateError(
+                f"work cannot begin source collection retirement from {record.phase}"
+            )
         policy = (
-            record.branch_set_plan.retirement_policy
+            record.branch_set_plan.source_collection_retirement_policy
             if record.branch_set_plan is not None
-            else record.workflow_plan.retirement_policy
+            else record.workflow_plan.source_collection_retirement_policy
             if record.workflow_plan is not None
             else None
         )
         if policy is None:
-            raise Stove0StateError("retirement work has no sealed policy")
+            raise Stove0StateError("source collection retirement work has no sealed policy")
         if policy == "retain":
             if collection_ids:
-                raise ValueError("retained work cannot retire input collections")
+                raise ValueError("retained work cannot retire source collections")
             return self._replace(record, phase="complete")
         expected = tuple(item.collection_id for item in record.work.inputs)
         normalized = tuple(sorted(set(int(item) for item in collection_ids)))
         if normalized != expected:
-            raise ValueError("retirement must name every exact input collection")
+            raise ValueError("source collection retirement must name every exact input collection")
         return self._replace(
             record,
-            phase="retirement_pending",
-            retirement_remaining=normalized,
+            phase="source_collection_retirement_pending",
+            source_collection_retirement_remaining=normalized,
         )
 
     def request_coordination_cancel(
@@ -1590,7 +1592,7 @@ class Stove0WorkService:
             return record
         return self._replace(record, coordination_cancel_requested=True)
 
-    def record_retired(
+    def record_source_collection_deleted(
         self,
         work_id: str,
         collection_id: int,
@@ -1598,17 +1600,21 @@ class Stove0WorkService:
         expected_revision: int,
     ) -> WorkRecord:
         record = self._load(work_id, expected_revision)
-        if record.phase != "retirement_pending":
-            raise Stove0StateError(f"work cannot record retirement from {record.phase}")
+        if record.phase != "source_collection_retirement_pending":
+            raise Stove0StateError(
+                f"work cannot record source collection deletion from {record.phase}"
+            )
         remaining = tuple(
-            item for item in record.retirement_remaining if item != int(collection_id)
+            item
+            for item in record.source_collection_retirement_remaining
+            if item != int(collection_id)
         )
-        if remaining == record.retirement_remaining:
-            raise ValueError("collection is not pending retirement")
+        if remaining == record.source_collection_retirement_remaining:
+            raise ValueError("collection is not pending source collection retirement")
         return self._replace(
             record,
-            phase="complete" if not remaining else "retirement_pending",
-            retirement_remaining=remaining,
+            phase="complete" if not remaining else "source_collection_retirement_pending",
+            source_collection_retirement_remaining=remaining,
         )
 
     def retry_failed(
@@ -1644,7 +1650,7 @@ class Stove0WorkService:
             target_request=None,
             target_status=None,
             output=None,
-            retirement_remaining=(),
+            source_collection_retirement_remaining=(),
             failure=None,
             inapplicable=None,
             abandon_outcome=None,

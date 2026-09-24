@@ -71,7 +71,7 @@ def _retirement(status: str, challenge: str | None, blockers: list[str]) -> dict
             "object_count": 1,
         },
         "retained_copies": [],
-        "retired_retrieval_job_count": 0,
+        "terminal_retrieval_job_count": 0,
         "blockers": blockers,
         "verification_note": "verification",
         "billing_note": "billing",

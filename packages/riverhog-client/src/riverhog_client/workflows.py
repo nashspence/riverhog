@@ -52,7 +52,7 @@ from riverhog_protocol.collection_workflow_transport import (
     ProcessingOutcomePageDocument,
     ReceivingSetDocument,
 )
-from riverhog_protocol.collection_workflows import RetirementPolicy
+from riverhog_protocol.collection_workflows import SourceCollectionRetirementPolicy
 from riverhog_protocol.errors import BadRequest
 from riverhog_protocol.paths import normalize_collection_id
 
@@ -73,7 +73,7 @@ def _exact_request[TDocument: BaseModel](
 ) -> TDocument:
     """Encode only declared exact scalar request fields from Python integers."""
 
-    for name in ("fence", "start_ordinal", "retirement_grace_seconds"):
+    for name in ("fence", "start_ordinal", "source_collection_retirement_grace_seconds"):
         if name in fields and fields[name] is not None:
             fields[name] = str(fields[name])
     return document_type.model_validate(fields)
@@ -311,8 +311,8 @@ class CollectionWorkflowMethods:
         operation_id: str,
         operation_sha256: str,
         input_artifacts: Iterable[ArtifactInput],
-        retirement_policy: RetirementPolicy = "retain",
-        retirement_grace_seconds: int = 0,
+        source_collection_retirement_policy: SourceCollectionRetirementPolicy = "retain",
+        source_collection_retirement_grace_seconds: int = 0,
     ) -> ProcessingClaimDocument:
         claim = self.get_processing_claim(claim_id)
         artifact_ordinal = claim.plan.artifacts.count if claim.plan is not None else 0
@@ -332,8 +332,8 @@ class CollectionWorkflowMethods:
             controller_evidence=dict(controller_evidence),
             controller_evidence_sha256=controller_evidence_sha256,
             operation=OperationIdentityDocument(id=operation_id, sha256=operation_sha256),
-            retirement_policy=retirement_policy,
-            retirement_grace_seconds=retirement_grace_seconds,
+            source_collection_retirement_policy=source_collection_retirement_policy,
+            source_collection_retirement_grace_seconds=source_collection_retirement_grace_seconds,
         )
         return self._claim_response("seal_processing_claim_plan", claim_id, "plan", request)
 
@@ -634,14 +634,14 @@ class CollectionWorkflowMethods:
         claim_id: ProcessingClaimId,
         *,
         fence: int,
-        retirement_policy: RetirementPolicy = "retain",
-        retirement_grace_seconds: int = 0,
+        source_collection_retirement_policy: SourceCollectionRetirementPolicy = "retain",
+        source_collection_retirement_grace_seconds: int = 0,
     ) -> ProcessingClaimDocument:
         request = _exact_request(
             ProcessingClaimOutcomesSettleDocument,
             fence=fence,
-            retirement_policy=retirement_policy,
-            retirement_grace_seconds=retirement_grace_seconds,
+            source_collection_retirement_policy=source_collection_retirement_policy,
+            source_collection_retirement_grace_seconds=source_collection_retirement_grace_seconds,
         )
         return self._claim_response(
             "settle_processing_claim_outcomes",
@@ -669,16 +669,16 @@ class CollectionWorkflowMethods:
             )
         )
 
-    def begin_processing_claim_retirement(
+    def begin_source_collection_retirement(
         self,
         claim_id: ProcessingClaimId,
         *,
         fence: int,
     ) -> ProcessingClaimDocument:
         return self._claim_response(
-            "begin_processing_claim_retirement",
+            "begin_source_collection_retirement",
             claim_id,
-            "retirement",
+            "source-collection-retirement",
             _exact_request(ProcessingClaimFenceDocument, fence=fence),
         )
 

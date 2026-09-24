@@ -388,7 +388,7 @@ class SqlAlchemyArchiveCopyRetirementService:
             if target is not None:
                 session.delete(target)
                 session.flush()
-        return _result(plan, status="retired", verified_store=verified_store)
+        return _result(plan, status="deleted", verified_store=verified_store)
 
     def _purge_terminal_retrieval_plans(self, collection_id: int, store: str) -> None:
         """Reclaim exact plan authorities in bounded, restartable catalog steps."""
@@ -719,7 +719,7 @@ def _build_plan(
             }
             for copy in retained
         ],
-        "retired_retrieval_job_count": terminal_retrieval_count,
+        "terminal_retrieval_job_count": terminal_retrieval_count,
         "blockers": blockers,
         "verification_note": (
             "Execution requires a different retained copy to pass current remote "

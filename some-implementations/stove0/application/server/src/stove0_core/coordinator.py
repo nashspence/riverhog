@@ -124,9 +124,9 @@ class RiverhogControlPort(Protocol):
 
     def abandon_claim(self, record: WorkRecord) -> None: ...
 
-    def begin_retirement(self, record: WorkRecord) -> bool: ...
+    def begin_source_collection_retirement(self, record: WorkRecord) -> bool: ...
 
-    def retire_input(self, record: WorkRecord, collection_id: int) -> bool: ...
+    def retire_source_collection(self, record: WorkRecord, collection_id: int) -> bool: ...
 
     def release_claim(self, record: WorkRecord) -> None: ...
 
@@ -528,7 +528,7 @@ class Stove0Coordinator:
             )
         if phase == "settled":
             return self._begin_or_complete_retirement(record)
-        if phase == "retirement_pending":
+        if phase == "source_collection_retirement_pending":
             return self._retire_one(record)
         return record
 
@@ -571,7 +571,7 @@ class Stove0Coordinator:
             if record.failure is None or not record.failure.retryable:
                 return record
             return self.work.cancel(work_id, expected_revision=record.revision)
-        if record.phase in {"settled", "retirement_pending"}:
+        if record.phase in {"settled", "source_collection_retirement_pending"}:
             raise RuntimeError("settled work cannot be canceled")
         if record.coordination_settlement is not None:
             raise RuntimeError("successfully settled coordination cannot be canceled")
@@ -814,14 +814,14 @@ class Stove0Coordinator:
 
     def _begin_or_complete_retirement(self, record: WorkRecord) -> WorkRecord:
         if record.branch_set_plan is not None:
-            policy = record.branch_set_plan.retirement_policy
+            policy = record.branch_set_plan.source_collection_retirement_policy
         elif record.workflow_plan is not None:
-            policy = record.workflow_plan.retirement_policy
+            policy = record.workflow_plan.source_collection_retirement_policy
         else:
             raise RuntimeError("settled work has no workflow or branch-set plan")
         if policy == "retain":
             self.riverhog.release_claim(record)
-            return self.work.begin_retirement(
+            return self.work.begin_source_collection_retirement(
                 record.work_id,
                 (),
                 expected_revision=record.revision,
@@ -832,32 +832,36 @@ class Stove0Coordinator:
                 for child in self._coordination_descendant_leaves(record)
                 if child.workflow_plan is not None
             )
-            if not all(operation.source_retirement_permitted for operation in operations):
+            if not all(
+                operation.source_collection_retirement_permitted for operation in operations
+            ):
                 raise RuntimeError(
-                    "every branch operation contract must authorize source retirement"
+                    "every branch operation contract must authorize source collection retirement"
                 )
         else:
             assert record.workflow_plan is not None
             operation = self.planning.operation_contract(record.workflow_plan.operation)
-            if not operation.source_retirement_permitted:
-                raise RuntimeError("operation contract does not authorize source retirement")
-        if not self.riverhog.begin_retirement(record):
+            if not operation.source_collection_retirement_permitted:
+                raise RuntimeError(
+                    "operation contract does not authorize source collection retirement"
+                )
+        if not self.riverhog.begin_source_collection_retirement(record):
             return record
-        return self.work.begin_retirement(
+        return self.work.begin_source_collection_retirement(
             record.work_id,
             tuple(item.collection_id for item in record.work.inputs),
             expected_revision=record.revision,
         )
 
     def _retire_one(self, record: WorkRecord) -> WorkRecord:
-        if not record.retirement_remaining:
-            raise RuntimeError("retirement phase has no remaining collection")
-        collection_id = record.retirement_remaining[0]
-        if not self.riverhog.retire_input(record, collection_id):
+        if not record.source_collection_retirement_remaining:
+            raise RuntimeError("source collection retirement phase has no remaining collection")
+        collection_id = record.source_collection_retirement_remaining[0]
+        if not self.riverhog.retire_source_collection(record, collection_id):
             return record
-        if len(record.retirement_remaining) == 1:
+        if len(record.source_collection_retirement_remaining) == 1:
             self.riverhog.release_claim(record)
-        return self.work.record_retired(
+        return self.work.record_source_collection_deleted(
             record.work_id,
             collection_id,
             expected_revision=record.revision,

@@ -3127,7 +3127,7 @@ def archive_retire_cmd(
     collection_id: Annotated[int, typer.Argument(help="Exact collection id")],
     store: Annotated[
         str,
-        typer.Option("--store", help="Archive store whose copy will be retired"),
+        typer.Option("--store", help="Archive store whose copy will be permanently deleted"),
     ],
     dry_run: Annotated[
         bool,
@@ -3146,7 +3146,7 @@ def archive_retire_cmd(
     ] = None,
     json_mode: Annotated[bool, typer.Option("--json", help="Emit JSON")] = False,
 ) -> None:
-    """Permanently retire one collection copy after verifying another store."""
+    """Retire one archive copy by deleting it after another passes verification."""
 
     if dry_run and confirm is not None:
         raise typer.BadParameter("--dry-run and --confirm cannot be used together")
@@ -3180,13 +3180,16 @@ def archive_retire_cmd(
     challenge = plan.get("challenge")
     if not isinstance(challenge, str) or not challenge:
         raise typer.BadParameter("server did not return an archive copy retirement challenge")
-    typed_id = typer.prompt("Type the complete collection id to retire from this store", type=int)
+    typed_id = typer.prompt(
+        "Type the complete collection id whose copy will be deleted from this store",
+        type=int,
+    )
     if typed_id != collection_id:
-        typer.echo("Collection id did not match; nothing was retired.", err=True)
+        typer.echo("Collection id did not match; no archive copy was deleted.", err=True)
         raise typer.Exit(1)
-    typed_store = typer.prompt("Type the archive store to retire")
+    typed_store = typer.prompt("Type the archive store whose copy will be deleted")
     if typed_store != store:
-        typer.echo("Archive store did not match; nothing was retired.", err=True)
+        typer.echo("Archive store did not match; no archive copy was deleted.", err=True)
         raise typer.Exit(1)
     payload = api.retire_archive_copy(
         collection_id,

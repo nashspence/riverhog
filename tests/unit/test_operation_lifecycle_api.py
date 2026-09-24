@@ -809,7 +809,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         operation_id=operation_identity.id,
         operation_sha256=operation_identity.sha256,
         input_artifacts=(source_artifact,),
-        retirement_policy="retain",
+        source_collection_retirement_policy="retain",
     )
     assert sealed["plan"]["execution_id"] == execution_id
     sealed_plan = sealed["plan"]
@@ -1153,14 +1153,14 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     settled_outcomes = operator.settle_processing_claim_outcomes(
         outcome_claim_id,
         fence=outcome_fence,
-        retirement_policy="retire-after-verified-output",
+        source_collection_retirement_policy="retire-after-verified-output",
     )
     while settled_outcomes["state"] == "active":
         assert container.collection_workflows.process_due_outcome_sets() == 1
         settled_outcomes = operator.settle_processing_claim_outcomes(
             outcome_claim_id,
             fence=outcome_fence,
-            retirement_policy="retire-after-verified-output",
+            source_collection_retirement_policy="retire-after-verified-output",
         )
     assert settled_outcomes["state"] == "settled"
     assert settled_outcomes["outcomes"]["identity"] is not None
@@ -1174,7 +1174,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
         .outcome_id
         == "qualification-output"
     )
-    retiring = operator.begin_processing_claim_retirement(
+    retiring = operator.begin_source_collection_retirement(
         outcome_claim_id,
         fence=outcome_fence,
     )
@@ -1182,19 +1182,19 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     replayed_outcomes = operator.settle_processing_claim_outcomes(
         outcome_claim_id,
         fence=outcome_fence,
-        retirement_policy="retire-after-verified-output",
+        source_collection_retirement_policy="retire-after-verified-output",
     )
     assert replayed_outcomes["state"] == "retiring"
     retirement = operator.plan_collection_deletion(
         collection_id,
-        retirement_claim_id=outcome_claim_id,
+        source_collection_retirement_claim_id=outcome_claim_id,
     )
     assert retirement["status"] == "ready"
     assert (
         operator.delete_collection(
             collection_id,
             challenge=str(retirement["challenge"]),
-            retirement_claim_id=outcome_claim_id,
+            source_collection_retirement_claim_id=outcome_claim_id,
         )["status"]
         == "deleting"
     )
@@ -1222,7 +1222,7 @@ def test_riverhog_official_client_positive_disposable_lifecycle(
     replayed_released_settlement = operator.settle_processing_claim_outcomes(
         outcome_claim_id,
         fence=outcome_fence,
-        retirement_policy="retire-after-verified-output",
+        source_collection_retirement_policy="retire-after-verified-output",
     )
     assert replayed_released_settlement["state"] == "released"
 

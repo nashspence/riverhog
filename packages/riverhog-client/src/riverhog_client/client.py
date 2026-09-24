@@ -1968,11 +1968,15 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         self,
         collection_id: CollectionId,
         *,
-        retirement_claim_id: ProcessingClaimId | None = None,
+        source_collection_retirement_claim_id: ProcessingClaimId | None = None,
     ) -> dict[str, Any]:
         params = (
-            {"retirement_claim_id": _processing_claim_id(retirement_claim_id)}
-            if retirement_claim_id is not None
+            {
+                "source_collection_retirement_claim_id": _processing_claim_id(
+                    source_collection_retirement_claim_id
+                )
+            }
+            if source_collection_retirement_claim_id is not None
             else None
         )
         return self._json(
@@ -1987,12 +1991,14 @@ class ApiClient(CollectionWorkflowMethods, _HttpApiClient):
         collection_id: CollectionId,
         *,
         challenge: str,
-        retirement_claim_id: ProcessingClaimId | None = None,
+        source_collection_retirement_claim_id: ProcessingClaimId | None = None,
         event_context: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]:
         payload: dict[str, Any] = {"challenge": challenge}
-        if retirement_claim_id is not None:
-            payload["retirement_claim_id"] = _processing_claim_id(retirement_claim_id)
+        if source_collection_retirement_claim_id is not None:
+            payload["source_collection_retirement_claim_id"] = _processing_claim_id(
+                source_collection_retirement_claim_id
+            )
         if event_context is not None:
             payload["event_context"] = dict(event_context)
         return self._json(

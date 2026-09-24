@@ -609,7 +609,7 @@ def test_review_effect_executes_sampling_delivery_and_canonical_receipt_end_to_e
             ),
             target_registration_id="review-effect",
             target_descriptor_sha256=preflight.descriptor.descriptor_sha256,
-            retirement_policy="retain",
+            source_collection_retirement_policy="retain",
         )
     )
     binding = TargetPlanBinding(

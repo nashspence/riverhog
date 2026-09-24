@@ -173,7 +173,7 @@ CREATE TABLE stove0_work_records (
 	document_json TEXT NOT NULL,
 	PRIMARY KEY (work_id),
 	CONSTRAINT ck_stove0_work_records_revision CHECK (revision >= 1),
-	CONSTRAINT ck_stove0_work_records_phase CHECK (phase IN ('eligible','claimed','observing','planning','target_preflight','queued','executing','output_finalizing','verifying','settled','retirement_pending','coordinating','abandon_pending','complete','inapplicable','failed','canceled')),
+	CONSTRAINT ck_stove0_work_records_phase CHECK (phase IN ('eligible','claimed','observing','planning','target_preflight','queued','executing','output_finalizing','verifying','settled','source_collection_retirement_pending','coordinating','abandon_pending','complete','inapplicable','failed','canceled')),
 	CONSTRAINT ck_stove0_work_records_id CHECK (length(work_id) = 64),
 	CONSTRAINT ck_stove0_work_records_document_bytes CHECK (document_bytes >= 0),
 	CONSTRAINT ck_stove0_work_records_work_id_hex CHECK (length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')

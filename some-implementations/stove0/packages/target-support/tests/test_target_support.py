@@ -181,7 +181,7 @@ def _operation() -> OperationContract:
                     derived_from_roles=("fixture.source/v1",),
                 ),
             ),
-            source_retirement_permitted=True,
+            source_collection_retirement_permitted=True,
         )
     )
 
@@ -284,7 +284,7 @@ def _controller_evidence(
             operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
             target_descriptor_sha256=target.descriptor_sha256,
-            retirement_policy="retain",
+            source_collection_retirement_policy="retain",
         )
     )
     binding = TargetPlanBinding(
@@ -406,7 +406,7 @@ def _effect_request() -> tuple[OperationContract, TargetDescriptor, TargetJobReq
             operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-index-target",
             target_descriptor_sha256=target.descriptor_sha256,
-            retirement_policy="retain",
+            source_collection_retirement_policy="retain",
         )
     )
     binding = TargetPlanBinding(

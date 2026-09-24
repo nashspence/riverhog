@@ -473,7 +473,7 @@ def _seal_workflow_claim(
     service: SqlAlchemyCollectionWorkflowService,
     claim_id: str,
     *,
-    retirement_policy: str = "retain",
+    source_collection_retirement_policy: str = "retain",
     execution_id: str = EXECUTION_ID,
     input_artifacts: Sequence[CollectionArtifactIdentity] | None = None,
 ) -> dict[str, object]:
@@ -499,8 +499,8 @@ def _seal_workflow_claim(
         controller_evidence_sha256=canonical_json_sha256(controller_evidence),
         operation_id=OPERATION.id,
         operation_sha256=OPERATION.sha256,
-        retirement_policy=retirement_policy,
-        retirement_grace_seconds=0,
+        source_collection_retirement_policy=source_collection_retirement_policy,
+        source_collection_retirement_grace_seconds=0,
         principal=WORKFLOW_PRINCIPAL,
     )
 
@@ -557,8 +557,8 @@ def _settle_outcomes(
     settled = service.settle_claim_outcomes(
         claim_id,
         fence=1,
-        retirement_policy="retain",
-        retirement_grace_seconds=0,
+        source_collection_retirement_policy="retain",
+        source_collection_retirement_grace_seconds=0,
         principal=WORKFLOW_PRINCIPAL,
     )
     while settled["state"] == "active":
@@ -566,8 +566,8 @@ def _settle_outcomes(
         settled = service.settle_claim_outcomes(
             claim_id,
             fence=1,
-            retirement_policy="retain",
-            retirement_grace_seconds=0,
+            source_collection_retirement_policy="retain",
+            source_collection_retirement_grace_seconds=0,
             principal=WORKFLOW_PRINCIPAL,
         )
     return settled
@@ -1506,8 +1506,8 @@ def test_postgres_last_outcome_attachment_and_claim_closure_converge(
                 services[1].settle_claim_outcomes(
                     parent_id,
                     fence=1,
-                    retirement_policy="retain",
-                    retirement_grace_seconds=0,
+                    source_collection_retirement_policy="retain",
+                    source_collection_retirement_grace_seconds=0,
                     principal=WORKFLOW_PRINCIPAL,
                 )
             )
@@ -1565,7 +1565,7 @@ def test_postgres_multi_input_retirement_resumes_after_first_source_deletion(
     _seal_workflow_claim(
         workflows,
         claim_id,
-        retirement_policy="retire-after-verified-output",
+        source_collection_retirement_policy="retire-after-verified-output",
         input_artifacts=(
             _workflow_artifact(first_root),
             CollectionArtifactIdentity(
@@ -1590,7 +1590,7 @@ def test_postgres_multi_input_retirement_resumes_after_first_source_deletion(
     )
     assert settled["state"] == "settled"
     assert (
-        workflows.begin_retirement(
+        workflows.begin_source_collection_retirement(
             claim_id,
             fence=1,
             principal=WORKFLOW_PRINCIPAL,
@@ -1619,7 +1619,7 @@ def test_postgres_multi_input_retirement_resumes_after_first_source_deletion(
     first_plan = deletions.plan(
         COLLECTION_ID,
         principal=WORKFLOW_PRINCIPAL,
-        retirement_claim_id=claim_id,
+        source_collection_retirement_claim_id=claim_id,
     )
     assert first_plan["status"] == "ready"
     assert (
@@ -1627,7 +1627,7 @@ def test_postgres_multi_input_retirement_resumes_after_first_source_deletion(
             COLLECTION_ID,
             challenge=str(first_plan["challenge"]),
             initiator=WORKFLOW_PRINCIPAL,
-            retirement_claim_id=claim_id,
+            source_collection_retirement_claim_id=claim_id,
         )["status"]
         == "deleting"
     )
@@ -1650,7 +1650,7 @@ def test_postgres_multi_input_retirement_resumes_after_first_source_deletion(
     second_plan = restarted_deletions.plan(
         SECOND_COLLECTION_ID,
         principal=WORKFLOW_PRINCIPAL,
-        retirement_claim_id=claim_id,
+        source_collection_retirement_claim_id=claim_id,
     )
     assert second_plan["status"] == "ready"
     assert (
@@ -1658,7 +1658,7 @@ def test_postgres_multi_input_retirement_resumes_after_first_source_deletion(
             SECOND_COLLECTION_ID,
             challenge=str(second_plan["challenge"]),
             initiator=WORKFLOW_PRINCIPAL,
-            retirement_claim_id=claim_id,
+            source_collection_retirement_claim_id=claim_id,
         )["status"]
         == "deleting"
     )

@@ -26,9 +26,9 @@ from stove0_protocol.models import (
     JoinWorkMemberBinding,
     PreviewOutcome,
     RecipeRef,
-    RetirementPolicy,
     SemanticId,
     Sha256,
+    SourceCollectionRetirementPolicy,
     Stove0ProtocolModel,
     TargetPlanBinding,
     WorkflowPlan,
@@ -247,7 +247,7 @@ class BranchPlan(Stove0ProtocolModel):
 
     @model_validator(mode="after")
     def bind_child_work(self) -> Self:
-        if self.workflow_plan.retirement_policy != "retain":
+        if self.workflow_plan.source_collection_retirement_policy != "retain":
             raise ValueError("branch workflow plans must retain their source collections")
         binding = self.workflow_plan.work.fork_join
         if not isinstance(binding, BranchWorkBinding):
@@ -431,7 +431,7 @@ class JoinDeclaration(Stove0ProtocolModel):
 
     @model_validator(mode="after")
     def verify_contract(self) -> Self:
-        if self.workflow_intent.retirement_policy != "retain":
+        if self.workflow_intent.source_collection_retirement_policy != "retain":
             raise ValueError("join workflow plans must retain every branch collection")
         if self.workflow_intent.result_kind != "collection":
             raise ValueError("a join must produce one derived collection")
@@ -471,8 +471,8 @@ class BranchSetPlan(Stove0ProtocolModel):
     evidence_sha256s: tuple[Sha256, ...] = ()
     branches: tuple[BranchDeclaration, ...] = Field(min_length=1)
     join: JoinDeclaration | None = None
-    retirement_policy: RetirementPolicy = "retain"
-    retirement_grace_seconds: int = Field(default=0, ge=0)
+    source_collection_retirement_policy: SourceCollectionRetirementPolicy = "retain"
+    source_collection_retirement_grace_seconds: int = Field(default=0, ge=0)
     branch_set_sha256: Sha256
 
     @field_validator("evidence_sha256s")
@@ -498,7 +498,7 @@ class BranchSetPlan(Stove0ProtocolModel):
             raise ValueError("join work cannot also be a coordination parent")
         if (
             isinstance(self.parent_work.fork_join, BranchWorkBinding)
-            and self.retirement_policy != "retain"
+            and self.source_collection_retirement_policy != "retain"
         ):
             raise ValueError("nested coordination must retain its input collections")
         for branch in self.branches:
@@ -529,14 +529,20 @@ class BranchSetPlan(Stove0ProtocolModel):
                     "external-effect branches cannot be declared as join members: "
                     + ", ".join(effects)
                 )
-        if self.retirement_policy != "retain" and any(
+        if self.source_collection_retirement_policy != "retain" and any(
             isinstance(branch, BranchPlan) and branch.workflow_plan.result_kind == "external-effect"
             for branch in self.branches
         ):
             raise ValueError("branch sets containing external effects must retain their sources")
-        if self.parent_work.evaluation is not None and self.retirement_policy != "retain":
+        if (
+            self.parent_work.evaluation is not None
+            and self.source_collection_retirement_policy != "retain"
+        ):
             raise ValueError("evaluation-bound branch sets must retain their source collections")
-        if self.retirement_policy == "retain" and self.retirement_grace_seconds:
+        if (
+            self.source_collection_retirement_policy == "retain"
+            and self.source_collection_retirement_grace_seconds
+        ):
             raise ValueError("retained branch sets cannot declare a retirement grace period")
         expected = canonical_json_sha256(_without_digest(self, "branch_set_sha256"))
         if expected != self.branch_set_sha256:
@@ -552,8 +558,8 @@ class BranchSetPlan(Stove0ProtocolModel):
         evidence_sha256s: Sequence[str] = (),
         branches: Sequence[BranchDeclaration],
         join: JoinDeclaration | None = None,
-        retirement_policy: RetirementPolicy = "retain",
-        retirement_grace_seconds: int = 0,
+        source_collection_retirement_policy: SourceCollectionRetirementPolicy = "retain",
+        source_collection_retirement_grace_seconds: int = 0,
         selections: SelectionDocuments,
         branch_sets: Mapping[str, BranchSetPlan] | None = None,
     ) -> BranchSetPlan:
@@ -567,8 +573,10 @@ class BranchSetPlan(Stove0ProtocolModel):
                 item.model_dump(mode="json", by_alias=True, exclude_none=True)
                 for item in ordered_branches
             ],
-            "retirement_policy": retirement_policy,
-            "retirement_grace_seconds": retirement_grace_seconds,
+            "source_collection_retirement_policy": source_collection_retirement_policy,
+            "source_collection_retirement_grace_seconds": (
+                source_collection_retirement_grace_seconds
+            ),
         }
         if join is not None:
             payload["join"] = join.model_dump(mode="json", by_alias=True, exclude_none=True)
@@ -774,7 +782,7 @@ class JoinPlan(Stove0ProtocolModel):
     def verify_contract(self) -> Self:
         if self.workflow_plan.work != self.work:
             raise ValueError("join workflow plan does not bind the resolved join work")
-        if self.workflow_plan.retirement_policy != "retain":
+        if self.workflow_plan.source_collection_retirement_policy != "retain":
             raise ValueError("join workflow plan must retain branch collections")
         if WorkflowPlanIntent.from_plan(self.workflow_plan) != self.declaration.workflow_intent:
             raise ValueError("join workflow plan differs from its declaration")
@@ -1034,7 +1042,7 @@ class BranchSetEvaluation(Stove0ProtocolModel):
     unsettled_work_ids: tuple[Sha256, ...]
     branch_set_succeeded: bool
     coordination_settlement: CoordinationSettlement | None
-    retirement_requested: bool
+    source_collection_retirement_requested: bool
     coordination_complete_for_retirement: bool
 
 
@@ -1206,7 +1214,7 @@ def validate_branch_set_plan(
             raise ValueError(
                 "join members require an exact collection result: " + ", ".join(invalid)
             )
-    if plan.retirement_policy != "retain":
+    if plan.source_collection_retirement_policy != "retain":
         for branch in plan.branches:
             if isinstance(branch, BranchPlan):
                 if branch.workflow_plan.result_kind == "external-effect":
@@ -1688,7 +1696,8 @@ def evaluate_branch_set(
         unsettled_work_ids=tuple(sorted(unsettled_work_ids)),
         branch_set_succeeded=succeeded,
         coordination_settlement=coordination_settlement,
-        retirement_requested=plan.retirement_policy == "retire-after-verified-output",
+        source_collection_retirement_requested=plan.source_collection_retirement_policy
+        == "retire-after-verified-output",
         coordination_complete_for_retirement=(
             succeeded
             and not effects

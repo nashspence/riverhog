@@ -31,7 +31,7 @@ from riverhog_protocol.collection_workflows import (
     CollectionDerivation,
     CollectionProcessingOutcomeIdentity,
     CollectionRootIdentity,
-    RetirementPolicy,
+    SourceCollectionRetirementPolicy,
 )
 from riverhog_protocol.collection_workflows import (
     canonical_json_sha256 as riverhog_canonical_json_sha256,
@@ -122,8 +122,8 @@ class RiverhogApi(Protocol):
         operation_id: str,
         operation_sha256: str,
         input_artifacts: Iterable[Mapping[str, Any]],
-        retirement_policy: RetirementPolicy = "retain",
-        retirement_grace_seconds: int = 0,
+        source_collection_retirement_policy: SourceCollectionRetirementPolicy = "retain",
+        source_collection_retirement_grace_seconds: int = 0,
     ) -> ProcessingClaimDocument: ...
 
     def settle_processing_claim(
@@ -143,8 +143,8 @@ class RiverhogApi(Protocol):
         claim_id: str,
         *,
         fence: int,
-        retirement_policy: RetirementPolicy = "retain",
-        retirement_grace_seconds: int = 0,
+        source_collection_retirement_policy: SourceCollectionRetirementPolicy = "retain",
+        source_collection_retirement_grace_seconds: int = 0,
     ) -> ProcessingClaimDocument: ...
 
     def list_processing_claim_outcomes(
@@ -214,12 +214,12 @@ class RiverhogApi(Protocol):
         self, claim_id: str
     ) -> ArtifactDispositionSetDocument: ...
 
-    def begin_processing_claim_retirement(
+    def begin_source_collection_retirement(
         self, claim_id: str, *, fence: int
     ) -> ProcessingClaimDocument: ...
 
     def plan_collection_deletion(
-        self, collection_id: int, *, retirement_claim_id: str | None = None
+        self, collection_id: int, *, source_collection_retirement_claim_id: str | None = None
     ) -> dict[str, Any]: ...
 
     def delete_collection(
@@ -227,7 +227,7 @@ class RiverhogApi(Protocol):
         collection_id: int,
         *,
         challenge: str,
-        retirement_claim_id: str | None = None,
+        source_collection_retirement_claim_id: str | None = None,
         event_context: Mapping[str, Any] | None = None,
     ) -> dict[str, Any]: ...
 
@@ -464,8 +464,8 @@ class Stove0RiverhogClient:
             operation_id=plan.operation.id,
             operation_sha256=plan.operation.sha256,
             input_artifacts=(_artifact_identity(item).as_dict() for item in inputs),
-            retirement_policy=plan.retirement_policy,
-            retirement_grace_seconds=plan.retirement_grace_seconds,
+            source_collection_retirement_policy=plan.source_collection_retirement_policy,
+            source_collection_retirement_grace_seconds=plan.source_collection_retirement_grace_seconds,
         )
         binding = _claim_binding(payload)
         if binding != claim:
@@ -732,8 +732,8 @@ class Stove0RiverhogClient:
         payload = self.api.settle_processing_claim_outcomes(
             record.claim.claim_id,
             fence=record.claim.fence,
-            retirement_policy=record.branch_set_plan.retirement_policy,
-            retirement_grace_seconds=record.branch_set_plan.retirement_grace_seconds,
+            source_collection_retirement_policy=record.branch_set_plan.source_collection_retirement_policy,
+            source_collection_retirement_grace_seconds=record.branch_set_plan.source_collection_retirement_grace_seconds,
         )
         if payload.state == "active":
             return False
@@ -797,19 +797,21 @@ class Stove0RiverhogClient:
         if payload.get("state") != "abandoned" or _claim_binding(payload) != claim:
             raise RuntimeError("Riverhog did not abandon the expected preview claim")
 
-    def begin_retirement(self, record: WorkRecord) -> bool:
+    def begin_source_collection_retirement(self, record: WorkRecord) -> bool:
         claim = _record_claim(record)
-        payload = self.api.begin_processing_claim_retirement(
+        payload = self.api.begin_source_collection_retirement(
             claim.claim_id,
             fence=claim.fence,
         )
         if _claim_binding(payload) != claim:
-            raise RuntimeError("Riverhog returned another retirement claim")
+            raise RuntimeError("Riverhog returned another source collection retirement claim")
         state = payload.get("state")
         if state == "settled":
             return False
         if state != "retiring":
-            raise RuntimeError("Riverhog did not enter the expected retirement claim")
+            raise RuntimeError(
+                "Riverhog did not enter the expected source collection retirement claim"
+            )
         return True
 
     def abandon_claim(self, record: WorkRecord) -> None:
@@ -822,14 +824,14 @@ class Stove0RiverhogClient:
         if payload.get("state") != "abandoned" or _claim_binding(payload) != claim:
             raise RuntimeError("Riverhog did not abandon the expected processing claim")
 
-    def retire_input(self, record: WorkRecord, collection_id: int) -> bool:
+    def retire_source_collection(self, record: WorkRecord, collection_id: int) -> bool:
         claim = _record_claim(record)
         if int(collection_id) not in {item.collection_id for item in record.work.inputs}:
-            raise ValueError("retirement collection is outside the stove0 work")
+            raise ValueError("source collection for retirement is outside the stove0 work")
         try:
             plan = self.api.plan_collection_deletion(
                 int(collection_id),
-                retirement_claim_id=claim.claim_id,
+                source_collection_retirement_claim_id=claim.claim_id,
             )
         except NotFound:
             # A prior attempt may have deleted the exact immutable input before
@@ -841,11 +843,11 @@ class Stove0RiverhogClient:
         if blockers:
             return False
         if plan.get("status") != "ready" or not isinstance(challenge, str) or not challenge:
-            raise RuntimeError("Riverhog did not return a ready retirement deletion plan")
+            raise RuntimeError("Riverhog did not return a ready source collection deletion plan")
         result = self.api.delete_collection(
             int(collection_id),
             challenge=challenge,
-            retirement_claim_id=claim.claim_id,
+            source_collection_retirement_claim_id=claim.claim_id,
             event_context={
                 "initiator": {
                     "app": "stove0",
@@ -856,7 +858,7 @@ class Stove0RiverhogClient:
             },
         )
         if result.get("status") not in {"deleted", "already_absent"}:
-            raise RuntimeError("Riverhog did not confirm input retirement")
+            raise RuntimeError("Riverhog did not confirm source collection deletion")
         return True
 
     def release_claim(self, record: WorkRecord) -> None:

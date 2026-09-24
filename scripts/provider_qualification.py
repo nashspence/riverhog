@@ -3535,7 +3535,7 @@ def _retire_copy(api: Any, collection_id: int, store: str) -> None:
     if not isinstance(challenge, str) or not challenge:
         raise QualificationError(f"{store} retirement challenge is missing")
     result = api.retire_archive_copy(collection_id, store=store, challenge=challenge)
-    if result.get("status") not in {"retired", "already_absent"}:
+    if result.get("status") not in {"deleted", "already_absent"}:
         raise QualificationError(f"{store} qualification copy did not retire")
 
 

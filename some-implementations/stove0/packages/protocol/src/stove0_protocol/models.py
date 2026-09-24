@@ -74,7 +74,7 @@ OciImageId = Annotated[str, StringConstraints(pattern=OCI_IMAGE_ID_PATTERN)]
 SemanticId = Annotated[str, StringConstraints(pattern=SEMANTIC_ID_PATTERN)]
 RegistrationId = Annotated[str, StringConstraints(pattern=REGISTRATION_ID_PATTERN)]
 ContentObservationState = Literal["observed", "inapplicable", "failed", "canceled"]
-RetirementPolicy = Literal["retain", "retire-after-verified-output"]
+SourceCollectionRetirementPolicy = Literal["retain", "retire-after-verified-output"]
 RetrievalPolicy = Literal["available-only", "allow"]
 OperationResultKind = Literal["collection", "external-effect"]
 
@@ -640,8 +640,14 @@ class WorkflowPlanPayload(Stove0ProtocolModel):
     target_descriptor_sha256: Sha256
     requested_target_options: dict[str, JsonValue] = Field(default_factory=dict)
     input_retrieval_policy: RetrievalPolicy = "available-only"
-    retirement_policy: RetirementPolicy = "retain"
-    retirement_grace_seconds: int = Field(default=0, ge=0)
+    source_collection_retirement_policy: SourceCollectionRetirementPolicy = Field(
+        default="retain",
+        description=(
+            "Retain source collections, or permit their permanent deletion after verified "
+            "output, the grace period, and collection deletion checks."
+        ),
+    )
+    source_collection_retirement_grace_seconds: int = Field(default=0, ge=0)
     output_policy: dict[str, JsonValue] = Field(default_factory=dict)
 
     @field_validator("observations")
@@ -656,11 +662,20 @@ class WorkflowPlanPayload(Stove0ProtocolModel):
 
     @model_validator(mode="after")
     def protect_evaluation_sources(self) -> Self:
-        if self.result_kind == "external-effect" and self.retirement_policy != "retain":
+        if (
+            self.result_kind == "external-effect"
+            and self.source_collection_retirement_policy != "retain"
+        ):
             raise ValueError("external-effect workflow must retain source collections")
-        if self.retirement_policy == "retain" and self.retirement_grace_seconds:
+        if (
+            self.source_collection_retirement_policy == "retain"
+            and self.source_collection_retirement_grace_seconds
+        ):
             raise ValueError("retained workflow plans cannot declare a retirement grace period")
-        if self.work.evaluation is not None and self.retirement_policy != "retain":
+        if (
+            self.work.evaluation is not None
+            and self.source_collection_retirement_policy != "retain"
+        ):
             raise ValueError("evaluation and trial work must retain every source collection")
         return self
 
@@ -690,15 +705,27 @@ class WorkflowPlanIntent(Stove0ProtocolModel):
     target_descriptor_sha256: Sha256
     requested_target_options: dict[str, JsonValue] = Field(default_factory=dict)
     input_retrieval_policy: RetrievalPolicy = "available-only"
-    retirement_policy: RetirementPolicy = "retain"
-    retirement_grace_seconds: int = Field(default=0, ge=0)
+    source_collection_retirement_policy: SourceCollectionRetirementPolicy = Field(
+        default="retain",
+        description=(
+            "Retain source collections, or permit their permanent deletion after verified "
+            "output, the grace period, and collection deletion checks."
+        ),
+    )
+    source_collection_retirement_grace_seconds: int = Field(default=0, ge=0)
     output_policy: dict[str, JsonValue] = Field(default_factory=dict)
 
     @model_validator(mode="after")
     def validate_retirement(self) -> Self:
-        if self.result_kind == "external-effect" and self.retirement_policy != "retain":
+        if (
+            self.result_kind == "external-effect"
+            and self.source_collection_retirement_policy != "retain"
+        ):
             raise ValueError("external-effect workflow intent must retain source collections")
-        if self.retirement_policy == "retain" and self.retirement_grace_seconds:
+        if (
+            self.source_collection_retirement_policy == "retain"
+            and self.source_collection_retirement_grace_seconds
+        ):
             raise ValueError("retained workflow intent cannot declare a retirement grace period")
         return self
 
@@ -711,8 +738,8 @@ class WorkflowPlanIntent(Stove0ProtocolModel):
             target_descriptor_sha256=plan.target_descriptor_sha256,
             requested_target_options=plan.requested_target_options,
             input_retrieval_policy=plan.input_retrieval_policy,
-            retirement_policy=plan.retirement_policy,
-            retirement_grace_seconds=plan.retirement_grace_seconds,
+            source_collection_retirement_policy=plan.source_collection_retirement_policy,
+            source_collection_retirement_grace_seconds=plan.source_collection_retirement_grace_seconds,
             output_policy=plan.output_policy,
         )
 
@@ -732,8 +759,8 @@ class WorkflowPlanIntent(Stove0ProtocolModel):
                 target_descriptor_sha256=self.target_descriptor_sha256,
                 requested_target_options=self.requested_target_options,
                 input_retrieval_policy=self.input_retrieval_policy,
-                retirement_policy=self.retirement_policy,
-                retirement_grace_seconds=self.retirement_grace_seconds,
+                source_collection_retirement_policy=self.source_collection_retirement_policy,
+                source_collection_retirement_grace_seconds=self.source_collection_retirement_grace_seconds,
                 output_policy=self.output_policy,
             )
         )
@@ -999,7 +1026,7 @@ __all__ = [
     "RIVERHOG_CAPABILITY_TRANSPORT",
     "OCI_IMAGE_ID_PATTERN",
     "RecipeRef",
-    "RetirementPolicy",
+    "SourceCollectionRetirementPolicy",
     "SHA256_PATTERN",
     "SemanticId",
     "SemanticValidationProfile",

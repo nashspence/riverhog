@@ -139,7 +139,7 @@ AUDIO_ARCHIVE_OPERATION = OperationContract.seal(
                 derived_from_roles=(XMP_SOURCE_ROLE,),
             ),
         ),
-        source_retirement_permitted=False,
+        source_collection_retirement_permitted=False,
     )
 )
 
@@ -177,7 +177,7 @@ AV1_OPUS_ARCHIVE_OPERATION = OperationContract.seal(
                 derived_from_roles=(SOURCE_ROLE, XMP_SOURCE_ROLE),
             ),
         ),
-        source_retirement_permitted=True,
+        source_collection_retirement_permitted=True,
     )
 )
 

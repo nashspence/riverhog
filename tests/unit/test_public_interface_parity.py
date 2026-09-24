@@ -621,7 +621,7 @@ PUBLIC_QUERY_SELECTORS = {
             "state",
         },
         "list_retrieval_plan_files": {"page_size", "start_ordinal"},
-        "plan_collection_deletion": {"retirement_claim_id"},
+        "plan_collection_deletion": {"source_collection_retirement_claim_id"},
         "list_catalog_sync_changes": {"cursor", "limit"},
         "list_catalog_sync_collections": {"cursor", "limit"},
         "search": {"collection", "order", "page_size", "page_token", "q", "sort"},

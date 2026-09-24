@@ -664,14 +664,14 @@ def plan_collection_deletion(
     collection_id: CollectionIdParameter,
     container: ContainerDep,
     principal: CollectionDeleter,
-    retirement_claim_id: ProcessingClaimId | None = None,
+    source_collection_retirement_claim_id: ProcessingClaimId | None = None,
 ) -> CollectionDeletionPlanOut:
     container.collection_access.require(principal, COLLECTIONS_DELETE, collection_id)
     return CollectionDeletionPlanOut.model_validate(
         container.collection_deletions.plan(
             collection_id,
             principal=principal,
-            retirement_claim_id=retirement_claim_id,
+            source_collection_retirement_claim_id=source_collection_retirement_claim_id,
         )
     )
 
@@ -693,6 +693,6 @@ def delete_collection(
             challenge=request.challenge,
             initiator=principal,
             event_context=request.event_context,
-            retirement_claim_id=request.retirement_claim_id,
+            source_collection_retirement_claim_id=request.source_collection_retirement_claim_id,
         )
     )

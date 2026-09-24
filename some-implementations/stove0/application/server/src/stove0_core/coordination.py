@@ -218,7 +218,7 @@ def _load_declared_work(store: WorkStore, work_id: str) -> WorkRecord:
 
 
 def _branch_settlement(record: WorkRecord) -> OutputCollectionRef | None:
-    if record.phase not in {"settled", "retirement_pending", "complete"}:
+    if record.phase not in {"settled", "source_collection_retirement_pending", "complete"}:
         return None
     output = record.output
     if output is None:
@@ -230,7 +230,7 @@ def _branch_effect_settlement(
     branch: BranchPlan,
     record: WorkRecord,
 ) -> BranchEffectSettlement | None:
-    if record.phase not in {"settled", "retirement_pending", "complete"}:
+    if record.phase not in {"settled", "source_collection_retirement_pending", "complete"}:
         return None
     status = record.target_status
     if (
@@ -293,7 +293,7 @@ def _join_settlement(
     selections: dict[str, ArtifactSelection],
     store: WorkStore,
 ) -> JoinSettlement | None:
-    if record.phase not in {"settled", "retirement_pending", "complete"}:
+    if record.phase not in {"settled", "source_collection_retirement_pending", "complete"}:
         return None
     output = record.output
     if output is None:

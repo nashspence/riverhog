@@ -87,7 +87,7 @@ REVIEW_MATERIALIZE_OPERATION = OperationContract.seal(
                 derived_from_roles=(REVIEW_SOURCE_ROLE,),
             ),
         ),
-        source_retirement_permitted=False,
+        source_collection_retirement_permitted=False,
     )
 )
 
@@ -133,7 +133,7 @@ REVIEW_RCLONE_DELIVER_OPERATION = OperationContract.seal(
             ),
         ),
         effect_receipt_schema=REVIEW_RCLONE_RECEIPT_SCHEMA,
-        source_retirement_permitted=False,
+        source_collection_retirement_permitted=False,
     )
 )
 

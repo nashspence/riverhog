@@ -147,8 +147,8 @@ operations:
     minimum: 0
     derived_from_roles:
     - stove0.media.xmp-source/v1
-  source_retirement_permitted: false
-  contract_sha256: ebbce54d0380c00fe10e79992791f23208e70a7d6e5bb2608b7fae49e7ae03c6
+  source_collection_retirement_permitted: false
+  contract_sha256: 25829fd64c816fc6d1493fc9a5e0e836813c151af2cb4badfdd4287f22aad2aa
 - id: stove0.media.av1-opus-archive/v1
   result_kind: collection
   intent_schema:
@@ -318,8 +318,8 @@ operations:
     derived_from_roles:
     - stove0.media.source/v1
     - stove0.media.xmp-source/v1
-  source_retirement_permitted: true
-  contract_sha256: b1b4e9b710b3cecdfe62c3c01bd1b5dac9693741a3ed8bda08c527a0077edf33
+  source_collection_retirement_permitted: true
+  contract_sha256: 0cb8d721c13a6d0ba154f2310ab67103ac20eb584823e9f4db771b467e44f43f
 - id: stove0.review.materialize/v1
   result_kind: collection
   intent_schema:
@@ -446,8 +446,8 @@ operations:
     minimum: 0
     derived_from_roles:
     - stove0.review.source/v1
-  source_retirement_permitted: false
-  contract_sha256: d41bbf55a3cabf764445d4bcf0c00def514327a58d9313a7f6c5d727d8ba7e9f
+  source_collection_retirement_permitted: false
+  contract_sha256: 7d37787e93f61be7907eec95987cec02ab108d811c34b32c59a47ecd406c5efb
 - id: stove0.review.rclone-deliver/v1
   result_kind: external-effect
   intent_schema:
@@ -592,14 +592,14 @@ operations:
           type: integer
           minimum: 0
       additionalProperties: false
-  source_retirement_permitted: false
-  contract_sha256: 2c23aa4d9697738b46f2a1a2da7a87d0757725cab5044034c14bc0a6237a358f
+  source_collection_retirement_permitted: false
+  contract_sha256: fc5f7d11db12afb9c81935f3bc05035ba97beaf10dc59fedf6879ca4ece7ad66
 recipes:
 - id: stove0.audio-archive/v1
   revision: 1
   event_input_closure: single-finalized-collection
   allow_derived_inputs: false
-  source_retirement_policy: retain
+  source_collection_retirement_policy: retain
   unmatched_artifact_disposition: retain-in-source
   observers:
   - registration_id: exiftool
@@ -643,7 +643,7 @@ recipes:
     - stove0.media.xmp-source/v1
     path_identity: same-parent-stem
   allow_derived_inputs: false
-  source_retirement_policy: retain
+  source_collection_retirement_policy: retain
   unmatched_artifact_disposition: retain-in-source
   observers:
   - registration_id: exiftool
@@ -797,7 +797,7 @@ recipes:
   revision: 1
   event_input_closure: single-finalized-collection
   allow_derived_inputs: false
-  source_retirement_policy: retain
+  source_collection_retirement_policy: retain
   unmatched_artifact_disposition: retain-in-source
   observers:
   - registration_id: ffprobe-sampling
@@ -839,7 +839,7 @@ recipes:
   revision: 1
   event_input_closure: single-finalized-collection
   allow_derived_inputs: false
-  source_retirement_policy: retain
+  source_collection_retirement_policy: retain
   unmatched_artifact_disposition: retain-in-source
   observers:
   - registration_id: ffprobe-sampling
@@ -881,9 +881,9 @@ recipes:
   revision: 1
   event_input_closure: single-finalized-collection
   allow_derived_inputs: false
-  source_retirement_policy: retire-after-verified-output
+  source_collection_retirement_policy: retire-after-verified-output
   unmatched_artifact_disposition: retain-in-source
-  retirement_grace_seconds: 86400
+  source_collection_retirement_grace_seconds: 86400
   observers:
   - registration_id: exiftool
     contract_id: stove0.media.metadata/v1

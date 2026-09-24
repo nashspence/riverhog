@@ -27,15 +27,15 @@ def test_media_archive_operations_retain_exact_v1_retirement_semantics() -> None
     assert AUDIO_ARCHIVE_OPERATION.id == "stove0.media.audio-archive/v1"
     assert (
         AUDIO_ARCHIVE_OPERATION.contract_sha256
-        == "ebbce54d0380c00fe10e79992791f23208e70a7d6e5bb2608b7fae49e7ae03c6"
+        == "25829fd64c816fc6d1493fc9a5e0e836813c151af2cb4badfdd4287f22aad2aa"
     )
-    assert AUDIO_ARCHIVE_OPERATION.source_retirement_permitted is False
+    assert AUDIO_ARCHIVE_OPERATION.source_collection_retirement_permitted is False
     assert AV1_OPUS_ARCHIVE_OPERATION.id == "stove0.media.av1-opus-archive/v1"
     assert (
         AV1_OPUS_ARCHIVE_OPERATION.contract_sha256
-        == "b1b4e9b710b3cecdfe62c3c01bd1b5dac9693741a3ed8bda08c527a0077edf33"
+        == "0cb8d721c13a6d0ba154f2310ab67103ac20eb584823e9f4db771b467e44f43f"
     )
-    assert AV1_OPUS_ARCHIVE_OPERATION.source_retirement_permitted is True
+    assert AV1_OPUS_ARCHIVE_OPERATION.source_collection_retirement_permitted is True
     assert source_artifacts.minimum == 1
     assert "preserve_source_artifacts" not in Av1OpusArchiveIntent.model_json_schema()["properties"]
     assert AUDIO_ARCHIVE_OPERATION.intent_semantics == AUDIO_ARCHIVE_INTENT_SEMANTICS

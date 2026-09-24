@@ -159,7 +159,7 @@ from riverhog_protocol.collection_workflow_transport import (
     ProcessingOutcomeBindingDocument,
     ProcessingOutcomeIdentityDocument,
     RecipeIdentityDocument,
-    RetirementClaimReferenceDocument,
+    SourceCollectionRetirementClaimReferenceDocument,
 )
 from riverhog_protocol.collection_workflows import (
     DERIVATION_DISPOSITION_EVIDENCE_PREFIX,
@@ -394,7 +394,7 @@ __all__ += [
     "ProcessingOutcomeBindingDocument",
     "ProcessingOutcomeIdentityDocument",
     "RecipeIdentityDocument",
-    "RetirementClaimReferenceDocument",
+    "SourceCollectionRetirementClaimReferenceDocument",
     "ProcessingCapabilityCreateDocument",
     "ProcessingCapabilityDocument",
     "COLLECTION_FINALIZED",

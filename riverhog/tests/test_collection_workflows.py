@@ -205,7 +205,7 @@ def _seal_plan(
     controller_evidence: dict[str, object] = CONTROLLER_EVIDENCE,
     controller_evidence_sha256: str = CONTROLLER_EVIDENCE_SHA256,
     operation_id: str = "archive-video/v1",
-    retirement_policy: str = "retain",
+    source_collection_retirement_policy: str = "retain",
 ) -> dict[str, object]:
     return service.seal_claim_plan(
         claim_id,
@@ -215,8 +215,8 @@ def _seal_plan(
         controller_evidence_sha256=controller_evidence_sha256,
         operation_id=operation_id,
         operation_sha256="c" * 64,
-        retirement_policy=retirement_policy,
-        retirement_grace_seconds=0,
+        source_collection_retirement_policy=source_collection_retirement_policy,
+        source_collection_retirement_grace_seconds=0,
         principal=_principal(),
     )
 
@@ -404,7 +404,7 @@ def test_claim_plan_capabilities_settlement_and_deletion_blocker(
     sealed = _seal_plan(
         service,
         claim_id,
-        retirement_policy="retire-after-verified-output",
+        source_collection_retirement_policy="retire-after-verified-output",
     )
     assert sealed["plan"]["execution_id"] == EXECUTION_ID  # type: ignore[index]
     assert service.authenticate_capability(str(observer_capability["token"])) is None
@@ -531,8 +531,8 @@ def test_claim_plan_capabilities_settlement_and_deletion_blocker(
     with factory() as session, session.begin():
         stored = session.get(CollectionProcessingClaimRecord, claim_id)
         assert stored is not None
-        stored.retirement_grace_seconds = 10 * 365 * 24 * 60 * 60
-    waiting = service.begin_retirement(
+        stored.source_collection_retirement_grace_seconds = 10 * 365 * 24 * 60 * 60
+    waiting = service.begin_source_collection_retirement(
         claim_id,
         fence=1,
         principal=_principal(),
@@ -541,8 +541,8 @@ def test_claim_plan_capabilities_settlement_and_deletion_blocker(
     with factory() as session, session.begin():
         stored = session.get(CollectionProcessingClaimRecord, claim_id)
         assert stored is not None
-        stored.retirement_grace_seconds = 0
-    retiring = service.begin_retirement(
+        stored.source_collection_retirement_grace_seconds = 0
+    retiring = service.begin_source_collection_retirement(
         claim_id,
         fence=1,
         principal=_principal(),
@@ -1115,8 +1115,8 @@ def test_multiple_processing_outcomes_retain_outputs_and_authorize_retirement(
     settled = service.settle_claim_outcomes(
         parent_id,
         fence=1,
-        retirement_policy="retire-after-verified-output",
-        retirement_grace_seconds=0,
+        source_collection_retirement_policy="retire-after-verified-output",
+        source_collection_retirement_grace_seconds=0,
         principal=_principal(),
     )
     while settled["state"] == "active":
@@ -1124,8 +1124,8 @@ def test_multiple_processing_outcomes_retain_outputs_and_authorize_retirement(
         settled = service.settle_claim_outcomes(
             parent_id,
             fence=1,
-            retirement_policy="retire-after-verified-output",
-            retirement_grace_seconds=0,
+            source_collection_retirement_policy="retire-after-verified-output",
+            source_collection_retirement_grace_seconds=0,
             principal=_principal(),
         )
     assert settled["state"] == "settled"
@@ -1147,5 +1147,8 @@ def test_multiple_processing_outcomes_retain_outputs_and_authorize_retirement(
         "video-copy",
     ]
     assert (
-        service.begin_retirement(parent_id, fence=1, principal=_principal())["state"] == "retiring"
+        service.begin_source_collection_retirement(parent_id, fence=1, principal=_principal())[
+            "state"
+        ]
+        == "retiring"
     )

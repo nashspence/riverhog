@@ -32,7 +32,7 @@ def _plan() -> dict[str, object]:
                 "remote_storage_bytes": 28,
             }
         ],
-        "retired_retrieval_job_count": 0,
+        "terminal_retrieval_job_count": 0,
         "blockers": [],
         "verification_note": "Another store must pass remote verification.",
         "billing_note": "Provider billing may lag.",
@@ -78,7 +78,7 @@ def test_archive_retire_interactive_requires_exact_collection_and_store(monkeypa
         ) -> dict[str, object]:
             calls.append((collection_id, store, challenge))
             return {
-                "status": "retired",
+                "status": "deleted",
                 "collection_id": collection_id,
                 "store": store,
                 "remote_storage_bytes": 28,
@@ -111,7 +111,7 @@ def test_archive_retire_noninteractive_uses_prior_challenge(monkeypatch) -> None
         ) -> dict[str, object]:
             assert challenge == "retire-copy-1-" + "b" * 64
             return {
-                "status": "retired",
+                "status": "deleted",
                 "collection_id": collection_id,
                 "store": store,
                 "remote_storage_bytes": 28,
@@ -135,4 +135,4 @@ def test_archive_retire_noninteractive_uses_prior_challenge(monkeypatch) -> None
     )
 
     assert result.exit_code == 0
-    assert json.loads(result.stdout)["status"] == "retired"
+    assert json.loads(result.stdout)["status"] == "deleted"

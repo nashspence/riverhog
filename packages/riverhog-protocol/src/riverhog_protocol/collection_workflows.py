@@ -44,11 +44,11 @@ DERIVATION_EVIDENCE_ORDINAL_HEX_WIDTH = 64
 
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _SEMANTIC_ID_RE = re.compile(r"^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$", re.ASCII)
-_RETIREMENT_POLICIES = {"retain", "retire-after-verified-output"}
+_SOURCE_COLLECTION_RETIREMENT_POLICIES = {"retain", "retire-after-verified-output"}
 _DISPOSITION_STATES = {"transformed", "preserved", "omitted", "rejected"}
 
 JsonValue = None | bool | int | float | str | list["JsonValue"] | dict[str, "JsonValue"]
-RetirementPolicy = Literal["retain", "retire-after-verified-output"]
+SourceCollectionRetirementPolicy = Literal["retain", "retire-after-verified-output"]
 DispositionState = Literal["transformed", "preserved", "omitted", "rejected"]
 
 
@@ -400,8 +400,8 @@ class TransformIntent:
     operation: OperationIdentity
     inputs: tuple[CollectionRootIdentity, ...]
     effective_intent: dict[str, JsonValue]
-    retirement_policy: RetirementPolicy = "retain"
-    retirement_grace_seconds: int = 0
+    source_collection_retirement_policy: SourceCollectionRetirementPolicy = "retain"
+    source_collection_retirement_grace_seconds: int = 0
 
     def __post_init__(self) -> None:
         normalized_inputs = tuple(sorted(self.inputs))
@@ -415,14 +415,23 @@ class TransformIntent:
             "effective_intent",
             _json_object(self.effective_intent, "effective transform intent"),
         )
-        policy = str(self.retirement_policy)
-        if policy not in _RETIREMENT_POLICIES:
-            raise ValueError("retirement policy is invalid")
-        object.__setattr__(self, "retirement_policy", cast(RetirementPolicy, policy))
-        grace = _uint(self.retirement_grace_seconds, "retirement grace seconds")
+        policy = str(self.source_collection_retirement_policy)
+        if policy not in _SOURCE_COLLECTION_RETIREMENT_POLICIES:
+            raise ValueError("source collection retirement policy is invalid")
+        object.__setattr__(
+            self,
+            "source_collection_retirement_policy",
+            cast(SourceCollectionRetirementPolicy, policy),
+        )
+        grace = _uint(
+            self.source_collection_retirement_grace_seconds,
+            "source collection retirement grace seconds",
+        )
         if policy == "retain" and grace:
-            raise ValueError("retain policy cannot have a retirement grace period")
-        object.__setattr__(self, "retirement_grace_seconds", grace)
+            raise ValueError(
+                "retain policy cannot have a source collection retirement grace period"
+            )
+        object.__setattr__(self, "source_collection_retirement_grace_seconds", grace)
         if self.transform_id != self.identity_sha256():
             raise ValueError("transform id does not match its canonical intent")
 
@@ -433,9 +442,9 @@ class TransformIntent:
             "operation": self.operation.as_dict(),
             "inputs": [item.as_dict() for item in self.inputs],
             "effective_intent": self.effective_intent,
-            "retirement": {
-                "policy": self.retirement_policy,
-                "grace_seconds": self.retirement_grace_seconds,
+            "source_collection_retirement": {
+                "policy": self.source_collection_retirement_policy,
+                "grace_seconds": self.source_collection_retirement_grace_seconds,
             },
         }
 
@@ -456,8 +465,8 @@ class TransformIntent:
         operation: OperationIdentity,
         inputs: Sequence[CollectionRootIdentity],
         effective_intent: Mapping[str, object],
-        retirement_policy: RetirementPolicy = "retain",
-        retirement_grace_seconds: int = 0,
+        source_collection_retirement_policy: SourceCollectionRetirementPolicy = "retain",
+        source_collection_retirement_grace_seconds: int = 0,
     ) -> TransformIntent:
         normalized_inputs = tuple(sorted(inputs))
         normalized_intent = _json_object(effective_intent, "effective transform intent")
@@ -467,9 +476,9 @@ class TransformIntent:
             "operation": operation.as_dict(),
             "inputs": [item.as_dict() for item in normalized_inputs],
             "effective_intent": normalized_intent,
-            "retirement": {
-                "policy": retirement_policy,
-                "grace_seconds": retirement_grace_seconds,
+            "source_collection_retirement": {
+                "policy": source_collection_retirement_policy,
+                "grace_seconds": source_collection_retirement_grace_seconds,
             },
         }
         return cls(
@@ -478,8 +487,8 @@ class TransformIntent:
             operation=operation,
             inputs=normalized_inputs,
             effective_intent=normalized_intent,
-            retirement_policy=retirement_policy,
-            retirement_grace_seconds=retirement_grace_seconds,
+            source_collection_retirement_policy=source_collection_retirement_policy,
+            source_collection_retirement_grace_seconds=source_collection_retirement_grace_seconds,
         )
 
     @classmethod
@@ -493,7 +502,7 @@ class TransformIntent:
                 "operation",
                 "inputs",
                 "effective_intent",
-                "retirement",
+                "source_collection_retirement",
             }
             or value.get("format") != TRANSFORM_INTENT_FORMAT
         ):
@@ -502,15 +511,15 @@ class TransformIntent:
         operation = value.get("operation")
         inputs = value.get("inputs")
         intent = value.get("effective_intent")
-        retirement = value.get("retirement")
+        source_collection_retirement = value.get("source_collection_retirement")
         if (
             not isinstance(recipe, Mapping)
             or not isinstance(operation, Mapping)
             or not isinstance(inputs, list)
             or not all(isinstance(item, Mapping) for item in inputs)
             or not isinstance(intent, Mapping)
-            or not isinstance(retirement, Mapping)
-            or set(retirement) != {"policy", "grace_seconds"}
+            or not isinstance(source_collection_retirement, Mapping)
+            or set(source_collection_retirement) != {"policy", "grace_seconds"}
         ):
             raise ValueError("transform intent nested fields are invalid")
         return cls(
@@ -519,9 +528,13 @@ class TransformIntent:
             operation=OperationIdentity.from_mapping(operation),
             inputs=tuple(CollectionRootIdentity.from_mapping(item) for item in inputs),
             effective_intent=dict(intent),
-            retirement_policy=cast(RetirementPolicy, str(retirement.get("policy") or "")),
-            retirement_grace_seconds=_uint(
-                retirement.get("grace_seconds"), "retirement grace seconds"
+            source_collection_retirement_policy=cast(
+                SourceCollectionRetirementPolicy,
+                str(source_collection_retirement.get("policy") or ""),
+            ),
+            source_collection_retirement_grace_seconds=_uint(
+                source_collection_retirement.get("grace_seconds"),
+                "source collection retirement grace seconds",
             ),
         )
 
@@ -867,7 +880,7 @@ __all__ = [
     "PRODUCER_EVIDENCE_PATH",
     "ProducerEvidence",
     "RecipeIdentity",
-    "RetirementPolicy",
+    "SourceCollectionRetirementPolicy",
     "TRANSFORM_INTENT_FORMAT",
     "TransformIntent",
     "canonical_json_bytes",

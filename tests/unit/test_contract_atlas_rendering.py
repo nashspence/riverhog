@@ -875,7 +875,8 @@ def _primary_contract(authority: str, title: str) -> tuple[dict[str, Any], str]:
             (
                 "definition `RecipeDefinition`",
                 '`allow_derived_inputs` | no | type="boolean"; default=false',
-                '`retirement_grace_seconds` | no | type="integer"; minimum=0; default=0',
+                '`source_collection_retirement_grace_seconds` | no | type="integer"; '
+                "minimum=0; default=0",
                 '`revision` | yes | type="integer"; minimum=1',
                 "`additionalProperties`: `false`",
                 '"propertyName":"kind"',
@@ -967,7 +968,7 @@ def _primary_contract(authority: str, title: str) -> tuple[dict[str, Any], str]:
                 "### Local structured outputs",
                 '`status` | `"conformant"`',
                 "`observer_contract · maximum_result_bytes` | `262144`",
-                "`operation_contract · source_retirement_permitted` | `false`",
+                "`operation_contract · source_collection_retirement_permitted` | `false`",
             ),
         ),
     ],

@@ -60,7 +60,7 @@ from riverhog_core.services.archive_records import (
 )
 from riverhog_core.services.collection_workflows import (
     processing_claim_blockers,
-    require_retirement_exemption,
+    require_source_collection_retirement_exemption,
 )
 from riverhog_core.services.collections import _normalize_collection_id_or_raise
 from riverhog_core.services.lifecycle_events import (
@@ -104,7 +104,7 @@ class SqlAlchemyCollectionDeletionService:
         collection_id: int,
         *,
         principal: Principal | None = None,
-        retirement_claim_id: str | None = None,
+        source_collection_retirement_claim_id: str | None = None,
     ) -> dict[str, object]:
         normalized_id = _normalize_collection_id_or_raise(collection_id)
         with session_scope(self._session_factory) as session:
@@ -112,12 +112,14 @@ class SqlAlchemyCollectionDeletionService:
             if active is not None:
                 return _public_plan(cast(dict[str, object], json.loads(active.plan_json)))
             retirement = None
-            if retirement_claim_id is not None:
+            if source_collection_retirement_claim_id is not None:
                 if principal is None:
-                    raise Conflict("retirement deletion requires an authenticated claim owner")
-                retirement = require_retirement_exemption(
+                    raise Conflict(
+                        "source collection deletion requires an authenticated claim owner"
+                    )
+                retirement = require_source_collection_retirement_exemption(
                     session,
-                    claim_id=retirement_claim_id,
+                    claim_id=source_collection_retirement_claim_id,
                     collection_id=normalized_id,
                     principal=principal,
                 )
@@ -126,9 +128,9 @@ class SqlAlchemyCollectionDeletionService:
                 session,
                 collection_id=normalized_id,
                 expires_at=expires,
-                exempt_claim_id=retirement_claim_id,
+                exempt_claim_id=source_collection_retirement_claim_id,
             )
-            plan["retirement_claim"] = retirement
+            plan["source_collection_retirement_claim"] = retirement
             plan["challenge"] = (
                 None if plan["blockers"] else plan_challenge(_CHALLENGE_PREFIX, plan, expires)
             )
@@ -141,7 +143,7 @@ class SqlAlchemyCollectionDeletionService:
         challenge: str,
         initiator: Principal,
         event_context: dict[str, object] | None = None,
-        retirement_claim_id: str | None = None,
+        source_collection_retirement_claim_id: str | None = None,
     ) -> dict[str, object]:
         normalized_id = _normalize_collection_id_or_raise(collection_id)
         supplied_challenge = challenge.strip()
@@ -163,9 +165,9 @@ class SqlAlchemyCollectionDeletionService:
                 if not secrets.compare_digest(active.challenge, supplied_challenge):
                     raise Conflict("collection deletion challenge does not match active deletion")
                 plan = cast(dict[str, object], json.loads(active.plan_json))
-                expected_retirement = _retirement_claim_id(plan)
-                if expected_retirement != retirement_claim_id:
-                    raise Conflict("collection deletion retirement claim changed")
+                expected_retirement = _source_collection_retirement_claim_id(plan)
+                if expected_retirement != source_collection_retirement_claim_id:
+                    raise Conflict("source collection retirement claim changed during deletion")
             elif collection is None:
                 if not challenge_has_shape(supplied_challenge, prefix=_CHALLENGE_PREFIX):
                     raise NotFound(f"collection not found: {normalized_id}")
@@ -187,10 +189,10 @@ class SqlAlchemyCollectionDeletionService:
                 if utc_now() > expires:
                     raise Conflict("collection deletion plan has expired; request a new plan")
                 retirement = None
-                if retirement_claim_id is not None:
-                    retirement = require_retirement_exemption(
+                if source_collection_retirement_claim_id is not None:
+                    retirement = require_source_collection_retirement_exemption(
                         session,
-                        claim_id=retirement_claim_id,
+                        claim_id=source_collection_retirement_claim_id,
                         collection_id=normalized_id,
                         principal=initiator,
                     )
@@ -198,9 +200,9 @@ class SqlAlchemyCollectionDeletionService:
                     session,
                     collection_id=normalized_id,
                     expires_at=expires,
-                    exempt_claim_id=retirement_claim_id,
+                    exempt_claim_id=source_collection_retirement_claim_id,
                 )
-                plan["retirement_claim"] = retirement
+                plan["source_collection_retirement_claim"] = retirement
                 if not secrets.compare_digest(
                     plan_challenge(_CHALLENGE_PREFIX, plan, expires),
                     supplied_challenge,
@@ -689,7 +691,7 @@ class SqlAlchemyCollectionDeletionService:
             blockers = _active_blockers(
                 session,
                 collection_id,
-                exempt_claim_id=_retirement_claim_id(plan),
+                exempt_claim_id=_source_collection_retirement_claim_id(plan),
             )
             if blockers:
                 raise Conflict("collection activity began during deletion: " + "; ".join(blockers))
@@ -1069,8 +1071,8 @@ def _catalog_event_sequence(plan: dict[str, object]) -> int:
     return value
 
 
-def _retirement_claim_id(plan: dict[str, object]) -> str | None:
-    value = plan.get("retirement_claim")
+def _source_collection_retirement_claim_id(plan: dict[str, object]) -> str | None:
+    value = plan.get("source_collection_retirement_claim")
     if not isinstance(value, dict):
         return None
     claim_id = value.get("claim_id")

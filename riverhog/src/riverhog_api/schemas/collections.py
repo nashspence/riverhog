@@ -27,8 +27,8 @@ from riverhog_protocol import (
     FileProvenanceBinding,
     ImmutableFileIdentityDocument,
     ProcessingClaimId,
-    RetirementClaimReferenceDocument,
     SortOrder,
+    SourceCollectionRetirementClaimReferenceDocument,
     validate_collection_upload_artifact_custody_receipt,
 )
 from riverhog_protocol import (
@@ -561,7 +561,9 @@ class CollectionDeletionPlanOut(RiverhogModel):
     upload_file_count: int
     inventory_identity: str
     metadata_rows: dict[str, int]
-    retirement_claim: RetirementClaimReferenceDocument | None = None
+    source_collection_retirement_claim: SourceCollectionRetirementClaimReferenceDocument | None = (
+        None
+    )
     blockers: list[str] = Field(
         max_length=COLLECTION_DELETION_BLOCKERS_MAX,
         json_schema_extra={
@@ -585,7 +587,7 @@ class CollectionDeletionPlanOut(RiverhogModel):
 
 class DeleteCollectionRequest(RiverhogModel):
     challenge: str
-    retirement_claim_id: ProcessingClaimId | None = None
+    source_collection_retirement_claim_id: ProcessingClaimId | None = None
     event_context: EventContext | None = None
 
 

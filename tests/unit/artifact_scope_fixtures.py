@@ -40,7 +40,7 @@ def persisted_artifact_scope(
                 purpose="fixture artifact authorization",
                 work_document_json="{}",
                 work_document_sha256=hashlib.sha256(b"{}").hexdigest(),
-                retirement_grace_seconds=0,
+                source_collection_retirement_grace_seconds=0,
                 state="active",
                 fence=1,
                 expires_at=_EXPIRES,

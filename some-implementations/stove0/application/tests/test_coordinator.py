@@ -121,7 +121,7 @@ def _work() -> WorkIdentity:
     )
 
 
-def _operation(*, source_retirement_permitted: bool = False) -> OperationContract:
+def _operation(*, source_collection_retirement_permitted: bool = False) -> OperationContract:
     return OperationContract.seal(
         OperationContractPayload(
             id="fixture.copy/v1",
@@ -147,7 +147,7 @@ def _operation(*, source_retirement_permitted: bool = False) -> OperationContrac
                     derived_from_roles=("fixture.source/v1",),
                 ),
             ),
-            source_retirement_permitted=source_retirement_permitted,
+            source_collection_retirement_permitted=source_collection_retirement_permitted,
         )
     )
 
@@ -392,7 +392,7 @@ class FixturePlanning:
                 ),
                 target_registration_id="fixture-target",
                 target_descriptor_sha256=self.target.descriptor_sha256,
-                retirement_policy="retain",
+                source_collection_retirement_policy="retain",
             ),
             observations=observations,
         )
@@ -489,7 +489,7 @@ class ForkJoinPlanning:
                     ),
                     target_registration_id="fixture-target",
                     target_descriptor_sha256=self.target.descriptor_sha256,
-                    retirement_policy="retain",
+                    source_collection_retirement_policy="retain",
                 ),
             )
             for branch_id in ("audio", "video")
@@ -511,7 +511,7 @@ class ForkJoinPlanning:
                 ),
                 target_registration_id="fixture-target",
                 target_descriptor_sha256=self.target.descriptor_sha256,
-                retirement_policy="retain",
+                source_collection_retirement_policy="retain",
             ),
         )
         documents = {selection.selection_sha256: selection}
@@ -595,7 +595,7 @@ class NestedPlanning(FixturePlanning):
                 ),
                 target_registration_id="fixture-target",
                 target_descriptor_sha256=self.target.descriptor_sha256,
-                retirement_policy="retain",
+                source_collection_retirement_policy="retain",
             ),
         )
         child_plan = BranchSetPlan.seal(
@@ -1170,10 +1170,10 @@ class FixtureRiverhog:
     def abandon_claim(self, _record: object) -> None:
         self.abandoned = True
 
-    def begin_retirement(self, _record: object) -> None:
+    def begin_source_collection_retirement(self, _record: object) -> None:
         raise AssertionError("retain policy must not begin retirement")
 
-    def retire_input(self, _record: object, _collection_id: int) -> None:
+    def retire_source_collection(self, _record: object, _collection_id: int) -> None:
         raise AssertionError("retain policy must not retire inputs")
 
     def release_claim(self, _record: object) -> None:
@@ -1186,10 +1186,10 @@ class RetirementWaitingRiverhog(FixtureRiverhog):
         self.begin_ready = False
         self.deletion_ready = False
 
-    def begin_retirement(self, _record: object) -> bool:
+    def begin_source_collection_retirement(self, _record: object) -> bool:
         return self.begin_ready
 
-    def retire_input(self, _record: object, _collection_id: int) -> bool:
+    def retire_source_collection(self, _record: object, _collection_id: int) -> bool:
         return self.deletion_ready
 
 
@@ -1512,7 +1512,7 @@ def test_incomplete_post_root_binding_is_not_visible_to_coordination() -> None:
 
 
 def test_retirement_grace_and_deletion_blockers_leave_work_stably_waiting() -> None:
-    operation = _operation(source_retirement_permitted=True)
+    operation = _operation(source_collection_retirement_permitted=True)
     target = _target(operation)
     work = _work()
     workflow = WorkflowPlan.seal(
@@ -1521,7 +1521,7 @@ def test_retirement_grace_and_deletion_blockers_leave_work_stably_waiting() -> N
             operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
             target_descriptor_sha256=target.descriptor_sha256,
-            retirement_policy="retire-after-verified-output",
+            source_collection_retirement_policy="retire-after-verified-output",
         )
     )
     store = InMemoryWorkStore()
@@ -1550,9 +1550,9 @@ def test_retirement_grace_and_deletion_blockers_leave_work_stably_waiting() -> N
 
     riverhog.begin_ready = True
     retirement = coordinator.step(work.work_id)
-    assert retirement.phase == "retirement_pending"
+    assert retirement.phase == "source_collection_retirement_pending"
     blocked = coordinator.step(work.work_id)
-    assert blocked.phase == "retirement_pending"
+    assert blocked.phase == "source_collection_retirement_pending"
     assert blocked.revision == retirement.revision
 
     riverhog.deletion_ready = True

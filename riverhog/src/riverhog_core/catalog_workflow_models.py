@@ -53,8 +53,10 @@ class CollectionProcessingClaimRecord(Base):
     outcome_set_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     outcome_failure: Mapped[str | None] = mapped_column(Text, nullable=True)
     outcomes_sealed_at: Mapped[str | None] = mapped_column(String, nullable=True)
-    retirement_policy: Mapped[str | None] = mapped_column(String, nullable=True)
-    retirement_grace_seconds: Mapped[int] = mapped_column(BigInteger, nullable=False, default=0)
+    source_collection_retirement_policy: Mapped[str | None] = mapped_column(String, nullable=True)
+    source_collection_retirement_grace_seconds: Mapped[int] = mapped_column(
+        BigInteger, nullable=False, default=0
+    )
     plan_sealed_at: Mapped[str | None] = mapped_column(String, nullable=True)
 
     state: Mapped[str] = mapped_column(String, nullable=False)
@@ -89,7 +91,7 @@ class CollectionProcessingClaimRecord(Base):
         ),
         CheckConstraint("fence >= 1", name="ck_collection_processing_claims_fence"),
         CheckConstraint(
-            "retirement_grace_seconds >= 0",
+            "source_collection_retirement_grace_seconds >= 0",
             name="ck_collection_processing_claims_grace",
         ),
         CheckConstraint(
