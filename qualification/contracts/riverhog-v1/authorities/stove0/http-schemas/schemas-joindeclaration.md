@@ -29,7 +29,7 @@ One optional exact named-subset join declaration.
 | <a id="s-31d9aefee4"></a>`format` | no | type="string"; const="stove0-join-declaration/v1"; default="stove0-join-declaration/v1"; title="Format" |  |
 | <a id="s-a8773a6c8d"></a>`join_declaration_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Join Declaration Sha256" |  |
 | <a id="s-23dfcec269"></a>`members` | yes | type="array"; items=([JoinMemberDeclaration](schemas-joinmemberdeclaration.md)); minItems=2; title="Members" |  |
-| <a id="s-df2b4dd551"></a>`recipe` | yes | [RecipeRef](schemas-reciperef.md) |  |
+| <a id="s-df2b4dd551"></a>`recipe` | yes | [RecipeIdentityRef](schemas-recipeidentityref.md) |  |
 | <a id="s-6e6a700a1a"></a>`workflow_intent` | yes | [WorkflowPlanIntent](schemas-workflowplanintent.md) |  |
 
 ### Progression, limits, and lifecycle
@@ -57,7 +57,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 - [JoinMemberDeclaration](schemas-joinmemberdeclaration.md)
 - [JsonValue](schemas-jsonvalue.md)
-- [RecipeRef](schemas-reciperef.md)
+- [RecipeIdentityRef](schemas-recipeidentityref.md)
 - [WorkflowPlanIntent](schemas-workflowplanintent.md)
 
 ## Governing policies
@@ -91,7 +91,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f5546eba1b0ee2da6a3a1215a3422b2bbd3ea9083d64eff4344c803b089b9ecb -->
+<!-- exact-contract-value: 64354686ca57ed2eb4a830a6e1e73789c25b7ce36c5ca4124eb33f1f2bce7426 -->
 
 ```json
 {
@@ -125,7 +125,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "array"
     },
     "recipe": {
-      "$ref": "#/components/schemas/RecipeRef"
+      "$ref": "#/components/schemas/RecipeIdentityRef"
     },
     "workflow_intent": {
       "$ref": "#/components/schemas/WorkflowPlanIntent"

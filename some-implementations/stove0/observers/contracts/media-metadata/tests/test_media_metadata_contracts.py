@@ -13,7 +13,7 @@ from a_stove0_media_metadata_contract_lib import (
 )
 from jsonschema import Draft202012Validator
 from pydantic import ValidationError
-from stove0_observer_protocol import ArtifactSubject, CollectionRootRef
+from stove0_observer_protocol import CollectionRootIdentityRef, WorkArtifactSubject
 
 
 def test_media_metadata_contract_carries_exact_evidence_without_a_ceiling() -> None:
@@ -91,10 +91,10 @@ def test_media_fact_model_and_published_schema_share_state_acceptance() -> None:
 
 
 def test_media_metadata_semantics_bind_evidence_and_exact_request_subjects() -> None:
-    subject = ArtifactSubject(
+    subject = WorkArtifactSubject(
         id="primary",
         role="fixture.media/v1",
-        collection=CollectionRootRef(
+        collection=CollectionRootIdentityRef(
             collection_id=str(1),
             archive_root_sha256="a" * 64,
             content_identity="b" * 64,

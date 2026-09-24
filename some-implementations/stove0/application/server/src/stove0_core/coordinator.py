@@ -24,13 +24,13 @@ from stove0_observer_protocol import (
 )
 from stove0_protocol import (
     ArtifactSelection,
-    ArtifactSubject,
     BranchSetDecision,
     BranchSetEvaluation,
     BranchWorkBinding,
     ControllerEvidence,
     JoinWorkBinding,
-    OperationRef,
+    OperationIdentityRef,
+    WorkArtifactSubject,
     WorkflowPlan,
     WorkflowPreview,
     WorkIdentity,
@@ -99,7 +99,7 @@ class RiverhogControlPort(Protocol):
         evidence: ControllerEvidence,
         plan: WorkflowPlan,
         target_plan: TargetPlan,
-        inputs: Iterable[ArtifactSubject],
+        inputs: Iterable[WorkArtifactSubject],
     ) -> None: ...
 
     def target_authority(
@@ -107,7 +107,7 @@ class RiverhogControlPort(Protocol):
         claim: ClaimBinding,
         evidence: ControllerEvidence,
         target_plan: TargetPlan,
-        inputs: Iterable[ArtifactSubject],
+        inputs: Iterable[WorkArtifactSubject],
     ) -> TargetInvocationAuthority: ...
 
     def verify_and_settle(
@@ -160,7 +160,7 @@ class PlanningPort(Protocol):
         selections: dict[str, ArtifactSelection],
     ) -> ArtifactSelection: ...
 
-    def operation_contract(self, operation: OperationRef) -> OperationContract: ...
+    def operation_contract(self, operation: OperationIdentityRef) -> OperationContract: ...
 
 
 class ObserverPort(Protocol):

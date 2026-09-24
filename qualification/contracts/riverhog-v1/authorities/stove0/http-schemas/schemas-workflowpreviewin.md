@@ -25,7 +25,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-8250b31586"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Effective Intent" |  |
-| <a id="s-6c92b782aa"></a>`inputs` | yes | type="array"; items=([CollectionRootRef](schemas-collectionrootref.md)); minItems=1; title="Inputs" |  |
+| <a id="s-6c92b782aa"></a>`inputs` | yes | type="array"; items=([CollectionRootIdentityRef](schemas-collectionrootidentityref.md)); minItems=1; title="Inputs" |  |
 | <a id="s-5308fa97b6"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1; title="Recipe Id" |  |
 | <a id="s-231030b92d"></a>`recipe_revision` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; title="Recipe Revision" |  |
 
@@ -52,7 +52,7 @@ Shared facts for every subject below: maximum=160; minimum=1; reason="schema-max
 
 ### Referenced contract elements
 
-- [CollectionRootRef](schemas-collectionrootref.md)
+- [CollectionRootIdentityRef](schemas-collectionrootidentityref.md)
 - [JsonValue](schemas-jsonvalue.md)
 
 ## Governing policies
@@ -86,7 +86,7 @@ Shared facts for every subject below: maximum=160; minimum=1; reason="schema-max
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d7a96d936032649ccfe393754cd7845b9f8251a631eef1e7af249617d68aecea -->
+<!-- exact-contract-value: c6537329ad3b8d21d0e60c580a54efc4bc245bd88339561b8b9922f17505c6b8 -->
 
 ```json
 {
@@ -101,7 +101,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     },
     "inputs": {
       "items": {
-        "$ref": "#/components/schemas/CollectionRootRef"
+        "$ref": "#/components/schemas/CollectionRootIdentityRef"
       },
       "minItems": 1,
       "title": "Inputs",

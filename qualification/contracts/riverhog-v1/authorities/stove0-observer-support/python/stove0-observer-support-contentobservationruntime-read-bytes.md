@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-2b400baed8"></a>`kind`: `"method"`
-- <a id="s-80859eb6f0"></a>`signature`: `"\"(self, subject: 'ArtifactSubject', *, maximum_bytes: 'int', **prepare_kwargs: 'Any') -> 'bytes'\""`
+- <a id="s-80859eb6f0"></a>`signature`: `"\"(self, subject: 'WorkArtifactSubject', *, maximum_bytes: 'int', **prepare_kwargs: 'Any') -> 'bytes'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e8b6f2c4343a31efea43a4a3e9e79a299523f4eae652c457bd55c7f20de40533 -->
+<!-- exact-contract-value: 68e3ee4e73fb42cf533439992d9c0aed6c7dd38ca7d8bc30a66b0a0cb4ba2e5d -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, subject: 'ArtifactSubject', *, maximum_bytes: 'int', **prepare_kwargs: 'Any') -> 'bytes'\""
+    "signature": "\"(self, subject: 'WorkArtifactSubject', *, maximum_bytes: 'int', **prepare_kwargs: 'Any') -> 'bytes'\""
   },
   "distribution": "stove0-observer-support",
   "module": "stove0_observer_support",

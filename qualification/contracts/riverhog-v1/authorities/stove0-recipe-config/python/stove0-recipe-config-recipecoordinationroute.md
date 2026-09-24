@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-832e989e41"></a>`kind`: `"class"`
-- <a id="s-cecc52a68f"></a>`signature`: `"\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], when: tuple[stove0_recipe_config.models.FactPredicate, ...] = (), artifact_rules: tuple[stove0_recipe_config.models.ArtifactRule, ...] = (ArtifactRule(glob='*', role='stove0.source/v1', media_type=None),), primary_role: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)]] = None, associated_roles: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], ...] = (), intent: dict[str, JsonValue] = <factory>, projections: tuple[stove0_recipe_config.models.OperationProjection, ...] = (), kind: Literal['coordination'] = 'coordination', recipe: stove0_protocol.models.RecipeRef) -> None\""`
+- <a id="s-cecc52a68f"></a>`signature`: `"\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], when: tuple[stove0_recipe_config.models.FactPredicate, ...] = (), artifact_rules: tuple[stove0_recipe_config.models.ArtifactRule, ...] = (ArtifactRule(glob='*', role='stove0.source/v1', media_type=None),), primary_role: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)]] = None, associated_roles: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], ...] = (), intent: dict[str, JsonValue] = <factory>, projections: tuple[stove0_recipe_config.models.OperationProjection, ...] = (), kind: Literal['coordination'] = 'coordination', recipe: stove0_protocol.models.RecipeIdentityRef) -> None\""`
 
 #### Validated model schema
 
@@ -43,7 +43,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-d4c669daab"></a>`kind` | no | type="string"; const="coordination"; default="coordination" |  |
 | <a id="s-d2aa5db056"></a>`primary_role` | no | anyOf=[(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); (type="null")]; default=null |  |
 | <a id="s-943a06dac0"></a>`projections` | no | type="array"; default=[]; items=([OperationProjection](#s-b359636fab)) |  |
-| <a id="s-c4f794431e"></a>`recipe` | yes | [RecipeRef](#s-d76f5030f1) |  |
+| <a id="s-c4f794431e"></a>`recipe` | yes | [RecipeIdentityRef](#s-ffb83abb25) |  |
 | <a id="s-37bc1d07c3"></a>`when` | no | type="array"; default=[]; items=([FactPredicate](#s-1f1ff682fb)) |  |
 
 ##### Definitions
@@ -53,7 +53,7 @@ Exact externally visible contract owned by this contract element.
 - [FactPredicate](#s-1f1ff682fb)
 - [JsonValue](#s-055ffe5fa8)
 - [OperationProjection](#s-b359636fab)
-- [RecipeRef](#s-d76f5030f1)
+- [RecipeIdentityRef](#s-ffb83abb25)
 
 ##### <a id="s-2d17589189"></a>definition `ArtifactFactBinding`
 
@@ -117,19 +117,19 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-92bb1203ed"></a>`source` | yes | type="string"; enum=["work-effective-intent","work-evaluation"] |  |
 | <a id="s-8c07bdbbf6"></a>`source_pointer` | yes | type="string"; pattern="^(?:\|/(?:[^~/]\|~[01])*(?:/(?:[^~/]\|~[01])*)*)$" |  |
 
-##### <a id="s-d76f5030f1"></a>definition `RecipeRef`
+##### <a id="s-ffb83abb25"></a>definition `RecipeIdentityRef`
 
-- <a id="s-ea2825dddb"></a>`type`: `"object"`
-- <a id="s-3dd5e73ee0"></a>`additionalProperties`: `false`
-- <a id="s-4ec870ece2"></a>`required`: `["id","revision","sha256"]`
+- <a id="s-1d3719dfeb"></a>`type`: `"object"`
+- <a id="s-c0562263ae"></a>`additionalProperties`: `false`
+- <a id="s-4987ec37a9"></a>`required`: `["id","revision","sha256"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4d5fc3810b"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-35bc38c9bc"></a>`revision` | yes | type="integer"; minimum=1 |  |
-| <a id="s-993095b527"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-1f669a3009"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-47829b6414"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-8100e88b03"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -165,7 +165,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 96e2cf72f346347ef16d74ce2a01d02bb36d488dadca170ca85f4d69b08c96c6 -->
+<!-- exact-contract-value: 28ddbedf9f3993cbcf3732a221bbba7fc79e495028808372ed012b869ce85288 -->
 
 ```json
 {
@@ -303,7 +303,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "type": "object"
         },
-        "RecipeRef": {
+        "RecipeIdentityRef": {
           "additionalProperties": false,
           "properties": {
             "id": {
@@ -385,7 +385,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "array"
         },
         "recipe": {
-          "$ref": "#/$defs/RecipeRef"
+          "$ref": "#/$defs/RecipeIdentityRef"
         },
         "when": {
           "default": [],
@@ -401,7 +401,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], when: tuple[stove0_recipe_config.models.FactPredicate, ...] = (), artifact_rules: tuple[stove0_recipe_config.models.ArtifactRule, ...] = (ArtifactRule(glob='*', role='stove0.source/v1', media_type=None),), primary_role: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)]] = None, associated_roles: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], ...] = (), intent: dict[str, JsonValue] = <factory>, projections: tuple[stove0_recipe_config.models.OperationProjection, ...] = (), kind: Literal['coordination'] = 'coordination', recipe: stove0_protocol.models.RecipeRef) -> None\""
+    "signature": "\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], when: tuple[stove0_recipe_config.models.FactPredicate, ...] = (), artifact_rules: tuple[stove0_recipe_config.models.ArtifactRule, ...] = (ArtifactRule(glob='*', role='stove0.source/v1', media_type=None),), primary_role: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)]] = None, associated_roles: tuple[typing.Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], ...] = (), intent: dict[str, JsonValue] = <factory>, projections: tuple[stove0_recipe_config.models.OperationProjection, ...] = (), kind: Literal['coordination'] = 'coordination', recipe: stove0_protocol.models.RecipeIdentityRef) -> None\""
   },
   "distribution": "stove0-recipe-config",
   "module": "stove0_recipe_config",

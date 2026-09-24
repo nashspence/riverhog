@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-cf7575f250"></a>`kind`: `"classmethod"`
-- <a id="s-c22fc3ddb4"></a>`signature`: `"\"(cls, value: 'tuple[ArtifactSubject, ...]') -> 'tuple[ArtifactSubject, ...]'\""`
+- <a id="s-c22fc3ddb4"></a>`signature`: `"\"(cls, value: 'tuple[WorkArtifactSubject, ...]') -> 'tuple[WorkArtifactSubject, ...]'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7dc884d1003463a316ffd550a242a2642f624d32e3af1fabf1dc60ed1e68abdb -->
+<!-- exact-contract-value: aff8b963c795873b68fcbabe7c76b97d1d5ef2995984ceff3b69c55ff5669e33 -->
 
 ```json
 {
   "contract": {
     "kind": "classmethod",
-    "signature": "\"(cls, value: 'tuple[ArtifactSubject, ...]') -> 'tuple[ArtifactSubject, ...]'\""
+    "signature": "\"(cls, value: 'tuple[WorkArtifactSubject, ...]') -> 'tuple[WorkArtifactSubject, ...]'\""
   },
   "distribution": "stove0-observer-protocol",
   "module": "stove0_observer_protocol",

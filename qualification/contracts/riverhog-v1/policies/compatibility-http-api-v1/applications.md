@@ -437,7 +437,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: ArtifactSelection](../../authorities/stove0/http-schemas/schemas-artifactselection.md#pa-bed7fde96d) |
 | `stove0` | [schemas: ArtifactSelectionPage](../../authorities/stove0/http-schemas/schemas-artifactselectionpage.md#pa-91c712fd92) |
 | `stove0` | [schemas: ArtifactSelectionRef](../../authorities/stove0/http-schemas/schemas-artifactselectionref.md#pa-e9e83b40b1) |
-| `stove0` | [schemas: ArtifactSubject](../../authorities/stove0/http-schemas/schemas-artifactsubject.md#pa-aae9877526) |
 | `stove0` | [schemas: BranchEffectSettlement](../../authorities/stove0/http-schemas/schemas-brancheffectsettlement.md#pa-41c124631c) |
 | `stove0` | [schemas: BranchPlan](../../authorities/stove0/http-schemas/schemas-branchplan.md#pa-c61d9b4840) |
 | `stove0` | [schemas: BranchSetAdmittedEvent](../../authorities/stove0/http-schemas/schemas-branchsetadmittedevent.md#pa-d6085c991b) |
@@ -452,7 +451,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: CatalogSyncDescriptor](../../authorities/stove0/http-schemas/schemas-catalogsyncdescriptor.md#pa-940fc0968d) |
 | `stove0` | [schemas: CollectionDescription](../../authorities/stove0/http-schemas/schemas-collectiondescription.md#pa-7c05028a65) |
 | `stove0` | [schemas: CollectionId](../../authorities/stove0/http-schemas/schemas-collectionid.md#pa-4760682c9f) |
-| `stove0` | [schemas: CollectionRootRef](../../authorities/stove0/http-schemas/schemas-collectionrootref.md#pa-06f91b0dda) |
+| `stove0` | [schemas: CollectionRootIdentityRef](../../authorities/stove0/http-schemas/schemas-collectionrootidentityref.md#pa-6e400a6d24) |
 | `stove0` | [schemas: CollectionTag](../../authorities/stove0/http-schemas/schemas-collectiontag.md#pa-5c8aab70ec) |
 | `stove0` | [schemas: ContentObservationEvidence](../../authorities/stove0/http-schemas/schemas-contentobservationevidence.md#pa-80147b0509) |
 | `stove0` | [schemas: ContentObservationFailure](../../authorities/stove0/http-schemas/schemas-contentobservationfailure.md#pa-6876436f50) |
@@ -501,8 +500,8 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: JsonValue](../../authorities/stove0/http-schemas/schemas-jsonvalue.md#pa-b306831d95) |
 | `stove0` | [schemas: ObserverImplementation](../../authorities/stove0/http-schemas/schemas-observerimplementation.md#pa-b0e5ccca90) |
 | `stove0` | [schemas: ObserverUse](../../authorities/stove0/http-schemas/schemas-observeruse.md#pa-0dc281bf62) |
+| `stove0` | [schemas: OperationIdentityRef](../../authorities/stove0/http-schemas/schemas-operationidentityref.md#pa-3a92a32a61) |
 | `stove0` | [schemas: OperationProjection](../../authorities/stove0/http-schemas/schemas-operationprojection.md#pa-b1fb0fcd2f) |
-| `stove0` | [schemas: OperationRef](../../authorities/stove0/http-schemas/schemas-operationref.md#pa-1c1f58b346) |
 | `stove0` | [schemas: OutputArtifact](../../authorities/stove0/http-schemas/schemas-outputartifact.md#pa-3b1ded151e) |
 | `stove0` | [schemas: OutputArtifactRoleCount](../../authorities/stove0/http-schemas/schemas-outputartifactrolecount.md#pa-b1db3dac05) |
 | `stove0` | [schemas: OutputArtifactSetIdentity](../../authorities/stove0/http-schemas/schemas-outputartifactsetidentity.md#pa-60a191718e) |
@@ -514,9 +513,9 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: RecipeCatalogView](../../authorities/stove0/http-schemas/schemas-recipecatalogview.md#pa-1fb91730df) |
 | `stove0` | [schemas: RecipeCoordinationRoute](../../authorities/stove0/http-schemas/schemas-recipecoordinationroute.md#pa-10a5e6b5ed) |
 | `stove0` | [schemas: RecipeDefinition](../../authorities/stove0/http-schemas/schemas-recipedefinition.md#pa-039ec7c752) |
+| `stove0` | [schemas: RecipeIdentityRef](../../authorities/stove0/http-schemas/schemas-recipeidentityref.md#pa-f0613660fd) |
 | `stove0` | [schemas: RecipeJoin](../../authorities/stove0/http-schemas/schemas-recipejoin.md#pa-5eb5a4dbbd) |
 | `stove0` | [schemas: RecipeJoinMember](../../authorities/stove0/http-schemas/schemas-recipejoinmember.md#pa-c93c659a0a) |
-| `stove0` | [schemas: RecipeRef](../../authorities/stove0/http-schemas/schemas-reciperef.md#pa-592bca4bba) |
 | `stove0` | [schemas: RecipeRoute](../../authorities/stove0/http-schemas/schemas-reciperoute.md#pa-fdc581f11d) |
 | `stove0` | [schemas: RecipeView](../../authorities/stove0/http-schemas/schemas-recipeview.md#pa-01c42e64b9) |
 | `stove0` | [schemas: SchedulerFailure](../../authorities/stove0/http-schemas/schemas-schedulerfailure.md#pa-976d61c0d3) |
@@ -544,6 +543,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: TargetSettlementAuthority](../../authorities/stove0/http-schemas/schemas-targetsettlementauthority.md#pa-d482c61c49) |
 | `stove0` | [schemas: TransformPlan](../../authorities/stove0/http-schemas/schemas-transformplan.md#pa-fa279a5cd3) |
 | `stove0` | [schemas: ValidationError](../../authorities/stove0/http-schemas/schemas-validationerror.md#pa-84770ee2b6) |
+| `stove0` | [schemas: WorkArtifactSubject](../../authorities/stove0/http-schemas/schemas-workartifactsubject.md#pa-5d7ea236d3) |
 | `stove0` | [schemas: WorkClaimView](../../authorities/stove0/http-schemas/schemas-workclaimview.md#pa-b919c0b753) |
 | `stove0` | [schemas: WorkCreateIn](../../authorities/stove0/http-schemas/schemas-workcreatein.md#pa-63d853fd3b) |
 | `stove0` | [schemas: WorkCreatedEvent](../../authorities/stove0/http-schemas/schemas-workcreatedevent.md#pa-42202ceef3) |

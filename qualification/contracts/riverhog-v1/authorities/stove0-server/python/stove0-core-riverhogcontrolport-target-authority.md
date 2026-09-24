@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-213839e27b"></a>`kind`: `"method"`
-- <a id="s-01f2ff03ac"></a>`signature`: `"\"(self, claim: 'ClaimBinding', evidence: 'ControllerEvidence', target_plan: 'TargetPlan', inputs: 'Iterable[ArtifactSubject]') -> 'TargetInvocationAuthority'\""`
+- <a id="s-01f2ff03ac"></a>`signature`: `"\"(self, claim: 'ClaimBinding', evidence: 'ControllerEvidence', target_plan: 'TargetPlan', inputs: 'Iterable[WorkArtifactSubject]') -> 'TargetInvocationAuthority'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f84ad0f293d1ca74af1d4183c9f171dadb597eba9c9184593144ea8938411eab -->
+<!-- exact-contract-value: f898e2c3b86b53e96170e279de717167569de6633f9b9ba30c20425bfc85bbf1 -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, claim: 'ClaimBinding', evidence: 'ControllerEvidence', target_plan: 'TargetPlan', inputs: 'Iterable[ArtifactSubject]') -> 'TargetInvocationAuthority'\""
+    "signature": "\"(self, claim: 'ClaimBinding', evidence: 'ControllerEvidence', target_plan: 'TargetPlan', inputs: 'Iterable[WorkArtifactSubject]') -> 'TargetInvocationAuthority'\""
   },
   "distribution": "stove0-server",
   "module": "stove0_core",

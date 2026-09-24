@@ -1,10 +1,10 @@
-# schemas: RecipeRef
+# schemas: RecipeIdentityRef
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: http-schemas:stove0:schemas-reciperef:8e602c9c7b -->
+<!-- contract-element: http-schemas:stove0:schemas-recipeidentityref:1b782adf52 -->
 
-Exact externally visible contract owned by this contract element.
+Embedded Stove0 reference to the Riverhog recipe identity.
 
 | Audit field | Value |
 |---|---|
@@ -13,20 +13,21 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-62017ec1c8"></a>
+<a id="s-b6ede3d890"></a>
 
-- <a id="s-9440c1834c"></a>`type`: `"object"`
-- <a id="s-5d706d6d38"></a>`additionalProperties`: `false`
-- <a id="s-3f565947e6"></a>`required`: `["id","revision","sha256"]`
-- <a id="s-4f771980df"></a>`title`: `"RecipeRef"`
+- <a id="s-54137e5325"></a>`type`: `"object"`
+- <a id="s-05b6a38bdb"></a>`additionalProperties`: `false`
+- <a id="s-f323a92188"></a>`description`: `"Embedded Stove0 reference to the Riverhog recipe identity."`
+- <a id="s-62c94f0aa8"></a>`required`: `["id","revision","sha256"]`
+- <a id="s-75afc7b778"></a>`title`: `"RecipeIdentityRef"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7a8a87bc51"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
-| <a id="s-a4b73aecf5"></a>`revision` | yes | type="integer"; minimum=1; title="Revision" |  |
-| <a id="s-f3f07db30c"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+| <a id="s-a397dffbf0"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-1586189874"></a>`revision` | yes | type="integer"; minimum=1; title="Revision" |  |
+| <a id="s-1b993bc3c6"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -36,14 +37,14 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field sha256](#s-f3f07db30c) | `length · characters · fixed` | shared above |
+| [field sha256](#s-1b993bc3c6) | `length · characters · fixed` | shared above |
 
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
-- <a id="pa-592bca4bba"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
-- <a id="pa-fa9aa07bab"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
+- <a id="pa-f0613660fd"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-b38ad90c9b"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -59,7 +60,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Machine authority
 
-- `/external_contract/http_openapi/stove0/components/schemas/RecipeRef`
+- `/external_contract/http_openapi/stove0/components/schemas/RecipeIdentityRef`
 
 ### Exact owned JSON
 
@@ -68,11 +69,12 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3790d8f811ebb13fed76cbd0a115a818961abe76707214c58706e9033077b650 -->
+<!-- exact-contract-value: 9ec65c637fbe5ff5af08a809e9712ece609c9400a2caf805d0513e73e3afcf47 -->
 
 ```json
 {
   "additionalProperties": false,
+  "description": "Embedded Stove0 reference to the Riverhog recipe identity.",
   "properties": {
     "id": {
       "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
@@ -95,7 +97,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "revision",
     "sha256"
   ],
-  "title": "RecipeRef",
+  "title": "RecipeIdentityRef",
   "type": "object"
 }
 ```

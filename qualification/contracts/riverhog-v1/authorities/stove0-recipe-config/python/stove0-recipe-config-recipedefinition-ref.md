@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-0e7e1b74fe"></a>`kind`: `"property"`
-- <a id="s-4b180f17b1"></a>`signature`: `"\"(self) -> 'RecipeRef'\""`
+- <a id="s-4b180f17b1"></a>`signature`: `"\"(self) -> 'RecipeIdentityRef'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 35d965cbb87bf051b9febbf338025434a3a681f3ba673426cca858b77e472b8a -->
+<!-- exact-contract-value: 77be93fbe5cc923861a2e677b46a808befd8a05feb261bacc6f72569b1f6a9a6 -->
 
 ```json
 {
   "contract": {
     "kind": "property",
-    "signature": "\"(self) -> 'RecipeRef'\""
+    "signature": "\"(self) -> 'RecipeIdentityRef'\""
   },
   "distribution": "stove0-recipe-config",
   "module": "stove0_recipe_config",

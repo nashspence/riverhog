@@ -32,7 +32,7 @@ One exact subrecipe selected as a branch-bound coordinator.
 | <a id="s-028eb1ca79"></a>`kind` | no | type="string"; const="coordination"; default="coordination"; title="Kind" |  |
 | <a id="s-0b22e4cc4a"></a>`primary_role` | no | anyOf=[(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); (type="null")]; title="Primary Role" |  |
 | <a id="s-2deb6d5c81"></a>`projections` | no | type="array"; default=[]; items=([OperationProjection](schemas-operationprojection.md)); title="Projections" |  |
-| <a id="s-c91319df09"></a>`recipe` | yes | [RecipeRef](schemas-reciperef.md) |  |
+| <a id="s-c91319df09"></a>`recipe` | yes | [RecipeIdentityRef](schemas-recipeidentityref.md) |  |
 | <a id="s-4c285d7366"></a>`when` | no | type="array"; default=[]; items=([FactPredicate](schemas-factpredicate.md)); title="When" |  |
 
 ### Progression, limits, and lifecycle
@@ -57,7 +57,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - [FactPredicate](schemas-factpredicate.md)
 - [JsonValue](schemas-jsonvalue.md)
 - [OperationProjection](schemas-operationprojection.md)
-- [RecipeRef](schemas-reciperef.md)
+- [RecipeIdentityRef](schemas-recipeidentityref.md)
 
 ## Governing policies
 
@@ -89,7 +89,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 624a1e3bbf0ecc59de56616c6389216c4ec53fe24f850f44b3a8af409d11280d -->
+<!-- exact-contract-value: 46d9df2afe51dd102cc6e403ac7ad5fb53ba251f69b0f85d4c6a4e0b8311e5e9 -->
 
 ```json
 {
@@ -157,7 +157,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "array"
     },
     "recipe": {
-      "$ref": "#/components/schemas/RecipeRef"
+      "$ref": "#/components/schemas/RecipeIdentityRef"
     },
     "when": {
       "default": [],

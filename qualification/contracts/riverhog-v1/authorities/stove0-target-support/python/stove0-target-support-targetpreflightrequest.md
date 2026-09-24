@@ -47,9 +47,8 @@ Exact externally visible contract owned by this contract element.
 ##### Definitions
 
 - [ArtifactSelectionRef](#s-39ad60087b)
-- [ArtifactSubject](#s-f072295446)
 - [CollectionId](#s-e027a9025e)
-- [CollectionRootRef](#s-8191dbc46c)
+- [CollectionRootIdentityRef](#s-6a2f8c81bb)
 - [ContentObservationEvidence](#s-659b75ec6e)
 - [ContentObservationFailure](#s-ecb1d1efa2)
 - [ContentObservationInapplicable](#s-c24d29bf4a)
@@ -60,6 +59,7 @@ Exact externally visible contract owned by this contract element.
 - [ObserverImplementation](#s-78ed3d8bbb)
 - [TargetInputAuthority](#s-60a5d6ef7e)
 - [TargetInputRoleCount](#s-769600fdb9)
+- [WorkArtifactSubject](#s-90b5c9acfe)
 
 ##### <a id="s-39ad60087b"></a>definition `ArtifactSelectionRef`
 
@@ -75,24 +75,6 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-3aab4adfd3"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-44ef421401"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
 
-##### <a id="s-f072295446"></a>definition `ArtifactSubject`
-
-- <a id="s-1df0087a74"></a>`type`: `"object"`
-- <a id="s-0e34d1507c"></a>`additionalProperties`: `false`
-- <a id="s-da454ac718"></a>`required`: `["id","role","collection","path","bytes","sha256"]`
-
-###### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-9e81e626cf"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-6c3c610190"></a>`collection` | yes | [CollectionRootRef](#s-8191dbc46c) |  |
-| <a id="s-5078849c51"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
-| <a id="s-5f806c319f"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
-| <a id="s-3403f3a526"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-1e1b421301"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-2bd6acfb9c"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-
 ##### <a id="s-e027a9025e"></a>definition `CollectionId`
 
 
@@ -103,19 +85,19 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-a63e579a63"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
 | <a id="s-5c9814f0a5"></a>2 | not=(const="0") |
 
-##### <a id="s-8191dbc46c"></a>definition `CollectionRootRef`
+##### <a id="s-6a2f8c81bb"></a>definition `CollectionRootIdentityRef`
 
-- <a id="s-dec5b5a88c"></a>`type`: `"object"`
-- <a id="s-5f3d230056"></a>`additionalProperties`: `false`
-- <a id="s-8e4d37763c"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+- <a id="s-4486934ff8"></a>`type`: `"object"`
+- <a id="s-e4ae9a707d"></a>`additionalProperties`: `false`
+- <a id="s-12ff8239fe"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ed0e6548df"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-99e160ddce"></a>`collection_id` | yes | [CollectionId](#s-e027a9025e) |  |
-| <a id="s-9157d45b6b"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b4d7d822fd"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-cf015fbef1"></a>`collection_id` | yes | [CollectionId](#s-e027a9025e) |  |
+| <a id="s-0eac7a7179"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-659b75ec6e"></a>definition `ContentObservationEvidence`
 
@@ -176,7 +158,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-08e3f0ae57"></a>`options` | no | type="object"; additionalProperties=([JsonValue](#s-d95af0d2da)) |  |
 | <a id="s-a123637170"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-bbfedd2576"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
-| <a id="s-3a9629d3ad"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-f072295446)); minItems=1 |  |
+| <a id="s-3a9629d3ad"></a>`subjects` | yes | type="array"; items=([WorkArtifactSubject](#s-90b5c9acfe)); minItems=1 |  |
 | <a id="s-a6fed198c7"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300 |  |
 | <a id="s-c2cc791fe7"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
@@ -203,7 +185,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-d585f2453d"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-e8a31a3cd2"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-e7188ed6bb"></a>`state` | yes | type="string"; enum=["observed","inapplicable","failed","canceled"] |  |
-| <a id="s-94d2e0866c"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-f072295446)); minItems=1 |  |
+| <a id="s-94d2e0866c"></a>`subjects` | yes | type="array"; items=([WorkArtifactSubject](#s-90b5c9acfe)); minItems=1 |  |
 
 ##### <a id="s-10bf8e2657"></a>definition `JsonSchemaValidationProfile`
 
@@ -267,6 +249,24 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-faa1fd20ec"></a>`count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-753f62b9be"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 
+##### <a id="s-90b5c9acfe"></a>definition `WorkArtifactSubject`
+
+- <a id="s-4c6cf50084"></a>`type`: `"object"`
+- <a id="s-c3c8a99318"></a>`additionalProperties`: `false`
+- <a id="s-2ee2067714"></a>`required`: `["id","role","collection","path","bytes","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-dc2b0baeac"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-f48fc093c3"></a>`collection` | yes | [CollectionRootIdentityRef](#s-6a2f8c81bb) |  |
+| <a id="s-1965c919a6"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-e31df909bc"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
+| <a id="s-3918a32ab5"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-696e737678"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-57f00a591e"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
 ## Maintained corroboration
 
 ### Related interface records
@@ -300,7 +300,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ce503e61f1b9ab2dc5b72513302ed2be4f74da8e60556e89863f59664cbf3d0f -->
+<!-- exact-contract-value: faca9daec4314b2ccb6d0424724f8c700831aaa1d10ff5d756b2de2a6b228e01 -->
 
 ```json
 {
@@ -331,57 +331,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "type": "object"
         },
-        "ArtifactSubject": {
-          "additionalProperties": false,
-          "properties": {
-            "bytes": {
-              "minimum": 0,
-              "type": "integer"
-            },
-            "collection": {
-              "$ref": "#/$defs/CollectionRootRef"
-            },
-            "id": {
-              "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-              "type": "string"
-            },
-            "media_type": {
-              "anyOf": [
-                {
-                  "maxLength": 255,
-                  "minLength": 1,
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "default": null
-            },
-            "path": {
-              "maxLength": 4096,
-              "minLength": 1,
-              "type": "string"
-            },
-            "role": {
-              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "type": "string"
-            },
-            "sha256": {
-              "pattern": "^[0-9a-f]{64}$",
-              "type": "string"
-            }
-          },
-          "required": [
-            "id",
-            "role",
-            "collection",
-            "path",
-            "bytes",
-            "sha256"
-          ],
-          "type": "object"
-        },
         "CollectionId": {
           "allOf": [
             {
@@ -395,7 +344,7 @@ The following JSON is the complete value owned at each machine-authority pointer
             }
           ]
         },
-        "CollectionRootRef": {
+        "CollectionRootIdentityRef": {
           "additionalProperties": false,
           "properties": {
             "archive_root_sha256": {
@@ -525,7 +474,7 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "subjects": {
               "items": {
-                "$ref": "#/$defs/ArtifactSubject"
+                "$ref": "#/$defs/WorkArtifactSubject"
               },
               "minItems": 1,
               "type": "array"
@@ -655,7 +604,7 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "subjects": {
               "items": {
-                "$ref": "#/$defs/ArtifactSubject"
+                "$ref": "#/$defs/WorkArtifactSubject"
               },
               "minItems": 1,
               "type": "array"
@@ -778,6 +727,57 @@ The following JSON is the complete value owned at each machine-authority pointer
           "required": [
             "role",
             "count"
+          ],
+          "type": "object"
+        },
+        "WorkArtifactSubject": {
+          "additionalProperties": false,
+          "properties": {
+            "bytes": {
+              "minimum": 0,
+              "type": "integer"
+            },
+            "collection": {
+              "$ref": "#/$defs/CollectionRootIdentityRef"
+            },
+            "id": {
+              "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
+              "type": "string"
+            },
+            "media_type": {
+              "anyOf": [
+                {
+                  "maxLength": 255,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "path": {
+              "maxLength": 4096,
+              "minLength": 1,
+              "type": "string"
+            },
+            "role": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "type": "string"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "role",
+            "collection",
+            "path",
+            "bytes",
+            "sha256"
           ],
           "type": "object"
         }

@@ -68,9 +68,9 @@ from stove0_operator_contracts import (
 from stove0_protocol import (
     ArtifactSelection,
     ArtifactSelectionRef,
-    ArtifactSubject,
     BranchSetDecision,
     JoinPlan,
+    WorkArtifactSubject,
     branch_work,
     canonical_json_bytes,
 )
@@ -978,10 +978,12 @@ class SqlAlchemyStateStore:
         self,
         selection_sha256: str,
         artifact_id: str,
-    ) -> ArtifactSubject | None:
+    ) -> WorkArtifactSubject | None:
         with self.sessions() as session:
             row = session.get(_ArtifactSelectionMemberRow, (selection_sha256, artifact_id))
-            return None if row is None else ArtifactSubject.model_validate_json(row.document_json)
+            return (
+                None if row is None else WorkArtifactSubject.model_validate_json(row.document_json)
+            )
 
     def record_target_output(self, work_id: str, job_id: str, output: OutputArtifact) -> None:
         encoded = _encode(output.model_dump(mode="json", by_alias=True, exclude_none=True))
@@ -1461,7 +1463,7 @@ class SqlAlchemyStateStore:
         *,
         continuation: str | None,
         limit: int,
-    ) -> tuple[tuple[ArtifactSubject, ...], str | None, bool]:
+    ) -> tuple[tuple[WorkArtifactSubject, ...], str | None, bool]:
         if limit < 1 or limit > 1000:
             raise ValueError("artifact selection page is invalid")
         with self.sessions() as session:
@@ -1490,12 +1492,12 @@ class SqlAlchemyStateStore:
             page = selected[:limit]
             next_continuation = None if complete or not page else page[-1].continuation_sha256
             return (
-                tuple(ArtifactSubject.model_validate_json(row.document_json) for row in page),
+                tuple(WorkArtifactSubject.model_validate_json(row.document_json) for row in page),
                 next_continuation,
                 complete,
             )
 
-    def iter_selection_artifacts(self, selection_sha256: str) -> Iterator[ArtifactSubject]:
+    def iter_selection_artifacts(self, selection_sha256: str) -> Iterator[WorkArtifactSubject]:
         statement = (
             select(_ArtifactSelectionMemberRow)
             .where(_ArtifactSelectionMemberRow.selection_sha256 == selection_sha256)
@@ -1504,7 +1506,7 @@ class SqlAlchemyStateStore:
         )
         with read_snapshot(self.sessions) as session:
             for row in session.scalars(statement):
-                yield ArtifactSubject.model_validate_json(row.document_json)
+                yield WorkArtifactSubject.model_validate_json(row.document_json)
 
     def list_work(
         self,
@@ -2166,7 +2168,7 @@ def _selection_ref(row: _ArtifactSelectionRow) -> ArtifactSelectionRef:
 def _selection_member_row(
     selection_sha256: str,
     artifact_order: int,
-    artifact: ArtifactSubject,
+    artifact: WorkArtifactSubject,
 ) -> _ArtifactSelectionMemberRow:
     encoded = _encode(artifact.model_dump(mode="json", by_alias=True, exclude_none=True))
     return _ArtifactSelectionMemberRow(
@@ -2190,7 +2192,7 @@ def _selection_from_rows(
 ) -> ArtifactSelection:
     return ArtifactSelection(
         artifacts=tuple(
-            ArtifactSubject.model_validate_json(member.document_json) for member in members
+            WorkArtifactSubject.model_validate_json(member.document_json) for member in members
         ),
         artifact_count=row.artifact_count,
         total_bytes=row.total_bytes,

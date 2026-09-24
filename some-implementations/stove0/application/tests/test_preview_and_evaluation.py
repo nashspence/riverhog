@@ -35,11 +35,10 @@ from stove0_observer_protocol import (
 from stove0_protocol import (
     JSON_SCHEMA_ONLY_SEMANTIC_PROFILE,
     ArtifactSelection,
-    ArtifactSubject,
     BranchPlan,
     BranchSetDecision,
     BranchSetPlan,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
     CoordinationBranchPlan,
     EvaluationDefinition,
     EvaluationDefinitionPayload,
@@ -47,8 +46,9 @@ from stove0_protocol import (
     EvaluationMatrixPayload,
     EvaluationVariant,
     JsonSchemaValidationProfile,
-    OperationRef,
-    RecipeRef,
+    OperationIdentityRef,
+    RecipeIdentityRef,
+    WorkArtifactSubject,
     WorkflowPlan,
     WorkflowPlanIntent,
     WorkIdentity,
@@ -81,8 +81,8 @@ def _sha(character: str) -> str:
     return character * 64
 
 
-def _root() -> CollectionRootRef:
-    return CollectionRootRef(
+def _root() -> CollectionRootIdentityRef:
+    return CollectionRootIdentityRef(
         collection_id=str(1),
         archive_root_sha256=_sha("1"),
         content_identity=_sha("2"),
@@ -92,7 +92,7 @@ def _root() -> CollectionRootRef:
 def _work() -> WorkIdentity:
     return WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeRef(id="fixture.recipe/v1", revision=1, sha256=_sha("3")),
+            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision=1, sha256=_sha("3")),
             inputs=(_root(),),
             effective_intent={"suffix": ".copy"},
         )
@@ -204,7 +204,7 @@ class PreviewPlanning:
                     observer_contract_id=contract.id,
                     observer_contract_sha256=contract.contract_sha256,
                     subjects=(
-                        ArtifactSubject(
+                        WorkArtifactSubject(
                             id="source",
                             role="fixture.source/v1",
                             collection=_root(),
@@ -235,7 +235,7 @@ class PreviewPlanning:
             recipe=work.recipe,
             effective_intent={"suffix": ".copy"},
             workflow_intent=WorkflowPlanIntent(
-                operation=OperationRef(
+                operation=OperationIdentityRef(
                     id=self.operation.id,
                     sha256=self.operation.contract_sha256,
                 ),
@@ -263,7 +263,7 @@ class PreviewPlanning:
     ) -> TargetPreflightRequest:
         selection = ArtifactSelection.seal(
             (
-                ArtifactSubject(
+                WorkArtifactSubject(
                     id="source",
                     role="fixture.source/v1",
                     collection=_root(),
@@ -282,7 +282,7 @@ class PreviewPlanning:
             observations=_plan.observations,
         )
 
-    def operation_contract(self, operation: OperationRef) -> OperationContract:
+    def operation_contract(self, operation: OperationIdentityRef) -> OperationContract:
         assert operation.sha256 == self.operation.contract_sha256
         return self.operation
 
@@ -303,7 +303,7 @@ class NestedPreviewPlanning(PreviewPlanning):
             branch_id="nested",
             decision_sha256=_sha("d"),
             selection=selection,
-            recipe=RecipeRef(id="fixture.child/v1", revision=1, sha256=_sha("5")),
+            recipe=RecipeIdentityRef(id="fixture.child/v1", revision=1, sha256=_sha("5")),
             effective_intent={"suffix": ".copy"},
         )
         child_evidence = nested_observer(child_work)
@@ -315,7 +315,7 @@ class NestedPreviewPlanning(PreviewPlanning):
             recipe=child_work.recipe,
             effective_intent=child_work.effective_intent,
             workflow_intent=WorkflowPlanIntent(
-                operation=OperationRef(
+                operation=OperationIdentityRef(
                     id=self.operation.id,
                     sha256=self.operation.contract_sha256,
                 ),
@@ -635,7 +635,7 @@ class FinishingController:
 def _evaluation() -> EvaluationDefinition:
     return EvaluationDefinition.seal(
         EvaluationDefinitionPayload(
-            recipe=RecipeRef(id="review.recipe/v1", revision=1, sha256=_sha("5")),
+            recipe=RecipeIdentityRef(id="review.recipe/v1", revision=1, sha256=_sha("5")),
             inputs=(_root(),),
             common_intent={"sample_plan_sha256": _sha("6")},
             matrix=EvaluationMatrix.seal(
@@ -710,7 +710,7 @@ def test_workflow_preview_rejects_observer_result_that_does_not_bind_request() -
                 invocation,
                 descriptor=descriptor,
             )
-            wrong_subject = ArtifactSubject(
+            wrong_subject = WorkArtifactSubject(
                 id="other",
                 role="fixture.source/v1",
                 collection=_root(),

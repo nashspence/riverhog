@@ -17,12 +17,12 @@ from riverhog_client.processing import (
 )
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 from stove0_observer_protocol import (
-    ArtifactSubject,
     ContentObservationInvocation,
     ContentObservationRequest,
     ContentObservationResult,
     FactsSemanticValidator,
     ObserverDescriptor,
+    WorkArtifactSubject,
 )
 
 CancellationCheck = Callable[[], None]
@@ -135,9 +135,9 @@ class ContentObservationRuntime:
         replacement.upload_timeout_seconds = current.upload_timeout_seconds
         self.api.replace(replacement, owns_client=True)
 
-    def subjects(self) -> tuple[tuple[ArtifactSubject, ClaimedArtifact], ...]:
+    def subjects(self) -> tuple[tuple[WorkArtifactSubject, ClaimedArtifact], ...]:
         self.heartbeat()
-        resolved: list[tuple[ArtifactSubject, ClaimedArtifact]] = []
+        resolved: list[tuple[WorkArtifactSubject, ClaimedArtifact]] = []
         seen: set[tuple[int, str]] = set()
         for subject in self.request.subjects:
             artifact = ClaimedArtifact(
@@ -157,7 +157,7 @@ class ContentObservationRuntime:
 
     def prepare(
         self,
-        subjects: Sequence[ArtifactSubject] | None = None,
+        subjects: Sequence[WorkArtifactSubject] | None = None,
         **kwargs: Any,
     ) -> ClaimedRetrieval:
         available = dict(self.subjects())
@@ -176,7 +176,7 @@ class ContentObservationRuntime:
     @contextmanager
     def stream(
         self,
-        subject: ArtifactSubject,
+        subject: WorkArtifactSubject,
         *,
         start: int = 0,
         end: int | None = None,
@@ -195,7 +195,7 @@ class ContentObservationRuntime:
 
     def read_bytes(
         self,
-        subject: ArtifactSubject,
+        subject: WorkArtifactSubject,
         *,
         maximum_bytes: int,
         **prepare_kwargs: Any,
@@ -216,7 +216,7 @@ class ContentObservationRuntime:
 
     def materialize(
         self,
-        subject: ArtifactSubject,
+        subject: WorkArtifactSubject,
         *,
         workspace: ProcessingWorkspace,
         relative_path: str | None = None,

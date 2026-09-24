@@ -37,7 +37,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-d862e0a7ba"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Request Id" |  |
 | <a id="s-ba69908844"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Result Sha256" |  |
 | <a id="s-06c8275ced"></a>`state` | yes | type="string"; enum=["observed","inapplicable","failed","canceled"]; title="State" |  |
-| <a id="s-b24d69ecf5"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](schemas-artifactsubject.md)); minItems=1; title="Subjects" |  |
+| <a id="s-b24d69ecf5"></a>`subjects` | yes | type="array"; items=([WorkArtifactSubject](schemas-workartifactsubject.md)); minItems=1; title="Subjects" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -66,12 +66,12 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract elements
 
-- [ArtifactSubject](schemas-artifactsubject.md)
 - [ContentObservationFailure](schemas-contentobservationfailure.md)
 - [ContentObservationInapplicable](schemas-contentobservationinapplicable.md)
 - [JsonSchemaValidationProfile](schemas-jsonschemavalidationprofile.md)
 - [JsonValue](schemas-jsonvalue.md)
 - [ObserverImplementation](schemas-observerimplementation.md)
+- [WorkArtifactSubject](schemas-workartifactsubject.md)
 
 ## Governing policies
 
@@ -104,7 +104,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d1005b8acfe5f5af7658e37eb2c3ca494832be2c2b4d8e6010c3a4bd2e1872ab -->
+<!-- exact-contract-value: 0f1113f4138ee8d44b29ca52d06faa51add93f6248873a53be866e58ddc8459e -->
 
 ```json
 {
@@ -214,7 +214,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     },
     "subjects": {
       "items": {
-        "$ref": "#/components/schemas/ArtifactSubject"
+        "$ref": "#/components/schemas/WorkArtifactSubject"
       },
       "minItems": 1,
       "title": "Subjects",

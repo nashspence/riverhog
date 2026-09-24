@@ -55,9 +55,9 @@ Exact externally visible contract owned by this contract element.
 - [OutputArtifactContract](#s-bb6addf750)
 - [RecipeCoordinationRoute](#s-7fffe998a8)
 - [RecipeDefinition](#s-e7eda17e90)
+- [RecipeIdentityRef](#s-c6a5e8916c)
 - [RecipeJoin](#s-f90bdb9aff)
 - [RecipeJoinMember](#s-b47918d08a)
-- [RecipeRef](#s-3785ff221b)
 - [RecipeRoute](#s-bd46a2e35f)
 - [SemanticValidationProfile](#s-b1189f8468)
 
@@ -239,7 +239,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-01b943ff0c"></a>`kind` | no | type="string"; const="coordination"; default="coordination" |  |
 | <a id="s-b13ceab449"></a>`primary_role` | no | anyOf=[(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); (type="null")]; default=null |  |
 | <a id="s-0653c83bb4"></a>`projections` | no | type="array"; default=[]; items=([OperationProjection](#s-66f9c8fe90)) |  |
-| <a id="s-e3450d9114"></a>`recipe` | yes | [RecipeRef](#s-3785ff221b) |  |
+| <a id="s-e3450d9114"></a>`recipe` | yes | [RecipeIdentityRef](#s-c6a5e8916c) |  |
 | <a id="s-3620f4c4a7"></a>`when` | no | type="array"; default=[]; items=([FactPredicate](#s-7a777308f1)) |  |
 
 ##### <a id="s-e7eda17e90"></a>definition `RecipeDefinition`
@@ -263,6 +263,20 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-fea6d2f612"></a>`source_collection_retirement_grace_seconds` | no | type="integer"; minimum=0; default=0 |  |
 | <a id="s-5aa6d30914"></a>`source_collection_retirement_policy` | no | type="string"; enum=["retain","retire-after-verified-output"]; default="retain" |  |
 | <a id="s-42be8ae529"></a>`unmatched_artifact_disposition` | yes | type="string"; enum=["retain-in-source","reject-work"] |  |
+
+##### <a id="s-c6a5e8916c"></a>definition `RecipeIdentityRef`
+
+- <a id="s-55626f6d3b"></a>`type`: `"object"`
+- <a id="s-cce349beb7"></a>`additionalProperties`: `false`
+- <a id="s-19e704a4b3"></a>`required`: `["id","revision","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-6c3df0f16a"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-8944e23fe4"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-5ec0715d76"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-f90bdb9aff"></a>definition `RecipeJoin`
 
@@ -295,20 +309,6 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-8b0bad1bcd"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-d96640dede"></a>`output_roles` | yes | type="array"; items=(type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"); minItems=1 |  |
-
-##### <a id="s-3785ff221b"></a>definition `RecipeRef`
-
-- <a id="s-c7f5a51711"></a>`type`: `"object"`
-- <a id="s-c57156a63d"></a>`additionalProperties`: `false`
-- <a id="s-1cad6d83b8"></a>`required`: `["id","revision","sha256"]`
-
-###### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-9dc99e64c5"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-143ee7b9cd"></a>`revision` | yes | type="integer"; minimum=1 |  |
-| <a id="s-a0044ca2eb"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-bd46a2e35f"></a>definition `RecipeRoute`
 
@@ -386,7 +386,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f2b46cd2ea612bdcc9828974aca979d3d801aa74fe0427a6bcd8274628e947f0 -->
+<!-- exact-contract-value: 3fd57142b8563bf6204c74a85a85909fd2dd41d1f2911e6a50495e7cfb1dfff0 -->
 
 ```json
 {
@@ -859,7 +859,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "array"
             },
             "recipe": {
-              "$ref": "#/$defs/RecipeRef"
+              "$ref": "#/$defs/RecipeIdentityRef"
             },
             "when": {
               "default": [],
@@ -970,6 +970,29 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "type": "object"
         },
+        "RecipeIdentityRef": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+              "type": "string"
+            },
+            "revision": {
+              "minimum": 1,
+              "type": "integer"
+            },
+            "sha256": {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "revision",
+            "sha256"
+          ],
+          "type": "object"
+        },
         "RecipeJoin": {
           "additionalProperties": false,
           "properties": {
@@ -1046,29 +1069,6 @@ The following JSON is the complete value owned at each machine-authority pointer
           "required": [
             "branch_id",
             "output_roles"
-          ],
-          "type": "object"
-        },
-        "RecipeRef": {
-          "additionalProperties": false,
-          "properties": {
-            "id": {
-              "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-              "type": "string"
-            },
-            "revision": {
-              "minimum": 1,
-              "type": "integer"
-            },
-            "sha256": {
-              "pattern": "^[0-9a-f]{64}$",
-              "type": "string"
-            }
-          },
-          "required": [
-            "id",
-            "revision",
-            "sha256"
           ],
           "type": "object"
         },

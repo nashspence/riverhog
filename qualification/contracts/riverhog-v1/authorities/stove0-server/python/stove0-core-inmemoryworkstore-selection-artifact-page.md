@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-f4a3e7d949"></a>`kind`: `"method"`
-- <a id="s-5115250d67"></a>`signature`: `"\"(self, selection_sha256: 'str', *, continuation: 'str \| None', limit: 'int') -> 'tuple[tuple[ArtifactSubject, ...], str \| None, bool]'\""`
+- <a id="s-5115250d67"></a>`signature`: `"\"(self, selection_sha256: 'str', *, continuation: 'str \| None', limit: 'int') -> 'tuple[tuple[WorkArtifactSubject, ...], str \| None, bool]'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 86292f0c5ed775583589547de9ff8d20fc83a91d0b96b19a6f3eed08a276d9fe -->
+<!-- exact-contract-value: cc4a044bcf5330bf5ce0c50b55d45704a508c4940497c0efde843132fffefcd9 -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, selection_sha256: 'str', *, continuation: 'str | None', limit: 'int') -> 'tuple[tuple[ArtifactSubject, ...], str | None, bool]'\""
+    "signature": "\"(self, selection_sha256: 'str', *, continuation: 'str | None', limit: 'int') -> 'tuple[tuple[WorkArtifactSubject, ...], str | None, bool]'\""
   },
   "distribution": "stove0-server",
   "module": "stove0_core",

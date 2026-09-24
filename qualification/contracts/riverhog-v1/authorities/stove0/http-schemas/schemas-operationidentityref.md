@@ -1,10 +1,10 @@
-# schemas: OperationRef
+# schemas: OperationIdentityRef
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: http-schemas:stove0:schemas-operationref:9134719feb -->
+<!-- contract-element: http-schemas:stove0:schemas-operationidentityref:1b80acde5c -->
 
-Exact externally visible contract owned by this contract element.
+Embedded Stove0 reference to the Riverhog operation identity.
 
 | Audit field | Value |
 |---|---|
@@ -13,19 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-58df033610"></a>
+<a id="s-5d469ed24f"></a>
 
-- <a id="s-4bb00c3e36"></a>`type`: `"object"`
-- <a id="s-edc9977b63"></a>`additionalProperties`: `false`
-- <a id="s-93fc2250a3"></a>`required`: `["id","sha256"]`
-- <a id="s-0fb706277c"></a>`title`: `"OperationRef"`
+- <a id="s-0c92b7b633"></a>`type`: `"object"`
+- <a id="s-4b9f831633"></a>`additionalProperties`: `false`
+- <a id="s-32a4f888f9"></a>`description`: `"Embedded Stove0 reference to the Riverhog operation identity."`
+- <a id="s-f598aaf645"></a>`required`: `["id","sha256"]`
+- <a id="s-868631cbcf"></a>`title`: `"OperationIdentityRef"`
 
 ### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d0ae942c0e"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
-| <a id="s-0b33031ffa"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+| <a id="s-c3146b85ae"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-3f302c4529"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -35,14 +36,14 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field sha256](#s-0b33031ffa) | `length · characters · fixed` | shared above |
+| [field sha256](#s-3f302c4529) | `length · characters · fixed` | shared above |
 
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
-- <a id="pa-1c1f58b346"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
-- <a id="pa-4e233aad2d"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
+- <a id="pa-3a92a32a61"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-07a55a4843"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -58,7 +59,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Machine authority
 
-- `/external_contract/http_openapi/stove0/components/schemas/OperationRef`
+- `/external_contract/http_openapi/stove0/components/schemas/OperationIdentityRef`
 
 ### Exact owned JSON
 
@@ -67,11 +68,12 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b0a71e15638b56b26ba692329ca73014bfa5bf6026623cec421455689c8542f8 -->
+<!-- exact-contract-value: b745626ada7a7d9610e3da4fe769165177b82d938101e3c788b9950bba622443 -->
 
 ```json
 {
   "additionalProperties": false,
+  "description": "Embedded Stove0 reference to the Riverhog operation identity.",
   "properties": {
     "id": {
       "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
@@ -88,7 +90,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "id",
     "sha256"
   ],
-  "title": "OperationRef",
+  "title": "OperationIdentityRef",
   "type": "object"
 }
 ```

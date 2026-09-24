@@ -33,10 +33,9 @@ Secret-bearing target invocation; never store this document durably.
 ### Definitions
 
 - [ArtifactSelectionRef](#s-657a10e518)
-- [ArtifactSubject](#s-b9f62c8929)
 - [BranchWorkBinding](#s-21ae556270)
 - [CollectionId](#s-78cd023b68)
-- [CollectionRootRef](#s-082053253d)
+- [CollectionRootIdentityRef](#s-43fbbd3c35)
 - [ContentObservationEvidence](#s-f50bdec28b)
 - [ContentObservationFailure](#s-90be301ea5)
 - [ContentObservationInapplicable](#s-fb053cfa40)
@@ -52,8 +51,8 @@ Secret-bearing target invocation; never store this document durably.
 - [JsonSchemaValidationProfile](#s-61a9572469)
 - [JsonValue](#s-35500bba5f)
 - [ObserverImplementation](#s-53f5ddfdf6)
-- [OperationRef](#s-07c6079373)
-- [RecipeRef](#s-adef91c9d7)
+- [OperationIdentityRef](#s-f7aecc543b)
+- [RecipeIdentityRef](#s-7bdf7a73a3)
 - [TargetCallbackAccess](#s-4a6151aff8)
 - [TargetInputAuthority](#s-32ba1dc94b)
 - [TargetInputRoleCount](#s-44780440f4)
@@ -61,6 +60,7 @@ Secret-bearing target invocation; never store this document durably.
 - [TargetPlanBinding](#s-30e6867f94)
 - [TargetRuntimeAuthority](#s-0dadecd6af)
 - [TransformPlan](#s-d9d22e348c)
+- [WorkArtifactSubject](#s-48c029b0e4)
 - [WorkIdentity](#s-fa0e1b5a44)
 - [WorkflowPlan](#s-06c3ebb676)
 
@@ -79,25 +79,6 @@ Secret-bearing target invocation; never store this document durably.
 | <a id="s-e8351d3651"></a>`artifact_count` | yes | type="integer"; minimum=1; title="Artifact Count" |  |
 | <a id="s-b2a96b6462"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Selection Sha256" |  |
 | <a id="s-69d91fe2bd"></a>`total_bytes` | yes | type="integer"; minimum=0; title="Total Bytes" |  |
-
-### <a id="s-b9f62c8929"></a>definition `ArtifactSubject`
-
-- <a id="s-d4d4fc3b5f"></a>`type`: `"object"`
-- <a id="s-2fdbe8bf0d"></a>`additionalProperties`: `false`
-- <a id="s-45ce75e7a6"></a>`required`: `["id","role","collection","path","bytes","sha256"]`
-- <a id="s-a1b25d6f86"></a>`title`: `"ArtifactSubject"`
-
-#### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-68b28f3009"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
-| <a id="s-5a5d35f11f"></a>`collection` | yes | [CollectionRootRef](#s-082053253d) |  |
-| <a id="s-7d2fdc57cf"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$"; title="Id" |  |
-| <a id="s-7f3786ebf6"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null; title="Media Type" |  |
-| <a id="s-1bf9687f97"></a>`path` | yes | type="string"; maxLength=4096; minLength=1; title="Path" |  |
-| <a id="s-982bb5d7c7"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Role" |  |
-| <a id="s-e1d8557c70"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### <a id="s-21ae556270"></a>definition `BranchWorkBinding`
 
@@ -127,20 +108,21 @@ Secret-bearing target invocation; never store this document durably.
 | <a id="s-9a6e8c499b"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
 | <a id="s-f38b54a213"></a>2 | not=(const="0") |
 
-### <a id="s-082053253d"></a>definition `CollectionRootRef`
+### <a id="s-43fbbd3c35"></a>definition `CollectionRootIdentityRef`
 
-- <a id="s-5330c3ee80"></a>`type`: `"object"`
-- <a id="s-87a925d857"></a>`additionalProperties`: `false`
-- <a id="s-686246b56d"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
-- <a id="s-011ab0d2c0"></a>`title`: `"CollectionRootRef"`
+- <a id="s-0e4ac19838"></a>`type`: `"object"`
+- <a id="s-4bb5331a5a"></a>`additionalProperties`: `false`
+- <a id="s-33971bff23"></a>`description`: `"Embedded Stove0 reference to the Riverhog collection-root identity."`
+- <a id="s-bd1f050211"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+- <a id="s-6a0d09ea95"></a>`title`: `"CollectionRootIdentityRef"`
 
 #### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-55221126be"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Root Sha256" |  |
-| <a id="s-87b8e51a3e"></a>`collection_id` | yes | [CollectionId](#s-78cd023b68) |  |
-| <a id="s-a0e9d370d4"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Content Identity" |  |
+| <a id="s-f18cedd028"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Root Sha256" |  |
+| <a id="s-c8dee49209"></a>`collection_id` | yes | [CollectionId](#s-78cd023b68) |  |
+| <a id="s-e027292deb"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Content Identity" |  |
 
 ### <a id="s-f50bdec28b"></a>definition `ContentObservationEvidence`
 
@@ -206,7 +188,7 @@ Secret-bearing target invocation; never store this document durably.
 | <a id="s-8faa283d89"></a>`options` | no | type="object"; additionalProperties=([JsonValue](#s-35500bba5f)); title="Options" |  |
 | <a id="s-1a75f9d635"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Request Id" |  |
 | <a id="s-d84dce8570"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only"; title="Retrieval Policy" |  |
-| <a id="s-b5c7481b8a"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-b9f62c8929)); minItems=1; title="Subjects" |  |
+| <a id="s-b5c7481b8a"></a>`subjects` | yes | type="array"; items=([WorkArtifactSubject](#s-48c029b0e4)); minItems=1; title="Subjects" |  |
 | <a id="s-f8fa691991"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300; title="Timeout Seconds" |  |
 | <a id="s-9fb7474c6c"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
 
@@ -234,7 +216,7 @@ Secret-bearing target invocation; never store this document durably.
 | <a id="s-f2ea418e3f"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Request Id" |  |
 | <a id="s-818d62163b"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Result Sha256" |  |
 | <a id="s-67a774aed3"></a>`state` | yes | type="string"; enum=["observed","inapplicable","failed","canceled"]; title="State" |  |
-| <a id="s-d8c7f8838f"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-b9f62c8929)); minItems=1; title="Subjects" |  |
+| <a id="s-d8c7f8838f"></a>`subjects` | yes | type="array"; items=([WorkArtifactSubject](#s-48c029b0e4)); minItems=1; title="Subjects" |  |
 
 ### <a id="s-ba0cab1e94"></a>definition `ControllerEvidence`
 
@@ -386,34 +368,36 @@ Secret-bearing target invocation; never store this document durably.
 | <a id="s-09f73b2244"></a>`source_revision` | yes | type="string"; maxLength=200; minLength=1; title="Source Revision" |  |
 | <a id="s-d49324c029"></a>`version` | yes | type="string"; maxLength=120; minLength=1; title="Version" |  |
 
-### <a id="s-07c6079373"></a>definition `OperationRef`
+### <a id="s-f7aecc543b"></a>definition `OperationIdentityRef`
 
-- <a id="s-33766c1cbf"></a>`type`: `"object"`
-- <a id="s-945064dc2b"></a>`additionalProperties`: `false`
-- <a id="s-f15760a68a"></a>`required`: `["id","sha256"]`
-- <a id="s-79d70a50b4"></a>`title`: `"OperationRef"`
-
-#### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-6afb0fa804"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
-| <a id="s-03aafbd6d2"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
-
-### <a id="s-adef91c9d7"></a>definition `RecipeRef`
-
-- <a id="s-adaf5f09dc"></a>`type`: `"object"`
-- <a id="s-46f06582e6"></a>`additionalProperties`: `false`
-- <a id="s-43b071cd24"></a>`required`: `["id","revision","sha256"]`
-- <a id="s-73b5c9fb1f"></a>`title`: `"RecipeRef"`
+- <a id="s-5a307772c6"></a>`type`: `"object"`
+- <a id="s-c576017504"></a>`additionalProperties`: `false`
+- <a id="s-5e2f27e482"></a>`description`: `"Embedded Stove0 reference to the Riverhog operation identity."`
+- <a id="s-d24991e7d0"></a>`required`: `["id","sha256"]`
+- <a id="s-af455a6a80"></a>`title`: `"OperationIdentityRef"`
 
 #### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b81b749dc9"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
-| <a id="s-f353075eea"></a>`revision` | yes | type="integer"; minimum=1; title="Revision" |  |
-| <a id="s-9531d5dd2a"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+| <a id="s-b0ac5a63b2"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-6abfb7ed0f"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+
+### <a id="s-7bdf7a73a3"></a>definition `RecipeIdentityRef`
+
+- <a id="s-640c9d009f"></a>`type`: `"object"`
+- <a id="s-9239c4302e"></a>`additionalProperties`: `false`
+- <a id="s-9ff492064e"></a>`description`: `"Embedded Stove0 reference to the Riverhog recipe identity."`
+- <a id="s-0b4dc34a52"></a>`required`: `["id","revision","sha256"]`
+- <a id="s-23c4034805"></a>`title`: `"RecipeIdentityRef"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-ab1c4d0bd9"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Id" |  |
+| <a id="s-e47dfe854f"></a>`revision` | yes | type="integer"; minimum=1; title="Revision" |  |
+| <a id="s-cb0a25e0ff"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### <a id="s-4a6151aff8"></a>definition `TargetCallbackAccess`
 
@@ -535,6 +519,26 @@ Secret-bearing target invocation; never store this document durably.
 | <a id="s-33c44ece06"></a>`target_implementation_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Target Implementation Id" |  |
 | <a id="s-ef78b87819"></a>`target_options` | no | type="object"; additionalProperties=([JsonValue](#s-35500bba5f)); title="Target Options" |  |
 
+### <a id="s-48c029b0e4"></a>definition `WorkArtifactSubject`
+
+- <a id="s-20fddf9462"></a>`type`: `"object"`
+- <a id="s-381f0abe3e"></a>`additionalProperties`: `false`
+- <a id="s-b5b1e9ac84"></a>`description`: `"A collection logical file assigned an ID and role within one Stove0 work."`
+- <a id="s-ff53746ef8"></a>`required`: `["id","role","collection","path","bytes","sha256"]`
+- <a id="s-9ae02e2ca4"></a>`title`: `"WorkArtifactSubject"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-4cf8c98834"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-e1610d46e4"></a>`collection` | yes | [CollectionRootIdentityRef](#s-43fbbd3c35) |  |
+| <a id="s-60c9ecd4ed"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$"; title="Id" |  |
+| <a id="s-51d3491e3d"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null; title="Media Type" |  |
+| <a id="s-70b28d302a"></a>`path` | yes | type="string"; maxLength=4096; minLength=1; title="Path" |  |
+| <a id="s-3a923c6f5d"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Role" |  |
+| <a id="s-2eb8985aab"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+
 ### <a id="s-fa0e1b5a44"></a>definition `WorkIdentity`
 
 - <a id="s-cc546d9a0f"></a>`type`: `"object"`
@@ -550,8 +554,8 @@ Secret-bearing target invocation; never store this document durably.
 | <a id="s-e7b558aac7"></a>`evaluation` | no | anyOf=[([EvaluationBinding](#s-fcab002bb2)); (type="null")]; default=null |  |
 | <a id="s-79017bc1a8"></a>`fork_join` | no | anyOf=[(discriminator={"mapping":{"branch":"#/$defs/BranchWorkBinding","join":"#/$defs/JoinWorkBinding"},"propertyName":"kind"}; oneOf=[([BranchWorkBinding](#s-21ae556270)); ([JoinWorkBinding](#s-465ef625e0))]); (type="null")]; default=null; title="Fork Join" |  |
 | <a id="s-9ffa159b9f"></a>`format` | no | type="string"; const="stove0-work/v1"; default="stove0-work/v1"; title="Format" |  |
-| <a id="s-e9199280e9"></a>`inputs` | yes | type="array"; items=([CollectionRootRef](#s-082053253d)); minItems=1; title="Inputs" |  |
-| <a id="s-a73313c59e"></a>`recipe` | yes | [RecipeRef](#s-adef91c9d7) |  |
+| <a id="s-e9199280e9"></a>`inputs` | yes | type="array"; items=([CollectionRootIdentityRef](#s-43fbbd3c35)); minItems=1; title="Inputs" |  |
+| <a id="s-a73313c59e"></a>`recipe` | yes | [RecipeIdentityRef](#s-7bdf7a73a3) |  |
 | <a id="s-1426db3034"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
 
 ### <a id="s-06c3ebb676"></a>definition `WorkflowPlan`
@@ -568,7 +572,7 @@ Secret-bearing target invocation; never store this document durably.
 | <a id="s-c7d58110d7"></a>`format` | no | type="string"; const="stove0-workflow-plan/v1"; default="stove0-workflow-plan/v1"; title="Format" |  |
 | <a id="s-1a5c29c53c"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only"; title="Input Retrieval Policy" |  |
 | <a id="s-1f133d2b1c"></a>`observations` | no | type="array"; default=[]; items=([ContentObservationEvidence](#s-f50bdec28b)); title="Observations" |  |
-| <a id="s-fe524ef0d5"></a>`operation` | yes | [OperationRef](#s-07c6079373) |  |
+| <a id="s-fe524ef0d5"></a>`operation` | yes | [OperationIdentityRef](#s-f7aecc543b) |  |
 | <a id="s-fb9d96e479"></a>`output_policy` | no | type="object"; additionalProperties=([JsonValue](#s-35500bba5f)); title="Output Policy" |  |
 | <a id="s-31642f7d92"></a>`requested_target_options` | no | type="object"; additionalProperties=([JsonValue](#s-35500bba5f)); title="Requested Target Options" |  |
 | <a id="s-c66b12982f"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection"; title="Result Kind" |  |
@@ -627,7 +631,7 @@ Secret-bearing target invocation; never store this document durably.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c4c7c9715b53473cce3fb11ba4b45f46af0a8225798729a42ef905a089099f4c -->
+<!-- exact-contract-value: 9580572de7d80a769ed6e01fdea015a7eeed55598214e145baa7269c7b5174a6 -->
 
 ```json
 {
@@ -658,64 +662,6 @@ The following JSON is the complete value owned at each machine-authority pointer
         "total_bytes"
       ],
       "title": "ArtifactSelectionRef",
-      "type": "object"
-    },
-    "ArtifactSubject": {
-      "additionalProperties": false,
-      "properties": {
-        "bytes": {
-          "minimum": 0,
-          "title": "Bytes",
-          "type": "integer"
-        },
-        "collection": {
-          "$ref": "#/$defs/CollectionRootRef"
-        },
-        "id": {
-          "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-          "title": "Id",
-          "type": "string"
-        },
-        "media_type": {
-          "anyOf": [
-            {
-              "maxLength": 255,
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Media Type"
-        },
-        "path": {
-          "maxLength": 4096,
-          "minLength": 1,
-          "title": "Path",
-          "type": "string"
-        },
-        "role": {
-          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Role",
-          "type": "string"
-        },
-        "sha256": {
-          "pattern": "^[0-9a-f]{64}$",
-          "title": "Sha256",
-          "type": "string"
-        }
-      },
-      "required": [
-        "id",
-        "role",
-        "collection",
-        "path",
-        "bytes",
-        "sha256"
-      ],
-      "title": "ArtifactSubject",
       "type": "object"
     },
     "BranchWorkBinding": {
@@ -771,8 +717,9 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       ]
     },
-    "CollectionRootRef": {
+    "CollectionRootIdentityRef": {
       "additionalProperties": false,
+      "description": "Embedded Stove0 reference to the Riverhog collection-root identity.",
       "properties": {
         "archive_root_sha256": {
           "pattern": "^[0-9a-f]{64}$",
@@ -793,7 +740,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "archive_root_sha256",
         "content_identity"
       ],
-      "title": "CollectionRootRef",
+      "title": "CollectionRootIdentityRef",
       "type": "object"
     },
     "ContentObservationEvidence": {
@@ -922,7 +869,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "subjects": {
           "items": {
-            "$ref": "#/$defs/ArtifactSubject"
+            "$ref": "#/$defs/WorkArtifactSubject"
           },
           "minItems": 1,
           "title": "Subjects",
@@ -1065,7 +1012,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "subjects": {
           "items": {
-            "$ref": "#/$defs/ArtifactSubject"
+            "$ref": "#/$defs/WorkArtifactSubject"
           },
           "minItems": 1,
           "title": "Subjects",
@@ -1428,8 +1375,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "ObserverImplementation",
       "type": "object"
     },
-    "OperationRef": {
+    "OperationIdentityRef": {
       "additionalProperties": false,
+      "description": "Embedded Stove0 reference to the Riverhog operation identity.",
       "properties": {
         "id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
@@ -1446,11 +1394,12 @@ The following JSON is the complete value owned at each machine-authority pointer
         "id",
         "sha256"
       ],
-      "title": "OperationRef",
+      "title": "OperationIdentityRef",
       "type": "object"
     },
-    "RecipeRef": {
+    "RecipeIdentityRef": {
       "additionalProperties": false,
+      "description": "Embedded Stove0 reference to the Riverhog recipe identity.",
       "properties": {
         "id": {
           "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
@@ -1473,7 +1422,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "revision",
         "sha256"
       ],
-      "title": "RecipeRef",
+      "title": "RecipeIdentityRef",
       "type": "object"
     },
     "TargetCallbackAccess": {
@@ -1759,6 +1708,65 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "TransformPlan",
       "type": "object"
     },
+    "WorkArtifactSubject": {
+      "additionalProperties": false,
+      "description": "A collection logical file assigned an ID and role within one Stove0 work.",
+      "properties": {
+        "bytes": {
+          "minimum": 0,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "collection": {
+          "$ref": "#/$defs/CollectionRootIdentityRef"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
+          "title": "Id",
+          "type": "string"
+        },
+        "media_type": {
+          "anyOf": [
+            {
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Media Type"
+        },
+        "path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "role": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Role",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "collection",
+        "path",
+        "bytes",
+        "sha256"
+      ],
+      "title": "WorkArtifactSubject",
+      "type": "object"
+    },
     "WorkIdentity": {
       "additionalProperties": false,
       "properties": {
@@ -1814,14 +1822,14 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "inputs": {
           "items": {
-            "$ref": "#/$defs/CollectionRootRef"
+            "$ref": "#/$defs/CollectionRootIdentityRef"
           },
           "minItems": 1,
           "title": "Inputs",
           "type": "array"
         },
         "recipe": {
-          "$ref": "#/$defs/RecipeRef"
+          "$ref": "#/$defs/RecipeIdentityRef"
         },
         "work_id": {
           "pattern": "^[0-9a-f]{64}$",
@@ -1864,7 +1872,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "array"
         },
         "operation": {
-          "$ref": "#/$defs/OperationRef"
+          "$ref": "#/$defs/OperationIdentityRef"
         },
         "output_policy": {
           "additionalProperties": {

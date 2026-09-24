@@ -10,7 +10,6 @@ from riverhog_protocol import CollectionArtifactIdentity, CollectionRootIdentity
 from stove0_protocol import (
     ArtifactSelection,
     ArtifactSelectionRef,
-    ArtifactSubject,
     BranchEffectSettlement,
     BranchOutcome,
     BranchOutcomeState,
@@ -18,16 +17,17 @@ from stove0_protocol import (
     BranchSetDecision,
     BranchSetPlan,
     BranchSettlement,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
     CoordinationBranchPlan,
     EvaluationBinding,
     JoinDeclaration,
     JoinMemberDeclaration,
     JoinOutcome,
     JoinSettlement,
-    OperationRef,
-    RecipeRef,
+    OperationIdentityRef,
+    RecipeIdentityRef,
     SourceCollectionRetirementPolicy,
+    WorkArtifactSubject,
     WorkflowPlanIntent,
     WorkIdentity,
     WorkPayload,
@@ -41,9 +41,9 @@ def digest(label: str) -> str:
     return hashlib.sha256(label.encode()).hexdigest()
 
 
-def root(number: int, label: str | None = None) -> CollectionRootRef:
+def root(number: int, label: str | None = None) -> CollectionRootIdentityRef:
     suffix = label or str(number)
-    return CollectionRootRef(
+    return CollectionRootIdentityRef(
         collection_id=str(number),
         archive_root_sha256=digest(f"manifest:{suffix}"),
         content_identity=digest(f"content:{suffix}"),
@@ -52,13 +52,13 @@ def root(number: int, label: str | None = None) -> CollectionRootRef:
 
 def artifact(
     artifact_id: str,
-    collection: CollectionRootRef,
+    collection: CollectionRootIdentityRef,
     path: str,
     *,
     role: str = "source.primary/v1",
     byte_count: int = 10,
-) -> ArtifactSubject:
-    return ArtifactSubject(
+) -> WorkArtifactSubject:
+    return WorkArtifactSubject(
         id=artifact_id,
         role=role,
         collection=collection,
@@ -101,8 +101,8 @@ def test_selection_order_projects_directly_to_riverhog_artifact_order() -> None:
     ]
 
 
-def recipe(label: str = "parent") -> RecipeRef:
-    return RecipeRef(id=f"recipe.{label}/v1", revision=1, sha256=digest(f"recipe:{label}"))
+def recipe(label: str = "parent") -> RecipeIdentityRef:
+    return RecipeIdentityRef(id=f"recipe.{label}/v1", revision=1, sha256=digest(f"recipe:{label}"))
 
 
 def workflow_intent(
@@ -114,7 +114,7 @@ def workflow_intent(
 ) -> WorkflowPlanIntent:
     return WorkflowPlanIntent(
         result_kind=result_kind,  # type: ignore[arg-type]
-        operation=OperationRef(
+        operation=OperationIdentityRef(
             id=f"operation.{label}/v1",
             sha256=digest(f"operation:{label}"),
         ),
@@ -127,7 +127,7 @@ def workflow_intent(
     )
 
 
-def parent_work(*roots: CollectionRootRef, evaluation: bool = False) -> WorkIdentity:
+def parent_work(*roots: CollectionRootIdentityRef, evaluation: bool = False) -> WorkIdentity:
     ordered = tuple(sorted(roots, key=lambda item: item.collection_id))
     return WorkIdentity.seal(
         WorkPayload(

@@ -20,14 +20,14 @@ from stove0_core.persistence import _AdmissionCandidateRow, _AdmissionPolicyRow
 from stove0_operator_contracts import AdmissionCatalog, AdmissionIntent, AdmissionPolicy
 from stove0_protocol import (
     ArtifactSelection,
-    ArtifactSubject,
     BranchPlan,
     BranchSetPlan,
     BranchTargetPreview,
-    CollectionRootRef,
-    OperationRef,
-    RecipeRef,
+    CollectionRootIdentityRef,
+    OperationIdentityRef,
+    RecipeIdentityRef,
     TargetPlanBinding,
+    WorkArtifactSubject,
     WorkflowPlanIntent,
     WorkflowPreview,
     WorkflowPreviewPayload,
@@ -128,14 +128,14 @@ class _Planner:
     def create_work(
         self,
         recipe_id: str,
-        roots: tuple[CollectionRootRef, ...],
+        roots: tuple[CollectionRootIdentityRef, ...],
         *,
         revision: int,
         effective_intent: dict[str, object],
     ) -> WorkIdentity:
         return WorkIdentity.seal(
             WorkPayload(
-                recipe=RecipeRef(
+                recipe=RecipeIdentityRef(
                     id=recipe_id,
                     revision=revision,
                     sha256=self.policy.recipe_sha256,
@@ -189,7 +189,7 @@ def _ready_preview(work: WorkIdentity) -> WorkflowPreview:
     request = WorkflowPreviewRequest.seal(WorkflowPreviewRequestPayload(work=work))
     selection = ArtifactSelection.seal(
         (
-            ArtifactSubject(
+            WorkArtifactSubject(
                 id="source",
                 role="fixture.source/v1",
                 collection=work.inputs[0],
@@ -200,7 +200,7 @@ def _ready_preview(work: WorkIdentity) -> WorkflowPreview:
             ),
         )
     )
-    operation = OperationRef(id="fixture.archive/v1", sha256="c" * 64)
+    operation = OperationIdentityRef(id="fixture.archive/v1", sha256="c" * 64)
     branch = BranchPlan.build(
         parent_work=work,
         branch_id="archive",
@@ -594,7 +594,7 @@ def test_policy_identity_is_evidence_but_semantic_work_converges() -> None:
     first_work = _Planner(first).create_work(
         first.recipe_id,
         (
-            CollectionRootRef(
+            CollectionRootIdentityRef(
                 collection_id=str(descriptor.collection_id),
                 archive_root_sha256=descriptor.archive_root_sha256,
                 content_identity=descriptor.content_identity,

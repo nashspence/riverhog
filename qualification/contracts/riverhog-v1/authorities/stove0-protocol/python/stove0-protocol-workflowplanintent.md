@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-f7f756ab42"></a>`kind`: `"class"`
-- <a id="s-a616f91be3"></a>`signature`: `"\"(*, operation: stove0_protocol.models.OperationRef, result_kind: Literal['collection', 'external-effect'] = 'collection', target_registration_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$', ascii_only=None)], target_descriptor_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], requested_target_options: dict[str, JsonValue] = <factory>, input_retrieval_policy: Literal['available-only', 'allow'] = 'available-only', source_collection_retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', source_collection_retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0, output_policy: dict[str, JsonValue] = <factory>) -> None\""`
+- <a id="s-a616f91be3"></a>`signature`: `"\"(*, operation: stove0_protocol.models.OperationIdentityRef, result_kind: Literal['collection', 'external-effect'] = 'collection', target_registration_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9.-]{0,118}[a-z0-9])?$', ascii_only=None)], target_descriptor_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], requested_target_options: dict[str, JsonValue] = <factory>, input_retrieval_policy: Literal['available-only', 'allow'] = 'available-only', source_collection_retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', source_collection_retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0, output_policy: dict[str, JsonValue] = <factory>) -> None\""`
 
 #### Validated model schema
 
@@ -37,7 +37,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-f68ba11817"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
-| <a id="s-e739133219"></a>`operation` | yes | [OperationRef](#s-429ed7f27c) |  |
+| <a id="s-e739133219"></a>`operation` | yes | [OperationIdentityRef](#s-5ecdba3ef5) |  |
 | <a id="s-4110fe6ff5"></a>`output_policy` | no | type="object"; additionalProperties=([JsonValue](#s-7ed2d99a03)) |  |
 | <a id="s-f9b8ce04e4"></a>`requested_target_options` | no | type="object"; additionalProperties=([JsonValue](#s-7ed2d99a03)) |  |
 | <a id="s-9e24211777"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
@@ -49,24 +49,24 @@ Exact externally visible contract owned by this contract element.
 ##### Definitions
 
 - [JsonValue](#s-7ed2d99a03)
-- [OperationRef](#s-429ed7f27c)
+- [OperationIdentityRef](#s-5ecdba3ef5)
 
 ##### <a id="s-7ed2d99a03"></a>definition `JsonValue`
 
 - Accepts: any JSON value.
 
-##### <a id="s-429ed7f27c"></a>definition `OperationRef`
+##### <a id="s-5ecdba3ef5"></a>definition `OperationIdentityRef`
 
-- <a id="s-ececb7d2f0"></a>`type`: `"object"`
-- <a id="s-951ccc997a"></a>`additionalProperties`: `false`
-- <a id="s-0f4c137e81"></a>`required`: `["id","sha256"]`
+- <a id="s-c2833bbc07"></a>`type`: `"object"`
+- <a id="s-2088933d14"></a>`additionalProperties`: `false`
+- <a id="s-805309cb69"></a>`required`: `["id","sha256"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-eaa5f8a918"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-caa7dfd9c3"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-5fea4c28b4"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-5bf7289e84"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -103,7 +103,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3765be00a02be43d67eef5be31c9004cedfa90fbc45b954e574bf346b499fb9d -->
+<!-- exact-contract-value: 04e745429a39bb8aa6af94569305c4aaa2d4e352c94cddf4d3fca9f0d450d0ee -->
 
 ```json
 {
@@ -112,7 +112,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "schema": {
       "$defs": {
         "JsonValue": {},
-        "OperationRef": {
+        "OperationIdentityRef": {
           "additionalProperties": false,
           "properties": {
             "id": {
@@ -142,7 +142,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "operation": {
-          "$ref": "#/$defs/OperationRef"
+          "$ref": "#/$defs/OperationIdentityRef"
         },
         "output_policy": {
           "additionalProperties": {
@@ -193,7 +193,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, operation: stove0_protocol.models.OperationRef, result_kind: Literal['collection', 'external-effect'] = 'collection', target_registration_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9.-]{0,118}[a-z0-9])?$', ascii_only=None)], target_descriptor_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], requested_target_options: dict[str, JsonValue] = <factory>, input_retrieval_policy: Literal['available-only', 'allow'] = 'available-only', source_collection_retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', source_collection_retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0, output_policy: dict[str, JsonValue] = <factory>) -> None\""
+    "signature": "\"(*, operation: stove0_protocol.models.OperationIdentityRef, result_kind: Literal['collection', 'external-effect'] = 'collection', target_registration_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9.-]{0,118}[a-z0-9])?$', ascii_only=None)], target_descriptor_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], requested_target_options: dict[str, JsonValue] = <factory>, input_retrieval_policy: Literal['available-only', 'allow'] = 'available-only', source_collection_retirement_policy: Literal['retain', 'retire-after-verified-output'] = 'retain', source_collection_retirement_grace_seconds: Annotated[int, Ge(ge=0)] = 0, output_policy: dict[str, JsonValue] = <factory>) -> None\""
   },
   "distribution": "stove0-protocol",
   "module": "stove0_protocol",

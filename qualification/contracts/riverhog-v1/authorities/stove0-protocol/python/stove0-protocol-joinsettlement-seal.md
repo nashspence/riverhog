@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-04065caee6"></a>`kind`: `"classmethod"`
-- <a id="s-d325b1671d"></a>`signature`: `"\"(cls, *, plan: 'JoinPlan', derivation_sha256: 'str', producer_settlement_sha256: 'str', output_collection: 'CollectionRootRef', output_selection: 'ArtifactSelection') -> 'JoinSettlement'\""`
+- <a id="s-d325b1671d"></a>`signature`: `"\"(cls, *, plan: 'JoinPlan', derivation_sha256: 'str', producer_settlement_sha256: 'str', output_collection: 'CollectionRootIdentityRef', output_selection: 'ArtifactSelection') -> 'JoinSettlement'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 536f735fca0d36a9a622963b69103a98bd973b389871bfab42d1cb513da69feb -->
+<!-- exact-contract-value: 33adb7e69a938e28918a4cbbbe2c235fc07c8ecd1fdece14cfbdcd8ec21306ba -->
 
 ```json
 {
   "contract": {
     "kind": "classmethod",
-    "signature": "\"(cls, *, plan: 'JoinPlan', derivation_sha256: 'str', producer_settlement_sha256: 'str', output_collection: 'CollectionRootRef', output_selection: 'ArtifactSelection') -> 'JoinSettlement'\""
+    "signature": "\"(cls, *, plan: 'JoinPlan', derivation_sha256: 'str', producer_settlement_sha256: 'str', output_collection: 'CollectionRootIdentityRef', output_selection: 'ArtifactSelection') -> 'JoinSettlement'\""
   },
   "distribution": "stove0-protocol",
   "module": "stove0_protocol",

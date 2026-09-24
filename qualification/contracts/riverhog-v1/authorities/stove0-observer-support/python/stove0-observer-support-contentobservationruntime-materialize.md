@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-320b7ba2c1"></a>`kind`: `"method"`
-- <a id="s-d212dcb7fe"></a>`signature`: `"\"(self, subject: 'ArtifactSubject', *, workspace: 'ProcessingWorkspace', relative_path: 'str \| None' = None, **prepare_kwargs: 'Any') -> 'Path'\""`
+- <a id="s-d212dcb7fe"></a>`signature`: `"\"(self, subject: 'WorkArtifactSubject', *, workspace: 'ProcessingWorkspace', relative_path: 'str \| None' = None, **prepare_kwargs: 'Any') -> 'Path'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e0888ff14e2a58f4d2cde88745d428a544d133de13bf5ac27e431c42eb48fed8 -->
+<!-- exact-contract-value: 4d939664046e553a3cc4d2249d0d48ed824ecd63ff91ff2a39c59fe689fa7ae8 -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, subject: 'ArtifactSubject', *, workspace: 'ProcessingWorkspace', relative_path: 'str | None' = None, **prepare_kwargs: 'Any') -> 'Path'\""
+    "signature": "\"(self, subject: 'WorkArtifactSubject', *, workspace: 'ProcessingWorkspace', relative_path: 'str | None' = None, **prepare_kwargs: 'Any') -> 'Path'\""
   },
   "distribution": "stove0-observer-support",
   "module": "stove0_observer_support",

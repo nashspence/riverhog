@@ -9,13 +9,11 @@ These are the indexed contract-element applications. Each link reaches the polic
 | Authority | Contract element |
 |---|---|
 | `stove0-observer-protocol` | [stove0_observer_protocol.ARTIFACT_ID_PATTERN](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-artifact-id-pattern.md#pa-66b085f1d0) |
-| `stove0-observer-protocol` | [stove0_observer_protocol.ArtifactSubject](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-artifactsubject.md#pa-4b76e3ee21) |
-| `stove0-observer-protocol` | [stove0_observer_protocol.ArtifactSubject.canonical_path](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-artifactsubject-canonical-path.md#pa-55747ac0bc) |
 | `stove0-observer-protocol` | [stove0_observer_protocol.CONTENT_OBSERVATION_REQUEST_FORMAT](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-content-observation-request-format.md#pa-4c576f0fea) |
 | `stove0-observer-protocol` | [stove0_observer_protocol.CONTENT_OBSERVATION_RESULT_FORMAT](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-content-observation-result-format.md#pa-b9e4b5f5e5) |
-| `stove0-observer-protocol` | [stove0_observer_protocol.CollectionRootRef](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-collectionrootref.md#pa-9e1fe6c93a) |
-| `stove0-observer-protocol` | [stove0_observer_protocol.CollectionRootRef.from_identity](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-collectionrootref-from-identity.md#pa-d11d68e47e) |
-| `stove0-observer-protocol` | [stove0_observer_protocol.CollectionRootRef.to_identity](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-collectionrootref-to-identity.md#pa-3ac815f874) |
+| `stove0-observer-protocol` | [stove0_observer_protocol.CollectionRootIdentityRef](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-collectionrootidentityref.md#pa-fe16c6a68b) |
+| `stove0-observer-protocol` | [stove0_observer_protocol.CollectionRootIdentityRef.from_identity](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-collectionrootidentityref-from-identity.md#pa-b54c77754a) |
+| `stove0-observer-protocol` | [stove0_observer_protocol.CollectionRootIdentityRef.to_identity](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-collectionrootidentityref-to-identity.md#pa-a2e6e89853) |
 | `stove0-observer-protocol` | [stove0_observer_protocol.ContentObservationEvidence](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-contentobservationevidence.md#pa-d999785ab9) |
 | `stove0-observer-protocol` | [stove0_observer_protocol.ContentObservationEvidence.bind_result](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-contentobservationevidence-bind-result.md#pa-686461f3af) |
 | `stove0-observer-protocol` | [stove0_observer_protocol.ContentObservationFailure](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-contentobservationfailure.md#pa-b30f736ada) |
@@ -83,6 +81,8 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-observer-protocol` | [stove0_observer_protocol.SemanticValidatorRegistry](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-semanticvalidatorregistry.md#pa-20a598451f) |
 | `stove0-observer-protocol` | [stove0_observer_protocol.SemanticValidatorRegistry.resolve](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-semanticvalidatorregistry-resolve.md#pa-bf202ebfb2) |
 | `stove0-observer-protocol` | [stove0_observer_protocol.Sha256](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-sha256.md#pa-2bc3d75c72) |
+| `stove0-observer-protocol` | [stove0_observer_protocol.WorkArtifactSubject](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-workartifactsubject.md#pa-0670ae983f) |
+| `stove0-observer-protocol` | [stove0_observer_protocol.WorkArtifactSubject.canonical_path](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-workartifactsubject-canonical-path.md#pa-a46168a6be) |
 | `stove0-observer-protocol` | [stove0_observer_protocol.accept_observation_result](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-accept-observation-result.md#pa-09b3ad0278) |
 | `stove0-observer-protocol` | [stove0_observer_protocol.canonical_json_bytes](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-canonical-json-bytes.md#pa-35a884c5ef) |
 | `stove0-observer-protocol` | [stove0_observer_protocol.canonical_json_sha256](../../../authorities/stove0-observer-protocol/python/stove0-observer-protocol-canonical-json-sha256.md#pa-568770d001) |

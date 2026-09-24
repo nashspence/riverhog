@@ -1,87 +1,87 @@
-# stove0_target_support.InputArtifact
+# stove0_protocol.WorkArtifactSubject
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: python:stove0-target-support:stove0-target-support-inputartifact:5e3f963f5e -->
+<!-- contract-element: python:stove0-protocol:stove0-protocol-workartifactsubject:7a59f3f408 -->
 
 Exact externally visible contract owned by this contract element.
 
 | Audit field | Value |
 |---|---|
-| Authority | [stove0-target-support](../index.md) |
+| Authority | [stove0-protocol](../index.md) |
 | Interface | [Python](index.md) |
 
 ## External contract
 
-<a id="s-5d3a77d787"></a>
-- <a id="s-8d7acc02ee"></a>`distribution`: `stove0-target-support`
-- <a id="s-fd683a4f72"></a>`module`: `stove0_target_support`
-- <a id="s-7e1236e72f"></a>`name`: `InputArtifact`
-- <a id="s-6593f2a2d3"></a>`unit`: `export`
+<a id="s-e83d6671c8"></a>
+- <a id="s-fbcce73adc"></a>`distribution`: `stove0-protocol`
+- <a id="s-c49b117987"></a>`module`: `stove0_protocol`
+- <a id="s-f669f00e75"></a>`name`: `WorkArtifactSubject`
+- <a id="s-bd0b09f09f"></a>`unit`: `export`
 
 ### Declared structure
 
-- <a id="s-3675c59dba"></a>`kind`: `"class"`
-- <a id="s-fc6dc65f0a"></a>`signature`: `"\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], collection: stove0_protocol.models.CollectionRootIdentityRef, path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], media_type: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=255)] = None) -> None\""`
+- <a id="s-241243a500"></a>`kind`: `"class"`
+- <a id="s-d3f6091c0c"></a>`signature`: `"\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], collection: stove0_protocol.models.CollectionRootIdentityRef, path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], media_type: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=255)] = None) -> None\""`
 
 #### Validated model schema
 
-<a id="s-f24d12856c"></a>
+<a id="s-31425efee5"></a>
 
-- <a id="s-ee4ea5a73b"></a>`type`: `"object"`
-- <a id="s-5de811aa13"></a>`additionalProperties`: `false`
-- <a id="s-54a6534668"></a>`required`: `["id","role","collection","path","bytes","sha256"]`
+- <a id="s-d24f926d59"></a>`type`: `"object"`
+- <a id="s-46f71a5f4f"></a>`additionalProperties`: `false`
+- <a id="s-939da302b8"></a>`required`: `["id","role","collection","path","bytes","sha256"]`
 
 ##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-423fdbfa4f"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-3eccc3d782"></a>`collection` | yes | [CollectionRootIdentityRef](#s-056751c3cf) |  |
-| <a id="s-31d96da027"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
-| <a id="s-b1801a1b02"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
-| <a id="s-741cfd9b81"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
-| <a id="s-728df2b37e"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-0d88b332bf"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b75c1b61d1"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-108518f488"></a>`collection` | yes | [CollectionRootIdentityRef](#s-08fc2c2dbc) |  |
+| <a id="s-a05cb8ef9a"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
+| <a id="s-73bbf6e4cc"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
+| <a id="s-80ba201209"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
+| <a id="s-17fd16e1db"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-f18439181a"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### Definitions
 
-- [CollectionId](#s-304b07ec89)
-- [CollectionRootIdentityRef](#s-056751c3cf)
+- [CollectionId](#s-92aecabcd6)
+- [CollectionRootIdentityRef](#s-08fc2c2dbc)
 
-##### <a id="s-304b07ec89"></a>definition `CollectionId`
+##### <a id="s-92aecabcd6"></a>definition `CollectionId`
 
 
 ###### All must match (`allOf`)
 
 | Alternative | Schema |
 |---|---|
-| <a id="s-a564f72724"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
-| <a id="s-1e7ea1d080"></a>2 | not=(const="0") |
+| <a id="s-a1f0d40dec"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
+| <a id="s-a776639550"></a>2 | not=(const="0") |
 
-##### <a id="s-056751c3cf"></a>definition `CollectionRootIdentityRef`
+##### <a id="s-08fc2c2dbc"></a>definition `CollectionRootIdentityRef`
 
-- <a id="s-896a9f6045"></a>`type`: `"object"`
-- <a id="s-8643a72f8e"></a>`additionalProperties`: `false`
-- <a id="s-4cdaf4c1d7"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+- <a id="s-d9d70c2b0d"></a>`type`: `"object"`
+- <a id="s-a07a9541e9"></a>`additionalProperties`: `false`
+- <a id="s-1579aaed19"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-2b6a06f379"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-99cf11ea6a"></a>`collection_id` | yes | [CollectionId](#s-304b07ec89) |  |
-| <a id="s-2585920ef7"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a39da58d62"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-b80b592a3b"></a>`collection_id` | yes | [CollectionId](#s-92aecabcd6) |  |
+| <a id="s-0d26a15e20"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
 ### Related interface records
 
-- [canonical_path](stove0-target-support-inputartifact-canonical-path.md)
+- [canonical_path](stove0-protocol-workartifactsubject-canonical-path.md)
 
 ## Governing policies
 
-- <a id="pa-0011521cba"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
+- <a id="pa-ec245785b3"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
 
 ## Evidence
 
@@ -93,11 +93,11 @@ Exact externally visible contract owned by this contract element.
 ### Executable sources
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- [python:stove0-target-support:stove0_target_support](../../../evidence/sources/authorities.md#src-3c01163237) — [some-implementations/stove0/packages/target-support/src/stove0\_target\_support/\_\_init\_\_.py](../../../../../../some-implementations/stove0/packages/target-support/src/stove0_target_support/__init__.py)
+- [python:stove0-protocol:stove0_protocol](../../../evidence/sources/authorities.md#src-084138045e) — [some-implementations/stove0/packages/protocol/src/stove0\_protocol/\_\_init\_\_.py](../../../../../../some-implementations/stove0/packages/protocol/src/stove0_protocol/__init__.py)
 
 ### Machine authority
 
-- `/external_contract/python/stove0_target_support.InputArtifact`
+- `/external_contract/python/stove0_protocol.WorkArtifactSubject`
 
 ### Exact owned JSON
 
@@ -106,7 +106,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 73f5249149bd499797df5d8f97401e53a32bdc8000b6a97d6aa28c18e5dc8da3 -->
+<!-- exact-contract-value: aa54c3ff7dafa3fd43737791e420d3b2a449720db145132b637e228bd72b575c -->
 
 ```json
 {
@@ -202,9 +202,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     },
     "signature": "\"(*, id: Annotated[str, _PydanticGeneralMetadata(pattern='^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$')], role: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], collection: stove0_protocol.models.CollectionRootIdentityRef, path: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], bytes: Annotated[int, Ge(ge=0)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], media_type: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=255)] = None) -> None\""
   },
-  "distribution": "stove0-target-support",
-  "module": "stove0_target_support",
-  "name": "InputArtifact",
+  "distribution": "stove0-protocol",
+  "module": "stove0_protocol",
+  "name": "WorkArtifactSubject",
   "unit": "export"
 }
 ```

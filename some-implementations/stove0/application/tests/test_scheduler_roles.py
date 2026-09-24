@@ -4,15 +4,15 @@ from typing import cast
 
 from stove0_core import ClaimBinding, Stove0Scheduler, WorkRecord
 from stove0_core.scheduler import _phases_for_role
-from stove0_protocol import CollectionRootRef, RecipeRef, WorkIdentity, WorkPayload
+from stove0_protocol import CollectionRootIdentityRef, RecipeIdentityRef, WorkIdentity, WorkPayload
 
 
 def _identity(index: int) -> WorkIdentity:
     return WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeRef(id="fixture/v1", revision=1, sha256="a" * 64),
+            recipe=RecipeIdentityRef(id="fixture/v1", revision=1, sha256="a" * 64),
             inputs=(
-                CollectionRootRef(
+                CollectionRootIdentityRef(
                     collection_id=str(index),
                     archive_root_sha256=f"{index:064x}",
                     content_identity="b" * 64,

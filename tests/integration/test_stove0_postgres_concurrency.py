@@ -49,19 +49,19 @@ from stove0_core.work_state import (
 from stove0_operator_contracts import AdmissionCatalog, AdmissionPolicy, WorkCreatedEvent
 from stove0_protocol import (
     ArtifactSelection,
-    ArtifactSubject,
     BranchPlan,
     BranchSetDecision,
     BranchSetPlan,
     BranchSettlement,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
     CoordinationBranchPlan,
     JoinDeclaration,
     JoinMemberDeclaration,
     JoinPlan,
     JsonSchemaValidationProfile,
-    OperationRef,
-    RecipeRef,
+    OperationIdentityRef,
+    RecipeIdentityRef,
+    WorkArtifactSubject,
     WorkflowPlan,
     WorkflowPlanIntent,
     WorkflowPlanPayload,
@@ -206,9 +206,9 @@ def test_stove0_postgres_current_v1_fixture_validates_and_restarts(
 def _work() -> WorkIdentity:
     return WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeRef(id="camera.archive/v1", revision=1, sha256="a" * 64),
+            recipe=RecipeIdentityRef(id="camera.archive/v1", revision=1, sha256="a" * 64),
             inputs=(
-                CollectionRootRef(
+                CollectionRootIdentityRef(
                     collection_id="1",
                     archive_root_sha256="b" * 64,
                     content_identity="c" * 64,
@@ -273,7 +273,7 @@ def _target_models() -> tuple[OperationContract, TargetDescriptor, TransformPlan
             inputs=TargetInputAuthority.from_selection(
                 ArtifactSelection.seal(
                     (
-                        ArtifactSubject(
+                        WorkArtifactSubject(
                             id="source",
                             role="fixture.source/v1",
                             collection=_work().inputs[0],
@@ -307,7 +307,7 @@ def _active_target_work(
     workflow = WorkflowPlan.seal(
         WorkflowPlanPayload(
             work=work,
-            operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
+            operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
             target_descriptor_sha256=target.descriptor_sha256,
             source_collection_retirement_policy="retain",
@@ -505,7 +505,7 @@ def _active_effect_work(
             inputs=TargetInputAuthority.from_selection(
                 ArtifactSelection.seal(
                     (
-                        ArtifactSubject(
+                        WorkArtifactSubject(
                             id="source",
                             role="fixture.source/v1",
                             collection=work.inputs[0],
@@ -532,7 +532,7 @@ def _active_effect_work(
         WorkflowPlanPayload(
             work=work,
             result_kind="external-effect",
-            operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
+            operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-effect-target",
             target_descriptor_sha256=target.descriptor_sha256,
             source_collection_retirement_policy="retain",
@@ -631,7 +631,7 @@ def _branch_decision() -> BranchSetDecision:
     work = _work()
     selection = ArtifactSelection.seal(
         (
-            ArtifactSubject(
+            WorkArtifactSubject(
                 id="source",
                 role="fixture.source/v1",
                 collection=work.inputs[0],
@@ -651,7 +651,7 @@ def _branch_decision() -> BranchSetDecision:
             recipe=work.recipe,
             effective_intent={"branch": branch_id},
             workflow_intent=WorkflowPlanIntent(
-                operation=OperationRef(id="fixture.branch/v1", sha256="f" * 64),
+                operation=OperationIdentityRef(id="fixture.branch/v1", sha256="f" * 64),
                 target_registration_id="fixture-target",
                 target_descriptor_sha256="1" * 64,
                 source_collection_retirement_policy="retain",
@@ -670,7 +670,7 @@ def _branch_decision() -> BranchSetDecision:
         recipe=work.recipe,
         effective_intent={"combine": "exact"},
         workflow_intent=WorkflowPlanIntent(
-            operation=OperationRef(id="fixture.join/v1", sha256="2" * 64),
+            operation=OperationIdentityRef(id="fixture.join/v1", sha256="2" * 64),
             target_registration_id="fixture-target",
             target_descriptor_sha256="1" * 64,
             source_collection_retirement_policy="retain",
@@ -695,14 +695,14 @@ def _resolved_join(
     documents = dict(decision.selection_documents)
     settlements: list[BranchSettlement] = []
     for offset, branch in enumerate(decision.plan.branches, start=10):
-        root = CollectionRootRef(
+        root = CollectionRootIdentityRef(
             collection_id=str(offset),
             archive_root_sha256=f"{offset % 16:x}" * 64,
             content_identity=f"{(offset + 2) % 16:x}" * 64,
         )
         output = ArtifactSelection.seal(
             (
-                ArtifactSubject(
+                WorkArtifactSubject(
                     id=f"{branch.branch_id}-output",
                     role="fixture.branch-output/v1",
                     collection=root,
@@ -737,7 +737,7 @@ def _nested_branch_decision() -> BranchSetDecision:
         branch_id="nested",
         decision_sha256="d" * 64,
         selection=selection,
-        recipe=RecipeRef(id="fixture.child/v1", revision=1, sha256="5" * 64),
+        recipe=RecipeIdentityRef(id="fixture.child/v1", revision=1, sha256="5" * 64),
         effective_intent={"nested": True},
     )
     leaf = BranchPlan.build(

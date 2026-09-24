@@ -42,18 +42,18 @@ from riverhog_protocol.collection_workflows import (
 )
 from stove0_protocol import (
     ArtifactSelection,
-    ArtifactSubject,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
     ControllerEvidence,
     ControllerEvidencePayload,
     ExecutionEnvelope,
     ExecutionEnvelopePayload,
     JsonSchemaValidationProfile,
-    OperationRef,
-    RecipeRef,
+    OperationIdentityRef,
+    RecipeIdentityRef,
     SemanticValidationProfile,
     SemanticValidationProfilePayload,
     TargetPlanBinding,
+    WorkArtifactSubject,
     WorkflowPlan,
     WorkflowPlanPayload,
     WorkIdentity,
@@ -218,7 +218,7 @@ def _input() -> InputArtifact:
     return InputArtifact(
         id="source",
         role="fixture.source/v1",
-        collection=CollectionRootRef(
+        collection=CollectionRootIdentityRef(
             collection_id=str(1),
             archive_root_sha256=_sha("1"),
             content_identity=_sha("2"),
@@ -233,7 +233,11 @@ def _input_authority() -> TargetInputAuthority:
     value = _input()
     return TargetInputAuthority.from_selection(
         ArtifactSelection.seal(
-            (ArtifactSubject.model_validate(value.model_dump(mode="python", exclude_none=True)),)
+            (
+                WorkArtifactSubject.model_validate(
+                    value.model_dump(mode="python", exclude_none=True)
+                ),
+            )
         )
     )
 
@@ -248,7 +252,7 @@ def _callback_access() -> TargetCallbackAccess:
 def _work() -> WorkIdentity:
     return WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeRef(id="fixture.recipe/v1", revision=1, sha256=_sha("4")),
+            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision=1, sha256=_sha("4")),
             inputs=(_input().collection,),
             effective_intent={"suffix": ".copy"},
         )
@@ -281,7 +285,7 @@ def _controller_evidence(
     workflow = WorkflowPlan.seal(
         WorkflowPlanPayload(
             work=work,
-            operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
+            operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-target",
             target_descriptor_sha256=target.descriptor_sha256,
             source_collection_retirement_policy="retain",
@@ -403,7 +407,7 @@ def _effect_request() -> tuple[OperationContract, TargetDescriptor, TargetJobReq
         WorkflowPlanPayload(
             work=work,
             result_kind="external-effect",
-            operation=OperationRef(id=operation.id, sha256=operation.contract_sha256),
+            operation=OperationIdentityRef(id=operation.id, sha256=operation.contract_sha256),
             target_registration_id="fixture-index-target",
             target_descriptor_sha256=target.descriptor_sha256,
             source_collection_retirement_policy="retain",

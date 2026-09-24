@@ -27,10 +27,10 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-ed083ea0aa"></a>`common_intent` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Common Intent" |  |
 | <a id="s-1d84fffa86"></a>`evaluation_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Evaluation Id" |  |
 | <a id="s-d003b4a71c"></a>`format` | no | type="string"; const="stove0-evaluation-definition/v1"; default="stove0-evaluation-definition/v1"; title="Format" |  |
-| <a id="s-52ffc0be04"></a>`inputs` | yes | type="array"; items=([CollectionRootRef](schemas-collectionrootref.md)); minItems=1; title="Inputs" |  |
+| <a id="s-52ffc0be04"></a>`inputs` | yes | type="array"; items=([CollectionRootIdentityRef](schemas-collectionrootidentityref.md)); minItems=1; title="Inputs" |  |
 | <a id="s-bf750d4125"></a>`matrix` | yes | [EvaluationMatrix](schemas-evaluationmatrix.md) |  |
 | <a id="s-ec1c535372"></a>`purpose` | no | type="string"; enum=["trial","evaluation"]; default="evaluation"; title="Purpose" |  |
-| <a id="s-a02c55f45d"></a>`recipe` | yes | [RecipeRef](schemas-reciperef.md) |  |
+| <a id="s-a02c55f45d"></a>`recipe` | yes | [RecipeIdentityRef](schemas-recipeidentityref.md) |  |
 
 ### Progression, limits, and lifecycle
 
@@ -55,10 +55,10 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract elements
 
-- [CollectionRootRef](schemas-collectionrootref.md)
+- [CollectionRootIdentityRef](schemas-collectionrootidentityref.md)
 - [EvaluationMatrix](schemas-evaluationmatrix.md)
 - [JsonValue](schemas-jsonvalue.md)
-- [RecipeRef](schemas-reciperef.md)
+- [RecipeIdentityRef](schemas-recipeidentityref.md)
 
 ## Governing policies
 
@@ -91,7 +91,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 85776fbbcc3b08f22d7521fb69c1035be3f997f9c685220d179af7cd994e096a -->
+<!-- exact-contract-value: 45628de56393d1b2f0f9379bb73bd3bf50e0c9e6fcb214c1ef8fd3a5794d9049 -->
 
 ```json
 {
@@ -117,7 +117,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     },
     "inputs": {
       "items": {
-        "$ref": "#/components/schemas/CollectionRootRef"
+        "$ref": "#/components/schemas/CollectionRootIdentityRef"
       },
       "minItems": 1,
       "title": "Inputs",
@@ -136,7 +136,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "recipe": {
-      "$ref": "#/components/schemas/RecipeRef"
+      "$ref": "#/components/schemas/RecipeIdentityRef"
     }
   },
   "required": [

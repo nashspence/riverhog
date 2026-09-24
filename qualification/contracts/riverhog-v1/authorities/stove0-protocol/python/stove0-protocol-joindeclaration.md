@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-37b2fa2d28"></a>`kind`: `"class"`
-- <a id="s-9ceaefdc39"></a>`signature`: `"\"(*, format: Literal['stove0-join-declaration/v1'] = 'stove0-join-declaration/v1', members: Annotated[tuple[stove0_protocol.fork_join.JoinMemberDeclaration, ...], MinLen(min_length=2)], recipe: stove0_protocol.models.RecipeRef, effective_intent: dict[str, JsonValue] = <factory>, workflow_intent: stove0_protocol.models.WorkflowPlanIntent, join_declaration_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+- <a id="s-9ceaefdc39"></a>`signature`: `"\"(*, format: Literal['stove0-join-declaration/v1'] = 'stove0-join-declaration/v1', members: Annotated[tuple[stove0_protocol.fork_join.JoinMemberDeclaration, ...], MinLen(min_length=2)], recipe: stove0_protocol.models.RecipeIdentityRef, effective_intent: dict[str, JsonValue] = <factory>, workflow_intent: stove0_protocol.models.WorkflowPlanIntent, join_declaration_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
 
 #### Validated model schema
 
@@ -40,15 +40,15 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-2e664fb177"></a>`format` | no | type="string"; const="stove0-join-declaration/v1"; default="stove0-join-declaration/v1" |  |
 | <a id="s-efd68c962f"></a>`join_declaration_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-ae30d7711c"></a>`members` | yes | type="array"; items=([JoinMemberDeclaration](#s-5300c97a15)); minItems=2 |  |
-| <a id="s-904fa8d437"></a>`recipe` | yes | [RecipeRef](#s-659c9b0200) |  |
+| <a id="s-904fa8d437"></a>`recipe` | yes | [RecipeIdentityRef](#s-e4d2f64c5c) |  |
 | <a id="s-5850f02fef"></a>`workflow_intent` | yes | [WorkflowPlanIntent](#s-8705882e44) |  |
 
 ##### Definitions
 
 - [JoinMemberDeclaration](#s-5300c97a15)
 - [JsonValue](#s-3c52221150)
-- [OperationRef](#s-75a94902c0)
-- [RecipeRef](#s-659c9b0200)
+- [OperationIdentityRef](#s-25621dc88f)
+- [RecipeIdentityRef](#s-e4d2f64c5c)
 - [WorkflowPlanIntent](#s-8705882e44)
 
 ##### <a id="s-5300c97a15"></a>definition `JoinMemberDeclaration`
@@ -68,32 +68,32 @@ Exact externally visible contract owned by this contract element.
 
 - Accepts: any JSON value.
 
-##### <a id="s-75a94902c0"></a>definition `OperationRef`
+##### <a id="s-25621dc88f"></a>definition `OperationIdentityRef`
 
-- <a id="s-0677662619"></a>`type`: `"object"`
-- <a id="s-d3a3ef28de"></a>`additionalProperties`: `false`
-- <a id="s-efed4252fd"></a>`required`: `["id","sha256"]`
-
-###### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-70ba042203"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-b0cc77cdee"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-
-##### <a id="s-659c9b0200"></a>definition `RecipeRef`
-
-- <a id="s-7f528ede2c"></a>`type`: `"object"`
-- <a id="s-8e541f4c41"></a>`additionalProperties`: `false`
-- <a id="s-7788118628"></a>`required`: `["id","revision","sha256"]`
+- <a id="s-e24d57eb12"></a>`type`: `"object"`
+- <a id="s-0b746109e1"></a>`additionalProperties`: `false`
+- <a id="s-e651b6cda9"></a>`required`: `["id","sha256"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-075fba364e"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-6e68457ccc"></a>`revision` | yes | type="integer"; minimum=1 |  |
-| <a id="s-1e45b41794"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-e7aac84b9c"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-a475af4b04"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-e4d2f64c5c"></a>definition `RecipeIdentityRef`
+
+- <a id="s-9730ad6c2b"></a>`type`: `"object"`
+- <a id="s-7018caa54d"></a>`additionalProperties`: `false`
+- <a id="s-f42db86a5b"></a>`required`: `["id","revision","sha256"]`
+
+###### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-94dc1435b3"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-1556c70727"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-e1222f3eea"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-8705882e44"></a>definition `WorkflowPlanIntent`
 
@@ -106,7 +106,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-0a69e0e6f9"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only" |  |
-| <a id="s-7a8d666867"></a>`operation` | yes | [OperationRef](#s-75a94902c0) |  |
+| <a id="s-7a8d666867"></a>`operation` | yes | [OperationIdentityRef](#s-25621dc88f) |  |
 | <a id="s-e4882b0236"></a>`output_policy` | no | type="object"; additionalProperties=([JsonValue](#s-3c52221150)) |  |
 | <a id="s-de64dbd8be"></a>`requested_target_options` | no | type="object"; additionalProperties=([JsonValue](#s-3c52221150)) |  |
 | <a id="s-664b25d4aa"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection" |  |
@@ -150,7 +150,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c0f71feddcdcd55b156c3dd5c876c4314953428fff0f14aaa81add1dc73f84a5 -->
+<!-- exact-contract-value: a79cff9771226b9895e47cee46a7cee6aa62baa7373eb6eb24e5589b58aeea62 -->
 
 ```json
 {
@@ -181,7 +181,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "object"
         },
         "JsonValue": {},
-        "OperationRef": {
+        "OperationIdentityRef": {
           "additionalProperties": false,
           "properties": {
             "id": {
@@ -199,7 +199,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "type": "object"
         },
-        "RecipeRef": {
+        "RecipeIdentityRef": {
           "additionalProperties": false,
           "properties": {
             "id": {
@@ -234,7 +234,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "operation": {
-              "$ref": "#/$defs/OperationRef"
+              "$ref": "#/$defs/OperationIdentityRef"
             },
             "output_policy": {
               "additionalProperties": {
@@ -311,7 +311,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "array"
         },
         "recipe": {
-          "$ref": "#/$defs/RecipeRef"
+          "$ref": "#/$defs/RecipeIdentityRef"
         },
         "workflow_intent": {
           "$ref": "#/$defs/WorkflowPlanIntent"
@@ -325,7 +325,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, format: Literal['stove0-join-declaration/v1'] = 'stove0-join-declaration/v1', members: Annotated[tuple[stove0_protocol.fork_join.JoinMemberDeclaration, ...], MinLen(min_length=2)], recipe: stove0_protocol.models.RecipeRef, effective_intent: dict[str, JsonValue] = <factory>, workflow_intent: stove0_protocol.models.WorkflowPlanIntent, join_declaration_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
+    "signature": "\"(*, format: Literal['stove0-join-declaration/v1'] = 'stove0-join-declaration/v1', members: Annotated[tuple[stove0_protocol.fork_join.JoinMemberDeclaration, ...], MinLen(min_length=2)], recipe: stove0_protocol.models.RecipeIdentityRef, effective_intent: dict[str, JsonValue] = <factory>, workflow_intent: stove0_protocol.models.WorkflowPlanIntent, join_declaration_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-protocol",
   "module": "stove0_protocol",

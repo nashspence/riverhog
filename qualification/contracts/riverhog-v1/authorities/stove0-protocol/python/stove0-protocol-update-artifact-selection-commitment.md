@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-216c485c34"></a>`kind`: `"function"`
-- <a id="s-a3600bc557"></a>`signature`: `"\"(digest: 'Any', *, ordinal: 'int', artifact: 'ArtifactSubject') -> 'None'\""`
+- <a id="s-a3600bc557"></a>`signature`: `"\"(digest: 'Any', *, ordinal: 'int', artifact: 'WorkArtifactSubject') -> 'None'\""`
 
 ## Governing policies
 
@@ -51,13 +51,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d4fb24cfbe06582b3a5c34cf37129e16e13d25c82339661e62bb33245c8aeecf -->
+<!-- exact-contract-value: 07877bfbf025f62e26bf718ec3ee483d5443f214e2fd9f4e11b71cd1799b794d -->
 
 ```json
 {
   "contract": {
     "kind": "function",
-    "signature": "\"(digest: 'Any', *, ordinal: 'int', artifact: 'ArtifactSubject') -> 'None'\""
+    "signature": "\"(digest: 'Any', *, ordinal: 'int', artifact: 'WorkArtifactSubject') -> 'None'\""
   },
   "distribution": "stove0-protocol",
   "module": "stove0_protocol",

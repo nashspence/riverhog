@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-e9ed419155"></a>`kind`: `"function"`
-- <a id="s-c33e50c5d2"></a>`signature`: `"\"(facts: 'Mapping[str, object]', subjects: 'Sequence[ArtifactSubject]') -> 'MediaSamplingFacts'\""`
+- <a id="s-c33e50c5d2"></a>`signature`: `"\"(facts: 'Mapping[str, object]', subjects: 'Sequence[WorkArtifactSubject]') -> 'MediaSamplingFacts'\""`
 
 ## Governing policies
 
@@ -51,13 +51,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c39821ebb01a4253e0c27cdb1acd1ff8c8321c67c3328e0f522087c77958fc2d -->
+<!-- exact-contract-value: 317a3bcec0c92c2e34ff74c8fd8b203ce18d72b7d8717e9e9923dd1e14463302 -->
 
 ```json
 {
   "contract": {
     "kind": "function",
-    "signature": "\"(facts: 'Mapping[str, object]', subjects: 'Sequence[ArtifactSubject]') -> 'MediaSamplingFacts'\""
+    "signature": "\"(facts: 'Mapping[str, object]', subjects: 'Sequence[WorkArtifactSubject]') -> 'MediaSamplingFacts'\""
   },
   "distribution": "a-stove0-media-sampling-contract-lib",
   "module": "a_stove0_media_sampling_contract_lib",

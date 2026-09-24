@@ -1,8 +1,8 @@
-# stove0_protocol.OperationRef.from_identity
+# stove0_protocol.RecipeIdentityRef.from_identity
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: python:stove0-protocol:stove0-protocol-operationref-from-identity:8bffaff1e3 -->
+<!-- contract-element: python:stove0-protocol:stove0-protocol-recipeidentityref-from-identity:12339a564b -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,27 +13,27 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-cc26c0d50e"></a>
-- <a id="s-6be04e32fe"></a>`distribution`: `stove0-protocol`
-- <a id="s-a6f247f303"></a>`module`: `stove0_protocol`
-- <a id="s-25bfc4cf45"></a>`name`: `from_identity`
-- <a id="s-55bde13610"></a>`owner`: `stove0_protocol.OperationRef`
-- <a id="s-c7169f0ed3"></a>`unit`: `member`
+<a id="s-0eebfc0a30"></a>
+- <a id="s-9542b4fcc4"></a>`distribution`: `stove0-protocol`
+- <a id="s-865d08dbbd"></a>`module`: `stove0_protocol`
+- <a id="s-48e93b2e5c"></a>`name`: `from_identity`
+- <a id="s-b90e326e96"></a>`owner`: `stove0_protocol.RecipeIdentityRef`
+- <a id="s-bf8e587ca1"></a>`unit`: `member`
 
 ### Declared structure
 
-- <a id="s-bedc3e2db2"></a>`kind`: `"classmethod"`
-- <a id="s-3653238530"></a>`signature`: `"\"(cls, value: 'OperationIdentity') -> 'OperationRef'\""`
+- <a id="s-4219ed0dc5"></a>`kind`: `"classmethod"`
+- <a id="s-eb82b793b1"></a>`signature`: `"\"(cls, value: 'RecipeIdentity') -> 'RecipeIdentityRef'\""`
 
 ## Maintained corroboration
 
 ### Related interface records
 
-- [OperationRef](stove0-protocol-operationref.md)
+- [RecipeIdentityRef](stove0-protocol-recipeidentityref.md)
 
 ## Governing policies
 
-- <a id="pa-2171364a30"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
+- <a id="pa-087f4dbfe9"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
 
 ## Evidence
 
@@ -49,7 +49,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/python/stove0_protocol.OperationRef.from_identity`
+- `/external_contract/python/stove0_protocol.RecipeIdentityRef.from_identity`
 
 ### Exact owned JSON
 
@@ -58,18 +58,18 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 88980458cb381543c3b8407b0ba99ad39a977f1b90ec5083d8e936bb4ef3ea53 -->
+<!-- exact-contract-value: f36ff2f837de7ea1f341edbc74294dc08a461489c36fc4c3413bd7b9913c1006 -->
 
 ```json
 {
   "contract": {
     "kind": "classmethod",
-    "signature": "\"(cls, value: 'OperationIdentity') -> 'OperationRef'\""
+    "signature": "\"(cls, value: 'RecipeIdentity') -> 'RecipeIdentityRef'\""
   },
   "distribution": "stove0-protocol",
   "module": "stove0_protocol",
   "name": "from_identity",
-  "owner": "stove0_protocol.OperationRef",
+  "owner": "stove0_protocol.RecipeIdentityRef",
   "unit": "member"
 }
 ```

@@ -41,16 +41,16 @@ from riverhog_client.processing import ProcessingWorkspace
 from riverhog_protocol import canonical_json_sha256
 from stove0_protocol import (
     ArtifactSelection,
-    ArtifactSubject,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
     ControllerEvidence,
     ControllerEvidencePayload,
     ExecutionEnvelope,
     ExecutionEnvelopePayload,
     JsonSchemaValidationProfile,
-    OperationRef,
-    RecipeRef,
+    OperationIdentityRef,
+    RecipeIdentityRef,
     TargetPlanBinding,
+    WorkArtifactSubject,
     WorkflowPlan,
     WorkflowPlanPayload,
     WorkIdentity,
@@ -80,7 +80,9 @@ def _sha(character: str) -> str:
 def _input_authority(*inputs: InputArtifact) -> TargetInputAuthority:
     return TargetInputAuthority.from_selection(
         ArtifactSelection.seal(
-            tuple(ArtifactSubject.model_validate(item.model_dump(mode="json")) for item in inputs)
+            tuple(
+                WorkArtifactSubject.model_validate(item.model_dump(mode="json")) for item in inputs
+            )
         )
     )
 
@@ -167,7 +169,7 @@ def test_review_preflight_seals_exact_sampler_identity_and_one_operation(
                 InputArtifact(
                     id="source",
                     role=REVIEW_SOURCE_ROLE,
-                    collection=CollectionRootRef(
+                    collection=CollectionRootIdentityRef(
                         collection_id=str(1),
                         archive_root_sha256=_sha("1"),
                         content_identity=_sha("2"),
@@ -416,7 +418,7 @@ def test_review_effect_deployment_has_one_fixed_effect_contract(tmp_path: Path) 
                 InputArtifact(
                     id="source",
                     role=REVIEW_SOURCE_ROLE,
-                    collection=CollectionRootRef(
+                    collection=CollectionRootIdentityRef(
                         collection_id=str(1),
                         archive_root_sha256=_sha("1"),
                         content_identity=_sha("2"),
@@ -570,7 +572,7 @@ def test_review_effect_executes_sampling_delivery_and_canonical_receipt_end_to_e
     source = InputArtifact(
         id="source",
         role=REVIEW_SOURCE_ROLE,
-        collection=CollectionRootRef(
+        collection=CollectionRootIdentityRef(
             collection_id=str(1),
             archive_root_sha256=_sha("1"),
             content_identity=_sha("2"),
@@ -595,7 +597,7 @@ def test_review_effect_executes_sampling_delivery_and_canonical_receipt_end_to_e
     )
     work = WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeRef(id="fixture.review-effect/v1", revision=1, sha256=_sha("4")),
+            recipe=RecipeIdentityRef(id="fixture.review-effect/v1", revision=1, sha256=_sha("4")),
             inputs=(source.collection,),
         )
     )
@@ -603,7 +605,7 @@ def test_review_effect_executes_sampling_delivery_and_canonical_receipt_end_to_e
         WorkflowPlanPayload(
             work=work,
             result_kind="external-effect",
-            operation=OperationRef(
+            operation=OperationIdentityRef(
                 id=REVIEW_RCLONE_DELIVER_OPERATION.id,
                 sha256=REVIEW_RCLONE_DELIVER_OPERATION.contract_sha256,
             ),

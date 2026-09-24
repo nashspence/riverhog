@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-ebbb251ae3"></a>`kind`: `"method"`
-- <a id="s-c02a52f007"></a>`signature`: `"\"(self, selection_sha256: 'str', artifact_id: 'str') -> 'ArtifactSubject \| None'\""`
+- <a id="s-c02a52f007"></a>`signature`: `"\"(self, selection_sha256: 'str', artifact_id: 'str') -> 'WorkArtifactSubject \| None'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 406a089047459c29998d9e34aa12a091b24f8137f37644f2d8162260190c286d -->
+<!-- exact-contract-value: 4a82e3dc4be15943d919128d6bf594a30485c5a577738a0db20168f926a86764 -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, selection_sha256: 'str', artifact_id: 'str') -> 'ArtifactSubject | None'\""
+    "signature": "\"(self, selection_sha256: 'str', artifact_id: 'str') -> 'WorkArtifactSubject | None'\""
   },
   "distribution": "stove0-server",
   "module": "stove0_core",

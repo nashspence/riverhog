@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-831d90b331"></a>`kind`: `"method"`
-- <a id="s-3e43cab858"></a>`signature`: `"\"(self, subjects: 'Sequence[ArtifactSubject] \| None' = None, **kwargs: 'Any') -> 'ClaimedRetrieval'\""`
+- <a id="s-3e43cab858"></a>`signature`: `"\"(self, subjects: 'Sequence[WorkArtifactSubject] \| None' = None, **kwargs: 'Any') -> 'ClaimedRetrieval'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f0e3cb78c6ab52a5a8c17d3ae14c91c4041f3fef409825c13800746a32557476 -->
+<!-- exact-contract-value: 2c93092882bce6fbae3f80edce9f3501d4dbfab7f501517dd1e67197d22df5cb -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, subjects: 'Sequence[ArtifactSubject] | None' = None, **kwargs: 'Any') -> 'ClaimedRetrieval'\""
+    "signature": "\"(self, subjects: 'Sequence[WorkArtifactSubject] | None' = None, **kwargs: 'Any') -> 'ClaimedRetrieval'\""
   },
   "distribution": "stove0-observer-support",
   "module": "stove0_observer_support",

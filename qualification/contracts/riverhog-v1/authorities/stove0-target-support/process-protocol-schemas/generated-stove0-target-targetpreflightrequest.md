@@ -35,9 +35,8 @@ Exact externally visible contract owned by this contract element.
 ### Definitions
 
 - [ArtifactSelectionRef](#s-3c4967cccf)
-- [ArtifactSubject](#s-56a22d7fcb)
 - [CollectionId](#s-a5154ea9fe)
-- [CollectionRootRef](#s-fc381411d0)
+- [CollectionRootIdentityRef](#s-1385076d93)
 - [ContentObservationEvidence](#s-85672ac4d2)
 - [ContentObservationFailure](#s-d7998e1949)
 - [ContentObservationInapplicable](#s-e1a61ed7c1)
@@ -48,6 +47,7 @@ Exact externally visible contract owned by this contract element.
 - [ObserverImplementation](#s-b3d0b4be58)
 - [TargetInputAuthority](#s-0bf40c6b84)
 - [TargetInputRoleCount](#s-a0d64f4573)
+- [WorkArtifactSubject](#s-9d18d8578a)
 
 ### <a id="s-3c4967cccf"></a>definition `ArtifactSelectionRef`
 
@@ -65,25 +65,6 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-d29b4f03dd"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Selection Sha256" |  |
 | <a id="s-406e23a91d"></a>`total_bytes` | yes | type="integer"; minimum=0; title="Total Bytes" |  |
 
-### <a id="s-56a22d7fcb"></a>definition `ArtifactSubject`
-
-- <a id="s-edd1ac3073"></a>`type`: `"object"`
-- <a id="s-7ab99e4d71"></a>`additionalProperties`: `false`
-- <a id="s-ca8ad64bec"></a>`required`: `["id","role","collection","path","bytes","sha256"]`
-- <a id="s-908fda200e"></a>`title`: `"ArtifactSubject"`
-
-#### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-2595b85632"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
-| <a id="s-32cb3a173b"></a>`collection` | yes | [CollectionRootRef](#s-fc381411d0) |  |
-| <a id="s-285f24a4e5"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$"; title="Id" |  |
-| <a id="s-f68e650b14"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null; title="Media Type" |  |
-| <a id="s-60fd345f49"></a>`path` | yes | type="string"; maxLength=4096; minLength=1; title="Path" |  |
-| <a id="s-ea8bccc8ba"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Role" |  |
-| <a id="s-3e418c8478"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
-
 ### <a id="s-a5154ea9fe"></a>definition `CollectionId`
 
 
@@ -94,20 +75,21 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-e3cfccb451"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
 | <a id="s-20f9e9cdd0"></a>2 | not=(const="0") |
 
-### <a id="s-fc381411d0"></a>definition `CollectionRootRef`
+### <a id="s-1385076d93"></a>definition `CollectionRootIdentityRef`
 
-- <a id="s-1ec946d130"></a>`type`: `"object"`
-- <a id="s-f1940d5f99"></a>`additionalProperties`: `false`
-- <a id="s-320048aadc"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
-- <a id="s-1886b79e2a"></a>`title`: `"CollectionRootRef"`
+- <a id="s-15da2c46cd"></a>`type`: `"object"`
+- <a id="s-b1061cee20"></a>`additionalProperties`: `false`
+- <a id="s-9296be3b91"></a>`description`: `"Embedded Stove0 reference to the Riverhog collection-root identity."`
+- <a id="s-29fcd01634"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+- <a id="s-365cc3eca2"></a>`title`: `"CollectionRootIdentityRef"`
 
 #### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-005cf9f0ca"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Root Sha256" |  |
-| <a id="s-4ea1b1e4b8"></a>`collection_id` | yes | [CollectionId](#s-a5154ea9fe) |  |
-| <a id="s-e2c297efe4"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Content Identity" |  |
+| <a id="s-aed004140e"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Root Sha256" |  |
+| <a id="s-2eb320f7fd"></a>`collection_id` | yes | [CollectionId](#s-a5154ea9fe) |  |
+| <a id="s-6dae36674a"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Content Identity" |  |
 
 ### <a id="s-85672ac4d2"></a>definition `ContentObservationEvidence`
 
@@ -173,7 +155,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-e99ac77336"></a>`options` | no | type="object"; additionalProperties=([JsonValue](#s-b0637b7a98)); title="Options" |  |
 | <a id="s-41d25e7e91"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Request Id" |  |
 | <a id="s-78842a3bb8"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only"; title="Retrieval Policy" |  |
-| <a id="s-8f49c952b8"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-56a22d7fcb)); minItems=1; title="Subjects" |  |
+| <a id="s-8f49c952b8"></a>`subjects` | yes | type="array"; items=([WorkArtifactSubject](#s-9d18d8578a)); minItems=1; title="Subjects" |  |
 | <a id="s-0ce7b68236"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300; title="Timeout Seconds" |  |
 | <a id="s-ff44a9e644"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
 
@@ -201,7 +183,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-9a361deba7"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Request Id" |  |
 | <a id="s-71e3ecc478"></a>`result_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Result Sha256" |  |
 | <a id="s-a57cd3f608"></a>`state` | yes | type="string"; enum=["observed","inapplicable","failed","canceled"]; title="State" |  |
-| <a id="s-99990d6156"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](#s-56a22d7fcb)); minItems=1; title="Subjects" |  |
+| <a id="s-99990d6156"></a>`subjects` | yes | type="array"; items=([WorkArtifactSubject](#s-9d18d8578a)); minItems=1; title="Subjects" |  |
 
 ### <a id="s-f58ad8865b"></a>definition `JsonSchemaValidationProfile`
 
@@ -270,6 +252,26 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-b6c378a52c"></a>`count` | yes | type="integer"; minimum=1; title="Count" |  |
 | <a id="s-1bc7a898ba"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Role" |  |
 
+### <a id="s-9d18d8578a"></a>definition `WorkArtifactSubject`
+
+- <a id="s-4ef60f1e3e"></a>`type`: `"object"`
+- <a id="s-0d005fc0c1"></a>`additionalProperties`: `false`
+- <a id="s-f591b272e1"></a>`description`: `"A collection logical file assigned an ID and role within one Stove0 work."`
+- <a id="s-ce0f7a7263"></a>`required`: `["id","role","collection","path","bytes","sha256"]`
+- <a id="s-25042ce7c9"></a>`title`: `"WorkArtifactSubject"`
+
+#### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-b73be5916b"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-e65e3e8491"></a>`collection` | yes | [CollectionRootIdentityRef](#s-1385076d93) |  |
+| <a id="s-d0536c6ca2"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$"; title="Id" |  |
+| <a id="s-1262cb66a3"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null; title="Media Type" |  |
+| <a id="s-a3a5108b66"></a>`path` | yes | type="string"; maxLength=4096; minLength=1; title="Path" |  |
+| <a id="s-311140494e"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Role" |  |
+| <a id="s-a1be27d94e"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+
 ### Progression, limits, and lifecycle
 
 #### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
@@ -327,7 +329,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c4c29efc081d01e762d129affea8d78fe2ef8b7973c98608bd4eacc66ab29451 -->
+<!-- exact-contract-value: 6f351c2e7bfed42411fbc4960e3a2d5f71388fd102b7838680fdf9dba09bde0d -->
 
 ```json
 {
@@ -360,64 +362,6 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "ArtifactSelectionRef",
       "type": "object"
     },
-    "ArtifactSubject": {
-      "additionalProperties": false,
-      "properties": {
-        "bytes": {
-          "minimum": 0,
-          "title": "Bytes",
-          "type": "integer"
-        },
-        "collection": {
-          "$ref": "#/$defs/CollectionRootRef"
-        },
-        "id": {
-          "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
-          "title": "Id",
-          "type": "string"
-        },
-        "media_type": {
-          "anyOf": [
-            {
-              "maxLength": 255,
-              "minLength": 1,
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ],
-          "default": null,
-          "title": "Media Type"
-        },
-        "path": {
-          "maxLength": 4096,
-          "minLength": 1,
-          "title": "Path",
-          "type": "string"
-        },
-        "role": {
-          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
-          "title": "Role",
-          "type": "string"
-        },
-        "sha256": {
-          "pattern": "^[0-9a-f]{64}$",
-          "title": "Sha256",
-          "type": "string"
-        }
-      },
-      "required": [
-        "id",
-        "role",
-        "collection",
-        "path",
-        "bytes",
-        "sha256"
-      ],
-      "title": "ArtifactSubject",
-      "type": "object"
-    },
     "CollectionId": {
       "allOf": [
         {
@@ -431,8 +375,9 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       ]
     },
-    "CollectionRootRef": {
+    "CollectionRootIdentityRef": {
       "additionalProperties": false,
+      "description": "Embedded Stove0 reference to the Riverhog collection-root identity.",
       "properties": {
         "archive_root_sha256": {
           "pattern": "^[0-9a-f]{64}$",
@@ -453,7 +398,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         "archive_root_sha256",
         "content_identity"
       ],
-      "title": "CollectionRootRef",
+      "title": "CollectionRootIdentityRef",
       "type": "object"
     },
     "ContentObservationEvidence": {
@@ -582,7 +527,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "subjects": {
           "items": {
-            "$ref": "#/$defs/ArtifactSubject"
+            "$ref": "#/$defs/WorkArtifactSubject"
           },
           "minItems": 1,
           "title": "Subjects",
@@ -725,7 +670,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "subjects": {
           "items": {
-            "$ref": "#/$defs/ArtifactSubject"
+            "$ref": "#/$defs/WorkArtifactSubject"
           },
           "minItems": 1,
           "title": "Subjects",
@@ -869,6 +814,65 @@ The following JSON is the complete value owned at each machine-authority pointer
         "count"
       ],
       "title": "TargetInputRoleCount",
+      "type": "object"
+    },
+    "WorkArtifactSubject": {
+      "additionalProperties": false,
+      "description": "A collection logical file assigned an ID and role within one Stove0 work.",
+      "properties": {
+        "bytes": {
+          "minimum": 0,
+          "title": "Bytes",
+          "type": "integer"
+        },
+        "collection": {
+          "$ref": "#/$defs/CollectionRootIdentityRef"
+        },
+        "id": {
+          "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",
+          "title": "Id",
+          "type": "string"
+        },
+        "media_type": {
+          "anyOf": [
+            {
+              "maxLength": 255,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Media Type"
+        },
+        "path": {
+          "maxLength": 4096,
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "role": {
+          "pattern": "^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$",
+          "title": "Role",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "collection",
+        "path",
+        "bytes",
+        "sha256"
+      ],
+      "title": "WorkArtifactSubject",
       "type": "object"
     }
   },

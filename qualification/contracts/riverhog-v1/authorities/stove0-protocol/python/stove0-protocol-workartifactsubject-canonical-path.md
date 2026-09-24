@@ -1,8 +1,8 @@
-# stove0_protocol.CollectionRootRef.from_identity
+# stove0_protocol.WorkArtifactSubject.canonical_path
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: python:stove0-protocol:stove0-protocol-collectionrootref-from-identity:540a25950e -->
+<!-- contract-element: python:stove0-protocol:stove0-protocol-workartifactsubject-canonical-path:54f0cbb44e -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,27 +13,27 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-0d14aecaf3"></a>
-- <a id="s-32b3cc80a2"></a>`distribution`: `stove0-protocol`
-- <a id="s-766dd9625a"></a>`module`: `stove0_protocol`
-- <a id="s-b8593b4b59"></a>`name`: `from_identity`
-- <a id="s-aca5137e54"></a>`owner`: `stove0_protocol.CollectionRootRef`
-- <a id="s-601afaaf55"></a>`unit`: `member`
+<a id="s-a4903e68b1"></a>
+- <a id="s-c3fc328a2a"></a>`distribution`: `stove0-protocol`
+- <a id="s-0435a70319"></a>`module`: `stove0_protocol`
+- <a id="s-d0b3278e48"></a>`name`: `canonical_path`
+- <a id="s-efc28a78b9"></a>`owner`: `stove0_protocol.WorkArtifactSubject`
+- <a id="s-f495caf9e0"></a>`unit`: `member`
 
 ### Declared structure
 
-- <a id="s-11bc087668"></a>`kind`: `"classmethod"`
-- <a id="s-9e9e7f2f64"></a>`signature`: `"\"(cls, value: 'CollectionRootIdentity') -> 'CollectionRootRef'\""`
+- <a id="s-85bdee4776"></a>`kind`: `"classmethod"`
+- <a id="s-2f3f2941d9"></a>`signature`: `"\"(cls, value: 'str') -> 'str'\""`
 
 ## Maintained corroboration
 
 ### Related interface records
 
-- [CollectionRootRef](stove0-protocol-collectionrootref.md)
+- [WorkArtifactSubject](stove0-protocol-workartifactsubject.md)
 
 ## Governing policies
 
-- <a id="pa-1624ecb775"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
+- <a id="pa-99edb35217"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
 
 ## Evidence
 
@@ -49,7 +49,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/python/stove0_protocol.CollectionRootRef.from_identity`
+- `/external_contract/python/stove0_protocol.WorkArtifactSubject.canonical_path`
 
 ### Exact owned JSON
 
@@ -58,18 +58,18 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b5226cd3952c0128cc0b2a325c2ee2b847ed5b3b33bf2798ba1f5f8776e774d1 -->
+<!-- exact-contract-value: 5cfe3b384db89501a739665ebbfc96f06ed4f754feb6b871be7edc527b16c1d4 -->
 
 ```json
 {
   "contract": {
     "kind": "classmethod",
-    "signature": "\"(cls, value: 'CollectionRootIdentity') -> 'CollectionRootRef'\""
+    "signature": "\"(cls, value: 'str') -> 'str'\""
   },
   "distribution": "stove0-protocol",
   "module": "stove0_protocol",
-  "name": "from_identity",
-  "owner": "stove0_protocol.CollectionRootRef",
+  "name": "canonical_path",
+  "owner": "stove0_protocol.WorkArtifactSubject",
   "unit": "member"
 }
 ```

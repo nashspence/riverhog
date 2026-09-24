@@ -28,8 +28,8 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-1f8b8e35e0"></a>`evaluation` | no | anyOf=[([EvaluationBinding](schemas-evaluationbinding.md)); (type="null")] |  |
 | <a id="s-627ac6d042"></a>`fork_join` | no | anyOf=[(discriminator={"mapping":{"branch":"#/components/schemas/BranchWorkBinding","join":"#/components/schemas/JoinWorkBinding"},"propertyName":"kind"}; oneOf=[([BranchWorkBinding](schemas-branchworkbinding.md)); ([JoinWorkBinding](schemas-joinworkbinding.md))]); (type="null")]; title="Fork Join" |  |
 | <a id="s-3b7d02e296"></a>`format` | no | type="string"; const="stove0-work/v1"; default="stove0-work/v1"; title="Format" |  |
-| <a id="s-181af1fa7a"></a>`inputs` | yes | type="array"; items=([CollectionRootRef](schemas-collectionrootref.md)); minItems=1; title="Inputs" |  |
-| <a id="s-adf4a103e4"></a>`recipe` | yes | [RecipeRef](schemas-reciperef.md) |  |
+| <a id="s-181af1fa7a"></a>`inputs` | yes | type="array"; items=([CollectionRootIdentityRef](schemas-collectionrootidentityref.md)); minItems=1; title="Inputs" |  |
+| <a id="s-adf4a103e4"></a>`recipe` | yes | [RecipeIdentityRef](schemas-recipeidentityref.md) |  |
 | <a id="s-81ce230f85"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
 
 ### Progression, limits, and lifecycle
@@ -56,11 +56,11 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 ### Referenced contract elements
 
 - [BranchWorkBinding](schemas-branchworkbinding.md)
-- [CollectionRootRef](schemas-collectionrootref.md)
+- [CollectionRootIdentityRef](schemas-collectionrootidentityref.md)
 - [EvaluationBinding](schemas-evaluationbinding.md)
 - [JoinWorkBinding](schemas-joinworkbinding.md)
 - [JsonValue](schemas-jsonvalue.md)
-- [RecipeRef](schemas-reciperef.md)
+- [RecipeIdentityRef](schemas-recipeidentityref.md)
 
 ## Governing policies
 
@@ -93,7 +93,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3a16e4895513ac18dd61fd4a29fd1b576cb62b2fc14b92e330784efec26186c4 -->
+<!-- exact-contract-value: f478c0d29f83b5fc32ca51c0da82bf6d5ca5580ea17a19438342cd1a0b952426 -->
 
 ```json
 {
@@ -149,14 +149,14 @@ The following JSON is the complete value owned at each machine-authority pointer
     },
     "inputs": {
       "items": {
-        "$ref": "#/components/schemas/CollectionRootRef"
+        "$ref": "#/components/schemas/CollectionRootIdentityRef"
       },
       "minItems": 1,
       "title": "Inputs",
       "type": "array"
     },
     "recipe": {
-      "$ref": "#/components/schemas/RecipeRef"
+      "$ref": "#/components/schemas/RecipeIdentityRef"
     },
     "work_id": {
       "pattern": "^[0-9a-f]{64}$",

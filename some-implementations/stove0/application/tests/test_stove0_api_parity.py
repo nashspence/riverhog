@@ -48,20 +48,20 @@ from stove0_operator_contracts import (
 )
 from stove0_protocol import (
     ArtifactSelection,
-    ArtifactSubject,
     BranchPlan,
     BranchSetEvaluation,
     BranchSetPlan,
     BranchTargetPreview,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
     EvaluationDefinition,
     EvaluationDefinitionPayload,
     EvaluationMatrix,
     EvaluationMatrixPayload,
     EvaluationVariant,
-    OperationRef,
-    RecipeRef,
+    OperationIdentityRef,
+    RecipeIdentityRef,
     TargetPlanBinding,
+    WorkArtifactSubject,
     WorkflowPlanIntent,
     WorkflowPreview,
     WorkflowPreviewPayload,
@@ -187,14 +187,14 @@ class _LifecyclePlanner:
     def create_work(
         self,
         recipe_id: str,
-        roots: list[CollectionRootRef],
+        roots: list[CollectionRootIdentityRef],
         *,
         revision: int | None = None,
         effective_intent: dict[str, object] | None = None,
     ) -> WorkIdentity:
         return WorkIdentity.seal(
             WorkPayload(
-                recipe=RecipeRef(
+                recipe=RecipeIdentityRef(
                     id=recipe_id,
                     revision=revision or 1,
                     sha256="3" * 64,
@@ -457,8 +457,8 @@ def _lifecycle_composition() -> Stove0Composition:
     )
 
 
-def _collection_root(collection_id: int = 1) -> CollectionRootRef:
-    return CollectionRootRef(
+def _collection_root(collection_id: int = 1) -> CollectionRootIdentityRef:
+    return CollectionRootIdentityRef(
         collection_id=str(collection_id),
         archive_root_sha256="1" * 64,
         content_identity="2" * 64,
@@ -477,9 +477,9 @@ def _evaluation_definition() -> EvaluationDefinition:
     return EvaluationDefinition.seal(
         EvaluationDefinitionPayload(
             purpose="trial",
-            recipe=RecipeRef(id="fixture.recipe/v1", revision=1, sha256="3" * 64),
+            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision=1, sha256="3" * 64),
             inputs=(
-                CollectionRootRef(
+                CollectionRootIdentityRef(
                     collection_id=str(1),
                     archive_root_sha256="1" * 64,
                     content_identity="2" * 64,
@@ -512,9 +512,9 @@ def _evaluation_record(
 def _fixture_work(recipe_id: str = "stove0.conformance-media/v1") -> WorkIdentity:
     return WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeRef(id=recipe_id, revision=1, sha256="3" * 64),
+            recipe=RecipeIdentityRef(id=recipe_id, revision=1, sha256="3" * 64),
             inputs=(
-                CollectionRootRef(
+                CollectionRootIdentityRef(
                     collection_id=str(1),
                     archive_root_sha256="1" * 64,
                     content_identity="2" * 64,
@@ -527,7 +527,7 @@ def _fixture_work(recipe_id: str = "stove0.conformance-media/v1") -> WorkIdentit
 def _fixture_selection(work: WorkIdentity) -> ArtifactSelection:
     return ArtifactSelection.seal(
         (
-            ArtifactSubject(
+            WorkArtifactSubject(
                 id="source",
                 role="fixture.source/v1",
                 collection=work.inputs[0],
@@ -543,7 +543,7 @@ def _fixture_selection(work: WorkIdentity) -> ArtifactSelection:
 def _ready_preview(work: WorkIdentity) -> WorkflowPreview:
     request = WorkflowPreviewRequest.seal(WorkflowPreviewRequestPayload(work=work))
     selection = _fixture_selection(work)
-    operation = OperationRef(id="fixture.copy/v1", sha256="5" * 64)
+    operation = OperationIdentityRef(id="fixture.copy/v1", sha256="5" * 64)
     branch = BranchPlan.build(
         parent_work=work,
         branch_id="archive",
@@ -667,7 +667,7 @@ class _LifecycleTargetCallbacks:
         self.input = InputArtifact(
             id="source",
             role="fixture.source/v1",
-            collection=CollectionRootRef(
+            collection=CollectionRootIdentityRef(
                 collection_id=str(1),
                 archive_root_sha256="1" * 64,
                 content_identity="2" * 64,
@@ -701,7 +701,7 @@ class _LifecycleTargetCallbacks:
         assert continuation is None
         assert limit == 256
         selection = ArtifactSelection.seal(
-            (ArtifactSubject.model_validate(self.input.model_dump(mode="json")),)
+            (WorkArtifactSubject.model_validate(self.input.model_dump(mode="json")),)
         )
         return TargetInputPage(
             authority=TargetInputAuthority.from_selection(selection),

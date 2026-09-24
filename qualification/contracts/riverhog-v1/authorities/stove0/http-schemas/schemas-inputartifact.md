@@ -25,7 +25,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-993c7b572e"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
-| <a id="s-2184fb8f86"></a>`collection` | yes | [CollectionRootRef](schemas-collectionrootref.md) |  |
+| <a id="s-2184fb8f86"></a>`collection` | yes | [CollectionRootIdentityRef](schemas-collectionrootidentityref.md) |  |
 | <a id="s-0eebf2992b"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$"; title="Id" |  |
 | <a id="s-441beb6169"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; title="Media Type" |  |
 | <a id="s-b428e392ba"></a>`path` | yes | type="string"; maxLength=4096; minLength=1; title="Path" |  |
@@ -54,7 +54,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract elements
 
-- [CollectionRootRef](schemas-collectionrootref.md)
+- [CollectionRootIdentityRef](schemas-collectionrootidentityref.md)
 
 ## Governing policies
 
@@ -87,7 +87,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 25b96421c955e3425bbe64bfe14c8e0451d302f6944b582f59203958e91b0000 -->
+<!-- exact-contract-value: 99d0ec8533f12fcc81442dbfef49255effda790264b0e64335fc73f41c691986 -->
 
 ```json
 {
@@ -99,7 +99,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "integer"
     },
     "collection": {
-      "$ref": "#/components/schemas/CollectionRootRef"
+      "$ref": "#/components/schemas/CollectionRootIdentityRef"
     },
     "id": {
       "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",

@@ -27,7 +27,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-6b03446110"></a>`format` | no | type="string"; const="stove0-workflow-plan/v1"; default="stove0-workflow-plan/v1"; title="Format" |  |
 | <a id="s-6ad1a7b068"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only"; title="Input Retrieval Policy" |  |
 | <a id="s-6ef6cec03d"></a>`observations` | no | type="array"; default=[]; items=([ContentObservationEvidence](schemas-contentobservationevidence.md)); title="Observations" |  |
-| <a id="s-5cabb9dd3b"></a>`operation` | yes | [OperationRef](schemas-operationref.md) |  |
+| <a id="s-5cabb9dd3b"></a>`operation` | yes | [OperationIdentityRef](schemas-operationidentityref.md) |  |
 | <a id="s-bf4f29710f"></a>`output_policy` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Output Policy" |  |
 | <a id="s-a5d912ee09"></a>`requested_target_options` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Requested Target Options" |  |
 | <a id="s-f570ec6b98"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection"; title="Result Kind" |  |
@@ -65,7 +65,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 - [ContentObservationEvidence](schemas-contentobservationevidence.md)
 - [JsonValue](schemas-jsonvalue.md)
-- [OperationRef](schemas-operationref.md)
+- [OperationIdentityRef](schemas-operationidentityref.md)
 - [WorkIdentity](schemas-workidentity.md)
 
 ## Governing policies
@@ -99,7 +99,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6ca234732128e48c431b1e7a2fcfcec3d1735d22ba14c07eaea717436d302958 -->
+<!-- exact-contract-value: 8c34d73b41aeefad11319bb8c7e5ad643f2a8c32a158b8a8208f638fe2078c43 -->
 
 ```json
 {
@@ -129,7 +129,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "array"
     },
     "operation": {
-      "$ref": "#/components/schemas/OperationRef"
+      "$ref": "#/components/schemas/OperationIdentityRef"
     },
     "output_policy": {
       "additionalProperties": {

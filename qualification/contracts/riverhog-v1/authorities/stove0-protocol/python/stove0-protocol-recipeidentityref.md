@@ -1,8 +1,8 @@
-# stove0_protocol.RecipeRef
+# stove0_protocol.RecipeIdentityRef
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: python:stove0-protocol:stove0-protocol-reciperef:1fdcf0f8c3 -->
+<!-- contract-element: python:stove0-protocol:stove0-protocol-recipeidentityref:c17defa97f -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,43 +13,43 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-ff2a8e9869"></a>
-- <a id="s-88ec72f004"></a>`distribution`: `stove0-protocol`
-- <a id="s-af47c72582"></a>`module`: `stove0_protocol`
-- <a id="s-d2319a6f09"></a>`name`: `RecipeRef`
-- <a id="s-0b72ff65f5"></a>`unit`: `export`
+<a id="s-c92f542f9f"></a>
+- <a id="s-b97d7c69c3"></a>`distribution`: `stove0-protocol`
+- <a id="s-523d51828b"></a>`module`: `stove0_protocol`
+- <a id="s-d774675923"></a>`name`: `RecipeIdentityRef`
+- <a id="s-18d2a98a19"></a>`unit`: `export`
 
 ### Declared structure
 
-- <a id="s-0db2671be2"></a>`kind`: `"class"`
-- <a id="s-f348d33a34"></a>`signature`: `"\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], revision: Annotated[int, Ge(ge=1)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+- <a id="s-3d3aca3a42"></a>`kind`: `"class"`
+- <a id="s-eaa6095797"></a>`signature`: `"\"(*, id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], revision: Annotated[int, Ge(ge=1)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
 
 #### Validated model schema
 
-<a id="s-511880ca2b"></a>
+<a id="s-d5d46152b0"></a>
 
-- <a id="s-c10a188b0a"></a>`type`: `"object"`
-- <a id="s-efba8a10d0"></a>`additionalProperties`: `false`
-- <a id="s-799ffd2f7b"></a>`required`: `["id","revision","sha256"]`
+- <a id="s-5733bc2802"></a>`type`: `"object"`
+- <a id="s-628b0e461e"></a>`additionalProperties`: `false`
+- <a id="s-19023f96be"></a>`required`: `["id","revision","sha256"]`
 
 ##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8436bc58e3"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-0d4a8994e1"></a>`revision` | yes | type="integer"; minimum=1 |  |
-| <a id="s-f8ed8b65fc"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-56b8395d82"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-eb6e31b315"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-0fa1547510"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
 ### Related interface records
 
-- [from_identity](stove0-protocol-reciperef-from-identity.md)
-- [to_identity](stove0-protocol-reciperef-to-identity.md)
+- [from_identity](stove0-protocol-recipeidentityref-from-identity.md)
+- [to_identity](stove0-protocol-recipeidentityref-to-identity.md)
 
 ## Governing policies
 
-- <a id="pa-c49255b322"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
+- <a id="pa-738d0bf5f6"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
 
 ## Evidence
 
@@ -65,7 +65,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/python/stove0_protocol.RecipeRef`
+- `/external_contract/python/stove0_protocol.RecipeIdentityRef`
 
 ### Exact owned JSON
 
@@ -74,7 +74,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9881b9b6773e64c5e9a9a77e7575fd936a5cc0ed6915fe5689275e934f172e39 -->
+<!-- exact-contract-value: f395a9c3a73e2fbdc30fdd590cb877c63a3692457b4a6f985c985ac205239943 -->
 
 ```json
 {
@@ -107,7 +107,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "distribution": "stove0-protocol",
   "module": "stove0_protocol",
-  "name": "RecipeRef",
+  "name": "RecipeIdentityRef",
   "unit": "export"
 }
 ```

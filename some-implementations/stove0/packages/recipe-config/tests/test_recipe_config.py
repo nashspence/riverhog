@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 from config_validation import ConfigError
-from stove0_protocol import RecipeRef
+from stove0_protocol import RecipeIdentityRef
 from stove0_recipe_config import RecipeCatalog, RecipeCoordinationRoute, RecipeDefinition
 from stove0_recipe_config.models import _validate_recipe_cycles
 
@@ -36,7 +36,7 @@ def test_exact_subrecipe_cycle_detection_is_iterative_and_ancestry_aware() -> No
         revision=1,
         routes=(
             RecipeCoordinationRoute.model_construct(
-                recipe=RecipeRef(id="fixture.second/v1", revision=1, sha256="1" * 64)
+                recipe=RecipeIdentityRef(id="fixture.second/v1", revision=1, sha256="1" * 64)
             ),
         ),
     )
@@ -45,7 +45,7 @@ def test_exact_subrecipe_cycle_detection_is_iterative_and_ancestry_aware() -> No
         revision=1,
         routes=(
             RecipeCoordinationRoute.model_construct(
-                recipe=RecipeRef(id="fixture.first/v1", revision=1, sha256="2" * 64)
+                recipe=RecipeIdentityRef(id="fixture.first/v1", revision=1, sha256="2" * 64)
             ),
         ),
     )

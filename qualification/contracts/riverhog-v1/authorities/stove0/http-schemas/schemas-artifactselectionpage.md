@@ -25,7 +25,7 @@ One bounded continuation step through an immutable artifact selection.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4fcf66d85f"></a>`artifacts` | yes | type="array"; items=([ArtifactSubject](schemas-artifactsubject.md)); maxItems=256; title="Artifacts"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"selection-bound-start_ordinal","reason":"bounded-artifact-selection-page"} |  |
+| <a id="s-4fcf66d85f"></a>`artifacts` | yes | type="array"; items=([WorkArtifactSubject](schemas-workartifactsubject.md)); maxItems=256; title="Artifacts"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"selection-bound-start_ordinal","reason":"bounded-artifact-selection-page"} |  |
 | <a id="s-bb912bc81c"></a>`authority` | yes | [ArtifactSelectionRef](schemas-artifactselectionref.md) |  |
 | <a id="s-53df9f7d4c"></a>`complete` | yes | type="boolean"; title="Complete" |  |
 | <a id="s-dbf38f6d33"></a>`continuation` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Continuation" |  |
@@ -75,7 +75,7 @@ Exact evidence groups for this contract element:
 ### Referenced contract elements
 
 - [ArtifactSelectionRef](schemas-artifactselectionref.md)
-- [ArtifactSubject](schemas-artifactsubject.md)
+- [WorkArtifactSubject](schemas-workartifactsubject.md)
 
 ## Governing policies
 
@@ -108,7 +108,7 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 02d0861511675ea88bb1eabb52ffb7a83cbbce075c250e5d031e6bf71a902702 -->
+<!-- exact-contract-value: feb69833f39fa8b8052a818786703d1530a7a37202d464899950d3e22e406e94 -->
 
 ```json
 {
@@ -117,7 +117,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "properties": {
     "artifacts": {
       "items": {
-        "$ref": "#/components/schemas/ArtifactSubject"
+        "$ref": "#/components/schemas/WorkArtifactSubject"
       },
       "maxItems": 256,
       "title": "Artifacts",

@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-796f2170ea"></a>`kind`: `"classmethod"`
-- <a id="s-7a25d38b50"></a>`signature`: `"\"(cls, *, parent_work: 'WorkIdentity', branch_id: 'str', decision_sha256: 'str', selection: 'ArtifactSelection', recipe: 'RecipeRef', effective_intent: 'Mapping[str, JsonValue]', workflow_intent: 'WorkflowPlanIntent', observations: 'tuple[ContentObservationEvidence, ...]' = ()) -> 'BranchPlan'\""`
+- <a id="s-7a25d38b50"></a>`signature`: `"\"(cls, *, parent_work: 'WorkIdentity', branch_id: 'str', decision_sha256: 'str', selection: 'ArtifactSelection', recipe: 'RecipeIdentityRef', effective_intent: 'Mapping[str, JsonValue]', workflow_intent: 'WorkflowPlanIntent', observations: 'tuple[ContentObservationEvidence, ...]' = ()) -> 'BranchPlan'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8ed0b6decd8f7228d9aa18c28d1170972611b6df50ea1ed4f28d3dcef9067f3c -->
+<!-- exact-contract-value: 96f6cff8af442c7ec3160063b15a2d76334b8d53458d53aa8ddcb3d68140a56b -->
 
 ```json
 {
   "contract": {
     "kind": "classmethod",
-    "signature": "\"(cls, *, parent_work: 'WorkIdentity', branch_id: 'str', decision_sha256: 'str', selection: 'ArtifactSelection', recipe: 'RecipeRef', effective_intent: 'Mapping[str, JsonValue]', workflow_intent: 'WorkflowPlanIntent', observations: 'tuple[ContentObservationEvidence, ...]' = ()) -> 'BranchPlan'\""
+    "signature": "\"(cls, *, parent_work: 'WorkIdentity', branch_id: 'str', decision_sha256: 'str', selection: 'ArtifactSelection', recipe: 'RecipeIdentityRef', effective_intent: 'Mapping[str, JsonValue]', workflow_intent: 'WorkflowPlanIntent', observations: 'tuple[ContentObservationEvidence, ...]' = ()) -> 'BranchPlan'\""
   },
   "distribution": "stove0-protocol",
   "module": "stove0_protocol",

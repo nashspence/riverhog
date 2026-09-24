@@ -13,8 +13,8 @@ from fastapi.testclient import TestClient
 from stove0_observer_protocol import ContentObservationRequest, ContentObservationRequestPayload
 from stove0_observer_support import ContentObservationRuntime
 from stove0_protocol import (
-    ArtifactSubject,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
+    WorkArtifactSubject,
 )
 
 
@@ -50,7 +50,7 @@ class FixtureRuntime:
 
     def materialize(
         self,
-        _subject: ArtifactSubject,
+        _subject: WorkArtifactSubject,
         *,
         workspace: FixtureWorkspace,
         relative_path: str,
@@ -81,10 +81,10 @@ def test_ffprobe_observer_reports_contract_facts_and_exact_image(
             observer_contract_id=support.contract_id,
             observer_contract_sha256=support.contract_sha256,
             subjects=(
-                ArtifactSubject(
+                WorkArtifactSubject(
                     id="camera-source",
                     role="stove0.review.source/v1",
-                    collection=CollectionRootRef(
+                    collection=CollectionRootIdentityRef(
                         collection_id=str(1),
                         archive_root_sha256=_sha("2"),
                         content_identity=_sha("3"),

@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-bcca25bdcc"></a>`kind`: `"function"`
-- <a id="s-4a46778728"></a>`signature`: `"'(*, recipe: \\'RecipeRef\\', inputs: \\'tuple[CollectionRootRef, ...]\\', sample_plan: \\'ReviewSamplePlan\\', variants: \\'tuple[ReviewVariant, ...]\\', purpose: \"Literal[\\'trial\\', \\'evaluation\\']\" = \\'evaluation\\', common_intent: \\'dict[str, JsonValue] \| None\\' = None) -> \\'EvaluationDefinition\\''"`
+- <a id="s-4a46778728"></a>`signature`: `"'(*, recipe: \\'RecipeIdentityRef\\', inputs: \\'tuple[CollectionRootIdentityRef, ...]\\', sample_plan: \\'ReviewSamplePlan\\', variants: \\'tuple[ReviewVariant, ...]\\', purpose: \"Literal[\\'trial\\', \\'evaluation\\']\" = \\'evaluation\\', common_intent: \\'dict[str, JsonValue] \| None\\' = None) -> \\'EvaluationDefinition\\''"`
 
 ## Governing policies
 
@@ -51,13 +51,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 534318c7a0ecde28abc6089ddc417afd161bb02cfd9fa7194a64ad5329535e18 -->
+<!-- exact-contract-value: cf2a0b15df9f61f079a00367a33aa4b703294d4413554487d3c8f9821f894049 -->
 
 ```json
 {
   "contract": {
     "kind": "function",
-    "signature": "'(*, recipe: \\'RecipeRef\\', inputs: \\'tuple[CollectionRootRef, ...]\\', sample_plan: \\'ReviewSamplePlan\\', variants: \\'tuple[ReviewVariant, ...]\\', purpose: \"Literal[\\'trial\\', \\'evaluation\\']\" = \\'evaluation\\', common_intent: \\'dict[str, JsonValue] | None\\' = None) -> \\'EvaluationDefinition\\''"
+    "signature": "'(*, recipe: \\'RecipeIdentityRef\\', inputs: \\'tuple[CollectionRootIdentityRef, ...]\\', sample_plan: \\'ReviewSamplePlan\\', variants: \\'tuple[ReviewVariant, ...]\\', purpose: \"Literal[\\'trial\\', \\'evaluation\\']\" = \\'evaluation\\', common_intent: \\'dict[str, JsonValue] | None\\' = None) -> \\'EvaluationDefinition\\''"
   },
   "distribution": "review0-planner",
   "module": "review0_planner",

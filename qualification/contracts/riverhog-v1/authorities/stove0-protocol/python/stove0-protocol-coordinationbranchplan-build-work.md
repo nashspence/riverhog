@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-76c31aa524"></a>`kind`: `"classmethod"`
-- <a id="s-1ba1da4104"></a>`signature`: `"\"(cls, *, parent_work: 'WorkIdentity', branch_id: 'str', decision_sha256: 'str', selection: 'ArtifactSelection', recipe: 'RecipeRef', effective_intent: 'Mapping[str, JsonValue]') -> 'WorkIdentity'\""`
+- <a id="s-1ba1da4104"></a>`signature`: `"\"(cls, *, parent_work: 'WorkIdentity', branch_id: 'str', decision_sha256: 'str', selection: 'ArtifactSelection', recipe: 'RecipeIdentityRef', effective_intent: 'Mapping[str, JsonValue]') -> 'WorkIdentity'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9fd88155b5d9199c3267b28f248605b8e6fd067808e7ac32c7a8c546a145a04a -->
+<!-- exact-contract-value: fe824af21f7923b38985be2f2becb5c71a2ac5c59fcadbc5b0ff01ee69f50d3e -->
 
 ```json
 {
   "contract": {
     "kind": "classmethod",
-    "signature": "\"(cls, *, parent_work: 'WorkIdentity', branch_id: 'str', decision_sha256: 'str', selection: 'ArtifactSelection', recipe: 'RecipeRef', effective_intent: 'Mapping[str, JsonValue]') -> 'WorkIdentity'\""
+    "signature": "\"(cls, *, parent_work: 'WorkIdentity', branch_id: 'str', decision_sha256: 'str', selection: 'ArtifactSelection', recipe: 'RecipeIdentityRef', effective_intent: 'Mapping[str, JsonValue]') -> 'WorkIdentity'\""
   },
   "distribution": "stove0-protocol",
   "module": "stove0_protocol",

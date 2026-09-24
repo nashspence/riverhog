@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-9344ce3524"></a>`kind`: `"method"`
-- <a id="s-fbfa2bf98d"></a>`signature`: `"\"(self, recipe_id: 'str', inputs: 'Sequence[CollectionRootRef]', *, recipe_revision: 'int \| None' = None, effective_intent: 'Mapping[str, Any] \| None' = None) -> 'WorkflowPreview'\""`
+- <a id="s-fbfa2bf98d"></a>`signature`: `"\"(self, recipe_id: 'str', inputs: 'Sequence[CollectionRootIdentityRef]', *, recipe_revision: 'int \| None' = None, effective_intent: 'Mapping[str, Any] \| None' = None) -> 'WorkflowPreview'\""`
 
 ## Maintained corroboration
 
@@ -61,13 +61,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 84bfc31ca84faf34f8cdb6d162dfc5b6d54efaa54e9ca8df4c718e870bfde97e -->
+<!-- exact-contract-value: ed94e0e22343379125ea77aa3afdd693c8d1fd6fceb7931a121c36d59258edad -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, recipe_id: 'str', inputs: 'Sequence[CollectionRootRef]', *, recipe_revision: 'int | None' = None, effective_intent: 'Mapping[str, Any] | None' = None) -> 'WorkflowPreview'\""
+    "signature": "\"(self, recipe_id: 'str', inputs: 'Sequence[CollectionRootIdentityRef]', *, recipe_revision: 'int | None' = None, effective_intent: 'Mapping[str, Any] | None' = None) -> 'WorkflowPreview'\""
   },
   "distribution": "stove0-api-client",
   "module": "stove0_api_client",

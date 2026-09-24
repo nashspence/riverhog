@@ -18,19 +18,19 @@ from pydantic import Field, JsonValue, field_validator, model_validator
 from stove0_protocol.jcs import canonical_json_bytes, canonical_json_sha256
 from stove0_protocol.models import (
     WORKFLOW_PREVIEW_FORMAT,
-    ArtifactSubject,
     BranchWorkBinding,
-    CollectionRootRef,
+    CollectionRootIdentityRef,
     ContentObservationEvidence,
     JoinWorkBinding,
     JoinWorkMemberBinding,
     PreviewOutcome,
-    RecipeRef,
+    RecipeIdentityRef,
     SemanticId,
     Sha256,
     SourceCollectionRetirementPolicy,
     Stove0ProtocolModel,
     TargetPlanBinding,
+    WorkArtifactSubject,
     WorkflowPlan,
     WorkflowPlanIntent,
     WorkIdentity,
@@ -71,11 +71,11 @@ def _without_digest(model: Stove0ProtocolModel, field: str) -> dict[str, Any]:
     return model.model_dump(mode="json", by_alias=True, exclude={field}, exclude_none=True)
 
 
-def _root_key(root: CollectionRootRef) -> tuple[int, str, str]:
+def _root_key(root: CollectionRootIdentityRef) -> tuple[int, str, str]:
     return root.collection_id, root.archive_root_sha256, root.content_identity
 
 
-def _artifact_key(artifact: ArtifactSubject) -> tuple[int, str, str, str, int, str, str]:
+def _artifact_key(artifact: WorkArtifactSubject) -> tuple[int, str, str, str, int, str, str]:
     """Order selections by their generic Riverhog artifact identity first."""
 
     return (
@@ -93,7 +93,7 @@ def update_artifact_selection_commitment(
     digest: Any,
     *,
     ordinal: int,
-    artifact: ArtifactSubject,
+    artifact: WorkArtifactSubject,
 ) -> None:
     """Commit one ordered selection member without materializing the full set."""
 
@@ -111,14 +111,16 @@ class ArtifactSelection(Stove0ProtocolModel):
     """One exact, content-addressed selection of immutable artifacts."""
 
     format: Literal["stove0-artifact-selection/v1"] = ARTIFACT_SELECTION_FORMAT
-    artifacts: tuple[ArtifactSubject, ...] = Field(min_length=1)
+    artifacts: tuple[WorkArtifactSubject, ...] = Field(min_length=1)
     artifact_count: int = Field(ge=1)
     total_bytes: int = Field(ge=0)
     selection_sha256: Sha256
 
     @field_validator("artifacts")
     @classmethod
-    def canonical_artifacts(cls, value: tuple[ArtifactSubject, ...]) -> tuple[ArtifactSubject, ...]:
+    def canonical_artifacts(
+        cls, value: tuple[WorkArtifactSubject, ...]
+    ) -> tuple[WorkArtifactSubject, ...]:
         ordered = tuple(sorted(value, key=_artifact_key))
         if value != ordered:
             raise ValueError("selection artifacts must be canonically ordered")
@@ -128,7 +130,7 @@ class ArtifactSelection(Stove0ProtocolModel):
         exact = [(_root_key(item.collection), item.path) for item in value]
         if len(exact) != len(set(exact)):
             raise ValueError("selection cannot repeat an exact collection artifact")
-        roots: dict[int, CollectionRootRef] = {}
+        roots: dict[int, CollectionRootIdentityRef] = {}
         for item in value:
             current = roots.setdefault(item.collection.collection_id, item.collection)
             if current != item.collection:
@@ -150,7 +152,7 @@ class ArtifactSelection(Stove0ProtocolModel):
         return self
 
     @classmethod
-    def seal(cls, artifacts: Sequence[ArtifactSubject]) -> ArtifactSelection:
+    def seal(cls, artifacts: Sequence[WorkArtifactSubject]) -> ArtifactSelection:
         ordered = tuple(sorted(tuple(artifacts), key=_artifact_key))
         digest = hashlib.sha256()
         for ordinal, artifact in enumerate(ordered):
@@ -169,7 +171,7 @@ class ArtifactSelection(Stove0ProtocolModel):
             total_bytes=self.total_bytes,
         )
 
-    def roots(self) -> tuple[CollectionRootRef, ...]:
+    def roots(self) -> tuple[CollectionRootIdentityRef, ...]:
         values = {_root_key(item.collection): item.collection for item in self.artifacts}
         return tuple(values[key] for key in sorted(values))
 
@@ -196,7 +198,7 @@ class ArtifactSelectionPage(Stove0ProtocolModel):
     continuation: Sha256 | None = None
     next_continuation: Sha256 | None = None
     complete: bool
-    artifacts: tuple[ArtifactSubject, ...] = Field(
+    artifacts: tuple[WorkArtifactSubject, ...] = Field(
         max_length=ARTIFACT_SELECTION_PAGE_MAX,
         json_schema_extra={
             "x-riverhog-extent": {
@@ -267,7 +269,7 @@ class BranchPlan(Stove0ProtocolModel):
         branch_id: str,
         decision_sha256: str,
         selection: ArtifactSelection,
-        recipe: RecipeRef,
+        recipe: RecipeIdentityRef,
         effective_intent: Mapping[str, JsonValue],
         workflow_intent: WorkflowPlanIntent,
         observations: tuple[ContentObservationEvidence, ...] = (),
@@ -325,7 +327,7 @@ class CoordinationBranchPlan(Stove0ProtocolModel):
         branch_id: str,
         decision_sha256: str,
         selection: ArtifactSelection,
-        recipe: RecipeRef,
+        recipe: RecipeIdentityRef,
         effective_intent: Mapping[str, JsonValue],
     ) -> WorkIdentity:
         """Seal a child coordinator without introducing a plan/work digest cycle."""
@@ -353,7 +355,7 @@ class CoordinationBranchPlan(Stove0ProtocolModel):
         branch_id: str,
         decision_sha256: str,
         selection: ArtifactSelection,
-        recipe: RecipeRef,
+        recipe: RecipeIdentityRef,
         effective_intent: Mapping[str, JsonValue],
         branch_set_sha256: str,
     ) -> CoordinationBranchPlan:
@@ -414,7 +416,7 @@ class JoinDeclaration(Stove0ProtocolModel):
 
     format: Literal["stove0-join-declaration/v1"] = JOIN_DECLARATION_FORMAT
     members: tuple[JoinMemberDeclaration, ...] = Field(min_length=2)
-    recipe: RecipeRef
+    recipe: RecipeIdentityRef
     effective_intent: dict[str, JsonValue] = Field(default_factory=dict)
     workflow_intent: WorkflowPlanIntent
     join_declaration_sha256: Sha256
@@ -445,7 +447,7 @@ class JoinDeclaration(Stove0ProtocolModel):
         cls,
         *,
         members: Sequence[JoinMemberDeclaration],
-        recipe: RecipeRef,
+        recipe: RecipeIdentityRef,
         effective_intent: Mapping[str, JsonValue],
         workflow_intent: WorkflowPlanIntent,
     ) -> JoinDeclaration:
@@ -660,7 +662,7 @@ class BranchSettlement(Stove0ProtocolModel):
     workflow_plan_sha256: Sha256
     derivation_sha256: Sha256
     producer_settlement_sha256: Sha256
-    output_collection: CollectionRootRef
+    output_collection: CollectionRootIdentityRef
     output_selection: ArtifactSelectionRef
     settlement_sha256: Sha256
 
@@ -678,7 +680,7 @@ class BranchSettlement(Stove0ProtocolModel):
         branch: BranchPlan,
         derivation_sha256: str,
         producer_settlement_sha256: str,
-        output_collection: CollectionRootRef,
+        output_collection: CollectionRootIdentityRef,
         output_selection: ArtifactSelection,
     ) -> BranchSettlement:
         if branch.workflow_plan.result_kind != "collection":
@@ -754,7 +756,7 @@ class JoinInputPlan(Stove0ProtocolModel):
     settlement_sha256: Sha256
     producer_settlement_sha256: Sha256 | None = None
     derivation_sha256: Sha256
-    output_collection: CollectionRootRef
+    output_collection: CollectionRootIdentityRef
     artifact_selection: ArtifactSelectionRef
 
 
@@ -851,7 +853,7 @@ class JoinSettlement(Stove0ProtocolModel):
     join_plan_sha256: Sha256
     derivation_sha256: Sha256
     producer_settlement_sha256: Sha256
-    output_collection: CollectionRootRef
+    output_collection: CollectionRootIdentityRef
     output_selection: ArtifactSelectionRef
     settlement_sha256: Sha256
 
@@ -869,7 +871,7 @@ class JoinSettlement(Stove0ProtocolModel):
         plan: JoinPlan,
         derivation_sha256: str,
         producer_settlement_sha256: str,
-        output_collection: CollectionRootRef,
+        output_collection: CollectionRootIdentityRef,
         output_selection: ArtifactSelection,
     ) -> JoinSettlement:
         payload = {
@@ -899,7 +901,7 @@ class CoordinationCollectionResult(Stove0ProtocolModel):
     producer_work_id: Sha256
     join_settlement_sha256: Sha256
     derivation_sha256: Sha256
-    output_collection: CollectionRootRef
+    output_collection: CollectionRootIdentityRef
     output_selection: ArtifactSelectionRef
 
 
@@ -1301,7 +1303,7 @@ def _normalize_branch_results(
     effect_map: dict[str, BranchEffectSettlement] = {}
     coordination_map: dict[str, CoordinationSettlement] = {}
     outcome_map: dict[str, BranchOutcome] = {}
-    roots: set[CollectionRootRef] = set()
+    roots: set[CollectionRootIdentityRef] = set()
     for collection_settlement in settlements:
         branch = branches.get(collection_settlement.branch_id)
         if branch is None:

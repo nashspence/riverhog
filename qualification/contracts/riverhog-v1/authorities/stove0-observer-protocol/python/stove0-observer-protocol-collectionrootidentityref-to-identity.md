@@ -1,8 +1,8 @@
-# stove0_observer_protocol.CollectionRootRef.to_identity
+# stove0_observer_protocol.CollectionRootIdentityRef.to_identity
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: python:stove0-observer-protocol:stove0-observer-protocol-collectionrootre-5392941366:673dba8d34 -->
+<!-- contract-element: python:stove0-observer-protocol:stove0-observer-protocol-collectionrootid-7276101ee6:950f199fc0 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,27 +13,27 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-e391b7bada"></a>
-- <a id="s-3b09fe50ae"></a>`distribution`: `stove0-observer-protocol`
-- <a id="s-6457930ec3"></a>`module`: `stove0_observer_protocol`
-- <a id="s-659ad70a08"></a>`name`: `to_identity`
-- <a id="s-c87c1d65eb"></a>`owner`: `stove0_observer_protocol.CollectionRootRef`
-- <a id="s-0b0113439a"></a>`unit`: `member`
+<a id="s-849900c0d8"></a>
+- <a id="s-c5ced41332"></a>`distribution`: `stove0-observer-protocol`
+- <a id="s-93cb3dd4a6"></a>`module`: `stove0_observer_protocol`
+- <a id="s-3885ca1484"></a>`name`: `to_identity`
+- <a id="s-d72502974d"></a>`owner`: `stove0_observer_protocol.CollectionRootIdentityRef`
+- <a id="s-2e5cad5691"></a>`unit`: `member`
 
 ### Declared structure
 
-- <a id="s-41bb17f7ba"></a>`kind`: `"method"`
-- <a id="s-0a0a89c21b"></a>`signature`: `"\"(self) -> 'CollectionRootIdentity'\""`
+- <a id="s-965d4fb6d5"></a>`kind`: `"method"`
+- <a id="s-f2e59d3b64"></a>`signature`: `"\"(self) -> 'CollectionRootIdentity'\""`
 
 ## Maintained corroboration
 
 ### Related interface records
 
-- [CollectionRootRef](stove0-observer-protocol-collectionrootref.md)
+- [CollectionRootIdentityRef](stove0-observer-protocol-collectionrootidentityref.md)
 
 ## Governing policies
 
-- <a id="pa-3ac815f874"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
+- <a id="pa-a2e6e89853"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
 
 ## Evidence
 
@@ -49,7 +49,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/python/stove0_observer_protocol.CollectionRootRef.to_identity`
+- `/external_contract/python/stove0_observer_protocol.CollectionRootIdentityRef.to_identity`
 
 ### Exact owned JSON
 
@@ -58,7 +58,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ddc4f5c213e19f30ddaa125a9f916c35d7abdf078c58d783184dbe3ef34283ae -->
+<!-- exact-contract-value: 84185f01ecbf89aabb3d70b6eb4b2ec3f4cce8481e271d86cc774d632235db83 -->
 
 ```json
 {
@@ -69,7 +69,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "distribution": "stove0-observer-protocol",
   "module": "stove0_observer_protocol",
   "name": "to_identity",
-  "owner": "stove0_observer_protocol.CollectionRootRef",
+  "owner": "stove0_observer_protocol.CollectionRootIdentityRef",
   "unit": "member"
 }
 ```

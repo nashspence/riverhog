@@ -1,8 +1,8 @@
-# stove0_observer_protocol.ArtifactSubject.canonical_path
+# stove0_observer_protocol.WorkArtifactSubject.canonical_path
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: python:stove0-observer-protocol:stove0-observer-protocol-artifactsubject-5961e4565a:76ff785cff -->
+<!-- contract-element: python:stove0-observer-protocol:stove0-observer-protocol-workartifactsubj-4e03be8978:d08424af2a -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,27 +13,27 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-9a1322510f"></a>
-- <a id="s-9b467be08f"></a>`distribution`: `stove0-observer-protocol`
-- <a id="s-05c63e89f0"></a>`module`: `stove0_observer_protocol`
-- <a id="s-5b7b3e3aba"></a>`name`: `canonical_path`
-- <a id="s-c9307af696"></a>`owner`: `stove0_observer_protocol.ArtifactSubject`
-- <a id="s-3015f23db5"></a>`unit`: `member`
+<a id="s-73e4fc0d4b"></a>
+- <a id="s-403251899f"></a>`distribution`: `stove0-observer-protocol`
+- <a id="s-7eb26bc8f9"></a>`module`: `stove0_observer_protocol`
+- <a id="s-eb4343bd88"></a>`name`: `canonical_path`
+- <a id="s-d8cef81845"></a>`owner`: `stove0_observer_protocol.WorkArtifactSubject`
+- <a id="s-fd305c934e"></a>`unit`: `member`
 
 ### Declared structure
 
-- <a id="s-887810c2dc"></a>`kind`: `"classmethod"`
-- <a id="s-c83819a4dc"></a>`signature`: `"\"(cls, value: 'str') -> 'str'\""`
+- <a id="s-eae36044d0"></a>`kind`: `"classmethod"`
+- <a id="s-bc857ba406"></a>`signature`: `"\"(cls, value: 'str') -> 'str'\""`
 
 ## Maintained corroboration
 
 ### Related interface records
 
-- [ArtifactSubject](stove0-observer-protocol-artifactsubject.md)
+- [WorkArtifactSubject](stove0-observer-protocol-workartifactsubject.md)
 
 ## Governing policies
 
-- <a id="pa-55747ac0bc"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
+- <a id="pa-a46168a6be"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
 
 ## Evidence
 
@@ -49,7 +49,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/python/stove0_observer_protocol.ArtifactSubject.canonical_path`
+- `/external_contract/python/stove0_observer_protocol.WorkArtifactSubject.canonical_path`
 
 ### Exact owned JSON
 
@@ -58,7 +58,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0f89c199602cdc663eb9ff224699822ae18d8d440d585d24863ab3ae9fa837a5 -->
+<!-- exact-contract-value: cdae5cd8c0f29fa12b9d499616150c6111c95637a6a490ea1a1a6480d228edcc -->
 
 ```json
 {
@@ -69,7 +69,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   "distribution": "stove0-observer-protocol",
   "module": "stove0_observer_protocol",
   "name": "canonical_path",
-  "owner": "stove0_observer_protocol.ArtifactSubject",
+  "owner": "stove0_observer_protocol.WorkArtifactSubject",
   "unit": "member"
 }
 ```

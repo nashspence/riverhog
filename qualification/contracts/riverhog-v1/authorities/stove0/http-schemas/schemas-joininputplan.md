@@ -27,7 +27,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-a54c7517ac"></a>`artifact_selection` | yes | [ArtifactSelectionRef](schemas-artifactselectionref.md) |  |
 | <a id="s-fc60225524"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Branch Id" |  |
 | <a id="s-abe5984f82"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Derivation Sha256" |  |
-| <a id="s-1543aa4be8"></a>`output_collection` | yes | [CollectionRootRef](schemas-collectionrootref.md) |  |
+| <a id="s-1543aa4be8"></a>`output_collection` | yes | [CollectionRootIdentityRef](schemas-collectionrootidentityref.md) |  |
 | <a id="s-54a858b5bb"></a>`producer_settlement_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Producer Settlement Sha256" |  |
 | <a id="s-c0b94e9d50"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Settlement Sha256" |  |
 
@@ -48,7 +48,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 ### Referenced contract elements
 
 - [ArtifactSelectionRef](schemas-artifactselectionref.md)
-- [CollectionRootRef](schemas-collectionrootref.md)
+- [CollectionRootIdentityRef](schemas-collectionrootidentityref.md)
 
 ## Governing policies
 
@@ -80,7 +80,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 848a5245f0f0bec04ab34a9693294b53ef0632c3a05f86bee4c3817a5ba3e6f4 -->
+<!-- exact-contract-value: 9c61326fa18df90c7371e9fbc8f7737d31bb95cff09fd9aa9910856157faf9ce -->
 
 ```json
 {
@@ -100,7 +100,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "output_collection": {
-      "$ref": "#/components/schemas/CollectionRootRef"
+      "$ref": "#/components/schemas/CollectionRootIdentityRef"
     },
     "producer_settlement_sha256": {
       "anyOf": [

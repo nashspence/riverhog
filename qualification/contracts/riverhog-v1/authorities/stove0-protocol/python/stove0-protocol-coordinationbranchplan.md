@@ -47,12 +47,12 @@ Exact externally visible contract owned by this contract element.
 - [ArtifactSelectionRef](#s-b33c09e2a3)
 - [BranchWorkBinding](#s-82983e92f5)
 - [CollectionId](#s-c0da401907)
-- [CollectionRootRef](#s-a0390c77aa)
+- [CollectionRootIdentityRef](#s-bd6947b82c)
 - [EvaluationBinding](#s-d3bc9a7c09)
 - [JoinWorkBinding](#s-5f78a1f478)
 - [JoinWorkMemberBinding](#s-50f9632db8)
 - [JsonValue](#s-0537c3bf06)
-- [RecipeRef](#s-f7ccd9433e)
+- [RecipeIdentityRef](#s-b761c9a961)
 - [WorkIdentity](#s-53618e1cd2)
 
 ##### <a id="s-b33c09e2a3"></a>definition `ArtifactSelectionRef`
@@ -95,19 +95,19 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-c9ca3d8543"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
 | <a id="s-01a9daa500"></a>2 | not=(const="0") |
 
-##### <a id="s-a0390c77aa"></a>definition `CollectionRootRef`
+##### <a id="s-bd6947b82c"></a>definition `CollectionRootIdentityRef`
 
-- <a id="s-94f81b3a53"></a>`type`: `"object"`
-- <a id="s-5eadf87148"></a>`additionalProperties`: `false`
-- <a id="s-ba1a204051"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+- <a id="s-f878693a50"></a>`type`: `"object"`
+- <a id="s-464cadbe4d"></a>`additionalProperties`: `false`
+- <a id="s-1cdf21924d"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8fa9f8dda3"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-db18e1a84d"></a>`collection_id` | yes | [CollectionId](#s-c0da401907) |  |
-| <a id="s-058d62e750"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-d83b40674b"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-c180cb4c36"></a>`collection_id` | yes | [CollectionId](#s-c0da401907) |  |
+| <a id="s-1e899ef920"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-d3bc9a7c09"></a>definition `EvaluationBinding`
 
@@ -158,19 +158,19 @@ Exact externally visible contract owned by this contract element.
 
 - Accepts: any JSON value.
 
-##### <a id="s-f7ccd9433e"></a>definition `RecipeRef`
+##### <a id="s-b761c9a961"></a>definition `RecipeIdentityRef`
 
-- <a id="s-fd4a41e137"></a>`type`: `"object"`
-- <a id="s-8ef7c02363"></a>`additionalProperties`: `false`
-- <a id="s-35951fc217"></a>`required`: `["id","revision","sha256"]`
+- <a id="s-2f5ec87b02"></a>`type`: `"object"`
+- <a id="s-43fc509d18"></a>`additionalProperties`: `false`
+- <a id="s-fb1142dc7a"></a>`required`: `["id","revision","sha256"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f69c8d7c56"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-d54dfb5ddd"></a>`revision` | yes | type="integer"; minimum=1 |  |
-| <a id="s-1048168f81"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-6a8e926aee"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-680018724d"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-08195f1d6f"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-53618e1cd2"></a>definition `WorkIdentity`
 
@@ -186,8 +186,8 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-fda109ffae"></a>`evaluation` | no | anyOf=[([EvaluationBinding](#s-d3bc9a7c09)); (type="null")]; default=null |  |
 | <a id="s-cb3bc75fb5"></a>`fork_join` | no | anyOf=[(discriminator={"mapping":{"branch":"#/$defs/BranchWorkBinding","join":"#/$defs/JoinWorkBinding"},"propertyName":"kind"}; oneOf=[([BranchWorkBinding](#s-82983e92f5)); ([JoinWorkBinding](#s-5f78a1f478))]); (type="null")]; default=null |  |
 | <a id="s-df5eac0440"></a>`format` | no | type="string"; const="stove0-work/v1"; default="stove0-work/v1" |  |
-| <a id="s-3f0333a677"></a>`inputs` | yes | type="array"; items=([CollectionRootRef](#s-a0390c77aa)); minItems=1 |  |
-| <a id="s-0c0a9cadf8"></a>`recipe` | yes | [RecipeRef](#s-f7ccd9433e) |  |
+| <a id="s-3f0333a677"></a>`inputs` | yes | type="array"; items=([CollectionRootIdentityRef](#s-bd6947b82c)); minItems=1 |  |
+| <a id="s-0c0a9cadf8"></a>`recipe` | yes | [RecipeIdentityRef](#s-b761c9a961) |  |
 | <a id="s-255414fa56"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
@@ -225,7 +225,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 12108946eb17041e0bca88eb6d356aa14045b81d50c7c6fdf4226d277855e69f -->
+<!-- exact-contract-value: 32395bde709e2c235120c5b29f898fc1870d79c445a0c37c49328bc432b142b0 -->
 
 ```json
 {
@@ -302,7 +302,7 @@ The following JSON is the complete value owned at each machine-authority pointer
             }
           ]
         },
-        "CollectionRootRef": {
+        "CollectionRootIdentityRef": {
           "additionalProperties": false,
           "properties": {
             "archive_root_sha256": {
@@ -420,7 +420,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "object"
         },
         "JsonValue": {},
-        "RecipeRef": {
+        "RecipeIdentityRef": {
           "additionalProperties": false,
           "properties": {
             "id": {
@@ -495,13 +495,13 @@ The following JSON is the complete value owned at each machine-authority pointer
             },
             "inputs": {
               "items": {
-                "$ref": "#/$defs/CollectionRootRef"
+                "$ref": "#/$defs/CollectionRootIdentityRef"
               },
               "minItems": 1,
               "type": "array"
             },
             "recipe": {
-              "$ref": "#/$defs/RecipeRef"
+              "$ref": "#/$defs/RecipeIdentityRef"
             },
             "work_id": {
               "pattern": "^[0-9a-f]{64}$",

@@ -10,7 +10,7 @@ from a_stove0_media_sampling_contract_lib import (
     SampleableRange,
     validate_media_sampling_facts,
 )
-from stove0_observer_protocol import ArtifactSubject, CollectionRootRef
+from stove0_observer_protocol import CollectionRootIdentityRef, WorkArtifactSubject
 
 
 def test_media_sampling_contract_has_no_artifact_or_duration_ceiling() -> None:
@@ -51,10 +51,10 @@ def test_media_sampling_semantic_vectors_are_bound_and_executable() -> None:
 
 
 def test_media_sampling_semantics_bind_ranges_and_exact_request_subjects() -> None:
-    subject = ArtifactSubject(
+    subject = WorkArtifactSubject(
         id="camera",
         role="fixture.media/v1",
-        collection=CollectionRootRef(
+        collection=CollectionRootIdentityRef(
             collection_id=str(1),
             archive_root_sha256="a" * 64,
             content_identity="b" * 64,

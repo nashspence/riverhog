@@ -28,7 +28,7 @@ Success-only, Riverhog-verified result of one resolved join plan.
 | <a id="s-db3e6acc98"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Derivation Sha256" |  |
 | <a id="s-87f6901bd8"></a>`format` | no | type="string"; const="stove0-join-settlement/v1"; default="stove0-join-settlement/v1"; title="Format" |  |
 | <a id="s-2846d59ef9"></a>`join_plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Join Plan Sha256" |  |
-| <a id="s-96a7bf9913"></a>`output_collection` | yes | [CollectionRootRef](schemas-collectionrootref.md) |  |
+| <a id="s-96a7bf9913"></a>`output_collection` | yes | [CollectionRootIdentityRef](schemas-collectionrootidentityref.md) |  |
 | <a id="s-edfa0bba52"></a>`output_selection` | yes | [ArtifactSelectionRef](schemas-artifactselectionref.md) |  |
 | <a id="s-c0b09ab379"></a>`producer_settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Producer Settlement Sha256" |  |
 | <a id="s-022e518efa"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Settlement Sha256" |  |
@@ -55,7 +55,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 ### Referenced contract elements
 
 - [ArtifactSelectionRef](schemas-artifactselectionref.md)
-- [CollectionRootRef](schemas-collectionrootref.md)
+- [CollectionRootIdentityRef](schemas-collectionrootidentityref.md)
 
 ## Governing policies
 
@@ -87,7 +87,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2f55169693f2be5ebba38485523c8687675c1609ec1aa11e9c47c2595c47f11a -->
+<!-- exact-contract-value: 599f2e5340c643e5c71a0bd9e66eca305eb9cd48088834c2ff9de006bc16851d -->
 
 ```json
 {
@@ -111,7 +111,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "output_collection": {
-      "$ref": "#/components/schemas/CollectionRootRef"
+      "$ref": "#/components/schemas/CollectionRootIdentityRef"
     },
     "output_selection": {
       "$ref": "#/components/schemas/ArtifactSelectionRef"

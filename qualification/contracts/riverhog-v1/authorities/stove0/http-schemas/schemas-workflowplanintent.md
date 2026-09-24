@@ -26,7 +26,7 @@ Work-independent fields that deterministically materialize a workflow plan.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-fc12db4ac7"></a>`input_retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only"; title="Input Retrieval Policy" |  |
-| <a id="s-dec7652768"></a>`operation` | yes | [OperationRef](schemas-operationref.md) |  |
+| <a id="s-dec7652768"></a>`operation` | yes | [OperationIdentityRef](schemas-operationidentityref.md) |  |
 | <a id="s-99bb65af48"></a>`output_policy` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Output Policy" |  |
 | <a id="s-0bb17d7fff"></a>`requested_target_options` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Requested Target Options" |  |
 | <a id="s-37b4b89175"></a>`result_kind` | no | type="string"; enum=["collection","external-effect"]; default="collection"; title="Result Kind" |  |
@@ -59,7 +59,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 ### Referenced contract elements
 
 - [JsonValue](schemas-jsonvalue.md)
-- [OperationRef](schemas-operationref.md)
+- [OperationIdentityRef](schemas-operationidentityref.md)
 
 ## Governing policies
 
@@ -92,7 +92,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6c1fc9c01d7137f700b13db7122bd84690aa92d1135822f4b26800503ae11b12 -->
+<!-- exact-contract-value: ca67e05a564ba6995a326fa187bb1335c9769420921ec8a1956393f2b8606106 -->
 
 ```json
 {
@@ -109,7 +109,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "operation": {
-      "$ref": "#/components/schemas/OperationRef"
+      "$ref": "#/components/schemas/OperationIdentityRef"
     },
     "output_policy": {
       "additionalProperties": {

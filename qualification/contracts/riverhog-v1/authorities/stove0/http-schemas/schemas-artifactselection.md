@@ -26,7 +26,7 @@ One exact, content-addressed selection of immutable artifacts.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-5ca1a027a8"></a>`artifact_count` | yes | type="integer"; minimum=1; title="Artifact Count" |  |
-| <a id="s-718513cbc7"></a>`artifacts` | yes | type="array"; items=([ArtifactSubject](schemas-artifactsubject.md)); minItems=1; title="Artifacts" |  |
+| <a id="s-718513cbc7"></a>`artifacts` | yes | type="array"; items=([WorkArtifactSubject](schemas-workartifactsubject.md)); minItems=1; title="Artifacts" |  |
 | <a id="s-bb0cdcf29c"></a>`format` | no | type="string"; const="stove0-artifact-selection/v1"; default="stove0-artifact-selection/v1"; title="Format" |  |
 | <a id="s-a95861fb35"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Selection Sha256" |  |
 | <a id="s-c25a38133a"></a>`total_bytes` | yes | type="integer"; minimum=0; title="Total Bytes" |  |
@@ -53,7 +53,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract elements
 
-- [ArtifactSubject](schemas-artifactsubject.md)
+- [WorkArtifactSubject](schemas-workartifactsubject.md)
 
 ## Governing policies
 
@@ -86,7 +86,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8af48804a1c059e6b44aa3f4ab91efe8fccf666f2e8c8f0bc454359fb12b95ca -->
+<!-- exact-contract-value: 4f84d3510e6a46e8f030d70fd32d5772072bd1da696aeac61ae2da963ac17aad -->
 
 ```json
 {
@@ -100,7 +100,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     },
     "artifacts": {
       "items": {
-        "$ref": "#/components/schemas/ArtifactSubject"
+        "$ref": "#/components/schemas/WorkArtifactSubject"
       },
       "minItems": 1,
       "title": "Artifacts",

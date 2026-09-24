@@ -8,7 +8,6 @@ from typing import Self
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from stove0_observer_protocol import (
-    ArtifactSubject,
     ContentObservationRequest,
     JsonSchemaValidationProfile,
     ObserverContract,
@@ -17,6 +16,7 @@ from stove0_observer_protocol import (
     SemanticValidationProfile,
     SemanticValidationProfilePayload,
     SemanticValidatorBinding,
+    WorkArtifactSubject,
 )
 
 MEDIA_SAMPLING_OBSERVATION_ID = "stove0.review.media-sampling/v1"
@@ -135,7 +135,7 @@ MEDIA_SAMPLING_FACTS_SEMANTICS = SemanticValidationProfile.seal(
 
 def validate_media_sampling_facts(
     facts: Mapping[str, object],
-    subjects: Sequence[ArtifactSubject],
+    subjects: Sequence[WorkArtifactSubject],
 ) -> MediaSamplingFacts:
     """Apply the exact semantic profile advertised by the observer contract."""
 

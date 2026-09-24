@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-a1d27d342f"></a>`kind`: `"class"`
-- <a id="s-88ddd34ca8"></a>`signature`: `"\"(*, format: Literal['stove0-evaluation-definition/v1'] = 'stove0-evaluation-definition/v1', purpose: Literal['trial', 'evaluation'] = 'evaluation', recipe: stove0_protocol.models.RecipeRef, inputs: Annotated[tuple[stove0_protocol.models.CollectionRootRef, ...], MinLen(min_length=1)], common_intent: dict[str, JsonValue] = <factory>, matrix: stove0_protocol.models.EvaluationMatrix, evaluation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+- <a id="s-88ddd34ca8"></a>`signature`: `"\"(*, format: Literal['stove0-evaluation-definition/v1'] = 'stove0-evaluation-definition/v1', purpose: Literal['trial', 'evaluation'] = 'evaluation', recipe: stove0_protocol.models.RecipeIdentityRef, inputs: Annotated[tuple[stove0_protocol.models.CollectionRootIdentityRef, ...], MinLen(min_length=1)], common_intent: dict[str, JsonValue] = <factory>, matrix: stove0_protocol.models.EvaluationMatrix, evaluation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
 
 #### Validated model schema
 
@@ -39,19 +39,19 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-ab8f045ab1"></a>`common_intent` | no | type="object"; additionalProperties=([JsonValue](#s-3d3dab1600)) |  |
 | <a id="s-444381c456"></a>`evaluation_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-1329820d22"></a>`format` | no | type="string"; const="stove0-evaluation-definition/v1"; default="stove0-evaluation-definition/v1" |  |
-| <a id="s-914f6dd691"></a>`inputs` | yes | type="array"; items=([CollectionRootRef](#s-369a50d278)); minItems=1 |  |
+| <a id="s-914f6dd691"></a>`inputs` | yes | type="array"; items=([CollectionRootIdentityRef](#s-c942642da4)); minItems=1 |  |
 | <a id="s-b30fdc8921"></a>`matrix` | yes | [EvaluationMatrix](#s-b12f948340) |  |
 | <a id="s-82cd0c8b05"></a>`purpose` | no | type="string"; enum=["trial","evaluation"]; default="evaluation" |  |
-| <a id="s-57ae92593f"></a>`recipe` | yes | [RecipeRef](#s-af298ee2e5) |  |
+| <a id="s-57ae92593f"></a>`recipe` | yes | [RecipeIdentityRef](#s-6050afda11) |  |
 
 ##### Definitions
 
 - [CollectionId](#s-b734067b50)
-- [CollectionRootRef](#s-369a50d278)
+- [CollectionRootIdentityRef](#s-c942642da4)
 - [EvaluationMatrix](#s-b12f948340)
 - [EvaluationVariant](#s-19aadbf995)
 - [JsonValue](#s-3d3dab1600)
-- [RecipeRef](#s-af298ee2e5)
+- [RecipeIdentityRef](#s-6050afda11)
 
 ##### <a id="s-b734067b50"></a>definition `CollectionId`
 
@@ -63,19 +63,19 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-f1ea3c6e39"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
 | <a id="s-f479ec8a7a"></a>2 | not=(const="0") |
 
-##### <a id="s-369a50d278"></a>definition `CollectionRootRef`
+##### <a id="s-c942642da4"></a>definition `CollectionRootIdentityRef`
 
-- <a id="s-96fa04e22b"></a>`type`: `"object"`
-- <a id="s-5659545476"></a>`additionalProperties`: `false`
-- <a id="s-cf8c2b7aed"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+- <a id="s-845e723290"></a>`type`: `"object"`
+- <a id="s-05739c4f22"></a>`additionalProperties`: `false`
+- <a id="s-5316b81d46"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ba30c015f7"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-2c7c6c2119"></a>`collection_id` | yes | [CollectionId](#s-b734067b50) |  |
-| <a id="s-1ced819b18"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-0ce02d60f1"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-d6e283e1ae"></a>`collection_id` | yes | [CollectionId](#s-b734067b50) |  |
+| <a id="s-06944c438b"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-b12f948340"></a>definition `EvaluationMatrix`
 
@@ -108,19 +108,19 @@ Exact externally visible contract owned by this contract element.
 
 - Accepts: any JSON value.
 
-##### <a id="s-af298ee2e5"></a>definition `RecipeRef`
+##### <a id="s-6050afda11"></a>definition `RecipeIdentityRef`
 
-- <a id="s-b81e8b0055"></a>`type`: `"object"`
-- <a id="s-20ac925820"></a>`additionalProperties`: `false`
-- <a id="s-be08ed21b6"></a>`required`: `["id","revision","sha256"]`
+- <a id="s-e7f5a928b1"></a>`type`: `"object"`
+- <a id="s-f1f1c4baf8"></a>`additionalProperties`: `false`
+- <a id="s-3c8f6efb09"></a>`required`: `["id","revision","sha256"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-04f77f15b3"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
-| <a id="s-f147f35e9d"></a>`revision` | yes | type="integer"; minimum=1 |  |
-| <a id="s-6a5aec7070"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-08555a0943"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
+| <a id="s-5612b67e5d"></a>`revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-a433125f6e"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Maintained corroboration
 
@@ -160,7 +160,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: bfecc08835ecb205f5ca2d3a2d6696fd11d2d36beecad406d108129e4d619571 -->
+<!-- exact-contract-value: d6a9898f596d62345679f78a24485e96560054621916515130528a403d493d5e -->
 
 ```json
 {
@@ -181,7 +181,7 @@ The following JSON is the complete value owned at each machine-authority pointer
             }
           ]
         },
-        "CollectionRootRef": {
+        "CollectionRootIdentityRef": {
           "additionalProperties": false,
           "properties": {
             "archive_root_sha256": {
@@ -249,7 +249,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "object"
         },
         "JsonValue": {},
-        "RecipeRef": {
+        "RecipeIdentityRef": {
           "additionalProperties": false,
           "properties": {
             "id": {
@@ -292,7 +292,7 @@ The following JSON is the complete value owned at each machine-authority pointer
         },
         "inputs": {
           "items": {
-            "$ref": "#/$defs/CollectionRootRef"
+            "$ref": "#/$defs/CollectionRootIdentityRef"
           },
           "minItems": 1,
           "type": "array"
@@ -309,7 +309,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "recipe": {
-          "$ref": "#/$defs/RecipeRef"
+          "$ref": "#/$defs/RecipeIdentityRef"
         }
       },
       "required": [
@@ -320,7 +320,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, format: Literal['stove0-evaluation-definition/v1'] = 'stove0-evaluation-definition/v1', purpose: Literal['trial', 'evaluation'] = 'evaluation', recipe: stove0_protocol.models.RecipeRef, inputs: Annotated[tuple[stove0_protocol.models.CollectionRootRef, ...], MinLen(min_length=1)], common_intent: dict[str, JsonValue] = <factory>, matrix: stove0_protocol.models.EvaluationMatrix, evaluation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
+    "signature": "\"(*, format: Literal['stove0-evaluation-definition/v1'] = 'stove0-evaluation-definition/v1', purpose: Literal['trial', 'evaluation'] = 'evaluation', recipe: stove0_protocol.models.RecipeIdentityRef, inputs: Annotated[tuple[stove0_protocol.models.CollectionRootIdentityRef, ...], MinLen(min_length=1)], common_intent: dict[str, JsonValue] = <factory>, matrix: stove0_protocol.models.EvaluationMatrix, evaluation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-protocol",
   "module": "stove0_protocol",

@@ -87,7 +87,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: AdmissionRun](../../authorities/stove0/http-schemas/schemas-admissionrun.md#pa-99866cbe67) |
 | `stove0` | [schemas: ArtifactAssociation](../../authorities/stove0/http-schemas/schemas-artifactassociation.md#pa-e203d52a70) |
 | `stove0` | [schemas: ArtifactSelection](../../authorities/stove0/http-schemas/schemas-artifactselection.md#pa-885e0fd2b3) |
-| `stove0` | [schemas: ArtifactSubject](../../authorities/stove0/http-schemas/schemas-artifactsubject.md#pa-60d2e67e32) |
 | `stove0` | [schemas: BranchSetEvaluation](../../authorities/stove0/http-schemas/schemas-branchsetevaluation.md#pa-3ee0a547bd) |
 | `stove0` | [schemas: BranchSetPlan](../../authorities/stove0/http-schemas/schemas-branchsetplan.md#pa-0013d5c5f7) |
 | `stove0` | [schemas: ContentObservationRequest](../../authorities/stove0/http-schemas/schemas-contentobservationrequest.md#pa-3dcdb6c33e) |
@@ -130,6 +129,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: TargetPlanBinding](../../authorities/stove0/http-schemas/schemas-targetplanbinding.md#pa-e5ba21c985) |
 | `stove0` | [schemas: TransformPlan](../../authorities/stove0/http-schemas/schemas-transformplan.md#pa-08124dbc8c) |
 | `stove0` | [schemas: ValidationError](../../authorities/stove0/http-schemas/schemas-validationerror.md#pa-64038d4887) |
+| `stove0` | [schemas: WorkArtifactSubject](../../authorities/stove0/http-schemas/schemas-workartifactsubject.md#pa-81fa8066b2) |
 | `stove0` | [schemas: WorkCreateIn](../../authorities/stove0/http-schemas/schemas-workcreatein.md#pa-4344e67c1e) |
 | `stove0` | [schemas: WorkIdentity](../../authorities/stove0/http-schemas/schemas-workidentity.md#pa-cb25a4a821) |
 | `stove0` | [schemas: WorkPage](../../authorities/stove0/http-schemas/schemas-workpage.md#pa-87aed63766) |

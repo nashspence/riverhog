@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-d21b17df63"></a>`kind`: `"classmethod"`
-- <a id="s-781c0afd9e"></a>`signature`: `"\"(cls, *, members: 'Sequence[JoinMemberDeclaration]', recipe: 'RecipeRef', effective_intent: 'Mapping[str, JsonValue]', workflow_intent: 'WorkflowPlanIntent') -> 'JoinDeclaration'\""`
+- <a id="s-781c0afd9e"></a>`signature`: `"\"(cls, *, members: 'Sequence[JoinMemberDeclaration]', recipe: 'RecipeIdentityRef', effective_intent: 'Mapping[str, JsonValue]', workflow_intent: 'WorkflowPlanIntent') -> 'JoinDeclaration'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f28b01f9da570fcbbbe6d0d13258c184f610e0c27c41718c6ac1c56c008c57c0 -->
+<!-- exact-contract-value: c79b13f2c71d0dd1e011c6bbbd46c91632d751f5be8da92a886935646be78645 -->
 
 ```json
 {
   "contract": {
     "kind": "classmethod",
-    "signature": "\"(cls, *, members: 'Sequence[JoinMemberDeclaration]', recipe: 'RecipeRef', effective_intent: 'Mapping[str, JsonValue]', workflow_intent: 'WorkflowPlanIntent') -> 'JoinDeclaration'\""
+    "signature": "\"(cls, *, members: 'Sequence[JoinMemberDeclaration]', recipe: 'RecipeIdentityRef', effective_intent: 'Mapping[str, JsonValue]', workflow_intent: 'WorkflowPlanIntent') -> 'JoinDeclaration'\""
   },
   "distribution": "stove0-protocol",
   "module": "stove0_protocol",

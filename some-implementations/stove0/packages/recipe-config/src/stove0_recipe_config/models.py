@@ -7,7 +7,7 @@ from typing import Annotated, Literal, Self
 
 from config_validation import load_yaml_config
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, field_validator, model_validator
-from stove0_protocol import RecipeRef, SemanticId, Sha256, canonical_json_sha256
+from stove0_protocol import RecipeIdentityRef, SemanticId, Sha256, canonical_json_sha256
 from stove0_target_protocol import OperationContract
 
 _JSON_POINTER_PATTERN = r"^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$"
@@ -133,7 +133,7 @@ class RecipeCoordinationRoute(_RecipeRouteBase):
     """One exact subrecipe selected as a branch-bound coordinator."""
 
     kind: Literal["coordination"] = "coordination"
-    recipe: RecipeRef
+    recipe: RecipeIdentityRef
 
     @model_validator(mode="after")
     def coordination_projections_target_intent_only(self) -> Self:
@@ -237,8 +237,8 @@ class RecipeDefinition(RecipeModel):
         return canonical_json_sha256(self.model_dump(mode="json", by_alias=True, exclude_none=True))
 
     @property
-    def ref(self) -> RecipeRef:
-        return RecipeRef(id=self.id, revision=self.revision, sha256=self.sha256)
+    def ref(self) -> RecipeIdentityRef:
+        return RecipeIdentityRef(id=self.id, revision=self.revision, sha256=self.sha256)
 
     def identity_document(self) -> dict[str, JsonValue]:
         return {"id": self.id, "revision": self.revision, "sha256": self.sha256}

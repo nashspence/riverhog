@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-f118c7617e"></a>`kind`: `"class"`
-- <a id="s-167d14ca6b"></a>`signature`: `"\"(*, producer_work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], join_settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], derivation_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], output_collection: stove0_protocol.models.CollectionRootRef, output_selection: stove0_protocol.fork_join.ArtifactSelectionRef) -> None\""`
+- <a id="s-167d14ca6b"></a>`signature`: `"\"(*, producer_work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], join_settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], derivation_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], output_collection: stove0_protocol.models.CollectionRootIdentityRef, output_selection: stove0_protocol.fork_join.ArtifactSelectionRef) -> None\""`
 
 #### Validated model schema
 
@@ -38,7 +38,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-cc9f456d3c"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-c86826f870"></a>`join_settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-2b815340a1"></a>`output_collection` | yes | [CollectionRootRef](#s-a8c5328325) |  |
+| <a id="s-2b815340a1"></a>`output_collection` | yes | [CollectionRootIdentityRef](#s-fb0871d52b) |  |
 | <a id="s-03cda085c4"></a>`output_selection` | yes | [ArtifactSelectionRef](#s-1a5436700c) |  |
 | <a id="s-5848a46fac"></a>`producer_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
@@ -46,7 +46,7 @@ Exact externally visible contract owned by this contract element.
 
 - [ArtifactSelectionRef](#s-1a5436700c)
 - [CollectionId](#s-1343125861)
-- [CollectionRootRef](#s-a8c5328325)
+- [CollectionRootIdentityRef](#s-fb0871d52b)
 
 ##### <a id="s-1a5436700c"></a>definition `ArtifactSelectionRef`
 
@@ -72,19 +72,19 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-4342aeb836"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
 | <a id="s-37dde26e1d"></a>2 | not=(const="0") |
 
-##### <a id="s-a8c5328325"></a>definition `CollectionRootRef`
+##### <a id="s-fb0871d52b"></a>definition `CollectionRootIdentityRef`
 
-- <a id="s-aefa0ea39f"></a>`type`: `"object"`
-- <a id="s-54d97cbabf"></a>`additionalProperties`: `false`
-- <a id="s-4dbe3fdc83"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+- <a id="s-9c655614c0"></a>`type`: `"object"`
+- <a id="s-f2eff3087e"></a>`additionalProperties`: `false`
+- <a id="s-f0d3571540"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0a4b886ae5"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-80c35894a9"></a>`collection_id` | yes | [CollectionId](#s-1343125861) |  |
-| <a id="s-3d747893a4"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a4a75c0b74"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-04de13fad8"></a>`collection_id` | yes | [CollectionId](#s-1343125861) |  |
+| <a id="s-2d5727947d"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ## Governing policies
 
@@ -113,7 +113,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c98c97cbd553ec6d7dbafa9b85ada83273d30e0b2f7d1577c66da22b64a90d15 -->
+<!-- exact-contract-value: af61f5b017d461e20a1c8da6bdfca27454816443ae57bf9ee546fcb326d2aa44 -->
 
 ```json
 {
@@ -157,7 +157,7 @@ The following JSON is the complete value owned at each machine-authority pointer
             }
           ]
         },
-        "CollectionRootRef": {
+        "CollectionRootIdentityRef": {
           "additionalProperties": false,
           "properties": {
             "archive_root_sha256": {
@@ -191,7 +191,7 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "output_collection": {
-          "$ref": "#/$defs/CollectionRootRef"
+          "$ref": "#/$defs/CollectionRootIdentityRef"
         },
         "output_selection": {
           "$ref": "#/$defs/ArtifactSelectionRef"
@@ -210,7 +210,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, producer_work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], join_settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], derivation_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], output_collection: stove0_protocol.models.CollectionRootRef, output_selection: stove0_protocol.fork_join.ArtifactSelectionRef) -> None\""
+    "signature": "\"(*, producer_work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], join_settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], derivation_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], output_collection: stove0_protocol.models.CollectionRootIdentityRef, output_selection: stove0_protocol.fork_join.ArtifactSelectionRef) -> None\""
   },
   "distribution": "stove0-protocol",
   "module": "stove0_protocol",

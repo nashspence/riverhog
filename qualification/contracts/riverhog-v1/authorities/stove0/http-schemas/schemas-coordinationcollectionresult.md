@@ -27,7 +27,7 @@ Parent-visible collection produced by the coordinator's actual join leaf.
 |---|---:|---|---|
 | <a id="s-c436558096"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Derivation Sha256" |  |
 | <a id="s-23d790639f"></a>`join_settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Join Settlement Sha256" |  |
-| <a id="s-ee6a9be560"></a>`output_collection` | yes | [CollectionRootRef](schemas-collectionrootref.md) |  |
+| <a id="s-ee6a9be560"></a>`output_collection` | yes | [CollectionRootIdentityRef](schemas-collectionrootidentityref.md) |  |
 | <a id="s-c64a7de331"></a>`output_selection` | yes | [ArtifactSelectionRef](schemas-artifactselectionref.md) |  |
 | <a id="s-7f67d120de"></a>`producer_work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Producer Work Id" |  |
 
@@ -48,7 +48,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 ### Referenced contract elements
 
 - [ArtifactSelectionRef](schemas-artifactselectionref.md)
-- [CollectionRootRef](schemas-collectionrootref.md)
+- [CollectionRootIdentityRef](schemas-collectionrootidentityref.md)
 
 ## Governing policies
 
@@ -80,7 +80,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 820ceced08fd62e760ccc86af09c0c0853234f5a2890ee7e56de01a2420d37ce -->
+<!-- exact-contract-value: 793b8c00f50453774700e659e5967349fc313567bb30cc9cc3c1e7c8c9ee983b -->
 
 ```json
 {
@@ -98,7 +98,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "output_collection": {
-      "$ref": "#/components/schemas/CollectionRootRef"
+      "$ref": "#/components/schemas/CollectionRootIdentityRef"
     },
     "output_selection": {
       "$ref": "#/components/schemas/ArtifactSelectionRef"

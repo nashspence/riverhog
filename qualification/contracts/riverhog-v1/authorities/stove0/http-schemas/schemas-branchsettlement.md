@@ -28,7 +28,7 @@ Success-only, Riverhog-verified result of one branch workflow plan.
 | <a id="s-d14fc4aaa1"></a>`branch_id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Branch Id" |  |
 | <a id="s-b122415c3e"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Derivation Sha256" |  |
 | <a id="s-8cc42659eb"></a>`format` | no | type="string"; const="stove0-branch-settlement/v1"; default="stove0-branch-settlement/v1"; title="Format" |  |
-| <a id="s-9a2f0035d4"></a>`output_collection` | yes | [CollectionRootRef](schemas-collectionrootref.md) |  |
+| <a id="s-9a2f0035d4"></a>`output_collection` | yes | [CollectionRootIdentityRef](schemas-collectionrootidentityref.md) |  |
 | <a id="s-3523e63710"></a>`output_selection` | yes | [ArtifactSelectionRef](schemas-artifactselectionref.md) |  |
 | <a id="s-3aa87a4f91"></a>`producer_settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Producer Settlement Sha256" |  |
 | <a id="s-786e03f388"></a>`settlement_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Settlement Sha256" |  |
@@ -54,7 +54,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 ### Referenced contract elements
 
 - [ArtifactSelectionRef](schemas-artifactselectionref.md)
-- [CollectionRootRef](schemas-collectionrootref.md)
+- [CollectionRootIdentityRef](schemas-collectionrootidentityref.md)
 
 ## Governing policies
 
@@ -86,7 +86,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ff3841fca031acff04876a69b8405ed3e2b279985c48de34ca24abbe802cbf08 -->
+<!-- exact-contract-value: e5db07b4773adf51d626c7c7b55be697ea8587f7bca61a95e87b9a108328c416 -->
 
 ```json
 {
@@ -110,7 +110,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "output_collection": {
-      "$ref": "#/components/schemas/CollectionRootRef"
+      "$ref": "#/components/schemas/CollectionRootIdentityRef"
     },
     "output_selection": {
       "$ref": "#/components/schemas/ArtifactSelectionRef"

@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-e0ace78a2a"></a>`kind`: `"method"`
-- <a id="s-3ed90ff2c3"></a>`signature`: `"\"(self, subject: 'ArtifactSubject', *, start: 'int' = 0, end: 'int \| None' = None, chunk_size: 'int' = 8388608, **prepare_kwargs: 'Any') -> 'Iterator[Iterator[bytes]]'\""`
+- <a id="s-3ed90ff2c3"></a>`signature`: `"\"(self, subject: 'WorkArtifactSubject', *, start: 'int' = 0, end: 'int \| None' = None, chunk_size: 'int' = 8388608, **prepare_kwargs: 'Any') -> 'Iterator[Iterator[bytes]]'\""`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d576bfe5d3159471ab20c709f336ad9bb5d00bf4a03db4bb45fed8c7529b1a94 -->
+<!-- exact-contract-value: e8278746b0d45791462addd55dec3c0dafa6f780830bfcbf466d14f18e7debba -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, subject: 'ArtifactSubject', *, start: 'int' = 0, end: 'int | None' = None, chunk_size: 'int' = 8388608, **prepare_kwargs: 'Any') -> 'Iterator[Iterator[bytes]]'\""
+    "signature": "\"(self, subject: 'WorkArtifactSubject', *, start: 'int' = 0, end: 'int | None' = None, chunk_size: 'int' = 8388608, **prepare_kwargs: 'Any') -> 'Iterator[Iterator[bytes]]'\""
   },
   "distribution": "stove0-observer-support",
   "module": "stove0_observer_support",

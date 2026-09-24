@@ -1,8 +1,8 @@
-# stove0_protocol.CollectionRootRef
+# stove0_protocol.CollectionRootIdentityRef
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: python:stove0-protocol:stove0-protocol-collectionrootref:fc7187931c -->
+<!-- contract-element: python:stove0-protocol:stove0-protocol-collectionrootidentityref:b9746e185b -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,57 +13,57 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-10a2a32df8"></a>
-- <a id="s-0246f8a2d7"></a>`distribution`: `stove0-protocol`
-- <a id="s-9da9fbb81a"></a>`module`: `stove0_protocol`
-- <a id="s-a7ea5e1aa7"></a>`name`: `CollectionRootRef`
-- <a id="s-ca40bdeee3"></a>`unit`: `export`
+<a id="s-87b4b805bc"></a>
+- <a id="s-d465bf5163"></a>`distribution`: `stove0-protocol`
+- <a id="s-699b8385ae"></a>`module`: `stove0_protocol`
+- <a id="s-5ef7851a25"></a>`name`: `CollectionRootIdentityRef`
+- <a id="s-d4ab53d7f0"></a>`unit`: `export`
 
 ### Declared structure
 
-- <a id="s-cffc0acbf1"></a>`kind`: `"class"`
-- <a id="s-524d43c3bc"></a>`signature`: `"\"(*, collection_id: CollectionId, archive_root_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], content_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+- <a id="s-ef1aa86859"></a>`kind`: `"class"`
+- <a id="s-356528acae"></a>`signature`: `"\"(*, collection_id: CollectionId, archive_root_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], content_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
 
 #### Validated model schema
 
-<a id="s-9e39aea4c3"></a>
+<a id="s-881983d6b7"></a>
 
-- <a id="s-6a9c1d36d4"></a>`type`: `"object"`
-- <a id="s-db3d5e6105"></a>`additionalProperties`: `false`
-- <a id="s-ca426c691d"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+- <a id="s-d89a60344b"></a>`type`: `"object"`
+- <a id="s-ba0cfac83e"></a>`additionalProperties`: `false`
+- <a id="s-42c6803253"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
 
 ##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-092c9b7dae"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-5044a4d3bc"></a>`collection_id` | yes | [CollectionId](#s-a0dd024c6d) |  |
-| <a id="s-bb3ed71587"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-a4308826f2"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-afbb8e70f1"></a>`collection_id` | yes | [CollectionId](#s-6b9c8cea27) |  |
+| <a id="s-58779f1693"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### Definitions
 
-- [CollectionId](#s-a0dd024c6d)
+- [CollectionId](#s-6b9c8cea27)
 
-##### <a id="s-a0dd024c6d"></a>definition `CollectionId`
+##### <a id="s-6b9c8cea27"></a>definition `CollectionId`
 
 
 ###### All must match (`allOf`)
 
 | Alternative | Schema |
 |---|---|
-| <a id="s-81e0b5c38f"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
-| <a id="s-cebde9d8e9"></a>2 | not=(const="0") |
+| <a id="s-e245d522f2"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
+| <a id="s-7ff7b4952b"></a>2 | not=(const="0") |
 
 ## Maintained corroboration
 
 ### Related interface records
 
-- [from_identity](stove0-protocol-collectionrootref-from-identity.md)
-- [to_identity](stove0-protocol-collectionrootref-to-identity.md)
+- [from_identity](stove0-protocol-collectionrootidentityref-from-identity.md)
+- [to_identity](stove0-protocol-collectionrootidentityref-to-identity.md)
 
 ## Governing policies
 
-- <a id="pa-5e315efac0"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
+- <a id="pa-2b11605d04"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
 
 ## Evidence
 
@@ -79,7 +79,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/python/stove0_protocol.CollectionRootRef`
+- `/external_contract/python/stove0_protocol.CollectionRootIdentityRef`
 
 ### Exact owned JSON
 
@@ -88,7 +88,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 19dac0fc3192c868b864b167ee4e49fc9eca44ff8d237fbaa4fc47e20918c05d -->
+<!-- exact-contract-value: d5924faf182c52e85dc6de925ce88d203a8477de6281ba131a4c64347e6272ae -->
 
 ```json
 {
@@ -135,7 +135,7 @@ The following JSON is the complete value owned at each machine-authority pointer
   },
   "distribution": "stove0-protocol",
   "module": "stove0_protocol",
-  "name": "CollectionRootRef",
+  "name": "CollectionRootIdentityRef",
   "unit": "export"
 }
 ```

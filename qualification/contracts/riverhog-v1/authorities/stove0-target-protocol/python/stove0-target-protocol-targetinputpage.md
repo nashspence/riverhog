@@ -46,7 +46,7 @@ Exact externally visible contract owned by this contract element.
 
 - [ArtifactSelectionRef](#s-2a796fd68b)
 - [CollectionId](#s-aacc57599e)
-- [CollectionRootRef](#s-15713f5133)
+- [CollectionRootIdentityRef](#s-d74f437ef2)
 - [InputArtifact](#s-b712976709)
 - [TargetInputAuthority](#s-19d884a805)
 - [TargetInputRoleCount](#s-35383094e0)
@@ -75,19 +75,19 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-d017fa6935"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
 | <a id="s-2603933f27"></a>2 | not=(const="0") |
 
-##### <a id="s-15713f5133"></a>definition `CollectionRootRef`
+##### <a id="s-d74f437ef2"></a>definition `CollectionRootIdentityRef`
 
-- <a id="s-e3c1d1bf98"></a>`type`: `"object"`
-- <a id="s-ebb2c56db2"></a>`additionalProperties`: `false`
-- <a id="s-2ae981970c"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
+- <a id="s-052eac6f5d"></a>`type`: `"object"`
+- <a id="s-245e37d7d0"></a>`additionalProperties`: `false`
+- <a id="s-1e38d4033c"></a>`required`: `["collection_id","archive_root_sha256","content_identity"]`
 
 ###### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8e54cd07fe"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-15758b9bf1"></a>`collection_id` | yes | [CollectionId](#s-aacc57599e) |  |
-| <a id="s-0429a3b526"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-e1af9a42c9"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+| <a id="s-1bdfa1c840"></a>`collection_id` | yes | [CollectionId](#s-aacc57599e) |  |
+| <a id="s-e6de05d90e"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
 ##### <a id="s-b712976709"></a>definition `InputArtifact`
 
@@ -100,7 +100,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-0149b5682c"></a>`bytes` | yes | type="integer"; minimum=0 |  |
-| <a id="s-ffdfc4b684"></a>`collection` | yes | [CollectionRootRef](#s-15713f5133) |  |
+| <a id="s-ffdfc4b684"></a>`collection` | yes | [CollectionRootIdentityRef](#s-d74f437ef2) |  |
 | <a id="s-09470f6876"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
 | <a id="s-2578e1740a"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
 | <a id="s-4c8843f4ff"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
@@ -166,7 +166,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0ce4d252f887a1cbf005ab055c39ceec84e8be4d5e97de9214ef3d4f79aae0e0 -->
+<!-- exact-contract-value: 15889bcaacd13e1272ed401a93bf1e4e7565675e46dd07cd93aea7a4ef26c048 -->
 
 ```json
 {
@@ -210,7 +210,7 @@ The following JSON is the complete value owned at each machine-authority pointer
             }
           ]
         },
-        "CollectionRootRef": {
+        "CollectionRootIdentityRef": {
           "additionalProperties": false,
           "properties": {
             "archive_root_sha256": {
@@ -240,7 +240,7 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "integer"
             },
             "collection": {
-              "$ref": "#/$defs/CollectionRootRef"
+              "$ref": "#/$defs/CollectionRootIdentityRef"
             },
             "id": {
               "pattern": "^[A-Za-z0-9]\u0028?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$",

@@ -33,7 +33,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-68cfe88ada"></a>`options` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Options" |  |
 | <a id="s-eb33288024"></a>`request_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Request Id" |  |
 | <a id="s-fff4a6273c"></a>`retrieval_policy` | no | type="string"; enum=["available-only","allow"]; default="available-only"; title="Retrieval Policy" |  |
-| <a id="s-c3a47947f3"></a>`subjects` | yes | type="array"; items=([ArtifactSubject](schemas-artifactsubject.md)); minItems=1; title="Subjects" |  |
+| <a id="s-c3a47947f3"></a>`subjects` | yes | type="array"; items=([WorkArtifactSubject](schemas-workartifactsubject.md)); minItems=1; title="Subjects" |  |
 | <a id="s-494b2e79ce"></a>`timeout_seconds` | no | type="integer"; minimum=1; maximum=86400; default=300; title="Timeout Seconds" |  |
 | <a id="s-4e1bd7f51d"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
 
@@ -63,8 +63,8 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 ### Referenced contract elements
 
-- [ArtifactSubject](schemas-artifactsubject.md)
 - [JsonValue](schemas-jsonvalue.md)
+- [WorkArtifactSubject](schemas-workartifactsubject.md)
 
 ## Governing policies
 
@@ -97,7 +97,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b6137379e719f0cf5d7e1fefd7c286c6ddf6babd40a62493c8e51d2d08bd0291 -->
+<!-- exact-contract-value: 0e2810ce782cae122fa2267104906a468724b221a8fe34c0fba937262a4c2845 -->
 
 ```json
 {
@@ -159,7 +159,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     },
     "subjects": {
       "items": {
-        "$ref": "#/components/schemas/ArtifactSubject"
+        "$ref": "#/components/schemas/WorkArtifactSubject"
       },
       "minItems": 1,
       "title": "Subjects",
