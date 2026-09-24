@@ -1,4 +1,4 @@
-"""Success-qualified FTP listener for the maintained reference adapter."""
+"""Success-qualified FTP listener for the supplied adapter."""
 
 from __future__ import annotations
 
@@ -133,7 +133,7 @@ def build_ftp_server(
     handler.active_uploads = set()
     handler.passive_ports = list(passive_ports)
     handler.masquerade_address = public_host
-    handler.banner = "Riverhog FTP reference ready."
+    handler.banner = "Riverhog FTP ready."
     server = FTPServer((host, port), handler)
     server.max_cons = max_connections
     server.max_cons_per_ip = max_connections_per_ip

@@ -13,7 +13,7 @@
       "id": "ftp-intake",
       "root": "/intake/ftp",
       "ingest_source": "ftp:example-intake",
-      "description": "Reference FTP intake",
+      "description": "Example FTP intake",
       "tags": ["source:ftp"],
       "close_mode": "stable",
       "max_files": 1000,
