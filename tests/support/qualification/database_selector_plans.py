@@ -231,13 +231,15 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
             f"""
             INSERT INTO collections (
                 id, creation_idempotency_key, creation_identity_sha256,
-                creation_custody_mode, content_identity, encryption_format,
+                creation_custody_mode, creation_archive_store, creation_use_cache,
+                creation_copy_to_json, content_identity, encryption_format,
                 passphrase_id, provenance_mode, provenance_identity, inventory_identity,
                 archive_generation, archive_root_sha256, catalog_revision, ingest_source,
                 description, description_search, description_revision, description_identity,
                 created_by_principal_id, created_at, file_count, file_bytes
             )
-            SELECT g, 'collection-' || g, {sha}, 'producer-retained', {sha},
+            SELECT g, 'collection-' || g, {sha}, 'producer-retained',
+                   'archive-' || lpad((g % 16)::text, 2, '0'), false, '[]', {sha},
                    CASE WHEN g = {rows} THEN 'age-v1-scrypt' ELSE 'age-v1-other' END,
                    CASE WHEN g = {rows} THEN 'qualification-key-v1'
                         ELSE 'qualification-key-v2' END,
@@ -319,7 +321,7 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
                 provenance_identity, encryption_format, passphrase_id,
                 initiated_by_principal_id, initiated_by_key_id, event_context_json,
                 state, custody_mode, lease_expires_at, orphaned_at, archive_store,
-                opened_at, last_activity_at, closed_at, archive_phase,
+                use_cache, copy_to_json, opened_at, last_activity_at, closed_at, archive_phase,
                 archive_phase_updated_at, archive_attempt_count,
                 archive_next_attempt_at, archive_last_attempt_at, archive_failure,
                 archive_storage_prefix, planner_checkpoint_json,
@@ -334,7 +336,7 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
                    CASE WHEN g = {rows} THEN 'open' ELSE 'orphaned' END,
                    'producer-retained', NULL,
                    CASE WHEN g = {rows} THEN NULL ELSE {timestamp} END,
-                   'archive', {timestamp}, {timestamp}, NULL,
+                   'archive', false, '[]', {timestamp}, {timestamp}, NULL,
                    CASE WHEN g = {rows} THEN 'planning' ELSE 'orphaned' END,
                    {timestamp}, 0, NULL, NULL, NULL, 'qualification/' || g,
                    '{{}}', g % 32, g * 1024, 0, 0,
@@ -434,11 +436,11 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
             f"""
             INSERT INTO archive_copy_jobs (
                 collection_id, destination_store, destination_storage_prefix,
-                source_store, initiated_by_app, state, requested_at
+                source_store, use_cache, initiated_by_app, state, requested_at
             )
             SELECT g, 'copy-' || lpad((g % 16)::text, 2, '0'),
                    'copies/' || g, 'archive-' || lpad((g % 16)::text, 2, '0'),
-                   'qualification',
+                   false, 'qualification',
                    CASE WHEN g = {rows} THEN 'requested' ELSE 'waiting' END,
                    {timestamp}
             FROM generate_series(1, {rows}) AS g
