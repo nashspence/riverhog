@@ -278,7 +278,7 @@ def _target_models() -> tuple[OperationContract, TargetDescriptor, TransformPlan
                             role="fixture.source/v1",
                             collection=_work().inputs[0],
                             path="source/input.bin",
-                            bytes=12,
+                            bytes="12",
                             sha256="d" * 64,
                         ),
                     )
@@ -375,7 +375,7 @@ def _active_target_work(
         id="output",
         role="fixture.output/v1",
         path="output/result.bin",
-        bytes=12,
+        bytes="12",
         sha256="5" * 64,
     )
     disposition_set = ArtifactDispositionSetIdentity(
@@ -510,7 +510,7 @@ def _active_effect_work(
                             role="fixture.source/v1",
                             collection=work.inputs[0],
                             path="source/input.bin",
-                            bytes=12,
+                            bytes="12",
                             sha256="d" * 64,
                         ),
                     )
@@ -636,7 +636,7 @@ def _branch_decision() -> BranchSetDecision:
                 role="fixture.source/v1",
                 collection=work.inputs[0],
                 path="source/input.bin",
-                bytes=12,
+                bytes="12",
                 sha256="d" * 64,
             ),
         )
@@ -707,7 +707,7 @@ def _resolved_join(
                     role="fixture.branch-output/v1",
                     collection=root,
                     path=f"{branch.branch_id}/output.bin",
-                    bytes=12,
+                    bytes="12",
                     sha256=f"{(offset + 4) % 16:x}" * 64,
                 ),
             )
@@ -938,7 +938,7 @@ def test_postgres_concurrent_classification_admission_converges_exactly_once(
         revision=1,
         required_tags=("camera",),
         recipe_id="fixture.archive/v1",
-        recipe_revision=1,
+        recipe_revision="1",
         recipe_sha256="5" * 64,
     )
 
@@ -1260,7 +1260,7 @@ def test_postgres_declaration_and_production_seal_race_has_one_atomic_boundary(
         id="output",
         role="fixture.output/v1",
         path="output/result.bin",
-        bytes=12,
+        bytes="12",
         sha256="5" * 64,
     )
     barrier = threading.Barrier(2)
@@ -1317,7 +1317,7 @@ def test_postgres_target_declarations_are_isolated_by_fenced_execution_generatio
         id="output",
         role="fixture.output/v1",
         path="output/result.bin",
-        bytes=12,
+        bytes="12",
         sha256="5" * 64,
     )
     first.ensure_target_production_receiving(record.work_id, stale_job)
@@ -1381,7 +1381,7 @@ def test_postgres_post_root_settlement_checkpoint_is_fenced_and_restartable(
             output_collection=succeeded.output_collection,
             output_bindings=TargetOutputBindingSetIdentity(
                 artifact_count=1,
-                total_bytes=12,
+                total_bytes="12",
                 sha256="7" * 64,
             ),
         )
