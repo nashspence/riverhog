@@ -212,7 +212,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-target-support` | [POST /v1/jobs/{job_id}/cancel](../../authorities/stove0-target-support/process-protocol-operations/post-v1-jobs-job-id-cancel.md#pa-054413e081) |
 | `stove0-target-support` | [POST /v1/preflight](../../authorities/stove0-target-support/process-protocol-operations/post-v1-preflight.md#pa-46db2efb30) |
 | `stove0-target-support` | [PUT /v1/jobs/{job_id}](../../authorities/stove0-target-support/process-protocol-operations/put-v1-jobs-job-id.md#pa-02ea72597b) |
-| `stove0-target-support` | [generated:stove0-target protocol](../../authorities/stove0-target-support/process-protocol/generated-stove0-target-protocol.md#pa-192c712a44) |
+| `stove0-target-support` | [generated:stove0-target protocol](../../authorities/stove0-target-support/process-protocol/generated-stove0-target-protocol.md#pa-d9bfc8e169) |
 | `stove0-target-support` | [generated:stove0-target: ErrorOut](../../authorities/stove0-target-support/process-protocol-schemas/generated-stove0-target-errorout.md#pa-c134bf2c04) |
 | `stove0-target-support` | [generated:stove0-target: OperationContract](../../authorities/stove0-target-support/process-protocol-schemas/generated-stove0-target-operationcontract.md#pa-018bb7213f) |
 | `stove0-target-support` | [generated:stove0-target: TargetConformanceResult](../../authorities/stove0-target-support/process-protocol-schemas/generated-stove0-target-targetconformanceresult.md#pa-8088daece5) |

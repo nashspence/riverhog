@@ -1050,6 +1050,10 @@ def test_postgres_concurrent_classification_admission_converges_exactly_once(
         order="desc",
     )["admissions"]
     assert len(cast(tuple[object, ...], admissions)) == 1
+    with first.sessions() as session:
+        policy_row = session.get(_AdmissionPolicyRow, policy.id)
+        assert policy_row is not None
+        generation = policy_row.generation
 
     delete = CatalogSyncDeparture(
         cause="collection_deleted", collection_id=str(descriptor.collection_id), revision="3"
@@ -1067,6 +1071,7 @@ def test_postgres_concurrent_classification_admission_converges_exactly_once(
         cursor="after-change",
         page=delete_page,
         evaluated=None,
+        expected_generation=generation,
     )
     stale_descriptor = descriptor.model_copy(
         update={"tag_revision": 2, "tag_set_identity": "8" * 64, "revision": "2"}
@@ -1085,6 +1090,7 @@ def test_postgres_concurrent_classification_admission_converges_exactly_once(
         cursor="after-delete",
         page=stale_page,
         evaluated=(stale, True),
+        expected_generation=generation,
     )
     conflicting_descriptor = stale_descriptor.model_copy(update={"revision": "3"})
     conflict = CatalogSyncUpsert(**conflicting_descriptor.model_dump())
@@ -1097,6 +1103,7 @@ def test_postgres_concurrent_classification_admission_converges_exactly_once(
             cursor="after-stale",
             page=conflict_page,
             evaluated=(conflict, True),
+            expected_generation=generation,
         )
 
     with first.sessions() as session:

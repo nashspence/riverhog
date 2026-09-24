@@ -13,6 +13,7 @@ from riverhog_protocol import (
     CatalogSyncDescriptor,
     CatalogSyncUpsert,
 )
+from riverhog_protocol.errors import CatalogSyncViewChanged
 from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
 from stove0_core import ClassificationAdmissionService, SqlAlchemyStateStore
@@ -217,6 +218,13 @@ def _state() -> SqlAlchemyStateStore:
         poolclass=StaticPool,
     )
     return SqlAlchemyStateStore("sqlite+pysqlite:///:memory:", engine=engine)
+
+
+def _generation(state: SqlAlchemyStateStore, policy_id: str) -> str:
+    with state.sessions() as session:
+        row = session.get(_AdmissionPolicyRow, policy_id)
+        assert row is not None
+        return row.generation
 
 
 def _service(
@@ -439,6 +447,7 @@ def test_stale_upsert_cannot_resurrect_a_departed_catalog_revision() -> None:
         cursor="following",
         page=departure_page,
         evaluated=None,
+        expected_generation=_generation(state, policy.id),
     )
 
     restarted = _service(state=state, api=api, policy=policy)
@@ -465,6 +474,7 @@ def test_stale_upsert_cannot_resurrect_a_departed_catalog_revision() -> None:
         cursor="after-departure",
         page=stale_page,
         evaluated=(stale, True),
+        expected_generation=_generation(state, policy.id),
     )
 
     assert (
@@ -511,6 +521,7 @@ def test_equal_catalog_revision_with_different_authority_fails_closed() -> None:
             cursor="following",
             page=page,
             evaluated=(conflict, False),
+            expected_generation=_generation(state, policy.id),
         )
     assert service.policies().policies[0].through_revision == "0"
 
@@ -634,6 +645,100 @@ def test_catalog_authority_change_persists_explicit_rebaseline_requirement() -> 
 
     assert len(run.failures) == 1
     assert service.policies().policies[0].phase == "reset_required"
+
+
+@pytest.mark.parametrize("transition", ["reset", "rebaseline"])
+def test_delayed_admission_baseline_page_cannot_cross_a_fence(
+    monkeypatch: pytest.MonkeyPatch, transition: str
+) -> None:
+    state = _state()
+    initial = _descriptor(tag_revision=1, tag_identity="6" * 64, revision="1")
+    api = _CatalogApi(initial, {"camera", "workflow/archive"})
+    policy = _policy()
+    service = _service(state=state, api=api, policy=policy)
+    assert service.advance(limit=1).failures == ()
+    generation = _generation(state, policy.id)
+    page = api.list_catalog_sync_collections("baseline", limit=100)
+
+    def delayed(_cursor: str, *, limit: int) -> CatalogSyncCollectionPage:
+        assert limit == 100
+        if transition == "reset":
+            service._require_rebaseline(  # noqa: SLF001 - delayed response race
+                policy.id, generation=generation, phase="baseline", cursor="baseline"
+            )
+        else:
+            service.rebaseline(policy.id)
+        return page
+
+    monkeypatch.setattr(api, "list_catalog_sync_collections", delayed)
+    with pytest.raises(RuntimeError, match="rebaseline is required"):
+        service._advance_policy(policy)  # noqa: SLF001 - delayed response race
+    assert service.policies().policies[0].phase == (
+        "reset_required" if transition == "reset" else "baseline"
+    )
+    if transition == "rebaseline":
+        assert _generation(state, policy.id) != generation
+
+
+@pytest.mark.parametrize("transition", ["reset", "rebaseline"])
+def test_delayed_admission_change_cannot_cross_a_fence(
+    monkeypatch: pytest.MonkeyPatch, transition: str
+) -> None:
+    state = _state()
+    initial = _descriptor(tag_revision=1, tag_identity="6" * 64, revision="1")
+    api = _CatalogApi(initial, {"camera", "workflow/archive"})
+    policy = _policy()
+    service = _service(state=state, api=api, policy=policy)
+    assert service.advance(limit=2).failures == ()
+    generation = _generation(state, policy.id)
+    page = CatalogSyncChangePage(
+        source_identity=api.source_identity,
+        authorization_view_identity=api.view_identity,
+        changes=[CatalogSyncDeparture(cause="visibility_lost", collection_id="7", revision="2")],
+        next_cursor="after-departure",
+        caught_up=True,
+        through_revision="2",
+    )
+
+    def delayed(_cursor: str, *, limit: int) -> CatalogSyncChangePage:
+        assert limit == 1
+        if transition == "reset":
+            service._require_rebaseline(  # noqa: SLF001 - delayed response race
+                policy.id, generation=generation, phase="following", cursor="following"
+            )
+        else:
+            service.rebaseline(policy.id)
+        return page
+
+    monkeypatch.setattr(api, "list_catalog_sync_changes", delayed)
+    with pytest.raises(RuntimeError, match="rebaseline is required"):
+        service._advance_policy(policy)  # noqa: SLF001 - delayed response race
+    assert service.policies().policies[0].phase == (
+        "reset_required" if transition == "reset" else "baseline"
+    )
+
+
+def test_delayed_admission_error_cannot_reset_a_new_generation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    state = _state()
+    initial = _descriptor(tag_revision=1, tag_identity="6" * 64, revision="1")
+    api = _CatalogApi(initial, {"camera", "workflow/archive"})
+    policy = _policy()
+    service = _service(state=state, api=api, policy=policy)
+    assert service.advance(limit=1).failures == ()
+    generation = _generation(state, policy.id)
+
+    def stale_error(_cursor: str, *, limit: int) -> CatalogSyncCollectionPage:
+        assert limit == 100
+        service.rebaseline(policy.id)
+        raise CatalogSyncViewChanged("old view changed")
+
+    monkeypatch.setattr(api, "list_catalog_sync_collections", stale_error)
+    with pytest.raises(CatalogSyncViewChanged):
+        service._advance_policy(policy)  # noqa: SLF001 - delayed error race
+    assert service.policies().policies[0].phase == "baseline"
+    assert _generation(state, policy.id) != generation
 
 
 def test_policy_identity_is_evidence_but_semantic_work_converges() -> None:

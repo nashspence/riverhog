@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import secrets
 from datetime import timedelta
-from typing import Any, Protocol, cast
+from typing import Any, Literal, Protocol, cast
 
 from riverhog_canonical_json import canonical_json_sha256
 from riverhog_client import ApiClient
@@ -281,7 +281,7 @@ class DepartureEffectService:
             row = session.get(_DeparturePolicyRow, policy.id)
             if row is None:
                 raise RuntimeError("departure policy state is unavailable")
-            phase, cursor = row.phase, row.cursor
+            phase, cursor, generation = row.phase, row.cursor, row.generation
         if phase == "reset_required":
             return False
         if phase == "new":
@@ -302,7 +302,11 @@ class DepartureEffectService:
                     for item in catalog_page.collections
                 ]
                 return self._commit_baseline_page(
-                    policy, cursor=cursor, page=catalog_page, matches=matches
+                    policy,
+                    cursor=cursor,
+                    page=catalog_page,
+                    matches=matches,
+                    expected_generation=generation,
                 )
             if phase == "following":
                 change_page = self.riverhog.list_catalog_sync_changes(cursor, limit=1)
@@ -312,14 +316,20 @@ class DepartureEffectService:
                         self.riverhog, policy.selector, change_page.changes[0]
                     )
                 return self._commit_change_page(
-                    policy, cursor=cursor, page=change_page, evaluated=evaluated
+                    policy,
+                    cursor=cursor,
+                    page=change_page,
+                    evaluated=evaluated,
+                    expected_generation=generation,
                 )
         except RiverhogError as exc:
             if exc.code in _RESET_ERRORS:
-                self._require_rebaseline(policy.id)
+                self._require_rebaseline(
+                    policy.id, generation=generation, phase=phase, cursor=cursor
+                )
             raise
         except _AuthorityChanged:
-            self._require_rebaseline(policy.id)
+            self._require_rebaseline(policy.id, generation=generation, phase=phase, cursor=cursor)
             raise
         raise RuntimeError("departure policy phase is invalid")
 
@@ -330,6 +340,7 @@ class DepartureEffectService:
         cursor: str,
         page: CatalogSyncCollectionPage,
         matches: list[tuple[CatalogSyncDescriptor, bool]],
+        expected_generation: str,
     ) -> bool:
         with self.state.sessions() as session, session.begin():
             row = session.get(_DeparturePolicyRow, policy.id, with_for_update=True)
@@ -338,6 +349,7 @@ class DepartureEffectService:
             if (
                 row is not None
                 and row.policy_sha256 == policy.policy_sha256
+                and row.generation == expected_generation
                 and row.source_identity == page.source_identity
                 and row.authorization_view_identity == page.authorization_view_identity
                 and row.cursor == next_cursor
@@ -346,7 +358,14 @@ class DepartureEffectService:
                 for descriptor, _matched in matches:
                     self._require_replayed_change(session, row, descriptor)
                 return False
-            self._require_page_authority(row, policy, cursor, page)
+            self._require_page_authority(
+                row,
+                policy,
+                cursor,
+                page,
+                expected_generation=expected_generation,
+                expected_phase="baseline",
+            )
             assert row is not None
             for descriptor, matched in matches:
                 self._apply_upsert(session, row, descriptor, matched)
@@ -362,12 +381,14 @@ class DepartureEffectService:
         cursor: str,
         page: CatalogSyncChangePage,
         evaluated: bool | None,
+        expected_generation: str,
     ) -> bool:
         with self.state.sessions() as session, session.begin():
             row = session.get(_DeparturePolicyRow, policy.id, with_for_update=True)
             if (
                 row is not None
                 and row.policy_sha256 == policy.policy_sha256
+                and row.generation == expected_generation
                 and row.source_identity == page.source_identity
                 and row.authorization_view_identity == page.authorization_view_identity
                 and row.cursor == page.next_cursor
@@ -380,7 +401,14 @@ class DepartureEffectService:
                     replay = page.changes[0]
                     self._require_replayed_change(session, row, replay)
                 return False
-            self._require_page_authority(row, policy, cursor, page)
+            self._require_page_authority(
+                row,
+                policy,
+                cursor,
+                page,
+                expected_generation=expected_generation,
+                expected_phase="following",
+            )
             assert row is not None
             if len(page.changes) > 1:
                 raise RuntimeError("departure change step exceeded its one-change transaction")
@@ -602,20 +630,32 @@ class DepartureEffectService:
         policy: DeparturePolicy,
         cursor: str,
         page: CatalogSyncCollectionPage | CatalogSyncChangePage,
+        *,
+        expected_generation: str,
+        expected_phase: Literal["baseline", "following"],
     ) -> None:
         if (
             row is None
             or row.policy_sha256 != policy.policy_sha256
+            or row.generation != expected_generation
+            or row.phase != expected_phase
             or row.cursor != cursor
             or row.source_identity != page.source_identity
             or row.authorization_view_identity != page.authorization_view_identity
         ):
             raise _AuthorityChanged("departure catalog authority changed; rebaseline is required")
 
-    def _require_rebaseline(self, policy_id: str) -> None:
+    def _require_rebaseline(
+        self, policy_id: str, *, generation: str, phase: str, cursor: str
+    ) -> None:
         with self.state.sessions() as session, session.begin():
             row = session.get(_DeparturePolicyRow, policy_id, with_for_update=True)
-            if row is not None:
+            if (
+                row is not None
+                and row.generation == generation
+                and row.phase == phase
+                and row.cursor == cursor
+            ):
                 row.phase = "reset_required"
                 row.updated_at = utc_timestamp_now()
 
