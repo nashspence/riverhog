@@ -49,8 +49,8 @@ RIVERHOG_EVENT_PAGE = {
             "time": "2026-08-14T00:00:00Z",
             "datacontenttype": "application/json",
             "data": {
-                "actor": {"app": "riverhog-installation-qualification"},
-                "initiator": {"app": "riverhog-installation-qualification"},
+                "actor": {"principal_id": "riverhog-installation-qualification"},
+                "initiator": {"principal_id": "riverhog-installation-qualification"},
                 "collection_id": "1",
                 "collection_created_at": "2026-08-14T00:00:00.000000Z",
                 "files_total": 1,

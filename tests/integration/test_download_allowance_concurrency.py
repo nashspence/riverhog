@@ -12,7 +12,7 @@ from riverhog_core.app_permissions import (
     KEYS_MANAGE,
     RETRIEVAL_MANAGE,
     ApplicationAccess,
-    ApplicationPrincipal,
+    Principal,
 )
 from riverhog_core.catalog_db import (
     STATE_VERSION_TABLE,
@@ -29,8 +29,8 @@ from time_formats import format_utc_timestamp, utc_now
 
 pytestmark = pytest.mark.integration
 
-BOOTSTRAP = ApplicationPrincipal(
-    app="bootstrap",
+BOOTSTRAP = Principal(
+    id="bootstrap",
     key_id=None,
     access=frozenset({ApplicationAccess(KEYS_MANAGE)}),
     unrestricted_delegation=True,

@@ -46,7 +46,7 @@ from sqlalchemy.sql.elements import ColumnElement
 from state_schema import read_snapshot
 from time_formats import format_utc_timestamp, parse_utc_timestamp, utc_now
 
-from riverhog_core.app_permissions import CATALOG_READ, RETRIEVAL_MANAGE, ApplicationPrincipal
+from riverhog_core.app_permissions import CATALOG_READ, RETRIEVAL_MANAGE, Principal
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.artifact_access import require_artifact_scope
 from riverhog_core.browse import bounded_page, keyset_statement, validate_page_size
@@ -206,7 +206,7 @@ class SqlAlchemyRetrievalService:
         self,
         collection_id: int,
         *,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> tuple[
         PortableCollectionHeader,
         Iterator[PortableCollectionFile],
@@ -267,7 +267,7 @@ class SqlAlchemyRetrievalService:
         cursor: str | None,
         limit: int,
         expected_identity: str | None,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> PortableCollectionInventoryPage:
         """Read one bounded page from one immutable collection inventory."""
 
@@ -366,7 +366,7 @@ class SqlAlchemyRetrievalService:
     def cache_status(
         self,
         *,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> dict[str, object]:
         now = format_utc_timestamp(utc_now())
         visible = collection_access_filter(
@@ -462,7 +462,7 @@ class SqlAlchemyRetrievalService:
         expires_after: str | None = None,
         sort: str,
         order: str,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> dict[str, object]:
         validate_page_size(page_size)
         now = format_utc_timestamp(utc_now())
@@ -532,7 +532,7 @@ class SqlAlchemyRetrievalService:
         expires_after: str | None = None,
         sort: str,
         order: str,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> Iterator[dict[str, object]]:
         now = format_utc_timestamp(utc_now())
         statement, _, _, _ = _cache_list_statement(
@@ -571,7 +571,7 @@ class SqlAlchemyRetrievalService:
         collection_id: int,
         source_store: str,
         object_id: str,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> dict[str, object]:
         normalized_id = _normalize_collection_id_or_raise(collection_id)
         normalized_store = source_store.strip().casefold()
@@ -613,7 +613,7 @@ class SqlAlchemyRetrievalService:
         idempotency_key: str | None = None,
         lease: timedelta | None = None,
         restore_policy: str = "allow",
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> dict[str, object]:
         normalized = _normalize_file_refs(files)
         normalized_idempotency_key = _normalize_plan_idempotency_key(
@@ -627,7 +627,7 @@ class SqlAlchemyRetrievalService:
             raise BadRequest("retrieval lease exceeds the configured maximum")
         plan_id = uuid.uuid4().hex
         now = utc_now()
-        owner_app = principal.app if principal is not None else ""
+        owner_principal_id = principal.id if principal is not None else ""
         owner_key_id = principal.key_id if principal is not None else None
         request_json = json.dumps(
             [{"collection_id": collection_id, "path": path} for collection_id, path in normalized],
@@ -655,7 +655,7 @@ class SqlAlchemyRetrievalService:
                 require_artifact_scope(session, principal, collection_id, path)
             existing = session.scalar(
                 select(RetrievalPlanRecord).where(
-                    RetrievalPlanRecord.app == owner_app,
+                    RetrievalPlanRecord.principal_id == owner_principal_id,
                     RetrievalPlanRecord.initiated_by_key_id == owner_key_id,
                     RetrievalPlanRecord.idempotency_key == normalized_idempotency_key,
                 )
@@ -668,7 +668,7 @@ class SqlAlchemyRetrievalService:
                 session.add(
                     RetrievalPlanRecord(
                         id=plan_id,
-                        app=owner_app,
+                        principal_id=owner_principal_id,
                         initiated_by_key_id=owner_key_id,
                         idempotency_key=normalized_idempotency_key,
                         creation_identity_sha256=creation_identity_sha256,
@@ -685,7 +685,7 @@ class SqlAlchemyRetrievalService:
                     )
                 )
         return self.advance_plan(
-            app=owner_app,
+            principal_id=owner_principal_id,
             key_id=owner_key_id,
             plan_id=plan_id,
         )
@@ -693,24 +693,28 @@ class SqlAlchemyRetrievalService:
     def get_plan(
         self,
         *,
-        app: str,
+        principal_id: str,
         plan_id: str,
         key_id: str | None = None,
     ) -> dict[str, object]:
         with session_scope(self._session_factory) as session:
-            plan = self._require_plan(session, app=app, key_id=key_id, plan_id=plan_id)
+            plan = self._require_plan(
+                session, principal_id=principal_id, key_id=key_id, plan_id=plan_id
+            )
             self._expire_plan_if_due(plan)
             return _plan_payload(plan)
 
     def advance_plan(
         self,
         *,
-        app: str,
+        principal_id: str,
         plan_id: str,
         key_id: str | None = None,
     ) -> dict[str, object]:
         with session_scope(self._session_factory) as session:
-            plan = self._require_plan(session, app=app, key_id=key_id, plan_id=plan_id, lock=True)
+            plan = self._require_plan(
+                session, principal_id=principal_id, key_id=key_id, plan_id=plan_id, lock=True
+            )
             self._expire_plan_if_due(plan)
             if plan.state != "planning":
                 return _plan_payload(plan)
@@ -724,7 +728,7 @@ class SqlAlchemyRetrievalService:
     def list_plan_files(
         self,
         *,
-        app: str,
+        principal_id: str,
         plan_id: str,
         etag: str,
         start_ordinal: int,
@@ -736,7 +740,9 @@ class SqlAlchemyRetrievalService:
         if page_size < 1 or page_size > _RETRIEVAL_PLAN_FILE_PAGE_MAX:
             raise BadRequest("retrieval plan file page size is invalid")
         with read_snapshot(self._session_factory) as session:
-            plan = self._require_plan(session, app=app, key_id=key_id, plan_id=plan_id)
+            plan = self._require_plan(
+                session, principal_id=principal_id, key_id=key_id, plan_id=plan_id
+            )
             if plan.state not in {"ready", "consumed"} or plan.etag is None:
                 raise InvalidState("retrieval plan is not sealed")
             if etag != plan.etag:
@@ -1020,15 +1026,15 @@ class SqlAlchemyRetrievalService:
     def create(
         self,
         *,
-        app: str,
+        principal_id: str,
         key_id: str | None = None,
         plan_id: str,
         plan_etag: str,
         event_context: dict[str, object] | None = None,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> dict[str, object]:
         if principal is not None:
-            app = principal.app
+            principal_id = principal.id
             key_id = principal.key_id
         job_id = uuid.uuid4().hex
         normalized_event_context = event_context_json(event_context)
@@ -1039,7 +1045,7 @@ class SqlAlchemyRetrievalService:
             with session_scope(self._session_factory) as session:
                 plan = self._require_plan(
                     session,
-                    app=app,
+                    principal_id=principal_id,
                     key_id=key_id,
                     plan_id=plan_id,
                     lock=True,
@@ -1079,7 +1085,7 @@ class SqlAlchemyRetrievalService:
                 record = RetrievalJobRecord(
                     id=job_id,
                     plan_id=plan_id,
-                    app=app,
+                    principal_id=principal_id,
                     initiated_by_key_id=key_id,
                     event_context_json=normalized_event_context,
                     state=state,
@@ -1114,18 +1120,22 @@ class SqlAlchemyRetrievalService:
             if allowance_reserved and key_id is not None and self._download_allowance is not None:
                 self._download_allowance.release_retrieval(job_id=job_id)
             raise
-        return self.get(app=app, key_id=key_id, job_id=job_id)
+        return self.get(principal_id=principal_id, key_id=key_id, job_id=job_id)
 
-    def get(self, *, app: str, job_id: str, key_id: str | None = None) -> dict[str, object]:
+    def get(
+        self, *, principal_id: str, job_id: str, key_id: str | None = None
+    ) -> dict[str, object]:
         with session_scope(self._session_factory) as session:
-            record = self._require_job(session, app=app, key_id=key_id, job_id=job_id)
+            record = self._require_job(
+                session, principal_id=principal_id, key_id=key_id, job_id=job_id
+            )
             self._expire_job_if_due(session, record)
             return _job_payload(record)
 
     def renew(
         self,
         *,
-        app: str,
+        principal_id: str,
         job_id: str,
         lease: timedelta,
         key_id: str | None = None,
@@ -1136,7 +1146,9 @@ class SqlAlchemyRetrievalService:
             raise BadRequest("retrieval lease exceeds the configured maximum")
         expires_at = format_utc_timestamp(utc_now() + lease)
         with session_scope(self._session_factory) as session:
-            record = self._require_job(session, app=app, key_id=key_id, job_id=job_id)
+            record = self._require_job(
+                session, principal_id=principal_id, key_id=key_id, job_id=job_id
+            )
             self._expire_job_if_due(session, record)
             if record.state != "ready":
                 raise InvalidState("only a ready retrieval job can be renewed")
@@ -1171,9 +1183,13 @@ class SqlAlchemyRetrievalService:
             )
             return _job_payload(record)
 
-    def acknowledge(self, *, app: str, job_id: str, key_id: str | None = None) -> dict[str, object]:
+    def acknowledge(
+        self, *, principal_id: str, job_id: str, key_id: str | None = None
+    ) -> dict[str, object]:
         with session_scope(self._session_factory) as session:
-            record = self._require_job(session, app=app, key_id=key_id, job_id=job_id)
+            record = self._require_job(
+                session, principal_id=principal_id, key_id=key_id, job_id=job_id
+            )
             if record.state not in {"ready", "completed"}:
                 raise InvalidState("only a ready retrieval job can be acknowledged")
             if record.state != "completed":
@@ -1190,9 +1206,13 @@ class SqlAlchemyRetrievalService:
             self._download_allowance.release_retrieval(job_id=job_id)
         return payload
 
-    def cancel(self, *, app: str, job_id: str, key_id: str | None = None) -> dict[str, object]:
+    def cancel(
+        self, *, principal_id: str, job_id: str, key_id: str | None = None
+    ) -> dict[str, object]:
         with session_scope(self._session_factory) as session:
-            record = self._require_job(session, app=app, key_id=key_id, job_id=job_id)
+            record = self._require_job(
+                session, principal_id=principal_id, key_id=key_id, job_id=job_id
+            )
             self._expire_job_if_due(session, record)
             if record.state in {"completed", "expired"}:
                 raise InvalidState(f"retrieval job is already {record.state}")
@@ -1214,7 +1234,7 @@ class SqlAlchemyRetrievalService:
     def content(
         self,
         *,
-        app: str,
+        principal_id: str,
         job_id: str,
         collection_id: int,
         path: str,
@@ -1223,7 +1243,9 @@ class SqlAlchemyRetrievalService:
         key_id: str | None = None,
     ) -> tuple[Iterator[bytes], int, str]:
         with session_scope(self._session_factory) as session:
-            job = self._require_job(session, app=app, key_id=key_id, job_id=job_id)
+            job = self._require_job(
+                session, principal_id=principal_id, key_id=key_id, job_id=job_id
+            )
             self._expire_job_if_due(session, job)
             if job.state != "ready":
                 raise InvalidState("retrieval job is not ready")
@@ -1498,14 +1520,16 @@ class SqlAlchemyRetrievalService:
     def content_metadata(
         self,
         *,
-        app: str,
+        principal_id: str,
         job_id: str,
         collection_id: int,
         path: str,
         key_id: str | None = None,
     ) -> tuple[int, str]:
         with session_scope(self._session_factory) as session:
-            job = self._require_job(session, app=app, key_id=key_id, job_id=job_id)
+            job = self._require_job(
+                session, principal_id=principal_id, key_id=key_id, job_id=job_id
+            )
             self._expire_job_if_due(session, job)
             if job.state != "ready":
                 raise InvalidState("retrieval job is not ready")
@@ -2078,7 +2102,7 @@ class SqlAlchemyRetrievalService:
     def _require_plan(
         session: Session,
         *,
-        app: str,
+        principal_id: str,
         plan_id: str,
         key_id: str | None = None,
         lock: bool = False,
@@ -2089,7 +2113,7 @@ class SqlAlchemyRetrievalService:
         record = session.scalar(statement)
         if (
             record is None
-            or (record.app and record.app != app)
+            or (record.principal_id and record.principal_id != principal_id)
             or (record.initiated_by_key_id is not None and record.initiated_by_key_id != key_id)
         ):
             raise NotFound(f"retrieval plan not found: {plan_id}")
@@ -2107,14 +2131,14 @@ class SqlAlchemyRetrievalService:
     def _require_job(
         session: Session,
         *,
-        app: str,
+        principal_id: str,
         job_id: str,
         key_id: str | None = None,
     ) -> RetrievalJobRecord:
         record = session.get(RetrievalJobRecord, job_id)
         if (
             record is None
-            or record.app != app
+            or record.principal_id != principal_id
             or (key_id is not None and record.initiated_by_key_id != key_id)
         ):
             raise NotFound(f"retrieval job not found: {job_id}")
@@ -2270,7 +2294,7 @@ def _cache_list_statement(
     expires_after: str | None,
     sort: str,
     order: str,
-    principal: ApplicationPrincipal | None,
+    principal: Principal | None,
     now: str,
 ) -> tuple[Any, tuple[Any, ...], dict[str, object], str | None]:
     if sort not in _CACHE_SORT_FIELDS:

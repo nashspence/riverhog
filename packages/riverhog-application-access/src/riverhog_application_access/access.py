@@ -26,11 +26,11 @@ COLLECTIONS_CREATE: Literal["collections:create"] = "collections:create"
 COLLECTION_DESCRIPTIONS_MANAGE: Literal["collection-descriptions:manage"] = (
     "collection-descriptions:manage"
 )
-COLLECTION_TRANSFORMS_CONTROL: Literal["collection-transforms:control"] = (
-    "collection-transforms:control"
+COLLECTION_PROCESSING_CONTROL: Literal["collection-processing:control"] = (
+    "collection-processing:control"
 )
-COLLECTION_TRANSFORMS_EXECUTE: Literal["collection-transforms:execute"] = (
-    "collection-transforms:execute"
+COLLECTION_PROCESSING_EXECUTE: Literal["collection-processing:execute"] = (
+    "collection-processing:execute"
 )
 COLLECTION_TAGS_MANAGE: Literal["collection-tags:manage"] = "collection-tags:manage"
 COLLECTIONS_DELETE: Literal["collections:delete"] = "collections:delete"
@@ -52,8 +52,8 @@ type ApplicationPermission = Literal[
     "retrieval:manage",
     "collections:create",
     "collection-descriptions:manage",
-    "collection-transforms:control",
-    "collection-transforms:execute",
+    "collection-processing:control",
+    "collection-processing:execute",
     "collection-tags:manage",
     "collections:delete",
     "archives:read",
@@ -93,8 +93,8 @@ APPLICATION_PERMISSIONS = frozenset(
         RETRIEVAL_MANAGE,
         COLLECTIONS_CREATE,
         COLLECTION_DESCRIPTIONS_MANAGE,
-        COLLECTION_TRANSFORMS_CONTROL,
-        COLLECTION_TRANSFORMS_EXECUTE,
+        COLLECTION_PROCESSING_CONTROL,
+        COLLECTION_PROCESSING_EXECUTE,
         COLLECTION_TAGS_MANAGE,
         COLLECTIONS_DELETE,
         ARCHIVES_READ,
@@ -368,8 +368,8 @@ __all__ = [
     "COLLECTION_PREFIX",
     "COLLECTION_SCOPED_PERMISSIONS",
     "COLLECTION_TAGS_MANAGE",
-    "COLLECTION_TRANSFORMS_CONTROL",
-    "COLLECTION_TRANSFORMS_EXECUTE",
+    "COLLECTION_PROCESSING_CONTROL",
+    "COLLECTION_PROCESSING_EXECUTE",
     "EVENTS_READ",
     "EVENTS_READ_ALL",
     "KEYS_MANAGE",

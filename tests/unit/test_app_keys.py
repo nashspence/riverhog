@@ -8,7 +8,7 @@ from typing import cast
 
 import pytest
 from fastapi.security import HTTPAuthorizationCredentials
-from riverhog_api.auth import require_application, require_permission
+from riverhog_api.auth import require_permission, require_principal
 from riverhog_application_access import ApplicationAccessError
 from riverhog_core.app_permissions import (
     CATALOG_READ,
@@ -17,7 +17,7 @@ from riverhog_core.app_permissions import (
     QUOTAS_MANAGE,
     RETRIEVAL_MANAGE,
     ApplicationAccess,
-    ApplicationPrincipal,
+    Principal,
 )
 from riverhog_core.catalog_db import initialize_db, make_session_factory, session_scope
 from riverhog_core.catalog_models import (
@@ -37,8 +37,8 @@ from riverhog_protocol.errors import BadRequest, Forbidden, NotFound, Unauthoriz
 
 from tests.unit.db_helpers import sqlite_url
 
-BOOTSTRAP = ApplicationPrincipal(
-    app="bootstrap",
+BOOTSTRAP = Principal(
+    id="bootstrap",
     key_id=None,
     access=frozenset(
         {
@@ -61,7 +61,7 @@ def create_key(
     *,
     app: str,
     access: tuple[ApplicationAccess, ...] = (ApplicationAccess(CATALOG_READ),),
-    grantor: ApplicationPrincipal = BOOTSTRAP,
+    grantor: Principal = BOOTSTRAP,
     expires_in: timedelta | None = None,
 ) -> dict[str, object]:
     return service.create(
@@ -102,7 +102,7 @@ def seed_tag(
                     encryption_format="age-v1-scrypt",
                     passphrase_id="fixture-archive-key-v1",
                     inventory_identity="1" * 64,
-                    created_by_app="fixture",
+                    created_by_principal_id="fixture",
                     created_at="2026-07-24T00:00:00.000000Z",
                     file_count=0,
                     file_bytes=0,
@@ -249,8 +249,8 @@ def test_key_delegation_cannot_exceed_permission_or_resource(tmp_path: Path) -> 
     collection_id = 1
     seed_tag(config, "docs", collection_id=collection_id)
     seed_tag(config, "other")
-    manager = ApplicationPrincipal(
-        app="manager",
+    manager = Principal(
+        id="manager",
         key_id="manager-key",
         access=frozenset(
             {
@@ -350,7 +350,7 @@ def test_revocation_cancels_key_jobs_and_releases_unused_download_reservations(
                 encryption_format="age-v1-scrypt",
                 passphrase_id="fixture-archive-key-v1",
                 inventory_identity="1" * 64,
-                created_by_app="fixture",
+                created_by_principal_id="fixture",
                 created_at=str(created["created_at"]),
             )
         )
@@ -360,7 +360,7 @@ def test_revocation_cancels_key_jobs_and_releases_unused_download_reservations(
         session.add(
             RetrievalPlanRecord(
                 id="plan-one",
-                app="review",
+                principal_id="review",
                 initiated_by_key_id=str(created["id"]),
                 idempotency_key="plan-one",
                 creation_identity_sha256="d" * 64,
@@ -392,7 +392,7 @@ def test_revocation_cancels_key_jobs_and_releases_unused_download_reservations(
             RetrievalJobRecord(
                 id="job-one",
                 plan_id="plan-one",
-                app="review",
+                principal_id="review",
                 initiated_by_key_id=str(created["id"]),
                 event_context_json=None,
                 state="requested",
@@ -454,21 +454,21 @@ def test_app_names_access_and_expiry_are_validated(tmp_path: Path) -> None:
 
 
 def test_application_authentication_distinguishes_missing_and_forbidden_permissions() -> None:
-    principal = ApplicationPrincipal(
-        app="local",
+    principal = Principal(
+        id="local",
         key_id="key",
         access=frozenset({ApplicationAccess(CATALOG_READ)}),
     )
 
     class Keys:
-        def authenticate(self, token: str) -> ApplicationPrincipal | None:
+        def authenticate(self, token: str) -> Principal | None:
             return principal if token == "valid" else None
 
     container = SimpleNamespace(app_keys=Keys())
     credentials = HTTPAuthorizationCredentials(scheme="Bearer", credentials="valid")
-    assert require_application(credentials, container) == principal
+    assert require_principal(credentials, container) == principal
     assert require_permission(CATALOG_READ)(credentials, container) == principal
-    with pytest.raises(Unauthorized, match="invalid application token"):
-        require_application(None, container)
-    with pytest.raises(Forbidden, match="application permission required"):
+    with pytest.raises(Unauthorized, match="invalid bearer token"):
+        require_principal(None, container)
+    with pytest.raises(Forbidden, match="permission required"):
         require_permission(COLLECTIONS_CREATE)(credentials, container)

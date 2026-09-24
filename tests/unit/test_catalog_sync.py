@@ -12,7 +12,7 @@ from pydantic import ValidationError
 from riverhog_api.app import create_app
 from riverhog_application_access import ALL_RESOURCES, CATALOG_READ, ApplicationAccess
 from riverhog_client import CatalogReplica
-from riverhog_core.app_permissions import ApplicationPrincipal
+from riverhog_core.app_permissions import Principal
 from riverhog_core.catalog_db import initialize_db, make_session_factory, session_scope
 from riverhog_core.catalog_events import (
     begin_catalog_event,
@@ -50,8 +50,8 @@ from sqlalchemy import select
 from tests.unit.db_helpers import sqlite_url
 
 NOW = "2026-09-07T00:00:00.000000Z"
-PRINCIPAL = ApplicationPrincipal(
-    app="indexer",
+PRINCIPAL = Principal(
+    id="indexer",
     key_id="indexer-key",
     access=frozenset({ApplicationAccess(CATALOG_READ, ALL_RESOURCES)}),
     authorization_view_identity="f" * 64,
@@ -89,7 +89,7 @@ def _seed(factory: object, collection_id: int) -> None:
                 revision=0,
                 description=None,
             ),
-            created_by_app="fixture",
+            created_by_principal_id="fixture",
             created_at=NOW,
             is_published=True,
             file_count=0,

@@ -8,20 +8,20 @@ from pathlib import Path
 from typing import Any, Self, cast
 
 from pydantic import JsonValue
-from riverhog_client.producer import (
-    ProducerArtifactCustody,
-    ProducerArtifactIdentity,
-    ProducerFile,
-    ProducerInput,
-)
-from riverhog_client.transform import (
+from riverhog_client.processing import (
     ClaimedArtifact,
     ClaimedCollectionRuntime,
     ClaimedRetrieval,
     CollectionTransformRuntime,
     DerivedCollectionSpec,
     IncrementalDerivedCollectionWriter,
-    TransformWorkspace,
+    ProcessingWorkspace,
+)
+from riverhog_client.producer import (
+    ProducerArtifactCustody,
+    ProducerArtifactIdentity,
+    ProducerFile,
+    ProducerInput,
 )
 from riverhog_protocol.collection_workflows import (
     OperationIdentity,
@@ -200,7 +200,7 @@ class TargetExecutionRuntime:
         self.runtime = runtime
         self.session = session
         self._runtime_binding: Any = None
-        self._workspaces: list[TransformWorkspace] = []
+        self._workspaces: list[ProcessingWorkspace] = []
         self._input_client = TargetCallbackClient(request.callback_access)
         self._completed = False
 
@@ -368,7 +368,7 @@ class TargetExecutionRuntime:
         ]
         return self.runtime.prepare_inputs(artifacts, **kwargs)
 
-    def open_workspace(self, root: Path) -> TransformWorkspace:
+    def open_workspace(self, root: Path) -> ProcessingWorkspace:
         workspace = self.runtime.open_workspace(
             root,
             declared_protection=self.request.declaration.declared_workspace_protection,

@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from riverhog_api.schemas.collections import CollectionDeletionPlanOut
 from riverhog_application_access import ALL_RESOURCES, CATALOG_READ, ApplicationAccess
-from riverhog_core.app_permissions import ApplicationPrincipal
+from riverhog_core.app_permissions import Principal
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_db import make_session_factory, session_scope
 from riverhog_core.catalog_models import (
@@ -44,13 +44,13 @@ from tests.unit.archive_object_fixtures import (
 )
 
 FILES = {"one.txt": b"first file\n", "two.txt": b"second file\n"}
-DELETER = ApplicationPrincipal(
-    app="riverhog-client",
+DELETER = Principal(
+    id="riverhog-client",
     key_id="client-key",
     access=frozenset(),
 )
-READER = ApplicationPrincipal(
-    app="indexer",
+READER = Principal(
+    id="indexer",
     key_id="indexer-key",
     access=frozenset({ApplicationAccess(CATALOG_READ, ALL_RESOURCES)}),
 )
@@ -161,7 +161,7 @@ def test_deletion_event_belongs_to_the_authenticated_deleter_across_retry(
     with session_scope(make_session_factory(config.database_url)) as session:
         collection = session.get(CollectionRecord, COLLECTION_ID)
         assert collection is not None
-        collection.created_by_app = "stove0"
+        collection.created_by_principal_id = "stove0"
         collection.created_by_key_id = "stove0-key"
 
     original_delete = archive_store.delete_collection_archive
@@ -190,8 +190,8 @@ def test_deletion_event_belongs_to_the_authenticated_deleter_across_retry(
     active = service.plan(COLLECTION_ID)
     assert active["status"] == "deleting"
     assert "_execution" not in active
-    retrying_app = ApplicationPrincipal(
-        app="stove0",
+    retrying_app = Principal(
+        id="stove0",
         key_id="stove0-key",
         access=frozenset(),
     )
@@ -205,18 +205,18 @@ def test_deletion_event_belongs_to_the_authenticated_deleter_across_retry(
     assert result["status"] == "deleting"
     assert _drain(service) == 10
     events = SqlAlchemyLifecycleEventService(config)
-    page = events.page(owner_app="riverhog-client", after=None, limit=100)
+    page = events.page(owner_principal_id="riverhog-client", after=None, limit=100)
     assert len(page.events) == 1
     event = page.events[0]
     assert event.type == "io.riverhog.riverhog.collection.deleted"
-    assert event.data["actor"] == {"app": "riverhog"}
+    assert event.data["actor"] == {"principal_id": "riverhog"}
     assert event.data["initiator"] == {
-        "app": "riverhog-client",
+        "principal_id": "riverhog-client",
         "key_id": "client-key",
     }
     assert event.data["collection_created_at"] == UPLOADED_AT
     assert event.data["context"] == {"workflow": "direct-delete"}
-    assert events.page(owner_app="stove0", after=None, limit=100).events == []
+    assert events.page(owner_principal_id="stove0", after=None, limit=100).events == []
 
 
 def test_catalog_teardown_is_bounded_and_event_publishes_only_when_complete(
@@ -342,7 +342,7 @@ def test_deletion_reclaims_a_multi_collection_retrieval_plan_as_one_authority(
         session.add(
             RetrievalPlanRecord(
                 id="multi-collection-plan",
-                app="reader",
+                principal_id="reader",
                 idempotency_key="multi-collection-plan",
                 creation_identity_sha256="8" * 64,
                 state="expired",

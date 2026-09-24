@@ -23,9 +23,9 @@ from riverhog_protocol.collection_workflows import (
 )
 
 from riverhog_api.auth import (
-    CollectionTransformController,
-    CollectionTransformExecutor,
-    CollectionTransformLeaseManager,
+    CollectionProcessingController,
+    CollectionProcessingExecutor,
+    CollectionProcessingLeaseManager,
 )
 from riverhog_api.browse import (
     BrowsePageTokenQuery,
@@ -47,6 +47,8 @@ from riverhog_api.schemas.workflows import (
     CollectionDerivationOut,
     CollectionRootBatchIn,
     CollectionRootPageOut,
+    ProcessingCapabilityCreateIn,
+    ProcessingCapabilityOut,
     ProcessingClaimAbandonIn,
     ProcessingClaimCreateIn,
     ProcessingClaimFenceIn,
@@ -59,8 +61,6 @@ from riverhog_api.schemas.workflows import (
     ProcessingClaimSettleIn,
     ProcessingOutcomePageOut,
     ReceivingSetOut,
-    TransformCapabilityCreateIn,
-    TransformCapabilityOut,
 )
 
 router = RiverhogRouter(tags=["collection-workflows"])
@@ -74,7 +74,7 @@ router = RiverhogRouter(tags=["collection-workflows"])
 def create_or_resume_processing_claim(
     request: ProcessingClaimCreateIn,
     container: ContainerDep,
-    principal: CollectionTransformController,
+    principal: CollectionProcessingController,
 ) -> ProcessingClaimOut:
     return ProcessingClaimOut.model_validate(
         container.collection_workflows.create_or_resume_claim(
@@ -97,7 +97,7 @@ def append_processing_claim_inputs(
     claim_id: ProcessingClaimId,
     request: CollectionRootBatchIn,
     container: ContainerDep,
-    principal: CollectionTransformController,
+    principal: CollectionProcessingController,
 ) -> ReceivingSetOut:
     return ReceivingSetOut.model_validate(
         container.collection_workflows.append_claim_inputs(
@@ -122,7 +122,7 @@ def seal_processing_claim_inputs(
     claim_id: ProcessingClaimId,
     request: ProcessingClaimFenceIn,
     container: ContainerDep,
-    principal: CollectionTransformController,
+    principal: CollectionProcessingController,
 ) -> ReceivingSetOut:
     return ReceivingSetOut.model_validate(
         container.collection_workflows.seal_claim_inputs(
@@ -149,7 +149,7 @@ def seal_processing_claim_inputs(
 def list_processing_claim_inputs(
     claim_id: ProcessingClaimId,
     container: ContainerDep,
-    principal: CollectionTransformLeaseManager,
+    principal: CollectionProcessingLeaseManager,
     identity_sha256: Annotated[str, Query(pattern=r"^[0-9a-f]{64}$")],
     start_ordinal: Annotated[int, Query(ge=0)] = 0,
 ) -> CollectionRootPageOut:
@@ -172,7 +172,7 @@ def append_processing_claim_artifacts(
     claim_id: ProcessingClaimId,
     request: CollectionArtifactBatchIn,
     container: ContainerDep,
-    principal: CollectionTransformController,
+    principal: CollectionProcessingController,
 ) -> ArtifactReceivingSetOut:
     return ArtifactReceivingSetOut.model_validate(
         container.collection_workflows.append_claim_artifacts(
@@ -197,7 +197,7 @@ def seal_processing_claim_artifacts(
     claim_id: ProcessingClaimId,
     request: ProcessingClaimFenceIn,
     container: ContainerDep,
-    principal: CollectionTransformController,
+    principal: CollectionProcessingController,
 ) -> ArtifactReceivingSetOut:
     return ArtifactReceivingSetOut.model_validate(
         container.collection_workflows.seal_claim_artifacts(
@@ -224,7 +224,7 @@ def seal_processing_claim_artifacts(
 def list_processing_claim_artifacts(
     claim_id: ProcessingClaimId,
     container: ContainerDep,
-    principal: CollectionTransformLeaseManager,
+    principal: CollectionProcessingLeaseManager,
     identity_sha256: Annotated[str, Query(pattern=r"^[0-9a-f]{64}$")],
     start_ordinal: Annotated[int, Query(ge=0)] = 0,
 ) -> CollectionArtifactPageOut:
@@ -248,7 +248,7 @@ def list_processing_claim_artifacts(
 )
 def list_processing_claims(
     container: ContainerDep,
-    principal: CollectionTransformController,
+    principal: CollectionProcessingController,
     page_size: Annotated[int, Query(ge=1, le=100)] = 25,
     page_token: BrowsePageTokenQuery = None,
     state: ClaimState | None = None,
@@ -289,7 +289,7 @@ def list_processing_claims(
 def get_processing_claim(
     claim_id: ProcessingClaimId,
     container: ContainerDep,
-    principal: CollectionTransformLeaseManager,
+    principal: CollectionProcessingLeaseManager,
 ) -> ProcessingClaimOut:
     return ProcessingClaimOut.model_validate(
         container.collection_workflows.get_claim(claim_id, principal=principal)
@@ -305,7 +305,7 @@ def renew_processing_claim(
     claim_id: ProcessingClaimId,
     request: ProcessingClaimRenewIn,
     container: ContainerDep,
-    principal: CollectionTransformLeaseManager,
+    principal: CollectionProcessingLeaseManager,
 ) -> ProcessingClaimOut:
     return ProcessingClaimOut.model_validate(
         container.collection_workflows.renew_claim(
@@ -326,7 +326,7 @@ def restart_processing_claim(
     claim_id: ProcessingClaimId,
     request: ProcessingClaimRestartIn,
     container: ContainerDep,
-    principal: CollectionTransformController,
+    principal: CollectionProcessingController,
 ) -> ProcessingClaimOut:
     return ProcessingClaimOut.model_validate(
         container.collection_workflows.restart_claim(
@@ -347,7 +347,7 @@ def abandon_processing_claim(
     claim_id: ProcessingClaimId,
     request: ProcessingClaimAbandonIn,
     container: ContainerDep,
-    principal: CollectionTransformController,
+    principal: CollectionProcessingController,
 ) -> ProcessingClaimOut:
     return ProcessingClaimOut.model_validate(
         container.collection_workflows.abandon_claim(
@@ -368,7 +368,7 @@ def seal_processing_claim_plan(
     claim_id: ProcessingClaimId,
     request: ProcessingClaimPlanSealIn,
     container: ContainerDep,
-    principal: CollectionTransformExecutor,
+    principal: CollectionProcessingExecutor,
 ) -> ProcessingClaimOut:
     return ProcessingClaimOut.model_validate(
         container.collection_workflows.seal_claim_plan(
@@ -388,16 +388,16 @@ def seal_processing_claim_plan(
 
 @router.post(
     "/collection-processing-claims/{claim_id}/capabilities",
-    response_model=TransformCapabilityOut,
+    response_model=ProcessingCapabilityOut,
     openapi_extra=operation_interface("client-only-primitive"),
 )
-def create_transform_capability(
+def create_processing_capability(
     claim_id: ProcessingClaimId,
-    request: TransformCapabilityCreateIn,
+    request: ProcessingCapabilityCreateIn,
     container: ContainerDep,
-    principal: CollectionTransformExecutor,
-) -> TransformCapabilityOut:
-    return TransformCapabilityOut.model_validate(
+    principal: CollectionProcessingExecutor,
+) -> ProcessingCapabilityOut:
+    return ProcessingCapabilityOut.model_validate(
         container.collection_workflows.issue_capability(
             claim_id,
             fence=request.fence,
@@ -414,12 +414,12 @@ def create_transform_capability(
     response_model=ArtifactReceivingSetOut,
     openapi_extra=operation_interface("client-only-primitive"),
 )
-def append_transform_capability_artifacts(
+def append_processing_capability_artifacts(
     claim_id: ProcessingClaimId,
     capability_id: str,
     request: CollectionArtifactBatchIn,
     container: ContainerDep,
-    principal: CollectionTransformController,
+    principal: CollectionProcessingController,
 ) -> ArtifactReceivingSetOut:
     return ArtifactReceivingSetOut.model_validate(
         container.collection_workflows.append_capability_artifacts(
@@ -441,12 +441,12 @@ def append_transform_capability_artifacts(
     response_model=ArtifactReceivingSetOut,
     openapi_extra=operation_interface("client-only-primitive"),
 )
-def seal_transform_capability_artifacts(
+def seal_processing_capability_artifacts(
     claim_id: ProcessingClaimId,
     capability_id: str,
     request: ProcessingClaimFenceIn,
     container: ContainerDep,
-    principal: CollectionTransformController,
+    principal: CollectionProcessingController,
 ) -> ArtifactReceivingSetOut:
     return ArtifactReceivingSetOut.model_validate(
         container.collection_workflows.seal_capability_artifacts(
@@ -467,7 +467,7 @@ def record_processing_claim_dispositions(
     claim_id: ProcessingClaimId,
     request: ArtifactDispositionBatchIn,
     container: ContainerDep,
-    principal: CollectionTransformLeaseManager,
+    principal: CollectionProcessingLeaseManager,
 ) -> ArtifactDispositionSetOut:
     return ArtifactDispositionSetOut.model_validate(
         container.collection_workflows.record_dispositions(
@@ -498,7 +498,7 @@ def record_processing_claim_dispositions(
 def list_processing_claim_dispositions(
     claim_id: ProcessingClaimId,
     container: ContainerDep,
-    principal: CollectionTransformLeaseManager,
+    principal: CollectionProcessingLeaseManager,
     identity_sha256: Annotated[str, Query(pattern=r"^[0-9a-f]{64}$")],
     start_ordinal: Annotated[int, Query(ge=0)] = 0,
 ) -> ArtifactDispositionPageOut:
@@ -521,7 +521,7 @@ def record_processing_claim_disposition_outputs(
     claim_id: ProcessingClaimId,
     request: ArtifactDispositionOutputBatchIn,
     container: ContainerDep,
-    principal: CollectionTransformLeaseManager,
+    principal: CollectionProcessingLeaseManager,
 ) -> ArtifactDispositionSetOut:
     return ArtifactDispositionSetOut.model_validate(
         container.collection_workflows.record_disposition_outputs(
@@ -552,7 +552,7 @@ def record_processing_claim_disposition_outputs(
 def list_processing_claim_disposition_outputs(
     claim_id: ProcessingClaimId,
     container: ContainerDep,
-    principal: CollectionTransformLeaseManager,
+    principal: CollectionProcessingLeaseManager,
     identity_sha256: Annotated[str, Query(pattern=r"^[0-9a-f]{64}$")],
     start_ordinal: Annotated[int, Query(ge=0)] = 0,
 ) -> ArtifactDispositionOutputPageOut:
@@ -575,7 +575,7 @@ def seal_processing_claim_dispositions(
     claim_id: ProcessingClaimId,
     request: ProcessingClaimFenceIn,
     container: ContainerDep,
-    principal: CollectionTransformLeaseManager,
+    principal: CollectionProcessingLeaseManager,
 ) -> ArtifactDispositionSetOut:
     return ArtifactDispositionSetOut.model_validate(
         container.collection_workflows.seal_disposition_set(
@@ -594,7 +594,7 @@ def seal_processing_claim_dispositions(
 def get_processing_claim_dispositions(
     claim_id: ProcessingClaimId,
     container: ContainerDep,
-    principal: CollectionTransformLeaseManager,
+    principal: CollectionProcessingLeaseManager,
 ) -> ArtifactDispositionSetOut:
     return ArtifactDispositionSetOut.model_validate(
         container.collection_workflows.get_disposition_set(
@@ -613,7 +613,7 @@ def settle_processing_claim(
     claim_id: ProcessingClaimId,
     request: ProcessingClaimSettleIn,
     container: ContainerDep,
-    principal: CollectionTransformController,
+    principal: CollectionProcessingController,
 ) -> ProcessingClaimOut:
     return ProcessingClaimOut.model_validate(
         container.collection_workflows.settle_claim(
@@ -638,7 +638,7 @@ def settle_processing_claim_outcomes(
     claim_id: ProcessingClaimId,
     request: ProcessingClaimOutcomesSettleIn,
     container: ContainerDep,
-    principal: CollectionTransformController,
+    principal: CollectionProcessingController,
 ) -> ProcessingClaimOut:
     return ProcessingClaimOut.model_validate(
         container.collection_workflows.settle_claim_outcomes(
@@ -667,7 +667,7 @@ def settle_processing_claim_outcomes(
 def list_processing_claim_outcomes(
     claim_id: ProcessingClaimId,
     container: ContainerDep,
-    principal: CollectionTransformController,
+    principal: CollectionProcessingController,
     identity_sha256: Annotated[str, Query(pattern=r"^[0-9a-f]{64}$")],
     start_ordinal: Annotated[int, Query(ge=0)] = 0,
 ) -> ProcessingOutcomePageOut:
@@ -690,7 +690,7 @@ def begin_processing_claim_retirement(
     claim_id: ProcessingClaimId,
     request: ProcessingClaimFenceIn,
     container: ContainerDep,
-    principal: CollectionTransformController,
+    principal: CollectionProcessingController,
 ) -> ProcessingClaimOut:
     return ProcessingClaimOut.model_validate(
         container.collection_workflows.begin_retirement(
@@ -710,7 +710,7 @@ def release_processing_claim(
     claim_id: ProcessingClaimId,
     request: ProcessingClaimFenceIn,
     container: ContainerDep,
-    principal: CollectionTransformController,
+    principal: CollectionProcessingController,
 ) -> ProcessingClaimOut:
     return ProcessingClaimOut.model_validate(
         container.collection_workflows.release_claim(
@@ -729,7 +729,7 @@ def release_processing_claim(
 def get_collection_derivation(
     collection_id: CollectionIdParameter,
     container: ContainerDep,
-    principal: CollectionTransformController,
+    principal: CollectionProcessingController,
 ) -> CollectionDerivationOut:
     return CollectionDerivationOut.model_validate(
         container.collection_workflows.get_derivation(

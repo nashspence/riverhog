@@ -28,7 +28,7 @@ from riverhog_core.app_permissions import (
     CATALOG_READ,
     PROVENANCE_READ,
     ApplicationAccess,
-    ApplicationPrincipal,
+    Principal,
 )
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_db import create_catalog_engine, initialize_db
@@ -525,11 +525,11 @@ def _database_semantics(engine: Engine, *, unicode_paths: Sequence[str]) -> dict
 
 
 class _QualificationAppKeys:
-    def authenticate(self, token: str) -> ApplicationPrincipal | None:
+    def authenticate(self, token: str) -> Principal | None:
         if token != "qualification-token":
             return None
-        return ApplicationPrincipal(
-            app="database-qualification",
+        return Principal(
+            id="database-qualification",
             key_id="database-qualification-key",
             access=frozenset(
                 {

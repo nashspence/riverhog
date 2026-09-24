@@ -20,7 +20,7 @@ from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
 from pydantic import ValidationError
 from riverhog_client import ProducerArtifactCustody, ProducerArtifactIdentity, ProducerFile
-from riverhog_client.transform import (
+from riverhog_client.processing import (
     ClaimedCollectionRuntime,
     ClaimedCollectionRuntimeRegistry,
     CollectionTransformRuntime,

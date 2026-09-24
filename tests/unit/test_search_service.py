@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from riverhog_core.app_permissions import CATALOG_READ, ApplicationAccess, ApplicationPrincipal
+from riverhog_core.app_permissions import CATALOG_READ, ApplicationAccess, Principal
 from riverhog_core.catalog_db import initialize_db, make_session_factory, session_scope
 from riverhog_core.catalog_models import (
     CollectionFileRecord,
@@ -44,7 +44,7 @@ def _seed(path: Path) -> None:
                 encryption_format="age-v1-scrypt",
                 passphrase_id="fixture-archive-key-v1",
                 inventory_identity="1" * 64,
-                created_by_app="fixture",
+                created_by_principal_id="fixture",
                 created_at="2026-01-01T00:00:00.000000Z",
                 file_count=3,
                 file_bytes=68,
@@ -149,8 +149,8 @@ def test_search_applies_tag_grants_in_the_database(tmp_path: Path) -> None:
     path = tmp_path / "catalog.sqlite3"
     initialize_db(sqlite_url(path))
     _seed(path)
-    principal = ApplicationPrincipal(
-        app="reader",
+    principal = Principal(
+        id="reader",
         key_id="reader-key",
         access=frozenset({ApplicationAccess(CATALOG_READ, "tag:other")}),
     )

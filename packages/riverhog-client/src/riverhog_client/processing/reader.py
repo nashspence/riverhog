@@ -18,7 +18,7 @@ from riverhog_protocol.exact_scalar import NonnegativeDecimal
 from riverhog_protocol.paths import CollectionId
 from riverhog_protocol.portable_collection import PortableCollectionInventoryPage
 
-from riverhog_client.transform.models import ClaimedArtifact
+from riverhog_client.processing.models import ClaimedArtifact
 
 Heartbeat = Callable[[], None]
 _CONTROL_PATHS = frozenset({PRODUCER_EVIDENCE_PATH, DERIVATION_EVIDENCE_PATH})
@@ -98,7 +98,7 @@ class ClaimedCollectionApi(Protocol):
 
 
 class ClaimedCollectionReader:
-    """Resolve and read only the immutable roots sealed into one transform intent."""
+    """Resolve and read only the immutable roots sealed into one processing claim."""
 
     def __init__(
         self,

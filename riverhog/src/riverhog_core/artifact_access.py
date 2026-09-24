@@ -5,14 +5,14 @@ from sqlalchemy import exists, select, true
 from sqlalchemy.orm import InstrumentedAttribute, Session
 from sqlalchemy.sql.elements import ColumnElement
 
-from riverhog_core.app_permissions import ApplicationPrincipal
-from riverhog_core.catalog_workflow_models import CollectionTransformCapabilityArtifactRecord
+from riverhog_core.app_permissions import Principal
+from riverhog_core.catalog_workflow_models import CollectionProcessingCapabilityArtifactRecord
 
 
 def artifact_scope_filter(
     collection_column: ColumnElement[int] | InstrumentedAttribute[int],
     path_column: ColumnElement[str] | InstrumentedAttribute[str],
-    principal: ApplicationPrincipal | None,
+    principal: Principal | None,
 ) -> ColumnElement[bool]:
     """Bind artifact scope without expanding persisted capabilities into predicates."""
 
@@ -21,17 +21,17 @@ def artifact_scope_filter(
     assert principal.artifact_scope_capability_id is not None
     return exists(
         select(1).where(
-            CollectionTransformCapabilityArtifactRecord.capability_id
+            CollectionProcessingCapabilityArtifactRecord.capability_id
             == principal.artifact_scope_capability_id,
-            CollectionTransformCapabilityArtifactRecord.collection_id == collection_column,
-            CollectionTransformCapabilityArtifactRecord.path == path_column,
+            CollectionProcessingCapabilityArtifactRecord.collection_id == collection_column,
+            CollectionProcessingCapabilityArtifactRecord.path == path_column,
         )
     )
 
 
 def require_artifact_scope(
     session: Session,
-    principal: ApplicationPrincipal | None,
+    principal: Principal | None,
     collection_id: int,
     path: str,
 ) -> None:
@@ -41,12 +41,12 @@ def require_artifact_scope(
         return
     assert principal.artifact_scope_capability_id is not None
     allowed = session.scalar(
-        select(CollectionTransformCapabilityArtifactRecord.capability_id)
+        select(CollectionProcessingCapabilityArtifactRecord.capability_id)
         .where(
-            CollectionTransformCapabilityArtifactRecord.capability_id
+            CollectionProcessingCapabilityArtifactRecord.capability_id
             == principal.artifact_scope_capability_id,
-            CollectionTransformCapabilityArtifactRecord.collection_id == collection_id,
-            CollectionTransformCapabilityArtifactRecord.path == path,
+            CollectionProcessingCapabilityArtifactRecord.collection_id == collection_id,
+            CollectionProcessingCapabilityArtifactRecord.path == path,
         )
         .limit(1)
     )

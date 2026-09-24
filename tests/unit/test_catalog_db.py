@@ -26,7 +26,7 @@ from tests.unit.db_helpers import sqlite_url
 
 def test_upload_creation_identity_binds_every_create_or_resume_input() -> None:
     base = CollectionUploadCreationIdentityPayload(
-        ingest_source="transform:fixture",
+        ingest_source="processing:fixture",
         initial_tag_set_identity="a" * 64,
         archive_store="archive",
         event_context={"source": "fixture"},
@@ -36,7 +36,7 @@ def test_upload_creation_identity_binds_every_create_or_resume_input() -> None:
     )
     sealed = CollectionUploadCreationIdentityDocument.seal(base)
     alternatives = (
-        base.model_copy(update={"ingest_source": "transform:other"}),
+        base.model_copy(update={"ingest_source": "processing:other"}),
         base.model_copy(update={"initial_tag_set_identity": "b" * 64}),
         base.model_copy(update={"archive_store": "secondary"}),
         base.model_copy(update={"event_context": {"source": "other"}}),
@@ -96,7 +96,7 @@ def test_initialize_db_creates_current_catalog(tmp_path: Path) -> None:
     }
     assert {column["name"] for column in inspector.get_columns("retrieval_plans")} >= {
         "id",
-        "app",
+        "principal_id",
         "state",
         "request_json",
         "next_file_order",
@@ -155,7 +155,7 @@ def test_initialize_db_creates_current_catalog(tmp_path: Path) -> None:
     assert {column["name"] for column in inspector.get_columns("lifecycle_events")} == {
         "sequence",
         "event_id",
-        "owner_app",
+        "owner_principal_id",
         "subject",
         "event_json",
         "context_json",

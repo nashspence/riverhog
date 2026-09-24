@@ -38,6 +38,7 @@ Contracts define packages; architecture records ownership.
   materialize canonical logical trees; provider policy remains external.
 - **Applications.** Applications use Riverhog capabilities and own their state;
   their contracts are authoritative for the application, not for Riverhog.
+  Delegated capabilities use distinct principal IDs.
 - **Extensions.** Observers report immutable-artifact facts; targets perform declared operations.
   Each selected distribution owns one capability; shared-dependency image bundles preserve separate
   identities and selection. Names identify families; only exact digest-bound contracts or selected

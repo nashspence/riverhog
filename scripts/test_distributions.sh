@@ -137,7 +137,7 @@ server_wheel="$(single_wheel 'riverhog_server-*.whl')"
 smoke_workspace_distribution \
   riverhog-client \
   'riverhog_client-*.whl' \
-  'import importlib.metadata as m, sys; import riverhog_client; assert not any(name.startswith("riverhog_client.transform") for name in sys.modules); import riverhog_client.transform as t; assert "inventory" not in t.ClaimedCollectionReader.__dict__; assert "inventory" not in t.ClaimedCollectionRuntime.__dict__; assert "inventory" not in t.CollectionTransformRuntime.__dict__; assert m.version("riverhog-client")'
+  'import importlib.metadata as m, sys; import riverhog_client; assert not any(name.startswith("riverhog_client.processing") for name in sys.modules); import riverhog_client.processing as t; assert "inventory" not in t.ClaimedCollectionReader.__dict__; assert "inventory" not in t.ClaimedCollectionRuntime.__dict__; assert "inventory" not in t.CollectionTransformRuntime.__dict__; assert m.version("riverhog-client")'
 env -u PYTHONPATH "${SCRATCH}/riverhog-client/bin/python" -I \
   "${ROOT_DIR}/tests/fixtures/external_riverhog_client_application.py"
 

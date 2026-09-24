@@ -9,7 +9,7 @@ from sqlalchemy import func, literal, select, union_all
 from sqlalchemy.orm import Session
 from state_schema import read_snapshot
 
-from riverhog_core.app_permissions import ARCHIVES_READ, ApplicationPrincipal
+from riverhog_core.app_permissions import ARCHIVES_READ, Principal
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.browse import bounded_page, validate_page_size
 from riverhog_core.catalog_db import SessionFactory, make_session_factory
@@ -58,7 +58,7 @@ class SqlAlchemyArchiveStoreService:
         self,
         store: str,
         *,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> ArchiveStoreSummary:
         normalized = store.strip().casefold()
         config = self._config.archive_stores.get(normalized)
@@ -85,7 +85,7 @@ class SqlAlchemyArchiveStoreService:
         q: str | None,
         sort: str,
         order: str,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> ArchiveStoreListPage:
         validate_page_size(page_size)
         if sort not in _SORT_FIELDS:
@@ -155,7 +155,7 @@ class SqlAlchemyArchiveStoreService:
         q: str | None,
         sort: str,
         order: str,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> Iterator[ArchiveStoreSummary]:
         page = self.list(
             page_size=max(1, len(self._config.archive_stores)),
@@ -206,7 +206,7 @@ def _store_aggregates(
     session: Session,
     *,
     stores: tuple[str, ...],
-    principal: ApplicationPrincipal | None,
+    principal: Principal | None,
 ) -> dict[str, tuple[int, int, int]]:
     if not stores:
         return {}

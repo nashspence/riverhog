@@ -1,23 +1,23 @@
-from riverhog_client.transform.capability import CapabilityApiClient
-from riverhog_client.transform.models import (
+from riverhog_client.processing.capability import CapabilityApiClient
+from riverhog_client.processing.models import (
     ClaimedArtifact,
     DerivedCollectionReceipt,
     DerivedCollectionSpec,
 )
-from riverhog_client.transform.reader import (
+from riverhog_client.processing.reader import (
     ClaimedCollectionApi,
     ClaimedCollectionReader,
     ClaimedRetrieval,
     Heartbeat,
 )
-from riverhog_client.transform.registry import ClaimedCollectionRuntimeRegistry
-from riverhog_client.transform.runtime import (
+from riverhog_client.processing.registry import ClaimedCollectionRuntimeRegistry
+from riverhog_client.processing.runtime import (
     CancellationCheck,
     ClaimedCollectionRuntime,
     CollectionTransformRuntime,
 )
-from riverhog_client.transform.workspace import TransformWorkspace
-from riverhog_client.transform.writer import (
+from riverhog_client.processing.workspace import ProcessingWorkspace
+from riverhog_client.processing.writer import (
     DerivedCollectionWriter,
     IncrementalDerivedCollectionWriter,
 )
@@ -37,5 +37,5 @@ __all__ = [
     "DerivedCollectionWriter",
     "IncrementalDerivedCollectionWriter",
     "Heartbeat",
-    "TransformWorkspace",
+    "ProcessingWorkspace",
 ]

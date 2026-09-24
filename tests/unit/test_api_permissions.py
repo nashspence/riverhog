@@ -14,13 +14,13 @@ from riverhog_core.app_permissions import (
     APPLICATION_PERMISSIONS,
     CATALOG_READ,
     COLLECTION_DESCRIPTIONS_MANAGE,
-    COLLECTION_TRANSFORMS_CONTROL,
-    COLLECTION_TRANSFORMS_EXECUTE,
+    COLLECTION_PROCESSING_CONTROL,
+    COLLECTION_PROCESSING_EXECUTE,
     COLLECTIONS_CREATE,
     PROVENANCE_EXPORT,
     PROVENANCE_READ,
     ApplicationAccess,
-    ApplicationPrincipal,
+    Principal,
 )
 
 
@@ -132,23 +132,23 @@ def test_every_public_riverhog_operation_declares_one_known_permission() -> None
     }
     assert (
         workflow_permissions[("POST", "/v1/collection-processing-claims/{claim_id}/capabilities")]
-        == COLLECTION_TRANSFORMS_EXECUTE
+        == COLLECTION_PROCESSING_EXECUTE
     )
     assert (
         workflow_permissions[("POST", "/v1/collection-processing-claims/{claim_id}/plan")]
-        == COLLECTION_TRANSFORMS_EXECUTE
+        == COLLECTION_PROCESSING_EXECUTE
     )
     assert (
         workflow_permissions[("POST", "/v1/collection-processing-claims/{claim_id}/settle")]
-        == COLLECTION_TRANSFORMS_CONTROL
+        == COLLECTION_PROCESSING_CONTROL
     )
     assert (
         workflow_permissions[("POST", "/v1/collection-processing-claims/{claim_id}/retirement")]
-        == COLLECTION_TRANSFORMS_CONTROL
+        == COLLECTION_PROCESSING_CONTROL
     )
     assert (
         workflow_permissions[("POST", "/v1/collection-processing-claims/{claim_id}/renew")]
-        == f"{COLLECTION_TRANSFORMS_CONTROL}|{COLLECTION_TRANSFORMS_EXECUTE}"
+        == f"{COLLECTION_PROCESSING_CONTROL}|{COLLECTION_PROCESSING_EXECUTE}"
     )
     assert {
         (method, path): permission
@@ -158,14 +158,14 @@ def test_every_public_riverhog_operation_declares_one_known_permission() -> None
 
 
 def test_collection_description_replacement_parses_condition_and_returns_identity() -> None:
-    principal = ApplicationPrincipal(
-        app="editor",
+    principal = Principal(
+        id="editor",
         key_id="editor-key",
         access=frozenset({ApplicationAccess(COLLECTION_DESCRIPTIONS_MANAGE, ALL_RESOURCES)}),
     )
 
     class Keys:
-        def authenticate(self, token: str) -> ApplicationPrincipal | None:
+        def authenticate(self, token: str) -> Principal | None:
             return principal if token == "editor-token" else None
 
     class Descriptions:
@@ -175,12 +175,12 @@ def test_collection_description_replacement_parses_condition_and_returns_identit
             *,
             description: str | None,
             expected_identity: str,
-            principal: ApplicationPrincipal,
+            principal: Principal,
         ) -> dict[str, object]:
             assert collection_id == 42
             assert description == "Updated description"
             assert expected_identity == "a" * 64
-            assert principal.app == "editor"
+            assert principal.id == "editor"
             return {
                 "collection_id": "42",
                 "description": description,
@@ -224,14 +224,14 @@ def test_collection_description_replacement_parses_condition_and_returns_identit
 
 
 def test_application_authentication_uses_the_public_error_contract() -> None:
-    principal = ApplicationPrincipal(
-        app="reader",
+    principal = Principal(
+        id="reader",
         key_id="reader-key",
         access=frozenset({ApplicationAccess(CATALOG_READ)}),
     )
 
     class Keys:
-        def authenticate(self, token: str) -> ApplicationPrincipal | None:
+        def authenticate(self, token: str) -> Principal | None:
             return principal if token == "reader-token" else None
 
     app = create_app(container=cast(Any, SimpleNamespace(app_keys=Keys())))
@@ -245,7 +245,7 @@ def test_application_authentication_uses_the_public_error_contract() -> None:
             assert unauthorized.json() == {
                 "error": {
                     "code": "unauthorized",
-                    "message": "invalid application token",
+                    "message": "invalid bearer token",
                 }
             }
 
@@ -258,7 +258,7 @@ def test_application_authentication_uses_the_public_error_contract() -> None:
             assert forbidden.json() == {
                 "error": {
                     "code": "forbidden",
-                    "message": "application permission required: collections:create",
+                    "message": "permission required: collections:create",
                 }
             }
 
@@ -266,20 +266,20 @@ def test_application_authentication_uses_the_public_error_contract() -> None:
 
 
 def test_collection_upload_unit_accepts_the_documented_binary_body() -> None:
-    principal = ApplicationPrincipal(
-        app="uploader",
+    principal = Principal(
+        id="uploader",
         key_id="uploader-key",
         access=frozenset({ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES)}),
     )
 
     class Keys:
-        def authenticate(self, token: str) -> ApplicationPrincipal | None:
+        def authenticate(self, token: str) -> Principal | None:
             return principal if token == "uploader-token" else None
 
     class Uploads:
         content: bytes | None = None
 
-        def require_access(self, collection_id: int, current: ApplicationPrincipal) -> None:
+        def require_access(self, collection_id: int, current: Principal) -> None:
             assert collection_id == 42
             assert current == principal
 

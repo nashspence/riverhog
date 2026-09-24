@@ -15,7 +15,7 @@ from riverhog_core.app_permissions import (
     CATALOG_READ,
     COLLECTIONS_CREATE,
     ApplicationAccess,
-    ApplicationPrincipal,
+    Principal,
 )
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_db import (
@@ -187,9 +187,9 @@ def test_postgres_retrieval_plan_advances_in_bounded_restartable_steps(
         service._cache,
         session_factory=make_session_factory(isolated_database_url),
     )
-    plan = restarted.advance_plan(app="", plan_id=str(plan["id"]))
+    plan = restarted.advance_plan(principal_id="", plan_id=str(plan["id"]))
     assert plan["state"] == "planning"
-    plan = restarted.advance_plan(app="", plan_id=str(plan["id"]))
+    plan = restarted.advance_plan(principal_id="", plan_id=str(plan["id"]))
     assert plan["state"] == "ready"
     with session_scope(make_session_factory(isolated_database_url)) as session:
         assert len(session.scalars(select(RetrievalPlanObjectRecord)).all()) == segment_count
@@ -213,7 +213,7 @@ def test_postgres_upload_idempotency_is_independent_per_application(
             idempotency_key="shared-retry-key",
             ingest_source="postgres-fixture",
             archive_store=None,
-            initiator=ApplicationPrincipal(app=app, key_id=key_id, access=access),
+            initiator=Principal(id=app, key_id=key_id, access=access),
             event_context=None,
         )
 
@@ -231,7 +231,7 @@ def test_postgres_upload_idempotency_is_independent_per_application(
     assert {
         tuple(str(column) for column in constraint["column_names"])
         for constraint in inspect(engine).get_unique_constraints("collections")
-    } == {("created_by_app", "creation_idempotency_key")}
+    } == {("created_by_principal_id", "creation_idempotency_key")}
     indexes = {
         str(index["name"]): index for index in inspect(engine).get_indexes("collection_uploads")
     }
@@ -263,7 +263,7 @@ def test_postgres_catalog_revisions_serialize_commit_and_restart(
                     provenance_identity=None,
                     inventory_identity=identity,
                     archive_root_sha256=identity,
-                    created_by_app="fixture",
+                    created_by_principal_id="fixture",
                     created_at="2026-09-07T00:00:00.000000Z",
                     is_published=True,
                     file_count=0,
@@ -315,8 +315,8 @@ def test_postgres_catalog_revisions_serialize_commit_and_restart(
         RuntimeConfig.for_testing(database_url=isolated_database_url),
         session_factory=make_session_factory(isolated_database_url),
     )
-    reader = ApplicationPrincipal(
-        app="indexer",
+    reader = Principal(
+        id="indexer",
         key_id="indexer-key",
         access=frozenset({ApplicationAccess(CATALOG_READ, ALL_RESOURCES)}),
     )
@@ -867,7 +867,7 @@ def test_postgres_archive_sequence_state_round_trips_full_v1_domain(
         idempotency_key="archive-sequence-persistence",
         ingest_source="postgres-fixture",
         archive_store=None,
-        initiator=ApplicationPrincipal(app="fixture", key_id="fixture-key", access=access),
+        initiator=Principal(id="fixture", key_id="fixture-key", access=access),
         event_context=None,
     )
     collection_id = int(created["collection_id"])

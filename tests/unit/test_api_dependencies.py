@@ -80,7 +80,7 @@ def test_startup_rejects_a_persisted_key_id_without_its_secret(tmp_path: Path) -
                 provenance_mode="omitted",
                 provenance_identity=None,
                 inventory_identity="b" * 64,
-                created_by_app="fixture",
+                created_by_principal_id="fixture",
                 created_at="2026-08-24T00:00:00.000000Z",
             )
         )
@@ -109,7 +109,7 @@ def test_startup_rejects_an_uploaded_copy_without_recovery_descriptor(tmp_path: 
                 provenance_mode="omitted",
                 provenance_identity=None,
                 inventory_identity="b" * 64,
-                created_by_app="fixture",
+                created_by_principal_id="fixture",
                 created_at="2026-08-24T00:00:00.000000Z",
             )
         )

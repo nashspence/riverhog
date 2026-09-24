@@ -16,7 +16,7 @@ from typing import Any, Final
 
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError as JsonSchemaValidationError
-from riverhog_client.transform import ClaimedCollectionRuntimeRegistry
+from riverhog_client.processing import ClaimedCollectionRuntimeRegistry
 from riverhog_protocol import DownloadAllowanceExceeded, RiverhogError, ServiceUnavailable
 from stove0_target_protocol import (
     EFFECT_TARGET_PROTOCOL,

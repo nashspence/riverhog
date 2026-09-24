@@ -886,7 +886,8 @@ def test_stove0_control_plane_does_not_import_riverhog_transform_runtime() -> No
         module
         for path in server.rglob("*.py")
         for module in imported_modules(path)
-        if module == "riverhog_client.transform" or module.startswith("riverhog_client.transform.")
+        if module == "riverhog_client.processing"
+        or module.startswith("riverhog_client.processing.")
     }
 
     assert not imported

@@ -15,7 +15,7 @@ from review0_target_lib import (
     file_identity,
     review_options_schema,
 )
-from riverhog_client.transform import TransformWorkspace
+from riverhog_client.processing import ProcessingWorkspace
 from riverhog_protocol import canonical_json_bytes
 from stove0_target_support import (
     DEFAULT_TERMINAL_STATE_RETENTION_SECONDS,
@@ -146,7 +146,7 @@ class ReviewRcloneEffectTargetService(ReviewTargetServiceBase):
         self,
         *,
         execution: TargetExecutionRuntime,
-        workspace: TransformWorkspace,
+        workspace: ProcessingWorkspace,
         request: TargetJobRequest,
         publication: TargetCollectionPublication | None,
         artifacts: tuple[OutputArtifact, ...],

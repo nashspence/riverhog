@@ -35,6 +35,8 @@ from riverhog_protocol.collection_workflow_transport import (
     CollectionRootIdentityDocument,
     CollectionRootPageDocument,
     OperationIdentityDocument,
+    ProcessingCapabilityCreateDocument,
+    ProcessingCapabilityDocument,
     ProcessingClaimAbandonDocument,
     ProcessingClaimCreateDocument,
     ProcessingClaimDocument,
@@ -49,8 +51,6 @@ from riverhog_protocol.collection_workflow_transport import (
     ProcessingOutcomeIdentityDocument,
     ProcessingOutcomePageDocument,
     ReceivingSetDocument,
-    TransformCapabilityCreateDocument,
-    TransformCapabilityDocument,
 )
 from riverhog_protocol.collection_workflows import RetirementPolicy
 from riverhog_protocol.errors import BadRequest
@@ -396,7 +396,7 @@ class CollectionWorkflowMethods:
             )
         )
 
-    def create_transform_capability(
+    def create_processing_capability(
         self,
         claim_id: ProcessingClaimId,
         *,
@@ -405,17 +405,17 @@ class CollectionWorkflowMethods:
         actions: Sequence[CapabilityAction] = ("read-inputs",),
         artifacts: Iterable[ArtifactInput],
         ttl_seconds: int = 900,
-    ) -> TransformCapabilityDocument:
+    ) -> ProcessingCapabilityDocument:
         request = _exact_request(
-            TransformCapabilityCreateDocument,
+            ProcessingCapabilityCreateDocument,
             fence=fence,
             audience=audience,
             actions=list(actions),
             ttl_seconds=ttl_seconds,
         )
-        capability = TransformCapabilityDocument.model_validate(
+        capability = ProcessingCapabilityDocument.model_validate(
             self._json(
-                "create_transform_capability",
+                "create_processing_capability",
                 "POST",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}/capabilities",
                 json=_dump(request),
@@ -423,7 +423,7 @@ class CollectionWorkflowMethods:
         )
         ordinal = capability.artifacts.count
         for chunk in _chunks(artifacts, maximum=WORKFLOW_SET_BATCH_MAX):
-            staged = self.append_transform_capability_artifacts(
+            staged = self.append_processing_capability_artifacts(
                 claim_id,
                 capability.id,
                 fence=fence,
@@ -431,14 +431,14 @@ class CollectionWorkflowMethods:
                 artifacts=chunk,
             )
             ordinal = staged.count
-        sealed = self.seal_transform_capability_artifacts(
+        sealed = self.seal_processing_capability_artifacts(
             claim_id,
             capability.id,
             fence=fence,
         )
         return capability.model_copy(update={"state": "active", "artifacts": sealed})
 
-    def append_transform_capability_artifacts(
+    def append_processing_capability_artifacts(
         self,
         claim_id: ProcessingClaimId,
         capability_id: str,
@@ -457,7 +457,7 @@ class CollectionWorkflowMethods:
         )
         return ArtifactReceivingSetDocument.model_validate(
             self._json(
-                "append_transform_capability_artifacts",
+                "append_processing_capability_artifacts",
                 "PUT",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}"
                 f"/capabilities/{capability_id}/artifacts",
@@ -465,7 +465,7 @@ class CollectionWorkflowMethods:
             )
         )
 
-    def seal_transform_capability_artifacts(
+    def seal_processing_capability_artifacts(
         self,
         claim_id: ProcessingClaimId,
         capability_id: str,
@@ -474,7 +474,7 @@ class CollectionWorkflowMethods:
     ) -> ArtifactReceivingSetDocument:
         return ArtifactReceivingSetDocument.model_validate(
             self._json(
-                "seal_transform_capability_artifacts",
+                "seal_processing_capability_artifacts",
                 "POST",
                 f"/v1/collection-processing-claims/{_claim_id(claim_id)}"
                 f"/capabilities/{capability_id}/artifacts/seal",

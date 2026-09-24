@@ -14,14 +14,14 @@ from riverhog_core.app_permissions import (
     ALL_RESOURCES,
     COLLECTION_PREFIX,
     TAG_PREFIX,
-    ApplicationPrincipal,
+    Principal,
 )
 from riverhog_core.catalog_db import SessionFactory, make_session_factory, session_scope
 from riverhog_core.catalog_models import (
     CollectionRecord,
     CollectionTagMembershipRecord,
 )
-from riverhog_core.catalog_workflow_models import CollectionTransformCapabilityArtifactRecord
+from riverhog_core.catalog_workflow_models import CollectionProcessingCapabilityArtifactRecord
 from riverhog_core.runtime_config import RuntimeConfig
 
 
@@ -36,7 +36,7 @@ class SqlAlchemyCollectionAccessService:
 
     def require(
         self,
-        principal: ApplicationPrincipal,
+        principal: Principal,
         permission: str,
         collection_id: int,
     ) -> int:
@@ -61,7 +61,7 @@ class SqlAlchemyCollectionAccessService:
 
 def require_collection_access(
     session: Session,
-    principal: ApplicationPrincipal | None,
+    principal: Principal | None,
     permission: str,
     collection_id: int,
 ) -> None:
@@ -98,7 +98,7 @@ def require_collection_access(
 
 
 def require_collection_create_access(
-    principal: ApplicationPrincipal | None,
+    principal: Principal | None,
     permission: str,
     *,
     tags: Iterable[str] = (),
@@ -117,7 +117,7 @@ def require_collection_create_access(
 
 def collection_access_filter(
     column: ColumnElement[int] | InstrumentedAttribute[int],
-    principal: ApplicationPrincipal | None,
+    principal: Principal | None,
     permission: str,
     *,
     published_filter: ColumnElement[bool] | None = None,
@@ -156,7 +156,7 @@ def collection_access_filter(
 
 def _capability_contains_collection(
     session: Session,
-    principal: ApplicationPrincipal,
+    principal: Principal,
     collection_id: int,
 ) -> bool:
     capability_id = principal.artifact_scope_capability_id
@@ -164,10 +164,10 @@ def _capability_contains_collection(
         return False
     return (
         session.scalar(
-            select(CollectionTransformCapabilityArtifactRecord.capability_id)
+            select(CollectionProcessingCapabilityArtifactRecord.capability_id)
             .where(
-                CollectionTransformCapabilityArtifactRecord.capability_id == capability_id,
-                CollectionTransformCapabilityArtifactRecord.collection_id == collection_id,
+                CollectionProcessingCapabilityArtifactRecord.capability_id == capability_id,
+                CollectionProcessingCapabilityArtifactRecord.collection_id == collection_id,
             )
             .limit(1)
         )
@@ -177,20 +177,20 @@ def _capability_contains_collection(
 
 def _capability_collection_filter(
     column: ColumnElement[int] | InstrumentedAttribute[int],
-    principal: ApplicationPrincipal,
+    principal: Principal,
 ) -> ColumnElement[bool] | None:
     capability_id = principal.artifact_scope_capability_id
     if capability_id is None:
         return None
     return exists(
         select(1).where(
-            CollectionTransformCapabilityArtifactRecord.capability_id == capability_id,
-            CollectionTransformCapabilityArtifactRecord.collection_id == column,
+            CollectionProcessingCapabilityArtifactRecord.capability_id == capability_id,
+            CollectionProcessingCapabilityArtifactRecord.collection_id == column,
         )
     )
 
 
-def permission_resources(principal: ApplicationPrincipal, permission: str) -> set[str]:
+def permission_resources(principal: Principal, permission: str) -> set[str]:
     return access_permission_resources(principal.access, permission)
 
 

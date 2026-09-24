@@ -464,12 +464,12 @@ def test_python_contract_units_are_exact_and_navigate_module_export_member() -> 
     assert {surface["unit"] for surface in surfaces.values()} == {"export", "member"}
     assert "riverhog_client.ApiClient" in surfaces
     assert "riverhog_client.ApiClient.list_collections" in surfaces
-    assert "riverhog_client.transform.CapabilityApiClient.__enter__" in surfaces
+    assert "riverhog_client.processing.CapabilityApiClient.__enter__" in surfaces
     assert surfaces["riverhog_client.ApiClient.list_collections"]["contract"]["signature"]
     assert "members" not in surfaces["riverhog_client.ApiClient"]["contract"]
 
     index = checked.files["riverhog-v1/authorities/riverhog-client/python/index.md"].decode()
-    assert index.index("### `riverhog_client`") < index.index("### `riverhog_client.transform`")
+    assert index.index("### `riverhog_client`") < index.index("### `riverhog_client.processing`")
     export_line = "- [ApiClient](riverhog-client-apiclient.md)"
     member_line = "  - [list_collections](riverhog-client-apiclient-list-collections.md)"
     assert export_line in index

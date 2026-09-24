@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql.elements import ColumnElement
 from time_formats import utc_timestamp_now
 
-from riverhog_core.app_permissions import ALL_RESOURCES, ApplicationPrincipal
+from riverhog_core.app_permissions import ALL_RESOURCES, Principal
 from riverhog_core.catalog_models import (
     CatalogEventRecord,
     CatalogSyncStateRecord,
@@ -175,7 +175,7 @@ def close_catalog_tag_visibility(
 
 
 def catalog_event_projection(
-    principal: ApplicationPrincipal | None,
+    principal: Principal | None,
     permission: str,
 ) -> tuple[ColumnElement[bool], ColumnElement[str]]:
     native_change = cast(ColumnElement[str], CatalogEventRecord.change)

@@ -17,14 +17,14 @@ class _CapabilityClientState:
     def snapshot(self) -> Any:
         with self.lock:
             if self.closed:
-                raise RuntimeError("transform capability client is closed")
+                raise RuntimeError("processing capability client is closed")
             return self.current
 
     def replace(self, client: Any, *, owned: bool) -> None:
         with self.lock:
             if self.closed:
                 _close(client, owned=owned)
-                raise RuntimeError("transform capability client is closed")
+                raise RuntimeError("processing capability client is closed")
             self.retired.append((self.current, self.current_owned))
             self.current = client
             self.current_owned = owned

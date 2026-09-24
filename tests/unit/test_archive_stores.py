@@ -49,7 +49,7 @@ def _seed(path: Path) -> None:
                 encryption_format="age-v1-scrypt",
                 passphrase_id="fixture-archive-key-v1",
                 inventory_identity="1" * 64,
-                created_by_app="fixture",
+                created_by_principal_id="fixture",
                 created_at="2026-01-01T00:00:00.000000Z",
             )
         )

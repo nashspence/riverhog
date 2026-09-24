@@ -14,22 +14,22 @@ from riverhog_protocol.collection_workflows import (
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 
 from riverhog_client import ApiClient
-from riverhog_client.producer import (
-    ProducerArtifactCustody,
-    ProducerArtifactIdentity,
-    ProducerInput,
-)
-from riverhog_client.transform.capability import CapabilityApiClient
-from riverhog_client.transform.models import (
+from riverhog_client.processing.capability import CapabilityApiClient
+from riverhog_client.processing.models import (
     ClaimedArtifact,
     DerivedCollectionReceipt,
     DerivedCollectionSpec,
 )
-from riverhog_client.transform.reader import ClaimedCollectionReader, ClaimedRetrieval
-from riverhog_client.transform.workspace import TransformWorkspace
-from riverhog_client.transform.writer import (
+from riverhog_client.processing.reader import ClaimedCollectionReader, ClaimedRetrieval
+from riverhog_client.processing.workspace import ProcessingWorkspace
+from riverhog_client.processing.writer import (
     DerivedCollectionWriter,
     IncrementalDerivedCollectionWriter,
+)
+from riverhog_client.producer import (
+    ProducerArtifactCustody,
+    ProducerArtifactIdentity,
+    ProducerInput,
 )
 
 CancellationCheck = Callable[[], None]
@@ -159,9 +159,9 @@ class ClaimedCollectionRuntime:
         root: Path,
         *,
         declared_protection: DeclaredWorkspaceProtection,
-    ) -> TransformWorkspace:
+    ) -> ProcessingWorkspace:
         self.heartbeat()
-        return TransformWorkspace.open(
+        return ProcessingWorkspace.open(
             root,
             execution_id=self.execution_id,
             declared_protection=declared_protection,
@@ -323,9 +323,9 @@ class CollectionTransformRuntime:
         root: Path,
         *,
         declared_protection: DeclaredWorkspaceProtection,
-    ) -> TransformWorkspace:
+    ) -> ProcessingWorkspace:
         self.heartbeat()
-        return TransformWorkspace.open(
+        return ProcessingWorkspace.open(
             root,
             execution_id=self.execution_id,
             declared_protection=declared_protection,
@@ -414,7 +414,7 @@ class CollectionTransformRuntime:
 def _capability_token(value: str) -> str:
     token = value.strip()
     if not token:
-        raise ValueError("transform capability token must be nonempty")
+        raise ValueError("processing capability token must be nonempty")
     return token
 
 

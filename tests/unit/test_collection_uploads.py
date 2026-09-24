@@ -16,7 +16,7 @@ from riverhog_core.app_permissions import (
     PROVENANCE_EXPORT,
     PROVENANCE_READ,
     ApplicationAccess,
-    ApplicationPrincipal,
+    Principal,
 )
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_db import initialize_db, make_session_factory, session_scope
@@ -87,14 +87,14 @@ from tests.unit.db_helpers import sqlite_url
 from tests.unit.test_archive_root import MemoryImmutableStore
 from tests.unit.test_pack_upload import MemoryResumableStore
 
-_CREATOR = ApplicationPrincipal(
-    app="uploader",
+_CREATOR = Principal(
+    id="uploader",
     key_id="key-1",
     access=frozenset({ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES)}),
 )
 
-_TAGGED_CREATOR = ApplicationPrincipal(
-    app="tagged-uploader",
+_TAGGED_CREATOR = Principal(
+    id="tagged-uploader",
     key_id="tagged-key-1",
     access=frozenset(
         {
@@ -104,14 +104,14 @@ _TAGGED_CREATOR = ApplicationPrincipal(
     ),
 )
 
-_DELETER = ApplicationPrincipal(
-    app="operator",
+_DELETER = Principal(
+    id="operator",
     key_id="key-operator",
     access=frozenset({ApplicationAccess(COLLECTIONS_DELETE, ALL_RESOURCES)}),
 )
 
-_OTHER_DELETER = ApplicationPrincipal(
-    app="other-operator",
+_OTHER_DELETER = Principal(
+    id="other-operator",
     key_id="key-other",
     access=frozenset({ApplicationAccess(COLLECTIONS_DELETE, "collection:999")}),
 )
@@ -424,7 +424,7 @@ def _verify_provenance(
     service: SqlAlchemyProvenanceService,
     collection_id: int,
     *,
-    principal: ApplicationPrincipal,
+    principal: Principal,
 ) -> dict[str, object]:
     service.request_verification(collection_id, principal=principal)
     for _ in range(256):
@@ -965,8 +965,8 @@ def test_captured_and_omitted_file_provenance_is_one_immutable_mixed_archive(
     assert provenance_descriptor["identity"] == provenance_root.identity
     assert provenance_descriptor["root"]["sha256"] == provenance_root.identity
 
-    reader = ApplicationPrincipal(
-        app="catalog-reader",
+    reader = Principal(
+        id="catalog-reader",
         key_id="key-reader",
         access=frozenset(
             {
@@ -1026,15 +1026,15 @@ def test_captured_and_omitted_file_provenance_is_one_immutable_mixed_archive(
         is True
     )
 
-    catalog_only = ApplicationPrincipal(
-        app="catalog-only",
+    catalog_only = Principal(
+        id="catalog-only",
         key_id="key-catalog",
         access=frozenset({ApplicationAccess(CATALOG_READ, ALL_RESOURCES)}),
     )
     with pytest.raises(NotFound):
         provenance_service.show_file(collection_id, "captured.bin", principal=catalog_only)
-    read_only = ApplicationPrincipal(
-        app="provenance-reader",
+    read_only = Principal(
+        id="provenance-reader",
         key_id="key-provenance",
         access=frozenset(
             {
@@ -1204,7 +1204,7 @@ def test_small_collection_moves_directly_from_source_unit_to_final_custody(
         event
         for event in SqlAlchemyLifecycleEventService(config)
         .page(
-            owner_app=_CREATOR.app,
+            owner_principal_id=_CREATOR.id,
             after=None,
             limit=100,
         )
@@ -1470,7 +1470,7 @@ def test_custody_transfer_receipt_orphan_resume_and_guarded_discard(
     with session_scope(make_session_factory(config.database_url)) as session:
         upload = session.get(CollectionUploadRecord, collection_id)
         assert upload is not None
-        upload.initiated_by_app = f"transform:{execution_id}"
+        upload.initiated_by_principal_id = f"processing:{execution_id}"
         session.add(
             CollectionProcessingClaimRecord(
                 id="b" * 64,

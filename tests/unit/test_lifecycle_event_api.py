@@ -16,7 +16,7 @@ from riverhog_core.app_permissions import (
     EVENTS_READ,
     EVENTS_READ_ALL,
     ApplicationAccess,
-    ApplicationPrincipal,
+    Principal,
 )
 from riverhog_core.catalog_db import initialize_db, make_session_factory, session_scope
 from riverhog_core.catalog_models import LifecycleEventRecord
@@ -42,8 +42,8 @@ def _collection_event_data(collection_id: int, owner: str) -> dict[str, object]:
     return {
         "collection_id": str(collection_id),
         "collection_created_at": utc_timestamp_now(),
-        "actor": {"app": "riverhog"},
-        "initiator": {"app": owner},
+        "actor": {"principal_id": "riverhog"},
+        "initiator": {"principal_id": owner},
     }
 
 
@@ -116,14 +116,14 @@ def test_context_expiry_targets_owner_and_subject_in_sql(tmp_path: Path) -> None
     initialize_db(config.database_url)
     events = SqlAlchemyLifecycleEventService(config)
     events.emit(
-        owner_app="alpha",
+        owner_principal_id="alpha",
         type=COLLECTION_FINALIZED,
         subject="1",
         data=_finalized_event_data(1, "alpha"),
         context_json='{"route":"phone"}',
     )
     events.emit(
-        owner_app="alpha",
+        owner_principal_id="alpha",
         type=COLLECTION_FINALIZED,
         subject="2",
         data=_finalized_event_data(2, "alpha"),
@@ -132,7 +132,7 @@ def test_context_expiry_targets_owner_and_subject_in_sql(tmp_path: Path) -> None
     expires_at = "2026-08-02T00:00:00.000000Z"
     with session_scope(make_session_factory(config.database_url)) as session:
         events.expire_context(
-            owner_app="alpha",
+            owner_principal_id="alpha",
             subject="1",
             expires_at=expires_at,
             session=session,
@@ -154,7 +154,7 @@ def test_event_page_omits_expired_context_without_performing_cleanup(tmp_path: P
     initialize_db(config.database_url)
     events = SqlAlchemyLifecycleEventService(config)
     events.emit(
-        owner_app="alpha",
+        owner_principal_id="alpha",
         type=COLLECTION_FINALIZED,
         subject="1",
         data=_finalized_event_data(1, "alpha"),
@@ -162,7 +162,7 @@ def test_event_page_omits_expired_context_without_performing_cleanup(tmp_path: P
         context_expires_at="2000-01-01T00:00:00.000000Z",
     )
 
-    page = events.page(owner_app="alpha", after=None, limit=1)
+    page = events.page(owner_principal_id="alpha", after=None, limit=1)
 
     assert len(page.events) == 1
     assert "context" not in page.events[0].data
@@ -181,7 +181,7 @@ def test_expired_context_reclamation_is_bounded_and_restartable(tmp_path: Path) 
     events = SqlAlchemyLifecycleEventService(config)
     for subject in ("1", "2", "3"):
         events.emit(
-            owner_app="alpha",
+            owner_principal_id="alpha",
             type=COLLECTION_FINALIZED,
             subject=subject,
             data=_finalized_event_data(int(subject), "alpha"),
@@ -189,7 +189,7 @@ def test_expired_context_reclamation_is_bounded_and_restartable(tmp_path: Path) 
             context_expires_at="2000-01-01T00:00:00.000000Z",
         )
     events.emit(
-        owner_app="alpha",
+        owner_principal_id="alpha",
         type=COLLECTION_FINALIZED,
         subject="4",
         data=_finalized_event_data(4, "alpha"),
@@ -221,8 +221,8 @@ def test_lifecycle_event_api_scopes_normal_readers_to_their_application(
     initialize_db(config.database_url)
     app_keys = SqlAlchemyAppKeyService(config)
     events = SqlAlchemyLifecycleEventService(config)
-    grantor = ApplicationPrincipal(
-        app="bootstrap",
+    grantor = Principal(
+        id="bootstrap",
         key_id=None,
         access=frozenset(),
         unrestricted_delegation=True,
@@ -240,13 +240,13 @@ def test_lifecycle_event_api_scopes_normal_readers_to_their_application(
         )["token"]
     )
     events.emit(
-        owner_app="alpha",
+        owner_principal_id="alpha",
         type=COLLECTION_FINALIZED,
         subject="1",
         data=_finalized_event_data(1, "alpha"),
     )
     events.emit(
-        owner_app="beta",
+        owner_principal_id="beta",
         type=COLLECTION_FINALIZED,
         subject="2",
         data=_finalized_event_data(2, "beta"),

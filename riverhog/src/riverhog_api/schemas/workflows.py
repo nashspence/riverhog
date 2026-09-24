@@ -43,6 +43,12 @@ from riverhog_protocol.collection_workflow_transport import (
     OperationIdentityDocument as OperationIdentityIn,
 )
 from riverhog_protocol.collection_workflow_transport import (
+    ProcessingCapabilityCreateDocument as ProcessingCapabilityCreateIn,
+)
+from riverhog_protocol.collection_workflow_transport import (
+    ProcessingCapabilityDocument as ProcessingCapabilityOut,
+)
+from riverhog_protocol.collection_workflow_transport import (
     ProcessingClaimAbandonDocument as ProcessingClaimAbandonIn,
 )
 from riverhog_protocol.collection_workflow_transport import (
@@ -78,12 +84,6 @@ from riverhog_protocol.collection_workflow_transport import (
 from riverhog_protocol.collection_workflow_transport import (
     ReceivingSetDocument as ReceivingSetOut,
 )
-from riverhog_protocol.collection_workflow_transport import (
-    TransformCapabilityCreateDocument as TransformCapabilityCreateIn,
-)
-from riverhog_protocol.collection_workflow_transport import (
-    TransformCapabilityDocument as TransformCapabilityOut,
-)
 
 __all__ = [
     "ArtifactDispositionBatchIn",
@@ -112,6 +112,6 @@ __all__ = [
     "ProcessingClaimSettleIn",
     "ProcessingOutcomePageOut",
     "ReceivingSetOut",
-    "TransformCapabilityCreateIn",
-    "TransformCapabilityOut",
+    "ProcessingCapabilityCreateIn",
+    "ProcessingCapabilityOut",
 ]

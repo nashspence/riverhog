@@ -12,9 +12,9 @@ from riverhog_core.app_permissions import (
     ARCHIVES_READ,
     CATALOG_READ,
     COLLECTION_DESCRIPTIONS_MANAGE,
+    COLLECTION_PROCESSING_CONTROL,
+    COLLECTION_PROCESSING_EXECUTE,
     COLLECTION_TAGS_MANAGE,
-    COLLECTION_TRANSFORMS_CONTROL,
-    COLLECTION_TRANSFORMS_EXECUTE,
     COLLECTIONS_CREATE,
     COLLECTIONS_DELETE,
     EVENTS_READ,
@@ -24,7 +24,7 @@ from riverhog_core.app_permissions import (
     QUOTAS_MANAGE,
     RETRIEVAL_MANAGE,
     ApplicationAccess,
-    ApplicationPrincipal,
+    Principal,
 )
 from riverhog_protocol.errors import Forbidden, Unauthorized
 
@@ -34,17 +34,17 @@ BOOTSTRAP_TOKEN_ENV = "RIVERHOG_BOOTSTRAP_TOKEN"
 
 _bearer = HTTPBearer(auto_error=False)
 BearerCredentials = Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)]
-PermissionDependency = Callable[..., ApplicationPrincipal]
+PermissionDependency = Callable[..., Principal]
 
 
-def authenticate_token(token: str, container: ServiceContainer) -> ApplicationPrincipal | None:
+def authenticate_token(token: str, container: ServiceContainer) -> Principal | None:
     supplied = token.strip()
     if not supplied:
         return None
     bootstrap = os.getenv(BOOTSTRAP_TOKEN_ENV, "")
     if bootstrap and secrets.compare_digest(supplied, bootstrap):
-        return ApplicationPrincipal(
-            app="bootstrap",
+        return Principal(
+            id="bootstrap",
             key_id=None,
             access=frozenset(
                 {
@@ -61,26 +61,26 @@ def authenticate_token(token: str, container: ServiceContainer) -> ApplicationPr
     return workflows.authenticate_capability(supplied) if workflows is not None else None
 
 
-def require_application(
+def require_principal(
     credentials: BearerCredentials,
     container: ContainerDep,
-) -> ApplicationPrincipal:
+) -> Principal:
     supplied = credentials.credentials if credentials is not None else ""
     principal = authenticate_token(supplied, container)
     if principal is not None:
         return principal
-    raise Unauthorized("invalid application token")
+    raise Unauthorized("invalid bearer token")
 
 
 def require_permission(permission: str) -> PermissionDependency:
     def dependency(
         credentials: BearerCredentials,
         container: ContainerDep,
-    ) -> ApplicationPrincipal:
-        principal = require_application(credentials, container)
+    ) -> Principal:
+        principal = require_principal(credentials, container)
         if principal.allows(permission):
             return principal
-        raise Forbidden(f"application permission required: {permission}")
+        raise Forbidden(f"permission required: {permission}")
 
     dependency.riverhog_permission = permission  # type: ignore[attr-defined]
     return dependency
@@ -93,11 +93,11 @@ def require_any_permission(*permissions: str) -> PermissionDependency:
     def dependency(
         credentials: BearerCredentials,
         container: ContainerDep,
-    ) -> ApplicationPrincipal:
-        principal = require_application(credentials, container)
+    ) -> Principal:
+        principal = require_principal(credentials, container)
         if any(principal.allows(permission) for permission in permissions):
             return principal
-        raise Forbidden("one application permission is required: " + ", ".join(permissions))
+        raise Forbidden("one permission is required: " + ", ".join(permissions))
 
     dependency.riverhog_permissions = tuple(permissions)  # type: ignore[attr-defined]
     return dependency
@@ -153,19 +153,19 @@ def apply_openapi_permission_contract(
 
 
 CatalogReader = Annotated[
-    ApplicationPrincipal,
+    Principal,
     Depends(cast(Callable[..., object], require_permission(CATALOG_READ))),
 ]
 RetrievalManager = Annotated[
-    ApplicationPrincipal,
+    Principal,
     Depends(cast(Callable[..., object], require_permission(RETRIEVAL_MANAGE))),
 ]
 CollectionCreator = Annotated[
-    ApplicationPrincipal,
+    Principal,
     Depends(cast(Callable[..., object], require_permission(COLLECTIONS_CREATE))),
 ]
 CollectionDescriptionManager = Annotated[
-    ApplicationPrincipal,
+    Principal,
     Depends(
         cast(
             Callable[..., object],
@@ -174,7 +174,7 @@ CollectionDescriptionManager = Annotated[
     ),
 ]
 CollectionUploadReader = Annotated[
-    ApplicationPrincipal,
+    Principal,
     Depends(
         cast(
             Callable[..., object],
@@ -182,28 +182,28 @@ CollectionUploadReader = Annotated[
         )
     ),
 ]
-CollectionTransformController = Annotated[
-    ApplicationPrincipal,
-    Depends(cast(Callable[..., object], require_permission(COLLECTION_TRANSFORMS_CONTROL))),
+CollectionProcessingController = Annotated[
+    Principal,
+    Depends(cast(Callable[..., object], require_permission(COLLECTION_PROCESSING_CONTROL))),
 ]
-CollectionTransformExecutor = Annotated[
-    ApplicationPrincipal,
-    Depends(cast(Callable[..., object], require_permission(COLLECTION_TRANSFORMS_EXECUTE))),
+CollectionProcessingExecutor = Annotated[
+    Principal,
+    Depends(cast(Callable[..., object], require_permission(COLLECTION_PROCESSING_EXECUTE))),
 ]
-CollectionTransformLeaseManager = Annotated[
-    ApplicationPrincipal,
+CollectionProcessingLeaseManager = Annotated[
+    Principal,
     Depends(
         cast(
             Callable[..., object],
             require_any_permission(
-                COLLECTION_TRANSFORMS_CONTROL,
-                COLLECTION_TRANSFORMS_EXECUTE,
+                COLLECTION_PROCESSING_CONTROL,
+                COLLECTION_PROCESSING_EXECUTE,
             ),
         )
     ),
 ]
 CollectionTagManager = Annotated[
-    ApplicationPrincipal,
+    Principal,
     Depends(
         cast(
             Callable[..., object],
@@ -212,35 +212,35 @@ CollectionTagManager = Annotated[
     ),
 ]
 CollectionDeleter = Annotated[
-    ApplicationPrincipal,
+    Principal,
     Depends(cast(Callable[..., object], require_permission(COLLECTIONS_DELETE))),
 ]
 ArchiveReader = Annotated[
-    ApplicationPrincipal,
+    Principal,
     Depends(cast(Callable[..., object], require_permission(ARCHIVES_READ))),
 ]
 ArchiveManager = Annotated[
-    ApplicationPrincipal,
+    Principal,
     Depends(cast(Callable[..., object], require_permission(ARCHIVES_MANAGE))),
 ]
 KeyManager = Annotated[
-    ApplicationPrincipal,
+    Principal,
     Depends(cast(Callable[..., object], require_permission(KEYS_MANAGE))),
 ]
 QuotaManager = Annotated[
-    ApplicationPrincipal,
+    Principal,
     Depends(cast(Callable[..., object], require_permission(QUOTAS_MANAGE))),
 ]
 EventsReader = Annotated[
-    ApplicationPrincipal,
+    Principal,
     Depends(cast(Callable[..., object], require_permission(EVENTS_READ))),
 ]
 ProvenanceReader = Annotated[
-    ApplicationPrincipal,
+    Principal,
     Depends(cast(Callable[..., object], require_permission(PROVENANCE_READ))),
 ]
 ProvenanceExporter = Annotated[
-    ApplicationPrincipal,
+    Principal,
     Depends(cast(Callable[..., object], require_permission(PROVENANCE_EXPORT))),
 ]
 
@@ -254,9 +254,9 @@ __all__ = [
     "CollectionDescriptionManager",
     "CollectionDeleter",
     "CollectionTagManager",
-    "CollectionTransformController",
-    "CollectionTransformExecutor",
-    "CollectionTransformLeaseManager",
+    "CollectionProcessingController",
+    "CollectionProcessingExecutor",
+    "CollectionProcessingLeaseManager",
     "CollectionUploadReader",
     "EventsReader",
     "KeyManager",
@@ -266,7 +266,7 @@ __all__ = [
     "RetrievalManager",
     "authenticate_token",
     "apply_openapi_permission_contract",
-    "require_application",
+    "require_principal",
     "require_any_permission",
     "require_permission",
 ]

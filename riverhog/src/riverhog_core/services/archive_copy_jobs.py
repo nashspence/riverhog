@@ -23,7 +23,7 @@ from sqlalchemy.orm import Session, aliased, selectinload
 from state_schema import read_snapshot
 from time_formats import format_utc_timestamp, utc_now
 
-from riverhog_core.app_permissions import ARCHIVES_MANAGE, ApplicationPrincipal
+from riverhog_core.app_permissions import ARCHIVES_MANAGE, Principal
 from riverhog_core.archive_formats import (
     PACK_VOLUME_STORAGE_FORMAT,
     RAW_VOLUME_STORAGE_FORMAT,
@@ -211,7 +211,7 @@ class SqlAlchemyArchiveCopyJobService:
         *,
         destination_store: str,
         source_store: str | None = None,
-        initiator: ApplicationPrincipal,
+        initiator: Principal,
         event_context: dict[str, object] | None = None,
     ) -> dict[str, object]:
         normalized_collection_id = _normalize_collection_id(collection_id)
@@ -250,7 +250,7 @@ class SqlAlchemyArchiveCopyJobService:
                     destination_storage_prefix=(
                         destination_archive_store.new_collection_archive_storage_prefix()
                     ),
-                    initiated_by_app=initiator.app,
+                    initiated_by_app=initiator.id,
                     initiated_by_key_id=initiator.key_id,
                     event_context_json=normalized_context_json,
                     state="requested",
@@ -263,7 +263,7 @@ class SqlAlchemyArchiveCopyJobService:
                 if job.state == "canceling":
                     raise Conflict("archive copy cancellation cleanup is still in progress")
                 job.source_store = source_copy.store
-                job.initiated_by_app = initiator.app
+                job.initiated_by_app = initiator.id
                 job.initiated_by_key_id = initiator.key_id
                 job.event_context_json = normalized_context_json
                 job.state = "requested"
@@ -285,7 +285,7 @@ class SqlAlchemyArchiveCopyJobService:
         collection_id: int,
         *,
         destination_store: str,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> dict[str, object]:
         normalized_collection_id = _normalize_collection_id(collection_id)
         destination = self._configured_store(destination_store)
@@ -339,7 +339,7 @@ class SqlAlchemyArchiveCopyJobService:
         collection_id: int,
         *,
         destination_store: str,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> dict[str, object]:
         normalized_collection_id = _normalize_collection_id(collection_id)
         destination = self._configured_store(destination_store)
@@ -370,7 +370,7 @@ class SqlAlchemyArchiveCopyJobService:
         sort: str,
         order: str,
         state: str | None = None,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> dict[str, object]:
         validate_page_size(page_size)
         if sort not in _SORT_FIELDS:
@@ -417,7 +417,7 @@ class SqlAlchemyArchiveCopyJobService:
         sort: str,
         order: str,
         state: str | None = None,
-        principal: ApplicationPrincipal | None = None,
+        principal: Principal | None = None,
     ) -> Iterator[dict[str, object]]:
         _, _, _, statement, key_columns = _archive_copy_job_list_statement(
             q=q,
@@ -1782,8 +1782,8 @@ class SqlAlchemyArchiveCopyJobService:
                 **(details or {}),
             },
             terminal=terminal,
-            initiator=ApplicationPrincipal(
-                app=job.initiated_by_app,
+            initiator=Principal(
+                id=job.initiated_by_app,
                 key_id=job.initiated_by_key_id,
                 access=frozenset(),
             ),
@@ -2010,7 +2010,7 @@ def _archive_copy_job_list_statement(
     state: str | None,
     sort: str,
     order: str,
-    principal: ApplicationPrincipal | None,
+    principal: Principal | None,
 ) -> tuple[str | None, str | None, list[Any], Any, tuple[Any, ...]]:
     if sort not in _SORT_FIELDS:
         raise BadRequest(f"sort must be one of {', '.join(sorted(_SORT_FIELDS))}")

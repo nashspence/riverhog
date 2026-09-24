@@ -1,4 +1,4 @@
-"""Immutable public values for the collection transform data plane."""
+"""Immutable public values for the collection processing data plane."""
 
 from __future__ import annotations
 
@@ -48,7 +48,7 @@ class DerivedCollectionSpec:
 
 @dataclass(frozen=True, order=True, slots=True)
 class ClaimedArtifact:
-    """One immutable logical file authorized by a transform claim."""
+    """One immutable logical file authorized by a processing claim."""
 
     root: CollectionRootIdentity
     path: str

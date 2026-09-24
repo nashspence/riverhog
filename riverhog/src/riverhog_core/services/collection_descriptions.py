@@ -21,7 +21,7 @@ from time_formats import format_utc_timestamp, utc_now, utc_timestamp_now
 
 from riverhog_core.app_permissions import (
     COLLECTION_DESCRIPTIONS_MANAGE,
-    ApplicationPrincipal,
+    Principal,
 )
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_db import SessionFactory, make_session_factory, session_scope
@@ -76,7 +76,7 @@ class SqlAlchemyCollectionDescriptionService:
         *,
         description: str | None,
         expected_identity: str,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> dict[str, object]:
         normalized_id = _normalize_collection_id_or_raise(collection_id)
         normalized_description = (

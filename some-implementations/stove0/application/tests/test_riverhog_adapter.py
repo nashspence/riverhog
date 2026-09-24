@@ -287,11 +287,11 @@ class FixtureApi:
         self.execution_id = None
         return {"id": claim_id, "fence": self.fence, "state": "active"}
 
-    def create_transform_capability(self, claim_id: str, **kwargs: Any) -> dict[str, Any]:
+    def create_processing_capability(self, claim_id: str, **kwargs: Any) -> dict[str, Any]:
         self.calls.append(("capability", {"claim_id": claim_id, **kwargs}))
         actions = tuple(sorted(kwargs["actions"]))
         principal = (
-            f"transform:{self.execution_id}"
+            f"processing:{self.execution_id}"
             if "write-output" in actions
             else f"claim:{claim_id}"
             if str(kwargs["audience"]).startswith("stove0.target/")
@@ -302,7 +302,7 @@ class FixtureApi:
             "fence": str(kwargs["fence"]),
             "audience": kwargs["audience"],
             "actions": list(actions),
-            "principal_app": principal,
+            "principal_id": principal,
             "token": f"secret-{len(self.calls)}",
         }
 

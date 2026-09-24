@@ -37,7 +37,7 @@ from review0_target_contracts import (
 )
 from review0_target_lib import ReviewTargetConfig, SamplerConfig, SamplerRegistration
 from review0_target_lib import target as review_support
-from riverhog_client.transform import TransformWorkspace
+from riverhog_client.processing import ProcessingWorkspace
 from riverhog_protocol import canonical_json_sha256
 from stove0_protocol import (
     ArtifactSelection,
@@ -667,8 +667,8 @@ def test_review_effect_executes_sampling_delivery_and_canonical_receipt_end_to_e
         def __exit__(self, *_args: object) -> None:
             return None
 
-        def open_workspace(self, root: Path) -> TransformWorkspace:
-            return TransformWorkspace.open(
+        def open_workspace(self, root: Path) -> ProcessingWorkspace:
+            return ProcessingWorkspace.open(
                 root,
                 execution_id=request.declaration.job_id,
                 declared_protection="memory-backed",

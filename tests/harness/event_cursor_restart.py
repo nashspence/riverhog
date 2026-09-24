@@ -24,7 +24,7 @@ def exercise(application: str, phase: str, root: Path) -> dict[str, object]:
             from riverhog_core.app_permissions import (
                 EVENTS_READ_ALL,
                 ApplicationAccess,
-                ApplicationPrincipal,
+                Principal,
             )
             from riverhog_protocol.lifecycle_events import COLLECTION_FINALIZED
 
@@ -38,8 +38,8 @@ def exercise(application: str, phase: str, root: Path) -> dict[str, object]:
                 key = container.app_keys.create(
                     app="cursor-fixture",
                     access=[ApplicationAccess(EVENTS_READ_ALL)],
-                    grantor=ApplicationPrincipal(
-                        app="bootstrap",
+                    grantor=Principal(
+                        id="bootstrap",
                         key_id=None,
                         access=frozenset(),
                         unrestricted_delegation=True,
@@ -54,7 +54,7 @@ def exercise(application: str, phase: str, root: Path) -> dict[str, object]:
 
             def emit(number: int) -> str:
                 container.lifecycle_events.emit(
-                    owner_app="cursor-fixture",
+                    owner_principal_id="cursor-fixture",
                     type=COLLECTION_FINALIZED,
                     subject=str(number),
                     data=_finalized_event_data(number, "cursor-fixture"),

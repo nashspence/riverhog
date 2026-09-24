@@ -19,7 +19,7 @@ from riverhog_core.app_permissions import (
     COLLECTIONS_CREATE,
     COLLECTIONS_DELETE,
     ApplicationAccess,
-    ApplicationPrincipal,
+    Principal,
     tag_resource,
 )
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
@@ -55,18 +55,18 @@ from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store
 
 pytestmark = pytest.mark.integration
 
-_CREATOR = ApplicationPrincipal(
-    app="fixture-target",
+_CREATOR = Principal(
+    id="fixture-target",
     key_id="target-key",
     access=frozenset({ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES)}),
 )
-_OPERATOR = ApplicationPrincipal(
-    app="fixture-operator",
+_OPERATOR = Principal(
+    id="fixture-operator",
     key_id="operator-key",
     access=frozenset({ApplicationAccess(COLLECTIONS_DELETE, ALL_RESOURCES)}),
 )
-_TAGGED_CREATOR = ApplicationPrincipal(
-    app="tagged-fixture-target",
+_TAGGED_CREATOR = Principal(
+    id="tagged-fixture-target",
     key_id="tagged-target-key",
     access=frozenset(
         {
@@ -132,7 +132,7 @@ def _services(
 def _create(service: SqlAlchemyCollectionUploadService) -> int:
     payload = service.create_or_resume(
         idempotency_key="fixture-execution",
-        ingest_source="transform:fixture",
+        ingest_source="processing:fixture",
         archive_store=None,
         initiator=_CREATOR,
         event_context=None,
@@ -153,8 +153,8 @@ def test_postgres_upload_tag_authorization_never_returns_the_accumulated_set(
 ) -> None:
     service, _other = _services(database_url)
     tags = tuple(f"scope/tag-{index:04d}" for index in range(301))
-    principal = ApplicationPrincipal(
-        app="bounded-tag-uploader",
+    principal = Principal(
+        id="bounded-tag-uploader",
         key_id="bounded-tag-key",
         access=frozenset(
             {
@@ -218,8 +218,8 @@ def test_a_riverhog_cli_reconciles_real_closed_discovery_without_replaying_tags(
 ) -> None:
     service, _other = _services(database_url)
     tags = [f"camera/retry-{index:04d}" for index in range(205)]
-    principal = ApplicationPrincipal(
-        app="a-riverhog-cli-retry",
+    principal = Principal(
+        id="a-riverhog-cli-retry",
         key_id="a-riverhog-cli-retry-key",
         access=frozenset(
             {
@@ -308,7 +308,7 @@ def test_postgres_upload_protects_a_reused_tag_root_before_its_first_commit(
             yield session
             upload = session.scalar(
                 select(CollectionUploadRecord).where(
-                    CollectionUploadRecord.initiated_by_app == _TAGGED_CREATOR.app,
+                    CollectionUploadRecord.initiated_by_principal_id == _TAGGED_CREATOR.id,
                     CollectionUploadRecord.idempotency_key == "reuse-orphan-tag-root",
                 )
             )
@@ -388,7 +388,7 @@ def test_postgres_upload_reuse_fails_before_commit_after_reclamation_claim(
         assert (
             session.scalar(
                 select(CollectionUploadRecord).where(
-                    CollectionUploadRecord.initiated_by_app == _TAGGED_CREATOR.app,
+                    CollectionUploadRecord.initiated_by_principal_id == _TAGGED_CREATOR.id,
                     CollectionUploadRecord.idempotency_key == "claimed-tag-root",
                 )
             )
@@ -623,7 +623,7 @@ def test_heartbeat_and_expiry_serialize_without_losing_resumable_custody(
         assert reaped == 1
         resumed = first.create_or_resume(
             idempotency_key="fixture-execution",
-            ingest_source="transform:fixture",
+            ingest_source="processing:fixture",
             archive_store=None,
             initiator=_CREATOR,
             event_context=None,

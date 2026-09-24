@@ -12,10 +12,10 @@ from riverhog_application_access import (
     CATALOG_READ,
     COLLECTION_DESCRIPTIONS_MANAGE,
     COLLECTION_PREFIX,
+    COLLECTION_PROCESSING_CONTROL,
+    COLLECTION_PROCESSING_EXECUTE,
     COLLECTION_SCOPED_PERMISSIONS,
     COLLECTION_TAGS_MANAGE,
-    COLLECTION_TRANSFORMS_CONTROL,
-    COLLECTION_TRANSFORMS_EXECUTE,
     COLLECTIONS_CREATE,
     COLLECTIONS_DELETE,
     EVENTS_READ,
@@ -36,6 +36,7 @@ from riverhog_application_access import collection_resource as _collection_resou
 from riverhog_application_access import normalize_access as _normalize_access
 from riverhog_application_access import tag_resource as _tag_resource
 from riverhog_protocol.errors import BadRequest
+from riverhog_protocol.principal_ids import PrincipalId, validate_principal_id
 
 
 def normalize_access(
@@ -62,13 +63,18 @@ def tag_resource(tag: str) -> str:
 
 
 @dataclass(frozen=True, slots=True)
-class ApplicationPrincipal:
-    app: str
+class Principal:
+    """An authorized application or claim-scoped delegated actor."""
+
+    id: PrincipalId
     key_id: str | None
     access: frozenset[ApplicationAccess]
     unrestricted_delegation: bool = False
     artifact_scope_capability_id: str | None = None
     authorization_view_identity: str | None = None
+
+    def __post_init__(self) -> None:
+        validate_principal_id(self.id)
 
     @property
     def has_artifact_scope(self) -> bool:
@@ -104,7 +110,7 @@ __all__ = [
     "ARCHIVES_MANAGE",
     "ARCHIVES_READ",
     "ApplicationAccess",
-    "ApplicationPrincipal",
+    "Principal",
     "CATALOG_READ",
     "COLLECTIONS_CREATE",
     "COLLECTION_DESCRIPTIONS_MANAGE",
@@ -112,8 +118,8 @@ __all__ = [
     "COLLECTION_PREFIX",
     "COLLECTION_SCOPED_PERMISSIONS",
     "COLLECTION_TAGS_MANAGE",
-    "COLLECTION_TRANSFORMS_CONTROL",
-    "COLLECTION_TRANSFORMS_EXECUTE",
+    "COLLECTION_PROCESSING_CONTROL",
+    "COLLECTION_PROCESSING_EXECUTE",
     "EVENTS_READ",
     "EVENTS_READ_ALL",
     "KEYS_MANAGE",

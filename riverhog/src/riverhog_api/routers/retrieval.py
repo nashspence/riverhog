@@ -195,7 +195,7 @@ def get_retrieval_plan(
 ) -> RetrievalPlanOut:
     return RetrievalPlanOut.model_validate(
         container.retrieval.get_plan(
-            app=principal.app,
+            principal_id=principal.id,
             key_id=principal.key_id,
             plan_id=plan_id,
         )
@@ -214,7 +214,7 @@ def advance_retrieval_plan(
 ) -> RetrievalPlanOut:
     return RetrievalPlanOut.model_validate(
         container.retrieval.advance_plan(
-            app=principal.app,
+            principal_id=principal.id,
             key_id=principal.key_id,
             plan_id=plan_id,
         )
@@ -244,7 +244,7 @@ def list_retrieval_plan_files(
 ) -> RetrievalPlanFilePageOut:
     return RetrievalPlanFilePageOut.model_validate(
         container.retrieval.list_plan_files(
-            app=principal.app,
+            principal_id=principal.id,
             key_id=principal.key_id,
             plan_id=plan_id,
             etag=parse_quoted_sha256_identity(if_match),
@@ -267,7 +267,7 @@ def create_retrieval_job(
 ) -> RetrievalJobOut:
     plan_etag = parse_quoted_sha256_identity(if_match)
     payload = container.retrieval.create(
-        app=principal.app,
+        principal_id=principal.id,
         key_id=principal.key_id,
         plan_id=request.plan_id,
         plan_etag=plan_etag,
@@ -290,7 +290,7 @@ def renew_retrieval_job(
 ) -> RetrievalJobOut:
     return RetrievalJobOut.model_validate(
         container.retrieval.renew(
-            app=principal.app,
+            principal_id=principal.id,
             key_id=principal.key_id,
             job_id=job_id,
             lease=timedelta(seconds=request.lease_seconds),
@@ -310,7 +310,7 @@ def get_retrieval_job(
 ) -> RetrievalJobOut:
     return RetrievalJobOut.model_validate(
         container.retrieval.get(
-            app=principal.app,
+            principal_id=principal.id,
             key_id=principal.key_id,
             job_id=job_id,
         )
@@ -328,7 +328,9 @@ def cancel_retrieval_job(
     container: ContainerDep,
 ) -> RetrievalJobOut:
     return RetrievalJobOut.model_validate(
-        container.retrieval.cancel(app=principal.app, key_id=principal.key_id, job_id=job_id)
+        container.retrieval.cancel(
+            principal_id=principal.id, key_id=principal.key_id, job_id=job_id
+        )
     )
 
 
@@ -344,7 +346,7 @@ def acknowledge_retrieval_job(
 ) -> RetrievalJobOut:
     return RetrievalJobOut.model_validate(
         container.retrieval.acknowledge(
-            app=principal.app,
+            principal_id=principal.id,
             key_id=principal.key_id,
             job_id=job_id,
         )
@@ -374,7 +376,7 @@ def download_retrieval_file(
     if_none_match: Annotated[str | None, Header(alias="If-None-Match")] = None,
 ) -> Response:
     total_bytes, sha256 = container.retrieval.content_metadata(
-        app=principal.app,
+        principal_id=principal.id,
         job_id=job_id,
         collection_id=collection_id,
         path=path,
@@ -399,7 +401,7 @@ def download_retrieval_file(
     if http_request.method == "HEAD":
         return Response(status_code=status_code, headers=headers)
     chunks, returned_bytes, returned_sha256 = container.retrieval.content(
-        app=principal.app,
+        principal_id=principal.id,
         job_id=job_id,
         collection_id=collection_id,
         path=path,

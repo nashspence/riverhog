@@ -28,7 +28,7 @@ def list_lifecycle_events(
 ) -> RiverhogEventPage:
     try:
         return container.lifecycle_events.page(
-            owner_app=None if principal.allows(EVENTS_READ_ALL) else principal.app,
+            owner_principal_id=None if principal.allows(EVENTS_READ_ALL) else principal.id,
             after=after,
             limit=limit,
         )

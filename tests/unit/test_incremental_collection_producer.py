@@ -16,7 +16,7 @@ from riverhog_core.app_permissions import (
     ALL_RESOURCES,
     COLLECTIONS_CREATE,
     ApplicationAccess,
-    ApplicationPrincipal,
+    Principal,
 )
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_db import initialize_db
@@ -172,7 +172,7 @@ def _producer(api: _CustodyApi) -> IncrementalCollectionProducer:
         producer_app="fixture-target",
         adapter_id="fixture-target/v1",
         adapter_version="1.0.0",
-        ingest_source="transform:fixture",
+        ingest_source="processing:fixture",
         source_event_id="fixture-execution",
         idempotency_key="fixture-execution",
     )
@@ -187,7 +187,7 @@ def test_incremental_producer_stages_unbounded_logical_tags_in_bounded_requests(
         producer_app="fixture-target",
         adapter_id="fixture-target/v1",
         adapter_version="1.0.0",
-        ingest_source="transform:fixture",
+        ingest_source="processing:fixture",
         source_event_id="fixture-execution",
         tags=tags,
     )
@@ -213,7 +213,7 @@ def test_incremental_producer_rejects_late_invalid_tags_before_remote_mutation()
             producer_app="fixture-target",
             adapter_id="fixture-target/v1",
             adapter_version="1.0.0",
-            ingest_source="transform:fixture",
+            ingest_source="processing:fixture",
             source_event_id="fixture-execution",
             tags=tags,
         )
@@ -346,7 +346,7 @@ class _ServiceApi:
     def __init__(
         self,
         service: SqlAlchemyCollectionUploadService,
-        principal: ApplicationPrincipal,
+        principal: Principal,
     ) -> None:
         self.service = service
         self.principal = principal
@@ -474,8 +474,8 @@ def _bounded_service_api(tmp_path: Path) -> tuple[_ServiceApi, MemoryArchiveStor
             raw_part_plaintext_bytes=5 * 1024 * 1024,
         ),
     )
-    principal = ApplicationPrincipal(
-        app="fixture-target",
+    principal = Principal(
+        id="fixture-target",
         key_id="fixture-key",
         access=frozenset({ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES)}),
     )
@@ -493,7 +493,7 @@ def test_many_artifact_publication_retains_only_the_unsealed_pack_window(
         producer_app="fixture-target",
         adapter_id="fixture-target/v1",
         adapter_version="1.0.0",
-        ingest_source="transform:fixture",
+        ingest_source="processing:fixture",
         source_event_id="many-artifact-execution",
         idempotency_key="many-artifact-execution",
     )

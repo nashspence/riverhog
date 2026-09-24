@@ -5,7 +5,7 @@ from pathlib import Path
 from riverhog_core.app_permissions import (
     CATALOG_READ,
     ApplicationAccess,
-    ApplicationPrincipal,
+    Principal,
     collection_resource,
 )
 from riverhog_core.catalog_db import (
@@ -48,7 +48,7 @@ def _seed_collections(database: Path, *, count: int) -> tuple[RuntimeConfig, Eng
                     provenance_mode="omitted",
                     provenance_identity=None,
                     inventory_identity=f"{collection_id:064x}",
-                    created_by_app="fixture",
+                    created_by_principal_id="fixture",
                     created_at=NOW,
                 )
             )
@@ -130,8 +130,8 @@ def test_collection_list_query_count_is_independent_of_page_rows(tmp_path: Path)
 def test_collection_encryption_filters_preserve_catalog_authorization(tmp_path: Path) -> None:
     config, engine = _seed_collections(tmp_path / "catalog.sqlite3", count=4)
     service = SqlAlchemyCollectionService(config)
-    principal = ApplicationPrincipal(
-        app="scoped-reader",
+    principal = Principal(
+        id="scoped-reader",
         key_id="key-1",
         access=frozenset({ApplicationAccess(CATALOG_READ, collection_resource(2))}),
     )

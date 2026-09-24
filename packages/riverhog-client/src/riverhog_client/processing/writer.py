@@ -16,15 +16,15 @@ from riverhog_protocol.collection_workflows import (
     derivation_evidence_page_path,
 )
 
+from riverhog_client.processing.models import (
+    DerivedCollectionReceipt,
+    DerivedCollectionSpec,
+)
 from riverhog_client.producer import (
     IncrementalCollectionProducer,
     ProducerArtifactCustody,
     ProducerArtifactIdentity,
     ProducerInput,
-)
-from riverhog_client.transform.models import (
-    DerivedCollectionReceipt,
-    DerivedCollectionSpec,
 )
 
 
@@ -74,7 +74,7 @@ def _append_generic_derivation_evidence(
 
 
 class DerivedCollectionWriter:
-    """Publish one output collection through a scoped transform capability.
+    """Publish one output collection through a scoped processing capability.
 
     The writer depends only on controller-sealed identities and evidence. It does
     not import an orchestration application, inspect contents, or choose archive
@@ -168,7 +168,7 @@ class DerivedCollectionWriter:
             producer_app=self.producer_app,
             adapter_id="riverhog-derived-collection/v1",
             adapter_version=self.producer_version,
-            ingest_source=f"transform:{self.execution_id}",
+            ingest_source=f"processing:{self.execution_id}",
             source_event_id=self.execution_id,
             source_context={
                 **dict(source_context or {}),
@@ -256,7 +256,7 @@ class IncrementalDerivedCollectionWriter:
             producer_app=producer_app,
             adapter_id="riverhog-derived-collection/v1",
             adapter_version=producer_version,
-            ingest_source=f"transform:{self.execution_id}",
+            ingest_source=f"processing:{self.execution_id}",
             source_event_id=self.execution_id,
             source_context={
                 **dict(source_context or {}),
