@@ -1172,10 +1172,12 @@ def test_postgres_concurrent_nested_tree_admission_is_atomic_and_normalized(
     }
     assert nested.work.work_id in created_events
     assert (
-        created_events[nested.work.work_id].payload.parent_work_id == decision.plan.parent_work.work_id
+        created_events[nested.work.work_id].payload.parent_work_id
+        == decision.plan.parent_work.work_id
     )
     assert (
-        created_events[leaf.workflow_plan.work.work_id].payload.parent_work_id == nested.work.work_id
+        created_events[leaf.workflow_plan.work.work_id].payload.parent_work_id
+        == nested.work.work_id
     )
 
 
