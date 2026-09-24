@@ -396,7 +396,7 @@ with RiverhogFtpSpoolClient(
             Path('/intake/ftp/.a-riverhog-ftp-spool/receipts').glob('*.json')
         )
         status = client.get_ftp_spool_status()
-        if len(receipt_paths) == 2 and status['sources'][0]['claims'] == 0:
+        if len(receipt_paths) == 2 and status.sources[0].claims == 0:
             break
         time.sleep(0.25)
     else:
@@ -607,7 +607,7 @@ with RiverhogFtpSpoolClient(
     assert result['completed'] == 1, result
     assert result['failed'] == [], result
     status = client.get_ftp_spool_status()
-    assert status['sources'][0]['claims'] == 0, status
+    assert status.sources[0].claims == 0, status
 assert all(not source.exists() for source, _content in uploads)
 receipts = sorted(receipt_root.glob('*.json'))
 new_receipts = [path for path in receipts if path.name not in existing_receipts]
