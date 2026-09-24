@@ -196,7 +196,7 @@ class _LifecyclePlanner:
             WorkPayload(
                 recipe=RecipeIdentityRef(
                     id=recipe_id,
-                    revision=revision or 1,
+                    revision=str(revision or 1),
                     sha256="3" * 64,
                 ),
                 inputs=tuple(roots),
@@ -477,7 +477,7 @@ def _evaluation_definition() -> EvaluationDefinition:
     return EvaluationDefinition.seal(
         EvaluationDefinitionPayload(
             purpose="trial",
-            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision=1, sha256="3" * 64),
+            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision="1", sha256="3" * 64),
             inputs=(
                 CollectionRootIdentityRef(
                     collection_id=str(1),
@@ -512,7 +512,7 @@ def _evaluation_record(
 def _fixture_work(recipe_id: str = "stove0.conformance-media/v1") -> WorkIdentity:
     return WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeIdentityRef(id=recipe_id, revision=1, sha256="3" * 64),
+            recipe=RecipeIdentityRef(id=recipe_id, revision="1", sha256="3" * 64),
             inputs=(
                 CollectionRootIdentityRef(
                     collection_id=str(1),

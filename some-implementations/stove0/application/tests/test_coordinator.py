@@ -114,7 +114,7 @@ def _root() -> CollectionRootIdentityRef:
 def _work() -> WorkIdentity:
     return WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision=1, sha256=_sha("3")),
+            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision="1", sha256=_sha("3")),
             inputs=(_root(),),
             effective_intent={"suffix": ".copy"},
         )
@@ -578,7 +578,7 @@ class NestedPlanning(FixturePlanning):
             branch_id="nested",
             decision_sha256=_sha("d"),
             selection=selection,
-            recipe=RecipeIdentityRef(id="fixture.child/v1", revision=1, sha256=_sha("5")),
+            recipe=RecipeIdentityRef(id="fixture.child/v1", revision="1", sha256=_sha("5")),
             effective_intent={"suffix": ".copy"},
         )
         leaf = BranchPlan.build(
@@ -651,7 +651,7 @@ class NestedJoinPlanning(ForkJoinPlanning):
             branch_id="nested",
             decision_sha256=_sha("d"),
             selection=selection,
-            recipe=RecipeIdentityRef(id="fixture.child/v1", revision=1, sha256=_sha("5")),
+            recipe=RecipeIdentityRef(id="fixture.child/v1", revision="1", sha256=_sha("5")),
             effective_intent={},
         )
         child_decision = super().workflow_plan(child_work, ())

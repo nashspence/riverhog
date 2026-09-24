@@ -252,7 +252,7 @@ def _callback_access() -> TargetCallbackAccess:
 def _work() -> WorkIdentity:
     return WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision=1, sha256=_sha("4")),
+            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision="1", sha256=_sha("4")),
             inputs=(_input().collection,),
             effective_intent={"suffix": ".copy"},
         )

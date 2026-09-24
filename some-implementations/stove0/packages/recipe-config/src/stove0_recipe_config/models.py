@@ -7,6 +7,8 @@ from typing import Annotated, Literal, Self
 
 from config_validation import load_yaml_config
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, field_validator, model_validator
+from riverhog_protocol.collection_workflows import RecipeIdentity
+from riverhog_protocol.exact_scalar import NonnegativeDecimal
 from stove0_protocol import RecipeIdentityRef, SemanticId, Sha256, canonical_json_sha256
 from stove0_target_protocol import OperationContract
 
@@ -177,7 +179,7 @@ class RecipeJoin(RecipeModel):
 
 class RecipeDefinition(RecipeModel):
     id: SemanticId
-    revision: int = Field(ge=1)
+    revision: NonnegativeDecimal = Field(ge=1)
     event_input_closure: Literal["single-finalized-collection"] = "single-finalized-collection"
     artifact_associations: tuple[ArtifactAssociation, ...] = ()
     observers: tuple[ObserverUse, ...] = ()
@@ -238,10 +240,12 @@ class RecipeDefinition(RecipeModel):
 
     @property
     def ref(self) -> RecipeIdentityRef:
-        return RecipeIdentityRef(id=self.id, revision=self.revision, sha256=self.sha256)
+        return RecipeIdentityRef.from_identity(
+            RecipeIdentity(id=self.id, revision=self.revision, sha256=self.sha256)
+        )
 
     def identity_document(self) -> dict[str, JsonValue]:
-        return {"id": self.id, "revision": self.revision, "sha256": self.sha256}
+        return self.ref.model_dump(mode="json")
 
 
 class RecipeCatalog(RecipeModel):

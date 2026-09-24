@@ -92,7 +92,7 @@ def _root() -> CollectionRootIdentityRef:
 def _work() -> WorkIdentity:
     return WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision=1, sha256=_sha("3")),
+            recipe=RecipeIdentityRef(id="fixture.recipe/v1", revision="1", sha256=_sha("3")),
             inputs=(_root(),),
             effective_intent={"suffix": ".copy"},
         )
@@ -303,7 +303,7 @@ class NestedPreviewPlanning(PreviewPlanning):
             branch_id="nested",
             decision_sha256=_sha("d"),
             selection=selection,
-            recipe=RecipeIdentityRef(id="fixture.child/v1", revision=1, sha256=_sha("5")),
+            recipe=RecipeIdentityRef(id="fixture.child/v1", revision="1", sha256=_sha("5")),
             effective_intent={"suffix": ".copy"},
         )
         child_evidence = nested_observer(child_work)
@@ -635,7 +635,7 @@ class FinishingController:
 def _evaluation() -> EvaluationDefinition:
     return EvaluationDefinition.seal(
         EvaluationDefinitionPayload(
-            recipe=RecipeIdentityRef(id="review.recipe/v1", revision=1, sha256=_sha("5")),
+            recipe=RecipeIdentityRef(id="review.recipe/v1", revision="1", sha256=_sha("5")),
             inputs=(_root(),),
             common_intent={"sample_plan_sha256": _sha("6")},
             matrix=EvaluationMatrix.seal(

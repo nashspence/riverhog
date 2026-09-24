@@ -596,7 +596,7 @@ operations:
   contract_sha256: fc5f7d11db12afb9c81935f3bc05035ba97beaf10dc59fedf6879ca4ece7ad66
 recipes:
 - id: stove0.audio-archive/v1
-  revision: 1
+  revision: "1"
   event_input_closure: single-finalized-collection
   allow_derived_inputs: false
   source_collection_retirement_policy: retain
@@ -635,7 +635,7 @@ recipes:
       container: opus
     input_retrieval_policy: allow
 - id: stove0.conformance-media/v1
-  revision: 1
+  revision: "1"
   event_input_closure: single-finalized-collection
   artifact_associations:
   - primary_role: stove0.media.source/v1
@@ -794,7 +794,7 @@ recipes:
       preset: p4
     input_retrieval_policy: available-only
 - id: stove0.review-effect/v1
-  revision: 1
+  revision: "1"
   event_input_closure: single-finalized-collection
   allow_derived_inputs: false
   source_collection_retirement_policy: retain
@@ -836,7 +836,7 @@ recipes:
       destination_pointer: ''
     input_retrieval_policy: available-only
 - id: stove0.review/v1
-  revision: 1
+  revision: "1"
   event_input_closure: single-finalized-collection
   allow_derived_inputs: false
   source_collection_retirement_policy: retain
@@ -878,7 +878,7 @@ recipes:
       destination_pointer: ''
     input_retrieval_policy: available-only
 - id: stove0.video-archive/v1
-  revision: 1
+  revision: "1"
   event_input_closure: single-finalized-collection
   allow_derived_inputs: false
   source_collection_retirement_policy: retire-after-verified-output

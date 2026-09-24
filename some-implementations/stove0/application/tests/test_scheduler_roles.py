@@ -10,7 +10,7 @@ from stove0_protocol import CollectionRootIdentityRef, RecipeIdentityRef, WorkId
 def _identity(index: int) -> WorkIdentity:
     return WorkIdentity.seal(
         WorkPayload(
-            recipe=RecipeIdentityRef(id="fixture/v1", revision=1, sha256="a" * 64),
+            recipe=RecipeIdentityRef(id="fixture/v1", revision="1", sha256="a" * 64),
             inputs=(
                 CollectionRootIdentityRef(
                     collection_id=str(index),

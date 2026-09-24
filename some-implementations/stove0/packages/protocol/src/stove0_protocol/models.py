@@ -28,6 +28,7 @@ from riverhog_protocol.collection_workflows import (
     OperationIdentity,
     RecipeIdentity,
 )
+from riverhog_protocol.exact_scalar import NonnegativeDecimal
 from riverhog_protocol.paths import CollectionId, validate_canonical_relpath
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 
@@ -192,12 +193,12 @@ class RecipeIdentityRef(Stove0ProtocolModel):
     """Embedded Stove0 reference to the Riverhog recipe identity."""
 
     id: SemanticId
-    revision: int = Field(ge=1)
+    revision: NonnegativeDecimal = Field(ge=1)
     sha256: Sha256
 
     @classmethod
     def from_identity(cls, value: RecipeIdentity) -> RecipeIdentityRef:
-        return cls(id=value.id, revision=value.revision, sha256=value.sha256)
+        return cls.model_validate(value.as_dict())
 
     def to_identity(self) -> RecipeIdentity:
         return RecipeIdentity(**self.model_dump(mode="python"))
