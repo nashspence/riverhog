@@ -63,7 +63,10 @@ BOUNDED_LIST_COMMANDS = (
     ("a-riverhog-cli", "local", "provenance-observer", "list", "--help"),
     ("stove0", "recipe", "list", "--help"),
     ("stove0", "admission", "policy", "list", "--help"),
+    ("stove0", "departure", "policy", "list", "--help"),
 )
+
+SIMPLE_PAGED_LIST_COMMANDS = (("stove0", "departure", "list", "--help"),)
 
 QUERY_PAGED_LIST_COMMANDS = (("a-riverhog-cli", "tag", "list", "--help"),)
 
@@ -153,6 +156,14 @@ def test_query_paged_list_cli_help_uses_its_exact_contract(command: tuple[str, .
         assert option in completed.stdout
 
 
+@pytest.mark.parametrize("command", SIMPLE_PAGED_LIST_COMMANDS)
+def test_simple_paged_list_cli_help_uses_its_exact_contract(command: tuple[str, ...]) -> None:
+    completed = _run_help(command)
+    assert completed.returncode == 0, completed.stderr
+    for option in ("--page-size", "--page-token"):
+        assert option in completed.stdout
+
+
 def test_stove0_declares_its_shared_json_projection_once_at_the_root() -> None:
     completed = _run_help(("stove0", "--help"))
 
@@ -210,6 +221,7 @@ def test_every_official_list_command_has_one_declared_convention() -> None:
             *LIFECYCLE_EVENT_LIST_COMMANDS,
             *PAGED_LIST_COMMANDS,
             *BOUNDED_LIST_COMMANDS,
+            *SIMPLE_PAGED_LIST_COMMANDS,
             *QUERY_PAGED_LIST_COMMANDS,
         )
         if command[-2] == "list"

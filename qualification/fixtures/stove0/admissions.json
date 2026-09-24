@@ -5,9 +5,10 @@
       "format": "stove0-admission-policy/v1",
       "id": "conformance-media",
       "revision": 1,
-      "required_tags": [
-        "stove0/conformance"
-      ],
+      "selector": {
+        "kind": "tags",
+        "required": ["stove0/conformance"]
+      },
       "recipe_id": "stove0.conformance-media/v1",
       "recipe_revision": "1",
       "recipe_sha256": "2229b4f736a85e6373efe69c3370b32471287f691a7228508e44af3938802c02",

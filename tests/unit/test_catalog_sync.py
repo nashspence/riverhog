@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sqlite3
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
@@ -32,7 +33,7 @@ from riverhog_protocol import (
     CatalogSyncChangePage,
     CatalogSyncCheckpoint,
     CatalogSyncCollectionPage,
-    CatalogSyncDelete,
+    CatalogSyncDeparture,
     CatalogSyncDescriptor,
     CatalogSyncUpsert,
     collection_description_identity,
@@ -185,7 +186,9 @@ def test_catalog_sync_bootstrap_and_follow_are_exact_bounded_authorities(
         session.delete(collection)
 
     followed = service.changes(cursor=catchup.next_cursor, limit=1, principal=PRINCIPAL)
-    assert followed.changes == [CatalogSyncDelete(collection_id="2", revision="5")]
+    assert followed.changes == [
+        CatalogSyncDeparture(cause="collection_deleted", collection_id="2", revision="5")
+    ]
     assert followed.caught_up is True
 
 
@@ -518,7 +521,11 @@ def test_catalog_replica_reclaims_settled_tombstones_in_bounded_steps(
             return CatalogSyncChangePage(
                 source_identity="a" * 64,
                 authorization_view_identity="b" * 64,
-                changes=[CatalogSyncDelete(collection_id="1", revision="2")],
+                changes=[
+                    CatalogSyncDeparture(
+                        cause="collection_deleted", collection_id="1", revision="2"
+                    )
+                ],
                 next_cursor="changes-3",
                 caught_up=True,
                 through_revision="2",
@@ -532,6 +539,10 @@ def test_catalog_replica_reclaims_settled_tombstones_in_bounded_steps(
     replica.step(api, limit=1)
     replica.step(api, limit=1)
     assert replica.get(1) is None
+    with sqlite3.connect(replica.path) as db:
+        assert db.execute(
+            "SELECT departure_cause FROM catalog_replica_collections WHERE departed = 1"
+        ).fetchone() == ("collection_deleted",)
 
     assert replica.reclaim(limit=1) == 1
     assert replica.reclaim(limit=1) == 0

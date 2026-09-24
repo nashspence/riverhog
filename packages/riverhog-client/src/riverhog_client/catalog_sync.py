@@ -16,7 +16,7 @@ from riverhog_protocol import (
     CatalogSyncChangePage,
     CatalogSyncCheckpoint,
     CatalogSyncCollectionPage,
-    CatalogSyncDelete,
+    CatalogSyncDeparture,
     CatalogSyncDescriptor,
     CatalogSyncUpsert,
     validate_collection_tag,
@@ -88,12 +88,15 @@ class CatalogReplica:
                     description_identity TEXT,
                     tag_revision INTEGER,
                     tag_set_identity TEXT,
-                    deleted INTEGER NOT NULL CHECK (deleted IN (0, 1)),
+                    departed INTEGER NOT NULL CHECK (departed IN (0, 1)),
+                    departure_cause TEXT,
                     PRIMARY KEY (generation, collection_id),
                     FOREIGN KEY (generation) REFERENCES catalog_replica_generations(id)
                         ON DELETE CASCADE,
                     CHECK (
-                        deleted = 1
+                        departed = 1
+                           AND departure_cause IS NOT NULL
+                           AND departure_cause IN ('collection_deleted', 'visibility_lost')
                            AND archive_root_sha256 IS NULL
                            AND content_identity IS NULL
                            AND description IS NULL
@@ -101,7 +104,8 @@ class CatalogReplica:
                            AND description_identity IS NULL
                            AND tag_revision IS NULL
                            AND tag_set_identity IS NULL
-                        OR deleted = 0
+                        OR departed = 0
+                           AND departure_cause IS NULL
                            AND length(archive_root_sha256) = 64
                            AND length(content_identity) = 64
                            AND description_revision >= 0
@@ -112,7 +116,7 @@ class CatalogReplica:
                 ) WITHOUT ROWID;
                 CREATE INDEX IF NOT EXISTS ix_catalog_replica_collections_live
                     ON catalog_replica_collections (generation, collection_id)
-                    WHERE deleted = 0;
+                    WHERE departed = 0;
                 CREATE TABLE IF NOT EXISTS catalog_replica_tag_sync (
                     generation TEXT NOT NULL,
                     collection_id INTEGER NOT NULL CHECK (collection_id > 0),
@@ -350,7 +354,7 @@ class CatalogReplica:
                        description, description_revision, description_identity,
                        tag_revision, tag_set_identity
                 FROM catalog_replica_collections
-                WHERE generation = ? AND collection_id > ? AND deleted = 0
+                WHERE generation = ? AND collection_id > ? AND departed = 0
                 {tag_filter}
                 ORDER BY collection_id
                 LIMIT ?
@@ -400,7 +404,7 @@ class CatalogReplica:
                   ON s.generation = c.generation AND s.collection_id = c.collection_id
                  AND s.tag_revision = c.tag_revision
                  AND s.tag_set_identity = c.tag_set_identity
-                WHERE c.generation = ? AND c.collection_id = ? AND c.deleted = 0
+                WHERE c.generation = ? AND c.collection_id = ? AND c.departed = 0
                 """,
                 (state["active_generation"], collection_id),
             ).fetchone()
@@ -441,7 +445,7 @@ class CatalogReplica:
                        description, description_revision, description_identity,
                        tag_revision, tag_set_identity
                 FROM catalog_replica_collections
-                WHERE generation = ? AND collection_id = ? AND deleted = 0
+                WHERE generation = ? AND collection_id = ? AND departed = 0
                 """,
                 (state["active_generation"], collection_id),
             ).fetchone()
@@ -476,13 +480,13 @@ class CatalogReplica:
                 if obsolete is None:
                     tombstones = db.execute(
                         "SELECT generation, collection_id "
-                        "FROM catalog_replica_collections WHERE deleted = 1 "
+                        "FROM catalog_replica_collections WHERE departed = 1 "
                         "ORDER BY generation, collection_id LIMIT ?",
                         (limit,),
                     ).fetchall()
                     db.executemany(
                         "DELETE FROM catalog_replica_collections "
-                        "WHERE generation = ? AND collection_id = ? AND deleted = 1",
+                        "WHERE generation = ? AND collection_id = ? AND departed = 1",
                         ((str(row["generation"]), int(row["collection_id"])) for row in tombstones),
                     )
                     db.commit()
@@ -664,7 +668,7 @@ class CatalogReplica:
             if item.collection_id <= previous:
                 raise ValueError("catalog synchronization collection page is not canonical")
             previous = item.collection_id
-            CatalogReplica._upsert(db, generation, item, deleted=False)
+            CatalogReplica._upsert(db, generation, item, departed=False)
 
     @staticmethod
     def _apply_change_page(
@@ -684,7 +688,7 @@ class CatalogReplica:
                 db,
                 generation,
                 item,
-                deleted=isinstance(item, CatalogSyncDelete),
+                departed=isinstance(item, CatalogSyncDeparture),
             )
         if page.changes and int(page.through_revision) < previous:
             raise ValueError("catalog synchronization change cursor precedes its page")
@@ -698,18 +702,19 @@ class CatalogReplica:
     def _upsert(
         db: sqlite3.Connection,
         generation: str,
-        item: CatalogSyncDescriptor | CatalogSyncUpsert | CatalogSyncDelete,
+        item: CatalogSyncDescriptor | CatalogSyncUpsert | CatalogSyncDeparture,
         *,
-        deleted: bool,
+        departed: bool,
     ) -> None:
         revision = int(item.revision)
-        root = None if deleted else item.archive_root_sha256  # type: ignore[union-attr]
-        content = None if deleted else item.content_identity  # type: ignore[union-attr]
-        description = None if deleted else item.description  # type: ignore[union-attr]
-        description_revision = None if deleted else item.description_revision  # type: ignore[union-attr]
-        description_identity = None if deleted else item.description_identity  # type: ignore[union-attr]
-        tag_revision = None if deleted else item.tag_revision  # type: ignore[union-attr]
-        tag_set_identity = None if deleted else item.tag_set_identity  # type: ignore[union-attr]
+        root = None if departed else item.archive_root_sha256  # type: ignore[union-attr]
+        content = None if departed else item.content_identity  # type: ignore[union-attr]
+        description = None if departed else item.description  # type: ignore[union-attr]
+        description_revision = None if departed else item.description_revision  # type: ignore[union-attr]
+        description_identity = None if departed else item.description_identity  # type: ignore[union-attr]
+        tag_revision = None if departed else item.tag_revision  # type: ignore[union-attr]
+        tag_set_identity = None if departed else item.tag_set_identity  # type: ignore[union-attr]
+        departure_cause = item.cause if isinstance(item, CatalogSyncDeparture) else None
         existing = db.execute(
             "SELECT * FROM catalog_replica_collections WHERE generation = ? AND collection_id = ?",
             (generation, item.collection_id),
@@ -723,7 +728,8 @@ class CatalogReplica:
                 existing["description_identity"],
                 existing["tag_revision"],
                 existing["tag_set_identity"],
-                bool(existing["deleted"]),
+                bool(existing["departed"]),
+                existing["departure_cause"],
             ) != (
                 root,
                 content,
@@ -732,7 +738,8 @@ class CatalogReplica:
                 description_identity,
                 tag_revision,
                 tag_set_identity,
-                deleted,
+                departed,
+                departure_cause,
             ):
                 raise ValueError("equal catalog revisions have different contents")
             return
@@ -742,8 +749,8 @@ class CatalogReplica:
                 generation, collection_id, revision,
                 archive_root_sha256, content_identity, description,
                 description_revision, description_identity,
-                tag_revision, tag_set_identity, deleted
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                tag_revision, tag_set_identity, departed, departure_cause
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT (generation, collection_id) DO UPDATE SET
                 revision = excluded.revision,
                 archive_root_sha256 = excluded.archive_root_sha256,
@@ -753,7 +760,8 @@ class CatalogReplica:
                 description_identity = excluded.description_identity,
                 tag_revision = excluded.tag_revision,
                 tag_set_identity = excluded.tag_set_identity,
-                deleted = excluded.deleted
+                departed = excluded.departed,
+                departure_cause = excluded.departure_cause
             WHERE excluded.revision > catalog_replica_collections.revision
             """,
             (
@@ -767,10 +775,11 @@ class CatalogReplica:
                 description_identity,
                 tag_revision,
                 tag_set_identity,
-                int(deleted),
+                int(departed),
+                departure_cause,
             ),
         )
-        if deleted:
+        if departed:
             db.execute(
                 "DELETE FROM catalog_replica_tag_sync WHERE generation = ? AND collection_id = ?",
                 (generation, item.collection_id),

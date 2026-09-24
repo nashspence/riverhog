@@ -304,7 +304,8 @@ def test_catalog_teardown_is_bounded_and_event_publishes_only_when_complete(
     changes = catalog_sync.changes(cursor=initial.next_cursor, limit=100, principal=READER)
     assert changes.caught_up is True
     assert changes.through_revision == str(event_revision)
-    assert [current.operation for current in changes.changes] == ["delete"]
+    assert [current.operation for current in changes.changes] == ["departure"]
+    assert [current.cause for current in changes.changes] == ["collection_deleted"]
 
 
 def test_deletion_reclaims_a_multi_collection_retrieval_plan_as_one_authority(

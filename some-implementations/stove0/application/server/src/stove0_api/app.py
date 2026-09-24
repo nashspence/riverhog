@@ -40,8 +40,10 @@ from stove0_core import (
     ClassificationAdmissionService,
     ConcurrentEvaluationUpdate,
     ConcurrentWorkUpdate,
+    DepartureEffectService,
     EvaluationReview,
     EvaluationService,
+    HttpDepartureTargetPort,
     HttpObserverPort,
     HttpTargetPort,
     RecipeCatalog,
@@ -69,6 +71,10 @@ from stove0_operator_contracts import (
     AdmissionSort,
     AdmissionState,
     AdmissionView,
+    DepartureEffectPage,
+    DepartureEffectView,
+    DeparturePolicyCatalogView,
+    DeparturePolicyStatus,
     EvaluationPage,
     EvaluationPhase,
     EvaluationSort,
@@ -92,7 +98,7 @@ from stove0_protocol import (
     WorkflowPreview,
     WorkIdentity,
 )
-from stove0_target_client import TargetClient
+from stove0_target_client import DepartureEffectClient, TargetClient
 from stove0_target_protocol import (
     InputDispositionDeclaration,
     OutputArtifact,
@@ -145,6 +151,7 @@ class Stove0Composition:
     evaluations: EvaluationService
     scheduler: Stove0Scheduler
     admission: ClassificationAdmissionService | None = None
+    departure: DepartureEffectService | None = None
     target_callbacks: TargetCallbackAuthority | None = None
     browse_tokens: BrowseTokenCodec | None = None
 
@@ -228,6 +235,21 @@ class Stove0Composition:
             preview=preview,
             coordinator=coordinator,
         )
+        departure = DepartureEffectService(
+            catalog=config.departures,
+            riverhog=riverhog_api,
+            state=state,
+            targets=HttpDepartureTargetPort(
+                {
+                    key: DepartureEffectClient(
+                        value.base_url,
+                        token=value.token,
+                        allow_insecure_http=value.allow_insecure_http,
+                    )
+                    for key, value in config.departure_targets.items()
+                }
+            ),
+        )
         return cls(
             config=config,
             riverhog_api=riverhog_api,
@@ -242,9 +264,11 @@ class Stove0Composition:
                 state=state,
                 production_seals=target_callbacks,
                 admission=admission,
+                departure=departure,
                 operational_state_retention_seconds=(config.operational_state_retention_seconds),
             ),
             admission=admission,
+            departure=departure,
             target_callbacks=target_callbacks,
             browse_tokens=BrowseTokenCodec(
                 config.browse_token_signing_key,
@@ -273,6 +297,13 @@ def _admission(composition: Stove0Composition) -> ClassificationAdmissionService
     if admission is None:
         raise HTTPException(status_code=503, detail="classification admission is unavailable")
     return admission
+
+
+def _departure(composition: Stove0Composition) -> DepartureEffectService:
+    departure = composition.departure
+    if departure is None:
+        raise HTTPException(status_code=503, detail="departure effects are unavailable")
+    return departure
 
 
 def create_app(
@@ -659,6 +690,62 @@ def create_app(
         return _admission(composition).get_admission(admission_id)
 
     @app.get(
+        "/v1/departure-policies",
+        response_model=DeparturePolicyCatalogView,
+        dependencies=[Depends(authorize)],
+        operation_id="list_departure_policies",
+        tags=["departures"],
+    )
+    def list_departure_policies() -> DeparturePolicyCatalogView:
+        return _departure(composition).policies()
+
+    @app.post(
+        "/v1/departure-policies/{policy_id}:rebaseline",
+        response_model=DeparturePolicyStatus,
+        dependencies=[Depends(authorize)],
+        operation_id="rebaseline_departure_policy",
+        tags=["departures"],
+    )
+    def rebaseline_departure_policy(policy_id: str) -> DeparturePolicyStatus:
+        return _departure(composition).rebaseline(policy_id)
+
+    @app.get(
+        "/v1/departure-effects",
+        response_model=DepartureEffectPage,
+        dependencies=[Depends(authorize)],
+        operation_id="list_departure_effects",
+        tags=["departures"],
+        openapi_extra=mutable_browse_operation(),
+    )
+    def list_departure_effects(
+        page_size: int = Query(default=25, ge=1, le=100),
+        page_token: BrowsePageTokenQuery = None,
+    ) -> DepartureEffectPage:
+        position = browse_position(
+            operation="list_departure_effects", page_token=page_token, selectors={}
+        )
+        if position is not None and (len(position) != 1 or not isinstance(position[0], str)):
+            raise HTTPException(status_code=400, detail="departure page position is invalid")
+        after_id = None if position is None else cast(str, position[0])
+        return DepartureEffectPage.model_validate(
+            browse_page(
+                _departure(composition).list_effects(page_size=page_size, after_id=after_id),
+                operation="list_departure_effects",
+                selectors={},
+            )
+        )
+
+    @app.get(
+        "/v1/departure-effects/{departure_id}",
+        response_model=DepartureEffectView,
+        dependencies=[Depends(authorize)],
+        operation_id="get_departure_effect",
+        tags=["departures"],
+    )
+    def get_departure_effect(departure_id: str) -> DepartureEffectView:
+        return _departure(composition).get_effect(departure_id)
+
+    @app.get(
         "/v1/work",
         response_model=WorkPage,
         dependencies=[Depends(authorize)],
@@ -1035,21 +1122,32 @@ def _scheduler_loop(
 
 
 def _log_scheduler_failures(role: SchedulerRole, result: dict[str, object]) -> None:
-    """Make isolated work advancement failures operator-visible."""
+    """Make isolated scheduler advancement failures operator-visible."""
 
     work = result.get("work")
     failures = work.get("failures") if isinstance(work, dict) else None
-    if not isinstance(failures, list):
-        return
-    for failure in failures:
-        if not isinstance(failure, dict):
-            continue
-        LOGGER.error(
-            "stove0 %s scheduler could not advance work %s: %s",
-            role,
-            failure.get("work_id", "unknown"),
-            failure.get("error", "unknown error"),
-        )
+    if isinstance(failures, list):
+        for failure in failures:
+            if isinstance(failure, dict):
+                LOGGER.error(
+                    "stove0 %s scheduler could not advance work %s: %s",
+                    role,
+                    failure.get("work_id", "unknown"),
+                    failure.get("error", "unknown error"),
+                )
+    for lane in ("admission", "departure"):
+        run = result.get(lane)
+        failures = run.get("failures") if isinstance(run, dict) else None
+        if isinstance(failures, list):
+            for failure in failures:
+                if isinstance(failure, dict):
+                    LOGGER.error(
+                        "stove0 %s scheduler could not advance %s %s: %s",
+                        role,
+                        lane,
+                        failure.get("event_id", "unknown"),
+                        failure.get("error", "unknown error"),
+                    )
 
 
 def _install_stop_handlers(stop: threading.Event) -> None:

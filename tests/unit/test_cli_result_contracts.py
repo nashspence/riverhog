@@ -133,7 +133,7 @@ def test_every_released_cli_leaf_has_one_implementation_owned_result_contract(
                     "optional-json",
                 }
 
-    assert len(executable) == 154
+    assert len(executable) == 158
     assert len({str(item["identity"]) for item in executable}) == len(executable)
     assert groups_with_contracts == {
         ("a-riverhog-event-relay", ()),

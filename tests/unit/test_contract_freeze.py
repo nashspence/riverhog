@@ -215,7 +215,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     }
     assert set(external["http_openapi"]) == {"riverhog", "a-riverhog-ftp-spool", "stove0"}
     assert len(external["http_route_supplements"]) == 2
-    assert len(trace["operation_qualification"]["records"]) == 149
+    assert len(trace["operation_qualification"]["records"]) == 153
     assert isinstance(external["python"], dict)
     assert len(external["python"]) == trace["python_registry"]["coverage"]["protected"]
     assert len(external["python"]) > len(trace["python_registry"]["detections"])
@@ -251,8 +251,8 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     assert trace["coverage"]["source_kinds"] == {
         "audit": 1,
         "cli": 29,
-        "configuration": 7,
-        "configuration-environment": 249,
+        "configuration": 8,
+        "configuration-environment": 251,
         "configuration-environment-pattern": 2,
         "openapi": 3,
         "protocol": 35,
@@ -265,7 +265,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "state": 8,
     }
     assert trace["coverage"]["extent_decisions"] == len(extents["decisions"])
-    assert trace["coverage"]["operation_qualification_records"] == 149
+    assert trace["coverage"]["operation_qualification_records"] == 153
     assert trace["python_registry"]["coverage"] == {
         "detected": 64,
         "resolved": len(trace["python_registry"]["resolutions"]),
@@ -311,21 +311,21 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     configuration = trace["configuration_registry"]
     configuration_documents = trace["configuration_document_registry"]
     assert configuration_documents["counts"] == {
-        "contracts": 7,
-        "detections": 7,
-        "resolved_detections": 7,
+        "contracts": 8,
+        "detections": 8,
+        "resolved_detections": 8,
     }
-    assert set(configuration_documents["coverage"].values()) == {0, 7}
+    assert set(configuration_documents["coverage"].values()) == {0, 8}
     assert {item["id"] for item in configuration_documents["candidates"]} == set(
         external["configuration_documents"]
     )
     assert configuration["counts"] == {
-        "contracts": 249,
-        "detections": 197,
+        "contracts": 251,
+        "detections": 198,
         "patterns": 2,
         "resolution_exceptions": 6,
-        "resolved_detections": 197,
-        "unique_environment_names": 239,
+        "resolved_detections": 198,
+        "unique_environment_names": 241,
         "by_owner": {
             "a-gogurt-linux-listener": 2,
             "a-gogurt-windows-listener": 3,
@@ -347,7 +347,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
             "a-stove0-opus-target": 9,
             "a-review0-materializer": 10,
             "a-review0-rclone-target": 15,
-            "stove0-server": 25,
+            "stove0-server": 27,
             "stove0-target-support": 1,
         },
     }

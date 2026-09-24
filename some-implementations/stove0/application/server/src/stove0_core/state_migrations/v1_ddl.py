@@ -4,6 +4,86 @@
 
 # This module is migration authority. Runtime model metadata must never be imported here.
 
+_DEPARTURE_DDL: tuple[str, ...] = (
+    """
+CREATE TABLE stove0_departure_policies (
+	policy_id VARCHAR(160) NOT NULL,
+	policy_revision INTEGER NOT NULL,
+	policy_sha256 VARCHAR(64) NOT NULL,
+	phase VARCHAR(32) NOT NULL,
+	generation VARCHAR(64) NOT NULL,
+	source_identity VARCHAR(64),
+	authorization_view_identity VARCHAR(64),
+	cursor VARCHAR(4096),
+	through_revision VARCHAR(19) NOT NULL,
+	updated_at VARCHAR(40) NOT NULL,
+	PRIMARY KEY (policy_id),
+	CONSTRAINT ck_stove0_departure_policy_revision CHECK (policy_revision >= 1),
+	CONSTRAINT ck_stove0_departure_policy_phase CHECK (phase IN ('new','baseline','following','reset_required')),
+	CONSTRAINT ck_stove0_departure_policies_policy_sha256_hex CHECK (length(policy_sha256) = 64 AND lower(policy_sha256) = policy_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(policy_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_stove0_departure_policies_generation_hex CHECK (length(generation) = 64 AND lower(generation) = generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_stove0_departure_policies_source_identity_hex CHECK (source_identity IS NULL OR length(source_identity) = 64 AND lower(source_identity) = source_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_stove0_departure_policies_authorization_view_identity_hex CHECK (authorization_view_identity IS NULL OR length(authorization_view_identity) = 64 AND lower(authorization_view_identity) = authorization_view_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(authorization_view_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+)
+    """.strip(),
+    """
+CREATE INDEX ix_stove0_departure_policies_phase ON stove0_departure_policies (phase, policy_id)
+    """.strip(),
+    """
+CREATE TABLE stove0_departure_seen (
+	policy_id VARCHAR(160) NOT NULL,
+	generation VARCHAR(64) NOT NULL,
+	collection_id BIGINT NOT NULL,
+	revision VARCHAR(19) NOT NULL,
+	operation VARCHAR(9) NOT NULL,
+	authority_sha256 VARCHAR(64) NOT NULL,
+	matched BOOLEAN NOT NULL,
+	document_bytes BIGINT,
+	document_json TEXT,
+	PRIMARY KEY (policy_id, generation, collection_id),
+	CONSTRAINT ck_stove0_departure_seen_collection CHECK (collection_id >= 1),
+	CONSTRAINT ck_stove0_departure_seen_operation CHECK (operation IN ('upsert','departure')),
+	CONSTRAINT ck_stove0_departure_seen_document CHECK (document_bytes IS NULL AND document_json IS NULL OR document_bytes >= 0 AND document_json IS NOT NULL),
+	CONSTRAINT ck_stove0_departure_seen_generation_hex CHECK (length(generation) = 64 AND lower(generation) = generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_stove0_departure_seen_authority_sha256_hex CHECK (length(authority_sha256) = 64 AND lower(authority_sha256) = authority_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(authority_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+)
+    """.strip(),
+    """
+CREATE INDEX ix_stove0_departure_seen_collection ON stove0_departure_seen (collection_id, policy_id)
+    """.strip(),
+    """
+CREATE TABLE stove0_departure_effects (
+	departure_id VARCHAR(64) NOT NULL,
+	policy_id VARCHAR(160) NOT NULL,
+	state VARCHAR(16) NOT NULL,
+	document_bytes BIGINT NOT NULL,
+	document_json TEXT NOT NULL,
+	receipt_sha256 VARCHAR(64),
+	receipt_bytes BIGINT,
+	receipt_json TEXT,
+	attempt_count INTEGER NOT NULL,
+	next_attempt_at VARCHAR(40),
+	failure TEXT,
+	created_at VARCHAR(40) NOT NULL,
+	updated_at VARCHAR(40) NOT NULL,
+	PRIMARY KEY (departure_id),
+	CONSTRAINT ck_stove0_departure_effect_state CHECK (state IN ('pending','complete')),
+	CONSTRAINT ck_stove0_departure_effect_bytes CHECK (document_bytes >= 0),
+	CONSTRAINT ck_stove0_departure_effect_receipt_bytes CHECK (receipt_bytes IS NULL OR receipt_bytes >= 0),
+	CONSTRAINT ck_stove0_departure_effect_attempts CHECK (attempt_count >= 0),
+	CONSTRAINT ck_stove0_departure_effect_stage CHECK (state = 'complete' AND receipt_sha256 IS NOT NULL AND receipt_bytes IS NOT NULL AND receipt_json IS NOT NULL AND next_attempt_at IS NULL OR state = 'pending' AND receipt_sha256 IS NULL AND receipt_bytes IS NULL AND receipt_json IS NULL AND next_attempt_at IS NOT NULL),
+	CONSTRAINT ck_stove0_departure_effects_departure_id_hex CHECK (length(departure_id) = 64 AND lower(departure_id) = departure_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(departure_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
+	CONSTRAINT ck_stove0_departure_effects_receipt_sha256_hex CHECK (receipt_sha256 IS NULL OR length(receipt_sha256) = 64 AND lower(receipt_sha256) = receipt_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(receipt_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
+)
+    """.strip(),
+    """
+CREATE INDEX ix_stove0_departure_effects_policy ON stove0_departure_effects (policy_id, departure_id)
+    """.strip(),
+    """
+CREATE INDEX ix_stove0_departure_effects_retry ON stove0_departure_effects (state, next_attempt_at, departure_id)
+    """.strip(),
+)
+
 _ADMISSION_DDL: tuple[str, ...] = (
     """
 CREATE TABLE stove0_admission_policies (
@@ -60,11 +140,11 @@ CREATE TABLE stove0_admission_observed_revisions (
 	generation VARCHAR(64) NOT NULL,
 	collection_id BIGINT NOT NULL,
 	descriptor_revision VARCHAR(19) NOT NULL,
-	operation VARCHAR(8) NOT NULL,
+	operation VARCHAR(9) NOT NULL,
 	authority_sha256 VARCHAR(64) NOT NULL,
 	PRIMARY KEY (policy_id, generation, collection_id),
 	CONSTRAINT ck_stove0_admission_observed_revision_collection CHECK (collection_id >= 1),
-	CONSTRAINT ck_stove0_admission_observed_revision_operation CHECK (operation IN ('upsert','delete')),
+	CONSTRAINT ck_stove0_admission_observed_revision_operation CHECK (operation IN ('upsert','departure')),
 	CONSTRAINT ck_stove0_admission_observed_revisions_generation_hex CHECK (length(generation) = 64 AND lower(generation) = generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_stove0_admission_observed_revisions_authority_sha256_hex CHECK (length(authority_sha256) = 64 AND lower(authority_sha256) = authority_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(authority_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 )
@@ -145,6 +225,7 @@ CREATE INDEX ix_stove0_admission_candidates_work_trgm ON stove0_admission_candid
 
 
 SQLITE_DDL: tuple[str, ...] = (
+    *_DEPARTURE_DDL,
     *_ADMISSION_DDL,
     *_ADMISSION_SQLITE_INDEX_DDL,
     """
@@ -405,6 +486,7 @@ CREATE INDEX ix_stove0_work_selection_references_selection ON stove0_work_select
 )
 
 POSTGRESQL_DDL: tuple[str, ...] = (
+    *_DEPARTURE_DDL,
     *_ADMISSION_DDL,
     *_ADMISSION_POSTGRESQL_INDEX_DDL,
     """

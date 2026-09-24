@@ -15,7 +15,7 @@ from riverhog_protocol import (
     CatalogSyncChangePage,
     CatalogSyncCheckpoint,
     CatalogSyncCollectionPage,
-    CatalogSyncDelete,
+    CatalogSyncDeparture,
     CatalogSyncDescriptor,
     CatalogSyncUpsert,
 )
@@ -39,6 +39,7 @@ from stove0_operator_contracts import (
 from stove0_protocol import CollectionRootIdentityRef, WorkflowPreview
 from time_formats import format_utc_timestamp, utc_now, utc_timestamp_now
 
+from stove0_core.catalog_predicate import catalog_selector_matches
 from stove0_core.coordinator import Stove0Coordinator
 from stove0_core.persistence import (
     SqlAlchemyStateStore,
@@ -389,24 +390,7 @@ class ClassificationAdmissionService:
         raise RuntimeError("admission policy phase is invalid")
 
     def _matches(self, policy: AdmissionPolicy, descriptor: CatalogSyncDescriptor) -> bool:
-        for tag in policy.required_tags:
-            response = self.riverhog.collection_contains_tag(
-                descriptor.collection_id,
-                tag=tag,
-                revision=descriptor.tag_revision,
-                tag_set_identity=descriptor.tag_set_identity,
-            )
-            if (
-                response.get("collection_id") != str(descriptor.collection_id)
-                or response.get("revision") != descriptor.tag_revision
-                or response.get("tag_set_identity") != descriptor.tag_set_identity
-                or response.get("tag") != tag
-                or not isinstance(response.get("present"), bool)
-            ):
-                raise RuntimeError("Riverhog tag membership response changed its authority")
-            if not response["present"]:
-                return False
-        return True
+        return catalog_selector_matches(self.riverhog, policy.selector, descriptor)
 
     def _commit_baseline_page(
         self,
@@ -428,6 +412,11 @@ class ClassificationAdmissionService:
                 and row.cursor == next_cursor
                 and row.phase == next_phase
             ):
+                for descriptor, _matched in matches:
+                    if self._observe_revision(session, row, descriptor) != "duplicate":
+                        raise RuntimeError(
+                            "admission baseline replay differs from committed authority"
+                        )
                 return False
             self._require_page_authority(row, policy, cursor, page)
             assert row is not None
@@ -459,6 +448,14 @@ class ClassificationAdmissionService:
                 and row.phase == "following"
                 and row.through_revision == page.through_revision
             ):
+                if len(page.changes) > 1:
+                    raise RuntimeError("admission change step exceeded its one-change transaction")
+                if page.changes:
+                    replay = page.changes[0]
+                    if self._observe_revision(session, row, replay) != "duplicate":
+                        raise RuntimeError(
+                            "admission change replay differs from committed authority"
+                        )
                 return False
             self._require_page_authority(row, policy, cursor, page)
             assert row is not None
@@ -470,7 +467,7 @@ class ClassificationAdmissionService:
                     _AdmissionMatchRow,
                     (policy.id, row.generation, change.collection_id),
                 )
-                if isinstance(change, CatalogSyncDelete):
+                if isinstance(change, CatalogSyncDeparture):
                     recorded = self._observe_revision(session, row, change)
                     if recorded == "applied" and prior is not None:
                         session.delete(prior)
@@ -534,9 +531,9 @@ class ClassificationAdmissionService:
         self,
         session: Any,
         policy_row: _AdmissionPolicyRow,
-        change: CatalogSyncDescriptor | CatalogSyncDelete,
+        change: CatalogSyncDescriptor | CatalogSyncDeparture,
     ) -> Literal["applied", "duplicate", "stale"]:
-        operation = "delete" if isinstance(change, CatalogSyncDelete) else "upsert"
+        operation = "departure" if isinstance(change, CatalogSyncDeparture) else "upsert"
         payload = {"operation": operation, **change.model_dump(mode="json")}
         authority_sha256 = canonical_json_sha256(payload)
         key = (policy_row.policy_id, policy_row.generation, change.collection_id)

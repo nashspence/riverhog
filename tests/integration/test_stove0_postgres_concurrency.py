@@ -14,7 +14,7 @@ from riverhog_protocol import (
     CatalogSyncChangePage,
     CatalogSyncCheckpoint,
     CatalogSyncCollectionPage,
-    CatalogSyncDelete,
+    CatalogSyncDeparture,
     CatalogSyncDescriptor,
     CatalogSyncUpsert,
 )
@@ -936,7 +936,7 @@ def test_postgres_concurrent_classification_admission_converges_exactly_once(
     policy = AdmissionPolicy(
         id="camera-archive",
         revision=1,
-        required_tags=("camera",),
+        selector={"kind": "tags", "required": ("camera",)},
         recipe_id="fixture.archive/v1",
         recipe_revision="1",
         recipe_sha256="5" * 64,
@@ -1051,7 +1051,9 @@ def test_postgres_concurrent_classification_admission_converges_exactly_once(
     )["admissions"]
     assert len(cast(tuple[object, ...], admissions)) == 1
 
-    delete = CatalogSyncDelete(collection_id=str(descriptor.collection_id), revision="3")
+    delete = CatalogSyncDeparture(
+        cause="collection_deleted", collection_id=str(descriptor.collection_id), revision="3"
+    )
     delete_page = CatalogSyncChangePage(
         source_identity="6" * 64,
         authorization_view_identity="7" * 64,
@@ -1105,7 +1107,7 @@ def test_postgres_concurrent_classification_admission_converges_exactly_once(
             (policy.id, policy_row.generation, descriptor.collection_id),
         )
         assert observed is not None
-        assert (observed.descriptor_revision, observed.operation) == ("3", "delete")
+        assert (observed.descriptor_revision, observed.operation) == ("3", "departure")
 
 
 def test_postgres_concurrent_nested_tree_admission_is_atomic_and_normalized(

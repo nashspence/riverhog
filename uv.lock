@@ -2496,7 +2496,7 @@ requires-dist = [
     { name = "riverhog-provenance-contracts", editable = "packages/riverhog-provenance-contracts" },
     { name = "riverhog-storage-adapter-protocol", editable = "packages/riverhog-storage-adapter-protocol" },
     { name = "riverhog-storage-adapter-support", editable = "packages/riverhog-storage-adapter-support" },
-    { name = "sqlalchemy", specifier = ">=2.0,<3.0" },
+    { name = "sqlalchemy", specifier = ">=2.0,<2.1" },
     { name = "starlette", specifier = ">=0.37,<2.0" },
     { name = "state-schema", editable = "packages/state-schema" },
     { name = "time-formats", editable = "packages/time-formats" },
@@ -2791,7 +2791,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "alembic", specifier = ">=1.18.5,<2.0" },
-    { name = "sqlalchemy", specifier = ">=2.0,<3.0" },
+    { name = "sqlalchemy", specifier = ">=2.0,<2.1" },
 ]
 
 [[package]]
@@ -2986,7 +2986,7 @@ requires-dist = [
     { name = "riverhog-canonical-json", editable = "packages/riverhog-canonical-json" },
     { name = "riverhog-client", editable = "packages/riverhog-client" },
     { name = "riverhog-protocol", editable = "packages/riverhog-protocol" },
-    { name = "sqlalchemy", specifier = ">=2.0,<3.0" },
+    { name = "sqlalchemy", specifier = ">=2.0,<2.1" },
     { name = "starlette", specifier = ">=0.37,<2.0" },
     { name = "state-schema", editable = "packages/state-schema" },
     { name = "stove0-observer-client", editable = "some-implementations/stove0/packages/observer-client" },

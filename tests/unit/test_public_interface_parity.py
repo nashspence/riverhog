@@ -507,6 +507,7 @@ READ_COLLECTION_OPERATIONS = {
     "stove0": {
         "mutable-browse": {
             "list_admissions",
+            "list_departure_effects",
             "list_evaluations",
             "list_work",
         },
@@ -647,6 +648,7 @@ PUBLIC_QUERY_SELECTORS = {
             "sort",
             "state",
         },
+        "list_departure_effects": {"page_size", "page_token"},
         "list_evaluations": {"order", "page_size", "page_token", "phase", "q", "sort"},
         "list_events": {"after", "limit"},
         "list_work": {"order", "page_size", "page_token", "phase", "q", "sort"},

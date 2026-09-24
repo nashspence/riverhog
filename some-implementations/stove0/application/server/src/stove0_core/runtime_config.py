@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import cast
 
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
-from stove0_operator_contracts import AdmissionCatalog
+from stove0_operator_contracts import AdmissionCatalog, DepartureCatalog
 
 DEFAULT_OPERATIONAL_STATE_RETENTION_SECONDS = 30 * 24 * 60 * 60
 
@@ -51,6 +51,8 @@ class Stove0RuntimeConfig:
     operational_state_retention_seconds: int
     browse_token_signing_key: str = field(repr=False)
     admissions: AdmissionCatalog = AdmissionCatalog()
+    departures: DepartureCatalog = DepartureCatalog()
+    departure_targets: dict[str, EndpointRegistration] = field(default_factory=dict)
     browse_token_lifetime_seconds: int = 24 * 60 * 60
 
     @classmethod
@@ -107,6 +109,8 @@ class Stove0RuntimeConfig:
             ),
             recipes_path=recipes_path,
             admissions=_admissions(values),
+            departures=_departures(values),
+            departure_targets=_registrations(values, "STOVE0_DEPARTURE_TARGETS_JSON"),
             observers=_registrations(
                 values,
                 "STOVE0_OBSERVERS_JSON",
@@ -192,6 +196,20 @@ def _admissions(values: Mapping[str, str]) -> AdmissionCatalog:
     except json.JSONDecodeError as exc:
         raise ValueError("STOVE0_ADMISSIONS_PATH must contain JSON") from exc
     return AdmissionCatalog.model_validate(payload)
+
+
+def _departures(values: Mapping[str, str]) -> DepartureCatalog:
+    path_value = values.get("STOVE0_DEPARTURES_PATH", "").strip()
+    if not path_value:
+        return DepartureCatalog()
+    path = Path(path_value).expanduser().resolve()
+    if not path.is_file():
+        raise ValueError("STOVE0_DEPARTURES_PATH must name a readable departure document")
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise ValueError("STOVE0_DEPARTURES_PATH must contain JSON") from exc
+    return DepartureCatalog.model_validate(payload)
 
 
 def _secret(

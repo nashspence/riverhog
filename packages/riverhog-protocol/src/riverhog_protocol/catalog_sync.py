@@ -71,14 +71,17 @@ class CatalogSyncUpsert(CatalogSyncDescriptor):
     operation: Literal["upsert"] = "upsert"
 
 
-class CatalogSyncDelete(CatalogSyncModel):
-    operation: Literal["delete"] = "delete"
+class CatalogSyncDeparture(CatalogSyncModel):
+    """A collection left this view; the cause identifies deletion or visibility loss."""
+
+    operation: Literal["departure"] = "departure"
+    cause: Literal["collection_deleted", "visibility_lost"]
     collection_id: CollectionId
     revision: CatalogSyncRevision
 
 
 CatalogSyncChange = Annotated[
-    CatalogSyncUpsert | CatalogSyncDelete,
+    CatalogSyncUpsert | CatalogSyncDeparture,
     Field(discriminator="operation"),
 ]
 
@@ -124,7 +127,7 @@ __all__ = [
     "CatalogSyncCheckpoint",
     "CatalogSyncCollectionPage",
     "CatalogSyncCursor",
-    "CatalogSyncDelete",
+    "CatalogSyncDeparture",
     "CatalogSyncDescriptor",
     "CatalogSyncIdentity",
     "CatalogSyncPosition",

@@ -141,7 +141,7 @@ compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" \
   tests/unit/test_collection_tags.py::test_committed_tag_head_reconciles_after_its_response_is_lost \
   tests/unit/test_collection_tags.py::test_delayed_old_head_writer_cannot_overwrite_newer_acknowledged_authority \
   tests/unit/test_collection_tags.py::test_delayed_gc_cannot_delete_a_node_republished_by_a_newer_authority \
-  some-implementations/stove0/application/tests/test_classification_admission.py::test_stale_upsert_cannot_resurrect_a_deleted_catalog_revision \
+  some-implementations/stove0/application/tests/test_classification_admission.py::test_stale_upsert_cannot_resurrect_a_departed_catalog_revision \
   some-implementations/stove0/application/tests/test_classification_admission.py::test_equal_catalog_revision_with_different_authority_fails_closed \
   some-implementations/stove0/application/tests/test_classification_admission.py::test_failed_lowest_candidate_is_delayed_and_does_not_starve_the_next
 ensure_compose_image app

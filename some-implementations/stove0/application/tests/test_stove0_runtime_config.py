@@ -44,10 +44,18 @@ def test_runtime_configuration_connects_every_control_plane_setting(tmp_path: Pa
     admissions = tmp_path / "admissions.json"
     admissions.write_text(
         '{"format":"stove0-admissions/v1","policies":[{'
-        '"id":"camera","revision":1,"required_tags":["camera"],'
+        '"id":"camera","revision":1,"selector":{"kind":"tags","required":["camera"]},'
         '"recipe_id":"fixture/v1","recipe_revision":"1",'
         '"recipe_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",'
         '"effective_intent":{}}]}',
+        encoding="utf-8",
+    )
+    departures = tmp_path / "departures.json"
+    departures.write_text(
+        '{"format":"stove0-departures/v1","policies":[{'
+        '"id":"withdraw-index","revision":1,"selector":{"kind":"all"},'
+        '"target_registration_id":"index",'
+        '"target_identity":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}]}',
         encoding="utf-8",
     )
     environment.update(
@@ -73,6 +81,10 @@ def test_runtime_configuration_connects_every_control_plane_setting(tmp_path: Pa
             "STOVE0_TARGET_CALLBACK_SIGNING_KEY": "target-callback-signing-key",
             "STOVE0_TARGET_AUTHORITY_BATCH_SIZE": "17",
             "STOVE0_ADMISSIONS_PATH": str(admissions),
+            "STOVE0_DEPARTURES_PATH": str(departures),
+            "STOVE0_DEPARTURE_TARGETS_JSON": (
+                '{"index":{"base_url":"https://index.invalid","allow_insecure_http":false}}'
+            ),
         }
     )
 
@@ -83,6 +95,8 @@ def test_runtime_configuration_connects_every_control_plane_setting(tmp_path: Pa
     assert config.riverhog_allow_insecure_http is True
     assert config.recipes_path == (tmp_path / "recipes.yaml").resolve()
     assert config.admissions.policies[0].id == "camera"
+    assert config.departures.policies[0].id == "withdraw-index"
+    assert config.departure_targets["index"].base_url == "https://index.invalid"
     assert config.observers["probe"].base_url == "http://probe:8080"
     assert config.observers["probe"].allow_insecure_http is True
     assert config.observers["probe"].semantic_validator_providers == ("fixture",)
