@@ -2158,10 +2158,12 @@ def _insert_or_verify_selection(
 
 
 def _selection_ref(row: _ArtifactSelectionRow) -> ArtifactSelectionRef:
-    return ArtifactSelectionRef(
-        selection_sha256=row.selection_sha256,
-        artifact_count=row.artifact_count,
-        total_bytes=row.total_bytes,
+    return ArtifactSelectionRef.model_validate(
+        dict(
+            selection_sha256=row.selection_sha256,
+            artifact_count=row.artifact_count,
+            total_bytes=str(row.total_bytes),
+        )
     )
 
 
@@ -2190,13 +2192,15 @@ def _selection_from_rows(
     row: _ArtifactSelectionRow,
     members: Iterator[_ArtifactSelectionMemberRow],
 ) -> ArtifactSelection:
-    return ArtifactSelection(
-        artifacts=tuple(
-            WorkArtifactSubject.model_validate_json(member.document_json) for member in members
-        ),
-        artifact_count=row.artifact_count,
-        total_bytes=row.total_bytes,
-        selection_sha256=row.selection_sha256,
+    return ArtifactSelection.model_validate(
+        dict(
+            artifacts=tuple(
+                WorkArtifactSubject.model_validate_json(member.document_json) for member in members
+            ),
+            artifact_count=row.artifact_count,
+            total_bytes=str(row.total_bytes),
+            selection_sha256=row.selection_sha256,
+        )
     )
 
 

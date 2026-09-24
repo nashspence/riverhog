@@ -42,6 +42,7 @@ Exact externally visible contract owned by this contract element.
 ##### Definitions
 
 - [ArtifactSelectionRef](#s-7dc6a4ef18)
+- [NonnegativeDecimal](#s-904f322e06)
 - [TargetInputRoleCount](#s-08566a1ea6)
 
 ##### <a id="s-7dc6a4ef18"></a>definition `ArtifactSelectionRef`
@@ -56,7 +57,12 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-1e77610fdf"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-bc5da194c7"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-a9fab63d2a"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-a9fab63d2a"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-904f322e06); ge=0 |  |
+
+##### <a id="s-904f322e06"></a>definition `NonnegativeDecimal`
+
+- <a id="s-ce25d26eab"></a>`type`: `"string"`
+- <a id="s-82a7992259"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ##### <a id="s-08566a1ea6"></a>definition `TargetInputRoleCount`
 
@@ -105,7 +111,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: bb35e2ac1a6cff851b887443ddd48df408598268b93467d162df61e39426df41 -->
+<!-- exact-contract-value: fa93639565abef8cf271c3e5d9d623ddbb3a8010bc8df06676e26d8d9c40c098 -->
 
 ```json
 {
@@ -125,8 +131,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "total_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             }
           },
           "required": [
@@ -135,6 +141,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "total_bytes"
           ],
           "type": "object"
+        },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
         },
         "TargetInputRoleCount": {
           "additionalProperties": false,

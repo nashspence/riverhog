@@ -27,7 +27,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-d8a5ccc404"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](schemas-jsonvalue.md)); title="Effective Intent" |  |
 | <a id="s-7842431ae4"></a>`inputs` | yes | type="array"; items=([CollectionRootIdentityRef](schemas-collectionrootidentityref.md)); minItems=1; title="Inputs" |  |
 | <a id="s-187cc83d3f"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1; title="Recipe Id" |  |
-| <a id="s-882876825e"></a>`recipe_revision` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; title="Recipe Revision" |  |
+| <a id="s-882876825e"></a>`recipe_revision` | no | anyOf=[([NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1); (type="null")] |  |
 
 ### Progression, limits, and lifecycle
 
@@ -54,6 +54,7 @@ Shared facts for every subject below: maximum=160; minimum=1; reason="schema-max
 
 - [CollectionRootIdentityRef](schemas-collectionrootidentityref.md)
 - [JsonValue](schemas-jsonvalue.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -86,7 +87,7 @@ Shared facts for every subject below: maximum=160; minimum=1; reason="schema-max
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 42945b403c43ef7c6f7724c8aed15ea450c1a12c15a795cbe60c102d97fc5b24 -->
+<!-- exact-contract-value: 7c6d128e6ed888575a2c489e91a92a1e6c215cfaa2cd81056708c768d8f9745d -->
 
 ```json
 {
@@ -116,14 +117,13 @@ The following JSON is the complete value owned at each machine-authority pointer
     "recipe_revision": {
       "anyOf": [
         {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/components/schemas/NonnegativeDecimal",
+          "ge": 1
         },
         {
           "type": "null"
         }
-      ],
-      "title": "Recipe Revision"
+      ]
     }
   },
   "required": [

@@ -209,7 +209,7 @@ class PreviewPlanning:
                             role="fixture.source/v1",
                             collection=_root(),
                             path="source/input.bin",
-                            bytes=12,
+                            bytes=str(12),
                             sha256=_sha("4"),
                         ),
                     ),
@@ -268,7 +268,7 @@ class PreviewPlanning:
                     role="fixture.source/v1",
                     collection=_root(),
                     path="source/input.bin",
-                    bytes=12,
+                    bytes=str(12),
                     sha256=_sha("4"),
                 ),
             )
@@ -576,7 +576,7 @@ class FinishingController:
                     output_collection=output,
                     output_bindings=TargetOutputBindingSetIdentity(
                         artifact_count=1,
-                        total_bytes=1,
+                        total_bytes=str(1),
                         sha256=_sha("e"),
                     ),
                 )
@@ -715,7 +715,7 @@ def test_workflow_preview_rejects_observer_result_that_does_not_bind_request() -
                 role="fixture.source/v1",
                 collection=_root(),
                 path="source/other.bin",
-                bytes=12,
+                bytes=str(12),
                 sha256=_sha("4"),
             )
             return ContentObservationResult.seal(

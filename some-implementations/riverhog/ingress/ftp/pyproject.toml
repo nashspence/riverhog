@@ -24,6 +24,7 @@ dependencies = [
   "pyftpdlib>=2.2,<3.0",
   "pydantic>=2.7,<3.0",
   "riverhog-client>=0.1,<0.2",
+  "riverhog-canonical-json>=0.1,<0.2",
   "a-riverhog-ftp-spool-client>=0.1,<0.2",
   "riverhog-protocol>=0.1,<0.2",
   "riverhog-provenance>=0.1,<0.2",
@@ -38,6 +39,7 @@ a-riverhog-ftp-spool = "a_riverhog_ftp_spool.app:main"
 http-api-contracts = { workspace = true }
 a-riverhog-ftp-spool-client = { workspace = true }
 riverhog-client = { workspace = true }
+riverhog-canonical-json = { workspace = true }
 riverhog-protocol = { workspace = true }
 riverhog-provenance = { workspace = true }
 

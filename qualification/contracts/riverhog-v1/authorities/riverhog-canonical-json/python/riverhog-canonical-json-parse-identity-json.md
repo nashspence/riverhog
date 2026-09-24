@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-16a45b83e0"></a>`kind`: `"function"`
-- <a id="s-c62bf683d2"></a>`signature`: `"\"(raw: 'bytes', *, binary64_paths: 'frozenset[str]' = frozenset()) -> 'JsonValue'\""`
+- <a id="s-c62bf683d2"></a>`signature`: `"\"(raw: 'bytes') -> 'JsonValue'\""`
 
 ## Governing policies
 
@@ -51,13 +51,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 678f181f1dbb9d2725143c034c63e8fd20410ef22b8ed60c94be6022de7194b0 -->
+<!-- exact-contract-value: 9e8813909157515249c5c8d40738167a8d8495e5b72e5a4b01ca9eb7c978b851 -->
 
 ```json
 {
   "contract": {
     "kind": "function",
-    "signature": "\"(raw: 'bytes', *, binary64_paths: 'frozenset[str]' = frozenset()) -> 'JsonValue'\""
+    "signature": "\"(raw: 'bytes') -> 'JsonValue'\""
   },
   "distribution": "riverhog-canonical-json",
   "module": "riverhog_canonical_json",

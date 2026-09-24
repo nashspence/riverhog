@@ -47,6 +47,7 @@ Exact externally visible contract owned by this contract element.
 - [ArtifactSelectionRef](#s-612021a3f8)
 - [CollectionId](#s-637edf639e)
 - [CollectionRootIdentityRef](#s-9dd8916c22)
+- [NonnegativeDecimal](#s-508119444c)
 - [WorkArtifactSubject](#s-71efee5497)
 
 ##### <a id="s-612021a3f8"></a>definition `ArtifactSelectionRef`
@@ -61,7 +62,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-d394fb634c"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-00663ee589"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-66d3103a03"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-66d3103a03"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-508119444c); ge=0 |  |
 
 ##### <a id="s-637edf639e"></a>definition `CollectionId`
 
@@ -87,6 +88,11 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-0c46eada96"></a>`collection_id` | yes | [CollectionId](#s-637edf639e) |  |
 | <a id="s-7bdcea6694"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
+##### <a id="s-508119444c"></a>definition `NonnegativeDecimal`
+
+- <a id="s-528deabe34"></a>`type`: `"string"`
+- <a id="s-e041b8d024"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
 ##### <a id="s-71efee5497"></a>definition `WorkArtifactSubject`
 
 - <a id="s-4a768fcbce"></a>`type`: `"object"`
@@ -97,7 +103,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0e4f53d9ce"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-0e4f53d9ce"></a>`bytes` | yes | [NonnegativeDecimal](#s-508119444c); ge=0 |  |
 | <a id="s-fc0dd35720"></a>`collection` | yes | [CollectionRootIdentityRef](#s-9dd8916c22) |  |
 | <a id="s-b0f5ebd2ad"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
 | <a id="s-eb23215221"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
@@ -138,7 +144,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 15de32788c232cdab3ba340790d345d959cdbcfd294b3ae4baefd205ef0ac918 -->
+<!-- exact-contract-value: b55058e450aaea99a3d78ec5715543e4c7132d32a764b8643c0bd80f109aaf0f -->
 
 ```json
 {
@@ -158,8 +164,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "total_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             }
           },
           "required": [
@@ -204,12 +210,16 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "type": "object"
         },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        },
         "WorkArtifactSubject": {
           "additionalProperties": false,
           "properties": {
             "bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             },
             "collection": {
               "$ref": "#/$defs/CollectionRootIdentityRef"

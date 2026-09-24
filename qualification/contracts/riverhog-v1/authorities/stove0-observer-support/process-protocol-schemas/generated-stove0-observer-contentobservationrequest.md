@@ -42,6 +42,7 @@ Exact externally visible contract owned by this contract element.
 - [CollectionId](#s-fdcd4e1424)
 - [CollectionRootIdentityRef](#s-5eb8e0e022)
 - [JsonValue](#s-78cce5ae7a)
+- [NonnegativeDecimal](#s-f01d33d23c)
 - [WorkArtifactSubject](#s-a9cdf4c84d)
 
 ### <a id="s-fdcd4e1424"></a>definition `CollectionId`
@@ -74,6 +75,11 @@ Exact externally visible contract owned by this contract element.
 
 - Accepts: any JSON value.
 
+### <a id="s-f01d33d23c"></a>definition `NonnegativeDecimal`
+
+- <a id="s-ad73700495"></a>`type`: `"string"`
+- <a id="s-c28ea7cff1"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
 ### <a id="s-a9cdf4c84d"></a>definition `WorkArtifactSubject`
 
 - <a id="s-940a24317a"></a>`type`: `"object"`
@@ -86,7 +92,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-909ae5b35e"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-909ae5b35e"></a>`bytes` | yes | [NonnegativeDecimal](#s-f01d33d23c); ge=0 |  |
 | <a id="s-00b0608ea6"></a>`collection` | yes | [CollectionRootIdentityRef](#s-5eb8e0e022) |  |
 | <a id="s-5e2690235f"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$"; title="Id" |  |
 | <a id="s-489163f311"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null; title="Media Type" |  |
@@ -153,7 +159,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7a3d65096fa69762163c34d20222b33709ff66b1edd543ae415eec415b62730c -->
+<!-- exact-contract-value: 0b34924ee1bd08e35af24ed46b0f1efe3199e1ed293ec50f5deda2ceb6ac6eac -->
 
 ```json
 {
@@ -198,14 +204,17 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "object"
     },
     "JsonValue": {},
+    "NonnegativeDecimal": {
+      "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+      "type": "string"
+    },
     "WorkArtifactSubject": {
       "additionalProperties": false,
       "description": "A collection logical file assigned an ID and role within one Stove0 work.",
       "properties": {
         "bytes": {
-          "minimum": 0,
-          "title": "Bytes",
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 0
         },
         "collection": {
           "$ref": "#/$defs/CollectionRootIdentityRef"

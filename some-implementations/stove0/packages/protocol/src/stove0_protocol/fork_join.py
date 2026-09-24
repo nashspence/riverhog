@@ -14,6 +14,7 @@ from collections.abc import Mapping, Sequence
 from typing import Annotated, Any, Literal, Self
 
 from pydantic import Field, JsonValue, field_validator, model_validator
+from riverhog_protocol.exact_scalar import NonnegativeDecimal
 
 from stove0_protocol.jcs import canonical_json_bytes, canonical_json_sha256
 from stove0_protocol.models import (
@@ -113,7 +114,7 @@ class ArtifactSelection(Stove0ProtocolModel):
     format: Literal["stove0-artifact-selection/v1"] = ARTIFACT_SELECTION_FORMAT
     artifacts: tuple[WorkArtifactSubject, ...] = Field(min_length=1)
     artifact_count: int = Field(ge=1)
-    total_bytes: int = Field(ge=0)
+    total_bytes: NonnegativeDecimal = Field(ge=0)
     selection_sha256: Sha256
 
     @field_validator("artifacts")
@@ -157,18 +158,22 @@ class ArtifactSelection(Stove0ProtocolModel):
         digest = hashlib.sha256()
         for ordinal, artifact in enumerate(ordered):
             update_artifact_selection_commitment(digest, ordinal=ordinal, artifact=artifact)
-        return cls(
-            artifacts=ordered,
-            artifact_count=len(ordered),
-            total_bytes=sum(item.bytes for item in ordered),
-            selection_sha256=digest.hexdigest(),
+        return cls.model_validate(
+            dict(
+                artifacts=ordered,
+                artifact_count=len(ordered),
+                total_bytes=str(sum(item.bytes for item in ordered)),
+                selection_sha256=digest.hexdigest(),
+            )
         )
 
     def ref(self) -> ArtifactSelectionRef:
-        return ArtifactSelectionRef(
-            selection_sha256=self.selection_sha256,
-            artifact_count=self.artifact_count,
-            total_bytes=self.total_bytes,
+        return ArtifactSelectionRef.model_validate(
+            dict(
+                selection_sha256=self.selection_sha256,
+                artifact_count=self.artifact_count,
+                total_bytes=str(self.total_bytes),
+            )
         )
 
     def roots(self) -> tuple[CollectionRootIdentityRef, ...]:
@@ -184,7 +189,7 @@ class ArtifactSelectionRef(Stove0ProtocolModel):
 
     selection_sha256: Sha256
     artifact_count: int = Field(ge=1)
-    total_bytes: int = Field(ge=0)
+    total_bytes: NonnegativeDecimal = Field(ge=0)
 
     @classmethod
     def from_selection(cls, selection: ArtifactSelection) -> ArtifactSelectionRef:

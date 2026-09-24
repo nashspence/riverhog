@@ -29,7 +29,7 @@ def test_media_sampling_contract_has_no_artifact_or_duration_ceiling() -> None:
     assert MEDIA_SAMPLING_OBSERVER_CONTRACT.id == "stove0.review.media-sampling/v1"
     assert (
         MEDIA_SAMPLING_OBSERVER_CONTRACT.contract_sha256
-        == "4c87a019d77b91d70e5c8cb08313f634b949a8049a220de53b14fca5060b3298"
+        == "406dee0d01ed49e29d6b7738a89607d815a256473797711952628314ffe5e79a"
     )
     assert len(facts.artifacts) == 257
     assert schema["properties"]["artifacts"].get("maxItems") is None
@@ -60,7 +60,7 @@ def test_media_sampling_semantics_bind_ranges_and_exact_request_subjects() -> No
             content_identity="b" * 64,
         ),
         path="camera.mp4",
-        bytes=10,
+        bytes=str(10),
         sha256="c" * 64,
     )
     facts = {

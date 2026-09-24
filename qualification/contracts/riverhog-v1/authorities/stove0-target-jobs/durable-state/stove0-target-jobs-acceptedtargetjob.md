@@ -81,7 +81,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-4b315d4d06"></a>`artifact_count` | yes | type="integer"; minimum=1; title="Artifact Count" |  |
 | <a id="s-079ddc42e2"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Selection Sha256" |  |
-| <a id="s-60c15f2059"></a>`total_bytes` | yes | type="integer"; minimum=0; title="Total Bytes" |  |
+| <a id="s-60c15f2059"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-73be0c7240); ge=0 |  |
 
 #### <a id="s-548c2def56"></a>definition `BranchWorkBinding`
 
@@ -507,7 +507,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4175135e73"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-4175135e73"></a>`bytes` | yes | [NonnegativeDecimal](#s-73be0c7240); ge=0 |  |
 | <a id="s-7b616def22"></a>`collection` | yes | [CollectionRootIdentityRef](#s-fe11381c28) |  |
 | <a id="s-82080a9a58"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$"; title="Id" |  |
 | <a id="s-9a144508ec"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null; title="Media Type" |  |
@@ -592,7 +592,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 493961a87b57694c2594e9f241b1968923d722d0c52df85517b93bb3aae7bd67 -->
+<!-- exact-contract-value: 3cead066b3bc08362012e59c42336423580f624c09a568d0039c6b687f09b61a -->
 
 ```json
 {
@@ -614,9 +614,8 @@ The following JSON is the complete value owned at each machine-authority pointer
             "type": "string"
           },
           "total_bytes": {
-            "minimum": 0,
-            "title": "Total Bytes",
-            "type": "integer"
+            "$ref": "#/$defs/NonnegativeDecimal",
+            "ge": 0
           }
         },
         "required": [
@@ -1616,9 +1615,8 @@ The following JSON is the complete value owned at each machine-authority pointer
         "description": "A collection logical file assigned an ID and role within one Stove0 work.",
         "properties": {
           "bytes": {
-            "minimum": 0,
-            "title": "Bytes",
-            "type": "integer"
+            "$ref": "#/$defs/NonnegativeDecimal",
+            "ge": 0
           },
           "collection": {
             "$ref": "#/$defs/CollectionRootIdentityRef"

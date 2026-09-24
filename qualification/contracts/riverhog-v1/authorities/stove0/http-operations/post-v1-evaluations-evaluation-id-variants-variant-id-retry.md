@@ -65,7 +65,7 @@ Retry Evaluation Variant
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:stove0](../../../evidence/sources/authorities.md#src-52e6e32124) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [some-implementations/stove0/application/server/src/stove0\_api/app.py::create\_app.&lt;locals&gt;.retry\_evaluation\_variant](../../../../../../some-implementations/stove0/application/server/src/stove0_api/app.py#L920)
+- **Handler:** [some-implementations/stove0/application/server/src/stove0\_api/app.py::create\_app.&lt;locals&gt;.retry\_evaluation\_variant](../../../../../../some-implementations/stove0/application/server/src/stove0_api/app.py#L922)
 
 ### Structural operation bindings
 
@@ -99,7 +99,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "stove0_api_client.Stove0ApiClient.retry_evaluation_variant",
       "source": {
-        "line": 419,
+        "line": 423,
         "module": "stove0_api_client.client",
         "path": "some-implementations/stove0/packages/api-client/src/stove0_api_client/client.py",
         "symbol": "Stove0ApiClient.retry_evaluation_variant"

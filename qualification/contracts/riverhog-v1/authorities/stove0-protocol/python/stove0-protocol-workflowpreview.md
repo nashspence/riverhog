@@ -97,7 +97,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-bf9e7088e1"></a>`artifacts` | yes | type="array"; items=([WorkArtifactSubject](#s-3c15081ff9)); minItems=1 |  |
 | <a id="s-736fda6e0e"></a>`format` | no | type="string"; const="stove0-artifact-selection/v1"; default="stove0-artifact-selection/v1" |  |
 | <a id="s-c3e0005c8f"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-c6b5e8a668"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-c6b5e8a668"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-925cbd5f0e); ge=0 |  |
 
 ##### <a id="s-c80df5a893"></a>definition `ArtifactSelectionRef`
 
@@ -111,7 +111,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-ece57bc175"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-c33cb7ae2b"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-7e2e7eff89"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-7e2e7eff89"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-925cbd5f0e); ge=0 |  |
 
 ##### <a id="s-3f7e0f08b1"></a>definition `BranchPlan`
 
@@ -491,7 +491,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-5fc15f9d57"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-5fc15f9d57"></a>`bytes` | yes | [NonnegativeDecimal](#s-925cbd5f0e); ge=0 |  |
 | <a id="s-4aeceee85b"></a>`collection` | yes | [CollectionRootIdentityRef](#s-ae37e14f45) |  |
 | <a id="s-2aa4704ac5"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
 | <a id="s-391f1cefa9"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
@@ -601,7 +601,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6c88f2e8ddf7785a3795368bb252562cab9d8548ef152b6d0af858bc21d820e5 -->
+<!-- exact-contract-value: 8527979c23745dc4fa9be0fc17a373143edc45196020b3b4ca39866514920bab -->
 
 ```json
 {
@@ -633,8 +633,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "total_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             }
           },
           "required": [
@@ -657,8 +657,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "total_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             }
           },
           "required": [
@@ -1503,8 +1503,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             },
             "collection": {
               "$ref": "#/$defs/CollectionRootIdentityRef"

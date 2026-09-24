@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 import secrets
 from collections.abc import Sequence
 from datetime import timedelta
 from typing import Any, Literal, cast
 
+from riverhog_canonical_json import canonical_json_sha256
 from riverhog_client import ApiClient
 from riverhog_protocol import (
     CATALOG_SYNC_PAGE_SIZE_MAX,
@@ -538,9 +538,7 @@ class ClassificationAdmissionService:
     ) -> Literal["applied", "duplicate", "stale"]:
         operation = "delete" if isinstance(change, CatalogSyncDelete) else "upsert"
         payload = {"operation": operation, **change.model_dump(mode="json")}
-        authority_sha256 = hashlib.sha256(
-            json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
-        ).hexdigest()
+        authority_sha256 = canonical_json_sha256(payload)
         key = (policy_row.policy_id, policy_row.generation, change.collection_id)
         observed = session.get(_AdmissionObservedRevisionRow, key)
         revision = int(change.revision)

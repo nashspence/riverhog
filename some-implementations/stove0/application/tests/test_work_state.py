@@ -156,7 +156,7 @@ def _observation(
         role="fixture.source/v1",
         collection=_root(),
         path="source/input.bin",
-        bytes=12,
+        bytes=str(12),
         sha256=_sha("4"),
     )
     request = ContentObservationRequest.seal(
@@ -258,7 +258,7 @@ def _target_plan(
                     role="fixture.source/v1",
                     collection=_root(),
                     path="source/input.bin",
-                    bytes=12,
+                    bytes=str(12),
                     sha256=_sha("4"),
                 ),
             )
@@ -291,7 +291,7 @@ def _branch_decision(
                     role="fixture.source/v1",
                     collection=_root(),
                     path="source/input.bin",
-                    bytes=12,
+                    bytes=str(12),
                     sha256=_sha("4"),
                 ),
             )
@@ -476,7 +476,7 @@ def test_target_callback_authority_seals_exact_production_and_is_idempotent() ->
         id="output",
         role="fixture.output/v1",
         path="output/result.bin",
-        bytes=12,
+        bytes=str(12),
         sha256=_sha("5"),
     )
     disposition = InputDispositionDeclaration(input_id=source.id, status="transformed")
@@ -499,7 +499,7 @@ def test_target_production_seal_is_segmented_closes_declarations_and_replays() -
                 role="fixture.source/v1",
                 collection=_root(),
                 path=f"source/{ordinal}.bin",
-                bytes=ordinal + 1,
+                bytes=str(ordinal + 1),
                 sha256=_sha(str(ordinal + 1)),
             )
             for ordinal in range(3)
@@ -521,7 +521,7 @@ def test_target_production_seal_is_segmented_closes_declarations_and_replays() -
             id=f"output-{ordinal}",
             role="fixture.output/v1",
             path=f"output/{ordinal}.bin",
-            bytes=source.bytes,
+            bytes=str(source.bytes),
             sha256=_sha(str(ordinal + 4)),
         )
         for ordinal, source in enumerate(inputs)
@@ -573,7 +573,7 @@ def test_target_callback_dispositions_cover_multi_input_selection_by_identity() 
                 role="fixture.source/v1",
                 collection=_root(),
                 path="z-collection-last.bin",
-                bytes=1,
+                bytes=str(1),
                 sha256=_sha("4"),
             ),
             WorkArtifactSubject(
@@ -581,7 +581,7 @@ def test_target_callback_dispositions_cover_multi_input_selection_by_identity() 
                 role="fixture.source/v1",
                 collection=_root(),
                 path="a-collection-first.bin",
-                bytes=1,
+                bytes=str(1),
                 sha256=_sha("5"),
             ),
         )
@@ -595,7 +595,7 @@ def test_target_callback_dispositions_cover_multi_input_selection_by_identity() 
         id="output",
         role="fixture.output/v1",
         path="output/result.bin",
-        bytes=2,
+        bytes=str(2),
         sha256=_sha("6"),
     )
     callbacks.declare_output(access.token, job_id=job_id, output=output)
@@ -636,7 +636,7 @@ def test_target_callback_authority_rejects_unpermitted_disposition_and_stale_fen
         id="output",
         role="fixture.output/v1",
         path="output/result.bin",
-        bytes=12,
+        bytes=str(12),
         sha256=_sha("5"),
     )
     callbacks.declare_output(access.token, job_id=job_id, output=output)
@@ -679,7 +679,7 @@ def _nested_branch_decision(work: WorkIdentity) -> BranchSetDecision:
                 role="fixture.source/v1",
                 collection=_root(),
                 path="source/input.bin",
-                bytes=12,
+                bytes=str(12),
                 sha256=_sha("4"),
             ),
         )
@@ -830,7 +830,7 @@ def test_one_record_carries_observation_plan_execution_verification_and_completi
         id="output",
         role="fixture.output/v1",
         path="output/result.bin",
-        bytes=12,
+        bytes=str(12),
         sha256=_sha("5"),
     )
     assert record.controller_evidence is not None
@@ -910,7 +910,7 @@ def test_one_record_carries_observation_plan_execution_verification_and_completi
             output_collection=output_collection,
             output_bindings=TargetOutputBindingSetIdentity(
                 artifact_count=1,
-                total_bytes=output.bytes,
+                total_bytes=str(output.bytes),
                 sha256=_sha("e"),
             ),
         )
@@ -969,7 +969,7 @@ def test_new_claim_fence_resets_unsettled_execution_authorities() -> None:
         id="result",
         role="fixture.output/v1",
         path="output/result.bin",
-        bytes=1,
+        bytes=str(1),
         sha256=_sha("1"),
     )
     store.ensure_target_production_receiving(work.work_id, stale_execution_id)
@@ -1136,7 +1136,7 @@ def test_stale_revision_and_invalid_success_order_fail_closed() -> None:
                     ),
                     output_bindings=TargetOutputBindingSetIdentity(
                         artifact_count=1,
-                        total_bytes=1,
+                        total_bytes=str(1),
                         sha256=_sha("a"),
                     ),
                 )
@@ -1481,7 +1481,7 @@ def test_sql_selection_restart_preserves_canonical_artifact_order(tmp_path: Path
                 role="fixture.source/v1",
                 collection=_root(),
                 path="z-collection-last.bin",
-                bytes=1,
+                bytes=str(1),
                 sha256=_sha("4"),
             ),
             WorkArtifactSubject(
@@ -1489,7 +1489,7 @@ def test_sql_selection_restart_preserves_canonical_artifact_order(tmp_path: Path
                 role="fixture.source/v1",
                 collection=_root(),
                 path="a-collection-first.bin",
-                bytes=1,
+                bytes=str(1),
                 sha256=_sha("5"),
             ),
         )

@@ -90,7 +90,7 @@ def test_ffprobe_observer_reports_contract_facts_and_exact_image(
                         content_identity=_sha("3"),
                     ),
                     path="camera/source.mp4",
-                    bytes=15,
+                    bytes=str(15),
                     sha256=_sha("4"),
                     media_type="video/mp4",
                 ),

@@ -97,7 +97,7 @@ def _input_selection(work: WorkIdentity) -> ArtifactSelection:
                 role="fixture.source/v1",
                 collection=work.inputs[0],
                 path="source/input.bin",
-                bytes=12,
+                bytes=str(12),
                 sha256=_sha("e"),
             ),
         )
@@ -135,7 +135,7 @@ def _output_artifact() -> OutputArtifact:
         id="output",
         role="fixture.output/v1",
         path="output/result.bin",
-        bytes=12,
+        bytes=str(12),
         sha256=_sha("9"),
     )
 
@@ -693,7 +693,7 @@ def test_riverhog_adapter_closes_only_the_exact_generic_outcome_set() -> None:
                 role="fixture.source/v1",
                 collection=work.inputs[0],
                 path="source/input.bin",
-                bytes=12,
+                bytes=str(12),
                 sha256=_sha("e"),
             ),
         )
@@ -725,7 +725,7 @@ def test_riverhog_adapter_closes_only_the_exact_generic_outcome_set() -> None:
                 role="fixture.output/v1",
                 collection=output_root,
                 path="output/result.bin",
-                bytes=12,
+                bytes=str(12),
                 sha256=_sha("9"),
             ),
         )
@@ -892,7 +892,7 @@ def test_synchronous_observation_must_fit_claim_and_capability_lifetime() -> Non
                     role="fixture.source/v1",
                     collection=work.inputs[0],
                     path="source/input.bin",
-                    bytes=12,
+                    bytes=str(12),
                     sha256=_sha("e"),
                 ),
             ),
@@ -923,7 +923,7 @@ def test_observation_capability_projects_subjects_into_riverhog_artifact_order()
                     role="fixture.source/v1",
                     collection=work.inputs[0],
                     path="source/z.bin",
-                    bytes=12,
+                    bytes=str(12),
                     sha256=_sha("e"),
                 ),
                 WorkArtifactSubject(
@@ -931,7 +931,7 @@ def test_observation_capability_projects_subjects_into_riverhog_artifact_order()
                     role="fixture.source/v1",
                     collection=work.inputs[0],
                     path="source/a.bin",
-                    bytes=13,
+                    bytes=str(13),
                     sha256=_sha("f"),
                 ),
             ),

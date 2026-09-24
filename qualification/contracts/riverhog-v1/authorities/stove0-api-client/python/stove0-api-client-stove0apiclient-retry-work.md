@@ -48,7 +48,7 @@ Exact externally visible contract owned by this contract element.
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [python:stove0-api-client:stove0_api_client](../../../evidence/sources/authorities.md#src-5d52ac5998) — [some-implementations/stove0/packages/api-client/src/stove0\_api\_client/\_\_init\_\_.py](../../../../../../some-implementations/stove0/packages/api-client/src/stove0_api_client/__init__.py)
-- **Client method:** [some-implementations/stove0/packages/api-client/src/stove0\_api\_client/client.py::Stove0ApiClient.retry\_work](../../../../../../some-implementations/stove0/packages/api-client/src/stove0_api_client/client.py#L314)
+- **Client method:** [some-implementations/stove0/packages/api-client/src/stove0\_api\_client/client.py::Stove0ApiClient.retry\_work](../../../../../../some-implementations/stove0/packages/api-client/src/stove0_api_client/client.py#L316)
 
 ### Machine authority
 

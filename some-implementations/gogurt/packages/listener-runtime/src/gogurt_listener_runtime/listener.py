@@ -4,7 +4,6 @@ import faulthandler
 import json
 import logging
 import logging.handlers
-import math
 import os
 import queue
 import shutil
@@ -18,7 +17,7 @@ import time
 from collections.abc import Callable, Iterator, Mapping, Sequence
 from contextlib import closing, contextmanager
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from decimal import Decimal
 from hashlib import sha256
 from pathlib import Path
 from typing import Any, cast
@@ -31,6 +30,7 @@ from gogurt_core.core import (
 )
 from gogurt_core.mounts import MountedVolumeProvider, validate_gogurt_interval
 from gogurt_core.providers import GogurtProviderReference
+from time_formats import format_utc_ns, parse_utc_timestamp, require_canonical_utc_timestamp
 
 from gogurt_listener_runtime.filesystem import (
     PRIVATE_FILE_MODE,
@@ -132,8 +132,8 @@ def _strict_json_integer(value: str) -> int:
 
 
 def _now_text(now: float | None = None) -> str:
-    value = time.time() if now is None else now
-    return datetime.fromtimestamp(value, tz=UTC).isoformat().replace("+00:00", "Z")
+    epoch_ns = time.time_ns() if now is None else int(Decimal(str(now)) * 1_000_000_000)
+    return format_utc_ns(epoch_ns)
 
 
 def _validated_product_version(value: str) -> str:
@@ -1175,18 +1175,12 @@ def run_listener(
 
 
 def _heartbeat_timestamp(value: object, *, field: str) -> float:
-    if not isinstance(value, str) or not value:
+    if not isinstance(value, str):
         raise ListenerError(f"Gogurt listener heartbeat {field} is invalid")
     try:
-        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
-        if parsed.tzinfo is None:
-            raise ValueError("timezone is absent")
-        timestamp = parsed.timestamp()
-    except (OSError, OverflowError, ValueError) as exc:
+        return parse_utc_timestamp(require_canonical_utc_timestamp(value)) / 1_000_000_000
+    except (TypeError, ValueError) as exc:
         raise ListenerError(f"Gogurt listener heartbeat {field} is invalid") from exc
-    if not math.isfinite(timestamp):
-        raise ListenerError(f"Gogurt listener heartbeat {field} is invalid")
-    return timestamp
 
 
 def _validate_heartbeat(value: object) -> dict[str, object]:

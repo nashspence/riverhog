@@ -57,7 +57,7 @@ Applies to: reported · stdout (json).
 | Field | Value |
 |---|---|
 | <a id="s-86ff022149"></a>`format` | `"review0-contract-report/v1"` |
-| <a id="s-a2bc0318da"></a>`observer_contract · contract_sha256` | `"4c87a019d77b91d70e5c8cb08313f634b949a8049a220de53b14fca5060b3298"` |
+| <a id="s-a2bc0318da"></a>`observer_contract · contract_sha256` | `"406dee0d01ed49e29d6b7738a89607d815a256473797711952628314ffe5e79a"` |
 | <a id="s-64fe0049d8"></a>`observer_contract · facts_schema · dialect` | `"https://json-schema.org/draft/2020-12/schema"` |
 | <a id="s-c7851ecef0"></a>`observer_contract · facts_schema · document · $schema` | `"https://json-schema.org/draft/2020-12/schema"` |
 | <a id="s-4bf48384d5"></a>`observer_contract · facts_schema · document · additionalProperties` | `false` |
@@ -84,9 +84,9 @@ Applies to: reported · stdout (json).
 | <a id="s-46cd4817b0"></a>`observer_contract · facts_schema · format_policy` | `"annotation-only"` |
 | <a id="s-8a22b7dd0c"></a>`observer_contract · facts_schema · id` | `"stove0.review.media-sampling-facts/v1"` |
 | <a id="s-b13fd9e231"></a>`observer_contract · facts_schema · profile_sha256` | `"730e1fcd4a831bad9707814fe65fb59861359795bcf336ed65f72670c725f71a"` |
-| <a id="s-370631d709"></a>`observer_contract · facts_semantics · conformance_vectors_sha256` | `"90d8dd72fda59c7a5006d59119d8a3fcf9d569a7875ae4d9f5ef4ada5aaa33c4"` |
+| <a id="s-370631d709"></a>`observer_contract · facts_semantics · conformance_vectors_sha256` | `"6f6c2bc816116299fd5ad0dc3a8e1221c0058df224062677895ad2e06325f7e8"` |
 | <a id="s-bc5745af5d"></a>`observer_contract · facts_semantics · id` | `"stove0.review.media-sampling-facts-semantics/v1"` |
-| <a id="s-3fe65bbe29"></a>`observer_contract · facts_semantics · profile_sha256` | `"7db5bb14ea7b0126ed8b58d12fe169ba4eff7f7f8b7650c5ac5be0b07b6b2d2f"` |
+| <a id="s-3fe65bbe29"></a>`observer_contract · facts_semantics · profile_sha256` | `"ba56ae95653ee6d82e0505ca5b8794335f6e320edfe8395918a448c5861363da"` |
 | <a id="s-6758c1fc56"></a>`observer_contract · facts_semantics · rules` | `["stove0.review.media-sampling-facts.complete-request-subjects/v1","stove0.review.media-sampling-facts.nonoverlapping-bounded-ranges/v1"]` |
 | <a id="s-5a52131c7e"></a>`observer_contract · id` | `"stove0.review.media-sampling/v1"` |
 | <a id="s-f38b3d48b2"></a>`observer_contract · maximum_result_bytes` | `262144` |
@@ -244,7 +244,7 @@ true
 
 ### `/external_contract/cli/review0-planner/result_contract`
 
-<!-- exact-contract-value: 83c9c7b8e8c662f2c9bc52c2dad423abb031a530551a7c679923c69b16fc1499 -->
+<!-- exact-contract-value: 5891280cf21ad8bd4a9829cf16bb6abe6a6e417ff2f6bd377ab4500a655dc08e -->
 
 ```json
 {
@@ -282,7 +282,7 @@ true
           "document": {
             "format": "review0-contract-report/v1",
             "observer_contract": {
-              "contract_sha256": "4c87a019d77b91d70e5c8cb08313f634b949a8049a220de53b14fca5060b3298",
+              "contract_sha256": "406dee0d01ed49e29d6b7738a89607d815a256473797711952628314ffe5e79a",
               "facts_schema": {
                 "dialect": "https://json-schema.org/draft/2020-12/schema",
                 "document": {
@@ -345,9 +345,9 @@ true
                 "profile_sha256": "730e1fcd4a831bad9707814fe65fb59861359795bcf336ed65f72670c725f71a"
               },
               "facts_semantics": {
-                "conformance_vectors_sha256": "90d8dd72fda59c7a5006d59119d8a3fcf9d569a7875ae4d9f5ef4ada5aaa33c4",
+                "conformance_vectors_sha256": "6f6c2bc816116299fd5ad0dc3a8e1221c0058df224062677895ad2e06325f7e8",
                 "id": "stove0.review.media-sampling-facts-semantics/v1",
-                "profile_sha256": "7db5bb14ea7b0126ed8b58d12fe169ba4eff7f7f8b7650c5ac5be0b07b6b2d2f",
+                "profile_sha256": "ba56ae95653ee6d82e0505ca5b8794335f6e320edfe8395918a448c5861363da",
                 "rules": [
                   "stove0.review.media-sampling-facts.complete-request-subjects/v1",
                   "stove0.review.media-sampling-facts.nonoverlapping-bounded-ranges/v1"

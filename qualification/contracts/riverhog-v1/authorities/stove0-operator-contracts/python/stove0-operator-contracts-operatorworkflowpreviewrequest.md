@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-0527160a3e"></a>`kind`: `"class"`
-- <a id="s-00b5260b2a"></a>`signature`: `"'(*, recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[int \| None, Ge(ge=1)] = None, inputs: Annotated[tuple[stove0_protocol.models.CollectionRootIdentityRef, ...], MinLen(min_length=1)], effective_intent: dict[str, JsonValue] = <factory>) -> None'"`
+- <a id="s-00b5260b2a"></a>`signature`: `"'(*, recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[NonnegativeDecimal \| None, Ge(ge=1)] = None, inputs: Annotated[tuple[stove0_protocol.models.CollectionRootIdentityRef, ...], MinLen(min_length=1)], effective_intent: dict[str, JsonValue] = <factory>) -> None'"`
 
 #### Validated model schema
 
@@ -39,13 +39,14 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-5832f02aeb"></a>`effective_intent` | no | type="object"; additionalProperties=([JsonValue](#s-8b2b6deb5f)) |  |
 | <a id="s-0f4d67ec52"></a>`inputs` | yes | type="array"; items=([CollectionRootIdentityRef](#s-ff8622ab45)); minItems=1 |  |
 | <a id="s-c323877f28"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-ba04a7f323"></a>`recipe_revision` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; default=null |  |
+| <a id="s-ba04a7f323"></a>`recipe_revision` | no | anyOf=[([NonnegativeDecimal](#s-10e0e11a40); ge=1); (type="null")]; default=null |  |
 
 ##### Definitions
 
 - [CollectionId](#s-9021d6f15c)
 - [CollectionRootIdentityRef](#s-ff8622ab45)
 - [JsonValue](#s-8b2b6deb5f)
+- [NonnegativeDecimal](#s-10e0e11a40)
 
 ##### <a id="s-9021d6f15c"></a>definition `CollectionId`
 
@@ -74,6 +75,11 @@ Exact externally visible contract owned by this contract element.
 ##### <a id="s-8b2b6deb5f"></a>definition `JsonValue`
 
 - Accepts: any JSON value.
+
+##### <a id="s-10e0e11a40"></a>definition `NonnegativeDecimal`
+
+- <a id="s-b3e0e52816"></a>`type`: `"string"`
+- <a id="s-d637d18dbc"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Maintained corroboration
 
@@ -108,7 +114,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 954f393a7d39b4adc81bdab3c7b16d643147c4d82ed1b5c83ea09e91760d3900 -->
+<!-- exact-contract-value: e189ddd2658bb6d0b121ec2d6e90998f39d4284469bbf44d9f85cbb8a6b996ef -->
 
 ```json
 {
@@ -151,7 +157,11 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "type": "object"
         },
-        "JsonValue": {}
+        "JsonValue": {},
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        }
       },
       "additionalProperties": false,
       "properties": {
@@ -176,8 +186,8 @@ The following JSON is the complete value owned at each machine-authority pointer
         "recipe_revision": {
           "anyOf": [
             {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             {
               "type": "null"
@@ -192,7 +202,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "'(*, recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[int | None, Ge(ge=1)] = None, inputs: Annotated[tuple[stove0_protocol.models.CollectionRootIdentityRef, ...], MinLen(min_length=1)], effective_intent: dict[str, JsonValue] = <factory>) -> None'"
+    "signature": "'(*, recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[NonnegativeDecimal | None, Ge(ge=1)] = None, inputs: Annotated[tuple[stove0_protocol.models.CollectionRootIdentityRef, ...], MinLen(min_length=1)], effective_intent: dict[str, JsonValue] = <factory>) -> None'"
   },
   "distribution": "stove0-operator-contracts",
   "module": "stove0_operator_contracts",

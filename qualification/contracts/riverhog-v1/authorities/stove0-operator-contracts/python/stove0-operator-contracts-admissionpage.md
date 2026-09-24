@@ -55,6 +55,7 @@ Exact externally visible contract owned by this contract element.
 - [CollectionId](#s-a599deb515)
 - [CollectionTag](#s-660b7ac527)
 - [JsonValue](#s-d964e44e24)
+- [NonnegativeDecimal](#s-1041b08a94)
 
 ##### <a id="s-715abe15ea"></a>definition `AdmissionIntent`
 
@@ -74,7 +75,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-5c376a0409"></a>`policy_revision` | yes | type="integer"; minimum=1 |  |
 | <a id="s-e0d76b9774"></a>`policy_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-9f7e272724"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-c7d1409453"></a>`recipe_revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-c7d1409453"></a>`recipe_revision` | yes | [NonnegativeDecimal](#s-1041b08a94); ge=1 |  |
 | <a id="s-5516b1d011"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-8b7c5c7a83"></a>`required_tags` | yes | type="array"; items=([CollectionTag](#s-660b7ac527)) |  |
 
@@ -156,6 +157,11 @@ Exact externally visible contract owned by this contract element.
 
 - Accepts: any JSON value.
 
+##### <a id="s-1041b08a94"></a>definition `NonnegativeDecimal`
+
+- <a id="s-67be15ad79"></a>`type`: `"string"`
+- <a id="s-5138e8577a"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
 ## Governing policies
 
 - <a id="pa-3d604dd7a3"></a>[compatibility/python-api/v1](../../release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5)
@@ -183,7 +189,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 93afadb75ddaeac8b7d7a678a497f06c53e01fa89dd194b8327b3404671ac623 -->
+<!-- exact-contract-value: f11ee0b1827313d21d18623df050cc5bf704cf4af0772130bbd713d845fd1be9 -->
 
 ```json
 {
@@ -231,8 +237,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "recipe_revision": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "recipe_sha256": {
               "pattern": "^[0-9a-f]{64}$",
@@ -460,7 +466,11 @@ The following JSON is the complete value owned at each machine-authority pointer
           },
           "x-unicode-normalization": "NFC"
         },
-        "JsonValue": {}
+        "JsonValue": {},
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        }
       },
       "additionalProperties": false,
       "properties": {

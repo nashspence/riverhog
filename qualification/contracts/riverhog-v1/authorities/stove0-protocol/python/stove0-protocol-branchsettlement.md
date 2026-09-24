@@ -51,6 +51,7 @@ Exact externally visible contract owned by this contract element.
 - [ArtifactSelectionRef](#s-ce9acaea80)
 - [CollectionId](#s-80fd89a6d5)
 - [CollectionRootIdentityRef](#s-b543984c60)
+- [NonnegativeDecimal](#s-87b22cd8c1)
 
 ##### <a id="s-ce9acaea80"></a>definition `ArtifactSelectionRef`
 
@@ -64,7 +65,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-038e88cec5"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-bd5f35c5fd"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-f2e0a91f1c"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-f2e0a91f1c"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-87b22cd8c1); ge=0 |  |
 
 ##### <a id="s-80fd89a6d5"></a>definition `CollectionId`
 
@@ -89,6 +90,11 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-d4b6a8e3f6"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-131c5fa8a0"></a>`collection_id` | yes | [CollectionId](#s-80fd89a6d5) |  |
 | <a id="s-b81f153e59"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-87b22cd8c1"></a>definition `NonnegativeDecimal`
+
+- <a id="s-674b8afb57"></a>`type`: `"string"`
+- <a id="s-ebdf1480f3"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Maintained corroboration
 
@@ -124,7 +130,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 807555516303b3e33ee9738098b62480ac8b7ca83437a1b6194aeed7c5291397 -->
+<!-- exact-contract-value: 8a8989564cfe49338a17bd242c2af992270244532a61fdc8e473197ddb46b125 -->
 
 ```json
 {
@@ -144,8 +150,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "total_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             }
           },
           "required": [
@@ -189,6 +195,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "content_identity"
           ],
           "type": "object"
+        },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
         }
       },
       "additionalProperties": false,

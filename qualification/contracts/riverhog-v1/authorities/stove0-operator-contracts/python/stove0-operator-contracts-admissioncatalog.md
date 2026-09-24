@@ -43,6 +43,7 @@ Exact externally visible contract owned by this contract element.
 - [AdmissionPolicy](#s-0d836ab3d0)
 - [CollectionTag](#s-faf360b591)
 - [JsonValue](#s-0f94759ee8)
+- [NonnegativeDecimal](#s-bb1c00d60a)
 
 ##### <a id="s-0d836ab3d0"></a>definition `AdmissionPolicy`
 
@@ -59,7 +60,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-770ef3f34e"></a>`format` | no | type="string"; const="stove0-admission-policy/v1"; default="stove0-admission-policy/v1" |  |
 | <a id="s-941227cf31"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-802dadf68b"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-200d5fef77"></a>`recipe_revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-200d5fef77"></a>`recipe_revision` | yes | [NonnegativeDecimal](#s-bb1c00d60a); ge=1 |  |
 | <a id="s-a9687c9bfe"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-e8dc91bade"></a>`required_tags` | yes | type="array"; items=([CollectionTag](#s-faf360b591)); maxItems=100; minItems=1; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-classification-admission-predicate"} |  |
 | <a id="s-f83795db7e"></a>`revision` | yes | type="integer"; minimum=1 |  |
@@ -76,6 +77,11 @@ Exact externally visible contract owned by this contract element.
 ##### <a id="s-0f94759ee8"></a>definition `JsonValue`
 
 - Accepts: any JSON value.
+
+##### <a id="s-bb1c00d60a"></a>definition `NonnegativeDecimal`
+
+- <a id="s-60e10c039e"></a>`type`: `"string"`
+- <a id="s-97fd2462c5"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Maintained corroboration
 
@@ -111,7 +117,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 401c080d68cad2f5e4adddcbf4198e2a14bb2ee9153dcc5bc587b1f7876ded0b -->
+<!-- exact-contract-value: 4261f26143eaebed457866cb8376dd9fb7e73339ba89db7c0c1faf77679798c6 -->
 
 ```json
 {
@@ -148,8 +154,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "recipe_revision": {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             "recipe_sha256": {
               "pattern": "^[0-9a-f]{64}$",
@@ -193,7 +199,11 @@ The following JSON is the complete value owned at each machine-authority pointer
           },
           "x-unicode-normalization": "NFC"
         },
-        "JsonValue": {}
+        "JsonValue": {},
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        }
       },
       "additionalProperties": false,
       "properties": {

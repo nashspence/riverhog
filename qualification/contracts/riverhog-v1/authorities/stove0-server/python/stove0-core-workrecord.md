@@ -163,7 +163,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-2bf8f00d55"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-872ad71742"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-419a1f1780"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-419a1f1780"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-83ffa45173); ge=0 |  |
 
 ##### <a id="s-c67174ab76"></a>definition `BranchPlan`
 
@@ -674,7 +674,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-c0251f037f"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-b729fbe43b"></a>`roles` | yes | type="array"; items=([OutputArtifactRoleCount](#s-ddd8716850)); minItems=1 |  |
 | <a id="s-19870b8a13"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-1733e59f36"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-1733e59f36"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-83ffa45173); ge=0 |  |
 
 ##### <a id="s-9ec3e43bb5"></a>definition `OutputCollectionRef`
 
@@ -862,7 +862,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-7e965b2232"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-db44c04b55"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-650160f77c"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-650160f77c"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-83ffa45173); ge=0 |  |
 
 ##### <a id="s-4065e53771"></a>definition `TargetPlanBinding`
 
@@ -965,7 +965,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e8f3292a11"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-e8f3292a11"></a>`bytes` | yes | [NonnegativeDecimal](#s-83ffa45173); ge=0 |  |
 | <a id="s-3b1350896c"></a>`collection` | yes | [CollectionRootIdentityRef](#s-517670cbed) |  |
 | <a id="s-95fec31b95"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
 | <a id="s-835fd6d529"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
@@ -1096,7 +1096,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 318665084f9a528ff1e5edd04f268ba250ac7bcaaca6b1889b1252f48e60ac56 -->
+<!-- exact-contract-value: 4fd29d3cdfd94079e864afc0c5abe8dcfdb17c31936df81164691a7007f7c164 -->
 
 ```json
 {
@@ -1156,8 +1156,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "total_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             }
           },
           "required": [
@@ -2333,8 +2333,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "total_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             }
           },
           "required": [
@@ -2780,8 +2780,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "total_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             }
           },
           "required": [
@@ -3034,8 +3034,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             },
             "collection": {
               "$ref": "#/$defs/CollectionRootIdentityRef"

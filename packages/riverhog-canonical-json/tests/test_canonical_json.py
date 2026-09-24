@@ -30,6 +30,7 @@ def test_jcs_orders_utf16_keys_and_preserves_unicode_code_points() -> None:
         (b"[-0,-0.0,0.0]", b"[0,0,0]"),
         (b"[1,1.0,1e0,100e-2]", b"[1,1,1,1]"),
         (b"9007199254740992", b"9007199254740992"),
+        (b'{"measurement":0.1}', b'{"measurement":0.1}'),
     ],
 )
 def test_admitted_json_has_one_jcs_encoding(raw: bytes, expected: bytes) -> None:
@@ -44,7 +45,6 @@ def test_admitted_json_has_one_jcs_encoding(raw: bytes, expected: bytes) -> None
         (b'"\\ufdd0"', "unicode"),
         (b"9007199254740993", "numeric"),
         (b"9223372036854775807", "numeric"),
-        (b"0.1", "numeric"),
         (b"1e400", "numeric"),
         (b"NaN", "numeric"),
         (b"01", "syntax"),
@@ -56,12 +56,10 @@ def test_identity_admission_rejects_loss_or_ambiguity(raw: bytes, reason: str) -
     assert exc_info.value.reason == reason
 
 
-def test_binary64_domain_is_explicit_and_rejects_underflow() -> None:
-    assert parse_identity_json(
-        b'{"measurement":0.1}', binary64_paths=frozenset({"/measurement"})
-    ) == {"measurement": 0.1}
+def test_binary64_domain_rejects_underflow() -> None:
+    assert parse_identity_json(b'{"measurement":0.1}') == {"measurement": 0.1}
     with pytest.raises(CanonicalJsonError, match="underflows"):
-        parse_identity_json(b"1e-400", binary64_paths=frozenset({""}))
+        parse_identity_json(b"1e-400")
 
 
 def test_canonical_text_is_verified_after_strict_admission() -> None:

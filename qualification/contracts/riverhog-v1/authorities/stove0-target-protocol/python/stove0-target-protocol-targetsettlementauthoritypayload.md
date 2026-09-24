@@ -45,6 +45,7 @@ Exact externally visible contract owned by this contract element.
 ##### Definitions
 
 - [CollectionId](#s-2089952b87)
+- [NonnegativeDecimal](#s-6c21c7603b)
 - [OutputCollectionRef](#s-3255c55702)
 - [TargetOutputBindingSetIdentity](#s-897edc1cc2)
 
@@ -57,6 +58,11 @@ Exact externally visible contract owned by this contract element.
 |---|---|
 | <a id="s-9a67f78c05"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
 | <a id="s-3a65416cf9"></a>2 | not=(const="0") |
+
+##### <a id="s-6c21c7603b"></a>definition `NonnegativeDecimal`
+
+- <a id="s-80109cf01d"></a>`type`: `"string"`
+- <a id="s-f72c4a2d06"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ##### <a id="s-3255c55702"></a>definition `OutputCollectionRef`
 
@@ -85,7 +91,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-e5d1dcc11e"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-49207694f8"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-a402379666"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-a402379666"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-6c21c7603b); ge=0 |  |
 
 ## Governing policies
 
@@ -114,7 +120,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0572d2b6a6048d199807366ed628b97bc8eeff4fb43be1512e4efd550c19d06c -->
+<!-- exact-contract-value: 3205fea286c60febdd4da46e189cb4fe3e669841d8d0d58394f5c15f3456249b -->
 
 ```json
 {
@@ -134,6 +140,10 @@ The following JSON is the complete value owned at each machine-authority pointer
               }
             }
           ]
+        },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
         },
         "OutputCollectionRef": {
           "additionalProperties": false,
@@ -174,8 +184,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "total_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             }
           },
           "required": [

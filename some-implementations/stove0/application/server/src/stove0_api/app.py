@@ -103,6 +103,7 @@ from stove0_target_protocol import (
 )
 from time_formats import utc_timestamp_now
 
+from stove0_api.routing import ExactJsonRoute
 from stove0_api.schemas import (
     ErrorOut,
     EvaluationReviewRequest,
@@ -295,6 +296,7 @@ def create_app(
         lifespan=lifespan,
         openapi_url="/v1/openapi.json",
     )
+    app.router.route_class = ExactJsonRoute
 
     def authorize(token: str = Depends(_bearer)) -> None:
         if not secrets.compare_digest(token, api_token):

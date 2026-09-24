@@ -45,7 +45,7 @@ def test_runtime_configuration_connects_every_control_plane_setting(tmp_path: Pa
     admissions.write_text(
         '{"format":"stove0-admissions/v1","policies":[{'
         '"id":"camera","revision":1,"required_tags":["camera"],'
-        '"recipe_id":"fixture/v1","recipe_revision":1,'
+        '"recipe_id":"fixture/v1","recipe_revision":"1",'
         '"recipe_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",'
         '"effective_intent":{}}]}',
         encoding="utf-8",

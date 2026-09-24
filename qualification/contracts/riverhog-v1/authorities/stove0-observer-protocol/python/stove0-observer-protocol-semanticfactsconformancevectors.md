@@ -45,6 +45,7 @@ Exact externally visible contract owned by this contract element.
 - [CollectionId](#s-684234679b)
 - [CollectionRootIdentityRef](#s-f85308dba1)
 - [JsonValue](#s-b251f751c9)
+- [NonnegativeDecimal](#s-7cefc2fe1a)
 - [SemanticFactsConformanceVector](#s-ba3d4531de)
 - [WorkArtifactSubject](#s-2e2e04ae5d)
 
@@ -76,6 +77,11 @@ Exact externally visible contract owned by this contract element.
 
 - Accepts: any JSON value.
 
+##### <a id="s-7cefc2fe1a"></a>definition `NonnegativeDecimal`
+
+- <a id="s-6900a7dd12"></a>`type`: `"string"`
+- <a id="s-cab1ece110"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
 ##### <a id="s-ba3d4531de"></a>definition `SemanticFactsConformanceVector`
 
 - <a id="s-1167ec7cde"></a>`type`: `"object"`
@@ -102,7 +108,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-13d0ce06d5"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-13d0ce06d5"></a>`bytes` | yes | [NonnegativeDecimal](#s-7cefc2fe1a); ge=0 |  |
 | <a id="s-43f9d4dabc"></a>`collection` | yes | [CollectionRootIdentityRef](#s-f85308dba1) |  |
 | <a id="s-7606604c54"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
 | <a id="s-0e374f2478"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
@@ -145,7 +151,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e092ff70d43911c8eb8081d53038c57b18e32d9c07481de5aac9439ccf8624e5 -->
+<!-- exact-contract-value: 33552fbf2027fccdc4fe77bcc5f7ccc1cf51d0f3a878c99d3b4061f6f3a7ce89 -->
 
 ```json
 {
@@ -189,6 +195,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "object"
         },
         "JsonValue": {},
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        },
         "SemanticFactsConformanceVector": {
           "additionalProperties": false,
           "properties": {
@@ -231,8 +241,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             },
             "collection": {
               "$ref": "#/$defs/CollectionRootIdentityRef"

@@ -280,7 +280,7 @@ def _request(
                         content_identity=_sha("2"),
                     ),
                     path="camera/input.mov",
-                    bytes=len(api.data),
+                    bytes=str(len(api.data)),
                     sha256=api.sha256,
                 ),
             ),
@@ -629,7 +629,7 @@ def test_subject_batch_preference_is_not_a_request_limit() -> None:
             role="fixture.source/v1",
             collection=root,
             path=f"camera/input-{index}.mov",
-            bytes=len(api.data),
+            bytes=str(len(api.data)),
             sha256=api.sha256,
         )
         for index in range(3)

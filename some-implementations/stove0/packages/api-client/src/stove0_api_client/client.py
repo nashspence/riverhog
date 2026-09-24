@@ -261,12 +261,14 @@ class Stove0ApiClient:
         recipe_revision: int | None = None,
         effective_intent: Mapping[str, Any] | None = None,
     ) -> WorkView:
-        request = WorkCreateRequest(
-            recipe_id=recipe_id,
-            preview_sha256=preview_sha256,
-            recipe_revision=recipe_revision,
-            inputs=tuple(inputs),
-            effective_intent=dict(effective_intent or {}),
+        request = WorkCreateRequest.model_validate(
+            dict(
+                recipe_id=recipe_id,
+                preview_sha256=preview_sha256,
+                recipe_revision=None if recipe_revision is None else str(recipe_revision),
+                inputs=tuple(inputs),
+                effective_intent=dict(effective_intent or {}),
+            )
         )
         return WorkView.model_validate(
             self._json(
@@ -329,11 +331,13 @@ class Stove0ApiClient:
         recipe_revision: int | None = None,
         effective_intent: Mapping[str, Any] | None = None,
     ) -> WorkflowPreview:
-        request = OperatorWorkflowPreviewRequest(
-            recipe_id=recipe_id,
-            recipe_revision=recipe_revision,
-            inputs=tuple(inputs),
-            effective_intent=dict(effective_intent or {}),
+        request = OperatorWorkflowPreviewRequest.model_validate(
+            dict(
+                recipe_id=recipe_id,
+                recipe_revision=None if recipe_revision is None else str(recipe_revision),
+                inputs=tuple(inputs),
+                effective_intent=dict(effective_intent or {}),
+            )
         )
         return WorkflowPreview.model_validate(
             self._json(

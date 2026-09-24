@@ -25,7 +25,7 @@ A collection logical file assigned an ID and role within one Stove0 work.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-113dae831c"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-113dae831c"></a>`bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 | <a id="s-d7182c2dc6"></a>`collection` | yes | [CollectionRootIdentityRef](schemas-collectionrootidentityref.md) |  |
 | <a id="s-e8506c7dc4"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$"; title="Id" |  |
 | <a id="s-d97d9b17d6"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; title="Media Type" |  |
@@ -34,14 +34,6 @@ A collection logical file assigned an ID and role within one Stove0 work.
 | <a id="s-9f75d0e2ff"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
 
 ### Progression, limits, and lifecycle
-
-#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
-
-Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"stove0"}; maximum=null; reason="no-declared-semantic-maximum"
-
-| Applies to | Contract | Bounds or reason |
-|---|---|---|
-| [field bytes](#s-113dae831c) | `value · schema-value · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
@@ -56,13 +48,13 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 ### Referenced contract elements
 
 - [CollectionRootIdentityRef](schemas-collectionrootidentityref.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
 - <a id="pa-5d7ea236d3"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
-- <a id="pa-81fa8066b2"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 - <a id="pa-ffd4553c9b"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
@@ -88,7 +80,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ee7624b6df8d52f57de130230dc5dfb8d3d22f066699f795c7de0a5a86ea8432 -->
+<!-- exact-contract-value: 63b4f10bcf841dafdca74f8abcd719cec065928cd758bd20fd88b73407c64ec5 -->
 
 ```json
 {
@@ -96,9 +88,8 @@ The following JSON is the complete value owned at each machine-authority pointer
   "description": "A collection logical file assigned an ID and role within one Stove0 work.",
   "properties": {
     "bytes": {
-      "minimum": 0,
-      "title": "Bytes",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 0
     },
     "collection": {
       "$ref": "#/components/schemas/CollectionRootIdentityRef"

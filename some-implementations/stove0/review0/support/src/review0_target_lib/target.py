@@ -371,13 +371,15 @@ class ReviewTargetServiceBase(PersistentTargetService, ABC):
                             path = workspace.resolve(output.path)
                             _verify_file(path, output.bytes, output.sha256)
                             collection_path = output.path.removeprefix("output/")
-                            output_artifact = OutputArtifact(
-                                id=output.id,
-                                role=descriptor.output_role,
-                                path=collection_path,
-                                bytes=output.bytes,
-                                sha256=output.sha256,
-                                media_type=output.media_type,
+                            output_artifact = OutputArtifact.model_validate(
+                                dict(
+                                    id=output.id,
+                                    role=descriptor.output_role,
+                                    path=collection_path,
+                                    bytes=str(output.bytes),
+                                    sha256=output.sha256,
+                                    media_type=output.media_type,
+                                )
                             )
                             artifacts.append(output_artifact)
                             if publication is not None:
@@ -427,13 +429,15 @@ class ReviewTargetServiceBase(PersistentTargetService, ABC):
                     )
                 )
                 index_bytes, index_sha = file_identity(index_path)
-                index = OutputArtifact(
-                    id="review-index",
-                    role=REVIEW_INDEX_ROLE,
-                    path="review/summary.json",
-                    bytes=index_bytes,
-                    sha256=index_sha,
-                    media_type="application/json",
+                index = OutputArtifact.model_validate(
+                    dict(
+                        id="review-index",
+                        role=REVIEW_INDEX_ROLE,
+                        path="review/summary.json",
+                        bytes=str(index_bytes),
+                        sha256=index_sha,
+                        media_type="application/json",
+                    )
                 )
                 artifacts.append(index)
                 if publication is not None:

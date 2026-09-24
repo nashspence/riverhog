@@ -217,13 +217,15 @@ class OpusTargetService(PersistentTargetService):
                             ) from exc
                         os.replace(temporary, destination)
                         size, sha256 = file_identity(destination)
-                        output = OutputArtifact(
-                            id=_output_id("opus", item.derived_from),
-                            role=AUDIO_ARCHIVE_ROLE,
-                            path=relative,
-                            bytes=size,
-                            sha256=sha256,
-                            media_type="audio/ogg",
+                        output = OutputArtifact.model_validate(
+                            dict(
+                                id=_output_id("opus", item.derived_from),
+                                role=AUDIO_ARCHIVE_ROLE,
+                                path=relative,
+                                bytes=str(size),
+                                sha256=sha256,
+                                media_type="audio/ogg",
+                            )
                         )
                         outputs.append(output)
                         publication.append(
@@ -237,13 +239,15 @@ class OpusTargetService(PersistentTargetService):
                             render_projection_xmp(item, tags=intent.metadata_projection.tags)
                         )
                         xmp_size, xmp_sha256 = file_identity(xmp)
-                        xmp_output = OutputArtifact(
-                            id=_output_id("metadata-xmp", item.derived_from),
-                            role=METADATA_XMP_ROLE,
-                            path=item.xmp_path,
-                            bytes=xmp_size,
-                            sha256=xmp_sha256,
-                            media_type="application/rdf+xml",
+                        xmp_output = OutputArtifact.model_validate(
+                            dict(
+                                id=_output_id("metadata-xmp", item.derived_from),
+                                role=METADATA_XMP_ROLE,
+                                path=item.xmp_path,
+                                bytes=str(xmp_size),
+                                sha256=xmp_sha256,
+                                media_type="application/rdf+xml",
+                            )
                         )
                         outputs.append(xmp_output)
                         publication.append(
@@ -265,13 +269,15 @@ class OpusTargetService(PersistentTargetService):
                         destination.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
                         shutil.copyfile(source, destination)
                         retained_size, retained_sha256 = file_identity(destination)
-                        retained_output = OutputArtifact(
-                            id=_output_id("source-xmp", (retained.input_artifact_id,)),
-                            role=SOURCE_ARTIFACT_ROLE,
-                            path=retained.output_path,
-                            bytes=retained_size,
-                            sha256=retained_sha256,
-                            media_type="application/rdf+xml",
+                        retained_output = OutputArtifact.model_validate(
+                            dict(
+                                id=_output_id("source-xmp", (retained.input_artifact_id,)),
+                                role=SOURCE_ARTIFACT_ROLE,
+                                path=retained.output_path,
+                                bytes=str(retained_size),
+                                sha256=retained_sha256,
+                                media_type="application/rdf+xml",
+                            )
                         )
                         outputs.append(retained_output)
                         publication.append(

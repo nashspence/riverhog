@@ -56,6 +56,7 @@ Exact externally visible contract owned by this contract element.
 - [ContentObservationResult](#s-a1cd105285)
 - [JsonSchemaValidationProfile](#s-10bf8e2657)
 - [JsonValue](#s-d95af0d2da)
+- [NonnegativeDecimal](#s-cda89e92e1)
 - [ObserverImplementation](#s-78ed3d8bbb)
 - [TargetInputAuthority](#s-60a5d6ef7e)
 - [TargetInputRoleCount](#s-769600fdb9)
@@ -73,7 +74,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-716544fe32"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-3aab4adfd3"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-44ef421401"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-44ef421401"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-cda89e92e1); ge=0 |  |
 
 ##### <a id="s-e027a9025e"></a>definition `CollectionId`
 
@@ -207,6 +208,11 @@ Exact externally visible contract owned by this contract element.
 
 - Accepts: any JSON value.
 
+##### <a id="s-cda89e92e1"></a>definition `NonnegativeDecimal`
+
+- <a id="s-3d0c12acd6"></a>`type`: `"string"`
+- <a id="s-fd3bae040e"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
 ##### <a id="s-78ed3d8bbb"></a>definition `ObserverImplementation`
 
 - <a id="s-01fa96f66a"></a>`type`: `"object"`
@@ -259,7 +265,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-dc2b0baeac"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-dc2b0baeac"></a>`bytes` | yes | [NonnegativeDecimal](#s-cda89e92e1); ge=0 |  |
 | <a id="s-f48fc093c3"></a>`collection` | yes | [CollectionRootIdentityRef](#s-6a2f8c81bb) |  |
 | <a id="s-1965c919a6"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
 | <a id="s-e31df909bc"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
@@ -300,7 +306,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: faca9daec4314b2ccb6d0424724f8c700831aaa1d10ff5d756b2de2a6b228e01 -->
+<!-- exact-contract-value: 487106098d3b486631cdc9904c293d60cf97d1138fa71311b05d1b3e2ba3c6fa -->
 
 ```json
 {
@@ -320,8 +326,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "total_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             }
           },
           "required": [
@@ -657,6 +663,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "object"
         },
         "JsonValue": {},
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        },
         "ObserverImplementation": {
           "additionalProperties": false,
           "properties": {
@@ -734,8 +744,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             },
             "collection": {
               "$ref": "#/$defs/CollectionRootIdentityRef"

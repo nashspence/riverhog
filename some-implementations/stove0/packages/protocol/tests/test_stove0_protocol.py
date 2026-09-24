@@ -214,7 +214,7 @@ def _subject() -> WorkArtifactSubject:
         role="camera.source/v1",
         collection=_root(1),
         path="camera/source.mov",
-        bytes=123,
+        bytes=str(123),
         sha256=_sha("d"),
         media_type="video/quicktime",
     )
@@ -481,7 +481,7 @@ def test_workflow_preview_and_evaluation_contracts_are_deterministic() -> None:
                 role="video.source/v1",
                 collection=work.inputs[0],
                 path="source.mp4",
-                bytes=12,
+                bytes=str(12),
                 sha256=_sha("d"),
             ),
         )

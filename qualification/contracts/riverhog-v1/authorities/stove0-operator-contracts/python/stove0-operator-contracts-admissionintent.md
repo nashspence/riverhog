@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-485b2e0a7c"></a>`kind`: `"class"`
-- <a id="s-d5e1ed28d6"></a>`signature`: `"\"(*, format: Literal['stove0-admission-intent/v1'] = 'stove0-admission-intent/v1', admission_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], policy_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], policy_revision: Annotated[int, Ge(ge=1)], policy_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], required_tags: tuple[CollectionTag, ...], collection: riverhog_protocol.catalog_sync.CatalogSyncDescriptor, recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[int, Ge(ge=1)], recipe_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], effective_intent: dict[str, JsonValue]) -> None\""`
+- <a id="s-d5e1ed28d6"></a>`signature`: `"\"(*, format: Literal['stove0-admission-intent/v1'] = 'stove0-admission-intent/v1', admission_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], policy_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], policy_revision: Annotated[int, Ge(ge=1)], policy_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], required_tags: tuple[CollectionTag, ...], collection: riverhog_protocol.catalog_sync.CatalogSyncDescriptor, recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[NonnegativeDecimal, Ge(ge=1)], recipe_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], effective_intent: dict[str, JsonValue]) -> None\""`
 
 #### Validated model schema
 
@@ -44,7 +44,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-e6bd64bb79"></a>`policy_revision` | yes | type="integer"; minimum=1 |  |
 | <a id="s-b4296f7571"></a>`policy_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-e2909a4b58"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-4d0773f3f1"></a>`recipe_revision` | yes | type="integer"; minimum=1 |  |
+| <a id="s-4d0773f3f1"></a>`recipe_revision` | yes | [NonnegativeDecimal](#s-f6f9f65876); ge=1 |  |
 | <a id="s-c1303526bb"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-10f74caced"></a>`required_tags` | yes | type="array"; items=([CollectionTag](#s-949d5d67c3)) |  |
 
@@ -55,6 +55,7 @@ Exact externally visible contract owned by this contract element.
 - [CollectionId](#s-581e1f826a)
 - [CollectionTag](#s-949d5d67c3)
 - [JsonValue](#s-87dae79148)
+- [NonnegativeDecimal](#s-f6f9f65876)
 
 ##### <a id="s-becf941a62"></a>definition `CatalogSyncDescriptor`
 
@@ -108,6 +109,11 @@ Exact externally visible contract owned by this contract element.
 
 - Accepts: any JSON value.
 
+##### <a id="s-f6f9f65876"></a>definition `NonnegativeDecimal`
+
+- <a id="s-1cc8e860bf"></a>`type`: `"string"`
+- <a id="s-6d33bdded3"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
 ## Maintained corroboration
 
 ### Related interface records
@@ -142,7 +148,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 40fd89aa27a487c7c3fe25a4df82e0fa92444f99aca7ea435d4d1eb2be86686d -->
+<!-- exact-contract-value: a03a8943070350ca2ebcc863c85561c967828a96013866cd3ea8f434b45a7953 -->
 
 ```json
 {
@@ -255,7 +261,11 @@ The following JSON is the complete value owned at each machine-authority pointer
           },
           "x-unicode-normalization": "NFC"
         },
-        "JsonValue": {}
+        "JsonValue": {},
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        }
       },
       "additionalProperties": false,
       "properties": {
@@ -296,8 +306,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "recipe_revision": {
-          "minimum": 1,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 1
         },
         "recipe_sha256": {
           "pattern": "^[0-9a-f]{64}$",
@@ -324,7 +334,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, format: Literal['stove0-admission-intent/v1'] = 'stove0-admission-intent/v1', admission_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], policy_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], policy_revision: Annotated[int, Ge(ge=1)], policy_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], required_tags: tuple[CollectionTag, ...], collection: riverhog_protocol.catalog_sync.CatalogSyncDescriptor, recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[int, Ge(ge=1)], recipe_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], effective_intent: dict[str, JsonValue]) -> None\""
+    "signature": "\"(*, format: Literal['stove0-admission-intent/v1'] = 'stove0-admission-intent/v1', admission_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], policy_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], policy_revision: Annotated[int, Ge(ge=1)], policy_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], required_tags: tuple[CollectionTag, ...], collection: riverhog_protocol.catalog_sync.CatalogSyncDescriptor, recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[NonnegativeDecimal, Ge(ge=1)], recipe_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], effective_intent: dict[str, JsonValue]) -> None\""
   },
   "distribution": "stove0-operator-contracts",
   "module": "stove0_operator_contracts",

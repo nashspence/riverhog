@@ -22,6 +22,7 @@ from riverhog_protocol.collection_workflows import (
 from riverhog_protocol.collection_workflows import (
     canonical_json_sha256 as riverhog_canonical_json_sha256,
 )
+from riverhog_protocol.exact_scalar import NonnegativeDecimal
 from riverhog_protocol.paths import CollectionId
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 from stove0_protocol import (
@@ -261,7 +262,7 @@ class InputArtifact(TargetProtocolModel):
     role: SemanticId
     collection: CollectionRootIdentityRef
     path: str = Field(min_length=1, max_length=4096)
-    bytes: int = Field(ge=0)
+    bytes: NonnegativeDecimal = Field(ge=0)
     sha256: Sha256
     media_type: str | None = Field(default=None, min_length=1, max_length=255)
 
@@ -349,7 +350,7 @@ class OutputArtifact(TargetProtocolModel):
     id: str = Field(pattern=ARTIFACT_ID_PATTERN)
     role: SemanticId
     path: str = Field(min_length=1, max_length=4096)
-    bytes: int = Field(ge=0)
+    bytes: NonnegativeDecimal = Field(ge=0)
     sha256: Sha256
     media_type: str | None = Field(default=None, min_length=1, max_length=255)
 
@@ -380,7 +381,7 @@ class OutputArtifactSetIdentity(TargetProtocolModel):
     """Small identity for target outputs already registered with Riverhog."""
 
     artifact_count: int = Field(ge=1)
-    total_bytes: int = Field(ge=0)
+    total_bytes: NonnegativeDecimal = Field(ge=0)
     roles: tuple[OutputArtifactRoleCount, ...] = Field(min_length=1)
     sha256: Sha256
 
@@ -415,14 +416,16 @@ class OutputArtifactSetIdentity(TargetProtocolModel):
             total_bytes += artifact.bytes
         if artifact_count == 0:
             raise ValueError("target output artifacts must be nonempty")
-        return cls(
-            artifact_count=artifact_count,
-            total_bytes=total_bytes,
-            roles=tuple(
-                OutputArtifactRoleCount(role=role, count=count)
-                for role, count in sorted(counts.items())
-            ),
-            sha256=digest.hexdigest(),
+        return cls.model_validate(
+            dict(
+                artifact_count=artifact_count,
+                total_bytes=str(total_bytes),
+                roles=tuple(
+                    OutputArtifactRoleCount(role=role, count=count)
+                    for role, count in sorted(counts.items())
+                ),
+                sha256=digest.hexdigest(),
+            )
         )
 
 
@@ -794,14 +797,14 @@ class TargetOutputBinding(TargetProtocolModel):
     role: SemanticId
     collection: OutputCollectionRef
     path: str = Field(min_length=1, max_length=4096)
-    bytes: int = Field(ge=0)
+    bytes: NonnegativeDecimal = Field(ge=0)
     sha256: Sha256
     media_type: str | None = Field(default=None, min_length=1, max_length=255)
 
 
 class TargetOutputBindingSetIdentity(TargetProtocolModel):
     artifact_count: int = Field(ge=1)
-    total_bytes: int = Field(ge=0)
+    total_bytes: NonnegativeDecimal = Field(ge=0)
     sha256: Sha256
 
 

@@ -4,7 +4,7 @@
 
 Hardware-neutral target protocol, runtime, and conformance support for Stove0.
 
-Contract elements: **168** · Extent decisions: **166**
+Contract elements: **168** · Extent decisions: **165**
 
 ## Interfaces
 

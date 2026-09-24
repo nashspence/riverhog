@@ -224,7 +224,7 @@ def _input() -> InputArtifact:
             content_identity=_sha("2"),
         ),
         path="source/input.bin",
-        bytes=12,
+        bytes=str(12),
         sha256=_sha("3"),
     )
 
@@ -491,7 +491,7 @@ def _success_status(
         id="output",
         role="fixture.output/v1",
         path="output/result.bin",
-        bytes=12,
+        bytes=str(12),
         sha256=_sha("5"),
     )
     declaration = request.declaration
@@ -748,7 +748,7 @@ def test_incremental_publication_releases_local_output_only_after_exact_custody(
         id="output",
         role="fixture.output/v1",
         path="output/result.bin",
-        bytes=len(content),
+        bytes=str(len(content)),
         sha256=hashlib.sha256(content).hexdigest(),
     )
 

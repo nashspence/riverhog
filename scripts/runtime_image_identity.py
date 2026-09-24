@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import subprocess
@@ -63,21 +64,36 @@ def _inspect(reference: str, kind: str) -> dict[str, Any]:
     return document
 
 
-def _manifest(repository: str, digest: str) -> dict[str, Any]:
-    manifest = _inspect(f"{repository}@{digest}", "Manifest")
-    if _digest(manifest.get("digest"), "inspected manifest digest") != digest:
-        raise ImageIdentityError(f"pinned manifest differs from {repository}@{digest}")
+def _manifest(repository: str, digest: str, descriptor: dict[str, Any]) -> dict[str, Any]:
+    reference = f"{repository}@{digest}"
+    try:
+        raw = subprocess.run(
+            ["docker", "buildx", "imagetools", "inspect", "--raw", reference],
+            capture_output=True,
+            check=True,
+        ).stdout
+        manifest = json.loads(raw)
+    except (subprocess.CalledProcessError, OSError, json.JSONDecodeError) as error:
+        raise ImageIdentityError(f"could not inspect manifest for {reference}") from error
+    if hashlib.sha256(raw).hexdigest() != digest.removeprefix("sha256:"):
+        raise ImageIdentityError(f"pinned manifest differs from {reference}")
+    if not isinstance(manifest, dict):
+        raise ImageIdentityError(f"registry returned no manifest for {reference}")
+    if descriptor.get("mediaType") != manifest.get("mediaType"):
+        raise ImageIdentityError(f"manifest media type differs from descriptor for {reference}")
+    if "size" in descriptor and descriptor["size"] != len(raw):
+        raise ImageIdentityError(f"manifest size differs from descriptor for {reference}")
     if manifest.get("schemaVersion") != 2:
-        raise ImageIdentityError(f"unsupported image manifest schema for {repository}@{digest}")
+        raise ImageIdentityError(f"unsupported image manifest schema for {reference}")
     return manifest
 
 
 def resolve_image(repository: str, tag: str) -> dict[str, str]:
     if not repository or "@" in repository or TAG.fullmatch(tag) is None:
         raise ImageIdentityError("a repository and valid registry tag are required")
-    top = _inspect(f"{repository}:{tag}", "Manifest")
-    top_digest = _digest(top.get("digest"), "tag digest")
-    top = _manifest(repository, top_digest)
+    descriptor = _inspect(f"{repository}:{tag}", "Manifest")
+    top_digest = _digest(descriptor.get("digest"), "tag digest")
+    top = _manifest(repository, top_digest, descriptor)
     media_type = top.get("mediaType")
     image_index_digest: str | None = None
     if media_type in INDEX_MEDIA_TYPES:
@@ -105,7 +121,7 @@ def resolve_image(repository: str, tag: str) -> dict[str, str]:
                 "image index must contain exactly one runnable linux/amd64 manifest"
             )
         manifest_digest = _digest(candidates[0].get("digest"), "platform manifest digest")
-        manifest = _manifest(repository, manifest_digest)
+        manifest = _manifest(repository, manifest_digest, candidates[0])
     elif media_type in MANIFEST_MEDIA_TYPES:
         manifest_digest = top_digest
         manifest = top

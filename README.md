@@ -33,8 +33,6 @@ document at `/openapi.json`.
 - [V1 contract atlas](qualification/contracts/riverhog-v1/index.md) provides the generated,
   human-routable view of the exact checked external contract.
 - [Licensing](LICENSE.md) defines the repository's release terms.
-- [Runtime image identity resolver](scripts/runtime_image_identity.py) obtains published image
-  manifest pins and ImageIDs for deployment from the release inventory.
 
 Release-level reference documentation belongs to tagged releases. The documentation on
 `main` is intentionally limited to current context that cannot be recovered quickly from

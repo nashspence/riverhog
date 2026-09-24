@@ -44,6 +44,7 @@ Exact externally visible contract owned by this contract element.
 - [ContentObservationResult](#s-02e76bc583)
 - [JsonSchemaValidationProfile](#s-f58ad8865b)
 - [JsonValue](#s-b0637b7a98)
+- [NonnegativeDecimal](#s-994534cf6d)
 - [ObserverImplementation](#s-b3d0b4be58)
 - [TargetInputAuthority](#s-0bf40c6b84)
 - [TargetInputRoleCount](#s-a0d64f4573)
@@ -63,7 +64,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-0ae7101efd"></a>`artifact_count` | yes | type="integer"; minimum=1; title="Artifact Count" |  |
 | <a id="s-d29b4f03dd"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Selection Sha256" |  |
-| <a id="s-406e23a91d"></a>`total_bytes` | yes | type="integer"; minimum=0; title="Total Bytes" |  |
+| <a id="s-406e23a91d"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-994534cf6d); ge=0 |  |
 
 ### <a id="s-a5154ea9fe"></a>definition `CollectionId`
 
@@ -206,6 +207,11 @@ Exact externally visible contract owned by this contract element.
 
 - Accepts: any JSON value.
 
+### <a id="s-994534cf6d"></a>definition `NonnegativeDecimal`
+
+- <a id="s-91b107e6ad"></a>`type`: `"string"`
+- <a id="s-9976741cd4"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
 ### <a id="s-b3d0b4be58"></a>definition `ObserverImplementation`
 
 - <a id="s-0cd669866f"></a>`type`: `"object"`
@@ -264,7 +270,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-b73be5916b"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-b73be5916b"></a>`bytes` | yes | [NonnegativeDecimal](#s-994534cf6d); ge=0 |  |
 | <a id="s-e65e3e8491"></a>`collection` | yes | [CollectionRootIdentityRef](#s-1385076d93) |  |
 | <a id="s-d0536c6ca2"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$"; title="Id" |  |
 | <a id="s-1262cb66a3"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null; title="Media Type" |  |
@@ -329,7 +335,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6f351c2e7bfed42411fbc4960e3a2d5f71388fd102b7838680fdf9dba09bde0d -->
+<!-- exact-contract-value: 06874749ab3ac7781b8b39ae0ba3ea3e63e85d8609ea06043631fd622834c1d2 -->
 
 ```json
 {
@@ -349,9 +355,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "total_bytes": {
-          "minimum": 0,
-          "title": "Total Bytes",
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 0
         }
       },
       "required": [
@@ -731,6 +736,10 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "object"
     },
     "JsonValue": {},
+    "NonnegativeDecimal": {
+      "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+      "type": "string"
+    },
     "ObserverImplementation": {
       "additionalProperties": false,
       "properties": {
@@ -821,9 +830,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "description": "A collection logical file assigned an ID and role within one Stove0 work.",
       "properties": {
         "bytes": {
-          "minimum": 0,
-          "title": "Bytes",
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 0
         },
         "collection": {
           "$ref": "#/$defs/CollectionRootIdentityRef"

@@ -152,7 +152,7 @@ def _policy(*, policy_id: str = "camera-archive") -> AdmissionPolicy:
         revision=1,
         required_tags=("camera", "workflow/archive"),
         recipe_id="stove0.media.archive/v1",
-        recipe_revision=1,
+        recipe_revision=str(1),
         recipe_sha256="a" * 64,
         effective_intent={"quality": "archive"},
     )
@@ -194,7 +194,7 @@ def _ready_preview(work: WorkIdentity) -> WorkflowPreview:
                 role="fixture.source/v1",
                 collection=work.inputs[0],
                 path="source/input.bin",
-                bytes=12,
+                bytes=str(12),
                 sha256="b" * 64,
                 media_type="application/octet-stream",
             ),
@@ -628,7 +628,7 @@ def test_committed_admission_survives_later_policy_edit() -> None:
         revision=2,
         required_tags=("camera",),
         recipe_id=original.recipe_id,
-        recipe_revision=original.recipe_revision,
+        recipe_revision=str(original.recipe_revision),
         recipe_sha256=original.recipe_sha256,
         effective_intent={"quality": "different-future-work"},
     )

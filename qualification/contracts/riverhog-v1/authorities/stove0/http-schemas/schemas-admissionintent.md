@@ -32,7 +32,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-f4f9002e65"></a>`policy_revision` | yes | type="integer"; minimum=1; title="Policy Revision" |  |
 | <a id="s-75bb897925"></a>`policy_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Policy Sha256" |  |
 | <a id="s-4ff09b93ec"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1; title="Recipe Id" |  |
-| <a id="s-b4e40a831d"></a>`recipe_revision` | yes | type="integer"; minimum=1; title="Recipe Revision" |  |
+| <a id="s-b4e40a831d"></a>`recipe_revision` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-17ec6189a3"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Recipe Sha256" |  |
 | <a id="s-81dfbfb6bf"></a>`required_tags` | yes | type="array"; items=([CollectionTag](schemas-collectiontag.md)); title="Required Tags" |  |
 
@@ -64,6 +64,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 - [CatalogSyncDescriptor](schemas-catalogsyncdescriptor.md)
 - [CollectionTag](schemas-collectiontag.md)
 - [JsonValue](schemas-jsonvalue.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -96,7 +97,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0944c132ed593050435d503c92c7a9b57d07fea52ef8280ed7641f12f0c1f12f -->
+<!-- exact-contract-value: 33d1b1c45c3f3fb6815907a5f4776bf89b4497d9a706e5450a4268306e0b15ea -->
 
 ```json
 {
@@ -146,9 +147,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "recipe_revision": {
-      "minimum": 1,
-      "title": "Recipe Revision",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "recipe_sha256": {
       "pattern": "^[0-9a-f]{64}$",

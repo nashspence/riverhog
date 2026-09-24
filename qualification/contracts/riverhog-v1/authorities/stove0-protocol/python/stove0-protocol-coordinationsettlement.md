@@ -73,7 +73,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-5f1faf43cc"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-203294cb6f"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-2b1b4c4f34"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-2b1b4c4f34"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-3348eae9e9); ge=0 |  |
 
 ##### <a id="s-c98157dc98"></a>definition `BranchWorkBinding`
 
@@ -266,7 +266,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a53a83f271e0545fe0809afd42b99bd590f33436245773909fdb371dda366b69 -->
+<!-- exact-contract-value: c2171bfdd4e353c164c25d567022256f1515ec7e2ca5f3c2d008ee5acb3524eb -->
 
 ```json
 {
@@ -286,8 +286,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "total_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             }
           },
           "required": [

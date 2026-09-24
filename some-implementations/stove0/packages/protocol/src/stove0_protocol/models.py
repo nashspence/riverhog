@@ -225,7 +225,7 @@ class WorkArtifactSubject(Stove0ProtocolModel):
     role: SemanticId
     collection: CollectionRootIdentityRef
     path: str = Field(min_length=1, max_length=4096)
-    bytes: int = Field(ge=0)
+    bytes: NonnegativeDecimal = Field(ge=0)
     sha256: Sha256
     media_type: str | None = Field(default=None, min_length=1, max_length=255)
 

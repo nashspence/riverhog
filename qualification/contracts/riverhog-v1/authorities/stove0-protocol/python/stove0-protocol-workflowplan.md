@@ -323,7 +323,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-042b60087c"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-042b60087c"></a>`bytes` | yes | [NonnegativeDecimal](#s-a7da740e27); ge=0 |  |
 | <a id="s-851868ff45"></a>`collection` | yes | [CollectionRootIdentityRef](#s-359a6c443e) |  |
 | <a id="s-73fd97f98b"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
 | <a id="s-1f7392b879"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
@@ -385,7 +385,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: bae5b6e1910919e3ed97d6edb5d448836370be02d32a3f32eab571e4b54d2785 -->
+<!-- exact-contract-value: 8f162e024f78e6775697f5bfd7557060cc77809b5683a129232ef86d92a15307 -->
 
 ```json
 {
@@ -931,8 +931,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             },
             "collection": {
               "$ref": "#/$defs/CollectionRootIdentityRef"

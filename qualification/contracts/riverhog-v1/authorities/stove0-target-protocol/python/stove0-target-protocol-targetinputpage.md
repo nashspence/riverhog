@@ -48,6 +48,7 @@ Exact externally visible contract owned by this contract element.
 - [CollectionId](#s-aacc57599e)
 - [CollectionRootIdentityRef](#s-d74f437ef2)
 - [InputArtifact](#s-b712976709)
+- [NonnegativeDecimal](#s-f9e7578950)
 - [TargetInputAuthority](#s-19d884a805)
 - [TargetInputRoleCount](#s-35383094e0)
 
@@ -63,7 +64,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-52c65ce55d"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-16ebf6fe5e"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-67563dd80e"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-67563dd80e"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-f9e7578950); ge=0 |  |
 
 ##### <a id="s-aacc57599e"></a>definition `CollectionId`
 
@@ -99,13 +100,18 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-0149b5682c"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-0149b5682c"></a>`bytes` | yes | [NonnegativeDecimal](#s-f9e7578950); ge=0 |  |
 | <a id="s-ffdfc4b684"></a>`collection` | yes | [CollectionRootIdentityRef](#s-d74f437ef2) |  |
 | <a id="s-09470f6876"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
 | <a id="s-2578e1740a"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
 | <a id="s-4c8843f4ff"></a>`path` | yes | type="string"; maxLength=4096; minLength=1 |  |
 | <a id="s-fe12d9f0f2"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$" |  |
 | <a id="s-18cc219485"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
+
+##### <a id="s-f9e7578950"></a>definition `NonnegativeDecimal`
+
+- <a id="s-db2bf2b6ca"></a>`type`: `"string"`
+- <a id="s-8b3f1792a0"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ##### <a id="s-19d884a805"></a>definition `TargetInputAuthority`
 
@@ -166,7 +172,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 15889bcaacd13e1272ed401a93bf1e4e7565675e46dd07cd93aea7a4ef26c048 -->
+<!-- exact-contract-value: b394013ef26445f2598c107359c40d7b9cef9132e8da08ef8d1a3b407649cd9d -->
 
 ```json
 {
@@ -186,8 +192,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "total_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             }
           },
           "required": [
@@ -236,8 +242,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             },
             "collection": {
               "$ref": "#/$defs/CollectionRootIdentityRef"
@@ -282,6 +288,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sha256"
           ],
           "type": "object"
+        },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
         },
         "TargetInputAuthority": {
           "additionalProperties": false,

@@ -28,7 +28,7 @@ Small identity for target outputs already registered with Riverhog.
 | <a id="s-5990b9f86c"></a>`artifact_count` | yes | type="integer"; minimum=1; title="Artifact Count" |  |
 | <a id="s-e4d192a5f2"></a>`roles` | yes | type="array"; items=([OutputArtifactRoleCount](schemas-outputartifactrolecount.md)); minItems=1; title="Roles" |  |
 | <a id="s-a86f446c9b"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
-| <a id="s-d7f31811ef"></a>`total_bytes` | yes | type="integer"; minimum=0; title="Total Bytes" |  |
+| <a id="s-d7f31811ef"></a>`total_bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -52,6 +52,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract elements
 
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 - [OutputArtifactRoleCount](schemas-outputartifactrolecount.md)
 
 ## Governing policies
@@ -85,7 +86,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5b8358c7d637b9865f6fa839ce95492058b0b03b126cf898f334be2dd855020c -->
+<!-- exact-contract-value: f9171604bd8dfbc14e6a395cb440b0394bc5a1b7b9cb290236656460642aa186 -->
 
 ```json
 {
@@ -111,9 +112,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "total_bytes": {
-      "minimum": 0,
-      "title": "Total Bytes",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 0
     }
   },
   "required": [

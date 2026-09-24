@@ -30,7 +30,7 @@ One bounded, exact all-of classification admission rule.
 | <a id="s-7ca1adfe1d"></a>`format` | no | type="string"; const="stove0-admission-policy/v1"; default="stove0-admission-policy/v1"; title="Format" |  |
 | <a id="s-f6d577c8df"></a>`id` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._-]{0,158}[a-z0-9])?$"; title="Id" |  |
 | <a id="s-fff97fd387"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1; title="Recipe Id" |  |
-| <a id="s-f81203e699"></a>`recipe_revision` | yes | type="integer"; minimum=1; title="Recipe Revision" |  |
+| <a id="s-f81203e699"></a>`recipe_revision` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-59bbce29c6"></a>`recipe_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Recipe Sha256" |  |
 | <a id="s-a53f69ac6c"></a>`required_tags` | yes | type="array"; items=([CollectionTag](schemas-collectiontag.md)); maxItems=100; minItems=1; title="Required Tags"; x-riverhog-extent={"policy":"contract_max","reason":"bounded-exact-classification-admission-predicate"} |  |
 | <a id="s-558e3f83fb"></a>`revision` | yes | type="integer"; minimum=1; title="Revision" |  |
@@ -59,6 +59,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 - [CollectionTag](schemas-collectiontag.md)
 - [JsonValue](schemas-jsonvalue.md)
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -91,7 +92,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b922dd931b907481cef3ecf609f8bc3f55ee33cb8bf1736c53e552822b5a43b5 -->
+<!-- exact-contract-value: ab99feb531b02d6a6f2ded94bee00fb57a99cadc7c339a609aeffec479d6a98d -->
 
 ```json
 {
@@ -129,9 +130,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "recipe_revision": {
-      "minimum": 1,
-      "title": "Recipe Revision",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 1
     },
     "recipe_sha256": {
       "pattern": "^[0-9a-f]{64}$",

@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-befb126761"></a>`kind`: `"class"`
-- <a id="s-9c623b29ed"></a>`signature`: `"\"(*, recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[int \| None, Ge(ge=1)] = None, inputs: Annotated[tuple[stove0_protocol.models.CollectionRootIdentityRef, ...], MinLen(min_length=1)], effective_intent: dict[str, JsonValue] = <factory>, preview_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+- <a id="s-9c623b29ed"></a>`signature`: `"\"(*, recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[NonnegativeDecimal \| None, Ge(ge=1)] = None, inputs: Annotated[tuple[stove0_protocol.models.CollectionRootIdentityRef, ...], MinLen(min_length=1)], effective_intent: dict[str, JsonValue] = <factory>, preview_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
 
 #### Validated model schema
 
@@ -40,13 +40,14 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-29eb01bd0b"></a>`inputs` | yes | type="array"; items=([CollectionRootIdentityRef](#s-4b4b718d1a)); minItems=1 |  |
 | <a id="s-8e2c94cf36"></a>`preview_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-b201d2bf64"></a>`recipe_id` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-a53f2401a3"></a>`recipe_revision` | no | anyOf=[(type="integer"; minimum=1); (type="null")]; default=null |  |
+| <a id="s-a53f2401a3"></a>`recipe_revision` | no | anyOf=[([NonnegativeDecimal](#s-a1fbecba5e); ge=1); (type="null")]; default=null |  |
 
 ##### Definitions
 
 - [CollectionId](#s-3aeef0d217)
 - [CollectionRootIdentityRef](#s-4b4b718d1a)
 - [JsonValue](#s-a160bed7f2)
+- [NonnegativeDecimal](#s-a1fbecba5e)
 
 ##### <a id="s-3aeef0d217"></a>definition `CollectionId`
 
@@ -75,6 +76,11 @@ Exact externally visible contract owned by this contract element.
 ##### <a id="s-a160bed7f2"></a>definition `JsonValue`
 
 - Accepts: any JSON value.
+
+##### <a id="s-a1fbecba5e"></a>definition `NonnegativeDecimal`
+
+- <a id="s-420c574459"></a>`type`: `"string"`
+- <a id="s-1dd62b681f"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Maintained corroboration
 
@@ -109,7 +115,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8f24a2bc0b08974320e57f919e0cbada2380825088d3e53fd65207fce45ed62b -->
+<!-- exact-contract-value: 35fffcc353bc63203b8277ddaa41a6129e51f1edb8cdd6a771e2a4b42672904a -->
 
 ```json
 {
@@ -152,7 +158,11 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "type": "object"
         },
-        "JsonValue": {}
+        "JsonValue": {},
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        }
       },
       "additionalProperties": false,
       "properties": {
@@ -181,8 +191,8 @@ The following JSON is the complete value owned at each machine-authority pointer
         "recipe_revision": {
           "anyOf": [
             {
-              "minimum": 1,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 1
             },
             {
               "type": "null"
@@ -198,7 +208,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[int | None, Ge(ge=1)] = None, inputs: Annotated[tuple[stove0_protocol.models.CollectionRootIdentityRef, ...], MinLen(min_length=1)], effective_intent: dict[str, JsonValue] = <factory>, preview_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
+    "signature": "\"(*, recipe_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], recipe_revision: Annotated[NonnegativeDecimal | None, Ge(ge=1)] = None, inputs: Annotated[tuple[stove0_protocol.models.CollectionRootIdentityRef, ...], MinLen(min_length=1)], effective_intent: dict[str, JsonValue] = <factory>, preview_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-operator-contracts",
   "module": "stove0_operator_contracts",

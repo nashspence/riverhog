@@ -79,7 +79,7 @@ Secret-bearing target invocation; never store this document durably.
 |---|---:|---|---|
 | <a id="s-e8351d3651"></a>`artifact_count` | yes | type="integer"; minimum=1; title="Artifact Count" |  |
 | <a id="s-b2a96b6462"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Selection Sha256" |  |
-| <a id="s-69d91fe2bd"></a>`total_bytes` | yes | type="integer"; minimum=0; title="Total Bytes" |  |
+| <a id="s-69d91fe2bd"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-7c2dafd839); ge=0 |  |
 
 ### <a id="s-21ae556270"></a>definition `BranchWorkBinding`
 
@@ -537,7 +537,7 @@ Secret-bearing target invocation; never store this document durably.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4cf8c98834"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-4cf8c98834"></a>`bytes` | yes | [NonnegativeDecimal](#s-7c2dafd839); ge=0 |  |
 | <a id="s-e1610d46e4"></a>`collection` | yes | [CollectionRootIdentityRef](#s-43fbbd3c35) |  |
 | <a id="s-60c9ecd4ed"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$"; title="Id" |  |
 | <a id="s-51d3491e3d"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null; title="Media Type" |  |
@@ -637,7 +637,7 @@ Secret-bearing target invocation; never store this document durably.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 21b19a6c33b4c1a8a0c01d8dc6ba9e7192313589f6e83c0d02189679418d72d9 -->
+<!-- exact-contract-value: 9ee4d7d47439bbbe1865e1cf5f3accc194aaeed68ec060a2a70a8e2ce9bea2a8 -->
 
 ```json
 {
@@ -657,9 +657,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "total_bytes": {
-          "minimum": 0,
-          "title": "Total Bytes",
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 0
         }
       },
       "required": [
@@ -1722,9 +1721,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "description": "A collection logical file assigned an ID and role within one Stove0 work.",
       "properties": {
         "bytes": {
-          "minimum": 0,
-          "title": "Bytes",
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 0
         },
         "collection": {
           "$ref": "#/$defs/CollectionRootIdentityRef"

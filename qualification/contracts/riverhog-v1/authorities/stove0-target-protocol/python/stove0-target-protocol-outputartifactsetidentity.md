@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-abac619cb1"></a>`kind`: `"class"`
-- <a id="s-62cac3dd8e"></a>`signature`: `"\"(*, artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[int, Ge(ge=0)], roles: Annotated[tuple[stove0_target_protocol.protocol.OutputArtifactRoleCount, ...], MinLen(min_length=1)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+- <a id="s-62cac3dd8e"></a>`signature`: `"\"(*, artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[NonnegativeDecimal, Ge(ge=0)], roles: Annotated[tuple[stove0_target_protocol.protocol.OutputArtifactRoleCount, ...], MinLen(min_length=1)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
 
 #### Validated model schema
 
@@ -39,11 +39,17 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-7e7b5a02d8"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-a7e23628d4"></a>`roles` | yes | type="array"; items=([OutputArtifactRoleCount](#s-96c477b04f)); minItems=1 |  |
 | <a id="s-bc1d77585e"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-a0c27ad3b5"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-a0c27ad3b5"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-6bdcc3168f); ge=0 |  |
 
 ##### Definitions
 
+- [NonnegativeDecimal](#s-6bdcc3168f)
 - [OutputArtifactRoleCount](#s-96c477b04f)
+
+##### <a id="s-6bdcc3168f"></a>definition `NonnegativeDecimal`
+
+- <a id="s-be6ea65d77"></a>`type`: `"string"`
+- <a id="s-306524eb71"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ##### <a id="s-96c477b04f"></a>definition `OutputArtifactRoleCount`
 
@@ -93,7 +99,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 77d3a4a1f13442259afac19e5e46a0a226d9008c44830f0c18e745bd9ae8417f -->
+<!-- exact-contract-value: 51a12300401ffeb2715473e627565154109b86cc553d3e3d52b7c9b735457e44 -->
 
 ```json
 {
@@ -101,6 +107,10 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "class",
     "schema": {
       "$defs": {
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        },
         "OutputArtifactRoleCount": {
           "additionalProperties": false,
           "properties": {
@@ -138,8 +148,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "total_bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 0
         }
       },
       "required": [
@@ -150,7 +160,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[int, Ge(ge=0)], roles: Annotated[tuple[stove0_target_protocol.protocol.OutputArtifactRoleCount, ...], MinLen(min_length=1)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
+    "signature": "\"(*, artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[NonnegativeDecimal, Ge(ge=0)], roles: Annotated[tuple[stove0_target_protocol.protocol.OutputArtifactRoleCount, ...], MinLen(min_length=1)], sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-target-protocol",
   "module": "stove0_target_protocol",

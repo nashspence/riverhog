@@ -49,6 +49,7 @@ Exact externally visible contract owned by this contract element.
 ##### Definitions
 
 - [ArtifactDispositionSetIdentity](#s-c3ddafe1b4)
+- [NonnegativeDecimal](#s-94854bf67a)
 - [OutputArtifactRoleCount](#s-15e65d7f01)
 - [OutputArtifactSetIdentity](#s-215cbcc0e0)
 
@@ -65,6 +66,11 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-6f9fae2b2b"></a>`output_artifact_count` | yes | type="integer" |  |
 | <a id="s-46e47cac8b"></a>`output_edge_count` | yes | type="integer" |  |
 | <a id="s-2889cb2d85"></a>`sha256` | yes | type="string" |  |
+
+##### <a id="s-94854bf67a"></a>definition `NonnegativeDecimal`
+
+- <a id="s-8f71a670cf"></a>`type`: `"string"`
+- <a id="s-24d08dac17"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ##### <a id="s-15e65d7f01"></a>definition `OutputArtifactRoleCount`
 
@@ -92,7 +98,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-bfdc292426"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-066b6ed4df"></a>`roles` | yes | type="array"; items=([OutputArtifactRoleCount](#s-15e65d7f01)); minItems=1 |  |
 | <a id="s-08421f580c"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-650d7cfda7"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-650d7cfda7"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-94854bf67a); ge=0 |  |
 
 ## Governing policies
 
@@ -121,7 +127,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ea63661c181d20a125141ce9299a64cda6fc324f6f3f073bd8f172e9ffbac58e -->
+<!-- exact-contract-value: fc6ff16c8ab92c9f41230bc2fb556c8338330a0bdf2983a468b52d9c7793838e -->
 
 ```json
 {
@@ -151,6 +157,10 @@ The following JSON is the complete value owned at each machine-authority pointer
             "sha256"
           ],
           "type": "object"
+        },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
         },
         "OutputArtifactRoleCount": {
           "additionalProperties": false,
@@ -189,8 +199,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "total_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             }
           },
           "required": [

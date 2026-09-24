@@ -58,6 +58,7 @@ Exact externally visible contract owned by this contract element.
 - [ContentObservationInapplicable](#s-a5b7142241)
 - [JsonSchemaValidationProfile](#s-5caa072672)
 - [JsonValue](#s-e5c5eb7687)
+- [NonnegativeDecimal](#s-30d2317ead)
 - [ObserverImplementation](#s-906f8c9ba0)
 - [WorkArtifactSubject](#s-4181f89f12)
 
@@ -132,6 +133,11 @@ Exact externally visible contract owned by this contract element.
 
 - Accepts: any JSON value.
 
+##### <a id="s-30d2317ead"></a>definition `NonnegativeDecimal`
+
+- <a id="s-f9d1b33b42"></a>`type`: `"string"`
+- <a id="s-50cd8adf1b"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
 ##### <a id="s-906f8c9ba0"></a>definition `ObserverImplementation`
 
 - <a id="s-cca8b4f7a4"></a>`type`: `"object"`
@@ -158,7 +164,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-7d0b7dc715"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-7d0b7dc715"></a>`bytes` | yes | [NonnegativeDecimal](#s-30d2317ead); ge=0 |  |
 | <a id="s-98dd1e6292"></a>`collection` | yes | [CollectionRootIdentityRef](#s-c452939674) |  |
 | <a id="s-6d6655b2da"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
 | <a id="s-b8d0ce230f"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
@@ -200,7 +206,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 11d0493e617a3e5dd47866d5875e1c3fd743dae3a1647d51947b464fe440484b -->
+<!-- exact-contract-value: a8be59258cfedeba6e1d1ef85f7792fad5cb125ec8bcc7605a38fb2942f73f94 -->
 
 ```json
 {
@@ -321,6 +327,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "object"
         },
         "JsonValue": {},
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        },
         "ObserverImplementation": {
           "additionalProperties": false,
           "properties": {
@@ -360,8 +370,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             },
             "collection": {
               "$ref": "#/$defs/CollectionRootIdentityRef"

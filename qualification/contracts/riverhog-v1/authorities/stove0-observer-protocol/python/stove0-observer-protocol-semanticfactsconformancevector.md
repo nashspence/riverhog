@@ -47,6 +47,7 @@ Exact externally visible contract owned by this contract element.
 - [CollectionId](#s-4534c23b31)
 - [CollectionRootIdentityRef](#s-9887d7a9cd)
 - [JsonValue](#s-aa856b39f4)
+- [NonnegativeDecimal](#s-f93549ead1)
 - [WorkArtifactSubject](#s-c0de004cee)
 
 ##### <a id="s-4534c23b31"></a>definition `CollectionId`
@@ -77,6 +78,11 @@ Exact externally visible contract owned by this contract element.
 
 - Accepts: any JSON value.
 
+##### <a id="s-f93549ead1"></a>definition `NonnegativeDecimal`
+
+- <a id="s-55739dd849"></a>`type`: `"string"`
+- <a id="s-b247d37dd2"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
 ##### <a id="s-c0de004cee"></a>definition `WorkArtifactSubject`
 
 - <a id="s-4355af81a5"></a>`type`: `"object"`
@@ -87,7 +93,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-63a661a21d"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-63a661a21d"></a>`bytes` | yes | [NonnegativeDecimal](#s-f93549ead1); ge=0 |  |
 | <a id="s-7eeed8bc86"></a>`collection` | yes | [CollectionRootIdentityRef](#s-9887d7a9cd) |  |
 | <a id="s-825ada8de7"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
 | <a id="s-c2c1f351bd"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
@@ -128,7 +134,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 14b98cec3b7a8651e2eb25c72a289f801bb03a47eab7120f604ee3383ad69514 -->
+<!-- exact-contract-value: a1b08895515e62281e09e5cf18b68f1ff1ff95a038524109483f45ff39a2ca55 -->
 
 ```json
 {
@@ -172,12 +178,16 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "object"
         },
         "JsonValue": {},
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        },
         "WorkArtifactSubject": {
           "additionalProperties": false,
           "properties": {
             "bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             },
             "collection": {
               "$ref": "#/$defs/CollectionRootIdentityRef"

@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-643e70571f"></a>`kind`: `"class"`
-- <a id="s-a6220a5ca2"></a>`signature`: `"\"(*, format: Literal['stove0-artifact-selection/v1'] = 'stove0-artifact-selection/v1', artifacts: Annotated[tuple[stove0_protocol.models.WorkArtifactSubject, ...], MinLen(min_length=1)], artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[int, Ge(ge=0)], selection_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
+- <a id="s-a6220a5ca2"></a>`signature`: `"\"(*, format: Literal['stove0-artifact-selection/v1'] = 'stove0-artifact-selection/v1', artifacts: Annotated[tuple[stove0_protocol.models.WorkArtifactSubject, ...], MinLen(min_length=1)], artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[NonnegativeDecimal, Ge(ge=0)], selection_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""`
 
 #### Validated model schema
 
@@ -40,12 +40,13 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-06c68d2d91"></a>`artifacts` | yes | type="array"; items=([WorkArtifactSubject](#s-014a730b2c)); minItems=1 |  |
 | <a id="s-6578d1a7df"></a>`format` | no | type="string"; const="stove0-artifact-selection/v1"; default="stove0-artifact-selection/v1" |  |
 | <a id="s-19bc8d66c9"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-2c1f70cfeb"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-2c1f70cfeb"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-646e2bdc64); ge=0 |  |
 
 ##### Definitions
 
 - [CollectionId](#s-b798222c0f)
 - [CollectionRootIdentityRef](#s-527568a3eb)
+- [NonnegativeDecimal](#s-646e2bdc64)
 - [WorkArtifactSubject](#s-014a730b2c)
 
 ##### <a id="s-b798222c0f"></a>definition `CollectionId`
@@ -72,6 +73,11 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-952a4bd1ad"></a>`collection_id` | yes | [CollectionId](#s-b798222c0f) |  |
 | <a id="s-3e703ca2a6"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 
+##### <a id="s-646e2bdc64"></a>definition `NonnegativeDecimal`
+
+- <a id="s-4327751029"></a>`type`: `"string"`
+- <a id="s-3abae3b5cc"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
 ##### <a id="s-014a730b2c"></a>definition `WorkArtifactSubject`
 
 - <a id="s-2315942d31"></a>`type`: `"object"`
@@ -82,7 +88,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-f085ba6848"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-f085ba6848"></a>`bytes` | yes | [NonnegativeDecimal](#s-646e2bdc64); ge=0 |  |
 | <a id="s-833a397419"></a>`collection` | yes | [CollectionRootIdentityRef](#s-527568a3eb) |  |
 | <a id="s-7cda86f8f0"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
 | <a id="s-f7811cc0cc"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
@@ -128,7 +134,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 16fc1a46d1bc16c9ccaac38b67e1d922900bd69ed1a484d8c72eef90f3f0dd08 -->
+<!-- exact-contract-value: 7c3f025308ff3e30db4d8b7d4e68dcdae4f340b3d5b8f007d17e8611ec770d2e -->
 
 ```json
 {
@@ -171,12 +177,16 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "type": "object"
         },
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        },
         "WorkArtifactSubject": {
           "additionalProperties": false,
           "properties": {
             "bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             },
             "collection": {
               "$ref": "#/$defs/CollectionRootIdentityRef"
@@ -246,8 +256,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "total_bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 0
         }
       },
       "required": [
@@ -258,7 +268,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, format: Literal['stove0-artifact-selection/v1'] = 'stove0-artifact-selection/v1', artifacts: Annotated[tuple[stove0_protocol.models.WorkArtifactSubject, ...], MinLen(min_length=1)], artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[int, Ge(ge=0)], selection_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
+    "signature": "\"(*, format: Literal['stove0-artifact-selection/v1'] = 'stove0-artifact-selection/v1', artifacts: Annotated[tuple[stove0_protocol.models.WorkArtifactSubject, ...], MinLen(min_length=1)], artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[NonnegativeDecimal, Ge(ge=0)], selection_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)]) -> None\""
   },
   "distribution": "stove0-protocol",
   "module": "stove0_protocol",

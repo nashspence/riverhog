@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-c64b79336f"></a>`kind`: `"class"`
-- <a id="s-44d973b82a"></a>`signature`: `"\"(*, selection_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[int, Ge(ge=0)]) -> None\""`
+- <a id="s-44d973b82a"></a>`signature`: `"\"(*, selection_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[NonnegativeDecimal, Ge(ge=0)]) -> None\""`
 
 #### Validated model schema
 
@@ -38,7 +38,16 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-20a6419614"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-4521979d85"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-05cba6e4d0"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-05cba6e4d0"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-1e85dd8564); ge=0 |  |
+
+##### Definitions
+
+- [NonnegativeDecimal](#s-1e85dd8564)
+
+##### <a id="s-1e85dd8564"></a>definition `NonnegativeDecimal`
+
+- <a id="s-a6df2dee33"></a>`type`: `"string"`
+- <a id="s-6550e5b0a2"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ## Maintained corroboration
 
@@ -73,13 +82,19 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6e601d5078ba6434fefadd7e205ba1205cfc59d2cb76a95628615a88a2d04b72 -->
+<!-- exact-contract-value: 1c55344c4a295775b82755ed6d5bb79bb8e08d24b4da44d5f11e2fa913780652 -->
 
 ```json
 {
   "contract": {
     "kind": "class",
     "schema": {
+      "$defs": {
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        }
+      },
       "additionalProperties": false,
       "properties": {
         "artifact_count": {
@@ -91,8 +106,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "total_bytes": {
-          "minimum": 0,
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 0
         }
       },
       "required": [
@@ -102,7 +117,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, selection_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[int, Ge(ge=0)]) -> None\""
+    "signature": "\"(*, selection_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{64}$', ascii_only=None)], artifact_count: Annotated[int, Ge(ge=1)], total_bytes: Annotated[NonnegativeDecimal, Ge(ge=0)]) -> None\""
   },
   "distribution": "stove0-protocol",
   "module": "stove0_protocol",

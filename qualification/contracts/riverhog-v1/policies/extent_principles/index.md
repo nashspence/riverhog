@@ -2,7 +2,7 @@
 
 [Atlas](../../index.md) · [Reference navigation](../index.md)
 
-These principles govern the whole extent contract: its 7 rules and all 2077 recorded extent decisions. Each decision appears on the contract element that owns it. The principle definition is not itself an application.
+These principles govern the whole extent contract: its 7 rules and all 2072 recorded extent decisions. Each decision appears on the contract element that owns it. The principle definition is not itself an application.
 
 Recorded scope in the machine artifact: `/external_contract/extents`. [Extent rules](../extent_rules/index.md) route to the elements with decisions using each rule.
 

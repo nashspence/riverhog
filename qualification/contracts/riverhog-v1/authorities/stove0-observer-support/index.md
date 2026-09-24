@@ -4,7 +4,7 @@
 
 External-author protocol, runtime, and conformance support for Stove0 content observers.
 
-Contract elements: **49** · Extent decisions: **84**
+Contract elements: **49** · Extent decisions: **83**
 
 ## Interfaces
 

@@ -85,7 +85,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-28979c03f9"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-91722de88b"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-a3e55ea16e"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-a3e55ea16e"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-fa4f5e2f11); ge=0 |  |
 
 ##### <a id="s-f65d3d2519"></a>definition `BranchWorkBinding`
 
@@ -385,7 +385,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-04f5d9fa01"></a>`bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-04f5d9fa01"></a>`bytes` | yes | [NonnegativeDecimal](#s-fa4f5e2f11); ge=0 |  |
 | <a id="s-f6f1d1dfd7"></a>`collection` | yes | [CollectionRootIdentityRef](#s-e99b915c80) |  |
 | <a id="s-d7d5bd9c84"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$" |  |
 | <a id="s-6757575d77"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null |  |
@@ -490,7 +490,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 562f58fe36b2441b0861b5ee2b4ecc576a5d115d3dcfafbaf6c4526ed4296e19 -->
+<!-- exact-contract-value: 50e0cc9f47ae82174e30374ef1a23c82d58b8fa93def4106764a16b1a24f1ede -->
 
 ```json
 {
@@ -510,8 +510,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "total_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             }
           },
           "required": [
@@ -1164,8 +1164,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "additionalProperties": false,
           "properties": {
             "bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             },
             "collection": {
               "$ref": "#/$defs/CollectionRootIdentityRef"

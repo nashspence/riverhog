@@ -29,7 +29,7 @@ One exact, content-addressed selection of immutable artifacts.
 | <a id="s-718513cbc7"></a>`artifacts` | yes | type="array"; items=([WorkArtifactSubject](schemas-workartifactsubject.md)); minItems=1; title="Artifacts" |  |
 | <a id="s-bb0cdcf29c"></a>`format` | no | type="string"; const="stove0-artifact-selection/v1"; default="stove0-artifact-selection/v1"; title="Format" |  |
 | <a id="s-a95861fb35"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Selection Sha256" |  |
-| <a id="s-c25a38133a"></a>`total_bytes` | yes | type="integer"; minimum=0; title="Total Bytes" |  |
+| <a id="s-c25a38133a"></a>`total_bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -53,6 +53,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 ### Referenced contract elements
 
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 - [WorkArtifactSubject](schemas-workartifactsubject.md)
 
 ## Governing policies
@@ -86,7 +87,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4f84d3510e6a46e8f030d70fd32d5772072bd1da696aeac61ae2da963ac17aad -->
+<!-- exact-contract-value: 62a0a3b10d9b09be956e33a9910acb4d536c0f9a86c5666681fbebfb762cdef8 -->
 
 ```json
 {
@@ -118,9 +119,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "total_bytes": {
-      "minimum": 0,
-      "title": "Total Bytes",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 0
     }
   },
   "required": [

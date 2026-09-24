@@ -50,6 +50,7 @@ Exact externally visible contract owned by this contract element.
 
 - [ArtifactSelectionRef](#s-4b20a1b842)
 - [JsonValue](#s-e933f8848e)
+- [NonnegativeDecimal](#s-4ff74c6d19)
 - [TargetInputAuthority](#s-34b6d9bef7)
 - [TargetInputRoleCount](#s-7a35047b81)
 
@@ -65,11 +66,16 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-a7e7dc3d5a"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-ec6843a844"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-1ae45b8ab2"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-1ae45b8ab2"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-4ff74c6d19); ge=0 |  |
 
 ##### <a id="s-e933f8848e"></a>definition `JsonValue`
 
 - Accepts: any JSON value.
+
+##### <a id="s-4ff74c6d19"></a>definition `NonnegativeDecimal`
+
+- <a id="s-3a7562cbae"></a>`type`: `"string"`
+- <a id="s-9c8f7eaedc"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ##### <a id="s-34b6d9bef7"></a>definition `TargetInputAuthority`
 
@@ -130,7 +136,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1fc56b48dee1c79f914cedc7aace4c2c969cd1cc0fbf1342eac46a5ed17ffc52 -->
+<!-- exact-contract-value: 888c6cf28b9890848f9bf9c81b80fcb2dad9e6c69749b169e312b0ba91253215 -->
 
 ```json
 {
@@ -150,8 +156,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "total_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             }
           },
           "required": [
@@ -162,6 +168,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "object"
         },
         "JsonValue": {},
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        },
         "TargetInputAuthority": {
           "additionalProperties": false,
           "properties": {

@@ -26,7 +26,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-7172839d4f"></a>`artifact_count` | yes | type="integer"; minimum=1; title="Artifact Count" |  |
 | <a id="s-048703c7e4"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
-| <a id="s-895f414e6b"></a>`total_bytes` | yes | type="integer"; minimum=0; title="Total Bytes" |  |
+| <a id="s-895f414e6b"></a>`total_bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -37,6 +37,12 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | [field sha256](#s-048703c7e4) | `length · characters · fixed` | shared above |
+
+## Maintained corroboration
+
+### Referenced contract elements
+
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -68,7 +74,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: daf38f19dc312122935afd84d58bf963fa26e233d8633d1f209196e4f92d8e9a -->
+<!-- exact-contract-value: aee67dbbe66ef36779ddbaaeb7279beab134bfe237ded5fcc26e35d34db923c9 -->
 
 ```json
 {
@@ -85,9 +91,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "total_bytes": {
-      "minimum": 0,
-      "title": "Total Bytes",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 0
     }
   },
   "required": [

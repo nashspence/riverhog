@@ -27,7 +27,7 @@ Closed reference to a separately retained selection document.
 |---|---:|---|---|
 | <a id="s-d3ec2665dd"></a>`artifact_count` | yes | type="integer"; minimum=1; title="Artifact Count" |  |
 | <a id="s-77bdcdd02e"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Selection Sha256" |  |
-| <a id="s-04c329f29f"></a>`total_bytes` | yes | type="integer"; minimum=0; title="Total Bytes" |  |
+| <a id="s-04c329f29f"></a>`total_bytes` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 
 ### Progression, limits, and lifecycle
 
@@ -38,6 +38,12 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | [field selection_sha256](#s-77bdcdd02e) | `length · characters · fixed` | shared above |
+
+## Maintained corroboration
+
+### Referenced contract elements
+
+- [NonnegativeDecimal](schemas-nonnegativedecimal.md)
 
 ## Governing policies
 
@@ -69,7 +75,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e8cd0eea202ee0c8f3d19552216aa1b0d50521d431df3a185e911bfe1c3aa4c7 -->
+<!-- exact-contract-value: 43be26638a8a725a6f82e49bdd482f2e09d687edbdf10f6f7f52c15a213607ef -->
 
 ```json
 {
@@ -87,9 +93,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "total_bytes": {
-      "minimum": 0,
-      "title": "Total Bytes",
-      "type": "integer"
+      "$ref": "#/components/schemas/NonnegativeDecimal",
+      "ge": 0
     }
   },
   "required": [

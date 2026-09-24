@@ -412,13 +412,15 @@ class NvencAv1OpusTargetService(PersistentTargetService):
         derived_from: tuple[str, ...],
     ) -> OutputArtifact:
         size, sha256 = file_identity(source)
-        return OutputArtifact(
-            id=artifact_id,
-            role=role,
-            path=path,
-            bytes=size,
-            sha256=sha256,
-            media_type=media_type,
+        return OutputArtifact.model_validate(
+            dict(
+                id=artifact_id,
+                role=role,
+                path=path,
+                bytes=str(size),
+                sha256=sha256,
+                media_type=media_type,
+            )
         )
 
 

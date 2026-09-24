@@ -37,6 +37,7 @@ Fence-bound invocation authority excluded from semantic request identity.
 - [ContentObservationRequest](#s-7826415ecb)
 - [DeclaredWorkspaceProtection](#s-9690597347)
 - [JsonValue](#s-3cd351bac8)
+- [NonnegativeDecimal](#s-5a9f99098a)
 - [ObserverRuntimeAuthority](#s-638f987df2)
 - [WorkArtifactSubject](#s-841f4a0d30)
 
@@ -100,6 +101,11 @@ Fence-bound invocation authority excluded from semantic request identity.
 
 - Accepts: any JSON value.
 
+### <a id="s-5a9f99098a"></a>definition `NonnegativeDecimal`
+
+- <a id="s-ab102c8118"></a>`type`: `"string"`
+- <a id="s-88e8f99480"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+
 ### <a id="s-638f987df2"></a>definition `ObserverRuntimeAuthority`
 
 - <a id="s-1cda3fde4b"></a>`type`: `"object"`
@@ -130,7 +136,7 @@ Fence-bound invocation authority excluded from semantic request identity.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c6d6197898"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-c6d6197898"></a>`bytes` | yes | [NonnegativeDecimal](#s-5a9f99098a); ge=0 |  |
 | <a id="s-a26dfc3c74"></a>`collection` | yes | [CollectionRootIdentityRef](#s-d1cdeea832) |  |
 | <a id="s-62caa094ad"></a>`id` | yes | type="string"; pattern="^[A-Za-z0-9]&#40;?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$"; title="Id" |  |
 | <a id="s-732445ae0e"></a>`media_type` | no | anyOf=[(type="string"; maxLength=255; minLength=1); (type="null")]; default=null; title="Media Type" |  |
@@ -148,7 +154,6 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 |---|---|---|
 | [definition ContentObservationRequest · field options](#s-d55800e706) | `cardinality · entries · operational_policy` | shared above |
 | [definition ContentObservationRequest · field subjects](#s-37364f1817) | `cardinality · items · operational_policy` | shared above |
-| [definition WorkArtifactSubject · field bytes](#s-c6d6197898) | `value · schema-value · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
@@ -206,7 +211,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ffe68a326906c84c2aafd4b2b56230e1f1a68536a7d14e3bc7c1cc29c8568161 -->
+<!-- exact-contract-value: 9a9cb6af0dd50d96c88f2c7142ec1f456eaebaf1fa7f8bdf8fe010c56f91f057 -->
 
 ```json
 {
@@ -349,6 +354,10 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "JsonValue": {},
+    "NonnegativeDecimal": {
+      "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+      "type": "string"
+    },
     "ObserverRuntimeAuthority": {
       "additionalProperties": false,
       "description": "Secret-bearing invocation material excluded from durable request identity.",
@@ -393,9 +402,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "description": "A collection logical file assigned an ID and role within one Stove0 work.",
       "properties": {
         "bytes": {
-          "minimum": 0,
-          "title": "Bytes",
-          "type": "integer"
+          "$ref": "#/$defs/NonnegativeDecimal",
+          "ge": 0
         },
         "collection": {
           "$ref": "#/$defs/CollectionRootIdentityRef"

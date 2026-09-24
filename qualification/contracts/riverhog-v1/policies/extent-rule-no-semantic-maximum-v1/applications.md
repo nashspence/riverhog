@@ -103,7 +103,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: ExternalEffectReceipt](../../authorities/stove0/http-schemas/schemas-externaleffectreceipt.md#pa-27eff5e66c) |
 | `stove0` | [schemas: FactPredicate](../../authorities/stove0/http-schemas/schemas-factpredicate.md#pa-bbbf93ebd2) |
 | `stove0` | [schemas: HTTPValidationError](../../authorities/stove0/http-schemas/schemas-httpvalidationerror.md#pa-7925bbac9f) |
-| `stove0` | [schemas: InputArtifact](../../authorities/stove0/http-schemas/schemas-inputartifact.md#pa-2314df78fb) |
 | `stove0` | [schemas: JoinDeclaration](../../authorities/stove0/http-schemas/schemas-joindeclaration.md#pa-59becc8fea) |
 | `stove0` | [schemas: JoinMemberDeclaration](../../authorities/stove0/http-schemas/schemas-joinmemberdeclaration.md#pa-0b3bd36e8a) |
 | `stove0` | [schemas: JoinPlan](../../authorities/stove0/http-schemas/schemas-joinplan.md#pa-9ca08de2b7) |
@@ -111,7 +110,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: JsonSchemaValidationProfile](../../authorities/stove0/http-schemas/schemas-jsonschemavalidationprofile.md#pa-1d478ed654) |
 | `stove0` | [schemas: ObserverUse](../../authorities/stove0/http-schemas/schemas-observeruse.md#pa-6e30440713) |
 | `stove0` | [schemas: OperatorWorkflowPreviewRequest](../../authorities/stove0/http-schemas/schemas-operatorworkflowpreviewrequest.md#pa-10c0ca5efc) |
-| `stove0` | [schemas: OutputArtifact](../../authorities/stove0/http-schemas/schemas-outputartifact.md#pa-7d3e2d46d5) |
 | `stove0` | [schemas: OutputArtifactRoleCount](../../authorities/stove0/http-schemas/schemas-outputartifactrolecount.md#pa-0da94a6ac9) |
 | `stove0` | [schemas: OutputArtifactSetIdentity](../../authorities/stove0/http-schemas/schemas-outputartifactsetidentity.md#pa-8efe6c6208) |
 | `stove0` | [schemas: PreviewAcceptanceView](../../authorities/stove0/http-schemas/schemas-previewacceptanceview.md#pa-0fda8095c1) |
@@ -130,7 +128,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0` | [schemas: TargetPlanBinding](../../authorities/stove0/http-schemas/schemas-targetplanbinding.md#pa-e5ba21c985) |
 | `stove0` | [schemas: TransformPlan](../../authorities/stove0/http-schemas/schemas-transformplan.md#pa-08124dbc8c) |
 | `stove0` | [schemas: ValidationError](../../authorities/stove0/http-schemas/schemas-validationerror.md#pa-64038d4887) |
-| `stove0` | [schemas: WorkArtifactSubject](../../authorities/stove0/http-schemas/schemas-workartifactsubject.md#pa-81fa8066b2) |
 | `stove0` | [schemas: WorkCreateRequest](../../authorities/stove0/http-schemas/schemas-workcreaterequest.md#pa-e78c0d00fc) |
 | `stove0` | [schemas: WorkIdentity](../../authorities/stove0/http-schemas/schemas-workidentity.md#pa-cb25a4a821) |
 | `stove0` | [schemas: WorkPage](../../authorities/stove0/http-schemas/schemas-workpage.md#pa-87aed63766) |

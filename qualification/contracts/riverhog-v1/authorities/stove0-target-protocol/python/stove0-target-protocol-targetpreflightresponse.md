@@ -45,6 +45,7 @@ Exact externally visible contract owned by this contract element.
 - [EffectPlan](#s-76c6471c9f)
 - [JsonSchemaValidationProfile](#s-12d06c88a6)
 - [JsonValue](#s-9f4f47f35d)
+- [NonnegativeDecimal](#s-a25a8c2af1)
 - [TargetDescriptor](#s-2d4babd363)
 - [TargetInputAuthority](#s-69a5afc687)
 - [TargetInputRoleCount](#s-73fe014af3)
@@ -63,7 +64,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-6d65feb2a1"></a>`artifact_count` | yes | type="integer"; minimum=1 |  |
 | <a id="s-5b856de9c7"></a>`selection_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
-| <a id="s-7cfcf4302f"></a>`total_bytes` | yes | type="integer"; minimum=0 |  |
+| <a id="s-7cfcf4302f"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-a25a8c2af1); ge=0 |  |
 
 ##### <a id="s-76c6471c9f"></a>definition `EffectPlan`
 
@@ -105,6 +106,11 @@ Exact externally visible contract owned by this contract element.
 ##### <a id="s-9f4f47f35d"></a>definition `JsonValue`
 
 - Accepts: any JSON value.
+
+##### <a id="s-a25a8c2af1"></a>definition `NonnegativeDecimal`
+
+- <a id="s-f1204b983c"></a>`type`: `"string"`
+- <a id="s-dfe5563e24"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
 ##### <a id="s-2d4babd363"></a>definition `TargetDescriptor`
 
@@ -220,7 +226,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 79276b09b40c27a92af037e9d9b7ceeaedea709089c8cca3bac95482afd873cf -->
+<!-- exact-contract-value: 58dba8af88e4ef6ad6def20f69c626c2995fb86b899beae9417dccac76ec1e99 -->
 
 ```json
 {
@@ -240,8 +246,8 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "total_bytes": {
-              "minimum": 0,
-              "type": "integer"
+              "$ref": "#/$defs/NonnegativeDecimal",
+              "ge": 0
             }
           },
           "required": [
@@ -350,6 +356,10 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "object"
         },
         "JsonValue": {},
+        "NonnegativeDecimal": {
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])",
+          "type": "string"
+        },
         "TargetDescriptor": {
           "additionalProperties": false,
           "properties": {

@@ -26,7 +26,7 @@
       "options": {},
       "subjects": [
         {
-          "bytes": 7,
+          "bytes": "7",
           "collection": {
             "archive_root_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             "collection_id": "1",
@@ -60,7 +60,7 @@
       "options": {},
       "subjects": [
         {
-          "bytes": 7,
+          "bytes": "7",
           "collection": {
             "archive_root_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             "collection_id": "1",
@@ -98,7 +98,7 @@
       "options": {},
       "subjects": [
         {
-          "bytes": 7,
+          "bytes": "7",
           "collection": {
             "archive_root_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             "collection_id": "1",
