@@ -15,7 +15,7 @@ from riverhog_age import (
     age_ciphertext_len_for_plaintext_len,
 )
 from riverhog_protocol.pack_ingress import canonical_json_bytes
-from riverhog_protocol.paths import normalize_relpath
+from riverhog_protocol.paths import validate_canonical_relpath
 
 from riverhog_core.archive_formats import RAW_VOLUME_STORAGE_FORMAT
 from riverhog_core.domain.archive import (
@@ -208,8 +208,8 @@ class RawUploadCheckpoint:
             collection_id=collection_id,
             volume_id=volume_id,
             object_path=object_path,
-            relative_path=normalize_relpath(str(payload.get("relative_path", ""))),
-            source_path=normalize_relpath(str(payload.get("source_path", ""))),
+            relative_path=validate_canonical_relpath(payload.get("relative_path")),
+            source_path=validate_canonical_relpath(payload.get("source_path")),
             file_offset=file_offset,
             plaintext_bytes=plaintext_bytes,
             file_bytes=file_bytes,
@@ -313,7 +313,7 @@ class RawVolumeUploader:
         opened_started = time.perf_counter()
         if collection_id < 1 or not object_path:
             raise ValueError("raw upload collection and object identities are required")
-        normalized_relative_path = normalize_relpath(relative_path)
+        normalized_relative_path = validate_canonical_relpath(relative_path)
         expected_relative_path = f"volumes/{plan.volume_id}.bin.age"
         if normalized_relative_path != expected_relative_path:
             raise ValueError("raw volume relative path is not canonical")

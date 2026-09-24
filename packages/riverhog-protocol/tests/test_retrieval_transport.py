@@ -56,6 +56,8 @@ def test_canonical_path_schema_advertises_semantic_exclusions() -> None:
     assert {entry["not"]["pattern"] for entry in schema["allOf"]} == {
         r"(?:^|/)\.{1,2}(?:/|$)",
         r"^\s|\s$",
+        r"\u0000",
+        r"[\ud800-\udfff]",
     }
 
 

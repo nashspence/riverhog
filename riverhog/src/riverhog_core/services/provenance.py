@@ -16,9 +16,9 @@ from riverhog_protocol.errors import BadRequest, InvalidState, NotFound
 from riverhog_protocol.paths import (
     PathNormalizationError,
     normalize_collection_id,
-    normalize_relpath,
     relpath_sort_key,
     text_search_key,
+    validate_canonical_relpath,
 )
 from riverhog_provenance import (
     PROVENANCE_BINDING_SEGMENT_FILES_MAX,
@@ -2268,7 +2268,7 @@ def _collection_id(value: int) -> int:
 
 def _path(value: str) -> str:
     try:
-        return normalize_relpath(value)
+        return validate_canonical_relpath(value)
     except PathNormalizationError as exc:
         raise BadRequest(str(exc)) from exc
 

@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Self
 
 from riverhog_protocol.collection_workflows import canonical_json_bytes
-from riverhog_protocol.paths import normalize_relpath
+from riverhog_protocol.paths import validate_canonical_relpath
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 
 _MARKER = ".riverhog-processing-workspace.json"
@@ -97,10 +97,10 @@ class ProcessingWorkspace:
         pass
 
     def resolve(self, relative_path: str) -> Path:
-        normalized = normalize_relpath(relative_path)
-        candidate = self.root.joinpath(*normalized.split("/"))
+        canonical = validate_canonical_relpath(relative_path)
+        candidate = self.root.joinpath(*canonical.split("/"))
         current = self.root
-        for part in normalized.split("/"):
+        for part in canonical.split("/"):
             current = current / part
             if current.is_symlink():
                 raise ValueError("workspace paths must not traverse symlinks")

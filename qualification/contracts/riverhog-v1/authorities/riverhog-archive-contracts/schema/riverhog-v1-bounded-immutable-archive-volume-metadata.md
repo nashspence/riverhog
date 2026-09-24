@@ -140,7 +140,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-bffb1edd6d"></a>`bytes` | yes | [nonnegative_count](#s-0c8f80a93d) |  |
 | <a id="s-dd97b15ddc"></a>`file_bytes` | yes | [nonnegative_count](#s-0c8f80a93d) |  |
 | <a id="s-bccb340a33"></a>`offset` | yes | [nonnegative_count](#s-0c8f80a93d) |  |
-| <a id="s-ff0c8b1f52"></a>`path` | yes | type="string"; pattern="^(?!/)(?!\\.riverhog/)(?!.*\\\\)(?!.*(?:^\|/)\\.\\.?(?:/\|$))[^/]+(?:/[^/]+)*$" |  |
+| `path` | yes | [See definition `segment_file` · field `path`](#s-ff0c8b1f52) |  |
 | <a id="s-2862954f72"></a>`sha256` | yes | [sha256](#s-ddfc70e987) |  |
 
 ### <a id="s-b18c6e158b"></a>definition `sequence`
@@ -152,6 +152,22 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-961ad6d906"></a>`type`: `"string"`
 - <a id="s-10dff615fa"></a>`pattern`: `"^[0-9a-f]{64}$"`
+
+### <a id="s-ff0c8b1f52"></a>definition `segment_file` · field `path`
+
+- <a id="s-7fea62184c"></a>`type`: `"string"`
+- <a id="s-fe6032fa1d"></a>`format`: `"riverhog-canonical-relpath-v1"`
+- <a id="s-c91f2fd89e"></a>`maxLength`: `4096`
+- <a id="s-4f8a4b77fc"></a>`pattern`: `"^(?!/)(?!\\.riverhog/)(?!.*\\\\)(?!.*(?:^\|/)\\.\\.?(?:/\|$))[^/]+(?:/[^/]+)*$"`
+- <a id="s-53ce49d4c9"></a>`x-unicode-normalization`: `"NFC"`
+
+#### All must match (`allOf`)
+
+| Alternative | Schema |
+|---|---|
+| <a id="s-a00e76d443"></a>1 | not=(pattern="^\\s\|\\s$") |
+| <a id="s-9ef96da024"></a>2 | not=(pattern="\\u0000") |
+| <a id="s-2269fcd532"></a>3 | not=(pattern="[\\ud800-\\udfff]") |
 
 ### Progression, limits, and lifecycle
 
@@ -169,6 +185,7 @@ Shared facts for every subject below: maximum=1024; minimum=1; progression={"pro
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | [definition pack · field files](#s-a00b69b256) | `value · schema-value · contract_max` | maximum=50000; minimum=1; reason="schema-maximum" |
+| [definition segment_file · field path](#s-ff0c8b1f52) | `length · characters · contract_max` | maximum=4096; reason="schema-maximum" |
 | [definition sequence](#s-b18c6e158b) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [definition sha256](#s-ddfc70e987) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
@@ -223,7 +240,7 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 64f84e39e834d295b4e25f4858916eaa6980d9843af46873596beffaab1dea7b -->
+<!-- exact-contract-value: 1003160c4091ca85ae9c1516bd425e4eee3740ebda911ac316c4ebed6b5d2be5 -->
 
 ```json
 {
@@ -427,8 +444,28 @@ The following JSON is the complete value owned at each machine-authority pointer
           "$ref": "#/$defs/nonnegative_count"
         },
         "path": {
+          "allOf": [
+            {
+              "not": {
+                "pattern": "^\\s|\\s$"
+              }
+            },
+            {
+              "not": {
+                "pattern": "\\u0000"
+              }
+            },
+            {
+              "not": {
+                "pattern": "[\\ud800-\\udfff]"
+              }
+            }
+          ],
+          "format": "riverhog-canonical-relpath-v1",
+          "maxLength": 4096,
           "pattern": "^(?!/)(?!\\.riverhog/)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$))[^/]+(?:/[^/]+)*$",
-          "type": "string"
+          "type": "string",
+          "x-unicode-normalization": "NFC"
         },
         "sha256": {
           "$ref": "#/$defs/sha256"

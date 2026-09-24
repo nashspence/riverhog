@@ -23,7 +23,7 @@ from riverhog_canonical_json import (
 
 from riverhog_protocol.paths import (
     CollectionId,
-    normalize_relpath,
+    validate_canonical_relpath,
     validate_collection_id,
 )
 
@@ -176,7 +176,7 @@ class CollectionArtifactIdentity:
     sha256: str
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "path", normalize_relpath(self.path))
+        object.__setattr__(self, "path", validate_canonical_relpath(self.path))
         object.__setattr__(self, "bytes", _uint(self.bytes, "artifact bytes"))
         object.__setattr__(self, "sha256", _sha256(self.sha256, "artifact identity"))
 
@@ -546,7 +546,7 @@ class ArtifactDisposition:
             "input_archive_root_sha256",
             _sha256(self.input_archive_root_sha256, "input archive-root identity"),
         )
-        object.__setattr__(self, "input_path", normalize_relpath(self.input_path))
+        object.__setattr__(self, "input_path", validate_canonical_relpath(self.input_path))
         state = str(self.status)
         if state not in _DISPOSITION_STATES:
             raise ValueError("artifact disposition state is invalid")
@@ -623,8 +623,8 @@ class ArtifactDispositionOutput:
             "input_archive_root_sha256",
             _sha256(self.input_archive_root_sha256, "input archive-root identity"),
         )
-        object.__setattr__(self, "input_path", normalize_relpath(self.input_path))
-        object.__setattr__(self, "output_path", normalize_relpath(self.output_path))
+        object.__setattr__(self, "input_path", validate_canonical_relpath(self.input_path))
+        object.__setattr__(self, "output_path", validate_canonical_relpath(self.output_path))
 
     def as_dict(self) -> dict[str, object]:
         return {

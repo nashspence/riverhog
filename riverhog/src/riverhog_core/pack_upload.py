@@ -16,7 +16,7 @@ from riverhog_age import (
     age_ciphertext_len_for_plaintext_len,
 )
 from riverhog_protocol.pack_ingress import canonical_json_bytes
-from riverhog_protocol.paths import normalize_relpath
+from riverhog_protocol.paths import validate_canonical_relpath
 
 from riverhog_core.archive_formats import PACK_VOLUME_STORAGE_FORMAT
 from riverhog_core.domain.archive import (
@@ -175,7 +175,7 @@ class PackUploadCheckpoint:
             ),
             volume_id=volume_id,
             object_path=object_path,
-            relative_path=normalize_relpath(str(payload.get("relative_path", ""))),
+            relative_path=validate_canonical_relpath(payload.get("relative_path")),
             plan_sha256=_required_sha256(payload.get("plan_sha256"), label="plan"),
             plaintext_bytes=plaintext_bytes,
             write_token=write_token,
@@ -281,7 +281,7 @@ class PackVolumeUploader:
         opened_started = time.perf_counter()
         if collection_id < 1:
             raise ValueError("collection id must be positive")
-        normalized_relative_path = normalize_relpath(relative_path)
+        normalized_relative_path = validate_canonical_relpath(relative_path)
         expected_relative_path = f"volumes/{plan.volume_id}.tar.age"
         if normalized_relative_path != expected_relative_path:
             raise ValueError("pack volume relative path is not canonical")
@@ -671,7 +671,7 @@ class PackVolumeUploader:
             or checkpoint.plan_sha256 != plan.plan_sha256
             or checkpoint.plaintext_bytes != plan.plaintext_bytes
             or checkpoint.object_path != object_path
-            or checkpoint.relative_path != normalize_relpath(relative_path)
+            or checkpoint.relative_path != validate_canonical_relpath(relative_path)
         ):
             raise ValueError("pack upload checkpoint does not match the requested plan")
         state = UploadState.from_json_bytes(checkpoint.age_state_json)

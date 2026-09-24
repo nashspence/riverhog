@@ -28,6 +28,8 @@ Exact externally visible contract owned by this contract element.
 |---|---|
 | <a id="s-161ce9f1ad"></a>1 | not=(pattern="(?:^\|/)\\.{1,2}(?:/\|$)") |
 | <a id="s-3a21cd534f"></a>2 | not=(pattern="^\\s\|\\s$") |
+| <a id="s-6ccf998cf5"></a>3 | not=(pattern="\\u0000") |
+| <a id="s-ff7a19cf5e"></a>4 | not=(pattern="[\\ud800-\\udfff]") |
 
 ### Progression, limits, and lifecycle
 
@@ -69,7 +71,7 @@ Shared facts for every subject below: maximum=4096; minimum=1; reason="schema-ma
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: fa3392977e23c3c604f49fed3024ddfc514d329289c0f292c3ebe3e4c3748e66 -->
+<!-- exact-contract-value: 2f4af581a31a8cdc9d98e167315285561e24735638ff4167482eaff38cb5ab5a -->
 
 ```json
 {
@@ -82,6 +84,16 @@ The following JSON is the complete value owned at each machine-authority pointer
     {
       "not": {
         "pattern": "^\\s|\\s$"
+      }
+    },
+    {
+      "not": {
+        "pattern": "\\u0000"
+      }
+    },
+    {
+      "not": {
+        "pattern": "[\\ud800-\\udfff]"
       }
     }
   ],

@@ -6,7 +6,7 @@ from collections.abc import Sequence
 
 from riverhog_age import CHUNK_SIZE, AgeAlignedUnitPlan, ResumableAgeScryptSession
 from riverhog_protocol.pack_ingress import RESERVED_ARCHIVE_PREFIX, canonical_json_bytes
-from riverhog_protocol.paths import normalize_relpath
+from riverhog_protocol.paths import validate_canonical_relpath
 
 from riverhog_core.domain.archive import ArchiveFile, RawVolumePlan
 
@@ -30,8 +30,8 @@ def plan_raw_volumes(
         raise ValueError("raw volume plaintext limit must be positive")
     plans: list[RawVolumePlan] = []
     seen: set[str] = set()
-    for current in sorted(files, key=lambda value: normalize_relpath(value.path)):
-        path = normalize_relpath(current.path)
+    for current in sorted(files, key=lambda value: validate_canonical_relpath(value.path)):
+        path = validate_canonical_relpath(current.path)
         if path.startswith(RESERVED_ARCHIVE_PREFIX):
             raise ValueError(f"collection path uses reserved archive namespace: {path}")
         if path in seen:
@@ -115,7 +115,7 @@ def parse_raw_volume_plan(content: bytes | str) -> RawVolumePlan:
     volume_id = str(payload.get("volume_id", ""))
     if sequence >= 1 << 256 or volume_id != f"segment-{sequence:064x}":
         raise ValueError("raw volume plan identity is invalid")
-    source_path = normalize_relpath(str(payload.get("source_path", "")))
+    source_path = validate_canonical_relpath(payload.get("source_path"))
     if source_path.startswith(RESERVED_ARCHIVE_PREFIX):
         raise ValueError("raw volume source uses the reserved archive namespace")
     file_offset = _canonical_nonnegative_int(payload.get("file_offset"), label="file offset")

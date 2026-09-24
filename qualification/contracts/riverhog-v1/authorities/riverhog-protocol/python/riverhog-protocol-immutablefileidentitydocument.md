@@ -60,6 +60,8 @@ Exact externally visible contract owned by this contract element.
 |---|---|
 | <a id="s-3abb6d9b12"></a>1 | not=(pattern="(?:^\|/)\\.{1,2}(?:/\|$)") |
 | <a id="s-5d4898801b"></a>2 | not=(pattern="^\\s\|\\s$") |
+| <a id="s-cd50a44de7"></a>3 | not=(pattern="\\u0000") |
+| <a id="s-bb19901f13"></a>4 | not=(pattern="[\\ud800-\\udfff]") |
 
 ##### <a id="s-fcac609203"></a>definition `NonnegativeDecimal`
 
@@ -93,7 +95,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 13a495e3ae6d09e49c93f6f00bcca657e59fc6aad6683570979d580143ff51fd -->
+<!-- exact-contract-value: f2fb3a362ba384698b1f612caa1233bb2fd8e0dd98eace63cf3e11713b537c8c -->
 
 ```json
 {
@@ -111,6 +113,16 @@ The following JSON is the complete value owned at each machine-authority pointer
             {
               "not": {
                 "pattern": "^\\s|\\s$"
+              }
+            },
+            {
+              "not": {
+                "pattern": "\\u0000"
+              }
+            },
+            {
+              "not": {
+                "pattern": "[\\ud800-\\udfff]"
               }
             }
           ],

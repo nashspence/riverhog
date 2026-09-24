@@ -35,7 +35,7 @@ from riverhog_protocol.collection_workflows import (
     ProducerEvidence,
 )
 from riverhog_protocol.file_identity import ImmutableFileIdentityDocument
-from riverhog_protocol.paths import CollectionId, normalize_relpath
+from riverhog_protocol.paths import CollectionId, validate_canonical_relpath
 from riverhog_protocol.storage_names import ArchiveStoreName
 
 from riverhog_client.client import ApiClient
@@ -65,7 +65,7 @@ class ProducerFile:
             raise ValueError(f"producer source must not be a symlink: {supplied}")
         resolved = supplied.resolve()
         object.__setattr__(self, "source", resolved)
-        object.__setattr__(self, "path", normalize_relpath(self.path))
+        object.__setattr__(self, "path", validate_canonical_relpath(self.path))
         if not resolved.is_file():
             raise ValueError(f"producer source must be a real regular file: {resolved}")
         if self.provenance is not None:
@@ -90,7 +90,7 @@ class ProducerStream:
     provenance: Mapping[str, object] | None = None
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "path", normalize_relpath(self.path))
+        object.__setattr__(self, "path", validate_canonical_relpath(self.path))
         if isinstance(self.bytes, bool) or not isinstance(self.bytes, int) or self.bytes < 0:
             raise ValueError("producer stream byte count must be non-negative")
         digest = self.sha256.casefold()
@@ -432,7 +432,7 @@ class IncrementalCollectionProducer:
             str(key): bytes(value) for key, value in (provenance_journals or {}).items()
         }
         expected = {
-            normalize_relpath(path): identity
+            validate_canonical_relpath(path): identity
             for path, identity in (expected_identities or {}).items()
         }
         if expected and set(expected) != set(supplied_paths):
@@ -507,8 +507,8 @@ class IncrementalCollectionProducer:
     ) -> ProducerArtifactCustody | None:
         """Append one bounded Riverhog derivation page after payload custody."""
 
-        normalized = normalize_relpath(path)
-        if not normalized.startswith(
+        canonical = validate_canonical_relpath(path)
+        if not canonical.startswith(
             (
                 f"{DERIVATION_DISPOSITION_EVIDENCE_PREFIX}/",
                 f"{DERIVATION_OUTPUT_EVIDENCE_PREFIX}/",
@@ -517,7 +517,7 @@ class IncrementalCollectionProducer:
             raise ValueError("derivation evidence path is outside its reserved namespace")
         value = bytes(content)
         source = _Source(
-            path=normalized,
+            path=canonical,
             bytes=len(value),
             sha256=hashlib.sha256(value).hexdigest(),
             content=value,
@@ -526,12 +526,12 @@ class IncrementalCollectionProducer:
             else _omitted(self.provenance_omission_reason),
         )
         receipts = self._append_sources([source])
-        immediate = next((item for item in receipts if item.artifact.path == normalized), None)
+        immediate = next((item for item in receipts if item.artifact.path == canonical), None)
         if immediate is not None:
             return immediate
         if self._needs_upload_scan:
             receipts = self._upload_available()
-            return next((item for item in receipts if item.artifact.path == normalized), None)
+            return next((item for item in receipts if item.artifact.path == canonical), None)
         return None
 
     def finish(
@@ -979,7 +979,7 @@ def _content_source(
 ) -> _Source:
     value = bytes(content)
     return _Source(
-        path=normalize_relpath(path),
+        path=validate_canonical_relpath(path),
         bytes=len(value),
         sha256=hashlib.sha256(value).hexdigest(),
         provenance=dict(provenance),

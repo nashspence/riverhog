@@ -59,6 +59,8 @@ Exact externally visible contract owned by this contract element.
 |---|---|
 | <a id="s-90c917009f"></a>1 | not=(pattern="(?:^\|/)\\.{1,2}(?:/\|$)") |
 | <a id="s-4801cbe113"></a>2 | not=(pattern="^\\s\|\\s$") |
+| <a id="s-ae89ad5c1c"></a>3 | not=(pattern="\\u0000") |
+| <a id="s-66b4e56323"></a>4 | not=(pattern="[\\ud800-\\udfff]") |
 
 ##### <a id="s-e440dc7980"></a>definition `CollectionId`
 
@@ -116,7 +118,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: cda2a88736ee07b57d5b489f649f5c54261a0cd85a6e3e853c85b173eb5db0cf -->
+<!-- exact-contract-value: cfed3001420b0d5d8535a32660b49fc3786d98ddaea4a15adb32431df8abb27b -->
 
 ```json
 {
@@ -134,6 +136,16 @@ The following JSON is the complete value owned at each machine-authority pointer
             {
               "not": {
                 "pattern": "^\\s|\\s$"
+              }
+            },
+            {
+              "not": {
+                "pattern": "\\u0000"
+              }
+            },
+            {
+              "not": {
+                "pattern": "[\\ud800-\\udfff]"
               }
             }
           ],

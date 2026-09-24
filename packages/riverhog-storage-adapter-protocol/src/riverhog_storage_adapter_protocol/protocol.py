@@ -118,7 +118,7 @@ type PositiveDecimal = Annotated[
 ]
 
 
-def normalize_object_path(value: str, *, allow_prefix: bool = False) -> str:
+def validate_object_path(value: str, *, allow_prefix: bool = False) -> str:
     """Return an unchanged canonical relative POSIX path or raise."""
 
     if (
@@ -190,7 +190,7 @@ class ObjectLocator(StorageAdapterModel):
     @field_validator("object_path")
     @classmethod
     def canonical_path(cls, value: str) -> str:
-        return normalize_object_path(value)
+        return validate_object_path(value)
 
 
 class WriteSession(StorageAdapterModel):
@@ -215,7 +215,7 @@ class WriteSession(StorageAdapterModel):
     @field_validator("object_path")
     @classmethod
     def canonical_path(cls, value: str) -> str:
-        return normalize_object_path(value)
+        return validate_object_path(value)
 
 
 class WriteStartRequest(StorageAdapterModel):
@@ -235,7 +235,7 @@ class WriteStartRequest(StorageAdapterModel):
     @field_validator("object_path")
     @classmethod
     def canonical_path(cls, value: str) -> str:
-        return normalize_object_path(value)
+        return validate_object_path(value)
 
     @field_validator("required_identity_assertions")
     @classmethod
@@ -391,7 +391,7 @@ class CompletedWriteLookupRequest(StorageAdapterModel):
     @field_validator("object_path")
     @classmethod
     def canonical_path(cls, value: str) -> str:
-        return normalize_object_path(value)
+        return validate_object_path(value)
 
     @field_validator("required_identity_assertions")
     @classmethod
@@ -412,7 +412,7 @@ class CompletedObjectReceipt(StorageAdapterModel):
     @field_validator("object_path")
     @classmethod
     def canonical_path(cls, value: str) -> str:
-        return normalize_object_path(value)
+        return validate_object_path(value)
 
     @field_validator("verified_identity_assertions")
     @classmethod
@@ -438,7 +438,7 @@ class SmallObjectWriteRequest(StorageAdapterModel):
     @field_validator("object_path")
     @classmethod
     def canonical_path(cls, value: str) -> str:
-        return normalize_object_path(value)
+        return validate_object_path(value)
 
     @field_validator("required_identity_assertions")
     @classmethod
@@ -466,7 +466,7 @@ class ImmutableObjectReceipt(StorageAdapterModel):
     @field_validator("object_path")
     @classmethod
     def canonical_path(cls, value: str) -> str:
-        return normalize_object_path(value)
+        return validate_object_path(value)
 
     @field_validator("verified_identity_assertions")
     @classmethod
@@ -493,7 +493,7 @@ class ObjectMetadataReceipt(StorageAdapterModel):
     @field_validator("object_path")
     @classmethod
     def canonical_path(cls, value: str) -> str:
-        return normalize_object_path(value)
+        return validate_object_path(value)
 
     @field_validator("observed_identity_assertions")
     @classmethod
@@ -599,7 +599,7 @@ class DeletePrefixRequest(StorageAdapterModel):
     @field_validator("object_prefix")
     @classmethod
     def canonical_prefix(cls, value: str) -> str:
-        return normalize_object_path(value, allow_prefix=True)
+        return validate_object_path(value, allow_prefix=True)
 
 
 class ReadPreparationRequest(StorageAdapterModel):
@@ -1190,7 +1190,7 @@ __all__ = [
     "StorageAdapterPort",
     "ValidatedStorageAdapterPort",
     "StorageAdapterRejection",
-    "normalize_object_path",
+    "validate_object_path",
     "validate_completed_write_response",
     "validate_object_metadata_response",
     "validate_object_read_response",

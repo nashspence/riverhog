@@ -8,7 +8,7 @@ from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 
 from riverhog_age import AEAD_TAG_SIZE, CHUNK_SIZE, ResumableAgeScryptSession, UploadState
-from riverhog_protocol.paths import normalize_relpath
+from riverhog_protocol.paths import validate_canonical_relpath
 
 from riverhog_core.age_range import (
     iter_decrypt_age_plaintext_range,
@@ -66,8 +66,8 @@ class PackMemberRetrievalSource:
     data_offset: int
 
     def __post_init__(self) -> None:
-        normalized = normalize_relpath(self.path)
-        if normalized != self.path or normalized.startswith(RESERVED_ARCHIVE_PREFIX):
+        path = validate_canonical_relpath(self.path)
+        if path.startswith(RESERVED_ARCHIVE_PREFIX):
             raise ValueError("pack retrieval member path is invalid")
         if self.bytes < 0 or self.data_offset < 0:
             raise ValueError("pack retrieval member range is invalid")

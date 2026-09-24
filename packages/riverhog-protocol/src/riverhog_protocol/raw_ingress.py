@@ -7,7 +7,7 @@ import re
 from collections.abc import Iterable
 from dataclasses import dataclass
 
-from riverhog_protocol.paths import normalize_relpath
+from riverhog_protocol.paths import validate_canonical_relpath
 
 RAW_SOURCE_DIGEST_SUMMARY_SCHEMA = "raw-source-digest-summary/v1"
 RAW_SOURCE_DIGEST_BATCH_MAX = 1024
@@ -80,8 +80,7 @@ class RawSourceDigestSummary:
     schema: str = RAW_SOURCE_DIGEST_SUMMARY_SCHEMA
 
     def __post_init__(self) -> None:
-        if normalize_relpath(self.path) != self.path:
-            raise ValueError("raw source digest path is not canonical")
+        validate_canonical_relpath(self.path)
         expected_parts = _part_count(self.bytes, self.part_plaintext_bytes)
         if self.part_count != expected_parts:
             raise ValueError("raw source digest part count is invalid")

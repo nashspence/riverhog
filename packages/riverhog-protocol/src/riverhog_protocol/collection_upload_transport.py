@@ -31,7 +31,7 @@ from riverhog_protocol.exact_scalar import NonnegativeDecimal, Sequence256Hex
 from riverhog_protocol.file_identity import ImmutableFileIdentityDocument
 from riverhog_protocol.paths import (
     CollectionId,
-    normalize_relpath,
+    validate_canonical_relpath,
     validate_collection_id,
 )
 from riverhog_protocol.raw_ingress import (
@@ -65,9 +65,9 @@ def collection_upload_path_order_key(path: str) -> tuple[int, bytes]:
     the complete output and generic evidence authorities.
     """
 
-    normalized = normalize_relpath(path)
-    rank = 2 if normalized == DERIVATION_EVIDENCE_PATH else int(normalized.startswith("riverhog/"))
-    return (rank, normalized.encode("utf-8"))
+    canonical = validate_canonical_relpath(path)
+    rank = 2 if canonical == DERIVATION_EVIDENCE_PATH else int(canonical.startswith("riverhog/"))
+    return (rank, canonical.encode("utf-8"))
 
 
 class CollectionUploadDocument(BaseModel):
@@ -117,7 +117,7 @@ class CollectionUploadRawDigestBatchDocument(CollectionUploadDocument):
     @field_validator("path")
     @classmethod
     def canonical_path(cls, value: str) -> str:
-        return normalize_relpath(value)
+        return validate_canonical_relpath(value)
 
 
 class CollectionUploadRawDigestProgressDocument(CollectionUploadDocument):
@@ -129,7 +129,7 @@ class CollectionUploadRawDigestProgressDocument(CollectionUploadDocument):
     @field_validator("path")
     @classmethod
     def canonical_path(cls, value: str) -> str:
-        return normalize_relpath(value)
+        return validate_canonical_relpath(value)
 
     @model_validator(mode="after")
     def validate_completion(self) -> Self:
@@ -197,7 +197,7 @@ class CollectionUploadUnitSourceDocument(CollectionUploadDocument):
     @field_validator("path")
     @classmethod
     def canonical_path(cls, value: str) -> str:
-        return normalize_relpath(value)
+        return validate_canonical_relpath(value)
 
 
 class CollectionUploadUnitDocument(CollectionUploadDocument):
@@ -342,7 +342,7 @@ class CollectionUploadArtifactCustodyReceiptDocument(CollectionUploadDocument):
     @field_validator("path")
     @classmethod
     def canonical_path(cls, value: str) -> str:
-        return normalize_relpath(value)
+        return validate_canonical_relpath(value)
 
     @model_validator(mode="after")
     def validate_receipt(self) -> Self:

@@ -7,7 +7,7 @@ from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, replace
 
 from riverhog_age import ResumableAgeScryptSession, UploadState
-from riverhog_protocol.paths import normalize_relpath
+from riverhog_protocol.paths import validate_canonical_relpath
 
 from riverhog_core.age_range import (
     iter_decrypt_age_plaintext_range,
@@ -46,8 +46,7 @@ class RawVolumeRetrievalSource:
     def __post_init__(self) -> None:
         if not self.volume_id.startswith("segment-") or not self.object_path:
             raise ValueError("raw retrieval volume identity is invalid")
-        if normalize_relpath(self.source_path) != self.source_path:
-            raise ValueError("raw retrieval source path is not canonical")
+        validate_canonical_relpath(self.source_path)
         if self.file_offset < 0 or self.plaintext_bytes < 0 or self.file_bytes < 0:
             raise ValueError("raw retrieval byte range is invalid")
         if self.file_offset + self.plaintext_bytes > self.file_bytes:

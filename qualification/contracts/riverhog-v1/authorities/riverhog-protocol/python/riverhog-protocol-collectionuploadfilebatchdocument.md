@@ -64,6 +64,8 @@ Exact externally visible contract owned by this contract element.
 |---|---|
 | <a id="s-b1436a506a"></a>1 | not=(pattern="(?:^\|/)\\.{1,2}(?:/\|$)") |
 | <a id="s-2c8822c509"></a>2 | not=(pattern="^\\s\|\\s$") |
+| <a id="s-56e1543b31"></a>3 | not=(pattern="\\u0000") |
+| <a id="s-992b8f4411"></a>4 | not=(pattern="[\\ud800-\\udfff]") |
 
 ##### <a id="s-e2f87c22de"></a>definition `CapturedFileProvenanceBinding`
 
@@ -170,7 +172,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e24a7c693d625a9a43049d7c027bdb0db2a4ae36a169e5ebcbaa13c146720fc6 -->
+<!-- exact-contract-value: 00413eb3bbb0c40fc5e2c93f1e19332445178dc9282fdd3d6bc7302ca30b1cb9 -->
 
 ```json
 {
@@ -188,6 +190,16 @@ The following JSON is the complete value owned at each machine-authority pointer
             {
               "not": {
                 "pattern": "^\\s|\\s$"
+              }
+            },
+            {
+              "not": {
+                "pattern": "\\u0000"
+              }
+            },
+            {
+              "not": {
+                "pattern": "[\\ud800-\\udfff]"
               }
             }
           ],

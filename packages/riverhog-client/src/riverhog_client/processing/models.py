@@ -13,7 +13,7 @@ from riverhog_protocol.collection_workflows import (
 )
 from riverhog_protocol.paths import (
     CollectionId,
-    normalize_relpath,
+    validate_canonical_relpath,
     validate_collection_id,
 )
 
@@ -57,7 +57,7 @@ class ClaimedArtifact:
     control: bool = False
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "path", normalize_relpath(self.path))
+        object.__setattr__(self, "path", validate_canonical_relpath(self.path))
         if isinstance(self.bytes, bool) or self.bytes < 0:
             raise ValueError("claimed artifact byte count must be non-negative")
         object.__setattr__(self, "sha256", _sha256(self.sha256, "claimed artifact identity"))

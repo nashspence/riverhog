@@ -30,7 +30,9 @@ class PathNormalizationError(ValueError):
 CANONICAL_RELPATH_PATTERN = r"^[^/\\]+(?:/[^/\\]+)*$"
 
 
-def validate_canonical_relpath(value: str) -> str:
+def validate_canonical_relpath(value: object) -> str:
+    if not isinstance(value, str):
+        raise PathNormalizationError("path must be text")
     normalized = normalize_relpath(value)
     if normalized != value:
         raise PathNormalizationError("path must be canonical")
@@ -49,6 +51,8 @@ type CanonicalRelPath = Annotated[
             "allOf": [
                 {"not": {"pattern": r"(?:^|/)\.{1,2}(?:/|$)"}},
                 {"not": {"pattern": r"^\s|\s$"}},
+                {"not": {"pattern": r"\u0000"}},
+                {"not": {"pattern": r"[\ud800-\udfff]"}},
             ],
         },
     ),
@@ -57,6 +61,12 @@ type CanonicalRelPath = Annotated[
 
 
 def normalize_relpath(raw: str) -> str:
+    if not isinstance(raw, str):
+        raise PathNormalizationError("path must be text")
+    if "\x00" in raw:
+        raise PathNormalizationError("path must not contain NUL")
+    if any(0xD800 <= ord(character) <= 0xDFFF for character in raw):
+        raise PathNormalizationError("path must contain Unicode scalar values")
     candidate = unicodedata.normalize("NFC", raw.strip()).replace("\\", "/")
     if not candidate or candidate in {".", "/"}:
         raise PathNormalizationError("path must not be empty")
@@ -72,7 +82,10 @@ def normalize_relpath(raw: str) -> str:
         parts.append(part)
     if not parts:
         raise PathNormalizationError("path must not be empty")
-    return "/".join(parts)
+    normalized = "/".join(parts)
+    if len(normalized) > 4096:
+        raise PathNormalizationError("path exceeds its 4096 character limit")
+    return normalized
 
 
 def relpath_sort_key(value: str) -> bytes:

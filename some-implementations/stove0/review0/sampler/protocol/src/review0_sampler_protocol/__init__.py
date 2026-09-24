@@ -6,7 +6,7 @@ from typing import Any, Literal, Self
 
 from http_api_contracts import HttpErrorContract, HttpOperationContract
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, field_validator, model_validator
-from riverhog_protocol.paths import normalize_relpath
+from riverhog_protocol.paths import validate_canonical_relpath
 from stove0_protocol import JsonSchemaValidationProfile, OciImageId, canonical_json_sha256
 
 SAMPLER_PROTOCOL: Literal["review0-sampler/v1"] = "review0-sampler/v1"
@@ -57,7 +57,8 @@ class SamplerInput(SamplerModel):
     @field_validator("path")
     @classmethod
     def canonical_path(cls, value: str) -> str:
-        if normalize_relpath(value) != value or not value.startswith("input/"):
+        validate_canonical_relpath(value)
+        if not value.startswith("input/"):
             raise ValueError("sampler input path must be canonical beneath input/")
         return value
 
@@ -72,7 +73,8 @@ class SamplerWindow(SamplerModel):
     @field_validator("output_path")
     @classmethod
     def canonical_output_path(cls, value: str) -> str:
-        if normalize_relpath(value) != value or not value.startswith("output/"):
+        validate_canonical_relpath(value)
+        if not value.startswith("output/"):
             raise ValueError("sampler output path must be canonical beneath output/")
         return value
 
@@ -107,7 +109,8 @@ class SamplerRequestPayload(SamplerModel):
     @field_validator("cancellation_path")
     @classmethod
     def canonical_cancellation_path(cls, value: str) -> str:
-        if normalize_relpath(value) != value or not value.startswith("control/"):
+        validate_canonical_relpath(value)
+        if not value.startswith("control/"):
             raise ValueError("sampler cancellation path must be beneath control/")
         return value
 
@@ -146,7 +149,8 @@ class SamplerOutput(SamplerModel):
     @field_validator("path")
     @classmethod
     def canonical_path(cls, value: str) -> str:
-        if normalize_relpath(value) != value or not value.startswith("output/"):
+        validate_canonical_relpath(value)
+        if not value.startswith("output/"):
             raise ValueError("sampler result path must be canonical beneath output/")
         return value
 

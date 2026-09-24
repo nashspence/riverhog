@@ -25,7 +25,7 @@ Get Collection File Provenance
 | Name | In | Required | Default | Schema |
 |---|---|---:|---|---|
 | <a id="s-163dce2876"></a>`collection_id` | path | yes | not declared | allOf=[(type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])"); (not=(const="0"))]; title="Collection Id" |
-| <a id="s-24db11cead"></a>`path` | path | yes | not declared | type="string"; format="riverhog-canonical-relpath-v1"; allOf=[(not=(pattern="(?:^\|/)\\.{1,2}(?:/\|$)")); (not=(pattern="^\\s\|\\s$"))]; maxLength=4096; minLength=1; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; title="Path"; x-unicode-normalization="NFC" |
+| <a id="s-24db11cead"></a>`path` | path | yes | not declared | type="string"; format="riverhog-canonical-relpath-v1"; allOf=[(not=(pattern="(?:^\|/)\\.{1,2}(?:/\|$)")); (not=(pattern="^\\s\|\\s$")); (not=(pattern="\\u0000")); (not=(pattern="[\\ud800-\\udfff]"))]; maxLength=4096; minLength=1; pattern="^[^/\\\\]+(?:/[^/\\\\]+)*$"; title="Path"; x-unicode-normalization="NFC" |
 
 ### Responses
 
@@ -143,7 +143,7 @@ This generated record links maintained client, CLI, response-authority, and prov
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5ae59bc1e6aca5dde72fd58c230f969a81805e6445d5ef4e401b980e03c7543f -->
+<!-- exact-contract-value: 19a76e475dd1340ff5c09ef53f5e8802ef4caa1ccf798ab2b1512e806a1fb910 -->
 
 ```json
 {
@@ -182,6 +182,16 @@ The following JSON is the complete value owned at each machine-authority pointer
           {
             "not": {
               "pattern": "^\\s|\\s$"
+            }
+          },
+          {
+            "not": {
+              "pattern": "\\u0000"
+            }
+          },
+          {
+            "not": {
+              "pattern": "[\\ud800-\\udfff]"
             }
           }
         ],

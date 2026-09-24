@@ -32,5 +32,5 @@ The following stages count the same discovered universe; their equality is a clo
 | Candidates | 4214 |
 | Included | 4214 |
 | Contract elements | 4214 |
-| Extent decisions | 1996 |
+| Extent decisions | 1997 |
 | Source authorities | 477 |

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 from riverhog_archive_contracts import CollectionArchiveManifest
 from riverhog_protocol.pack_ingress import canonical_json_bytes
-from riverhog_protocol.paths import normalize_relpath
+from riverhog_protocol.paths import validate_canonical_relpath
 
 from riverhog_core.archive_manifest import build_collection_archive_manifest
 from riverhog_core.archive_root import SealedArchiveRoot
@@ -202,7 +202,7 @@ def build_archive_catalog_projection(
             ArchiveSegmentProjection(
                 collection_id=collection_id,
                 store=store,
-                path=normalize_relpath(raw_receipt.source_path),
+                path=validate_canonical_relpath(raw_receipt.source_path),
                 file_offset=raw_receipt.file_offset,
                 volume_id=raw_receipt.volume_id,
                 bytes=raw_receipt.plaintext_bytes,

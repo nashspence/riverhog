@@ -26,7 +26,7 @@ from riverhog_storage_adapter_protocol import (
     WriteSegmentListRequest,
     WriteSession,
     WriteStartRequest,
-    normalize_object_path,
+    validate_object_path,
 )
 
 from riverhog_storage_adapter_support.client import (
@@ -142,7 +142,7 @@ def run_storage_adapter_conformance(
     this protocol-level check.
     """
 
-    normalized_prefix = normalize_object_path(object_prefix, allow_prefix=True).rstrip("/")
+    normalized_prefix = validate_object_path(object_prefix, allow_prefix=True).rstrip("/")
     cleanup_prefix = f"{normalized_prefix}/"
     descriptor = client.descriptor()
     checks: list[str] = ["descriptor"]
@@ -502,7 +502,7 @@ def _parser() -> argparse.ArgumentParser:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
-    base_prefix = normalize_object_path(args.object_prefix, allow_prefix=True).rstrip("/")
+    base_prefix = validate_object_path(args.object_prefix, allow_prefix=True).rstrip("/")
     run_prefix = f"{base_prefix}/{uuid.uuid4().hex}"
     client = StorageAdapterClient.from_token_file(
         args.base_url,
