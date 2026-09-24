@@ -27,11 +27,23 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-47daac55a0"></a>`attempts` | yes | type="integer"; minimum=0; title="Attempts" |  |
 | <a id="s-6ca57b3926"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
 | <a id="s-b6bb0512f6"></a>`failure` | yes | anyOf=[(type="string"); (type="null")]; title="Failure" |  |
-| <a id="s-c7a8ebe491"></a>`finished_at` | yes | anyOf=[(type="string"); (type="null")]; title="Finished At" |  |
-| <a id="s-f484534cb7"></a>`requested_at` | yes | type="string"; title="Requested At" |  |
+| <a id="s-c7a8ebe491"></a>`finished_at` | yes | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Finished At" |  |
+| <a id="s-f484534cb7"></a>`requested_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Requested At" |  |
 | <a id="s-de3dc86efe"></a>`result` | yes | anyOf=[([CollectionProvenanceVerificationOut](schemas-collectionprovenanceverificationout.md)); (type="null")] |  |
-| <a id="s-e54a5477bb"></a>`started_at` | yes | anyOf=[(type="string"); (type="null")]; title="Started At" |  |
+| <a id="s-e54a5477bb"></a>`started_at` | yes | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Started At" |  |
 | <a id="s-32e51516fe"></a>`state` | yes | type="string"; enum=["queued","running","canceling","succeeded","failed","canceled"]; title="State" |  |
+
+### Progression, limits, and lifecycle
+
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
+
+Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-public-representation"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-e66492f752"></a>[field finished_at · string value](#s-c7a8ebe491) | `length · characters · fixed` | shared above |
+| [field requested_at](#s-f484534cb7) | `length · characters · fixed` | shared above |
+| <a id="s-6c471ba2c8"></a>[field started_at · string value](#s-e54a5477bb) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -42,7 +54,10 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
+[Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
+
 - <a id="pa-7f92ebf17b"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-3b85effb90"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -67,7 +82,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: de7cbad7331cf2f94febc0c3d07c3b32e066668ffe9796a2c2c66063f8e4cfc5 -->
+<!-- exact-contract-value: 76fc929b6c5b95ad22357a1e87da9da557603845414817a280e7d3cd87d9f5c2 -->
 
 ```json
 {
@@ -95,6 +110,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "finished_at": {
       "anyOf": [
         {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {
@@ -104,6 +122,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Finished At"
     },
     "requested_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Requested At",
       "type": "string"
     },
@@ -120,6 +141,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "started_at": {
       "anyOf": [
         {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {

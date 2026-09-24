@@ -19,6 +19,7 @@ from riverhog_provenance_contracts import (
     ProvenanceJournalId,
     ProvenanceStateId,
 )
+from time_formats import CanonicalUtcTimestamp
 
 from riverhog_api.schemas.common import RiverhogModel
 
@@ -206,9 +207,9 @@ class CollectionProvenanceVerificationOut(
 class CollectionProvenanceVerificationJobOut(RiverhogModel):
     collection_id: CollectionId
     state: Literal["queued", "running", "canceling", "succeeded", "failed", "canceled"]
-    requested_at: str
-    started_at: str | None
-    finished_at: str | None
+    requested_at: CanonicalUtcTimestamp
+    started_at: CanonicalUtcTimestamp | None
+    finished_at: CanonicalUtcTimestamp | None
     attempts: int = Field(ge=0)
     result: CollectionProvenanceVerificationOut | None
     failure: str | None

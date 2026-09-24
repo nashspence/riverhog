@@ -12,7 +12,6 @@ import threading
 import time
 import tracemalloc
 from collections.abc import Iterable, Sequence
-from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, cast
@@ -43,6 +42,7 @@ from sqlalchemy import select, text
 from sqlalchemy.engine import Engine, make_url
 from sqlalchemy.sql.compiler import IdentifierPreparer
 from stove0_core.persistence import stove0_state_schema
+from time_formats import utc_timestamp_now
 
 from tests.support.qualification.database_selector_plans import (
     DATABASE_PLAN_OPERATIONS as _DATABASE_PLAN_OPERATIONS,
@@ -973,7 +973,7 @@ def build_evidence(database_url: str, *, source_sha: str) -> dict[str, object]:
     return {
         "schema": SCHEMA,
         "source_sha": source_sha,
-        "generated_at": datetime.now(UTC).isoformat(),
+        "generated_at": utc_timestamp_now(),
         "cardinalities": list(CARDINALITIES),
         "selector_contract": {
             "applications": applications,

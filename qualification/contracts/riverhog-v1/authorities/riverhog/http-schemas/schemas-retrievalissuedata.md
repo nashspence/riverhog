@@ -26,7 +26,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-e41e5e822e"></a>`actor` | yes | [RiverhogActor](schemas-riverhogactor.md) |  |
 | <a id="s-cacf608ce3"></a>`cause` | no | anyOf=[([RiverhogEventCause](schemas-riverhogeventcause.md)); (type="null")] |  |
-| <a id="s-4c4268ef6a"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; title="Collection Created At" |  |
+| <a id="s-4c4268ef6a"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Collection Created At" |  |
 | <a id="s-dc91964e2c"></a>`collection_id` | no | anyOf=[([CollectionId](schemas-collectionid.md)); (type="null")] |  |
 | <a id="s-1ea7f25788"></a>`collection_ids` | yes | type="array"; items=([CollectionId](schemas-collectionid.md)); minItems=1; title="Collection Ids" |  |
 | <a id="s-dd874d7287"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; title="Context" |  |
@@ -50,7 +50,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-7747973112"></a>[field collection_created_at · string value](#s-4c4268ef6a) | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
+| <a id="s-7747973112"></a>[field collection_created_at · string value](#s-4c4268ef6a) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 | [field context · object value](#s-68023b2f77) | `encoded-size · bytes · contract_max` | maximum=4096; reason="bounded-lifecycle-event-context"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
 | [field error](#s-99f1d4d657) | `length · characters · contract_max` | maximum=16384; minimum=1; reason="schema-maximum" |
 | [field retrieval_id](#s-642cd7a6f7) | `length · characters · contract_max` | maximum=300; minimum=1; reason="schema-maximum" |
@@ -94,7 +94,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e149aec6574de95dcad648d4f68006f0d27b1c3f5728be4e18857378b36852ed -->
+<!-- exact-contract-value: f78a0562be438d205e79f610238a609a9502fb9d83f3002b690280e4aa2d36ff -->
 
 ```json
 {
@@ -116,8 +116,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "collection_created_at": {
       "anyOf": [
         {
-          "maxLength": 64,
-          "minLength": 1,
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {

@@ -18,7 +18,6 @@ import time
 from collections import Counter, defaultdict
 from collections.abc import Callable, Iterable, Iterator, Sequence
 from dataclasses import asdict, dataclass
-from datetime import UTC, datetime
 from pathlib import Path
 from statistics import median
 from typing import Any, TypeGuard, cast, get_origin, get_type_hints
@@ -52,6 +51,7 @@ from stove0_core import (
     WorkflowPreviewService,
 )
 from stove0_target_client import TargetCallbackClient
+from time_formats import utc_timestamp_now
 
 _SCRIPT_DIRECTORY = Path(__file__).resolve().parent
 if str(_SCRIPT_DIRECTORY) not in sys.path:
@@ -1075,7 +1075,7 @@ def evidence(*, source_sha: str, timings: Path) -> dict[str, object]:
     payload: dict[str, object] = {
         "schema": SCHEMA,
         "source_sha": source_sha,
-        "generated_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
+        "generated_at": utc_timestamp_now(),
         "summary": _summary(matrix),
         "qualification": {
             "extent_contract": {

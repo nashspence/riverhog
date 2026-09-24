@@ -26,13 +26,24 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-465b66cfb2"></a>`archive_root` | yes | anyOf=[([PendingArchiveRootPublicationOut](schemas-pendingarchiverootpublicationout.md)); ([UploadedArchiveRootPublicationOut](schemas-uploadedarchiverootpublicationout.md))]; title="Archive Root" |  |
 | <a id="s-461f9bfdc3"></a>`failure` | yes | type="null"; title="Failure" |  |
-| <a id="s-91c7e1fec3"></a>`last_uploaded_at` | yes | anyOf=[(type="string"); (type="null")]; title="Last Uploaded At" |  |
-| <a id="s-21e4a90300"></a>`last_verified_at` | yes | anyOf=[(type="string"); (type="null")]; title="Last Verified At" |  |
+| <a id="s-91c7e1fec3"></a>`last_uploaded_at` | yes | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Last Uploaded At" |  |
+| <a id="s-21e4a90300"></a>`last_verified_at` | yes | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Last Verified At" |  |
 | <a id="s-c956ecabd4"></a>`object_count` | yes | type="integer"; minimum=0; title="Object Count" |  |
 | <a id="s-126da85264"></a>`state` | yes | type="string"; enum=["pending","uploading","retrying"]; title="State" |  |
 | <a id="s-2c41fde9f8"></a>`storage_prefix` | yes | anyOf=[(type="string"; minLength=1); (type="null")]; title="Storage Prefix" |  |
 | <a id="s-624ee4c956"></a>`store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
 | <a id="s-2e70f18438"></a>`stored_bytes` | yes | type="integer"; minimum=0; title="Stored Bytes" |  |
+
+### Progression, limits, and lifecycle
+
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
+
+Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-public-representation"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-fd3c7c37de"></a>[field last_uploaded_at · string value](#s-91c7e1fec3) | `length · characters · fixed` | shared above |
+| <a id="s-8434123607"></a>[field last_verified_at · string value](#s-21e4a90300) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -44,7 +55,10 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
+[Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
+
 - <a id="pa-4f3c6c6e2b"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-585da3f41a"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -69,7 +83,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 03f626031ce0ea3a25b02a5259193a1083c2047db6f52e8e72ae31d6c7c24e5a -->
+<!-- exact-contract-value: 770f6b1e2330e1bf816942ae36e306e870d160dfdee8f68d2c358741f8776185 -->
 
 ```json
 {
@@ -93,6 +107,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "last_uploaded_at": {
       "anyOf": [
         {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {
@@ -104,6 +121,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "last_verified_at": {
       "anyOf": [
         {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {

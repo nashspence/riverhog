@@ -17,6 +17,7 @@ urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "
 dependencies = [
   "riverhog-provenance>=0.1,<0.2",
   "a-riverhog-windows-provenance-contract-lib>=0.1,<0.2",
+  "time-formats>=0.1,<0.2",
 ]
 
 [project.entry-points."riverhog.provenance-observers"]
@@ -25,6 +26,7 @@ a-riverhog-windows-provenance-observer = "a_riverhog_windows_provenance_observer
 [tool.uv.sources]
 riverhog-provenance = { workspace = true }
 a-riverhog-windows-provenance-contract-lib = { workspace = true }
+time-formats = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/a_riverhog_windows_provenance_observer"]

@@ -79,7 +79,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-93905fe13a"></a>`available_until` | no | anyOf=[(type="string"; maxLength=100; minLength=1); (type="null")]; default=null |  |
+| <a id="s-93905fe13a"></a>`available_until` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; default=null |  |
 | <a id="s-f15fd3367c"></a>`state` | no | type="string"; const="ready"; default="ready" |  |
 
 ##### <a id="s-8fc985c6ca"></a>definition `ReadRequested`
@@ -91,7 +91,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-998c2d9989"></a>`estimated_ready_at` | no | anyOf=[(type="string"; maxLength=100; minLength=1); (type="null")]; default=null |  |
+| <a id="s-998c2d9989"></a>`estimated_ready_at` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; default=null |  |
 | <a id="s-ef4920cf1d"></a>`state` | no | type="string"; const="requested"; default="requested" |  |
 
 ## Maintained corroboration
@@ -127,7 +127,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4801558f74f25e288cb663cab652684ce44fd72b4119a6e25e1c7be07bf3eacd -->
+<!-- exact-contract-value: 51f3355f1ab394c5b983082d6521a894e5f0edd4d2a7da337c24447cea673cb3 -->
 
 ```json
 {
@@ -179,8 +179,9 @@ The following JSON is the complete value owned at each machine-authority pointer
             "available_until": {
               "anyOf": [
                 {
-                  "maxLength": 100,
-                  "minLength": 1,
+                  "maxLength": 30,
+                  "minLength": 30,
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
                   "type": "string"
                 },
                 {
@@ -203,8 +204,9 @@ The following JSON is the complete value owned at each machine-authority pointer
             "estimated_ready_at": {
               "anyOf": [
                 {
-                  "maxLength": 100,
-                  "minLength": 1,
+                  "maxLength": 30,
+                  "minLength": 30,
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
                   "type": "string"
                 },
                 {

@@ -25,13 +25,13 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-2876199d78"></a>`attempt_count` | yes | type="integer"; minimum=0; title="Attempt Count" |  |
-| <a id="s-6df2d3fad6"></a>`created_at` | yes | type="string"; maxLength=40; minLength=1; title="Created At" |  |
+| <a id="s-6df2d3fad6"></a>`created_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Created At" |  |
 | <a id="s-c08d71353e"></a>`failure` | no | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; title="Failure" |  |
 | <a id="s-22ad3d0ba1"></a>`intent` | yes | [AdmissionIntent](schemas-admissionintent.md) |  |
-| <a id="s-95bb151c01"></a>`next_attempt_at` | no | anyOf=[(type="string"; maxLength=40; minLength=1); (type="null")]; title="Next Attempt At" |  |
+| <a id="s-95bb151c01"></a>`next_attempt_at` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Next Attempt At" |  |
 | <a id="s-c05701d9fd"></a>`preview_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Preview Sha256" |  |
 | <a id="s-21f919bc64"></a>`state` | yes | type="string"; enum=["intent","previewed","work_bound"]; title="State" |  |
-| <a id="s-500fd66991"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1; title="Updated At" |  |
+| <a id="s-500fd66991"></a>`updated_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Updated At" |  |
 | <a id="s-93af888f26"></a>`work_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Work Id" |  |
 
 ### Progression, limits, and lifecycle
@@ -40,11 +40,11 @@ Exact externally visible contract owned by this contract element.
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field created_at](#s-6df2d3fad6) | `length · characters · contract_max` | maximum=40; minimum=1; reason="schema-maximum" |
+| [field created_at](#s-6df2d3fad6) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 | <a id="s-e65943eec0"></a>[field failure · string value](#s-c08d71353e) | `length · characters · contract_max` | maximum=1000; minimum=1; reason="schema-maximum" |
-| <a id="s-975669e5c3"></a>[field next_attempt_at · string value](#s-95bb151c01) | `length · characters · contract_max` | maximum=40; minimum=1; reason="schema-maximum" |
+| <a id="s-975669e5c3"></a>[field next_attempt_at · string value](#s-95bb151c01) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 | <a id="s-b15f87ebd9"></a>[field preview_sha256 · string value](#s-c05701d9fd) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [field updated_at](#s-500fd66991) | `length · characters · contract_max` | maximum=40; minimum=1; reason="schema-maximum" |
+| [field updated_at](#s-500fd66991) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 | <a id="s-6df4164e76"></a>[field work_id · string value](#s-93af888f26) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 
 ## Maintained corroboration
@@ -83,7 +83,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9cba7e1704e5373153f3f9f290e884c6d67733a32baed9f56bec9097eb280ffe -->
+<!-- exact-contract-value: f05b694956d512a0b0836a622c35b33344c4b417203e8d983311a47dea956837 -->
 
 ```json
 {
@@ -95,8 +95,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "integer"
     },
     "created_at": {
-      "maxLength": 40,
-      "minLength": 1,
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Created At",
       "type": "string"
     },
@@ -119,8 +120,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "next_attempt_at": {
       "anyOf": [
         {
-          "maxLength": 40,
-          "minLength": 1,
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {
@@ -151,8 +153,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "updated_at": {
-      "maxLength": 40,
-      "minLength": 1,
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Updated At",
       "type": "string"
     },

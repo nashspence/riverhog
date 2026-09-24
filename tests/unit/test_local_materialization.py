@@ -24,7 +24,7 @@ from riverhog_protocol import (
 from typer.testing import CliRunner
 
 COLLECTION_ID = 1
-CREATED_AT = "2026-07-19T20:55:09.123456Z"
+CREATED_AT = "2026-07-19T20:55:09.123456000Z"
 CONTENT = b"locally materialized archive file\n"
 SECOND_CONTENT = b"another locally materialized file\n"
 MANIFEST = {

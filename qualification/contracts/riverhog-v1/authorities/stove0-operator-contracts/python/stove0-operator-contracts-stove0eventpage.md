@@ -72,7 +72,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-811bc19c53"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
 | <a id="s-d51d3dadab"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-422c8fc3cf"></a>`subject` | yes | type="string"; minLength=1 |  |
-| <a id="s-c446dc142c"></a>`time` | yes | type="string" |  |
+| <a id="s-c446dc142c"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-67943fadab"></a>`type` | yes | type="string"; const="io.riverhog.stove0.branch-set.admitted" |  |
 
 ##### <a id="s-e062cfc1fb"></a>definition `BranchSetAdmittedEventData`
@@ -108,7 +108,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-c60e55df8b"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
 | <a id="s-9b28726b6a"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-1f35f82699"></a>`subject` | yes | type="string"; minLength=1 |  |
-| <a id="s-5540310b99"></a>`time` | yes | type="string" |  |
+| <a id="s-5540310b99"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-65e1e4ff20"></a>`type` | yes | type="string"; const="io.riverhog.stove0.evaluation.created" |  |
 
 ##### <a id="s-76b044aa8b"></a>definition `EvaluationCreatedEventData`
@@ -140,7 +140,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-f6d946f88c"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
 | <a id="s-9391aa9f3b"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-6095eff361"></a>`subject` | yes | type="string"; minLength=1 |  |
-| <a id="s-053e48c4e5"></a>`time` | yes | type="string" |  |
+| <a id="s-053e48c4e5"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-cdf88f034c"></a>`type` | yes | type="string"; const="io.riverhog.stove0.evaluation.updated" |  |
 
 ##### <a id="s-bf4fa5097c"></a>definition `EvaluationUpdatedEventData`
@@ -173,7 +173,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-afd9d3befa"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
 | <a id="s-e03bdc1770"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-63c8f8a47a"></a>`subject` | yes | type="string"; minLength=1 |  |
-| <a id="s-68f32492f8"></a>`time` | yes | type="string" |  |
+| <a id="s-68f32492f8"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-8d3583f6b2"></a>`type` | yes | type="string"; const="io.riverhog.stove0.join.admitted" |  |
 
 ##### <a id="s-4d75b42669"></a>definition `JoinAdmittedEventData`
@@ -224,7 +224,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-80a7824a80"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
 | <a id="s-c1750c40bb"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-80fe67098e"></a>`subject` | yes | type="string"; minLength=1 |  |
-| <a id="s-b6397c8ca9"></a>`time` | yes | type="string" |  |
+| <a id="s-b6397c8ca9"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-0913ecfaa0"></a>`type` | yes | type="string"; const="io.riverhog.stove0.work.created" |  |
 
 ##### <a id="s-e484369c30"></a>definition `WorkCreatedEventData`
@@ -259,7 +259,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-06cb374f57"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
 | <a id="s-ef960eec2d"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-97aab70693"></a>`subject` | yes | type="string"; minLength=1 |  |
-| <a id="s-3a99c2b253"></a>`time` | yes | type="string" |  |
+| <a id="s-3a99c2b253"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-62185a28d0"></a>`type` | yes | type="string"; const="io.riverhog.stove0.work.updated" |  |
 
 ##### <a id="s-d34baf0de6"></a>definition `WorkUpdatedEventData`
@@ -309,7 +309,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a166d7747cc25a404cfc9dd9df76af4fb0cc90e6efcbf0ec023fe1299867953c -->
+<!-- exact-contract-value: 3b394f3d4a6f2c99b7f34f9ccd23a874fc21e48afbdbab8ab8b40118043a0171 -->
 
 ```json
 {
@@ -346,6 +346,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "time": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "type": {
@@ -430,6 +433,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "time": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "type": {
@@ -501,6 +507,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "time": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "type": {
@@ -577,6 +586,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "time": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "type": {
@@ -694,6 +706,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "time": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "type": {
@@ -812,6 +827,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "time": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "type": {

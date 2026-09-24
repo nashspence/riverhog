@@ -24,11 +24,11 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3b26ebd228"></a>`abandoned_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; title="Abandoned At" |  |
+| <a id="s-3b26ebd228"></a>`abandoned_at` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Abandoned At" |  |
 | <a id="s-ff86aa1856"></a>`abandonment_reason` | no | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; title="Abandonment Reason" |  |
 | <a id="s-8bfc846875"></a>`consumer` | yes | [ProcessingClaimConsumerDocument](schemas-processingclaimconsumerdocument.md) |  |
-| <a id="s-9d922404c4"></a>`created_at` | yes | type="string"; maxLength=64; minLength=1; title="Created At" |  |
-| <a id="s-672a29cfd8"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1; title="Expires At" |  |
+| <a id="s-9d922404c4"></a>`created_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Created At" |  |
+| <a id="s-672a29cfd8"></a>`expires_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Expires At" |  |
 | <a id="s-32f010eb31"></a>`fence` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-4eff6e6056"></a>`format` | yes | type="string"; const="riverhog-processing-claim/v1"; title="Format" |  |
 | <a id="s-b60202a68b"></a>`id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Id" |  |
@@ -38,10 +38,10 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-637e612ce8"></a>`output_collection_id` | no | anyOf=[([CollectionId](schemas-collectionid.md)); (type="null")] |  |
 | <a id="s-9049da54de"></a>`plan` | no | anyOf=[([ProcessingClaimPlanDocument](schemas-processingclaimplandocument.md)); (type="null")] |  |
 | <a id="s-38ac0d9a68"></a>`purpose` | yes | type="string"; maxLength=160; minLength=1; title="Purpose" |  |
-| <a id="s-7f23a91312"></a>`released_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; title="Released At" |  |
-| <a id="s-ec795af7cb"></a>`settled_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; title="Settled At" |  |
+| <a id="s-7f23a91312"></a>`released_at` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Released At" |  |
+| <a id="s-ec795af7cb"></a>`settled_at` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Settled At" |  |
 | <a id="s-bb2fa0d286"></a>`state` | yes | type="string"; enum=["active","settled","retiring","abandoned","released"]; title="State" |  |
-| <a id="s-1a8a5eaf65"></a>`updated_at` | yes | type="string"; maxLength=64; minLength=1; title="Updated At" |  |
+| <a id="s-1a8a5eaf65"></a>`updated_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Updated At" |  |
 | <a id="s-3097610fdd"></a>`work_document` | yes | type="object"; additionalProperties=(any JSON value); title="Work Document"; x-riverhog-encoded-bytes-max=4194304; x-riverhog-extent={"policy":"contract_max","reason":"bounded-work-document-envelope"} |  |
 | <a id="s-1c037e7801"></a>`work_document_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Document Sha256" |  |
 | <a id="s-8fb6149ecc"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Work Id" |  |
@@ -68,15 +68,15 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-e20c4978b2"></a>[field abandoned_at · string value](#s-3b26ebd228) | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
+| <a id="s-e20c4978b2"></a>[field abandoned_at · string value](#s-3b26ebd228) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 | <a id="s-335ccf771c"></a>[field abandonment_reason · string value](#s-ff86aa1856) | `length · characters · contract_max` | maximum=1000; minimum=1; reason="schema-maximum" |
-| [field created_at](#s-9d922404c4) | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
-| [field expires_at](#s-672a29cfd8) | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
+| [field created_at](#s-9d922404c4) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
+| [field expires_at](#s-672a29cfd8) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 | [field id](#s-b60202a68b) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [field purpose](#s-38ac0d9a68) | `length · characters · contract_max` | maximum=160; minimum=1; reason="schema-maximum" |
-| <a id="s-31c5a76041"></a>[field released_at · string value](#s-7f23a91312) | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
-| <a id="s-3585c81332"></a>[field settled_at · string value](#s-ec795af7cb) | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
-| [field updated_at](#s-1a8a5eaf65) | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
+| <a id="s-31c5a76041"></a>[field released_at · string value](#s-7f23a91312) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
+| <a id="s-3585c81332"></a>[field settled_at · string value](#s-ec795af7cb) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
+| [field updated_at](#s-1a8a5eaf65) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 | [field work_document](#s-3097610fdd) | `encoded-size · bytes · contract_max` | maximum=4194304; reason="bounded-work-document-envelope"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
 | [field work_document_sha256](#s-1c037e7801) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [field work_id](#s-8fb6149ecc) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
@@ -124,7 +124,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 545fc6826422cffb711ce119319054ebb6eb6526f3781794adfaffcadd783373 -->
+<!-- exact-contract-value: 925081c49cc407da53de2236daf2cf651f7385716e032a5a92908feb7b620160 -->
 
 ```json
 {
@@ -224,8 +224,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "abandoned_at": {
       "anyOf": [
         {
-          "maxLength": 64,
-          "minLength": 1,
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {
@@ -251,14 +252,16 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$ref": "#/components/schemas/ProcessingClaimConsumerDocument"
     },
     "created_at": {
-      "maxLength": 64,
-      "minLength": 1,
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Created At",
       "type": "string"
     },
     "expires_at": {
-      "maxLength": 64,
-      "minLength": 1,
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Expires At",
       "type": "string"
     },
@@ -321,8 +324,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "released_at": {
       "anyOf": [
         {
-          "maxLength": 64,
-          "minLength": 1,
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {
@@ -334,8 +338,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "settled_at": {
       "anyOf": [
         {
-          "maxLength": 64,
-          "minLength": 1,
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {
@@ -356,8 +361,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "updated_at": {
-      "maxLength": 64,
-      "minLength": 1,
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Updated At",
       "type": "string"
     },

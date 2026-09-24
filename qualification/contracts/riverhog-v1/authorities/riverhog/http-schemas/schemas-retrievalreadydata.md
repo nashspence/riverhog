@@ -26,11 +26,11 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-7e2852ec59"></a>`actor` | yes | [RiverhogActor](schemas-riverhogactor.md) |  |
 | <a id="s-9afac4e20b"></a>`cause` | no | anyOf=[([RiverhogEventCause](schemas-riverhogeventcause.md)); (type="null")] |  |
-| <a id="s-d9a2b57fb8"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; title="Collection Created At" |  |
+| <a id="s-d9a2b57fb8"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Collection Created At" |  |
 | <a id="s-328580e7cb"></a>`collection_id` | no | anyOf=[([CollectionId](schemas-collectionid.md)); (type="null")] |  |
 | <a id="s-59cca2fa8c"></a>`collection_ids` | yes | type="array"; items=([CollectionId](schemas-collectionid.md)); minItems=1; title="Collection Ids" |  |
 | <a id="s-e36e872632"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; title="Context" |  |
-| <a id="s-c9b96c35d6"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1; title="Expires At" |  |
+| <a id="s-c9b96c35d6"></a>`expires_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Expires At" |  |
 | <a id="s-a0510bc5ae"></a>`initiator` | yes | [RiverhogActor](schemas-riverhogactor.md) |  |
 | <a id="s-74697df86a"></a>`retrieval_id` | yes | type="string"; maxLength=300; minLength=1; title="Retrieval Id" |  |
 | <a id="s-69b850b257"></a>`state` | yes | type="string"; const="ready"; title="State" |  |
@@ -50,9 +50,9 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-234357e1a5"></a>[field collection_created_at · string value](#s-d9a2b57fb8) | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
+| <a id="s-234357e1a5"></a>[field collection_created_at · string value](#s-d9a2b57fb8) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 | [field context · object value](#s-39a0f4caa6) | `encoded-size · bytes · contract_max` | maximum=4096; reason="bounded-lifecycle-event-context"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
-| [field expires_at](#s-c9b96c35d6) | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
+| [field expires_at](#s-c9b96c35d6) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 | [field retrieval_id](#s-74697df86a) | `length · characters · contract_max` | maximum=300; minimum=1; reason="schema-maximum" |
 
 ## Maintained corroboration
@@ -94,7 +94,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ac9216466b428610bb8faef838ef0299950015db70aa3cbe29638afb1366e75b -->
+<!-- exact-contract-value: 1242fddbae61fcba0d3ab67f325c3b4dd4b702ed7ce213963ad8de58c690bf6c -->
 
 ```json
 {
@@ -116,8 +116,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "collection_created_at": {
       "anyOf": [
         {
-          "maxLength": 64,
-          "minLength": 1,
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {
@@ -162,8 +163,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Context"
     },
     "expires_at": {
-      "maxLength": 64,
-      "minLength": 1,
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Expires At",
       "type": "string"
     },

@@ -502,7 +502,7 @@ def test_restart_revalidates_projection_and_exact_published_payload(tmp_path: Pa
     unpublished_metadata = _metadata_for(root, unpublished_path)
     original_unpublished_metadata = unpublished_metadata.read_bytes()
     value = json.loads(original_unpublished_metadata)
-    value["completed_at"] = "2026-09-10T01:02:03.000000Z"
+    value["completed_at"] = "2026-09-10T01:02:03.000000000Z"
     unpublished_metadata.write_text(json.dumps(value), encoding="utf-8")
     with pytest.raises(MaterializationError, match="projection changed"):
         materialize_committed_objects(
@@ -515,7 +515,7 @@ def test_restart_revalidates_projection_and_exact_published_payload(tmp_path: Pa
     published_metadata = _metadata_for(root, published_path)
     original_published_metadata = published_metadata.read_bytes()
     value = json.loads(original_published_metadata)
-    value["completed_at"] = "2026-09-10T01:02:03.000000Z"
+    value["completed_at"] = "2026-09-10T01:02:03.000000000Z"
     published_metadata.write_text(json.dumps(value), encoding="utf-8")
     with pytest.raises(MaterializationError, match="projection changed"):
         materialize_committed_objects(

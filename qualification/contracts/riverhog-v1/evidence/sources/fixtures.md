@@ -6,7 +6,7 @@ Fixture paths and hashes identify the recorded state baseline. They do not recor
 
 | State authority | Fixture | SHA-256 |
 |---|---|---|
-| [state:a-riverhog-cli-local](authorities.md#src-196019bfcc) | [tests/fixtures/state/v1\_0001/a-riverhog-cli.sqlite.sql](../../../../../tests/fixtures/state/v1_0001/a-riverhog-cli.sqlite.sql) | `e144bb12ef2be95adead33d33220bcf0f1c6b18649f760b53f80c1f327cae865` |
+| [state:a-riverhog-cli-local](authorities.md#src-196019bfcc) | [tests/fixtures/state/v1\_0001/a-riverhog-cli.sqlite.sql](../../../../../tests/fixtures/state/v1_0001/a-riverhog-cli.sqlite.sql) | `82040b941082aa5b6a8be08b1baed102c6a2e83dadb1e018a2f06174c071b9dd` |
 | [state:a-riverhog-event-relay-cursor](authorities.md#src-eeab4d5ab7) | [tests/fixtures/state/v1\_0001/a-riverhog-event-relay.sqlite.sql](../../../../../tests/fixtures/state/v1_0001/a-riverhog-event-relay.sqlite.sql) | `e1a9a023ba0d37a3d2b0f16e0a57c9f2ac776bc168ce01c787d3e769c91515c5` |
 | [state:a-riverhog-ftp-spool-custody](authorities.md#src-97232522a5) | [tests/fixtures/state/v1\_0001/a-riverhog-ftp-spool/claim.json](../../../../../tests/fixtures/state/v1_0001/a-riverhog-ftp-spool/claim.json) | `e0fe390d073fd847e5ad34cc4962ff0d6f81b02c8654f5d15b90514753218a16` |
 | [state:a-riverhog-ftp-spool-custody](authorities.md#src-97232522a5) | [tests/fixtures/state/v1\_0001/a-riverhog-ftp-spool/payload.bin](../../../../../tests/fixtures/state/v1_0001/a-riverhog-ftp-spool/payload.bin) | `565b24bc77ebeee74f70f6c608e099956666c3589ed85146fcea7e77d9f25356` |

@@ -30,8 +30,18 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-7da3146f34"></a>`source` | yes | type="string"; minLength=1; title="Source" |  |
 | <a id="s-ff397a7488"></a>`specversion` | no | type="string"; const="1.0"; default="1.0"; title="Specversion" |  |
 | <a id="s-1b2315cd83"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; title="Subject" |  |
-| <a id="s-484880631a"></a>`time` | yes | type="string"; title="Time" |  |
+| <a id="s-484880631a"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Time" |  |
 | <a id="s-186330c03a"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.canceled"; title="Type" |  |
+
+### Progression, limits, and lifecycle
+
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
+
+Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-public-representation"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field time](#s-484880631a) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -41,7 +51,10 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
+[Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
+
 - <a id="pa-3832e1a15f"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-1b96e48a3c"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -66,7 +79,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ad60c3c6616ced4b0e974819569f76b7d31c36d32e48c2f7a3062826de5efa15 -->
+<!-- exact-contract-value: 6643995388ffdfdc695b3c9a94e572966014ea5ae7fb4736203554f74844b5c2 -->
 
 ```json
 {
@@ -110,6 +123,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Subject"
     },
     "time": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Time",
       "type": "string"
     },

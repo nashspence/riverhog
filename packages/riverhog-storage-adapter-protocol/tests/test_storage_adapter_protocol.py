@@ -175,7 +175,7 @@ def test_validated_port_rejects_direct_response_and_stream_drift() -> None:
         stored_bytes=1,
         observed_identity_assertions={},
         verified_placement="immediate",
-        completed_at="2026-08-25T00:00:00.000000Z",
+        completed_at="2026-08-25T00:00:00.000000000Z",
     )
     head_adapter = cast(
         StorageAdapterPort,
@@ -324,7 +324,7 @@ def test_completed_write_attestation_binds_exact_identity_and_placement() -> Non
         verified_content_type=request.expected_content_type,
         verified_identity_assertions=request.required_identity_assertions,
         verified_placement=request.expected_placement,
-        completed_at="2026-08-25T00:00:00.000000Z",
+        completed_at="2026-08-25T00:00:00.000000000Z",
     )
 
     validate_completed_write_response(request, receipt)
@@ -516,7 +516,7 @@ def test_object_metadata_keeps_large_object_digest_optional() -> None:
         stored_bytes=100,
         observed_identity_assertions={"riverhog-format": "riverhog-pack-volume/v1"},
         verified_placement="archive",
-        completed_at="2026-08-21T00:00:00.000000Z",
+        completed_at="2026-08-21T00:00:00.000000000Z",
     )
 
     assert receipt.revision is None
@@ -641,20 +641,20 @@ def test_response_validators_bind_exact_requests_and_closed_readiness_states() -
         stored_bytes=1,
         observed_identity_assertions=start.required_identity_assertions,
         verified_placement="archive",
-        completed_at="2026-08-25T00:00:00.000000Z",
+        completed_at="2026-08-25T00:00:00.000000000Z",
     )
     validate_object_metadata_response(head_request, metadata)
 
     read_request = ReadPreparationRequest(objects=(head_request.object,))
     status = ReadStatus(
         objects=read_request.objects,
-        readiness=ReadRequested(estimated_ready_at="2026-08-25T01:00:00.000000Z"),
+        readiness=ReadRequested(estimated_ready_at="2026-08-25T01:00:00.000000000Z"),
     )
     validate_read_status_response(read_request, status)
     assert (
         ReadStatus(
             objects=read_request.objects,
-            readiness=ReadReady(available_until="2026-08-26T00:00:00.000000Z"),
+            readiness=ReadReady(available_until="2026-08-26T00:00:00.000000000Z"),
         ).readiness.state
         == "ready"
     )
@@ -772,7 +772,7 @@ def test_small_write_and_head_success_bind_exact_storage_predicates() -> None:
         verified_content_type=request.content_type,
         verified_identity_assertions=request.required_identity_assertions,
         verified_placement=request.placement,
-        completed_at="2026-08-25T00:00:00.000000Z",
+        completed_at="2026-08-25T00:00:00.000000000Z",
     )
 
     validate_small_object_response(request, receipt)
@@ -801,7 +801,7 @@ def test_small_write_and_head_success_bind_exact_storage_predicates() -> None:
         stored_bytes=1,
         observed_identity_assertions=request.required_identity_assertions,
         verified_placement="archive",
-        completed_at="2026-08-25T00:00:00.000000Z",
+        completed_at="2026-08-25T00:00:00.000000000Z",
     )
     with pytest.raises(ValueError, match="metadata placement"):
         validate_object_metadata_response(head, metadata)
@@ -817,7 +817,7 @@ def test_small_write_and_head_success_bind_exact_storage_predicates() -> None:
 def test_storage_adapter_timestamps_require_canonical_utc(
     factory: Callable[[], object],
 ) -> None:
-    with pytest.raises(ValidationError, match="timestamp"):
+    with pytest.raises(ValidationError):
         factory()
 
 

@@ -10,7 +10,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 |---|---|
 | `lifecycle-events` | [lifecycle_events.CLOUDEVENTS_JSON_CONTENT_TYPE](../../../authorities/lifecycle-events/python/lifecycle-events-cloudevents-json-content-type.md#pa-c041d36a71) |
 | `lifecycle-events` | [lifecycle_events.CloudEvent](../../../authorities/lifecycle-events/python/lifecycle-events-cloudevent.md#pa-b731b7c842) |
-| `lifecycle-events` | [lifecycle_events.CloudEvent.validate_time](../../../authorities/lifecycle-events/python/lifecycle-events-cloudevent-validate-time.md#pa-ee0a298d31) |
 | `lifecycle-events` | [lifecycle_events.EventContext](../../../authorities/lifecycle-events/python/lifecycle-events-eventcontext.md#pa-6702f4457a) |
 | `lifecycle-events` | [lifecycle_events.EventPage](../../../authorities/lifecycle-events/python/lifecycle-events-eventpage.md#pa-f0a223d5f6) |
 | `lifecycle-events` | [lifecycle_events.EventPage.require_progress_after](../../../authorities/lifecycle-events/python/lifecycle-events-eventpage-require-progress-after.md#pa-a112b52768) |

@@ -414,7 +414,7 @@ def test_collection_contracts_expose_creation_and_encryption_identities() -> Non
     mapped = map_collection(
         CollectionSummary(
             id=CollectionId(42),
-            created_at="2026-07-26T20:00:00.000000Z",
+            created_at="2026-07-26T20:00:00.000000000Z",
             description=None,
             description_revision=0,
             description_identity="0" * 64,
@@ -430,7 +430,7 @@ def test_collection_contracts_expose_creation_and_encryption_identities() -> Non
             bytes=10,
         )
     )
-    assert mapped["created_at"] == "2026-07-26T20:00:00.000000Z"
+    assert mapped["created_at"] == "2026-07-26T20:00:00.000000000Z"
 
 
 def test_riverhog_application_access_openapi_uses_the_public_permission_and_resource_grammar() -> (

@@ -7,7 +7,6 @@ from pathlib import Path
 import pytest
 from riverhog_provenance import provenance_journal_filename
 from riverhog_provenance.common import (
-    format_utc_ns,
     locator_from_path,
     new_urn_uuid,
     retained_native_value,
@@ -17,6 +16,7 @@ from riverhog_provenance.model import (
     LargeValueDisposition,
     ObservationPolicy,
 )
+from time_formats import format_utc_ns
 
 
 def test_uuid7_urn_is_canonical() -> None:
@@ -51,8 +51,8 @@ def test_provenance_journal_filename_requires_canonical_uuid_urn(journal_id: str
 
 
 def test_format_utc_ns_preserves_nanoseconds() -> None:
-    assert format_utc_ns(1_234_567_890) == "1970-01-01T00:00:01.23456789Z"
-    assert format_utc_ns(0) == "1970-01-01T00:00:00Z"
+    assert format_utc_ns(1_234_567_890) == "1970-01-01T00:00:01.234567890Z"
+    assert format_utc_ns(0) == "1970-01-01T00:00:00.000000000Z"
 
 
 def test_locator_preserves_non_utf8_path_bytes() -> None:

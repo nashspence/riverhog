@@ -584,10 +584,14 @@ def test_portable_core_listener_runtime_and_platform_dependency_direction_is_exa
                 / f"some-implementations/riverhog/provenance/observers/{platform}/pyproject.toml"
             ).read_text(encoding="utf-8")
         )
-        assert declared_project_dependencies(observer_config) == {
+        expected_observer_dependencies = {
             "riverhog-provenance",
             contract,
         }
+        if platform == "windows":
+            # FILETIME observations preserve 100 ns precision through the shared UTC formatter.
+            expected_observer_dependencies.add("time-formats")
+        assert declared_project_dependencies(observer_config) == expected_observer_dependencies
         contract_config = tomllib.loads(
             (
                 REPO

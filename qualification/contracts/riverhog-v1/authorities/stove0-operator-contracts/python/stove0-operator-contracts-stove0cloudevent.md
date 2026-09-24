@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-2d9ef24fc3"></a>`kind`: `"class"`
-- <a id="s-489444ae84"></a>`signature`: `"\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Annotated[str, MinLen(min_length=1)], subject: Annotated[str, MinLen(min_length=1)], time: str, datacontenttype: Literal['application/json'] = 'application/json', data: Any) -> None\""`
+- <a id="s-489444ae84"></a>`signature`: `"\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Annotated[str, MinLen(min_length=1)], subject: Annotated[str, MinLen(min_length=1)], time: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)], datacontenttype: Literal['application/json'] = 'application/json', data: Any) -> None\""`
 
 #### Validated model schema
 
@@ -42,7 +42,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-503011d03a"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
 | <a id="s-11497c7367"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-20c1c814af"></a>`subject` | yes | type="string"; minLength=1 |  |
-| <a id="s-cca47fbd88"></a>`time` | yes | type="string" |  |
+| <a id="s-cca47fbd88"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-7b8dd11a65"></a>`type` | yes | type="string"; minLength=1 |  |
 
 ## Maintained corroboration
@@ -50,7 +50,6 @@ Exact externally visible contract owned by this contract element.
 ### Related interface records
 
 - [exact_subject](stove0-operator-contracts-stove0cloudevent-exact-subject.md)
-- [validate_time](stove0-operator-contracts-stove0cloudevent-validate-time.md)
 
 ## Governing policies
 
@@ -79,7 +78,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 08ba5fa09e14aa6f6130d74d1f4b1ec321bebe73184662eb20955a1faa4e666c -->
+<!-- exact-contract-value: 1da8323709b98aa879ae8345627e64122e7fdf9a7a7758b6ea94f983644f4e35 -->
 
 ```json
 {
@@ -112,6 +111,9 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "time": {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         "type": {
@@ -129,7 +131,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Annotated[str, MinLen(min_length=1)], subject: Annotated[str, MinLen(min_length=1)], time: str, datacontenttype: Literal['application/json'] = 'application/json', data: Any) -> None\""
+    "signature": "\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Annotated[str, MinLen(min_length=1)], subject: Annotated[str, MinLen(min_length=1)], time: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)], datacontenttype: Literal['application/json'] = 'application/json', data: Any) -> None\""
   },
   "distribution": "stove0-operator-contracts",
   "module": "stove0_operator_contracts",

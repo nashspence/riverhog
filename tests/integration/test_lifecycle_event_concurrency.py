@@ -87,7 +87,7 @@ def test_event_reads_and_concurrent_context_reapers_do_only_bounded_work(
             subject=str(ordinal + 1),
             data=_event_data(ordinal + 1),
             context_json='{"route":"fixture"}',
-            context_expires_at="2000-01-01T00:00:00.000000Z",
+            context_expires_at="2000-01-01T00:00:00.000000000Z",
         )
     first.emit(
         owner_principal_id="fixture",
@@ -95,7 +95,7 @@ def test_event_reads_and_concurrent_context_reapers_do_only_bounded_work(
         subject="24",
         data=_event_data(24),
         context_json='{"route":"future"}',
-        context_expires_at="2999-01-01T00:00:00.000000Z",
+        context_expires_at="2999-01-01T00:00:00.000000000Z",
     )
 
     page = first.page(owner_principal_id="fixture", after=None, limit=3)
@@ -108,7 +108,7 @@ def test_event_reads_and_concurrent_context_reapers_do_only_bounded_work(
                 .select_from(LifecycleEventRecord)
                 .where(
                     LifecycleEventRecord.context_json.is_not(None),
-                    LifecycleEventRecord.context_expires_at == "2000-01-01T00:00:00.000000Z",
+                    LifecycleEventRecord.context_expires_at == "2000-01-01T00:00:00.000000000Z",
                 )
             )
             == 23

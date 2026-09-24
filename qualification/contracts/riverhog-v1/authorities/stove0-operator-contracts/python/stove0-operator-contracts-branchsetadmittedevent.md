@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-05870c1e04"></a>`kind`: `"class"`
-- <a id="s-30a03ecf14"></a>`signature`: `"\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Literal['io.riverhog.stove0.branch-set.admitted'], subject: Annotated[str, MinLen(min_length=1)], time: str, datacontenttype: Literal['application/json'] = 'application/json', data: stove0_operator_contracts.BranchSetAdmittedEventData) -> None\""`
+- <a id="s-30a03ecf14"></a>`signature`: `"\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Literal['io.riverhog.stove0.branch-set.admitted'], subject: Annotated[str, MinLen(min_length=1)], time: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)], datacontenttype: Literal['application/json'] = 'application/json', data: stove0_operator_contracts.BranchSetAdmittedEventData) -> None\""`
 
 #### Validated model schema
 
@@ -42,7 +42,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-00409b580d"></a>`source` | yes | type="string"; const="urn:riverhog:stove0" |  |
 | <a id="s-c31ef44a03"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-a19d40f37d"></a>`subject` | yes | type="string"; minLength=1 |  |
-| <a id="s-024d0cdc1b"></a>`time` | yes | type="string" |  |
+| <a id="s-024d0cdc1b"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-3e97f83f26"></a>`type` | yes | type="string"; const="io.riverhog.stove0.branch-set.admitted" |  |
 
 ##### Definitions
@@ -71,7 +71,6 @@ Exact externally visible contract owned by this contract element.
 ### Related interface records
 
 - [exact_subject](stove0-operator-contracts-branchsetadmittedevent-exact-subject.md)
-- [validate_time](stove0-operator-contracts-branchsetadmittedevent-validate-time.md)
 
 ## Governing policies
 
@@ -100,7 +99,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d74d7f4c0a7add424ab5b70d773ab426d16543042344946f8907ebbed3b9f4cf -->
+<!-- exact-contract-value: e34e9e62eebe9b6c704cd819a1507cfb781183af7f95fc6fd42921710ece6238 -->
 
 ```json
 {
@@ -175,6 +174,9 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "string"
         },
         "time": {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         "type": {
@@ -192,7 +194,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Literal['io.riverhog.stove0.branch-set.admitted'], subject: Annotated[str, MinLen(min_length=1)], time: str, datacontenttype: Literal['application/json'] = 'application/json', data: stove0_operator_contracts.BranchSetAdmittedEventData) -> None\""
+    "signature": "\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Literal['urn:riverhog:stove0'], type: Literal['io.riverhog.stove0.branch-set.admitted'], subject: Annotated[str, MinLen(min_length=1)], time: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)], datacontenttype: Literal['application/json'] = 'application/json', data: stove0_operator_contracts.BranchSetAdmittedEventData) -> None\""
   },
   "distribution": "stove0-operator-contracts",
   "module": "stove0_operator_contracts",

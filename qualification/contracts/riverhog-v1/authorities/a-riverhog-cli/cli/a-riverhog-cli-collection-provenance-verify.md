@@ -211,7 +211,7 @@ false
 
 ### `/external_contract/cli/a-riverhog-cli/commands/collection/commands/provenance/commands/verify/result_contract`
 
-<!-- exact-contract-value: adab3afac10cef9ee74adb3b85d78143bce9013fd512ef7c036864c4362d598d -->
+<!-- exact-contract-value: ba278011e8ece020f1f8fcb65a96fa36391005553fa68293a61cbc5fdcc58523 -->
 
 ```json
 {
@@ -340,6 +340,9 @@ false
               "finished_at": {
                 "anyOf": [
                   {
+                    "maxLength": 30,
+                    "minLength": 30,
+                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
                     "type": "string"
                   },
                   {
@@ -349,6 +352,9 @@ false
                 "title": "Finished At"
               },
               "requested_at": {
+                "maxLength": 30,
+                "minLength": 30,
+                "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
                 "title": "Requested At",
                 "type": "string"
               },
@@ -365,6 +371,9 @@ false
               "started_at": {
                 "anyOf": [
                   {
+                    "maxLength": 30,
+                    "minLength": 30,
+                    "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
                     "type": "string"
                   },
                   {

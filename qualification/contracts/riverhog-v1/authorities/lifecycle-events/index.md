@@ -4,8 +4,8 @@
 
 Durable CloudEvents lifecycle log and client primitives.
 
-Contract elements: **26** · Extent decisions: **0**
+Contract elements: **25** · Extent decisions: **0**
 
 ## Interfaces
 
-- [Python](python/index.md) (26)
+- [Python](python/index.md) (25)

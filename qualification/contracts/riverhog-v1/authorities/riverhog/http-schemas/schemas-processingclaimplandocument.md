@@ -34,7 +34,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-b014f9416d"></a>`operation` | yes | [OperationIdentityDocument](schemas-operationidentitydocument.md) |  |
 | <a id="s-6904c65b63"></a>`retirement_grace_seconds` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=0 |  |
 | <a id="s-d49cde6da8"></a>`retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"]; title="Retirement Policy" |  |
-| <a id="s-0c58a348ae"></a>`sealed_at` | yes | type="string"; maxLength=64; minLength=1; title="Sealed At" |  |
+| <a id="s-0c58a348ae"></a>`sealed_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Sealed At" |  |
 
 ### <a id="s-1114014bd6"></a>`if`
 
@@ -71,7 +71,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [field controller_evidence](#s-c31b744472) | `encoded-size · bytes · contract_max` | maximum=16777216; reason="bounded-controller-evidence-envelope"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
 | [field controller_evidence_sha256](#s-827ae4b73c) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [field execution_id](#s-68f89f7550) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [field sealed_at](#s-0c58a348ae) | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
+| [field sealed_at](#s-0c58a348ae) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 
 ## Maintained corroboration
 
@@ -113,7 +113,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 61cfc5cedb832bd0c65e67fc02c6ec5e25741a515214c3e575289da2f6e096be -->
+<!-- exact-contract-value: 06fb0e896c6cbeef17f895dca9071465c3b193d48d5d7f2ebe65fc446058df53 -->
 
 ```json
 {
@@ -168,8 +168,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "sealed_at": {
-      "maxLength": 64,
-      "minLength": 1,
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Sealed At",
       "type": "string"
     }

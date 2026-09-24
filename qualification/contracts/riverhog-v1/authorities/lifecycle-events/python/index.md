@@ -10,7 +10,6 @@ Declared public imports and their selected exact structural contracts.
 
 - [CLOUDEVENTS_JSON_CONTENT_TYPE](lifecycle-events-cloudevents-json-content-type.md)
 - [CloudEvent](lifecycle-events-cloudevent.md)
-  - [validate_time](lifecycle-events-cloudevent-validate-time.md)
 - [EventContext](lifecycle-events-eventcontext.md)
 - [EventPage](lifecycle-events-eventpage.md)
   - [require_progress_after](lifecycle-events-eventpage-require-progress-after.md)

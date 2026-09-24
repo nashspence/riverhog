@@ -256,7 +256,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "configuration-environment-pattern": 2,
         "openapi": 3,
         "protocol": 35,
-        "python": 63,
+        "python": 64,
         "release": 1,
         "release-distribution": 72,
         "release-images": 1,
@@ -267,7 +267,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     assert trace["coverage"]["extent_decisions"] == len(extents["decisions"])
     assert trace["coverage"]["operation_qualification_records"] == 147
     assert trace["python_registry"]["coverage"] == {
-        "detected": 63,
+        "detected": 64,
         "resolved": len(trace["python_registry"]["resolutions"]),
         "protected": len(external["python"]),
         "unresolved": 0,

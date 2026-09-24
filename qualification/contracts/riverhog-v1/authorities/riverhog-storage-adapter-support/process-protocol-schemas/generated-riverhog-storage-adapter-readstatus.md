@@ -70,7 +70,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-8f1c09c270"></a>`available_until` | no | anyOf=[(type="string"; maxLength=100; minLength=1); (type="null")]; default=null; title="Available Until" |  |
+| <a id="s-8f1c09c270"></a>`available_until` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; default=null; title="Available Until" |  |
 | <a id="s-6593f5851e"></a>`state` | no | type="string"; const="ready"; default="ready"; title="State" |  |
 
 ### <a id="s-c23f02270e"></a>definition `ReadRequested`
@@ -83,7 +83,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ed34680d49"></a>`estimated_ready_at` | no | anyOf=[(type="string"; maxLength=100; minLength=1); (type="null")]; default=null; title="Estimated Ready At" |  |
+| <a id="s-ed34680d49"></a>`estimated_ready_at` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; default=null; title="Estimated Ready At" |  |
 | <a id="s-a235938066"></a>`state` | no | type="string"; const="requested"; default="requested"; title="State" |  |
 
 ### Progression, limits, and lifecycle
@@ -98,12 +98,12 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
-Shared facts for every subject below: maximum=100; minimum=1; reason="schema-maximum"
+Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-public-representation"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-b6fb007001"></a>[definition ReadReady · field available_until · string value](#s-8f1c09c270) | `length · characters · contract_max` | shared above |
-| <a id="s-ab68818a64"></a>[definition ReadRequested · field estimated_ready_at · string value](#s-ed34680d49) | `length · characters · contract_max` | shared above |
+| <a id="s-b6fb007001"></a>[definition ReadReady · field available_until · string value](#s-8f1c09c270) | `length · characters · fixed` | shared above |
+| <a id="s-ab68818a64"></a>[definition ReadRequested · field estimated_ready_at · string value](#s-ed34680d49) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -142,7 +142,7 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c2e15c25cf8ffc82c41b134eb06692ae3c3138226cfdc381c64e277774f403a6 -->
+<!-- exact-contract-value: 77ae76b58c58e37deab0eb7b5b55f1b8e3e3fecf99ab1c5348051419dd65e0c0 -->
 
 ```json
 {
@@ -196,8 +196,9 @@ The following JSON is the complete value owned at each machine-authority pointer
         "available_until": {
           "anyOf": [
             {
-              "maxLength": 100,
-              "minLength": 1,
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             {
@@ -223,8 +224,9 @@ The following JSON is the complete value owned at each machine-authority pointer
         "estimated_ready_at": {
           "anyOf": [
             {
-              "maxLength": 100,
-              "minLength": 1,
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             {

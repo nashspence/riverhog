@@ -24,9 +24,19 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-6548249a87"></a>`last_verified_at` | yes | type="string"; title="Last Verified At" |  |
+| <a id="s-6548249a87"></a>`last_verified_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Last Verified At" |  |
 | <a id="s-ae86cb6aca"></a>`remote_storage_bytes` | yes | type="integer"; title="Remote Storage Bytes" |  |
 | <a id="s-a38cb1ae87"></a>`store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
+
+### Progression, limits, and lifecycle
+
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
+
+Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-public-representation"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field last_verified_at](#s-6548249a87) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -36,7 +46,10 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
+[Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
+
 - <a id="pa-72fb6d99e8"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-83a493746d"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -61,13 +74,16 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6180f1093894f89de000aeda85262465faadc86cc8d63c5f7dfccb30d6e0c50c -->
+<!-- exact-contract-value: 8971d3452741d73b37c78ba89b3784a7e36d9d23f34a45b20251fc0bb378af2d -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
     "last_verified_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Last Verified At",
       "type": "string"
     },

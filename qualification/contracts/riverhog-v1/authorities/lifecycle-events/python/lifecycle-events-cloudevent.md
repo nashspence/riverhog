@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-b267ee0cbf"></a>`kind`: `"class"`
-- <a id="s-ea7ddd3dda"></a>`signature`: `"\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Annotated[str, MinLen(min_length=1)], type: Annotated[str, MinLen(min_length=1)], subject: Annotated[str \| None, MinLen(min_length=1)] = None, time: str, datacontenttype: Literal['application/json'] = 'application/json', data: dict[str, typing.Any] = <factory>) -> None\""`
+- <a id="s-ea7ddd3dda"></a>`signature`: `"\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Annotated[str, MinLen(min_length=1)], type: Annotated[str, MinLen(min_length=1)], subject: Annotated[str \| None, MinLen(min_length=1)] = None, time: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)], datacontenttype: Literal['application/json'] = 'application/json', data: dict[str, typing.Any] = <factory>) -> None\""`
 
 #### Validated model schema
 
@@ -42,14 +42,8 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-ffcf800cd2"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-6194936dee"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-722293f09c"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
-| <a id="s-687ecd37d4"></a>`time` | yes | type="string" |  |
+| <a id="s-687ecd37d4"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-45e923bd2e"></a>`type` | yes | type="string"; minLength=1 |  |
-
-## Maintained corroboration
-
-### Related interface records
-
-- [validate_time](lifecycle-events-cloudevent-validate-time.md)
 
 ## Governing policies
 
@@ -78,7 +72,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: ccbd62dc77c4b42d31bb62e5c5630c3203ee2aba228af4a43261274b62d8292f -->
+<!-- exact-contract-value: ca4fb8a0fd050472b7dd6dbf76582e971bc0b6a0dbf937352f8fed4360596b78 -->
 
 ```json
 {
@@ -122,6 +116,9 @@ The following JSON is the complete value owned at each machine-authority pointer
           "default": null
         },
         "time": {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         "type": {
@@ -137,7 +134,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Annotated[str, MinLen(min_length=1)], type: Annotated[str, MinLen(min_length=1)], subject: Annotated[str | None, MinLen(min_length=1)] = None, time: str, datacontenttype: Literal['application/json'] = 'application/json', data: dict[str, typing.Any] = <factory>) -> None\""
+    "signature": "\"(*, specversion: Literal['1.0'] = '1.0', id: Annotated[str, MinLen(min_length=1)], source: Annotated[str, MinLen(min_length=1)], type: Annotated[str, MinLen(min_length=1)], subject: Annotated[str | None, MinLen(min_length=1)] = None, time: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)], datacontenttype: Literal['application/json'] = 'application/json', data: dict[str, typing.Any] = <factory>) -> None\""
   },
   "distribution": "lifecycle-events",
   "module": "lifecycle_events",

@@ -6,6 +6,7 @@ from http_api_contracts import BrowsePageToken
 from pydantic import Field
 from riverhog_application_access import ApplicationKeyId, ApplicationName, MonthlyDownloadQuotaBytes
 from riverhog_protocol import DownloadQuotaSort, SortOrder
+from time_formats import CanonicalUtcTimestamp
 
 from riverhog_api.schemas.common import RiverhogModel
 
@@ -16,8 +17,8 @@ class KeyDownloadQuotaOut(RiverhogModel):
     key_id: ApplicationKeyId
     key_status: Literal["active", "expired", "revoked"]
     monthly_bytes: MonthlyDownloadQuotaBytes | None
-    month_started_at: str
-    resets_at: str
+    month_started_at: CanonicalUtcTimestamp
+    resets_at: CanonicalUtcTimestamp
     accounted_bytes: int = Field(ge=0)
     reserved_bytes: int = Field(ge=0)
     remaining_bytes: int | None = Field(ge=0)

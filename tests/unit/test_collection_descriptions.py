@@ -62,7 +62,7 @@ from sqlalchemy import delete, select
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
 from tests.unit.db_helpers import sqlite_url
 
-NOW = "2026-09-07T00:00:00.000000Z"
+NOW = "2026-09-07T00:00:00.000000000Z"
 DESCRIPTION = TypeAdapter(CollectionDescription)
 PRINCIPAL = Principal(
     id="catalog-editor",

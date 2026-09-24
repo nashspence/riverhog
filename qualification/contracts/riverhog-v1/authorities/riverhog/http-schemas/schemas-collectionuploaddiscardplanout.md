@@ -30,7 +30,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-7d087eddae"></a>`challenge` | yes | anyOf=[(type="string"); (type="null")]; title="Challenge" |  |
 | <a id="s-bb62e75af0"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
 | <a id="s-ff4cd61355"></a>`custody` | yes | discriminator={"mapping":{"complete":"#/components/schemas/CompleteCollectionUploadCustodyOut","pending":"#/components/schemas/PendingCollectionUploadCustodyOut"},"propertyName":"state"}; oneOf=[([PendingCollectionUploadCustodyOut](schemas-pendingcollectionuploadcustodyout.md)); ([CompleteCollectionUploadCustodyOut](schemas-completecollectionuploadcustodyout.md))]; title="Custody" |  |
-| <a id="s-4240669b0c"></a>`expires_at` | yes | type="string"; title="Expires At" |  |
+| <a id="s-4240669b0c"></a>`expires_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Expires At" |  |
 | <a id="s-c89b6e31a6"></a>`files` | yes | type="integer"; minimum=0; title="Files" |  |
 | <a id="s-f06ccf51a0"></a>`state` | yes | type="string"; enum=["open","closing","uploading","finalizing","orphaned","discarding"]; title="State" |  |
 | <a id="s-e9e793215e"></a>`status` | yes | type="string"; enum=["ready","blocked"]; title="Status" |  |
@@ -54,6 +54,14 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | [field bytes](#s-54499c7b79) | `value · schema-value · operational_policy` | shared above |
 | [field files](#s-c89b6e31a6) | `value · schema-value · operational_policy` | shared above |
 
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
+
+Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-public-representation"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field expires_at](#s-4240669b0c) | `length · characters · fixed` | shared above |
+
 ## Maintained corroboration
 
 ### Referenced contract elements
@@ -68,6 +76,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 - <a id="pa-f39984516f"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
 - <a id="pa-1b41248571"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
+- <a id="pa-fd21e2273c"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -92,7 +101,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9ae8fa9763c1acfe4a0bfaaef8e14e81bff0bc9722261d9ac71ab379ba5cd047 -->
+<!-- exact-contract-value: 6a78041682b70781d5ea2e95c6b373487887ec674b399a73a831d709da30532c -->
 
 ```json
 {
@@ -175,6 +184,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Custody"
     },
     "expires_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Expires At",
       "type": "string"
     },

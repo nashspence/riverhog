@@ -26,12 +26,12 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-586f65365e"></a>`access` | yes | [ApplicationAccessGrantSet](schemas-applicationaccessgrantset.md) |  |
 | <a id="s-48bcb68302"></a>`app` | yes | [ApplicationName](schemas-applicationname.md) |  |
-| <a id="s-7b641a4bb0"></a>`created_at` | yes | type="string"; title="Created At" |  |
-| <a id="s-d9ca89d4ca"></a>`expires_at` | yes | anyOf=[(type="string"); (type="null")]; title="Expires At" |  |
+| <a id="s-7b641a4bb0"></a>`created_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Created At" |  |
+| <a id="s-d9ca89d4ca"></a>`expires_at` | yes | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Expires At" |  |
 | <a id="s-5ccd64df56"></a>`id` | yes | [ApplicationKeyId](schemas-applicationkeyid.md) |  |
-| <a id="s-9dbd92c3f8"></a>`last_used_at` | yes | anyOf=[(type="string"); (type="null")]; title="Last Used At" |  |
+| <a id="s-9dbd92c3f8"></a>`last_used_at` | yes | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Last Used At" |  |
 | <a id="s-54bec0ed94"></a>`monthly_download_quota_bytes` | yes | anyOf=[([MonthlyDownloadQuotaBytes](schemas-monthlydownloadquotabytes.md)); (type="null")] |  |
-| <a id="s-e253c7e9c1"></a>`revoked_at` | yes | anyOf=[(type="string"); (type="null")]; title="Revoked At" |  |
+| <a id="s-e253c7e9c1"></a>`revoked_at` | yes | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Revoked At" |  |
 | <a id="s-41bdd094b2"></a>`status` | yes | type="string"; enum=["active","expired","revoked"]; title="Status" |  |
 | <a id="s-7def1d8177"></a>`token` | yes | type="string"; title="Token" |  |
 
@@ -41,6 +41,19 @@ Exact externally visible contract owned by this contract element.
 |---|---|---|---|
 | <a id="s-10d16a3d18"></a>1 | properties={status: (const="revoked")} | properties={revoked_at: (type="string")} | properties={revoked_at: (type="null")} |
 | <a id="s-f7ba579e11"></a>2 | properties={status: (const="expired")} | properties={expires_at: (type="string")} | no additional constraint |
+
+### Progression, limits, and lifecycle
+
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
+
+Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-public-representation"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field created_at](#s-7b641a4bb0) | `length · characters · fixed` | shared above |
+| <a id="s-fffdcd9131"></a>[field expires_at · string value](#s-d9ca89d4ca) | `length · characters · fixed` | shared above |
+| <a id="s-a72d32019e"></a>[field last_used_at · string value](#s-9dbd92c3f8) | `length · characters · fixed` | shared above |
+| <a id="s-e6e292be21"></a>[field revoked_at · string value](#s-e253c7e9c1) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -53,7 +66,10 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
+[Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
+
 - <a id="pa-04b352a05c"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-480f15dfd0"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -78,7 +94,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b48fb472f2850c9929f5c7614e7848aef64643b02496b07bd0661060b148c76b -->
+<!-- exact-contract-value: 6aa1011e3b34f78e8adaa2b676b5b35034e43dd8ffcb5f8910537fa0f035040f -->
 
 ```json
 {
@@ -132,12 +148,18 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$ref": "#/components/schemas/ApplicationName"
     },
     "created_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Created At",
       "type": "string"
     },
     "expires_at": {
       "anyOf": [
         {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {
@@ -152,6 +174,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "last_used_at": {
       "anyOf": [
         {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {
@@ -173,6 +198,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "revoked_at": {
       "anyOf": [
         {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {

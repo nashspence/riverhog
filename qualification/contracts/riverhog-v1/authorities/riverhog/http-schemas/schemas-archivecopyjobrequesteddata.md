@@ -26,7 +26,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-40d32771b8"></a>`actor` | yes | [RiverhogActor](schemas-riverhogactor.md) |  |
 | <a id="s-e13b6e2d44"></a>`cause` | no | anyOf=[([RiverhogEventCause](schemas-riverhogeventcause.md)); (type="null")] |  |
-| <a id="s-a427b21273"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1; title="Collection Created At" |  |
+| <a id="s-a427b21273"></a>`collection_created_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Collection Created At" |  |
 | <a id="s-2b9acde322"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
 | <a id="s-2600232578"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; title="Context" |  |
 | <a id="s-86cf53a6a0"></a>`destination_store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
@@ -48,7 +48,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field collection_created_at](#s-a427b21273) | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
+| [field collection_created_at](#s-a427b21273) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 | [field context · object value](#s-413230b577) | `encoded-size · bytes · contract_max` | maximum=4096; reason="bounded-lifecycle-event-context"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
 
 ## Maintained corroboration
@@ -91,7 +91,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8edcb50fb9c9e8f07f6fa10a7fe4308ac6f0b4dc24ecf86ec03784ddeb8ef48d -->
+<!-- exact-contract-value: fec8c0c9e35276d026f1d136fb06a1607d28d58b4b11b59c53e6e9b26807663a -->
 
 ```json
 {
@@ -111,8 +111,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       ]
     },
     "collection_created_at": {
-      "maxLength": 64,
-      "minLength": 1,
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Collection Created At",
       "type": "string"
     },

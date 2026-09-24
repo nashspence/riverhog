@@ -27,13 +27,24 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-8ef21559a1"></a>`accounted_bytes` | yes | type="integer"; title="Accounted Bytes" |  |
 | <a id="s-e79165f0f2"></a>`allowance_bytes` | yes | type="integer"; title="Allowance Bytes" |  |
 | <a id="s-9ff4a596cd"></a>`effective_limit_bytes` | yes | type="integer"; title="Effective Limit Bytes" |  |
-| <a id="s-099dbcfcba"></a>`month_started_at` | yes | type="string"; title="Month Started At" |  |
+| <a id="s-099dbcfcba"></a>`month_started_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Month Started At" |  |
 | <a id="s-3c36967233"></a>`remaining_bytes` | yes | type="integer"; title="Remaining Bytes" |  |
 | <a id="s-2b5c28bc14"></a>`reserved_bytes` | yes | type="integer"; title="Reserved Bytes" |  |
-| <a id="s-138f1ddbcc"></a>`resets_at` | yes | type="string"; title="Resets At" |  |
+| <a id="s-138f1ddbcc"></a>`resets_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Resets At" |  |
 | <a id="s-3b2f6d1df2"></a>`safety_buffer_bytes` | yes | type="integer"; title="Safety Buffer Bytes" |  |
 | <a id="s-38ef97275a"></a>`state` | yes | type="string"; enum=["open","closed"]; title="State" |  |
 | <a id="s-51a26ac5cc"></a>`store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
+
+### Progression, limits, and lifecycle
+
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
+
+Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-public-representation"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field month_started_at](#s-099dbcfcba) | `length · characters · fixed` | shared above |
+| [field resets_at](#s-138f1ddbcc) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -43,7 +54,10 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
+[Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
+
 - <a id="pa-a8c49fdb9f"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-16d666f068"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -68,7 +82,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 6bf5085d23cac01726e33f1c0aaab7af69c8b4af270cffb72c5387ff400b329a -->
+<!-- exact-contract-value: 8c91a48067ff7eb986b133688c3c7086be5405f0130d4d75c505e7042d629703 -->
 
 ```json
 {
@@ -87,6 +101,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "integer"
     },
     "month_started_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Month Started At",
       "type": "string"
     },
@@ -99,6 +116,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "integer"
     },
     "resets_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Resets At",
       "type": "string"
     },

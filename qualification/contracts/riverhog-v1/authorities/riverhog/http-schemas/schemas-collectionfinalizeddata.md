@@ -28,7 +28,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-943808cecb"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Root Sha256" |  |
 | <a id="s-0f4ed7f415"></a>`bytes_total` | yes | type="integer"; minimum=0; title="Bytes Total" |  |
 | <a id="s-036a4cbcd9"></a>`cause` | no | anyOf=[([RiverhogEventCause](schemas-riverhogeventcause.md)); (type="null")] |  |
-| <a id="s-072c25f017"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1; title="Collection Created At" |  |
+| <a id="s-072c25f017"></a>`collection_created_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Collection Created At" |  |
 | <a id="s-b9b9559b23"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
 | <a id="s-634b16fda5"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; title="Context" |  |
 | <a id="s-1b21fd8bfc"></a>`files_total` | yes | type="integer"; minimum=0; title="Files Total" |  |
@@ -49,7 +49,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | [field archive_root_sha256](#s-943808cecb) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [field collection_created_at](#s-072c25f017) | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
+| [field collection_created_at](#s-072c25f017) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 | [field context · object value](#s-3361a1cab5) | `encoded-size · bytes · contract_max` | maximum=4096; reason="bounded-lifecycle-event-context"; source_constraint={"field":"x-riverhog-encoded-bytes-max"} |
 
 ## Maintained corroboration
@@ -91,7 +91,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4e2c740a3d21713a89eac6de594b9e49845d3ba53b838c2e9c7bf03af2c89231 -->
+<!-- exact-contract-value: 218b2e9f964fdb1d5473e73f4e139aa50a9c82ab3f173d73cd968b22c795f70a -->
 
 ```json
 {
@@ -121,8 +121,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       ]
     },
     "collection_created_at": {
-      "maxLength": 64,
-      "minLength": 1,
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Collection Created At",
       "type": "string"
     },

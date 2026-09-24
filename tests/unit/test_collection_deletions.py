@@ -439,7 +439,7 @@ def test_cache_deletion_waits_for_lease_and_accounts_once_after_ambiguous_respon
                 source_store=first_identity[0],
                 collection_id=COLLECTION_ID,
                 object_id=first_identity[1],
-                expires_at="2099-01-01T00:00:00.000000Z",
+                expires_at="2099-01-01T00:00:00.000000000Z",
             )
         )
 

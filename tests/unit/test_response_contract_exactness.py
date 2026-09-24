@@ -41,7 +41,7 @@ def _collection_deletion(status: str, challenge: str | None, blockers: list[str]
         "status": status,
         "collection_id": "1",
         "warning": "warning",
-        "expires_at": "2026-08-25T00:00:00.000000Z",
+        "expires_at": "2026-08-25T00:00:00.000000000Z",
         "challenge": challenge,
         "file_count": 1,
         "bytes": 1,
@@ -62,11 +62,11 @@ def _retirement(status: str, challenge: str | None, blockers: list[str]) -> dict
         "collection_id": "1",
         "store": "archive",
         "warning": "warning",
-        "expires_at": "2026-08-25T00:00:00.000000Z",
+        "expires_at": "2026-08-25T00:00:00.000000000Z",
         "challenge": challenge,
         "target_copy": {
             "store": "archive",
-            "last_verified_at": "2026-08-25T00:00:00.000000Z",
+            "last_verified_at": "2026-08-25T00:00:00.000000000Z",
             "remote_storage_bytes": 1,
             "object_count": 1,
         },
@@ -83,7 +83,7 @@ def test_upload_discard_readiness_requires_orphaned_custody_but_orphans_may_be_b
         "status": "ready",
         "collection_id": "1",
         "warning": "warning",
-        "expires_at": "2026-08-25T00:00:00.000000Z",
+        "expires_at": "2026-08-25T00:00:00.000000000Z",
         "challenge": "challenge",
         "state": "orphaned",
         "files": 1,
@@ -135,7 +135,7 @@ def test_terminal_job_responses_require_their_evidence() -> None:
         "initiated_by_app": "operator",
         "initiated_by_key_id": None,
         "state": "completed",
-        "requested_at": "2026-08-25T00:00:00.000000Z",
+        "requested_at": "2026-08-25T00:00:00.000000000Z",
         "ready_at": None,
         "expires_at": None,
         "finished_at": None,
@@ -146,7 +146,7 @@ def test_terminal_job_responses_require_their_evidence() -> None:
         "plan_id": "plan",
         "state": "failed",
         "plan_etag": "a" * 64,
-        "created_at": "2026-08-25T00:00:00.000000Z",
+        "created_at": "2026-08-25T00:00:00.000000000Z",
         "requested_at": None,
         "restore_requested_at": None,
         "ready_at": None,
@@ -164,7 +164,7 @@ def test_terminal_job_responses_require_their_evidence() -> None:
     failed_archive_job = {
         **archive_job,
         "state": "failed",
-        "finished_at": "2026-08-25T00:00:01.000000Z",
+        "finished_at": "2026-08-25T00:00:01.000000000Z",
         "failure": "transfer failed",
     }
     assert ArchiveCopyJobOut.model_validate(failed_archive_job).state == "failed"
@@ -182,10 +182,10 @@ def test_operational_responses_reject_contradictory_state_evidence() -> None:
         "initiated_by_app": "operator",
         "initiated_by_key_id": None,
         "state": "requested",
-        "requested_at": "2026-08-25T00:00:00.000000Z",
+        "requested_at": "2026-08-25T00:00:00.000000000Z",
         "ready_at": None,
         "expires_at": None,
-        "finished_at": "2026-08-25T00:00:01.000000Z",
+        "finished_at": "2026-08-25T00:00:01.000000000Z",
         "failure": None,
     }
     with pytest.raises(ValidationError, match="finished_at"):
@@ -196,13 +196,13 @@ def test_operational_responses_reject_contradictory_state_evidence() -> None:
         "plan_id": "plan",
         "state": "ready",
         "plan_etag": "a" * 64,
-        "created_at": "2026-08-25T00:00:00.000000Z",
-        "requested_at": "2026-08-25T00:00:00.000000Z",
+        "created_at": "2026-08-25T00:00:00.000000000Z",
+        "requested_at": "2026-08-25T00:00:00.000000000Z",
         "restore_requested_at": None,
-        "ready_at": "2026-08-25T00:00:01.000000Z",
-        "expires_at": "2026-08-25T01:00:00.000000Z",
+        "ready_at": "2026-08-25T00:00:01.000000000Z",
+        "expires_at": "2026-08-25T01:00:00.000000000Z",
         "completed_at": None,
-        "canceled_at": "2026-08-25T00:00:02.000000Z",
+        "canceled_at": "2026-08-25T00:00:02.000000000Z",
         "failure": None,
         "lease_seconds": 3600,
         "restore_policy": "allow",
@@ -231,9 +231,9 @@ def test_operational_responses_reject_contradictory_state_evidence() -> None:
                 "access": [{"permission": "catalog:read", "resource": "*"}],
                 "monthly_download_quota_bytes": None,
                 "status": "active",
-                "created_at": "2026-08-25T00:00:00.000000Z",
+                "created_at": "2026-08-25T00:00:00.000000000Z",
                 "expires_at": None,
-                "revoked_at": "2026-08-25T00:00:01.000000Z",
+                "revoked_at": "2026-08-25T00:00:01.000000000Z",
                 "last_used_at": None,
             }
         )
@@ -242,7 +242,7 @@ def test_operational_responses_reject_contradictory_state_evidence() -> None:
 def test_finalized_upload_sessions_require_immutable_evidence() -> None:
     payload = {
         "collection_id": "1",
-        "created_at": "2026-08-25T00:00:00.000000Z",
+        "created_at": "2026-08-25T00:00:00.000000000Z",
         "ingest_source": None,
         "description": None,
         "description_revision": None,
@@ -269,7 +269,7 @@ def test_finalized_upload_sessions_require_immutable_evidence() -> None:
         "orphaned_at": None,
         "latest_failure": None,
         "archive_phase": "completed",
-        "archive_phase_updated_at": "2026-08-25T00:00:00.000000Z",
+        "archive_phase_updated_at": "2026-08-25T00:00:00.000000000Z",
         "archive_next_attempt_at": None,
         "collection": None,
     }
@@ -311,12 +311,12 @@ def test_finalized_upload_sessions_require_immutable_evidence() -> None:
             "uploading",
             None,
             "custody-transfer",
-            "2026-08-25T00:05:00.000000Z",
+            "2026-08-25T00:05:00.000000000Z",
         ),
         (
             "finalizing",
             "finalization_queued",
-            "2026-08-25T00:00:01.000000Z",
+            "2026-08-25T00:00:01.000000000Z",
             "producer-retained",
             None,
         ),
@@ -339,7 +339,7 @@ def test_finalized_upload_sessions_require_immutable_evidence() -> None:
         {
             "state": "finalizing",
             "archive_phase": "finalization_queued",
-            "archive_next_attempt_at": "2026-08-25T00:00:01.000000Z",
+            "archive_next_attempt_at": "2026-08-25T00:00:01.000000000Z",
             "files_total": 1,
             "bytes_total": 2,
             "custody": {"state": "pending", "files": 0, "bytes": 0},
@@ -370,7 +370,7 @@ def test_finalized_upload_sessions_require_immutable_evidence() -> None:
     closing_transfer.update(
         {
             "state": "closing",
-            "upload_state_expires_at": "2026-08-25T00:05:00.000000Z",
+            "upload_state_expires_at": "2026-08-25T00:05:00.000000000Z",
         }
     )
     CollectionUploadSessionOut.model_validate(closing_transfer)
@@ -399,7 +399,7 @@ def test_finalized_upload_sessions_require_immutable_evidence() -> None:
             "tag_publication": "current",
             "collection": {
                 "id": "1",
-                "created_at": "2026-08-25T00:00:00.000000Z",
+                "created_at": "2026-08-25T00:00:00.000000000Z",
                 "description": None,
                 "description_revision": 0,
                 "description_identity": DESCRIPTION_IDENTITY,
@@ -519,7 +519,7 @@ def test_finalized_upload_sessions_require_immutable_evidence() -> None:
 
     noncanonical_timestamp = deepcopy(open_payload)
     noncanonical_timestamp["archive_phase_updated_at"] = "2026-08-25T00:00:00Z"
-    with pytest.raises(ValidationError, match="pattern|canonical UTC"):
+    with pytest.raises(ValidationError):
         CollectionUploadSessionOut.model_validate(noncanonical_timestamp)
     with pytest.raises(JsonSchemaValidationError):
         schema_validator.validate(noncanonical_timestamp)
@@ -528,24 +528,27 @@ def test_finalized_upload_sessions_require_immutable_evidence() -> None:
 @pytest.mark.parametrize(
     "changes",
     (
-        {"custody_mode": "producer-retained", "upload_state_expires_at": "later"},
+        {
+            "custody_mode": "producer-retained",
+            "upload_state_expires_at": "2026-08-25T00:05:00.000000000Z",
+        },
         {"custody_mode": "producer-retained", "state": "closing"},
         {
             "custody_mode": "producer-retained",
             "state": "orphaned",
-            "orphaned_at": "now",
+            "orphaned_at": "2026-08-25T00:01:00.000000000Z",
         },
         {"custody_mode": "custody-transfer", "upload_state_expires_at": None},
         {
             "custody_mode": "custody-transfer",
             "state": "orphaned",
-            "upload_state_expires_at": "later",
-            "orphaned_at": "now",
+            "upload_state_expires_at": "2026-08-25T00:05:00.000000000Z",
+            "orphaned_at": "2026-08-25T00:01:00.000000000Z",
         },
         {
             "custody_mode": "custody-transfer",
             "state": "uploading",
-            "upload_state_expires_at": "later",
+            "upload_state_expires_at": "2026-08-25T00:05:00.000000000Z",
         },
     ),
 )
@@ -554,7 +557,7 @@ def test_upload_session_list_states_reject_impossible_custody_lifecycles(
 ) -> None:
     payload: dict[str, object] = {
         "collection_id": "1",
-        "created_at": "2026-08-25T00:00:00.000000Z",
+        "created_at": "2026-08-25T00:00:00.000000000Z",
         "ingest_source": None,
         "description": None,
         "description_revision": None,
@@ -613,12 +616,15 @@ def test_file_registration_response_has_one_reachable_state() -> None:
     "changes",
     (
         {},
-        {"custody_mode": "custody-transfer", "upload_state_expires_at": "later"},
+        {
+            "custody_mode": "custody-transfer",
+            "upload_state_expires_at": "2026-08-25T00:05:00.000000000Z",
+        },
         {"custody_mode": "custody-transfer", "state": "uploading"},
         {
             "custody_mode": "custody-transfer",
             "state": "orphaned",
-            "orphaned_at": "now",
+            "orphaned_at": "2026-08-25T00:01:00.000000000Z",
         },
     ),
 )
@@ -627,7 +633,7 @@ def test_upload_session_list_states_accept_reachable_custody_lifecycles(
 ) -> None:
     payload: dict[str, object] = {
         "collection_id": "1",
-        "created_at": "2026-08-25T00:00:00.000000Z",
+        "created_at": "2026-08-25T00:00:00.000000000Z",
         "ingest_source": None,
         "description": None,
         "description_revision": None,
@@ -666,7 +672,7 @@ def test_upload_session_list_complete_states_require_complete_custody(
 ) -> None:
     payload: dict[str, object] = {
         "collection_id": "1",
-        "created_at": "2026-08-25T00:00:00.000000Z",
+        "created_at": "2026-08-25T00:00:00.000000000Z",
         "ingest_source": None,
         "description": None,
         "description_revision": None,
@@ -743,8 +749,8 @@ def test_archive_copy_projection_accepts_each_reachable_evidence_state() -> None
             "storage_prefix": "collections/1",
             "object_count": 2,
             "stored_bytes": 84,
-            "last_uploaded_at": "2026-08-25T00:00:00.000000Z",
-            "last_verified_at": "2026-08-25T00:00:01.000000Z",
+            "last_uploaded_at": "2026-08-25T00:00:00.000000000Z",
+            "last_verified_at": "2026-08-25T00:00:01.000000000Z",
             "failure": None,
             "archive_root": {
                 **root,
@@ -757,7 +763,7 @@ def test_archive_copy_projection_accepts_each_reachable_evidence_state() -> None
             "storage_prefix": "collections/1",
             "object_count": 1,
             "stored_bytes": 42,
-            "last_uploaded_at": "2026-08-25T00:00:00.000000Z",
+            "last_uploaded_at": "2026-08-25T00:00:00.000000000Z",
             "last_verified_at": None,
             "failure": "archive-root publication failed",
             "archive_root": {**root, "state": "failed"},

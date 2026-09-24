@@ -60,7 +60,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-d690335fef"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-5dfa018c91"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-cf47bcc831"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
-| <a id="s-d33f524596"></a>`time` | yes | type="string" |  |
+| <a id="s-d33f524596"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-206b110aaf"></a>`type` | yes | type="string"; minLength=1 |  |
 
 ## Maintained corroboration
@@ -96,7 +96,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7b19ed6d9d85c8f889a4c2d44b56f95afa99c46d21ba3585950d233d72dcb0d2 -->
+<!-- exact-contract-value: 40efa8a9430e78a02fe51dae363202e6d413427c0f0827f0f5ca834e60ea33e2 -->
 
 ```json
 {
@@ -142,6 +142,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "time": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "type": {

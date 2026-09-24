@@ -83,7 +83,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-52d72fd271"></a>`policy_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-ca0cc0b765"></a>`source_identity` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-3656dff895"></a>`through_revision` | yes | type="string"; pattern="^(?:0\|[1-9][0-9]*)$" |  |
-| <a id="s-491d13cbc7"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1 |  |
+| <a id="s-491d13cbc7"></a>`updated_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 
 ##### <a id="s-cb5907c3dd"></a>definition `CollectionTag`
 
@@ -125,7 +125,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a69a139639800be2b7dcd38831eb7348c5ad02b04782a8a7fe2b9da7b0705dc9 -->
+<!-- exact-contract-value: 2809eaefea72988c034c5ae41ee186e6113c875c117da0ecf2a1d3936f00d6f5 -->
 
 ```json
 {
@@ -251,8 +251,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "updated_at": {
-              "maxLength": 40,
-              "minLength": 1,
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             }
           },

@@ -26,6 +26,7 @@ from pathlib import Path
 from typing import Any, Protocol, cast
 
 from riverhog_canonical_json import canonical_json_bytes
+from time_formats import epoch_ns_from_datetime, format_utc_timestamp, parse_utc_timestamp
 
 CONFIG_SCHEMA = "riverhog-provider-qualification-config/v1"
 PLAN_SCHEMA = "riverhog-provider-qualification-infrastructure-plan/v1"
@@ -372,17 +373,7 @@ def _utc_now() -> datetime:
 
 
 def _timestamp(value: datetime) -> str:
-    return value.astimezone(UTC).isoformat(timespec="microseconds").replace("+00:00", "Z")
-
-
-def _parse_timestamp(value: str) -> datetime:
-    try:
-        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
-    except ValueError as exc:
-        raise QualificationError("qualification timestamp is invalid") from exc
-    if parsed.tzinfo is None:
-        raise QualificationError("qualification timestamp must include a timezone")
-    return parsed.astimezone(UTC)
+    return format_utc_timestamp(value)
 
 
 def _expect_mapping(value: object, *, label: str) -> dict[str, Any]:
@@ -3795,7 +3786,9 @@ def operate_qualification(
             if checkpoint.collection_id is None or checkpoint.retrieval_job_id is None:
                 raise QualificationError("restore checkpoint identity is incomplete")
             collection_id = checkpoint.collection_id
-            if _utc_now() > _parse_timestamp(checkpoint.restore_deadline_at):
+            if epoch_ns_from_datetime(_utc_now()) > parse_utc_timestamp(
+                checkpoint.restore_deadline_at
+            ):
                 _cleanup_b2_namespace(checkpoint, buckets, values)
                 checkpoint = advance_checkpoint(
                     checkpoint,

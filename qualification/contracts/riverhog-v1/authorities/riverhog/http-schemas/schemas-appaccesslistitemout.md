@@ -25,7 +25,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-b38b195323"></a>`app` | yes | [ApplicationName](schemas-applicationname.md) |  |
-| <a id="s-4f422c3d19"></a>`created_at` | yes | type="string"; title="Created At" |  |
+| <a id="s-4f422c3d19"></a>`created_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Created At" |  |
 | <a id="s-3323fdf105"></a>`key_id` | yes | [ApplicationKeyId](schemas-applicationkeyid.md) |  |
 | <a id="s-3fb98e8404"></a>`key_status` | yes | type="string"; enum=["active","expired","revoked"]; title="Key Status" |  |
 | <a id="s-f4a4193314"></a>`permission` | yes | [ApplicationPermission](schemas-applicationpermission.md) |  |
@@ -93,6 +93,16 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-99d8f46218"></a>`permission` | yes | enum=["collection-processing:control","collection-processing:execute","events:read","events:read_all","keys:manage","quotas:manage"] |  |
 | <a id="s-8e2da8ff39"></a>`resource` | no | const="*" |  |
 
+### Progression, limits, and lifecycle
+
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
+
+Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-public-representation"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field created_at](#s-4f422c3d19) | `length · characters · fixed` | shared above |
+
 ## Maintained corroboration
 
 ### Referenced contract elements
@@ -104,7 +114,10 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
+[Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
+
 - <a id="pa-b4137b2151"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-c7825e91cf"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -129,7 +142,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: a3a192c6bc551d30426ecf9069c3572ea1613216057ff3044174948d4178efde -->
+<!-- exact-contract-value: 143213c593ed4b71b1d6b1daae5321f1f4fc469b3d1eb7f083d21a34a99ca4cf -->
 
 ```json
 {
@@ -216,6 +229,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$ref": "#/components/schemas/ApplicationName"
     },
     "created_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Created At",
       "type": "string"
     },

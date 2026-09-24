@@ -28,7 +28,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-da1c3dedb5"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Root Sha256" |  |
 | <a id="s-96e1750701"></a>`bytes` | yes | type="integer"; title="Bytes" |  |
 | <a id="s-4a2c71fa69"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Content Identity" |  |
-| <a id="s-f767b31dab"></a>`created_at` | yes | type="string"; title="Created At" |  |
+| <a id="s-f767b31dab"></a>`created_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Created At" |  |
 | <a id="s-4233142e27"></a>`description` | yes | anyOf=[([CollectionDescription](schemas-collectiondescription.md)); (type="null")] |  |
 | <a id="s-f7df86a094"></a>`description_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Description Identity" |  |
 | <a id="s-453cf07a7d"></a>`description_publication` | yes | type="string"; enum=["not_required","current","reconciling"]; title="Description Publication" |  |
@@ -59,6 +59,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 |---|---|---|
 | [field archive_root_sha256](#s-da1c3dedb5) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [field content_identity](#s-4a2c71fa69) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field created_at](#s-f767b31dab) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 | [field description_identity](#s-f7df86a094) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | [field description_revision](#s-f993f04535) | `value · schema-value · contract_max` | maximum=9007199254740991; minimum=0; reason="schema-maximum" |
 | [field tag_revision](#s-a4c8cd0f70) | `value · schema-value · contract_max` | maximum=9007199254740991; minimum=1; reason="schema-maximum" |
@@ -102,7 +103,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 4cd5a125d37eac748c8a3bb9e6b711adaefc92edcc8b19d4485cdff4b505e975 -->
+<!-- exact-contract-value: 10668a83d79bc76defbee26443aaffa9414835b0350619d0d5ae9c2d7112bc2c -->
 
 ```json
 {
@@ -128,6 +129,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "created_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Created At",
       "type": "string"
     },

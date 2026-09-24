@@ -15,14 +15,14 @@ def test_archive_wait_status_reports_the_exact_retry_schedule() -> None:
         {
             "archive_phase": "retry_wait",
             "latest_failure": "temporary provider failure",
-            "archive_next_attempt_at": "2026-08-26T12:34:56.000000Z",
+            "archive_next_attempt_at": "2026-08-26T12:34:56.000000000Z",
         }
     )
 
     assert status == (
         ", archive_phase=retry_wait"
         ", latest_failure=temporary provider failure"
-        ", archive_next_attempt_at=2026-08-26T12:34:56.000000Z"
+        ", archive_next_attempt_at=2026-08-26T12:34:56.000000000Z"
     )
 
     rich = format_collection_upload(
@@ -34,7 +34,7 @@ def test_archive_wait_status_reports_the_exact_retry_schedule() -> None:
             "custody": {"state": "complete"},
             "archive_phase": "retry_wait",
             "latest_failure": "temporary provider failure",
-            "archive_next_attempt_at": "2026-08-26T12:34:56.000000Z",
+            "archive_next_attempt_at": "2026-08-26T12:34:56.000000000Z",
         }
     )
     assert "custody state: complete" in rich
@@ -42,4 +42,4 @@ def test_archive_wait_status_reports_the_exact_retry_schedule() -> None:
     assert "custodied bytes: 10 B/10 B" in rich
     assert "archive phase: retry_wait" in rich
     assert "failure: temporary provider failure" in rich
-    assert "archive next attempt: 2026-08-26T12:34:56.000000Z" in rich
+    assert "archive next attempt: 2026-08-26T12:34:56.000000000Z" in rich

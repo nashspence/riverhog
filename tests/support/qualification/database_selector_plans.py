@@ -54,10 +54,10 @@ from stove0_core.persistence import (
 )
 from stove0_core.persistence import _keyset_statement as _stove0_keyset_statement
 from stove0_operator_contracts import AdmissionSort, EvaluationSort, WorkSort
-from time_formats import parse_utc_timestamp
+from time_formats import datetime_from_utc_timestamp
 
 _ROWS = 16384
-_NOW = "2026-08-28T00:00:00.000000Z"
+_NOW = "2026-08-28T00:00:00.000000000Z"
 _EMPTY_TAG_SET_IDENTITY = collection_tag_set_identity(None)
 _READER = Principal(
     id="qualification",
@@ -350,7 +350,7 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
                    CASE WHEN g <= {rows // 2} THEN 'app-000'
                         ELSE 'app-' || lpad(g::text, 6, '0') END, {sha},
                    1000000000 + g, {timestamp},
-                   CASE WHEN g % 3 = 0 THEN '2027-08-28T00:00:00.000000Z' ELSE NULL END,
+                   CASE WHEN g % 3 = 0 THEN '2027-08-28T00:00:00.000000000Z' ELSE NULL END,
                    CASE WHEN g = {rows} THEN NULL ELSE {timestamp} END,
                    CASE WHEN g % 5 = 0 THEN {timestamp} ELSE NULL END
             FROM generate_series(1, {rows}) AS g
@@ -370,7 +370,7 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
                 key_id, month_started_at, accounted_bytes, updated_at
             )
             SELECT substring(md5(g::text), 1, 16),
-                   '2026-08-01T00:00:00.000000Z', g * 1000, {timestamp}
+                   '2026-08-01T00:00:00.000000000Z', g * 1000, {timestamp}
             FROM generate_series(1, {rows}) AS g
             """,
             f"""
@@ -381,9 +381,9 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
             SELECT 'reservation-' || lpad(g::text, 6, '0'),
                    substring(md5(g::text), 1, 16), 'job-' || g,
                    CASE WHEN g % 2 = 0 THEN 'job' ELSE 'stream' END,
-                   '2026-08-01T00:00:00.000000Z', g * 10, {timestamp},
-                   CASE WHEN g % 2 = 0 THEN '2027-08-28T00:00:00.000000Z'
-                        ELSE '2026-01-01T00:00:00.000000Z' END
+                   '2026-08-01T00:00:00.000000000Z', g * 10, {timestamp},
+                   CASE WHEN g % 2 = 0 THEN '2027-08-28T00:00:00.000000000Z'
+                        ELSE '2026-01-01T00:00:00.000000000Z' END
             FROM generate_series(1, {rows}) AS g
             """,
             f"""
@@ -427,8 +427,8 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
             SELECT 'indexer-' || (g % 8),
                    'archive-' || lpad((g % 16)::text, 2, '0'), g,
                    'object-' || lpad(g::text, 6, '0'),
-                   CASE WHEN g % 2 = 0 THEN '2027-08-28T00:00:00.000000Z'
-                        ELSE '2026-01-01T00:00:00.000000Z' END
+                   CASE WHEN g % 2 = 0 THEN '2027-08-28T00:00:00.000000000Z'
+                        ELSE '2026-01-01T00:00:00.000000000Z' END
             FROM generate_series(1, {rows}) AS g
             """,
             f"""
@@ -457,7 +457,7 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
                    repeat(md5('execution-' || g), 2),
                    0, 0, 0, 0, 'receiving', 0, 0,
                    CASE WHEN g % 2 = 0 THEN 'active' ELSE 'settled' END,
-                   1, '2027-08-28T00:00:00.000000Z', {timestamp}, {timestamp}
+                   1, '2027-08-28T00:00:00.000000000Z', {timestamp}, {timestamp}
             FROM generate_series(1, {rows}) AS g
             """,
         ):
@@ -915,13 +915,13 @@ def _plan_cases() -> tuple[_PlanCase, ...]:
         ("protection", {"protection": "protected"}, None, "Aggregate"),
         (
             "expires_before",
-            {"expires_before": "2028-08-28T00:00:00.000000Z"},
+            {"expires_before": "2028-08-28T00:00:00.000000000Z"},
             None,
             "Aggregate",
         ),
         (
             "expires_after",
-            {"expires_after": "2026-08-28T00:00:00.000000Z"},
+            {"expires_after": "2026-08-28T00:00:00.000000000Z"},
             None,
             "Aggregate",
         ),
@@ -1197,7 +1197,7 @@ def _plan_cases() -> tuple[_PlanCase, ...]:
         )
     )
 
-    qualification_now = parse_utc_timestamp(_NOW)
+    qualification_now = datetime_from_utc_timestamp(_NOW)
     for sort in sorted(closed_literal_values(DownloadQuotaSort)):
         for order in ("asc", "desc"):
             statement = _riverhog_plan_statement(

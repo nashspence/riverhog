@@ -4,8 +4,8 @@
 
 Provider-neutral opaque-object capability contracts for Riverhog storage adapters.
 
-Contract elements: **121** · Extent decisions: **0**
+Contract elements: **116** · Extent decisions: **0**
 
 ## Interfaces
 
-- [Python](python/index.md) (121)
+- [Python](python/index.md) (116)

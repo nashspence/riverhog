@@ -4,7 +4,7 @@
 
 The Riverhog service API and its maintained cross-interface operation parity.
 
-Contract elements: **369** · Extent decisions: **470**
+Contract elements: **369** · Extent decisions: **544**
 
 ## Interfaces
 

@@ -166,11 +166,11 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-24c2850fae"></a>`abandoned_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
+| <a id="s-24c2850fae"></a>`abandoned_at` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; default=null |  |
 | <a id="s-8f75c8d14a"></a>`abandonment_reason` | no | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; default=null |  |
 | <a id="s-2eb7221fd6"></a>`consumer` | yes | [ProcessingClaimConsumerDocument](#s-4bf8bbae51) |  |
-| <a id="s-11983e0a3f"></a>`created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
-| <a id="s-dc73b48a31"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1 |  |
+| <a id="s-11983e0a3f"></a>`created_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
+| <a id="s-dc73b48a31"></a>`expires_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-9e52be538b"></a>`fence` | yes | [NonnegativeDecimal](#s-e156ec829d); ge=1 |  |
 | <a id="s-ab4ec9779c"></a>`format` | yes | type="string"; const="riverhog-processing-claim/v1" |  |
 | <a id="s-1d896f1cd1"></a>`id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -180,10 +180,10 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-9c887ff265"></a>`output_collection_id` | no | anyOf=[([CollectionId](#s-40fd4aa997)); (type="null")]; default=null |  |
 | <a id="s-22e6d3db1d"></a>`plan` | no | anyOf=[([ProcessingClaimPlanDocument](#s-3bbf0a4010)); (type="null")]; default=null |  |
 | <a id="s-5d99764df7"></a>`purpose` | yes | type="string"; maxLength=160; minLength=1 |  |
-| <a id="s-15149cdf4e"></a>`released_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
-| <a id="s-3bfd7138b4"></a>`settled_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
+| <a id="s-15149cdf4e"></a>`released_at` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; default=null |  |
+| <a id="s-3bfd7138b4"></a>`settled_at` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; default=null |  |
 | <a id="s-b41339bc2b"></a>`state` | yes | type="string"; enum=["active","settled","retiring","abandoned","released"] |  |
-| <a id="s-8a3c3355be"></a>`updated_at` | yes | type="string"; maxLength=64; minLength=1 |  |
+| <a id="s-8a3c3355be"></a>`updated_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-9e31fb61f1"></a>`work_document` | yes | type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4194304; x-riverhog-extent={"policy":"contract_max","reason":"bounded-work-document-envelope"} |  |
 | <a id="s-e5089e0a76"></a>`work_document_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-35d5b3c6fd"></a>`work_id` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
@@ -243,7 +243,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-c54d1d1aa2"></a>`operation` | yes | [OperationIdentityDocument](#s-e05dec9278) |  |
 | <a id="s-b7d410c8ce"></a>`retirement_grace_seconds` | yes | [NonnegativeDecimal](#s-e156ec829d); ge=0 |  |
 | <a id="s-dc68417f6b"></a>`retirement_policy` | yes | type="string"; enum=["retain","retire-after-verified-output"] |  |
-| <a id="s-42cee0c720"></a>`sealed_at` | yes | type="string"; maxLength=64; minLength=1 |  |
+| <a id="s-42cee0c720"></a>`sealed_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 
 ##### <a id="s-3db543803a"></a>definition `ProcessingClaimSort`
 
@@ -339,7 +339,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2414cdcc32cc909ca0c439d3d3a62442d8fec49db2fbb017fcfad5a282c7a414 -->
+<!-- exact-contract-value: c0541f957b831492cfd532bfc98cd078bc40c363c4c06862b041f2107514a0ac -->
 
 ```json
 {
@@ -601,8 +601,9 @@ The following JSON is the complete value owned at each machine-authority pointer
             "abandoned_at": {
               "anyOf": [
                 {
-                  "maxLength": 64,
-                  "minLength": 1,
+                  "maxLength": 30,
+                  "minLength": 30,
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
                   "type": "string"
                 },
                 {
@@ -628,13 +629,15 @@ The following JSON is the complete value owned at each machine-authority pointer
               "$ref": "#/$defs/ProcessingClaimConsumerDocument"
             },
             "created_at": {
-              "maxLength": 64,
-              "minLength": 1,
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "expires_at": {
-              "maxLength": 64,
-              "minLength": 1,
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "fence": {
@@ -696,8 +699,9 @@ The following JSON is the complete value owned at each machine-authority pointer
             "released_at": {
               "anyOf": [
                 {
-                  "maxLength": 64,
-                  "minLength": 1,
+                  "maxLength": 30,
+                  "minLength": 30,
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
                   "type": "string"
                 },
                 {
@@ -709,8 +713,9 @@ The following JSON is the complete value owned at each machine-authority pointer
             "settled_at": {
               "anyOf": [
                 {
-                  "maxLength": 64,
-                  "minLength": 1,
+                  "maxLength": 30,
+                  "minLength": 30,
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
                   "type": "string"
                 },
                 {
@@ -730,8 +735,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "updated_at": {
-              "maxLength": 64,
-              "minLength": 1,
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "work_document": {
@@ -881,8 +887,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "sealed_at": {
-              "maxLength": 64,
-              "minLength": 1,
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             }
           },

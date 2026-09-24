@@ -121,7 +121,7 @@ class MemoryRetrievalCache:
             object_path=f"cache/{source_store}/{collection_id}/{object_id}",
             expected_bytes=expected_bytes,
             write_token="memory-write",
-            admitted_at="2026-08-08T00:00:00.000000Z",
+            admitted_at="2026-08-08T00:00:00.000000000Z",
         )
 
     def put(
@@ -141,8 +141,8 @@ class MemoryRetrievalCache:
             revision=version,
             stored_bytes=len(payload),
             stored_sha256=hashlib.sha256(payload).hexdigest(),
-            cached_at="2026-08-08T00:00:00.000000Z",
-            verified_at="2026-08-08T00:00:00.000000Z",
+            cached_at="2026-08-08T00:00:00.000000000Z",
+            verified_at="2026-08-08T00:00:00.000000000Z",
         )
 
     def iter_object(
@@ -418,8 +418,8 @@ def _seed_collection(
                 tag_sha256=TAG_SHA256,
                 tag=TAG,
                 search_text=TAG,
-                created_at="2026-08-08T00:00:00.000000Z",
-                updated_at="2026-08-08T00:00:00.000000Z",
+                created_at="2026-08-08T00:00:00.000000000Z",
+                updated_at="2026-08-08T00:00:00.000000000Z",
                 collection_count=1,
             )
         )
@@ -427,7 +427,7 @@ def _seed_collection(
             CollectionTagMembershipRecord(
                 collection_id=collection_id,
                 tag_sha256=TAG_SHA256,
-                added_at="2026-08-08T00:00:00.000000Z",
+                added_at="2026-08-08T00:00:00.000000000Z",
             )
         )
 
@@ -962,7 +962,7 @@ def test_requested_retrieval_converges_after_its_pending_timeout(tmp_path: Path)
     with session_scope(service._session_factory) as session:
         record = session.get(RetrievalJobRecord, str(requested["id"]))
         assert record is not None
-        record.created_at = "2020-01-01T00:00:00.000000Z"
+        record.created_at = "2020-01-01T00:00:00.000000000Z"
 
     assert service.process_due() == 1
     failed = service.get(
@@ -1067,8 +1067,8 @@ def test_cache_status_list_and_show_respect_catalog_group_access(tmp_path: Path)
         "cache_store": None,
         "state": "ready",
         "protection": "protected",
-        "expires_before": "2099-01-01T00:00:00.000000Z",
-        "expires_after": "2020-01-01T00:00:00.000000Z",
+        "expires_before": "2099-01-01T00:00:00.000000000Z",
+        "expires_after": "2020-01-01T00:00:00.000000000Z",
     }
     assert shown["collection_id"] == collection_id
     assert shown["state"] == "ready"

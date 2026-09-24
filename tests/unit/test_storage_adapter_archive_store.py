@@ -49,7 +49,7 @@ class _Stored:
     identity: dict[str, str]
     placement: str
     revision: str
-    completed_at: str = "2026-08-21T00:00:00.000000Z"
+    completed_at: str = "2026-08-21T00:00:00.000000000Z"
 
 
 class _MemoryAdapter:

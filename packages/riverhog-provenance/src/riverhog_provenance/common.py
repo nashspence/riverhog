@@ -17,6 +17,7 @@ from typing import Any, cast
 
 from riverhog_canonical_json import canonical_json_bytes, format_scalar
 from riverhog_provenance_contracts import require_canonical_uuid_urn
+from time_formats import format_utc_ns, utc_timestamp_now
 
 from .constants import (
     CAPTURE_PLAN_ID,
@@ -72,17 +73,7 @@ def provenance_journal_filename(journal_id: str) -> str:
 
 
 def utc_now() -> str:
-    return format_utc_ns(time.time_ns())
-
-
-def format_utc_ns(epoch_ns: int) -> str:
-    seconds, nanoseconds = divmod(epoch_ns, 1_000_000_000)
-    moment = dt.datetime.fromtimestamp(seconds, tz=UTC)
-    base = moment.strftime("%Y-%m-%dT%H:%M:%S")
-    if nanoseconds:
-        fraction = f"{nanoseconds:09d}".rstrip("0")
-        return f"{base}.{fraction}Z"
-    return f"{base}Z"
+    return utc_timestamp_now()
 
 
 def utc_offset_string() -> str:

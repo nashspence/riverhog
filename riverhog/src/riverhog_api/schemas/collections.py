@@ -4,7 +4,7 @@ from typing import Annotated, Any, Literal, cast
 
 from http_api_contracts import BrowsePageToken, CanonicalVisibleText
 from lifecycle_events import EventContext
-from pydantic import ConfigDict, Field, field_validator, model_validator
+from pydantic import ConfigDict, Field, model_validator
 from riverhog_protocol import (
     COLLECTION_TAG_REQUEST_MEMBERS_MAX,
     MAX_COLLECTION_DESCRIPTION_REVISION,
@@ -35,7 +35,7 @@ from riverhog_protocol import (
     CollectionUploadFileIn as CollectionUploadFileIn,
 )
 from riverhog_protocol.transport import COLLECTION_DELETION_BLOCKERS_MAX
-from time_formats import format_utc_timestamp, parse_utc_timestamp
+from time_formats import CanonicalUtcTimestamp
 
 from riverhog_api.schemas.archive import ArchiveCopyOut
 from riverhog_api.schemas.common import RiverhogModel
@@ -155,7 +155,6 @@ CollectionUploadArchivePhase = Literal[
     "orphaned",
     "discarding",
 ]
-_CANONICAL_UTC_TIMESTAMP_PATTERN = r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z$"
 _UPLOAD_ARCHIVE_STATE_PHASES: dict[str, tuple[str, ...]] = {
     "open": ("planning", "uploading"),
     "closing": ("uploading",),
@@ -251,22 +250,12 @@ _UPLOAD_PROVENANCE_STATE_SCHEMA: list[dict[str, Any]] = [
 ]
 
 
-def _canonical_timestamp(value: str) -> str:
-    try:
-        parsed = parse_utc_timestamp(value)
-    except ValueError as exc:
-        raise ValueError("timestamp must include UTC context") from exc
-    if format_utc_timestamp(parsed) != value:
-        raise ValueError("timestamp must use the canonical UTC representation")
-    return value
-
-
 def _validate_upload_custody_state(
     *,
     state: str,
     custody_mode: str,
-    upload_state_expires_at: str | None,
-    orphaned_at: str | None,
+    upload_state_expires_at: CanonicalUtcTimestamp | None,
+    orphaned_at: CanonicalUtcTimestamp | None,
 ) -> None:
     if state in _UPLOAD_NONCUSTODY_STATES:
         if upload_state_expires_at is not None or orphaned_at is not None:
@@ -425,7 +414,7 @@ class CollectionUploadTagsOut(RiverhogModel):
 
 class CollectionSummaryOut(RiverhogModel):
     id: CollectionId
-    created_at: str
+    created_at: CanonicalUtcTimestamp
     description: CollectionDescription | None
     description_revision: int = Field(ge=0, le=MAX_COLLECTION_DESCRIPTION_REVISION, strict=True)
     description_identity: str = Field(pattern=r"^[0-9a-f]{64}$")
@@ -562,7 +551,7 @@ class CollectionDeletionPlanOut(RiverhogModel):
     status: Literal["ready", "blocked", "deleting"]
     collection_id: CollectionId
     warning: str
-    expires_at: str
+    expires_at: CanonicalUtcTimestamp
     challenge: str | None
     file_count: int
     bytes: int
@@ -667,7 +656,7 @@ class CollectionUploadListItemOut(RiverhogModel):
     model_config = ConfigDict(json_schema_extra={"allOf": cast(Any, _UPLOAD_CUSTODY_STATE_SCHEMA)})
 
     collection_id: CollectionId
-    created_at: str | None
+    created_at: CanonicalUtcTimestamp | None
     ingest_source: str | None
     description: CollectionDescription | None
     description_revision: int | None = Field(
@@ -691,8 +680,8 @@ class CollectionUploadListItemOut(RiverhogModel):
     files: int = Field(ge=0, strict=True)
     bytes: int = Field(ge=0, strict=True)
     custody: CollectionUploadCustodyOut
-    upload_state_expires_at: str | None
-    orphaned_at: str | None
+    upload_state_expires_at: CanonicalUtcTimestamp | None
+    orphaned_at: CanonicalUtcTimestamp | None
 
     @model_validator(mode="after")
     def validate_custody_state(self) -> CollectionUploadListItemOut:
@@ -776,7 +765,7 @@ class CollectionUploadSessionOut(RiverhogModel):
     )
 
     collection_id: CollectionId
-    created_at: str
+    created_at: CanonicalUtcTimestamp
     ingest_source: str | None
     description: CollectionDescription | None
     description_revision: int | None = Field(
@@ -813,24 +802,19 @@ class CollectionUploadSessionOut(RiverhogModel):
     registration_constraints: CollectionUploadRegistrationConstraintsOut | None
     files_total: int = Field(ge=0, strict=True)
     bytes_total: int = Field(ge=0, strict=True)
-    upload_state_expires_at: str | None
+    upload_state_expires_at: CanonicalUtcTimestamp | None
     custody: CollectionUploadCustodyOut
-    orphaned_at: str | None
+    orphaned_at: CanonicalUtcTimestamp | None
     latest_failure: str | None = Field(min_length=1, max_length=1000)
     archive_phase: CollectionUploadArchivePhase
-    archive_phase_updated_at: str = Field(pattern=_CANONICAL_UTC_TIMESTAMP_PATTERN)
-    archive_next_attempt_at: str | None = Field(pattern=_CANONICAL_UTC_TIMESTAMP_PATTERN)
+    archive_phase_updated_at: CanonicalUtcTimestamp
+    archive_next_attempt_at: CanonicalUtcTimestamp | None
     archive_storage_prefix: str | None = None
     archive_uploaded_bytes: int | None = None
     archive_total_bytes: int | None = None
     archive_uploaded_units: int | None = None
     archive_total_units: int | None = None
     collection: CollectionSummaryOut | None
-
-    @field_validator("archive_phase_updated_at", "archive_next_attempt_at")
-    @classmethod
-    def canonical_archive_timestamp(cls, value: str | None) -> str | None:
-        return _canonical_timestamp(value) if value is not None else None
 
     @model_validator(mode="after")
     def validate_terminal_evidence(self) -> CollectionUploadSessionOut:
@@ -924,7 +908,7 @@ class CollectionUploadDiscardPlanOut(RiverhogModel):
     status: Literal["ready", "blocked"]
     collection_id: CollectionId
     warning: str
-    expires_at: str
+    expires_at: CanonicalUtcTimestamp
     challenge: str | None
     state: Literal["open", "closing", "uploading", "finalizing", "orphaned", "discarding"]
     files: int = Field(ge=0, strict=True)

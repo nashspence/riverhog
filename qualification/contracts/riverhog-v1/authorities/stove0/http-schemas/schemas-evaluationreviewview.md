@@ -26,7 +26,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-24c43eadff"></a>`note` | no | anyOf=[(type="string"; maxLength=4000; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$"); (type="null")]; title="Note" |  |
 | <a id="s-f75f344358"></a>`rating` | no | anyOf=[(type="integer"; minimum=1; maximum=5); (type="null")]; title="Rating" |  |
-| <a id="s-689703e9c5"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1; title="Updated At" |  |
+| <a id="s-689703e9c5"></a>`updated_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Updated At" |  |
 | <a id="s-2d55a4ad50"></a>`updated_by` | yes | type="string"; maxLength=160; minLength=1; title="Updated By" |  |
 | <a id="s-27564cd680"></a>`variant_id` | yes | type="string"; maxLength=160; minLength=1; title="Variant Id" |  |
 
@@ -34,15 +34,13 @@ Exact externally visible contract owned by this contract element.
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
-Shared facts for every subject below: minimum=1; reason="schema-maximum"
-
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-3480c044fe"></a>[field note · string value](#s-24c43eadff) | `length · characters · contract_max` | maximum=4000 |
-| <a id="s-b427e4e826"></a>[field rating · integer value](#s-f75f344358) | `value · schema-value · contract_max` | maximum=5 |
-| [field updated_at](#s-689703e9c5) | `length · characters · contract_max` | maximum=40 |
-| [field updated_by](#s-2d55a4ad50) | `length · characters · contract_max` | maximum=160 |
-| [field variant_id](#s-27564cd680) | `length · characters · contract_max` | maximum=160 |
+| <a id="s-3480c044fe"></a>[field note · string value](#s-24c43eadff) | `length · characters · contract_max` | maximum=4000; minimum=1; reason="schema-maximum" |
+| <a id="s-b427e4e826"></a>[field rating · integer value](#s-f75f344358) | `value · schema-value · contract_max` | maximum=5; minimum=1; reason="schema-maximum" |
+| [field updated_at](#s-689703e9c5) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
+| [field updated_by](#s-2d55a4ad50) | `length · characters · contract_max` | maximum=160; minimum=1; reason="schema-maximum" |
+| [field variant_id](#s-27564cd680) | `length · characters · contract_max` | maximum=160; minimum=1; reason="schema-maximum" |
 
 ## Governing policies
 
@@ -74,7 +72,7 @@ Shared facts for every subject below: minimum=1; reason="schema-maximum"
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b523bdd6e34cda0cc29b30ba551749cf3dc07b5c971d74a87b8906f5961e1117 -->
+<!-- exact-contract-value: 3e0abe7f6357037fdff9eeb097ef88c839adc5d50852440a6524735f941d542f -->
 
 ```json
 {
@@ -108,8 +106,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Rating"
     },
     "updated_at": {
-      "maxLength": 40,
-      "minLength": 1,
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Updated At",
       "type": "string"
     },

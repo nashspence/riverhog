@@ -24,10 +24,20 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-d96da381e5"></a>`last_verified_at` | yes | type="string"; title="Last Verified At" |  |
+| <a id="s-d96da381e5"></a>`last_verified_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Last Verified At" |  |
 | <a id="s-ed7d869eec"></a>`object_count` | yes | type="integer"; title="Object Count" |  |
 | <a id="s-42f787206b"></a>`remote_storage_bytes` | yes | type="integer"; title="Remote Storage Bytes" |  |
 | <a id="s-8fd0830440"></a>`store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
+
+### Progression, limits, and lifecycle
+
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
+
+Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-public-representation"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field last_verified_at](#s-d96da381e5) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -37,7 +47,10 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
+[Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
+
 - <a id="pa-1b43d4e767"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-aac4e85dbb"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -62,13 +75,16 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 644fcc1fb33a87da56a4ef230512696f5a547d855e15361bef9f27105e20a11a -->
+<!-- exact-contract-value: b1bdfc24f7035cb13afe3b7c925bee0e77b942261d704d66cbcd88f9d4b3d40e -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
     "last_verified_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Last Verified At",
       "type": "string"
     },

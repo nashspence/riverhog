@@ -4,7 +4,7 @@
 
 The Stove0 application API and its maintained cross-interface operation parity.
 
-Contract elements: **171** · Extent decisions: **346**
+Contract elements: **171** · Extent decisions: **352**
 
 ## Interfaces
 

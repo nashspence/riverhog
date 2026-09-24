@@ -81,4 +81,4 @@ Published Python distribution identities and artifact forms.
 | [stove0-target-client](python-distribution-stove0-target-client.md) | `reusable_library` |
 | [stove0-target-protocol](python-distribution-stove0-target-protocol.md) | `reusable_library` |
 | [stove0-target-support](python-distribution-stove0-target-support.md) | `reusable_library` |
-| [time-formats](python-distribution-time-formats.md) | `internal_build_unit` |
+| [time-formats](python-distribution-time-formats.md) | `reusable_library` |

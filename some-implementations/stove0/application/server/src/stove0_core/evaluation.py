@@ -19,6 +19,7 @@ from stove0_operator_contracts import (
 )
 from stove0_protocol import EvaluationDefinition
 from stove0_target_protocol import OutputCollectionRef
+from time_formats import CanonicalUtcTimestamp
 
 from stove0_core.work_state import Stove0WorkService, WorkRecord
 
@@ -65,7 +66,7 @@ class EvaluationReview(EvaluationModel):
     rating: int | None = Field(default=None, ge=1, le=5)
     note: str | None = Field(default=None, max_length=4000)
     updated_by: str = Field(min_length=1, max_length=160)
-    updated_at: str = Field(min_length=1, max_length=40)
+    updated_at: CanonicalUtcTimestamp
 
     @model_validator(mode="after")
     def meaningful(self) -> Self:

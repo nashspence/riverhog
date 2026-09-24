@@ -25,7 +25,7 @@ def test_collection_list_json_emits_the_api_response_without_a_second_model(
         "collections": [
             {
                 "id": "42",
-                "created_at": "2026-07-26T18:43:00.000000Z",
+                "created_at": "2026-07-26T18:43:00.000000000Z",
                 "description": "Morning footage — camera seven",
                 "description_identity": "a" * 64,
                 "description_revision": 1,
@@ -68,7 +68,7 @@ def test_collection_list_json_emits_the_api_response_without_a_second_model(
 def test_collection_show_human_and_json_use_one_identical_api_response(monkeypatch) -> None:
     payload = {
         "id": "42",
-        "created_at": "2026-07-26T18:43:00.000000Z",
+        "created_at": "2026-07-26T18:43:00.000000000Z",
         "description": "Morning footage — camera seven",
         "description_identity": "a" * 64,
         "files": 1,
@@ -225,10 +225,10 @@ def test_retrieval_cache_views_project_the_same_api_models_in_human_and_json(
         "state": "ready",
         "stored_bytes": 2048,
         "stored_sha256": "a" * 64,
-        "cached_at": "2026-08-13T00:00:00.000000Z",
-        "verified_at": "2026-08-13T00:00:01.000000Z",
-        "protected_until": "2026-08-14T00:00:00.000000Z",
-        "new_archive_expires_at": "2026-08-14T00:00:00.000000Z",
+        "cached_at": "2026-08-13T00:00:00.000000000Z",
+        "verified_at": "2026-08-13T00:00:01.000000000Z",
+        "protected_until": "2026-08-14T00:00:00.000000000Z",
+        "new_archive_expires_at": "2026-08-14T00:00:00.000000000Z",
         "lease_categories": ["new_archive"],
         "retrieval_job_leases": 0,
     }
@@ -330,7 +330,7 @@ def test_retrieval_cache_views_project_the_same_api_models_in_human_and_json(
     assert human_list.exit_code == 0
     assert "state=ready" in human_list.stdout
     assert "cache=local" in human_list.stdout
-    assert "protected-until=2026-08-14T00:00:00.000000Z" in human_list.stdout
+    assert "protected-until=2026-08-14T00:00:00.000000000Z" in human_list.stdout
     assert json.loads(json_list.stdout) == page
     assert human_show.exit_code == 0
     assert "state: ready" in human_show.stdout

@@ -30,8 +30,18 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-0800c849d6"></a>`source` | yes | type="string"; const="urn:riverhog:stove0"; title="Source" |  |
 | <a id="s-443d205ec8"></a>`specversion` | no | type="string"; const="1.0"; default="1.0"; title="Specversion" |  |
 | <a id="s-ae8b6da303"></a>`subject` | yes | type="string"; minLength=1; title="Subject" |  |
-| <a id="s-6d92c96711"></a>`time` | yes | type="string"; title="Time" |  |
+| <a id="s-6d92c96711"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Time" |  |
 | <a id="s-dbf4280eb9"></a>`type` | yes | type="string"; const="io.riverhog.stove0.join.admitted"; title="Type" |  |
+
+### Progression, limits, and lifecycle
+
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
+
+Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-public-representation"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field time](#s-6d92c96711) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -41,7 +51,10 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
+[Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
+
 - <a id="pa-eda5c5b206"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-ca39938afb"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -66,7 +79,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 399c6d1daf10ceea8b1ddf3dc271deb0f1c71c74d764005f54cb24ca5afde635 -->
+<!-- exact-contract-value: 3931634ded7746bc582c6fbecfcd9b0ac7bc78ea4992fcd537a71e4019314a47 -->
 
 ```json
 {
@@ -103,6 +116,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "time": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Time",
       "type": "string"
     },

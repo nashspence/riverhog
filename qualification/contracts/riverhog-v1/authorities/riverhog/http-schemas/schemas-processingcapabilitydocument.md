@@ -28,7 +28,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-dbfc9397ae"></a>`artifacts` | yes | [ArtifactReceivingSetDocument](schemas-artifactreceivingsetdocument.md) |  |
 | <a id="s-0030de3986"></a>`audience` | yes | type="string"; pattern="^[a-z0-9][a-z0-9._:/-]{0,299}$"; title="Audience" |  |
 | <a id="s-30bae1c5f9"></a>`claim_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Claim Id" |  |
-| <a id="s-389557c02d"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1; title="Expires At" |  |
+| <a id="s-389557c02d"></a>`expires_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Expires At" |  |
 | <a id="s-b8159e00ee"></a>`fence` | yes | [NonnegativeDecimal](schemas-nonnegativedecimal.md); ge=1 |  |
 | <a id="s-01112b8876"></a>`format` | yes | type="string"; const="riverhog-processing-capability/v1"; title="Format" |  |
 | <a id="s-457409baab"></a>`id` | yes | type="string"; maxLength=160; minLength=1; title="Id" |  |
@@ -51,7 +51,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | [field claim_id](#s-30bae1c5f9) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [field expires_at](#s-389557c02d) | `length · characters · contract_max` | maximum=64; minimum=1; reason="schema-maximum" |
+| [field expires_at](#s-389557c02d) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 | [field id](#s-457409baab) | `length · characters · contract_max` | maximum=160; minimum=1; reason="schema-maximum" |
 | [field principal_id](#s-7138e92d1f) | `length · characters · contract_max` | maximum=300; reason="schema-maximum" |
 
@@ -94,7 +94,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 22997392b91654749d6db53d9eca3dd837905f446b6c0b903a06e751fc8f6ad0 -->
+<!-- exact-contract-value: 20b420a9b3c09859e73cb1e117df1f666f02d1d3d34ca3fc6b364602ae25cfe2 -->
 
 ```json
 {
@@ -139,8 +139,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "expires_at": {
-      "maxLength": 64,
-      "minLength": 1,
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Expires At",
       "type": "string"
     },

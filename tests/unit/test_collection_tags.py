@@ -781,7 +781,7 @@ def test_pending_mutation_reuses_a_retiring_root_without_a_retention_gap(
     with session_scope(factory) as session:  # type: ignore[arg-type]
         retired = session.get(CollectionTagRevisionRecord, (1, 1))
         assert retired is not None and retired.root_sha256 == initial_root
-        retired.cleanup_started_at = "2026-01-01T00:00:00.000000Z"
+        retired.cleanup_started_at = "2026-01-01T00:00:00.000000000Z"
 
     entered = threading.Event()
     resume = threading.Event()
@@ -823,8 +823,8 @@ def test_pending_mutation_reuses_a_retiring_root_without_a_retention_gap(
             _reap_unreferenced_tag_history(
                 session,
                 limit=1_000,
-                cleanup_before="2026-02-01T00:00:00.000000Z",
-                cleanup_started_at="2026-02-01T00:00:00.000000Z",
+                cleanup_before="2026-02-01T00:00:00.000000000Z",
+                cleanup_started_at="2026-02-01T00:00:00.000000000Z",
             )
         with session_scope(factory) as session:  # type: ignore[arg-type]
             assert session.get(CollectionTagRevisionRecord, (1, 1)) is None
@@ -919,7 +919,7 @@ def test_provider_nodes_for_retained_exact_revisions_remain_recoverable(
         events = list(session.scalars(select(CatalogEventRecord)))
         assert len(events) == 2
         for event in events:
-            event.committed_at = "2026-01-01T00:00:00.000000Z"
+            event.committed_at = "2026-01-01T00:00:00.000000000Z"
     monkeypatch.setattr(
         "riverhog_core.services.catalog_sync.utc_now",
         lambda: datetime(2026, 9, 8, tzinfo=UTC),
@@ -1156,15 +1156,15 @@ def test_tag_replica_reconciles_exact_ambiguous_attempt_before_newer_desired(
             (1, ambiguous_revision),
         )
         assert attempted_revision is not None
-        attempted_revision.cleanup_started_at = "2026-01-01T00:00:00.000000Z"
+        attempted_revision.cleanup_started_at = "2026-01-01T00:00:00.000000000Z"
 
     for _ in range(16):
         with session_scope(factory) as session:  # type: ignore[arg-type]
             metrics = _reap_unreferenced_tag_history(
                 session,
                 limit=100,
-                cleanup_before="2026-02-01T00:00:00.000000Z",
-                cleanup_started_at="2026-02-01T00:00:00.000000Z",
+                cleanup_before="2026-02-01T00:00:00.000000000Z",
+                cleanup_started_at="2026-02-01T00:00:00.000000000Z",
             )
         if metrics.changed_rows == 0:
             break
@@ -1806,7 +1806,7 @@ def _expire_prior_tag_authorities(
 ) -> None:
     with session_scope(factory) as session:  # type: ignore[arg-type]
         for event in session.scalars(select(CatalogEventRecord)):
-            event.committed_at = "2026-01-01T00:00:00.000000Z"
+            event.committed_at = "2026-01-01T00:00:00.000000000Z"
     monkeypatch.setattr(
         "riverhog_core.services.catalog_sync.utc_now",
         lambda: datetime(2026, 9, 8, tzinfo=UTC),
@@ -1901,7 +1901,7 @@ def _assert_unrelated_head_advance_preserves_interrupted_tag_gc(
         with session_scope(factory) as session:  # type: ignore[arg-type]
             gc = session.get(CollectionTagNodeGcRecord, (1, "archive", reclaimed_digest))
             if gc is not None and gc.state == "retry_wait":
-                gc.next_attempt_at = "9999-12-31T23:59:59.999999Z"
+                gc.next_attempt_at = "9999-12-31T23:59:59.999999000Z"
                 obligation_head_identity = gc.expected_head_identity
                 break
     else:  # pragma: no cover - the fixed-depth tag closure is much smaller
@@ -2136,7 +2136,7 @@ def test_reused_tag_node_advances_its_exact_gc_dependency_through_public_mainten
 
     with session_scope(factory) as session:  # type: ignore[arg-type]
         for event in session.scalars(select(CatalogEventRecord)):
-            event.committed_at = "2026-01-01T00:00:00.000000Z"
+            event.committed_at = "2026-01-01T00:00:00.000000000Z"
     monkeypatch.setattr(
         "riverhog_core.services.catalog_sync.utc_now",
         lambda: datetime(2026, 9, 8, tzinfo=UTC),
@@ -2309,7 +2309,7 @@ def test_persistent_tag_gc_failure_is_bounded_and_does_not_starve_other_publicat
 
     with session_scope(factory) as session:  # type: ignore[arg-type]
         for event in session.scalars(select(CatalogEventRecord)):
-            event.committed_at = "2026-01-01T00:00:00.000000Z"
+            event.committed_at = "2026-01-01T00:00:00.000000000Z"
     monkeypatch.setattr(
         "riverhog_core.services.catalog_sync.utc_now",
         lambda: datetime(2026, 9, 8, tzinfo=UTC),
@@ -2377,7 +2377,7 @@ def test_persistent_tag_gc_failure_is_bounded_and_does_not_starve_other_publicat
         archive_publication = session.get(CollectionTagPublicationRecord, (1, "archive"))
         collection = session.get(CollectionRecord, 1)
         assert gc is not None and archive_publication is not None and collection is not None
-        gc.next_attempt_at = "9999-12-31T23:59:59.999999Z"
+        gc.next_attempt_at = "9999-12-31T23:59:59.999999000Z"
         archive_publication.next_attempt_at = gc.next_attempt_at
         session.add(
             mirror_copy := CollectionArchiveCopyRecord(
@@ -2541,8 +2541,8 @@ def test_tag_history_cleanup_bounds_all_subordinate_rows_and_restarts(
             metrics = _reap_unreferenced_tag_history(
                 session,
                 limit=work_limit,
-                cleanup_before="9999-12-31T23:59:59.999999Z",
-                cleanup_started_at="9999-12-31T23:59:59.999999Z",
+                cleanup_before="9999-12-31T23:59:59.999999000Z",
+                cleanup_started_at="9999-12-31T23:59:59.999999000Z",
             )
             assert 1 <= metrics.selected_rows <= work_limit
             assert metrics.locked_rows == metrics.selected_rows
@@ -2620,8 +2620,8 @@ def test_tag_node_reclamation_counts_every_edge_and_node_row_at_work_one(
             metrics = _reap_unreferenced_tag_history(
                 session,
                 limit=1,
-                cleanup_before="9999-12-31T23:59:59.999999Z",
-                cleanup_started_at="9999-12-31T23:59:59.999999Z",
+                cleanup_before="9999-12-31T23:59:59.999999000Z",
+                cleanup_started_at="9999-12-31T23:59:59.999999000Z",
             )
             session.flush()
             after = sum(
@@ -2687,8 +2687,8 @@ def test_exact_tag_revisions_expire_with_the_catalog_history_that_names_them(
             session.scalars(select(CatalogEventRecord).order_by(CatalogEventRecord.revision))
         )
         assert len(events) == 2
-        events[0].committed_at = "2026-01-01T00:00:00.000000Z"
-        events[1].committed_at = "2026-09-07T00:00:00.000000Z"
+        events[0].committed_at = "2026-01-01T00:00:00.000000000Z"
+        events[1].committed_at = "2026-09-07T00:00:00.000000000Z"
     monkeypatch.setattr(
         "riverhog_core.services.catalog_sync.utc_now",
         lambda: datetime(2026, 9, 8, tzinfo=UTC),
@@ -2748,7 +2748,7 @@ def test_exact_tag_revisions_expire_with_the_catalog_history_that_names_them(
         )
     monkeypatch.setattr(
         "riverhog_core.services.collection_tags.utc_timestamp_now",
-        lambda: "2026-09-08T00:59:59.000000Z",
+        lambda: "2026-09-08T00:59:59.000000000Z",
     )
     browse_now[0] += (60 * 60) - 1
     continuation = browse_tokens.verify(

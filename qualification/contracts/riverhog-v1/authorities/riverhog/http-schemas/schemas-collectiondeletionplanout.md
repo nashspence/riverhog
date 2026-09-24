@@ -31,7 +31,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-c328f97416"></a>`bytes` | yes | type="integer"; title="Bytes" |  |
 | <a id="s-3c2ff39367"></a>`challenge` | yes | anyOf=[(type="string"); (type="null")]; title="Challenge" |  |
 | <a id="s-73ba2d2bee"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
-| <a id="s-f0db1aa2f2"></a>`expires_at` | yes | type="string"; title="Expires At" |  |
+| <a id="s-f0db1aa2f2"></a>`expires_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Expires At" |  |
 | <a id="s-4551e18b33"></a>`file_count` | yes | type="integer"; title="File Count" |  |
 | <a id="s-0c27dfe4e3"></a>`inventory_identity` | yes | type="string"; title="Inventory Identity" |  |
 | <a id="s-ce48510009"></a>`metadata_rows` | yes | type="object"; additionalProperties=(type="integer"); title="Metadata Rows" |  |
@@ -89,6 +89,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 |---|---|---|
 | [oneOf alternative 2 · field blockers](#s-ae6d9ad024) | `cardinality · items · contract_max` | maximum=0; reason="state-conditioned-empty-set" |
 | [field blockers](#s-327ac9fe43) | `cardinality · items · contract_max` | maximum=55; reason="bounded-diagnostic-sample-with-explicit-overflow-markers" |
+| [field expires_at](#s-f0db1aa2f2) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 
 ## Maintained corroboration
 
@@ -129,7 +130,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c45b1e900ac654c02b79b444cd1069c7afa157fcd5e00f8632f6b6b9c6adb342 -->
+<!-- exact-contract-value: f06c23142357224026311aebe8a804f82fc3b32a5fb240c73c200660e846f03b -->
 
 ```json
 {
@@ -213,6 +214,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$ref": "#/components/schemas/CollectionId"
     },
     "expires_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Expires At",
       "type": "string"
     },

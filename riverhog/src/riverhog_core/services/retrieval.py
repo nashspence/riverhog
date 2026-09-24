@@ -44,7 +44,14 @@ from sqlalchemy import case, delete, exists, func, or_, select, update
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.elements import ColumnElement
 from state_schema import read_snapshot
-from time_formats import format_utc_timestamp, parse_utc_timestamp, utc_now
+from time_formats import (
+    epoch_ns_from_datetime,
+    format_utc_timestamp,
+    normalize_utc_timestamp,
+    parse_utc_timestamp,
+    utc_epoch_ns_now,
+    utc_now,
+)
 
 from riverhog_core.app_permissions import CATALOG_READ, RETRIEVAL_MANAGE, Principal
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
@@ -1879,7 +1886,13 @@ class SqlAlchemyRetrievalService:
             )
             if job is None or job.state != "requested":
                 return None
-            if parse_utc_timestamp(job.created_at) + self._config.retrieval_pending_timeout <= now:
+            pending_timeout_ns = (
+                self._config.retrieval_pending_timeout.days * 86_400
+                + self._config.retrieval_pending_timeout.seconds
+            ) * 1_000_000_000 + self._config.retrieval_pending_timeout.microseconds * 1_000
+            if parse_utc_timestamp(job.created_at) + pending_timeout_ns <= epoch_ns_from_datetime(
+                now
+            ):
                 self._fail_pending_job(
                     session,
                     job,
@@ -2123,7 +2136,7 @@ class SqlAlchemyRetrievalService:
     def _expire_plan_if_due(plan: RetrievalPlanRecord) -> None:
         if (
             plan.state in {"planning", "ready"}
-            and parse_utc_timestamp(plan.expires_at) <= utc_now()
+            and parse_utc_timestamp(plan.expires_at) <= utc_epoch_ns_now()
         ):
             plan.state = "expired"
 
@@ -2148,7 +2161,7 @@ class SqlAlchemyRetrievalService:
         if (
             job.state == "ready"
             and job.expires_at is not None
-            and parse_utc_timestamp(job.expires_at) <= utc_now()
+            and parse_utc_timestamp(job.expires_at) <= utc_epoch_ns_now()
         ):
             job.state = "expired"
             self._lifecycle_events.emit_retrieval(
@@ -2515,7 +2528,7 @@ def _normalize_cache_expiry(value: str | None, *, name: str) -> str | None:
     if normalized is None:
         return None
     try:
-        return format_utc_timestamp(parse_utc_timestamp(normalized))
+        return normalize_utc_timestamp(normalized)
     except ValueError as exc:
         raise BadRequest(f"{name} must be an ISO 8601 timestamp with a timezone") from exc
 

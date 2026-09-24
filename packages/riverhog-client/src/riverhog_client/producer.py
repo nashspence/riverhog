@@ -11,7 +11,6 @@ import time
 from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from dataclasses import dataclass
 from dataclasses import field as dataclass_field
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, BinaryIO, Literal, cast
 
@@ -37,6 +36,7 @@ from riverhog_protocol.collection_workflows import (
 from riverhog_protocol.file_identity import ImmutableFileIdentityDocument
 from riverhog_protocol.paths import CollectionId, validate_canonical_relpath
 from riverhog_protocol.storage_names import ArchiveStoreName
+from time_formats import parse_utc_timestamp, utc_epoch_ns_now
 
 from riverhog_client.client import ApiClient
 from riverhog_client.initial_tags import create_or_resume_with_initial_collection_tags
@@ -1080,12 +1080,10 @@ def _custody_heartbeat_interval(session: Mapping[str, object]) -> float:
     if not isinstance(value, str) or not value:
         return 60.0
     try:
-        expires = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        expires_ns = parse_utc_timestamp(value)
     except ValueError as exc:
         raise RuntimeError("Riverhog upload session returned an invalid custody expiry") from exc
-    if expires.tzinfo is None:
-        raise RuntimeError("Riverhog upload session returned a naive custody expiry")
-    remaining = (expires.astimezone(UTC) - datetime.now(UTC)).total_seconds()
+    remaining = (expires_ns - utc_epoch_ns_now()) / 1_000_000_000
     if remaining <= 0:
         return 0.1
     return min(60.0, max(0.1, remaining / 3))

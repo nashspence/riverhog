@@ -89,13 +89,13 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-6eebed3c01"></a>`attempt_count` | yes | type="integer"; minimum=0 |  |
-| <a id="s-6bf0141e7c"></a>`created_at` | yes | type="string"; maxLength=40; minLength=1 |  |
+| <a id="s-6bf0141e7c"></a>`created_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-93fba00a1c"></a>`failure` | no | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; default=null |  |
 | <a id="s-5600181fb9"></a>`intent` | yes | [AdmissionIntent](#s-715abe15ea) |  |
-| <a id="s-5d21396028"></a>`next_attempt_at` | no | anyOf=[(type="string"; maxLength=40; minLength=1); (type="null")]; default=null |  |
+| <a id="s-5d21396028"></a>`next_attempt_at` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; default=null |  |
 | <a id="s-12e9d8c692"></a>`preview_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 | <a id="s-966df76680"></a>`state` | yes | type="string"; enum=["intent","previewed","work_bound"] |  |
-| <a id="s-0ff1be1354"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1 |  |
+| <a id="s-0ff1be1354"></a>`updated_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-fe6b190aa1"></a>`work_id` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; default=null |  |
 
 ##### <a id="s-dd3b10a08d"></a>definition `BrowsePageToken`
@@ -183,7 +183,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e7dafc9a041605b90c5d203ca55751949f3a88447ba7b40e7732827727160b52 -->
+<!-- exact-contract-value: 93afadb75ddaeac8b7d7a678a497f06c53e01fa89dd194b8327b3404671ac623 -->
 
 ```json
 {
@@ -267,8 +267,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "integer"
             },
             "created_at": {
-              "maxLength": 40,
-              "minLength": 1,
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "failure": {
@@ -290,8 +291,9 @@ The following JSON is the complete value owned at each machine-authority pointer
             "next_attempt_at": {
               "anyOf": [
                 {
-                  "maxLength": 40,
-                  "minLength": 1,
+                  "maxLength": 30,
+                  "minLength": 30,
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
                   "type": "string"
                 },
                 {
@@ -321,8 +323,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "type": "string"
             },
             "updated_at": {
-              "maxLength": 40,
-              "minLength": 1,
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "work_id": {

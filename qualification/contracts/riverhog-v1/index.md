@@ -4,7 +4,7 @@
 
 This generated snapshot accounts for the externally exposed surfaces discovered from this repository revision. Discovery means inclusion; no separate acceptance decision is required.
 
-Included contract elements: **4214** · Extent decisions: **1997**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
+Included contract elements: **4215** · Extent decisions: **2077**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
 
 ## Audit references
 
@@ -181,7 +181,7 @@ Included contract elements: **4214** · Extent decisions: **1997**. Complete acc
   - [Python](authorities/http-api-contracts/python/index.md) (63)
 
 - [lifecycle-events](authorities/lifecycle-events/index.md) — Durable CloudEvents lifecycle log and client primitives.
-  - [Python](authorities/lifecycle-events/python/index.md) (26)
+  - [Python](authorities/lifecycle-events/python/index.md) (25)
 
 - [release](authorities/release/index.md) — Coordinated v1 compatibility and publication promises.
   - [Runtime Images](authorities/release/runtime-images/index.md) (13)
@@ -267,7 +267,7 @@ Included contract elements: **4214** · Extent decisions: **1997**. Complete acc
   - [Python](authorities/riverhog-storage-adapter-asgi-support/python/index.md) (1)
 
 - [riverhog-storage-adapter-protocol](authorities/riverhog-storage-adapter-protocol/index.md) — Provider-neutral opaque-object capability contracts for Riverhog storage adapters.
-  - [Python](authorities/riverhog-storage-adapter-protocol/python/index.md) (121) — Defines protocol: [riverhog-storage-adapter](extensions/process-protocol-riverhog-storage-adapter.md).
+  - [Python](authorities/riverhog-storage-adapter-protocol/python/index.md) (116) — Defines protocol: [riverhog-storage-adapter](extensions/process-protocol-riverhog-storage-adapter.md).
 
 - **[riverhog-storage-adapter-support](authorities/riverhog-storage-adapter-support/index.md)** [📦](authorities/riverhog-storage-adapter-support/evidence-gaps.md) — HTTP binding and conformance support for Riverhog storage adapters.
   - [Process Protocol](authorities/riverhog-storage-adapter-support/process-protocol/index.md) (1)
@@ -306,7 +306,7 @@ Included contract elements: **4214** · Extent decisions: **1997**. Complete acc
 
 - [stove0-operator-contracts](authorities/stove0-operator-contracts/index.md) — Canonical public state contracts for the Stove0 v1 operator surface.
   - [Configuration Documents](authorities/stove0-operator-contracts/configuration/index.md) (1)
-  - [Python](authorities/stove0-operator-contracts/python/index.md) (124)
+  - [Python](authorities/stove0-operator-contracts/python/index.md) (117)
 
 - [stove0-protocol](authorities/stove0-protocol/index.md) — Canonical content-opaque collection orchestration contracts for Stove0.
   - [Python](authorities/stove0-protocol/python/index.md) (207)
@@ -336,3 +336,6 @@ Included contract elements: **4214** · Extent decisions: **1997**. Complete acc
   - [CLI](authorities/stove0-target-support/cli/index.md) (2)
   - [Configuration Environment](authorities/stove0-target-support/configuration-environment/index.md) (1)
   - [Python](authorities/stove0-target-support/python/index.md) (151)
+
+- [time-formats](authorities/time-formats/index.md) — UTC timestamp and operator duration formats.
+  - [Python](authorities/time-formats/python/index.md) (14)

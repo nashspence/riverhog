@@ -81,7 +81,7 @@ class _ArchiveCopyCache:
             object_path=path,
             expected_bytes=expected_bytes,
             write_token=session.write_token,
-            admitted_at="2026-08-08T00:00:00.000000Z",
+            admitted_at="2026-08-08T00:00:00.000000000Z",
         )
 
     def resumable_object_store(self, **_: object) -> MemoryArchiveStore:

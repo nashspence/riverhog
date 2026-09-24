@@ -113,7 +113,7 @@ def _completion_precondition(
 
 
 COLLECTION_ID = 1
-UPLOADED_AT = "2026-07-15T00:00:00.000000Z"
+UPLOADED_AT = "2026-07-15T00:00:00.000000000Z"
 
 
 @dataclass(frozen=True, slots=True)

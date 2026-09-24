@@ -35,6 +35,7 @@ from a_riverhog_windows_provenance_observer import (
     WindowsPrincipal,
     WindowsSnapshot,
     WindowsVolumeInfo,
+    _format_filetime,
     windows_locator,
 )
 from riverhog_provenance import (
@@ -49,6 +50,10 @@ from riverhog_provenance.common import canonical_json
 
 def _ticks(epoch_ns: int) -> int:
     return FILETIME_UNIX_EPOCH_TICKS + epoch_ns // 100
+
+
+def test_filetime_uses_canonical_nanosecond_timestamp() -> None:
+    assert _format_filetime(FILETIME_UNIX_EPOCH_TICKS + 1) == ("1970-01-01T00:00:00.000000100Z")
 
 
 def _ea_entry(name: bytes, value: bytes, *, flags: int = 0, final: bool) -> bytes:

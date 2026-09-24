@@ -18,6 +18,7 @@ from riverhog_protocol import (
     RetrievalFileReferenceSetDocument,
     SortOrder,
 )
+from time_formats import CanonicalUtcTimestamp
 
 from riverhog_api.schemas.common import RiverhogModel
 
@@ -41,9 +42,9 @@ class RetrievalPlanOut(RiverhogModel):
     format: Literal["riverhog-retrieval-plan/v1"]
     id: str
     state: Literal["planning", "ready", "consumed", "expired", "failed"]
-    created_at: str
-    ready_at: str | None
-    expires_at: str
+    created_at: CanonicalUtcTimestamp
+    ready_at: CanonicalUtcTimestamp | None
+    expires_at: CanonicalUtcTimestamp
     failure: str | None = Field(min_length=1)
     lease_seconds: int
     restore_policy: Literal["allow", "never"]
@@ -126,13 +127,13 @@ class RetrievalJobOut(RiverhogModel):
     plan_id: str
     state: Literal["requested", "ready", "completed", "expired", "failed", "canceled"]
     plan_etag: Sha256Identity
-    created_at: str
-    requested_at: str | None
-    restore_requested_at: str | None
-    ready_at: str | None
-    expires_at: str | None
-    completed_at: str | None
-    canceled_at: str | None
+    created_at: CanonicalUtcTimestamp
+    requested_at: CanonicalUtcTimestamp | None
+    restore_requested_at: CanonicalUtcTimestamp | None
+    ready_at: CanonicalUtcTimestamp | None
+    expires_at: CanonicalUtcTimestamp | None
+    completed_at: CanonicalUtcTimestamp | None
+    canceled_at: CanonicalUtcTimestamp | None
     failure: str | None = Field(min_length=1)
     lease_seconds: int
     restore_policy: Literal["allow", "never"]
@@ -188,10 +189,10 @@ class RetrievalCacheObjectOut(RiverhogModel):
     state: RetrievalCacheState
     stored_bytes: int
     stored_sha256: str | None
-    cached_at: str
-    verified_at: str
-    protected_until: str | None
-    new_archive_expires_at: str | None
+    cached_at: CanonicalUtcTimestamp
+    verified_at: CanonicalUtcTimestamp
+    protected_until: CanonicalUtcTimestamp | None
+    new_archive_expires_at: CanonicalUtcTimestamp | None
     lease_categories: list[Literal["new_archive", "retrieval_job"]]
     retrieval_job_leases: int
 

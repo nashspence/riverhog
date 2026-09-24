@@ -24,20 +24,20 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4a26bd20ca"></a>`canceled_at` | yes | anyOf=[(type="string"); (type="null")]; title="Canceled At" |  |
-| <a id="s-62ab89c460"></a>`completed_at` | yes | anyOf=[(type="string"); (type="null")]; title="Completed At" |  |
-| <a id="s-3969583590"></a>`created_at` | yes | type="string"; title="Created At" |  |
-| <a id="s-3f1631fe3f"></a>`expires_at` | yes | anyOf=[(type="string"); (type="null")]; title="Expires At" |  |
+| <a id="s-4a26bd20ca"></a>`canceled_at` | yes | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Canceled At" |  |
+| <a id="s-62ab89c460"></a>`completed_at` | yes | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Completed At" |  |
+| <a id="s-3969583590"></a>`created_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Created At" |  |
+| <a id="s-3f1631fe3f"></a>`expires_at` | yes | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Expires At" |  |
 | <a id="s-47cbd02588"></a>`failure` | yes | anyOf=[(type="string"; minLength=1); (type="null")]; title="Failure" |  |
 | <a id="s-ba2913517e"></a>`id` | yes | type="string"; title="Id" |  |
 | <a id="s-4309221e14"></a>`lease_seconds` | yes | type="integer"; title="Lease Seconds" |  |
 | <a id="s-7d910b2388"></a>`plan_etag` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Etag" |  |
 | <a id="s-b3a272f4b1"></a>`plan_id` | yes | type="string"; title="Plan Id" |  |
-| <a id="s-73a1545b22"></a>`ready_at` | yes | anyOf=[(type="string"); (type="null")]; title="Ready At" |  |
-| <a id="s-e2e4bf916b"></a>`requested_at` | yes | anyOf=[(type="string"); (type="null")]; title="Requested At" |  |
+| <a id="s-73a1545b22"></a>`ready_at` | yes | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Ready At" |  |
+| <a id="s-e2e4bf916b"></a>`requested_at` | yes | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Requested At" |  |
 | <a id="s-a1460da5f4"></a>`requires_restore` | yes | type="boolean"; title="Requires Restore" |  |
 | <a id="s-a9bf8be7aa"></a>`restore_policy` | yes | type="string"; enum=["allow","never"]; title="Restore Policy" |  |
-| <a id="s-4e2d281293"></a>`restore_requested_at` | yes | anyOf=[(type="string"); (type="null")]; title="Restore Requested At" |  |
+| <a id="s-4e2d281293"></a>`restore_requested_at` | yes | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Restore Requested At" |  |
 | <a id="s-89d57750d5"></a>`state` | yes | type="string"; enum=["requested","ready","completed","expired","failed","canceled"]; title="State" |  |
 
 ### All must match (`allOf`)
@@ -53,11 +53,18 @@ Exact externally visible contract owned by this contract element.
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
-Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"}
+Shared facts for every subject below: reason="fixed-public-representation"
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field plan_etag](#s-7d910b2388) | `length · characters · fixed` | shared above |
+| <a id="s-e974e95be5"></a>[field canceled_at · string value](#s-4a26bd20ca) | `length · characters · fixed` | maximum=30; minimum=30 |
+| <a id="s-891627f529"></a>[field completed_at · string value](#s-62ab89c460) | `length · characters · fixed` | maximum=30; minimum=30 |
+| [field created_at](#s-3969583590) | `length · characters · fixed` | maximum=30; minimum=30 |
+| <a id="s-54edeb8854"></a>[field expires_at · string value](#s-3f1631fe3f) | `length · characters · fixed` | maximum=30; minimum=30 |
+| [field plan_etag](#s-7d910b2388) | `length · characters · fixed` | maximum=64; minimum=64; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-623efa1136"></a>[field ready_at · string value](#s-73a1545b22) | `length · characters · fixed` | maximum=30; minimum=30 |
+| <a id="s-6561b6a15d"></a>[field requested_at · string value](#s-e2e4bf916b) | `length · characters · fixed` | maximum=30; minimum=30 |
+| <a id="s-41a80b1e21"></a>[field restore_requested_at · string value](#s-4e2d281293) | `length · characters · fixed` | maximum=30; minimum=30 |
 
 ## Governing policies
 
@@ -89,7 +96,7 @@ Shared facts for every subject below: maximum=64; minimum=64; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0d0f00eafedd9f6bb74bd870b5ae7b2767cb28b8f7f7ce704d3ce519d011aeca -->
+<!-- exact-contract-value: e28a3f3e5c63fce74d708846df2e305461913bc38c38e21195b46d97c5c8359d -->
 
 ```json
 {
@@ -182,6 +189,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "canceled_at": {
       "anyOf": [
         {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {
@@ -193,6 +203,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "completed_at": {
       "anyOf": [
         {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {
@@ -202,12 +215,18 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Completed At"
     },
     "created_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Created At",
       "type": "string"
     },
     "expires_at": {
       "anyOf": [
         {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {
@@ -248,6 +267,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "ready_at": {
       "anyOf": [
         {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {
@@ -259,6 +281,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "requested_at": {
       "anyOf": [
         {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {
@@ -282,6 +307,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "restore_requested_at": {
       "anyOf": [
         {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {

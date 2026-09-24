@@ -72,9 +72,9 @@ def test_provenance_list_show_trace_export_and_verify_share_one_cli_surface(
             return {
                 "collection_id": collection_id,
                 "state": "succeeded",
-                "requested_at": "2026-08-29T00:00:00.000000Z",
-                "started_at": "2026-08-29T00:00:00.000000Z",
-                "finished_at": "2026-08-29T00:00:01.000000Z",
+                "requested_at": "2026-08-29T00:00:00.000000000Z",
+                "started_at": "2026-08-29T00:00:00.000000000Z",
+                "finished_at": "2026-08-29T00:00:01.000000000Z",
                 "attempts": 1,
                 "failure": None,
                 "result": {

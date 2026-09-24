@@ -23,7 +23,7 @@ UTC timestamp and operator duration formats.
 | <a id="s-c619177636"></a>`license_expression` | `"Apache-2.0"` |
 | <a id="s-91fa562265"></a>`publication_identity` | `{"coordinate":"time-formats","kind":"python-distribution"}` |
 | <a id="s-1ba15713c9"></a>`requires_python` | `">=3.12"` |
-| <a id="s-80ca4b9dcc"></a>`role` | `"internal_build_unit"` |
+| <a id="s-80ca4b9dcc"></a>`role` | `"reusable_library"` |
 | <a id="s-c68c08fafe"></a>`source` | `"packages/time-formats/pyproject.toml"` |
 
 ## Existing ownership context
@@ -63,7 +63,7 @@ Publication preserves these existing component authorities; it does not reclassi
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 54ecfaa95bddcdf6888738345c304b629c197e6301e2b8f70313c76630ff180a -->
+<!-- exact-contract-value: 07a25667e732dcc4a18fa576a0a8d405db7618baaa543aea19afad9d63880acd -->
 
 ```json
 {
@@ -86,7 +86,7 @@ The following JSON is the complete value owned at each machine-authority pointer
     "kind": "python-distribution"
   },
   "requires_python": ">=3.12",
-  "role": "internal_build_unit",
+  "role": "reusable_library",
   "source": "packages/time-formats/pyproject.toml"
 }
 ```

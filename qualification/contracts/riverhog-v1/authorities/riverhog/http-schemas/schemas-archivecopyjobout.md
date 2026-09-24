@@ -26,13 +26,13 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-f94ca18605"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
 | <a id="s-ee02c17aac"></a>`destination_store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
-| <a id="s-17ef5e59ff"></a>`expires_at` | yes | anyOf=[(type="string"); (type="null")]; title="Expires At" |  |
+| <a id="s-17ef5e59ff"></a>`expires_at` | yes | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Expires At" |  |
 | <a id="s-79dd5dafe3"></a>`failure` | yes | anyOf=[(type="string"; minLength=1); (type="null")]; title="Failure" |  |
-| <a id="s-42f7be85cb"></a>`finished_at` | yes | anyOf=[(type="string"); (type="null")]; title="Finished At" |  |
+| <a id="s-42f7be85cb"></a>`finished_at` | yes | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Finished At" |  |
 | <a id="s-c07f6332bc"></a>`initiated_by_app` | yes | [ApplicationName](schemas-applicationname.md) |  |
 | <a id="s-0bcb097c2c"></a>`initiated_by_key_id` | yes | anyOf=[([ApplicationKeyId](schemas-applicationkeyid.md)); (type="null")] |  |
-| <a id="s-88e645a59b"></a>`ready_at` | yes | anyOf=[(type="string"); (type="null")]; title="Ready At" |  |
-| <a id="s-69542ab9df"></a>`requested_at` | yes | type="string"; title="Requested At" |  |
+| <a id="s-88e645a59b"></a>`ready_at` | yes | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Ready At" |  |
+| <a id="s-69542ab9df"></a>`requested_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Requested At" |  |
 | <a id="s-7dd0ee0992"></a>`source_store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
 | <a id="s-9877b84351"></a>`state` | yes | [ArchiveCopyJobState](schemas-archivecopyjobstate.md) |  |
 
@@ -42,6 +42,19 @@ Exact externally visible contract owned by this contract element.
 |---|---|---|---|
 | <a id="s-fbea60a442"></a>1 | properties={state: (enum=["completed","failed","canceled"])} | properties={finished_at: (type="string")} | properties={finished_at: (type="null")} |
 | <a id="s-ab9983dcd9"></a>2 | properties={state: (const="failed")} | properties={failure: (type="string"; minLength=1)} | properties={failure: (type="null")} |
+
+### Progression, limits, and lifecycle
+
+#### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
+
+Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-public-representation"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| <a id="s-0355aecb3d"></a>[field expires_at · string value](#s-17ef5e59ff) | `length · characters · fixed` | shared above |
+| <a id="s-dd6ca32ef7"></a>[field finished_at · string value](#s-42f7be85cb) | `length · characters · fixed` | shared above |
+| <a id="s-968e84def1"></a>[field ready_at · string value](#s-88e645a59b) | `length · characters · fixed` | shared above |
+| [field requested_at](#s-69542ab9df) | `length · characters · fixed` | shared above |
 
 ## Maintained corroboration
 
@@ -55,7 +68,10 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
+[Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
+
 - <a id="pa-c71050b819"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-fbd184f3ae"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
 
@@ -80,7 +96,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: c2c04a28fd603df4a70428ffd6d7c0645ff1ed9ae91dea8b20cdfc0955f90d02 -->
+<!-- exact-contract-value: e03a0b622c09cc058fa167e3b2f37bb9f68fae994121ca491f9dcc18b6c19269 -->
 
 ```json
 {
@@ -148,6 +164,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "expires_at": {
       "anyOf": [
         {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {
@@ -171,6 +190,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "finished_at": {
       "anyOf": [
         {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {
@@ -195,6 +217,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "ready_at": {
       "anyOf": [
         {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {
@@ -204,6 +229,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Ready At"
     },
     "requested_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Requested At",
       "type": "string"
     },

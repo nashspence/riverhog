@@ -24,9 +24,9 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-593c3aa8bb"></a>`archive_next_attempt_at` | yes | anyOf=[(type="string"; pattern="^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$"); (type="null")]; title="Archive Next Attempt At" |  |
+| <a id="s-593c3aa8bb"></a>`archive_next_attempt_at` | yes | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Archive Next Attempt At" |  |
 | <a id="s-364d7da064"></a>`archive_phase` | yes | type="string"; enum=["planning","uploading","finalization_queued","finalizing","retry_wait","completed","canceled","orphaned","discarding"]; title="Archive Phase" |  |
-| <a id="s-1b21051159"></a>`archive_phase_updated_at` | yes | type="string"; pattern="^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$"; title="Archive Phase Updated At" |  |
+| <a id="s-1b21051159"></a>`archive_phase_updated_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Archive Phase Updated At" |  |
 | <a id="s-75de08a13f"></a>`archive_root_sha256` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Archive Root Sha256" |  |
 | <a id="s-0a9a5c61fb"></a>`archive_storage_prefix` | no | anyOf=[(type="string"); (type="null")]; title="Archive Storage Prefix" |  |
 | <a id="s-a661ebc979"></a>`archive_store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
@@ -38,7 +38,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-e279eb3f57"></a>`collection` | yes | anyOf=[([CollectionSummaryOut](schemas-collectionsummaryout.md)); (type="null")] |  |
 | <a id="s-5aecbbf4c0"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
 | <a id="s-1337f069e3"></a>`content_identity` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Content Identity" |  |
-| <a id="s-e03e99fa8a"></a>`created_at` | yes | type="string"; title="Created At" |  |
+| <a id="s-e03e99fa8a"></a>`created_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Created At" |  |
 | <a id="s-76be39688f"></a>`custody` | yes | discriminator={"mapping":{"complete":"#/components/schemas/CompleteCollectionUploadCustodyOut","pending":"#/components/schemas/PendingCollectionUploadCustodyOut"},"propertyName":"state"}; oneOf=[([PendingCollectionUploadCustodyOut](schemas-pendingcollectionuploadcustodyout.md)); ([CompleteCollectionUploadCustodyOut](schemas-completecollectionuploadcustodyout.md))]; title="Custody" |  |
 | <a id="s-a4ebd8e964"></a>`custody_mode` | yes | type="string"; enum=["producer-retained","custody-transfer"]; title="Custody Mode" |  |
 | <a id="s-9dd0e9d0dc"></a>`description` | yes | anyOf=[([CollectionDescription](schemas-collectiondescription.md)); (type="null")] |  |
@@ -49,7 +49,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-9d1ecaccd3"></a>`files_total` | yes | type="integer"; minimum=0; title="Files Total" |  |
 | <a id="s-afe732efdf"></a>`ingest_source` | yes | anyOf=[(type="string"); (type="null")]; title="Ingest Source" |  |
 | <a id="s-570ad9d89c"></a>`latest_failure` | yes | anyOf=[(type="string"; maxLength=1000; minLength=1); (type="null")]; title="Latest Failure" |  |
-| <a id="s-4158d3e07e"></a>`orphaned_at` | yes | anyOf=[(type="string"); (type="null")]; title="Orphaned At" |  |
+| <a id="s-4158d3e07e"></a>`orphaned_at` | yes | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Orphaned At" |  |
 | <a id="s-0507afa7fd"></a>`passphrase_id` | yes | type="string"; pattern="^[A-Za-z0-9_-]{16,128}$"; title="Passphrase Id" |  |
 | <a id="s-703cd5df49"></a>`provenance_identity` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Provenance Identity" |  |
 | <a id="s-7328fa36e5"></a>`provenance_mode` | yes | type="string"; enum=["captured","mixed","omitted"]; title="Provenance Mode" |  |
@@ -60,7 +60,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-107736f50c"></a>`tag_publication` | yes | type="string"; enum=["pending","current"]; title="Tag Publication" |  |
 | <a id="s-77565b278a"></a>`tag_revision` | no | anyOf=[(type="integer"; minimum=1; maximum=9007199254740991); (type="null")]; title="Tag Revision" |  |
 | <a id="s-add3845109"></a>`tag_set_identity` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Tag Set Identity" |  |
-| <a id="s-c06f1bbb1e"></a>`upload_state_expires_at` | yes | anyOf=[(type="string"); (type="null")]; title="Upload State Expires At" |  |
+| <a id="s-c06f1bbb1e"></a>`upload_state_expires_at` | yes | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Upload State Expires At" |  |
 
 ### All must match (`allOf`)
 
@@ -94,14 +94,19 @@ Exact externally visible contract owned by this contract element.
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | <a id="s-aec0b595cc"></a>[allOf alternative 3 · then · oneOf alternative 1 · field provenance_identity](#s-ec18fdfbd4) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-e3b6bc960a"></a>[field archive_next_attempt_at · string value](#s-593c3aa8bb) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
+| [field archive_phase_updated_at](#s-1b21051159) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 | <a id="s-4dac66a09c"></a>[field archive_root_sha256 · string value](#s-75de08a13f) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | <a id="s-0bff60cfb3"></a>[field content_identity · string value](#s-1337f069e3) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field created_at](#s-e03e99fa8a) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 | <a id="s-4f378691a3"></a>[field description_identity · string value](#s-87279bec9a) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | <a id="s-975e5196b4"></a>[field description_revision · integer value](#s-97818911b3) | `value · schema-value · contract_max` | maximum=9007199254740991; minimum=0; reason="schema-maximum" |
 | <a id="s-645d2232be"></a>[field latest_failure · string value](#s-570ad9d89c) | `length · characters · contract_max` | maximum=1000; minimum=1; reason="schema-maximum" |
+| <a id="s-65f97bddb4"></a>[field orphaned_at · string value](#s-4158d3e07e) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 | <a id="s-1e5f76f5f3"></a>[field provenance_identity · string value](#s-703cd5df49) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
 | <a id="s-5349b464e2"></a>[field tag_revision · integer value](#s-77565b278a) | `value · schema-value · contract_max` | maximum=9007199254740991; minimum=1; reason="schema-maximum" |
 | <a id="s-959a59821a"></a>[field tag_set_identity · string value](#s-add3845109) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-a0afd85e42"></a>[field upload_state_expires_at · string value](#s-c06f1bbb1e) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 
 ## Maintained corroboration
 
@@ -145,7 +150,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2a1c6d4a2d6413272bc05ba49aa8ce33aa9ca6977b3058b622b3ab37133baccc -->
+<!-- exact-contract-value: 1fa164da6a837be86f3a565f08ffe3b1aa19d42ec46af1267e490e187d3d2414 -->
 
 ```json
 {
@@ -730,7 +735,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "archive_next_attempt_at": {
       "anyOf": [
         {
-          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$",
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {
@@ -755,7 +762,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "archive_phase_updated_at": {
-      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{6}Z$",
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Archive Phase Updated At",
       "type": "string"
     },
@@ -860,6 +869,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Content Identity"
     },
     "created_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Created At",
       "type": "string"
     },
@@ -969,6 +981,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "orphaned_at": {
       "anyOf": [
         {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {
@@ -1072,6 +1087,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "upload_state_expires_at": {
       "anyOf": [
         {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {

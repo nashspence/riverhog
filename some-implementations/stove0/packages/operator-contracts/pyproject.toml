@@ -27,6 +27,7 @@ dependencies = [
   "stove0-protocol>=0.1,<0.2",
   "stove0-recipe-config>=0.1,<0.2",
   "stove0-target-protocol>=0.1,<0.2",
+  "time-formats>=0.1,<0.2",
 ]
 
 [tool.uv.sources]
@@ -37,6 +38,7 @@ stove0-observer-protocol = { workspace = true }
 stove0-protocol = { workspace = true }
 stove0-recipe-config = { workspace = true }
 stove0-target-protocol = { workspace = true }
+time-formats = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/stove0_operator_contracts"]

@@ -28,7 +28,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-3bb1c53f61"></a>`blockers` | yes | type="array"; items=(type="string"); title="Blockers" |  |
 | <a id="s-a8bf1cfd6c"></a>`challenge` | yes | anyOf=[(type="string"); (type="null")]; title="Challenge" |  |
 | <a id="s-b3e346a57e"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
-| <a id="s-22bb7f1875"></a>`expires_at` | yes | type="string"; title="Expires At" |  |
+| <a id="s-22bb7f1875"></a>`expires_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Expires At" |  |
 | <a id="s-3b329cb5f9"></a>`retained_copies` | yes | type="array"; items=([ArchiveCopyRetirementRetainedOut](schemas-archivecopyretirementretainedout.md)); title="Retained Copies" |  |
 | <a id="s-91c234b2f5"></a>`retired_retrieval_job_count` | yes | type="integer"; title="Retired Retrieval Job Count" |  |
 | <a id="s-bc86b383bf"></a>`status` | yes | type="string"; enum=["ready","blocked","retiring"]; title="Status" |  |
@@ -80,11 +80,10 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
-Shared facts for every subject below: maximum=0; reason="state-conditioned-empty-set"
-
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [oneOf alternative 2 · field blockers](#s-82a7ddf46a) | `cardinality · items · contract_max` | shared above |
+| [oneOf alternative 2 · field blockers](#s-82a7ddf46a) | `cardinality · items · contract_max` | maximum=0; reason="state-conditioned-empty-set" |
+| [field expires_at](#s-22bb7f1875) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 
 ## Maintained corroboration
 
@@ -126,7 +125,7 @@ Shared facts for every subject below: maximum=0; reason="state-conditioned-empty
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 25fb81614c8184e917269d3bdba07c7340d77e680d89b0fc832b24319e5900e2 -->
+<!-- exact-contract-value: c9d96fd5866f52d1ba72117dcc755d564059f9a14070f045a433b86338dadacb -->
 
 ```json
 {
@@ -190,6 +189,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "$ref": "#/components/schemas/CollectionId"
     },
     "expires_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Expires At",
       "type": "string"
     },

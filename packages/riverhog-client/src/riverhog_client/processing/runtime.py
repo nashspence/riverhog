@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping, Sequence
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal, Self
 
@@ -12,6 +11,7 @@ from riverhog_protocol.collection_workflows import (
     CollectionRootIdentity,
 )
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
+from time_formats import utc_timestamp_now
 
 from riverhog_client import ApiClient
 from riverhog_client.processing.capability import CapabilityApiClient
@@ -197,9 +197,7 @@ class CollectionTransformRuntime:
         self.execution_id = execution_id
         self.producer_app = producer_app
         self.producer_version = producer_version
-        self.started_at = (
-            datetime.now(UTC).isoformat(timespec="microseconds").replace("+00:00", "Z")
-        )
+        self.started_at = utc_timestamp_now()
         self.controller_evidence = dict(controller_evidence)
         if not self.controller_evidence:
             raise ValueError("collection transform runtime requires controller evidence")

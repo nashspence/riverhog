@@ -152,7 +152,7 @@ class _Adapter:
             verified_content_type=request.content_type,
             verified_identity_assertions=request.required_identity_assertions,
             verified_placement=request.placement,
-            completed_at="2026-08-21T00:00:00.000000Z",
+            completed_at="2026-08-21T00:00:00.000000000Z",
         )
 
     def read_object(self, request: ObjectReadRequest) -> ObjectReadStream:
@@ -185,7 +185,7 @@ class _Adapter:
             verified_content_type=request.expected_content_type,
             verified_identity_assertions=request.required_identity_assertions,
             verified_placement=request.expected_placement,
-            completed_at="2026-08-21T00:00:00.000000Z",
+            completed_at="2026-08-21T00:00:00.000000000Z",
         )
 
 

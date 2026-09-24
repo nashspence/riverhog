@@ -140,7 +140,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-c4f91233ea"></a>`note` | no | anyOf=[(type="string"; maxLength=4000; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$"); (type="null")]; default=null |  |
 | <a id="s-0c831491e4"></a>`rating` | no | anyOf=[(type="integer"; minimum=1; maximum=5); (type="null")]; default=null |  |
-| <a id="s-168a50aa40"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1 |  |
+| <a id="s-168a50aa40"></a>`updated_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-678d2be791"></a>`updated_by` | yes | type="string"; maxLength=160; minLength=1 |  |
 | <a id="s-9510f7b1ce"></a>`variant_id` | yes | type="string"; maxLength=160; minLength=1 |  |
 
@@ -224,7 +224,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: fffa3e282ed95a58a319808a14e17c25fc86376b76001a10668c40b6289c81dc -->
+<!-- exact-contract-value: a2e1f5c9469224e1ef147567abaa466f3abfcfd8808f8c0628c0aa6cf2448c52 -->
 
 ```json
 {
@@ -414,8 +414,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "updated_at": {
-              "maxLength": 40,
-              "minLength": 1,
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "updated_by": {

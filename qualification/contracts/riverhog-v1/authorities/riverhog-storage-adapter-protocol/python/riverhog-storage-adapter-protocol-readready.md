@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-920d0c637a"></a>`kind`: `"class"`
-- <a id="s-2f1dd9704d"></a>`signature`: `"\"(*, state: Literal['ready'] = 'ready', available_until: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=100)] = None) -> None\""`
+- <a id="s-2f1dd9704d"></a>`signature`: `"\"(*, state: Literal['ready'] = 'ready', available_until: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)]] = None) -> None\""`
 
 #### Validated model schema
 
@@ -35,14 +35,8 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-436877d32c"></a>`available_until` | no | anyOf=[(type="string"; maxLength=100; minLength=1); (type="null")]; default=null |  |
+| <a id="s-436877d32c"></a>`available_until` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; default=null |  |
 | <a id="s-6d94a26d0a"></a>`state` | no | type="string"; const="ready"; default="ready" |  |
-
-## Maintained corroboration
-
-### Related interface records
-
-- [canonical_available_until](riverhog-storage-adapter-protocol-readready-canonical-available-until.md)
 
 ## Governing policies
 
@@ -71,7 +65,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8fc44485c0bbe79514b258e2b7ed3cadb78221bd3ccda422a71dc2d95bd62e31 -->
+<!-- exact-contract-value: 81e0922cc1723b4a2f01bb61be708e2244d39f02f6c0fb7d38c402a7c3c63db2 -->
 
 ```json
 {
@@ -83,8 +77,9 @@ The following JSON is the complete value owned at each machine-authority pointer
         "available_until": {
           "anyOf": [
             {
-              "maxLength": 100,
-              "minLength": 1,
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             {
@@ -101,7 +96,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       "type": "object"
     },
-    "signature": "\"(*, state: Literal['ready'] = 'ready', available_until: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=100)] = None) -> None\""
+    "signature": "\"(*, state: Literal['ready'] = 'ready', available_until: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern='^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\\\\\.[0-9]{9}Z$', ascii_only=None), AfterValidator(func=<function require_canonical_utc_timestamp>)]] = None) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",

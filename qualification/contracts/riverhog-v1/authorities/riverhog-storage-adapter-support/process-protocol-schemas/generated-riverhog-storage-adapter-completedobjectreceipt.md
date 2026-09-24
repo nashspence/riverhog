@@ -24,7 +24,7 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-e321434eb8"></a>`completed_at` | yes | type="string"; maxLength=100; minLength=1; title="Completed At" |  |
+| <a id="s-e321434eb8"></a>`completed_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Completed At" |  |
 | <a id="s-f9fbc589a8"></a>`entity_token` | no | anyOf=[(type="string"; maxLength=4000; minLength=1); (type="null")]; default=null; title="Entity Token" |  |
 | <a id="s-627e7fc470"></a>`object_path` | yes | type="string"; maxLength=4096; minLength=1; title="Object Path" |  |
 | <a id="s-a35df82ae3"></a>`revision` | no | anyOf=[(type="string"; maxLength=2000; minLength=1); (type="null")]; default=null; title="Revision" |  |
@@ -48,7 +48,7 @@ Exact externally visible contract owned by this contract element.
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [field completed_at](#s-e321434eb8) | `length · characters · contract_max` | maximum=100; minimum=1; reason="schema-maximum" |
+| [field completed_at](#s-e321434eb8) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 | <a id="s-5a60785583"></a>[field entity_token · string value](#s-f9fbc589a8) | `length · characters · contract_max` | maximum=4000; minimum=1; reason="schema-maximum" |
 | [field object_path](#s-627e7fc470) | `length · characters · contract_max` | maximum=4096; minimum=1; reason="schema-maximum" |
 | <a id="s-ed019f2a33"></a>[field revision · string value](#s-a35df82ae3) | `length · characters · contract_max` | maximum=2000; minimum=1; reason="schema-maximum" |
@@ -92,7 +92,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d45a6410297e750bbef8554a1465757b2e17926e73ee63a3181531db3dcb9db4 -->
+<!-- exact-contract-value: ab6bfdce5018d235f5e376b46c568204ed3a24e85ecc261d3baf109e2676089b -->
 
 ```json
 {
@@ -105,8 +105,9 @@ The following JSON is the complete value owned at each machine-authority pointer
   "additionalProperties": false,
   "properties": {
     "completed_at": {
-      "maxLength": 100,
-      "minLength": 1,
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Completed At",
       "type": "string"
     },

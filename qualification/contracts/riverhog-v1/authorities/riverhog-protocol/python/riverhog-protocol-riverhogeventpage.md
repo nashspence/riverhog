@@ -90,7 +90,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-a2bf311030"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-89e606c549"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
-| <a id="s-3776852b57"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
+| <a id="s-3776852b57"></a>`collection_created_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-3187d6cbeb"></a>`collection_id` | yes | [CollectionId](#s-3b7d7e3c2c) |  |
 | <a id="s-e3c6214c81"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
 | <a id="s-d82a6cc7e8"></a>`destination_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
@@ -114,7 +114,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-8a9efdf673"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-0a6d7b54e4"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-5744ae2800"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
-| <a id="s-90610300dd"></a>`time` | yes | type="string" |  |
+| <a id="s-90610300dd"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-a39126293c"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.archive_copy_job.canceled" |  |
 
 ##### <a id="s-696dcb49a9"></a>definition `ArchiveCopyJobCompletedData`
@@ -129,7 +129,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-cb82bfea88"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-b5c1f48847"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
-| <a id="s-a989bad623"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
+| <a id="s-a989bad623"></a>`collection_created_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-560e29b4d8"></a>`collection_id` | yes | [CollectionId](#s-3b7d7e3c2c) |  |
 | <a id="s-f3b1eb0038"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
 | <a id="s-18359b47fa"></a>`destination_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
@@ -153,7 +153,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-6013d0903a"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-b2659e8ee1"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-eab5955dae"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
-| <a id="s-59cb751965"></a>`time` | yes | type="string" |  |
+| <a id="s-59cb751965"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-ece152b09c"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.archive_copy_job.completed" |  |
 
 ##### <a id="s-e826ef642d"></a>definition `ArchiveCopyJobFailedData`
@@ -168,7 +168,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-4f2680291c"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-0b44d5dbd9"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
-| <a id="s-344f8bd3f5"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
+| <a id="s-344f8bd3f5"></a>`collection_created_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-7cf9aa154e"></a>`collection_id` | yes | [CollectionId](#s-3b7d7e3c2c) |  |
 | <a id="s-433b77401b"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
 | <a id="s-c3373ca00f"></a>`destination_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
@@ -193,7 +193,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-99489d70c5"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-0e1bddbe65"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-4b256775ee"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
-| <a id="s-14bc414db1"></a>`time` | yes | type="string" |  |
+| <a id="s-14bc414db1"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-8560870a04"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.archive_copy_job.failed" |  |
 
 ##### <a id="s-f7f1999027"></a>definition `ArchiveCopyJobRequestedData`
@@ -208,7 +208,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-ad5f1a1ece"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-43db5b67db"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
-| <a id="s-b22c159690"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
+| <a id="s-b22c159690"></a>`collection_created_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-519a45279f"></a>`collection_id` | yes | [CollectionId](#s-3b7d7e3c2c) |  |
 | <a id="s-5f45a158b6"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
 | <a id="s-1477505de9"></a>`destination_store` | yes | [ArchiveStoreName](#s-2e2a7afe9a) |  |
@@ -232,7 +232,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-3f8b60a044"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-65a10abd37"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-e98d810109"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
-| <a id="s-9c5605a96f"></a>`time` | yes | type="string" |  |
+| <a id="s-9c5605a96f"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-3558bfd0b3"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.archive_copy_job.requested" |  |
 
 ##### <a id="s-2e2a7afe9a"></a>definition `ArchiveStoreName`
@@ -253,7 +253,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-57da1f3b82"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-522d26df29"></a>`bytes` | yes | type="integer"; minimum=0 |  |
 | <a id="s-49218e5e3e"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
-| <a id="s-8dae7de57b"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
+| <a id="s-8dae7de57b"></a>`collection_created_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-ac2d1c2565"></a>`collection_id` | yes | [CollectionId](#s-3b7d7e3c2c) |  |
 | <a id="s-30c4f9b5e9"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
 | <a id="s-5bc7b30fe2"></a>`files` | yes | type="integer"; minimum=0 |  |
@@ -276,7 +276,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-28c4eb0e96"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-2e6704ebc4"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-29f8fe627a"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
-| <a id="s-153e92bfb8"></a>`time` | yes | type="string" |  |
+| <a id="s-153e92bfb8"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-84a576dc14"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.collection.deleted" |  |
 
 ##### <a id="s-caf8e4a999"></a>definition `CollectionFinalizedData`
@@ -293,7 +293,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-a4ae429085"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$" |  |
 | <a id="s-ae2c7918f4"></a>`bytes_total` | yes | type="integer"; minimum=0 |  |
 | <a id="s-1760e551a2"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
-| <a id="s-36de94ee67"></a>`collection_created_at` | yes | type="string"; maxLength=64; minLength=1 |  |
+| <a id="s-36de94ee67"></a>`collection_created_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-8c1457cfa0"></a>`collection_id` | yes | [CollectionId](#s-3b7d7e3c2c) |  |
 | <a id="s-6c21ec8a3d"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
 | <a id="s-65413559df"></a>`files_total` | yes | type="integer"; minimum=0 |  |
@@ -315,7 +315,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-c335c5ae5e"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-25fea6a4fd"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-ef095a513a"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
-| <a id="s-a93c31cd89"></a>`time` | yes | type="string" |  |
+| <a id="s-a93c31cd89"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-c170710dc4"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.collection.finalized" |  |
 
 ##### <a id="s-3b7d7e3c2c"></a>definition `CollectionId`
@@ -352,7 +352,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-9caf87ec0f"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-587fc9338b"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
-| <a id="s-17ba014898"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
+| <a id="s-17ba014898"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; default=null |  |
 | <a id="s-6ad3117fab"></a>`collection_id` | no | anyOf=[([CollectionId](#s-3b7d7e3c2c)); (type="null")]; default=null |  |
 | <a id="s-086bd0ec77"></a>`collection_ids` | yes | type="array"; items=([CollectionId](#s-3b7d7e3c2c)); minItems=1 |  |
 | <a id="s-d4094959ac"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
@@ -377,7 +377,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-4395aacfb6"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-976b2d5f99"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-9173f5b0df"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
-| <a id="s-2c47db07d1"></a>`time` | yes | type="string" |  |
+| <a id="s-2c47db07d1"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-2835564e78"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.canceled" |  |
 
 ##### <a id="s-e680525602"></a>definition `RetrievalCompletedData`
@@ -392,7 +392,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-d633b25199"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-1703f42ba6"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
-| <a id="s-483430fb94"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
+| <a id="s-483430fb94"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; default=null |  |
 | <a id="s-4be8917304"></a>`collection_id` | no | anyOf=[([CollectionId](#s-3b7d7e3c2c)); (type="null")]; default=null |  |
 | <a id="s-bb1b254e9e"></a>`collection_ids` | yes | type="array"; items=([CollectionId](#s-3b7d7e3c2c)); minItems=1 |  |
 | <a id="s-dfcb1fcb34"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
@@ -416,7 +416,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-9f53fa1852"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-f781b54b02"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-101aec1767"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
-| <a id="s-f300bdc263"></a>`time` | yes | type="string" |  |
+| <a id="s-f300bdc263"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-880eb05bbe"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.completed" |  |
 
 ##### <a id="s-901491f41d"></a>definition `RetrievalExpiredData`
@@ -431,7 +431,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-ed336aa0ab"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-77dbc0be59"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
-| <a id="s-208b5a2bcc"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
+| <a id="s-208b5a2bcc"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; default=null |  |
 | <a id="s-4fe2097994"></a>`collection_id` | no | anyOf=[([CollectionId](#s-3b7d7e3c2c)); (type="null")]; default=null |  |
 | <a id="s-015acc72f6"></a>`collection_ids` | yes | type="array"; items=([CollectionId](#s-3b7d7e3c2c)); minItems=1 |  |
 | <a id="s-16112840b3"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
@@ -455,7 +455,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-ae8b415b82"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-bfb0bf6f88"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-356d4325e2"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
-| <a id="s-859791f24c"></a>`time` | yes | type="string" |  |
+| <a id="s-859791f24c"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-c9e0511c11"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.expired" |  |
 
 ##### <a id="s-c2a74431c4"></a>definition `RetrievalFailedData`
@@ -470,7 +470,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-9e0fcb7c1f"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-dae4492859"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
-| <a id="s-68c0974906"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
+| <a id="s-68c0974906"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; default=null |  |
 | <a id="s-3698954897"></a>`collection_id` | no | anyOf=[([CollectionId](#s-3b7d7e3c2c)); (type="null")]; default=null |  |
 | <a id="s-349277b22f"></a>`collection_ids` | yes | type="array"; items=([CollectionId](#s-3b7d7e3c2c)); minItems=1 |  |
 | <a id="s-7e901ba46c"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
@@ -495,7 +495,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-a19b2058b9"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-b4479f5de0"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-c91911f642"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
-| <a id="s-09898f0b1b"></a>`time` | yes | type="string" |  |
+| <a id="s-09898f0b1b"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-7069924984"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.failed" |  |
 
 ##### <a id="s-5d019111c7"></a>definition `RetrievalIssueData`
@@ -510,7 +510,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-9c895201e2"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-bb9dc193c6"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
-| <a id="s-fadaa0dc64"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
+| <a id="s-fadaa0dc64"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; default=null |  |
 | <a id="s-6a4aeb6735"></a>`collection_id` | no | anyOf=[([CollectionId](#s-3b7d7e3c2c)); (type="null")]; default=null |  |
 | <a id="s-395f72ee9d"></a>`collection_ids` | yes | type="array"; items=([CollectionId](#s-3b7d7e3c2c)); minItems=1 |  |
 | <a id="s-90c00dfff4"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
@@ -535,7 +535,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-c37fb27fa6"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-6533ffd54c"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-29dccbde08"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
-| <a id="s-75a6f5c746"></a>`time` | yes | type="string" |  |
+| <a id="s-75a6f5c746"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-8467f20f19"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.issue" |  |
 
 ##### <a id="s-94276b17d8"></a>definition `RetrievalReadyData`
@@ -550,11 +550,11 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-a42a913481"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-68759b58f8"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
-| <a id="s-31ea966e9e"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
+| <a id="s-31ea966e9e"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; default=null |  |
 | <a id="s-d268e8c028"></a>`collection_id` | no | anyOf=[([CollectionId](#s-3b7d7e3c2c)); (type="null")]; default=null |  |
 | <a id="s-ddd3bb8bc2"></a>`collection_ids` | yes | type="array"; items=([CollectionId](#s-3b7d7e3c2c)); minItems=1 |  |
 | <a id="s-ed8038fbe3"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
-| <a id="s-3aa854894c"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1 |  |
+| <a id="s-3aa854894c"></a>`expires_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-63d865e6bb"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-d42e5eca9a"></a>`retrieval_id` | yes | type="string"; maxLength=300; minLength=1 |  |
 | <a id="s-1a3f96afcd"></a>`state` | yes | type="string"; const="ready" |  |
@@ -575,7 +575,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-5b06ca20d8"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-75c83e093e"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-e373935a4e"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
-| <a id="s-23798381bb"></a>`time` | yes | type="string" |  |
+| <a id="s-23798381bb"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-c3c2577807"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.ready" |  |
 
 ##### <a id="s-d1bc1f3107"></a>definition `RetrievalRenewedData`
@@ -590,11 +590,11 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-cf63af7b77"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-3890179752"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
-| <a id="s-c0cc9568d5"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
+| <a id="s-c0cc9568d5"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; default=null |  |
 | <a id="s-17488d8589"></a>`collection_id` | no | anyOf=[([CollectionId](#s-3b7d7e3c2c)); (type="null")]; default=null |  |
 | <a id="s-1115efd158"></a>`collection_ids` | yes | type="array"; items=([CollectionId](#s-3b7d7e3c2c)); minItems=1 |  |
 | <a id="s-90f064dc62"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
-| <a id="s-3b00b3651c"></a>`expires_at` | yes | type="string"; maxLength=64; minLength=1 |  |
+| <a id="s-3b00b3651c"></a>`expires_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-ee8bf80162"></a>`initiator` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-b6de652492"></a>`retrieval_id` | yes | type="string"; maxLength=300; minLength=1 |  |
 | <a id="s-4cb4ac0a11"></a>`state` | yes | type="string"; const="ready" |  |
@@ -615,7 +615,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-1f0472058a"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-904e68dbed"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-3c44160f20"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
-| <a id="s-8d9ea4f6b7"></a>`time` | yes | type="string" |  |
+| <a id="s-8d9ea4f6b7"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-6a4f1e6158"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.renewed" |  |
 
 ##### <a id="s-64049bf6f9"></a>definition `RetrievalRequestedData`
@@ -630,7 +630,7 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-3a82345d45"></a>`actor` | yes | [RiverhogActor](#s-3ec07c9031) |  |
 | <a id="s-72adccc6c8"></a>`cause` | no | anyOf=[([RiverhogEventCause](#s-56c61376dd)); (type="null")]; default=null |  |
-| <a id="s-e32c279383"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=64; minLength=1); (type="null")]; default=null |  |
+| <a id="s-e32c279383"></a>`collection_created_at` | no | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; default=null |  |
 | <a id="s-94c50d4b6f"></a>`collection_id` | no | anyOf=[([CollectionId](#s-3b7d7e3c2c)); (type="null")]; default=null |  |
 | <a id="s-ef5fe00caf"></a>`collection_ids` | yes | type="array"; items=([CollectionId](#s-3b7d7e3c2c)); minItems=1 |  |
 | <a id="s-39eaf089f3"></a>`context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; default=null |  |
@@ -657,7 +657,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-ff969da433"></a>`source` | yes | type="string"; minLength=1 |  |
 | <a id="s-dad540dd63"></a>`specversion` | no | type="string"; const="1.0"; default="1.0" |  |
 | <a id="s-1e9333c620"></a>`subject` | no | anyOf=[(type="string"; minLength=1); (type="null")]; default=null |  |
-| <a id="s-b7bf2cedf2"></a>`time` | yes | type="string" |  |
+| <a id="s-b7bf2cedf2"></a>`time` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$" |  |
 | <a id="s-52578520a5"></a>`type` | yes | type="string"; const="io.riverhog.riverhog.retrieval.requested" |  |
 
 ##### <a id="s-3ec07c9031"></a>definition `RiverhogActor`
@@ -746,7 +746,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 5520be8a91f3b937d14f14930c01b5e040bdec5b16e173b8b047a70905324ef9 -->
+<!-- exact-contract-value: 94cb7410880406f364455abb815d222b78bb587432d94ea8fd1dcee391b9a30b -->
 
 ```json
 {
@@ -772,8 +772,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "collection_created_at": {
-              "maxLength": 64,
-              "minLength": 1,
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "collection_id": {
@@ -858,6 +859,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "time": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "type": {
@@ -892,8 +896,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "collection_created_at": {
-              "maxLength": 64,
-              "minLength": 1,
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "collection_id": {
@@ -978,6 +983,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "time": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "type": {
@@ -1012,8 +1020,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "collection_created_at": {
-              "maxLength": 64,
-              "minLength": 1,
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "collection_id": {
@@ -1104,6 +1113,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "time": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "type": {
@@ -1138,8 +1150,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "collection_created_at": {
-              "maxLength": 64,
-              "minLength": 1,
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "collection_id": {
@@ -1224,6 +1237,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "time": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "type": {
@@ -1266,8 +1282,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "collection_created_at": {
-              "maxLength": 64,
-              "minLength": 1,
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "collection_id": {
@@ -1350,6 +1367,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "time": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "type": {
@@ -1392,8 +1412,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "collection_created_at": {
-              "maxLength": 64,
-              "minLength": 1,
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "collection_id": {
@@ -1472,6 +1493,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "time": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "type": {
@@ -1531,8 +1555,9 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection_created_at": {
               "anyOf": [
                 {
-                  "maxLength": 64,
-                  "minLength": 1,
+                  "maxLength": 30,
+                  "minLength": 30,
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
                   "type": "string"
                 },
                 {
@@ -1648,6 +1673,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "time": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "type": {
@@ -1684,8 +1712,9 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection_created_at": {
               "anyOf": [
                 {
-                  "maxLength": 64,
-                  "minLength": 1,
+                  "maxLength": 30,
+                  "minLength": 30,
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
                   "type": "string"
                 },
                 {
@@ -1788,6 +1817,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "time": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "type": {
@@ -1824,8 +1856,9 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection_created_at": {
               "anyOf": [
                 {
-                  "maxLength": 64,
-                  "minLength": 1,
+                  "maxLength": 30,
+                  "minLength": 30,
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
                   "type": "string"
                 },
                 {
@@ -1928,6 +1961,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "time": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "type": {
@@ -1964,8 +2000,9 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection_created_at": {
               "anyOf": [
                 {
-                  "maxLength": 64,
-                  "minLength": 1,
+                  "maxLength": 30,
+                  "minLength": 30,
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
                   "type": "string"
                 },
                 {
@@ -2074,6 +2111,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "time": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "type": {
@@ -2110,8 +2150,9 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection_created_at": {
               "anyOf": [
                 {
-                  "maxLength": 64,
-                  "minLength": 1,
+                  "maxLength": 30,
+                  "minLength": 30,
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
                   "type": "string"
                 },
                 {
@@ -2220,6 +2261,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "time": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "type": {
@@ -2256,8 +2300,9 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection_created_at": {
               "anyOf": [
                 {
-                  "maxLength": 64,
-                  "minLength": 1,
+                  "maxLength": 30,
+                  "minLength": 30,
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
                   "type": "string"
                 },
                 {
@@ -2302,8 +2347,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "expires_at": {
-              "maxLength": 64,
-              "minLength": 1,
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "initiator": {
@@ -2366,6 +2412,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "time": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "type": {
@@ -2402,8 +2451,9 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection_created_at": {
               "anyOf": [
                 {
-                  "maxLength": 64,
-                  "minLength": 1,
+                  "maxLength": 30,
+                  "minLength": 30,
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
                   "type": "string"
                 },
                 {
@@ -2448,8 +2498,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "expires_at": {
-              "maxLength": 64,
-              "minLength": 1,
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "initiator": {
@@ -2512,6 +2563,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "time": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "type": {
@@ -2548,8 +2602,9 @@ The following JSON is the complete value owned at each machine-authority pointer
             "collection_created_at": {
               "anyOf": [
                 {
-                  "maxLength": 64,
-                  "minLength": 1,
+                  "maxLength": 30,
+                  "minLength": 30,
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
                   "type": "string"
                 },
                 {
@@ -2669,6 +2724,9 @@ The following JSON is the complete value owned at each machine-authority pointer
               "default": null
             },
             "time": {
+              "maxLength": 30,
+              "minLength": 30,
+              "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
               "type": "string"
             },
             "type": {

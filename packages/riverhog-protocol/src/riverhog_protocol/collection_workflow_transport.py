@@ -13,6 +13,7 @@ from typing import Annotated, Any, Literal, Self, cast
 from http_api_contracts import BrowsePageToken
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from riverhog_canonical_json import format_scalar, scalar_schema
+from time_formats import CanonicalUtcTimestamp
 
 from riverhog_protocol.collection_workflows import (
     ArtifactDisposition,
@@ -39,7 +40,6 @@ SemanticId = Annotated[
     str,
     Field(pattern=r"^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$"),
 ]
-Timestamp = Annotated[str, Field(min_length=1, max_length=64)]
 CapabilityAction = Literal["read-inputs", "write-output"]
 
 WORK_DOCUMENT_MAX_BYTES = 4 * 1024 * 1024
@@ -625,7 +625,7 @@ class ProcessingClaimPlanDocument(RiverhogWorkflowDocument):
     artifacts: ArtifactSetIdentityDocument
     retirement_policy: RetirementPolicy
     retirement_grace_seconds: NonnegativeDecimal = Field(ge=0)
-    sealed_at: Timestamp
+    sealed_at: CanonicalUtcTimestamp
 
     @model_validator(mode="after")
     def validate_plan(self) -> Self:
@@ -757,13 +757,13 @@ class ProcessingClaimDocument(RiverhogWorkflowDocument):
     purpose: str = Field(min_length=1, max_length=160)
     state: ClaimState
     fence: NonnegativeDecimal = Field(ge=1)
-    expires_at: Timestamp
-    created_at: Timestamp
-    updated_at: Timestamp
-    settled_at: Timestamp | None = None
-    abandoned_at: Timestamp | None = None
+    expires_at: CanonicalUtcTimestamp
+    created_at: CanonicalUtcTimestamp
+    updated_at: CanonicalUtcTimestamp
+    settled_at: CanonicalUtcTimestamp | None = None
+    abandoned_at: CanonicalUtcTimestamp | None = None
     abandonment_reason: str | None = Field(default=None, min_length=1, max_length=1000)
-    released_at: Timestamp | None = None
+    released_at: CanonicalUtcTimestamp | None = None
     output_collection_id: CollectionId | None = None
     work_document: WorkDocument
     work_document_sha256: SHA256
@@ -847,7 +847,7 @@ class ProcessingCapabilityDocument(RiverhogWorkflowDocument):
     )
     state: Literal["receiving", "active"]
     principal_id: PrincipalId = Field(max_length=300)
-    expires_at: Timestamp
+    expires_at: CanonicalUtcTimestamp
     artifacts: ArtifactReceivingSetDocument
     token: str = Field(pattern=r"^rhc_[A-Za-z0-9_-]+$")
 

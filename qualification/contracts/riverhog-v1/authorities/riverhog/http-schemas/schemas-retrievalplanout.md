@@ -24,15 +24,15 @@ Exact externally visible contract owned by this contract element.
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-c266a5a498"></a>`created_at` | yes | type="string"; title="Created At" |  |
+| <a id="s-c266a5a498"></a>`created_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Created At" |  |
 | <a id="s-e251cf3834"></a>`etag` | yes | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Etag" |  |
-| <a id="s-68c3046468"></a>`expires_at` | yes | type="string"; title="Expires At" |  |
+| <a id="s-68c3046468"></a>`expires_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Expires At" |  |
 | <a id="s-b41e85bc12"></a>`failure` | yes | anyOf=[(type="string"; minLength=1); (type="null")]; title="Failure" |  |
 | <a id="s-ddf8e0203e"></a>`file_count` | yes | type="integer"; minimum=1; maximum=10000; title="File Count" |  |
 | <a id="s-ddadecec43"></a>`format` | yes | type="string"; const="riverhog-retrieval-plan/v1"; title="Format" |  |
 | <a id="s-715beca7a8"></a>`id` | yes | type="string"; title="Id" |  |
 | <a id="s-6e0e6318d1"></a>`lease_seconds` | yes | type="integer"; title="Lease Seconds" |  |
-| <a id="s-d30d97cea2"></a>`ready_at` | yes | anyOf=[(type="string"); (type="null")]; title="Ready At" |  |
+| <a id="s-d30d97cea2"></a>`ready_at` | yes | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Ready At" |  |
 | <a id="s-c945c34413"></a>`requires_restore` | yes | type="boolean"; title="Requires Restore" |  |
 | <a id="s-00bdb5cade"></a>`restore_policy` | yes | type="string"; enum=["allow","never"]; title="Restore Policy" |  |
 | <a id="s-9408ce9990"></a>`state` | yes | type="string"; enum=["planning","ready","consumed","expired","failed"]; title="State" |  |
@@ -43,8 +43,11 @@ Exact externally visible contract owned by this contract element.
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
+| [field created_at](#s-c266a5a498) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 | <a id="s-1919cb4869"></a>[field etag · string value](#s-e251cf3834) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field expires_at](#s-68c3046468) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 | [field file_count](#s-ddf8e0203e) | `value · schema-value · contract_max` | maximum=10000; minimum=1; reason="schema-maximum" |
+| <a id="s-888e87a01c"></a>[field ready_at · string value](#s-d30d97cea2) | `length · characters · fixed` | maximum=30; minimum=30; reason="fixed-public-representation" |
 
 ## Governing policies
 
@@ -76,13 +79,16 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: bfd67616847edef1e39584fbb8604ff423dc38761470242a99f5a66d86f28123 -->
+<!-- exact-contract-value: 740ffa3866689d62dfd84adb30a183f8bf79b991508c4305bfdfc28e25dff43c -->
 
 ```json
 {
   "additionalProperties": false,
   "properties": {
     "created_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Created At",
       "type": "string"
     },
@@ -99,6 +105,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "title": "Etag"
     },
     "expires_at": {
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Expires At",
       "type": "string"
     },
@@ -136,6 +145,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "ready_at": {
       "anyOf": [
         {
+          "maxLength": 30,
+          "minLength": 30,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
           "type": "string"
         },
         {

@@ -27,7 +27,7 @@ def test_shared_cli_output_formats_lifecycle_event_pages() -> None:
         "events": [
             {
                 "id": "event-1",
-                "time": "2026-08-02T12:00:00.000000Z",
+                "time": "2026-08-02T12:00:00.000000000Z",
                 "type": "io.riverhog.target.job.succeeded",
                 "subject": "job-1",
             }
@@ -38,7 +38,7 @@ def test_shared_cli_output_formats_lifecycle_event_pages() -> None:
 
     assert format_lifecycle_events(payload) == (
         "events: 1\n"
-        "2026-08-02T12:00:00.000000Z io.riverhog.target.job.succeeded "
+        "2026-08-02T12:00:00.000000000Z io.riverhog.target.job.succeeded "
         "subject=job-1 id=event-1\n"
         "next cursor: 41\n"
         "has more: yes"

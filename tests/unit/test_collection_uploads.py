@@ -167,7 +167,7 @@ class _MemoryResumableCache:
             object_path=path,
             expected_bytes=expected_bytes,
             write_token=session.write_token,
-            admitted_at="2026-08-08T00:00:00.000000Z",
+            admitted_at="2026-08-08T00:00:00.000000000Z",
         )
 
     def resumable_object_store(self, **_: object) -> MemoryResumableStore:
@@ -1305,7 +1305,7 @@ def test_closed_custody_transfer_keeps_lease_until_final_tail_is_custodied(
     with session_scope(make_session_factory(config.database_url)) as session:
         upload = session.get(CollectionUploadRecord, collection_id)
         assert upload is not None
-        upload.lease_expires_at = "2020-01-01T00:00:00.000000Z"
+        upload.lease_expires_at = "2020-01-01T00:00:00.000000000Z"
     assert service.reap_expired_custody_transfers() == 1
     assert service.get(collection_id)["state"] == "orphaned"
 
@@ -1442,7 +1442,7 @@ def test_custody_transfer_receipt_orphan_resume_and_guarded_discard(
     with session_scope(make_session_factory(config.database_url)) as session:
         upload = session.get(CollectionUploadRecord, collection_id)
         assert upload is not None
-        upload.lease_expires_at = "2020-01-01T00:00:00.000000Z"
+        upload.lease_expires_at = "2020-01-01T00:00:00.000000000Z"
     assert service.reap_expired_custody_transfers() == 1
     assert service.get(collection_id)["state"] == "orphaned"
     assert service.reap_expired_custody_transfers() == 0
@@ -1464,7 +1464,7 @@ def test_custody_transfer_receipt_orphan_resume_and_guarded_discard(
     with session_scope(make_session_factory(config.database_url)) as session:
         upload = session.get(CollectionUploadRecord, collection_id)
         assert upload is not None
-        upload.lease_expires_at = "2020-01-01T00:00:00.000000Z"
+        upload.lease_expires_at = "2020-01-01T00:00:00.000000000Z"
     assert service.reap_expired_custody_transfers() == 1
     execution_id = "a" * 64
     with session_scope(make_session_factory(config.database_url)) as session:
@@ -1483,9 +1483,9 @@ def test_custody_transfer_receipt_orphan_resume_and_guarded_discard(
                 execution_id=execution_id,
                 state="active",
                 fence=1,
-                expires_at="2099-01-01T00:00:00.000000Z",
-                created_at="2026-08-25T00:00:00.000000Z",
-                updated_at="2026-08-25T00:00:00.000000Z",
+                expires_at="2099-01-01T00:00:00.000000000Z",
+                created_at="2026-08-25T00:00:00.000000000Z",
+                updated_at="2026-08-25T00:00:00.000000000Z",
             )
         )
     active_plan = service.plan_orphan_discard(collection_id)
@@ -1495,7 +1495,7 @@ def test_custody_transfer_receipt_orphan_resume_and_guarded_discard(
     with session_scope(make_session_factory(config.database_url)) as session:
         claim = session.get(CollectionProcessingClaimRecord, "b" * 64)
         assert claim is not None
-        claim.expires_at = "2020-01-01T00:00:00.000000Z"
+        claim.expires_at = "2020-01-01T00:00:00.000000000Z"
     plan = service.plan_orphan_discard(collection_id)
     assert plan["status"] == "ready"
     assert "permanently destroys" in str(plan["warning"])
@@ -1531,7 +1531,7 @@ def test_failed_orphan_cleanup_remains_visible_and_exactly_retryable(
     with session_scope(make_session_factory(config.database_url)) as session:
         upload = session.get(CollectionUploadRecord, collection_id)
         assert upload is not None
-        upload.lease_expires_at = "2020-01-01T00:00:00.000000Z"
+        upload.lease_expires_at = "2020-01-01T00:00:00.000000000Z"
     assert service.reap_expired_custody_transfers() == 1
     store = service._archive_stores.require("archive").store  # noqa: SLF001
     original = store.discard_collection_archive_upload

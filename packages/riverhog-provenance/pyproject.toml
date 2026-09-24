@@ -23,11 +23,13 @@ dependencies = [
   "referencing>=0.37,<0.38",
   "riverhog-canonical-json>=0.1,<0.2",
   "riverhog-provenance-contracts>=0.1,<0.2",
+  "time-formats>=0.1,<0.2",
 ]
 
 [tool.uv.sources]
 riverhog-canonical-json = { workspace = true }
 riverhog-provenance-contracts = { workspace = true }
+time-formats = { workspace = true }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/riverhog_provenance"]

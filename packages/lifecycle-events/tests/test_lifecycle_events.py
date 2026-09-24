@@ -113,7 +113,7 @@ def test_context_expiry_is_scoped_to_owner_and_subject_in_sql(tmp_path: Path) ->
         log.expire_context(
             owner="client",
             subject="collection-1",
-            expires_at="2026-08-02T00:00:00.000000Z",
+            expires_at="2026-08-02T00:00:00.000000000Z",
         )
         == 1
     )
@@ -126,7 +126,7 @@ def test_context_expiry_is_scoped_to_owner_and_subject_in_sql(tmp_path: Path) ->
         }
 
     assert [tuple(row) for row in rows] == [
-        ("client", "2026-08-02T00:00:00.000000Z"),
+        ("client", "2026-08-02T00:00:00.000000000Z"),
         ("client", None),
         ("other", None),
     ]

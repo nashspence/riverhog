@@ -30,7 +30,7 @@ from riverhog_canonical_json import (
     parse_scalar,
     scalar_schema,
 )
-from time_formats import format_utc_timestamp, parse_utc_timestamp
+from time_formats import CanonicalUtcTimestamp
 
 STORAGE_ADAPTER_PROTOCOL: Literal["riverhog-storage-adapter/v1"] = "riverhog-storage-adapter/v1"
 ADAPTER_PRIVATE_ASSERTION_PREFIX = "riverhog-adapter-"
@@ -280,16 +280,6 @@ class WriteCompletionPrecondition(StorageAdapterModel):
     )
 
 
-def _canonical_utc_timestamp(value: str) -> str:
-    try:
-        parsed = parse_utc_timestamp(value)
-    except ValueError as exc:
-        raise ValueError("timestamp must include UTC context") from exc
-    if format_utc_timestamp(parsed) != value:
-        raise ValueError("timestamp must use the canonical UTC representation")
-    return value
-
-
 class WriteSegmentListRequest(StorageAdapterModel):
     """Request one bounded page from an exact accepted-segment view."""
 
@@ -407,7 +397,7 @@ class CompletedObjectReceipt(StorageAdapterModel):
     verified_content_type: str = Field(min_length=1, max_length=255)
     verified_identity_assertions: RequiredIdentityAssertions
     verified_placement: ObjectPlacement
-    completed_at: str = Field(min_length=1, max_length=100)
+    completed_at: CanonicalUtcTimestamp
 
     @field_validator("object_path")
     @classmethod
@@ -418,11 +408,6 @@ class CompletedObjectReceipt(StorageAdapterModel):
     @classmethod
     def canonical_metadata(cls, value: dict[str, str]) -> dict[str, str]:
         return _canonical_identity_assertions(value)
-
-    @field_validator("completed_at")
-    @classmethod
-    def canonical_completed_at(cls, value: str) -> str:
-        return _canonical_utc_timestamp(value)
 
 
 class SmallObjectWriteRequest(StorageAdapterModel):
@@ -461,7 +446,7 @@ class ImmutableObjectReceipt(StorageAdapterModel):
     verified_content_type: str = Field(min_length=1, max_length=255)
     verified_identity_assertions: RequiredIdentityAssertions
     verified_placement: ObjectPlacement
-    completed_at: str = Field(min_length=1, max_length=100)
+    completed_at: CanonicalUtcTimestamp
 
     @field_validator("object_path")
     @classmethod
@@ -473,11 +458,6 @@ class ImmutableObjectReceipt(StorageAdapterModel):
     def canonical_metadata(cls, value: dict[str, str]) -> dict[str, str]:
         return _canonical_identity_assertions(value)
 
-    @field_validator("completed_at")
-    @classmethod
-    def canonical_completed_at(cls, value: str) -> str:
-        return _canonical_utc_timestamp(value)
-
 
 class ObjectMetadataReceipt(StorageAdapterModel):
     object_path: str = Field(min_length=1, max_length=4096)
@@ -488,7 +468,7 @@ class ObjectMetadataReceipt(StorageAdapterModel):
     stored_sha256: Sha256 | None = None
     observed_identity_assertions: RequiredIdentityAssertions
     verified_placement: ObjectPlacement
-    completed_at: str = Field(min_length=1, max_length=100)
+    completed_at: CanonicalUtcTimestamp
 
     @field_validator("object_path")
     @classmethod
@@ -499,11 +479,6 @@ class ObjectMetadataReceipt(StorageAdapterModel):
     @classmethod
     def canonical_metadata(cls, value: dict[str, str]) -> dict[str, str]:
         return _canonical_identity_assertions(value)
-
-    @field_validator("completed_at")
-    @classmethod
-    def canonical_completed_at(cls, value: str) -> str:
-        return _canonical_utc_timestamp(value)
 
 
 class ObjectHeadRequest(StorageAdapterModel):
@@ -616,22 +591,12 @@ class ReadPreparationRequest(StorageAdapterModel):
 
 class ReadRequested(StorageAdapterModel):
     state: Literal["requested"] = "requested"
-    estimated_ready_at: str | None = Field(default=None, min_length=1, max_length=100)
-
-    @field_validator("estimated_ready_at")
-    @classmethod
-    def canonical_estimated_ready_at(cls, value: str | None) -> str | None:
-        return _canonical_utc_timestamp(value) if value is not None else None
+    estimated_ready_at: CanonicalUtcTimestamp | None = None
 
 
 class ReadReady(StorageAdapterModel):
     state: Literal["ready"] = "ready"
-    available_until: str | None = Field(default=None, min_length=1, max_length=100)
-
-    @field_validator("available_until")
-    @classmethod
-    def canonical_available_until(cls, value: str | None) -> str | None:
-        return _canonical_utc_timestamp(value) if value is not None else None
+    available_until: CanonicalUtcTimestamp | None = None
 
 
 class ReadExpired(StorageAdapterModel):

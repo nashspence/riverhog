@@ -13,5 +13,5 @@ Each definition has one primary location and states its own scope. The links bel
 | [compatibility/durable-state/v1](../../authorities/release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de) | [137 indexed contract elements](../compatibility-durable-state-v1/applications.md) |
 | [compatibility/http-api/v1](../../authorities/release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0) | [552 indexed contract elements](../compatibility-http-api-v1/applications.md) |
 | [compatibility/licensing/v1](../../authorities/release/compatibility-guarantees/compatibility-licensing.md#p-c6988e244a) | Scope stated in definition; no element index |
-| [compatibility/python-api/v1](../../authorities/release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5) | [2842 indexed contract elements](../compatibility-python-api-v1/applications.md) |
+| [compatibility/python-api/v1](../../authorities/release/compatibility-guarantees/compatibility-python-api.md#p-e574772ba5) | [2843 indexed contract elements](../compatibility-python-api-v1/applications.md) |
 | [compatibility/recovery/v1](../../authorities/release/compatibility-guarantees/compatibility-recovery.md#p-04aa4508f1) | Scope stated in definition; no element index |

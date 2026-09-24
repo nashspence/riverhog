@@ -86,8 +86,8 @@ def seed_tag(
                 tag_sha256=tag_id,
                 tag=label,
                 search_text=label,
-                created_at="2026-07-24T00:00:00.000000Z",
-                updated_at="2026-07-24T00:00:00.000000Z",
+                created_at="2026-07-24T00:00:00.000000000Z",
+                updated_at="2026-07-24T00:00:00.000000000Z",
                 collection_count=1 if collection_id is not None else 0,
             )
         )
@@ -103,7 +103,7 @@ def seed_tag(
                     passphrase_id="fixture-archive-key-v1",
                     inventory_identity="1" * 64,
                     created_by_principal_id="fixture",
-                    created_at="2026-07-24T00:00:00.000000Z",
+                    created_at="2026-07-24T00:00:00.000000000Z",
                     file_count=0,
                     file_bytes=0,
                 )
@@ -112,7 +112,7 @@ def seed_tag(
                 CollectionTagMembershipRecord(
                     collection_id=collection_id,
                     tag_sha256=tag_id,
-                    added_at="2026-07-24T00:00:00.000000Z",
+                    added_at="2026-07-24T00:00:00.000000000Z",
                 )
             )
     return tag_id
@@ -187,7 +187,7 @@ def test_app_keys_rotate_revoke_expire_and_authenticate_without_restart(tmp_path
     with session_scope(factory) as session:
         record = session.get(AppKeyRecord, str(second["id"]))
         assert record is not None
-        record.expires_at = "2000-01-01T00:00:00.000000Z"
+        record.expires_at = "2000-01-01T00:00:00.000000000Z"
     assert service.authenticate(str(second["token"])) is None
 
 
@@ -198,8 +198,8 @@ def test_key_browsing_crosses_nullable_sort_positions_without_omission(
     created = [create_key(service, app="nullable") for _ in range(3)]
     factory = make_session_factory(config.database_url)
     expiry_by_id = {
-        str(created[0]["id"]): "2026-01-01T00:00:00.000000Z",
-        str(created[1]["id"]): "2027-01-01T00:00:00.000000Z",
+        str(created[0]["id"]): "2026-01-01T00:00:00.000000000Z",
+        str(created[1]["id"]): "2027-01-01T00:00:00.000000000Z",
         str(created[2]["id"]): None,
     }
     with session_scope(factory) as session:
@@ -370,7 +370,7 @@ def test_revocation_cancels_key_jobs_and_releases_unused_download_reservations(
                 restore_policy="allow",
                 created_at=str(created["created_at"]),
                 ready_at=None,
-                expires_at="2026-08-01T00:00:00.000000Z",
+                expires_at="2026-08-01T00:00:00.000000000Z",
                 file_commitment_sha256="b" * 64,
                 segment_commitment_sha256="c" * 64,
                 etag="a" * 64,
@@ -411,10 +411,10 @@ def test_revocation_cancels_key_jobs_and_releases_unused_download_reservations(
                 key_id=str(created["id"]),
                 job_id="job-one",
                 kind="job",
-                month_started_at="2026-07-01T00:00:00.000000Z",
+                month_started_at="2026-07-01T00:00:00.000000000Z",
                 reserved_bytes=100,
                 created_at=str(created["created_at"]),
-                expires_at="2026-08-01T00:00:00.000000Z",
+                expires_at="2026-08-01T00:00:00.000000000Z",
             )
         )
     service.revoke(app="review", key_id=str(created["id"]))

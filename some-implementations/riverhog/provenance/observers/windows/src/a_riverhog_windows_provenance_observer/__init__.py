@@ -57,6 +57,7 @@ from riverhog_provenance.model import (
     PathInput,
 )
 from riverhog_provenance.providers import ProvenanceObserverBinding
+from time_formats import format_utc_ns
 
 # Fixed-width Windows ABI scalar types.  ctypes.wintypes.DWORD is host-ABI
 # dependent on non-Windows LP64 builds, which would invalidate structure tests.
@@ -451,13 +452,7 @@ def _filetime_to_unix_ns(ticks: int) -> int:
 def _format_filetime(ticks: int) -> str:
     if ticks <= 0:
         raise ValueError("FILETIME value is not a positive absolute timestamp")
-    unix_100ns = ticks - FILETIME_UNIX_EPOCH_TICKS
-    seconds, remainder = divmod(unix_100ns, 10_000_000)
-    moment = dt.datetime.fromtimestamp(seconds, tz=dt.UTC)
-    base = moment.strftime("%Y-%m-%dT%H:%M:%S")
-    if remainder:
-        return f"{base}.{remainder:07d}".rstrip("0") + "Z"
-    return base + "Z"
+    return format_utc_ns(_filetime_to_unix_ns(ticks))
 
 
 def _filetime_observation(kind: str, ticks: int, field: str) -> JsonObject:

@@ -50,7 +50,7 @@ def _seed(path: Path) -> None:
                 passphrase_id="fixture-archive-key-v1",
                 inventory_identity="1" * 64,
                 created_by_principal_id="fixture",
-                created_at="2026-01-01T00:00:00.000000Z",
+                created_at="2026-01-01T00:00:00.000000000Z",
             )
         )
         session.add(
@@ -66,8 +66,8 @@ def _seed(path: Path) -> None:
             store="deep",
             state="uploaded",
             archive_storage_prefix="collections/1",
-            last_uploaded_at="2026-01-01T00:00:00.000000Z",
-            last_verified_at="2026-01-01T00:00:00.000000Z",
+            last_uploaded_at="2026-01-01T00:00:00.000000000Z",
+            last_verified_at="2026-01-01T00:00:00.000000000Z",
         )
         session.add(copy)
         for order, (object_id, kind, size) in enumerate(
@@ -85,8 +85,8 @@ def _seed(path: Path) -> None:
                     stored_bytes=size,
                     sha256=chr(ord("a") + order) * 64,
                     stored_sha256=chr(ord("a") + order) * 64,
-                    uploaded_at="2026-01-01T00:00:00.000000Z",
-                    verified_at="2026-01-01T00:00:00.000000Z",
+                    uploaded_at="2026-01-01T00:00:00.000000000Z",
+                    verified_at="2026-01-01T00:00:00.000000000Z",
                 )
             )
 

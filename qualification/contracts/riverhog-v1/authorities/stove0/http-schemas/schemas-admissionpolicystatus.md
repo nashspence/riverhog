@@ -31,18 +31,20 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-bc8436892e"></a>`policy_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Policy Sha256" |  |
 | <a id="s-8a42f28aef"></a>`source_identity` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Source Identity" |  |
 | <a id="s-81ea7bf804"></a>`through_revision` | yes | type="string"; pattern="^(?:0\|[1-9][0-9]*)$"; title="Through Revision" |  |
-| <a id="s-ded9b01a7b"></a>`updated_at` | yes | type="string"; maxLength=40; minLength=1; title="Updated At" |  |
+| <a id="s-ded9b01a7b"></a>`updated_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Updated At" |  |
 
 ### Progression, limits, and lifecycle
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
+Shared facts for every subject below: reason="fixed-public-representation"
+
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| <a id="s-c9abb94bd5"></a>[field authorization_view_identity · string value](#s-7abab665da) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [field policy_sha256](#s-bc8436892e) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| <a id="s-1edd94b408"></a>[field source_identity · string value](#s-8a42f28aef) | `length · characters · fixed` | maximum=64; minimum=64; reason="fixed-public-representation"; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
-| [field updated_at](#s-ded9b01a7b) | `length · characters · contract_max` | maximum=40; minimum=1; reason="schema-maximum" |
+| <a id="s-c9abb94bd5"></a>[field authorization_view_identity · string value](#s-7abab665da) | `length · characters · fixed` | maximum=64; minimum=64; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field policy_sha256](#s-bc8436892e) | `length · characters · fixed` | maximum=64; minimum=64; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| <a id="s-1edd94b408"></a>[field source_identity · string value](#s-8a42f28aef) | `length · characters · fixed` | maximum=64; minimum=64; source_constraint={"pattern":"^[0-9a-f]{64}$"} |
+| [field updated_at](#s-ded9b01a7b) | `length · characters · fixed` | maximum=30; minimum=30 |
 
 ## Maintained corroboration
 
@@ -80,7 +82,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7404ffc49e24c3273ed3c6d1d48218bb2dc3b14579283217e176b3ecc4b7983a -->
+<!-- exact-contract-value: a42f2565b2104bffc99c97aa4083c77e3ce46186362bae4d7a4c0a774fabcb1b -->
 
 ```json
 {
@@ -142,8 +144,9 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "string"
     },
     "updated_at": {
-      "maxLength": 40,
-      "minLength": 1,
+      "maxLength": 30,
+      "minLength": 30,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$",
       "title": "Updated At",
       "type": "string"
     }
