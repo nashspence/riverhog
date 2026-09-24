@@ -27,7 +27,8 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | <a id="s-3253253ef4"></a>`collection_id`<br>`collection_id` | required positional; 1 value | integer | not recorded<br>Env: `null` |
 | <a id="s-1209595923"></a>`destination_store`<br>`--to` | required option; 1 value | text | not recorded<br>Env: `null` |
 | <a id="s-a27db2b476"></a>`source_store`<br>`--from` | optional option; 1 value | text | not recorded<br>Env: `null` |
-| <a id="s-e00b34c579"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
+| <a id="s-e00b34c579"></a>`use_cache`<br>`--use-cache`, alternate: `--no-use-cache` | optional flag; 0 values | boolean | not recorded<br>Env: `null` |
+| <a id="s-8497f66913"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -65,8 +66,9 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 |---|---|---|
 | [CLI parameter collection_id](#s-3253253ef4) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
 | [CLI parameter --to](#s-1209595923) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
-| [CLI parameter --json](#s-e00b34c579) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
+| [CLI parameter --json](#s-8497f66913) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
 | [CLI parameter --from](#s-a27db2b476) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --use-cache](#s-e00b34c579) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
 
 ## Maintained corroboration
 
@@ -93,7 +95,7 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 - [cli:a-riverhog-cli](../../../evidence/sources/authorities.md#src-d2d8219a30) — [some-implementations/riverhog/applications/a-riverhog-cli/src/a\_riverhog\_cli/main.py::&lt;module&gt;](../../../../../../some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py)
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- **Command callback:** [some-implementations/riverhog/applications/a-riverhog-cli/src/a\_riverhog\_cli/main.py::archive\_copy\_cmd](../../../../../../some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py#L2984)
+- **Command callback:** [some-implementations/riverhog/applications/a-riverhog-cli/src/a\_riverhog\_cli/main.py::archive\_copy\_cmd](../../../../../../some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py#L3008)
 
 ### Machine authority
 
@@ -146,7 +148,7 @@ false
 
 ### `/external_contract/cli/a-riverhog-cli/commands/archive/commands/copy-job/commands/start/parameters`
 
-<!-- exact-contract-value: c7ff3ed6ced0e984db2acb296727ee8504a8533e7af6ec8deeb3b7d42775493e -->
+<!-- exact-contract-value: 5db5e323e9897128e55118f1962c790f758cb649e4572613ab2f5ac59f9b4250 -->
 
 ```json
 [
@@ -200,6 +202,26 @@ false
     "type": {
       "class": "typer._click.types.StringParamType",
       "name": "text"
+    }
+  },
+  {
+    "count": false,
+    "envvar": null,
+    "is_flag": true,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "use_cache",
+    "nargs": 1,
+    "options": [
+      "--use-cache"
+    ],
+    "required": false,
+    "secondary_options": [
+      "--no-use-cache"
+    ],
+    "type": {
+      "class": "typer._click.types.BoolParamType",
+      "name": "boolean"
     }
   },
   {

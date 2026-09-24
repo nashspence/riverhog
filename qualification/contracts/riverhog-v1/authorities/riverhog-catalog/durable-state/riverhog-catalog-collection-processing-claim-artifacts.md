@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-processing-cl-b761c1c7be:4426253d75 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-processing-cl-b761c1c7be:8666e3caec -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-841b96ee19"></a>
+<a id="s-d73c4686f2"></a>
 
 ### Table: `collection_processing_claim_artifacts`
 
@@ -21,24 +21,24 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-20abc2cef1"></a>`claim_id` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-5297f0c8b1"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-0628c3d37c"></a>`path` | `VARCHAR` | no | `—` | — |
-| <a id="s-0bf019998a"></a>`artifact_order` | `BIGINT` | no | `—` | — |
-| <a id="s-37e23b17c5"></a>`bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-3ffac4b9c2"></a>`sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-1250dfe579"></a>`claim_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-4c71906f53"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-ca4491da34"></a>`path` | `VARCHAR` | no | `—` | — |
+| <a id="s-dc20a39a2f"></a>`artifact_order` | `BIGINT` | no | `—` | — |
+| <a id="s-d26c896d55"></a>`bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-a2bfca2a40"></a>`sha256` | `VARCHAR(64)` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-0ef405d0d8"></a>`primary-key` | `—` | `PRIMARY KEY (claim_id, collection_id, path)` |
-| <a id="s-76bb1574ec"></a>`foreign-key` | `—` | `FOREIGN KEY(claim_id, collection_id) REFERENCES collection_processing_claim_inputs (claim_id, collection_id) ON DELETE CASCADE` |
-| <a id="s-f3944a6def"></a>`check` | `ck_processing_claim_artifacts_bytes` | `CONSTRAINT ck_processing_claim_artifacts_bytes CHECK (bytes >= 0)` |
-| <a id="s-e6bfdc2d01"></a>`check` | `ck_processing_claim_artifacts_order` | `CONSTRAINT ck_processing_claim_artifacts_order CHECK (artifact_order >= 0)` |
-| <a id="s-18d99c735a"></a>`check` | `ck_processing_claim_artifacts_sha256` | `CONSTRAINT ck_processing_claim_artifacts_sha256 CHECK (length(sha256) = 64)` |
-| <a id="s-5fe26466b6"></a>`check` | `ck_collection_processing_claim_artifacts_claim_id_hex` | `CONSTRAINT ck_collection_processing_claim_artifacts_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-2000575e14"></a>`check` | `ck_collection_processing_claim_artifacts_sha256_hex` | `CONSTRAINT ck_collection_processing_claim_artifacts_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-6144105291"></a>`primary-key` | `—` | `PRIMARY KEY (claim_id, collection_id, path)` |
+| <a id="s-7c2cdc0223"></a>`foreign-key` | `—` | `FOREIGN KEY(claim_id, collection_id) REFERENCES collection_processing_claim_inputs (claim_id, collection_id) ON DELETE CASCADE` |
+| <a id="s-69b2b169cb"></a>`check` | `ck_processing_claim_artifacts_bytes` | `CONSTRAINT ck_processing_claim_artifacts_bytes CHECK (bytes >= 0)` |
+| <a id="s-d8aace839a"></a>`check` | `ck_processing_claim_artifacts_order` | `CONSTRAINT ck_processing_claim_artifacts_order CHECK (artifact_order >= 0)` |
+| <a id="s-008dede6d0"></a>`check` | `ck_processing_claim_artifacts_sha256` | `CONSTRAINT ck_processing_claim_artifacts_sha256 CHECK (length(sha256) = 64)` |
+| <a id="s-11c5deb2c5"></a>`check` | `ck_collection_processing_claim_artifacts_claim_id_hex` | `CONSTRAINT ck_collection_processing_claim_artifacts_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-10a2c0646f"></a>`check` | `ck_collection_processing_claim_artifacts_sha256_hex` | `CONSTRAINT ck_collection_processing_claim_artifacts_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -48,7 +48,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-010e4505a1"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-bc00521e07"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -64,7 +64,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/70`
+- `/external_contract/durable_state/owners/0/structure/tables/71`
 
 ### Exact owned JSON
 

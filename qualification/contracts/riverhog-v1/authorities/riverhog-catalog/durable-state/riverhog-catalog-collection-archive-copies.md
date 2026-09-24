@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-archive-copies:cfb6223bf9 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-archive-copies:60e87a9b2b -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-a2879b730f"></a>
+<a id="s-fc8d1d92cf"></a>
 
 ### Table: `collection_archive_copies`
 
@@ -21,21 +21,21 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-bd4666ca28"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-bfefcfb058"></a>`store` | `VARCHAR` | no | `—` | — |
-| <a id="s-10e4b0d4d7"></a>`state` | `VARCHAR` | no | `—` | — |
-| <a id="s-9ae5495748"></a>`archive_storage_prefix` | `VARCHAR` | yes | `—` | — |
-| <a id="s-1ef5d906e5"></a>`last_uploaded_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-249afa008b"></a>`last_verified_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-e935eb09f8"></a>`failure` | `VARCHAR` | yes | `—` | — |
+| <a id="s-ece90bd4cf"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-5df0aae33f"></a>`store` | `VARCHAR` | no | `—` | — |
+| <a id="s-1c59f17454"></a>`state` | `VARCHAR` | no | `—` | — |
+| <a id="s-ada38e2f6a"></a>`archive_storage_prefix` | `VARCHAR` | yes | `—` | — |
+| <a id="s-b656f1317a"></a>`last_uploaded_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-a7a308f106"></a>`last_verified_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-ad1b8c9435"></a>`failure` | `VARCHAR` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-d780583b4c"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, store)` |
-| <a id="s-3af3c2b24c"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collections (id) ON DELETE CASCADE` |
-| <a id="s-3438fcb898"></a>`check` | `ck_collection_archive_copies_state` | `CONSTRAINT ck_collection_archive_copies_state CHECK (state IN ('pending','uploading','uploaded','retrying','failed'))` |
+| <a id="s-f3d5d14e20"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, store)` |
+| <a id="s-c146b926df"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collections (id) ON DELETE CASCADE` |
+| <a id="s-2f65e84d6a"></a>`check` | `ck_collection_archive_copies_state` | `CONSTRAINT ck_collection_archive_copies_state CHECK (state IN ('pending','uploading','uploaded','retrying','failed'))` |
 
 ## Maintained corroboration
 
@@ -45,7 +45,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-bcc8ca36ae"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-1b97c21950"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -61,7 +61,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/18`
+- `/external_contract/durable_state/owners/0/structure/tables/19`
 
 ### Exact owned JSON
 

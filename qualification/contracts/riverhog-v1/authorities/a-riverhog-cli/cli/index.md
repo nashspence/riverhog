@@ -6,7 +6,7 @@ CLI contract owned by a-riverhog-cli.
 
 ## Contract elements
 
-Executable commands: **66** · Command groups: **20**
+Executable commands: **67** · Command groups: **20**
 
 ### Command tree
 
@@ -30,6 +30,7 @@ Executable commands: **66** · Command groups: **20**
   - [archive](a-riverhog-cli-archive.md)
     - [copy-job](a-riverhog-cli-archive-copy-job.md)
       - [cancel](a-riverhog-cli-archive-copy-job-cancel.md)
+      - [intents](a-riverhog-cli-archive-copy-job-intents.md)
       - [list](a-riverhog-cli-archive-copy-job-list.md)
       - [show](a-riverhog-cli-archive-copy-job-show.md)
       - [start](a-riverhog-cli-archive-copy-job-start.md)

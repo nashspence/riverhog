@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-description-publications:88fa144038 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-description-publications:9d3b5013d4 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-534a86f2be"></a>
+<a id="s-5135cc46d8"></a>
 
 ### Table: `collection_description_publications`
 
@@ -21,40 +21,40 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-6917b0905f"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-2fc0f38afc"></a>`store` | `VARCHAR` | no | `—` | — |
-| <a id="s-53bc220b21"></a>`desired_revision` | `BIGINT` | no | `—` | — |
-| <a id="s-922a4eccea"></a>`desired_identity` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-652e226f59"></a>`published_revision` | `BIGINT` | no | `—` | — |
-| <a id="s-774413c21c"></a>`published_identity` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-e5af529259"></a>`state` | `VARCHAR` | no | `—` | — |
-| <a id="s-1ebf4f6c5c"></a>`attempt_count` | `INTEGER` | no | `0` | — |
-| <a id="s-e585fb2533"></a>`next_attempt_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-0cfd24fd6c"></a>`last_attempt_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-869bc32ca5"></a>`failure` | `TEXT` | yes | `—` | — |
-| <a id="s-5059ed65b2"></a>`object_path` | `VARCHAR` | yes | `—` | — |
-| <a id="s-3b68f49d21"></a>`provider_revision` | `VARCHAR` | yes | `—` | — |
-| <a id="s-fa182ec714"></a>`stored_bytes` | `BIGINT` | yes | `—` | — |
-| <a id="s-35a7d7ae01"></a>`stored_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-72d455c9b7"></a>`published_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-6dfd570257"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-4f8ba8a21c"></a>`store` | `VARCHAR` | no | `—` | — |
+| <a id="s-e061d4aecb"></a>`desired_revision` | `BIGINT` | no | `—` | — |
+| <a id="s-5442036c1a"></a>`desired_identity` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-ba869643a0"></a>`published_revision` | `BIGINT` | no | `—` | — |
+| <a id="s-fc0510f0ef"></a>`published_identity` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-bd919e02c0"></a>`state` | `VARCHAR` | no | `—` | — |
+| <a id="s-c1a4b16909"></a>`attempt_count` | `INTEGER` | no | `0` | — |
+| <a id="s-d182b1ad8a"></a>`next_attempt_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-001ce14272"></a>`last_attempt_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-6c9404505d"></a>`failure` | `TEXT` | yes | `—` | — |
+| <a id="s-f8678b4e88"></a>`object_path` | `VARCHAR` | yes | `—` | — |
+| <a id="s-6d480a27b0"></a>`provider_revision` | `VARCHAR` | yes | `—` | — |
+| <a id="s-40eefe40ac"></a>`stored_bytes` | `BIGINT` | yes | `—` | — |
+| <a id="s-c475fbb1d2"></a>`stored_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-8dc72cc230"></a>`published_at` | `VARCHAR` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-cbe8c47225"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, store)` |
-| <a id="s-2f7025a01f"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, store) REFERENCES collection_archive_copies (collection_id, store) ON DELETE CASCADE` |
-| <a id="s-162ff679de"></a>`check` | `ck_description_publications_desired_revision` | `CONSTRAINT ck_description_publications_desired_revision CHECK (desired_revision >= 0 AND desired_revision <= 9007199254740991)` |
-| <a id="s-54986f64d2"></a>`check` | `ck_description_publications_published_revision` | `CONSTRAINT ck_description_publications_published_revision CHECK (published_revision >= 0 AND published_revision <= 9007199254740991)` |
-| <a id="s-d9b0a86b7b"></a>`check` | `ck_description_publications_desired_identity` | `CONSTRAINT ck_description_publications_desired_identity CHECK (length(desired_identity) = 64 AND lower(desired_identity) = desired_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(desired_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-2ad719db32"></a>`check` | `ck_description_publications_published_identity` | `CONSTRAINT ck_description_publications_published_identity CHECK (length(published_identity) = 64 AND lower(published_identity) = published_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(published_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-07d688fe63"></a>`check` | `ck_description_publications_attempt_count` | `CONSTRAINT ck_description_publications_attempt_count CHECK (attempt_count >= 0)` |
-| <a id="s-77b405af46"></a>`check` | `ck_description_publications_state` | `CONSTRAINT ck_description_publications_state CHECK (state IN ('pending','publishing','published','retry_wait'))` |
-| <a id="s-e7e5dfb58a"></a>`check` | `ck_description_publications_next_attempt` | `CONSTRAINT ck_description_publications_next_attempt CHECK (state = 'published' AND next_attempt_at IS NULL OR state != 'published' AND next_attempt_at IS NOT NULL)` |
-| <a id="s-8e8abd4ad1"></a>`check` | `ck_description_publications_receipt` | `CONSTRAINT ck_description_publications_receipt CHECK (published_revision = 0 AND object_path IS NULL AND stored_bytes IS NULL AND stored_sha256 IS NULL OR published_revision > 0 AND object_path IS NOT NULL AND stored_bytes IS NOT NULL AND stored_sha256 IS NOT NULL)` |
-| <a id="s-0113085753"></a>`check` | `ck_collection_description_publications_desired_identity_hex` | `CONSTRAINT ck_collection_description_publications_desired_identity_hex CHECK (length(desired_identity) = 64 AND lower(desired_identity) = desired_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(desired_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-16a77e29d4"></a>`check` | `ck_sha256_5f9e0ec935743970` | `CONSTRAINT ck_sha256_5f9e0ec935743970 CHECK (length(published_identity) = 64 AND lower(published_identity) = published_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(published_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-4cecd710a3"></a>`check` | `ck_collection_description_publications_stored_sha256_hex` | `CONSTRAINT ck_collection_description_publications_stored_sha256_hex CHECK (stored_sha256 IS NULL OR length(stored_sha256) = 64 AND lower(stored_sha256) = stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-2f0fb38e63"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, store)` |
+| <a id="s-fcf4c9fc58"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, store) REFERENCES collection_archive_copies (collection_id, store) ON DELETE CASCADE` |
+| <a id="s-caa2e2b8fd"></a>`check` | `ck_description_publications_desired_revision` | `CONSTRAINT ck_description_publications_desired_revision CHECK (desired_revision >= 0 AND desired_revision <= 9007199254740991)` |
+| <a id="s-39108e3409"></a>`check` | `ck_description_publications_published_revision` | `CONSTRAINT ck_description_publications_published_revision CHECK (published_revision >= 0 AND published_revision <= 9007199254740991)` |
+| <a id="s-3c88fa1677"></a>`check` | `ck_description_publications_desired_identity` | `CONSTRAINT ck_description_publications_desired_identity CHECK (length(desired_identity) = 64 AND lower(desired_identity) = desired_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(desired_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-450b7c8a71"></a>`check` | `ck_description_publications_published_identity` | `CONSTRAINT ck_description_publications_published_identity CHECK (length(published_identity) = 64 AND lower(published_identity) = published_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(published_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-36fab2d022"></a>`check` | `ck_description_publications_attempt_count` | `CONSTRAINT ck_description_publications_attempt_count CHECK (attempt_count >= 0)` |
+| <a id="s-463f13a9c1"></a>`check` | `ck_description_publications_state` | `CONSTRAINT ck_description_publications_state CHECK (state IN ('pending','publishing','published','retry_wait'))` |
+| <a id="s-fac512a5ed"></a>`check` | `ck_description_publications_next_attempt` | `CONSTRAINT ck_description_publications_next_attempt CHECK (state = 'published' AND next_attempt_at IS NULL OR state != 'published' AND next_attempt_at IS NOT NULL)` |
+| <a id="s-099cd253e6"></a>`check` | `ck_description_publications_receipt` | `CONSTRAINT ck_description_publications_receipt CHECK (published_revision = 0 AND object_path IS NULL AND stored_bytes IS NULL AND stored_sha256 IS NULL OR published_revision > 0 AND object_path IS NOT NULL AND stored_bytes IS NOT NULL AND stored_sha256 IS NOT NULL)` |
+| <a id="s-ef601aacb6"></a>`check` | `ck_collection_description_publications_desired_identity_hex` | `CONSTRAINT ck_collection_description_publications_desired_identity_hex CHECK (length(desired_identity) = 64 AND lower(desired_identity) = desired_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(desired_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-f1ddf0a677"></a>`check` | `ck_sha256_5f9e0ec935743970` | `CONSTRAINT ck_sha256_5f9e0ec935743970 CHECK (length(published_identity) = 64 AND lower(published_identity) = published_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(published_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-cea7abab8c"></a>`check` | `ck_collection_description_publications_stored_sha256_hex` | `CONSTRAINT ck_collection_description_publications_stored_sha256_hex CHECK (stored_sha256 IS NULL OR length(stored_sha256) = 64 AND lower(stored_sha256) = stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -64,7 +64,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-b674b24ada"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-c81eb51591"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -80,7 +80,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/43`
+- `/external_contract/durable_state/owners/0/structure/tables/44`
 
 ### Exact owned JSON
 

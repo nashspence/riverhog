@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-tag-revisions:be1d6570d0 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-tag-revisions:59548e3b55 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-fde380e33e"></a>
+<a id="s-5c534a7cd1"></a>
 
 ### Table: `collection_tag_revisions`
 
@@ -21,27 +21,27 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-11f8ed6d88"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-4aab0b8f00"></a>`revision` | `BIGINT` | no | `—` | — |
-| <a id="s-f4491a8309"></a>`root_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-7aff0d860b"></a>`tag_set_identity` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-988ad3697c"></a>`head_identity` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-78952758ca"></a>`created_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-d50b4e617c"></a>`cleanup_started_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-4e8db8a2bd"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-ee0619fdfd"></a>`revision` | `BIGINT` | no | `—` | — |
+| <a id="s-cf60d564c7"></a>`root_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-cadad7863c"></a>`tag_set_identity` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-728dded389"></a>`head_identity` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-264662b57d"></a>`created_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-d576685a7a"></a>`cleanup_started_at` | `VARCHAR` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-827632f5b7"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, revision)` |
-| <a id="s-590de972d1"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collections (id) ON DELETE CASCADE` |
-| <a id="s-3b41812152"></a>`check` | `ck_collection_tag_revisions_revision` | `CONSTRAINT ck_collection_tag_revisions_revision CHECK (revision >= 1 AND revision <= 9007199254740991)` |
-| <a id="s-94ae3aef5d"></a>`check` | `ck_collection_tag_revisions_root` | `CONSTRAINT ck_collection_tag_revisions_root CHECK (root_sha256 IS NULL OR length(root_sha256) = 64 AND lower(root_sha256) = root_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-454beba88c"></a>`check` | `ck_collection_tag_revisions_set_identity` | `CONSTRAINT ck_collection_tag_revisions_set_identity CHECK (length(tag_set_identity) = 64 AND lower(tag_set_identity) = tag_set_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-a3c3896a90"></a>`check` | `ck_collection_tag_revisions_head_identity` | `CONSTRAINT ck_collection_tag_revisions_head_identity CHECK (length(head_identity) = 64 AND lower(head_identity) = head_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(head_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-a9e3eb6dba"></a>`check` | `ck_collection_tag_revisions_root_sha256_hex` | `CONSTRAINT ck_collection_tag_revisions_root_sha256_hex CHECK (root_sha256 IS NULL OR length(root_sha256) = 64 AND lower(root_sha256) = root_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-d3c4a722f2"></a>`check` | `ck_collection_tag_revisions_tag_set_identity_hex` | `CONSTRAINT ck_collection_tag_revisions_tag_set_identity_hex CHECK (length(tag_set_identity) = 64 AND lower(tag_set_identity) = tag_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-3ad132abad"></a>`check` | `ck_collection_tag_revisions_head_identity_hex` | `CONSTRAINT ck_collection_tag_revisions_head_identity_hex CHECK (length(head_identity) = 64 AND lower(head_identity) = head_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(head_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-ed3b17ea02"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, revision)` |
+| <a id="s-f653cbd2a0"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collections (id) ON DELETE CASCADE` |
+| <a id="s-0e2db9fec1"></a>`check` | `ck_collection_tag_revisions_revision` | `CONSTRAINT ck_collection_tag_revisions_revision CHECK (revision >= 1 AND revision <= 9007199254740991)` |
+| <a id="s-2f9d7ae2a2"></a>`check` | `ck_collection_tag_revisions_root` | `CONSTRAINT ck_collection_tag_revisions_root CHECK (root_sha256 IS NULL OR length(root_sha256) = 64 AND lower(root_sha256) = root_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-35502dfd43"></a>`check` | `ck_collection_tag_revisions_set_identity` | `CONSTRAINT ck_collection_tag_revisions_set_identity CHECK (length(tag_set_identity) = 64 AND lower(tag_set_identity) = tag_set_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-0992175ad1"></a>`check` | `ck_collection_tag_revisions_head_identity` | `CONSTRAINT ck_collection_tag_revisions_head_identity CHECK (length(head_identity) = 64 AND lower(head_identity) = head_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(head_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-789a57e5c1"></a>`check` | `ck_collection_tag_revisions_root_sha256_hex` | `CONSTRAINT ck_collection_tag_revisions_root_sha256_hex CHECK (root_sha256 IS NULL OR length(root_sha256) = 64 AND lower(root_sha256) = root_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-ce83ac2f2f"></a>`check` | `ck_collection_tag_revisions_tag_set_identity_hex` | `CONSTRAINT ck_collection_tag_revisions_tag_set_identity_hex CHECK (length(tag_set_identity) = 64 AND lower(tag_set_identity) = tag_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-df4c771bbc"></a>`check` | `ck_collection_tag_revisions_head_identity_hex` | `CONSTRAINT ck_collection_tag_revisions_head_identity_hex CHECK (length(head_identity) = 64 AND lower(head_identity) = head_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(head_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -51,7 +51,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-383ee92707"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-5766cef978"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -67,7 +67,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/27`
+- `/external_contract/durable_state/owners/0/structure/tables/28`
 
 ### Exact owned JSON
 

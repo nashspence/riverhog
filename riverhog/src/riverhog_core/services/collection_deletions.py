@@ -37,6 +37,7 @@ from riverhog_core.catalog_models import (
     CollectionTagMembershipRecord,
     CollectionTagPublicationRecord,
     CollectionTagRecord,
+    CollectionUploadCopyIntentRecord,
     CollectionUploadFileRecord,
     CollectionUploadRecord,
     RetrievalCacheLeaseRecord,
@@ -727,6 +728,11 @@ class SqlAlchemyCollectionDeletionService:
                 if event is None or event.published:
                     raise RuntimeError("collection deletion catalog event is unavailable")
                 publish_catalog_event(session, event=event)
+                session.execute(
+                    delete(CollectionUploadCopyIntentRecord).where(
+                        CollectionUploadCopyIntentRecord.collection_id == collection_id
+                    )
+                )
                 session.delete(collection)
             session.delete(active)
         return _deletion_result(plan, status="deleted")

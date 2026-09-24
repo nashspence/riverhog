@@ -102,7 +102,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "a-riverhog-cli",
       "result_identity": "a-riverhog-cli-result/collection/provenance/export/v1",
       "source": {
-        "line": 2690,
+        "line": 2714,
         "module": "a_riverhog_cli.main",
         "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "provenance_export_cmd"
@@ -117,7 +117,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.stream_collection_provenance_journal",
       "source": {
-        "line": 1694,
+        "line": 1705,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.stream_collection_provenance_journal"

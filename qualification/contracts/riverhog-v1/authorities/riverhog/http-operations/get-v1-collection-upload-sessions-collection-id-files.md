@@ -111,7 +111,7 @@ Exact evidence groups for this contract element:
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [riverhog/src/riverhog\_api/routers/collections.py::list\_collection\_upload\_session\_files](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L417)
+- **Handler:** [riverhog/src/riverhog\_api/routers/collections.py::list\_collection\_upload\_session\_files](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L419)
 
 ### Structural operation bindings
 
@@ -130,7 +130,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "a-riverhog-cli",
       "result_identity": "a-riverhog-cli-result/collection/upload/files/v1",
       "source": {
-        "line": 2390,
+        "line": 2414,
         "module": "a_riverhog_cli.main",
         "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "upload_files_cmd"
@@ -145,7 +145,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.list_collection_upload_session_files",
       "source": {
-        "line": 1224,
+        "line": 1235,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.list_collection_upload_session_files"

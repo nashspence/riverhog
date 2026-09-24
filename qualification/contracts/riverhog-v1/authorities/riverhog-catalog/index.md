@@ -4,8 +4,8 @@
 
 Encrypted archive management, catalog, and retrieval.
 
-Contract elements: **91** · Extent decisions: **0**
+Contract elements: **92** · Extent decisions: **0**
 
 ## Interfaces
 
-- [Durable State](durable-state/index.md) (91)
+- [Durable State](durable-state/index.md) (92)

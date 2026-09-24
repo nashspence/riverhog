@@ -363,6 +363,8 @@ class CreateOrResumeCollectionUploadSessionRequest(RiverhogModel):
     )
     initial_tag_set_identity: str = Field(pattern=r"^[0-9a-f]{64}$")
     archive_store: ArchiveStoreName | None = None
+    use_cache: bool | None = None
+    copy_to: list[ArchiveStoreName] | None = None
     event_context: EventContext | None = None
     provenance_mode: Literal["captured", "omitted"] = "captured"
     provenance_omission_reason: CanonicalVisibleText | None = None
@@ -372,6 +374,8 @@ class CreateOrResumeCollectionUploadSessionRequest(RiverhogModel):
     def validate_provenance_choice(self) -> CreateOrResumeCollectionUploadSessionRequest:
         if len(set(self.tags)) != len(self.tags):
             raise ValueError("initial collection tags must not contain duplicates")
+        if self.copy_to is not None and len(set(self.copy_to)) != len(self.copy_to):
+            raise ValueError("copy_to destinations must not contain duplicates")
         if self.provenance_mode == "captured":
             if self.provenance_omission_reason is not None:
                 raise ValueError("captured provenance cannot have an omission reason")
@@ -724,6 +728,14 @@ class CollectionUploadRegistrationConstraintsOut(CollectionUploadRegistrationCon
     pass
 
 
+class CollectionUploadCopyIntentOut(RiverhogModel):
+    destination_store: ArchiveStoreName
+    state: Literal["accepted", "pending", "handed_off", "failed", "canceled"]
+    failure_code: str | None
+    job_state: str | None
+    job_created: bool | None
+
+
 class CollectionUploadSessionOut(RiverhogModel):
     model_config = ConfigDict(
         json_schema_extra={
@@ -788,6 +800,9 @@ class CollectionUploadSessionOut(RiverhogModel):
     content_identity: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     archive_root_sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
     archive_store: ArchiveStoreName
+    use_cache: bool
+    copy_to: list[ArchiveStoreName]
+    copy_intents: list[CollectionUploadCopyIntentOut]
     encryption_format: str
     passphrase_id: str = Field(pattern=r"^[A-Za-z0-9_-]{16,128}$")
     state: Literal[

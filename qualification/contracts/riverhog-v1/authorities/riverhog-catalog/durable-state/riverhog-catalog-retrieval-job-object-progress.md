@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-job-object-progress:9d20405285 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-job-object-progress:2f3c179864 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-7369fcabeb"></a>
+<a id="s-f3f1ae97a4"></a>
 
 ### Table: `retrieval_job_object_progress`
 
@@ -21,22 +21,22 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-cc82627a80"></a>`job_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-4ab8f3c1a7"></a>`object_order` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-f3243ab53a"></a>`plan_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-c1891cfedf"></a>`state` | `VARCHAR` | no | `—` | — |
-| <a id="s-83c13196e8"></a>`prepare_requested_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-f965282383"></a>`next_poll_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-ab326bc70c"></a>`cache_store` | `VARCHAR` | yes | `—` | — |
+| <a id="s-3955421a30"></a>`job_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-e028c8ca0a"></a>`object_order` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-b7163d56e6"></a>`plan_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-bb73a3a476"></a>`state` | `VARCHAR` | no | `—` | — |
+| <a id="s-493aa58d39"></a>`prepare_requested_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-8475ff6ab4"></a>`next_poll_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-61fc175fcf"></a>`cache_store` | `VARCHAR` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-b4e44dde84"></a>`primary-key` | `—` | `PRIMARY KEY (job_id, object_order)` |
-| <a id="s-99ecd1b587"></a>`foreign-key` | `—` | `FOREIGN KEY(job_id, plan_id) REFERENCES retrieval_jobs (id, plan_id) ON DELETE CASCADE` |
-| <a id="s-3c802dfcd1"></a>`foreign-key` | `—` | `FOREIGN KEY(plan_id, object_order) REFERENCES retrieval_plan_objects (plan_id, object_order)` |
-| <a id="s-8c14194e23"></a>`check` | `ck_retrieval_job_object_progress_state` | `CONSTRAINT ck_retrieval_job_object_progress_state CHECK (state IN ('preparing','requested','ready'))` |
+| <a id="s-eebf114466"></a>`primary-key` | `—` | `PRIMARY KEY (job_id, object_order)` |
+| <a id="s-8fc9256e97"></a>`foreign-key` | `—` | `FOREIGN KEY(job_id, plan_id) REFERENCES retrieval_jobs (id, plan_id) ON DELETE CASCADE` |
+| <a id="s-676149a270"></a>`foreign-key` | `—` | `FOREIGN KEY(plan_id, object_order) REFERENCES retrieval_plan_objects (plan_id, object_order)` |
+| <a id="s-7017ebde56"></a>`check` | `ck_retrieval_job_object_progress_state` | `CONSTRAINT ck_retrieval_job_object_progress_state CHECK (state IN ('preparing','requested','ready'))` |
 
 ## Maintained corroboration
 
@@ -46,7 +46,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-fdd29130b6"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-ecbfc71c51"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -62,7 +62,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/78`
+- `/external_contract/durable_state/owners/0/structure/tables/79`
 
 ### Exact owned JSON
 

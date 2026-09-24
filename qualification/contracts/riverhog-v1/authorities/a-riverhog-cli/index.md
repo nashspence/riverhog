@@ -4,9 +4,9 @@
 
 Command-line client for Riverhog.
 
-Contract elements: **93** · Extent decisions: **308**
+Contract elements: **94** · Extent decisions: **314**
 
 ## Interfaces
 
-- [CLI](cli/index.md) (86)
+- [CLI](cli/index.md) (87)
 - [Configuration Environment](configuration-environment/index.md) (7)

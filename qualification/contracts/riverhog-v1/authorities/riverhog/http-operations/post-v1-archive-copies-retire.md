@@ -70,7 +70,7 @@ Retire Archive Copy
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [riverhog/src/riverhog\_api/routers/archive.py::retire\_archive\_copy](../../../../../../riverhog/src/riverhog_api/routers/archive.py#L160)
+- **Handler:** [riverhog/src/riverhog\_api/routers/archive.py::retire\_archive\_copy](../../../../../../riverhog/src/riverhog_api/routers/archive.py#L176)
 
 ### Structural operation bindings
 
@@ -89,7 +89,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "a-riverhog-cli",
       "result_identity": "a-riverhog-cli-result/archive/retire/v1",
       "source": {
-        "line": 3125,
+        "line": 3180,
         "module": "a_riverhog_cli.main",
         "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "archive_retire_cmd"
@@ -104,7 +104,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.retire_archive_copy",
       "source": {
-        "line": 2524,
+        "line": 2548,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.retire_archive_copy"

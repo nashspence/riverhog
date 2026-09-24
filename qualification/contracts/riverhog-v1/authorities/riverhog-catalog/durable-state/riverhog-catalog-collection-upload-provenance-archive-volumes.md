@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-upload-proven-49eaa53a80:a9bdb31c85 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-upload-proven-49eaa53a80:1d4c2399d2 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-1dab4d0f87"></a>
+<a id="s-0a7b502c4e"></a>
 
 ### Table: `collection_upload_provenance_archive_volumes`
 
@@ -21,21 +21,21 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-31df735f31"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-b90d2a8ab8"></a>`sequence` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-629b7b318f"></a>`kind` | `VARCHAR` | no | `—` | — |
-| <a id="s-17dab7c5b2"></a>`document_json` | `TEXT` | no | `—` | — |
-| <a id="s-7636188887"></a>`payload_receipt_json` | `TEXT` | no | `—` | — |
-| <a id="s-5d2f8f925b"></a>`metadata_receipt_json` | `TEXT` | no | `—` | — |
+| <a id="s-5fb26066c8"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-96b02c1cad"></a>`sequence` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-421af34327"></a>`kind` | `VARCHAR` | no | `—` | — |
+| <a id="s-7e8d32cfa9"></a>`document_json` | `TEXT` | no | `—` | — |
+| <a id="s-ac3195928b"></a>`payload_receipt_json` | `TEXT` | no | `—` | — |
+| <a id="s-6c2e636236"></a>`metadata_receipt_json` | `TEXT` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-439b567377"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, sequence)` |
-| <a id="s-8fb81ce7db"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE` |
-| <a id="s-56bb0a08e7"></a>`check` | `ck_upload_provenance_archive_volumes_sequence` | `CONSTRAINT ck_upload_provenance_archive_volumes_sequence CHECK (length(sequence) = 64 AND lower(sequence) = sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-74c5a686c7"></a>`check` | `ck_upload_provenance_archive_volumes_kind` | `CONSTRAINT ck_upload_provenance_archive_volumes_kind CHECK (kind IN ('bindings','journal'))` |
+| <a id="s-62f9c0d071"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, sequence)` |
+| <a id="s-0e4eccc667"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE` |
+| <a id="s-26369da6d0"></a>`check` | `ck_upload_provenance_archive_volumes_sequence` | `CONSTRAINT ck_upload_provenance_archive_volumes_sequence CHECK (length(sequence) = 64 AND lower(sequence) = sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-b63cf1b5d9"></a>`check` | `ck_upload_provenance_archive_volumes_kind` | `CONSTRAINT ck_upload_provenance_archive_volumes_kind CHECK (kind IN ('bindings','journal'))` |
 
 ## Maintained corroboration
 
@@ -45,7 +45,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-66db23ce6d"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-e232ca6991"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -61,7 +61,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/29`
+- `/external_contract/durable_state/owners/0/structure/tables/30`
 
 ### Exact owned JSON
 

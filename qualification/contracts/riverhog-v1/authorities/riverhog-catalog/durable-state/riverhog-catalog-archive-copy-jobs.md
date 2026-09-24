@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-archive-copy-jobs:94f5e6e713 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-archive-copy-jobs:f7ab7aa3a4 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-07d9a1b0cb"></a>
+<a id="s-574565769b"></a>
 
 ### Table: `archive_copy_jobs`
 
@@ -21,36 +21,37 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-9942861055"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-692751482a"></a>`destination_store` | `VARCHAR` | no | `—` | — |
-| <a id="s-639a288dcd"></a>`destination_storage_prefix` | `VARCHAR` | no | `—` | — |
-| <a id="s-5e16f41caf"></a>`source_store` | `VARCHAR` | no | `—` | — |
-| <a id="s-c86be3b2f0"></a>`initiated_by_app` | `VARCHAR` | no | `—` | — |
-| <a id="s-5faac2e4f4"></a>`initiated_by_key_id` | `VARCHAR` | yes | `—` | — |
-| <a id="s-62bbcd68c5"></a>`event_context_json` | `TEXT` | yes | `—` | — |
-| <a id="s-de5ae5cefc"></a>`state` | `VARCHAR` | no | `—` | — |
-| <a id="s-6cb8b2ae8d"></a>`requested_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-1e0a5aeeac"></a>`read_requested_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-d1288dc50e"></a>`ready_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-41735a1629"></a>`expires_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-d1aa1af007"></a>`batch_start_order` | `VARCHAR(65)` | yes | `—` | — |
-| <a id="s-4a093cd57d"></a>`batch_end_order` | `VARCHAR(65)` | yes | `—` | — |
-| <a id="s-6683d93033"></a>`destination_discarded_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-47c367fc6b"></a>`next_attempt_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-bdaf1de960"></a>`finished_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-da04114afb"></a>`failure` | `VARCHAR` | yes | `—` | — |
-| <a id="s-9173b6f815"></a>`search_text` | `VARCHAR` | no | `—` | {"generated":"GENERATED ALWAYS AS (lower(CAST(collection_id AS TEXT) \|\| ' ' \|\| source_store \|\| ' ' \|\| destination_store \|\| ' ' \|\| state)) STORED"} |
+| <a id="s-0c082cc8f9"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-78195d1637"></a>`destination_store` | `VARCHAR` | no | `—` | — |
+| <a id="s-b41bf71615"></a>`destination_storage_prefix` | `VARCHAR` | no | `—` | — |
+| <a id="s-0a2c76d81d"></a>`source_store` | `VARCHAR` | no | `—` | — |
+| <a id="s-6d53532837"></a>`use_cache` | `BOOLEAN` | no | `—` | — |
+| <a id="s-53f44a7a77"></a>`initiated_by_app` | `VARCHAR` | no | `—` | — |
+| <a id="s-d7036af01a"></a>`initiated_by_key_id` | `VARCHAR` | yes | `—` | — |
+| <a id="s-4d6cbd363f"></a>`event_context_json` | `TEXT` | yes | `—` | — |
+| <a id="s-31d0d1bf15"></a>`state` | `VARCHAR` | no | `—` | — |
+| <a id="s-7c1511c985"></a>`requested_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-5d7355ee61"></a>`read_requested_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-8cf34deff9"></a>`ready_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-84fd0d7c7e"></a>`expires_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-d03bfe3ea1"></a>`batch_start_order` | `VARCHAR(65)` | yes | `—` | — |
+| <a id="s-edf3849c11"></a>`batch_end_order` | `VARCHAR(65)` | yes | `—` | — |
+| <a id="s-80b81f4c83"></a>`destination_discarded_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-e4cf59c186"></a>`next_attempt_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-7d1ddd5d38"></a>`finished_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-4014929736"></a>`failure` | `VARCHAR` | yes | `—` | — |
+| <a id="s-1e50287243"></a>`search_text` | `VARCHAR` | no | `—` | {"generated":"GENERATED ALWAYS AS (lower(CAST(collection_id AS TEXT) \|\| ' ' \|\| source_store \|\| ' ' \|\| destination_store \|\| ' ' \|\| state)) STORED"} |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-68f7abe07f"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, destination_store)` |
-| <a id="s-95a164f0a5"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, source_store) REFERENCES collection_archive_copies (collection_id, store) ON DELETE CASCADE` |
-| <a id="s-b54f413ebf"></a>`check` | `ck_archive_copy_jobs_state` | `CONSTRAINT ck_archive_copy_jobs_state CHECK (state IN ('requested','waiting','checking','copying','canceling','completed','failed','canceled'))` |
-| <a id="s-67c3ba74b0"></a>`check` | `ck_archive_copy_jobs_batch` | `CONSTRAINT ck_archive_copy_jobs_batch CHECK (batch_start_order IS NULL AND batch_end_order IS NULL OR batch_start_order IS NOT NULL AND batch_end_order >= batch_start_order)` |
-| <a id="s-c30c7de264"></a>`check` | `ck_archive_copy_jobs_batch_start_order` | `CONSTRAINT ck_archive_copy_jobs_batch_start_order CHECK (batch_start_order IS NULL OR length(batch_start_order) = 65 AND lower(batch_start_order) = batch_start_order AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(batch_start_order, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-ab18e67502"></a>`check` | `ck_archive_copy_jobs_batch_end_order` | `CONSTRAINT ck_archive_copy_jobs_batch_end_order CHECK (batch_end_order IS NULL OR length(batch_end_order) = 65 AND lower(batch_end_order) = batch_end_order AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(batch_end_order, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-6f09699701"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, destination_store)` |
+| <a id="s-937cb9f3c0"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, source_store) REFERENCES collection_archive_copies (collection_id, store) ON DELETE CASCADE` |
+| <a id="s-96318ec69c"></a>`check` | `ck_archive_copy_jobs_state` | `CONSTRAINT ck_archive_copy_jobs_state CHECK (state IN ('requested','waiting','checking','copying','canceling','completed','failed','canceled'))` |
+| <a id="s-70e93ea9e9"></a>`check` | `ck_archive_copy_jobs_batch` | `CONSTRAINT ck_archive_copy_jobs_batch CHECK (batch_start_order IS NULL AND batch_end_order IS NULL OR batch_start_order IS NOT NULL AND batch_end_order >= batch_start_order)` |
+| <a id="s-2009624b22"></a>`check` | `ck_archive_copy_jobs_batch_start_order` | `CONSTRAINT ck_archive_copy_jobs_batch_start_order CHECK (batch_start_order IS NULL OR length(batch_start_order) = 65 AND lower(batch_start_order) = batch_start_order AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(batch_start_order, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-b57b139db2"></a>`check` | `ck_archive_copy_jobs_batch_end_order` | `CONSTRAINT ck_archive_copy_jobs_batch_end_order CHECK (batch_end_order IS NULL OR length(batch_end_order) = 65 AND lower(batch_end_order) = batch_end_order AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(batch_end_order, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
 
 ## Maintained corroboration
 
@@ -60,7 +61,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-3871780656"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-9724f8ac8e"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -76,7 +77,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/39`
+- `/external_contract/durable_state/owners/0/structure/tables/40`
 
 ### Exact owned JSON
 
@@ -85,7 +86,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 98e374510d9bd5ab0cf3e66908a9f09ffe17c0e9a32196be7b5a7a3952386336 -->
+<!-- exact-contract-value: 80da1f7efd05ce6eeef0d96570e96e3ef15d3e26884b0b81c11d6e633efa028f -->
 
 ```json
 {
@@ -113,6 +114,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       "name": "source_store",
       "nullable": false,
       "type": "VARCHAR"
+    },
+    {
+      "definition": "use_cache BOOLEAN NOT NULL",
+      "name": "use_cache",
+      "nullable": false,
+      "type": "BOOLEAN"
     },
     {
       "definition": "initiated_by_app VARCHAR NOT NULL",

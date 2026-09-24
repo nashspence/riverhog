@@ -86,7 +86,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "a-riverhog-cli",
       "result_identity": "a-riverhog-cli-result/retrieval/cache/show/v1",
       "source": {
-        "line": 2865,
+        "line": 2889,
         "module": "a_riverhog_cli.main",
         "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "retrieval_cache_show_cmd"

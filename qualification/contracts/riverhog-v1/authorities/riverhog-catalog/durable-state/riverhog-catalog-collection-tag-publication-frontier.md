@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-tag-publication-frontier:4472b02d1f -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-tag-publication-frontier:7d90eee97c -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-5e15c17a39"></a>
+<a id="s-88bf9910ea"></a>
 
 ### Table: `collection_tag_publication_frontier`
 
@@ -21,23 +21,23 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-e372eb26e2"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-4b768c7212"></a>`store` | `VARCHAR` | no | `—` | — |
-| <a id="s-5371ae3ac6"></a>`head_identity` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-60e49570cd"></a>`node_digest` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-2c48cc5719"></a>`expanded` | `BOOLEAN` | no | `false` | — |
-| <a id="s-c7b45d8f32"></a>`published` | `BOOLEAN` | no | `false` | — |
+| <a id="s-8e986a5d99"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-052416dafd"></a>`store` | `VARCHAR` | no | `—` | — |
+| <a id="s-2cf457d11d"></a>`head_identity` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-a5aa6b2d02"></a>`node_digest` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-59c0bfa9ac"></a>`expanded` | `BOOLEAN` | no | `false` | — |
+| <a id="s-11181a55cc"></a>`published` | `BOOLEAN` | no | `false` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-8e05875b86"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, store, head_identity, node_digest)` |
-| <a id="s-ac6db663d5"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, store) REFERENCES collection_tag_publications (collection_id, store) ON DELETE CASCADE` |
-| <a id="s-1c5bd8767a"></a>`check` | `ck_collection_tag_publication_frontier_head` | `CONSTRAINT ck_collection_tag_publication_frontier_head CHECK (length(head_identity) = 64 AND lower(head_identity) = head_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(head_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-007f57e27f"></a>`check` | `ck_collection_tag_publication_frontier_node` | `CONSTRAINT ck_collection_tag_publication_frontier_node CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-783a406675"></a>`check` | `ck_collection_tag_publication_frontier_head_identity_hex` | `CONSTRAINT ck_collection_tag_publication_frontier_head_identity_hex CHECK (length(head_identity) = 64 AND lower(head_identity) = head_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(head_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-629d80da66"></a>`check` | `ck_collection_tag_publication_frontier_node_digest_hex` | `CONSTRAINT ck_collection_tag_publication_frontier_node_digest_hex CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-4ab13d9a44"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, store, head_identity, node_digest)` |
+| <a id="s-3d92348c64"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, store) REFERENCES collection_tag_publications (collection_id, store) ON DELETE CASCADE` |
+| <a id="s-986e99e0a7"></a>`check` | `ck_collection_tag_publication_frontier_head` | `CONSTRAINT ck_collection_tag_publication_frontier_head CHECK (length(head_identity) = 64 AND lower(head_identity) = head_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(head_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-551bd4ca17"></a>`check` | `ck_collection_tag_publication_frontier_node` | `CONSTRAINT ck_collection_tag_publication_frontier_node CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-81e5d2d380"></a>`check` | `ck_collection_tag_publication_frontier_head_identity_hex` | `CONSTRAINT ck_collection_tag_publication_frontier_head_identity_hex CHECK (length(head_identity) = 64 AND lower(head_identity) = head_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(head_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-3e9933a4e0"></a>`check` | `ck_collection_tag_publication_frontier_node_digest_hex` | `CONSTRAINT ck_collection_tag_publication_frontier_node_digest_hex CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -47,7 +47,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-c40f2dfef1"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-e47651ae6a"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -63,7 +63,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/72`
+- `/external_contract/durable_state/owners/0/structure/tables/73`
 
 ### Exact owned JSON
 

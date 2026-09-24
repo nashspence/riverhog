@@ -67,7 +67,7 @@ Cancel Archive Copy Job
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [riverhog/src/riverhog\_api/routers/archive.py::cancel\_archive\_copy\_job](../../../../../../riverhog/src/riverhog_api/routers/archive.py#L102)
+- **Handler:** [riverhog/src/riverhog\_api/routers/archive.py::cancel\_archive\_copy\_job](../../../../../../riverhog/src/riverhog_api/routers/archive.py#L118)
 
 ### Structural operation bindings
 
@@ -86,7 +86,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "a-riverhog-cli",
       "result_identity": "a-riverhog-cli-result/archive/copy-job/cancel/v1",
       "source": {
-        "line": 3077,
+        "line": 3132,
         "module": "a_riverhog_cli.main",
         "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "archive_copy_cancel_cmd"
@@ -101,7 +101,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.cancel_archive_copy_job",
       "source": {
-        "line": 2495,
+        "line": 2519,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.cancel_archive_copy_job"

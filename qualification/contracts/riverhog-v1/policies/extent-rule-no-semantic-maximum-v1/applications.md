@@ -43,7 +43,9 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: CollectionUploadDiscardResultOut](../../authorities/riverhog/http-schemas/schemas-collectionuploaddiscardresultout.md#pa-309366660f) |
 | `riverhog` | [schemas: CollectionUploadListItemOut](../../authorities/riverhog/http-schemas/schemas-collectionuploadlistitemout.md#pa-b45767be95) |
 | `riverhog` | [schemas: CollectionUploadSessionFilesRegistrationOut](../../authorities/riverhog/http-schemas/schemas-collectionuploadsessionfilesregistrationout.md#pa-3bff10283e) |
+| `riverhog` | [schemas: CollectionUploadSessionOut](../../authorities/riverhog/http-schemas/schemas-collectionuploadsessionout.md#pa-f1e13e7ff0) |
 | `riverhog` | [schemas: CreateArchiveCopyJobRequest](../../authorities/riverhog/http-schemas/schemas-createarchivecopyjobrequest.md#pa-e105a5b9d0) |
+| `riverhog` | [schemas: CreateOrResumeCollectionUploadSessionOut](../../authorities/riverhog/http-schemas/schemas-createorresumecollectionuploadsessionout.md#pa-547f5bb54d) |
 | `riverhog` | [schemas: CreateOrResumeCollectionUploadSessionRequest](../../authorities/riverhog/http-schemas/schemas-createorresumecollectionuploadsessionrequest.md#pa-6e8cc7c8db) |
 | `riverhog` | [schemas: CreateRetrievalJobRequest](../../authorities/riverhog/http-schemas/schemas-createretrievaljobrequest.md#pa-96eea3ae6d) |
 | `riverhog` | [schemas: DeleteCollectionRequest](../../authorities/riverhog/http-schemas/schemas-deletecollectionrequest.md#pa-eb8051ee54) |
@@ -71,6 +73,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog` | [schemas: RetrievalReadyData](../../authorities/riverhog/http-schemas/schemas-retrievalreadydata.md#pa-69dd22057c) |
 | `riverhog` | [schemas: RetrievalRenewedData](../../authorities/riverhog/http-schemas/schemas-retrievalreneweddata.md#pa-f9246616b2) |
 | `riverhog` | [schemas: RetrievalRequestedData](../../authorities/riverhog/http-schemas/schemas-retrievalrequesteddata.md#pa-58fa73952c) |
+| `riverhog` | [schemas: UploadCopyIntentsOut](../../authorities/riverhog/http-schemas/schemas-uploadcopyintentsout.md#pa-c549c1fff3) |
 | `riverhog` | [schemas: ValidationError](../../authorities/riverhog/http-schemas/schemas-validationerror.md#pa-2786c5d75c) |
 | `riverhog-provenance` | [Riverhog provenance observer capture policy](../../authorities/riverhog-provenance/schema/riverhog-provenance-observer-capture-policy.md#pa-6b70997ac3) |
 | `riverhog-provenance` | [Riverhog provenance v1 journal entry](../../authorities/riverhog-provenance/schema/riverhog-provenance-v1-journal-entry.md#pa-b3e2a1266e) |

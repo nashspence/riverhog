@@ -105,6 +105,9 @@ class CollectionRecord(Base):
     creation_idempotency_key: Mapped[str] = mapped_column(String)
     creation_identity_sha256: Mapped[str] = mapped_column(String(64), nullable=False)
     creation_custody_mode: Mapped[str] = mapped_column(String, nullable=False)
+    creation_archive_store: Mapped[str] = mapped_column(String, nullable=False, default="archive")
+    creation_use_cache: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    creation_copy_to_json: Mapped[str] = mapped_column(Text, nullable=False, default="[]")
     archive_generation: Mapped[str] = mapped_column(
         String(64), nullable=False, default=lambda: secrets.token_hex(32)
     )
@@ -1506,6 +1509,7 @@ class ArchiveCopyJobRecord(Base):
     destination_store: Mapped[str] = mapped_column(String, primary_key=True)
     destination_storage_prefix: Mapped[str] = mapped_column(String)
     source_store: Mapped[str] = mapped_column(String)
+    use_cache: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     initiated_by_app: Mapped[str] = mapped_column(String)
     initiated_by_key_id: Mapped[str | None] = mapped_column(String, nullable=True)
     event_context_json: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -2360,6 +2364,38 @@ class RetrievalCacheLeaseRecord(Base):
     )
 
 
+class CollectionUploadCopyIntentRecord(Base):
+    """Durable handoff from one accepted upload to one ordinary archive copy job."""
+
+    __tablename__ = "collection_upload_copy_intents"
+
+    collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
+    destination_store: Mapped[str] = mapped_column(String, primary_key=True)
+    source_store: Mapped[str] = mapped_column(String, nullable=False)
+    destination_binding_sha256: Mapped[str] = mapped_column(String, nullable=False)
+    source_binding_sha256: Mapped[str] = mapped_column(String, nullable=False)
+    initiated_by_app: Mapped[str] = mapped_column(String, nullable=False)
+    initiated_by_key_id: Mapped[str] = mapped_column(String, nullable=False)
+    event_context_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    use_cache: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    state: Mapped[str] = mapped_column(String, nullable=False)
+    accepted_at: Mapped[str] = mapped_column(String, nullable=False)
+    next_attempt_at: Mapped[str | None] = mapped_column(String, nullable=True)
+    attempts: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    handed_off_at: Mapped[str | None] = mapped_column(String, nullable=True)
+    job_created: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    failure_code: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    __table_args__ = (
+        CheckConstraint(
+            "state IN ('accepted','pending','handed_off','failed','canceled')",
+            name="ck_collection_upload_copy_intents_state",
+        ),
+        CheckConstraint("attempts >= 0", name="ck_collection_upload_copy_intents_attempts"),
+        Index("ix_collection_upload_copy_intents_due", "state", "next_attempt_at"),
+    )
+
+
 class CollectionUploadRecord(Base):
     __tablename__ = "collection_uploads"
 
@@ -2403,6 +2439,8 @@ class CollectionUploadRecord(Base):
     lease_expires_at: Mapped[str | None] = mapped_column(String, nullable=True)
     orphaned_at: Mapped[str | None] = mapped_column(String, nullable=True)
     archive_store: Mapped[str] = mapped_column(String, nullable=False)
+    use_cache: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    copy_to_json: Mapped[str] = mapped_column(Text, nullable=False, default="[]")
     opened_at: Mapped[str] = mapped_column(String)
     last_activity_at: Mapped[str] = mapped_column(String)
     closed_at: Mapped[str | None] = mapped_column(String, nullable=True)

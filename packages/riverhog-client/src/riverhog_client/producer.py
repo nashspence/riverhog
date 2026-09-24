@@ -179,6 +179,8 @@ class CollectionProducer:
         adapter_version: str,
         ingest_source: str,
         archive_store: ArchiveStoreName | None = None,
+        use_cache: bool | None = None,
+        copy_to: Sequence[ArchiveStoreName] | None = None,
         description: CollectionDescription | None = None,
         tags: Sequence[CollectionTag] = (),
         provenance_mode: Literal["captured", "omitted"] = "omitted",
@@ -194,6 +196,8 @@ class CollectionProducer:
         self.adapter_version = adapter_version
         self.ingest_source = ingest_source
         self.archive_store = archive_store
+        self.use_cache = use_cache
+        self.copy_to = tuple(copy_to) if copy_to is not None else None
         self.description = description
         self.tags = tuple(tags)
         self.provenance_mode = provenance_mode
@@ -256,6 +260,8 @@ class CollectionProducer:
             source_context=source_context,
             idempotency_key=idempotency_key,
             archive_store=self.archive_store,
+            use_cache=self.use_cache,
+            copy_to=self.copy_to,
             description=self.description,
             tags=self.tags,
             event_context=event_context,
@@ -305,6 +311,8 @@ class IncrementalCollectionProducer:
         source_context: Mapping[str, object] | None = None,
         idempotency_key: str | None = None,
         archive_store: ArchiveStoreName | None = None,
+        use_cache: bool | None = None,
+        copy_to: Sequence[ArchiveStoreName] | None = None,
         description: CollectionDescription | None = None,
         tags: Sequence[CollectionTag] = (),
         event_context: Mapping[str, object] | None = None,
@@ -357,6 +365,8 @@ class IncrementalCollectionProducer:
                     tags=first_batch,
                     initial_tag_set_identity=identity,
                     archive_store=archive_store,
+                    use_cache=use_cache,
+                    copy_to=copy_to,
                     event_context=event_context,
                     provenance_mode=provenance_mode,
                     provenance_omission_reason=(reason if provenance_mode == "omitted" else None),

@@ -110,6 +110,7 @@ class ArchiveCopyOut(
 
 class CreateArchiveCopyJobRequest(ArchiveCopyStoreSelectionDocument):
     collection_id: CollectionId
+    use_cache: bool | None = None
     event_context: EventContext | None = None
 
 
@@ -134,6 +135,7 @@ class ArchiveCopyJobOut(RiverhogModel):
     collection_id: CollectionId
     source_store: ArchiveStoreName
     destination_store: ArchiveStoreName
+    use_cache: bool
     initiated_by_app: ApplicationName
     initiated_by_key_id: ApplicationKeyId | None
     state: ArchiveCopyJobState
@@ -151,6 +153,22 @@ class ArchiveCopyJobOut(RiverhogModel):
         if (self.failure is not None) != (self.state == "failed"):
             raise ValueError("archive-copy failure evidence must match failed state")
         return self
+
+
+class UploadCopyIntentOut(RiverhogModel):
+    destination_store: ArchiveStoreName
+    state: Literal["accepted", "pending", "handed_off", "failed", "canceled"]
+    failure_code: str | None
+    job_created: bool | None
+    job_state: ArchiveCopyJobState | None
+
+
+class UploadCopyIntentsOut(RiverhogModel):
+    collection_id: CollectionId
+    archive_store: ArchiveStoreName
+    use_cache: bool
+    copy_to: list[ArchiveStoreName]
+    intents: list[UploadCopyIntentOut]
 
 
 class ArchiveCopyJobListFiltersOut(RiverhogModel):

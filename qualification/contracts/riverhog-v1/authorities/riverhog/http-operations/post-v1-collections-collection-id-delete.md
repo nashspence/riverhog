@@ -75,7 +75,7 @@ Delete Collection
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [riverhog/src/riverhog\_api/routers/collections.py::delete\_collection](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L679)
+- **Handler:** [riverhog/src/riverhog\_api/routers/collections.py::delete\_collection](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L681)
 
 ### Structural operation bindings
 
@@ -94,7 +94,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "a-riverhog-cli",
       "result_identity": "a-riverhog-cli-result/collection/delete/v1",
       "source": {
-        "line": 2926,
+        "line": 2950,
         "module": "a_riverhog_cli.main",
         "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "collection_delete_cmd"
@@ -109,7 +109,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.delete_collection",
       "source": {
-        "line": 1989,
+        "line": 2000,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.delete_collection"

@@ -17,7 +17,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-3432f369ea"></a>`type`: `"object"`
 - <a id="s-52602bd78e"></a>`additionalProperties`: `false`
-- <a id="s-3a428c6e45"></a>`required`: `["collection_id","created_at","ingest_source","description","description_revision","description_identity","description_publication","tag_publication","tag_count","provenance_mode","archive_store","encryption_format","passphrase_id","state","custody_mode","registration_constraints","files_total","bytes_total","upload_state_expires_at","custody","orphaned_at","latest_failure","archive_phase","archive_phase_updated_at","archive_next_attempt_at","collection","resumed"]`
+- <a id="s-3a428c6e45"></a>`required`: `["collection_id","created_at","ingest_source","description","description_revision","description_identity","description_publication","tag_publication","tag_count","provenance_mode","archive_store","use_cache","copy_to","copy_intents","encryption_format","passphrase_id","state","custody_mode","registration_constraints","files_total","bytes_total","upload_state_expires_at","custody","orphaned_at","latest_failure","archive_phase","archive_phase_updated_at","archive_next_attempt_at","collection","resumed"]`
 - <a id="s-97c06b7483"></a>`title`: `"CreateOrResumeCollectionUploadSessionOut"`
 
 ### Fields
@@ -38,6 +38,8 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-e279eb3f57"></a>`collection` | yes | anyOf=[([CollectionSummaryOut](schemas-collectionsummaryout.md)); (type="null")] |  |
 | <a id="s-5aecbbf4c0"></a>`collection_id` | yes | [CollectionId](schemas-collectionid.md) |  |
 | <a id="s-1337f069e3"></a>`content_identity` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Content Identity" |  |
+| <a id="s-d80cee8026"></a>`copy_intents` | yes | type="array"; items=([CollectionUploadCopyIntentOut](schemas-collectionuploadcopyintentout.md)); title="Copy Intents" |  |
+| <a id="s-64c05b799d"></a>`copy_to` | yes | type="array"; items=([ArchiveStoreName](schemas-archivestorename.md)); title="Copy To" |  |
 | <a id="s-e03e99fa8a"></a>`created_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Created At" |  |
 | <a id="s-76be39688f"></a>`custody` | yes | discriminator={"mapping":{"complete":"#/components/schemas/CompleteCollectionUploadCustodyOut","pending":"#/components/schemas/PendingCollectionUploadCustodyOut"},"propertyName":"state"}; oneOf=[([PendingCollectionUploadCustodyOut](schemas-pendingcollectionuploadcustodyout.md)); ([CompleteCollectionUploadCustodyOut](schemas-completecollectionuploadcustodyout.md))]; title="Custody" |  |
 | <a id="s-a4ebd8e964"></a>`custody_mode` | yes | type="string"; enum=["producer-retained","custody-transfer"]; title="Custody Mode" |  |
@@ -61,6 +63,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-77565b278a"></a>`tag_revision` | no | anyOf=[(type="integer"; minimum=1; maximum=9007199254740991); (type="null")]; title="Tag Revision" |  |
 | <a id="s-add3845109"></a>`tag_set_identity` | no | anyOf=[(type="string"; pattern="^[0-9a-f]{64}$"); (type="null")]; title="Tag Set Identity" |  |
 | <a id="s-c06f1bbb1e"></a>`upload_state_expires_at` | yes | anyOf=[(type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"); (type="null")]; title="Upload State Expires At" |  |
+| <a id="s-61a40360d2"></a>`use_cache` | yes | type="boolean"; title="Use Cache" |  |
 
 ### All must match (`allOf`)
 
@@ -89,6 +92,15 @@ Exact externally visible contract owned by this contract element.
 
 ### Progression, limits, and lifecycle
 
+#### [extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
+
+Shared facts for every subject below: capacity_authority={"declared_maximum":null,"hidden_maximum":"forbidden","owner":"riverhog"}; maximum=null; reason="no-declared-semantic-maximum"
+
+| Applies to | Contract | Bounds or reason |
+|---|---|---|
+| [field copy_intents](#s-d80cee8026) | `cardinality · items · operational_policy` | shared above |
+| [field copy_to](#s-64c05b799d) | `cardinality · items · operational_policy` | shared above |
+
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 | Applies to | Contract | Bounds or reason |
@@ -116,6 +128,7 @@ Exact externally visible contract owned by this contract element.
 - [CollectionDescription](schemas-collectiondescription.md)
 - [CollectionId](schemas-collectionid.md)
 - [CollectionSummaryOut](schemas-collectionsummaryout.md)
+- [CollectionUploadCopyIntentOut](schemas-collectionuploadcopyintentout.md)
 - [CollectionUploadRegistrationConstraintsOut](schemas-collectionuploadregistrationconstraintsout.md)
 - [CompleteCollectionUploadCustodyOut](schemas-completecollectionuploadcustodyout.md)
 - [PendingCollectionUploadCustodyOut](schemas-pendingcollectionuploadcustodyout.md)
@@ -125,6 +138,7 @@ Exact externally visible contract owned by this contract element.
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
 - <a id="pa-1a0180417b"></a>[compatibility/http-api/v1](../../release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0)
+- <a id="pa-547f5bb54d"></a>[extent-rule/no-semantic-maximum/v1](../../extent-contract/extent/extent-rule-no-semantic-maximum.md#p-574724b48a)
 - <a id="pa-1492cd155f"></a>[extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
 ## Evidence
@@ -150,7 +164,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 1fa164da6a837be86f3a565f08ffe3b1aa19d42ec46af1267e490e187d3d2414 -->
+<!-- exact-contract-value: 4b62ee2c041e21c59133d8b7357aa301d3ae38c7be471b833dbcf2f87d62415b -->
 
 ```json
 {
@@ -868,6 +882,20 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "title": "Content Identity"
     },
+    "copy_intents": {
+      "items": {
+        "$ref": "#/components/schemas/CollectionUploadCopyIntentOut"
+      },
+      "title": "Copy Intents",
+      "type": "array"
+    },
+    "copy_to": {
+      "items": {
+        "$ref": "#/components/schemas/ArchiveStoreName"
+      },
+      "title": "Copy To",
+      "type": "array"
+    },
     "created_at": {
       "maxLength": 30,
       "minLength": 30,
@@ -1097,6 +1125,10 @@ The following JSON is the complete value owned at each machine-authority pointer
         }
       ],
       "title": "Upload State Expires At"
+    },
+    "use_cache": {
+      "title": "Use Cache",
+      "type": "boolean"
     }
   },
   "required": [
@@ -1111,6 +1143,9 @@ The following JSON is the complete value owned at each machine-authority pointer
     "tag_count",
     "provenance_mode",
     "archive_store",
+    "use_cache",
+    "copy_to",
+    "copy_intents",
     "encryption_format",
     "passphrase_id",
     "state",

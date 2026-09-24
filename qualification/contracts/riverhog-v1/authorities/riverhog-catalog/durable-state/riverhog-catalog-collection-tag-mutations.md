@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-tag-mutations:7b625dee0d -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-tag-mutations:15f9485e04 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-f8df4c117f"></a>
+<a id="s-458329dbd9"></a>
 
 ### Table: `collection_tag_mutations`
 
@@ -21,45 +21,45 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-9932270c54"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-2e7b6ebbb8"></a>`operation_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-c55acc3fd7"></a>`action` | `VARCHAR` | no | `—` | — |
-| <a id="s-0e44175f25"></a>`tag` | `TEXT` | no | `—` | — |
-| <a id="s-a1fe7085a7"></a>`tag_sha256` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-63c188e927"></a>`expected_revision` | `BIGINT` | no | `—` | — |
-| <a id="s-2d26de7851"></a>`expected_tag_set_identity` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-8c80809714"></a>`result_revision` | `BIGINT` | no | `—` | — |
-| <a id="s-fdda0d2250"></a>`result_root_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-ebe848d365"></a>`result_tag_set_identity` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-c147718322"></a>`result_head_identity` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-94f64413f2"></a>`changed` | `BOOLEAN` | no | `—` | — |
-| <a id="s-9fadb41d15"></a>`state` | `VARCHAR` | no | `—` | — |
-| <a id="s-8b6f9442cd"></a>`initiated_by_app` | `VARCHAR` | no | `—` | — |
-| <a id="s-daf67e277a"></a>`initiated_by_key_id` | `VARCHAR` | yes | `—` | — |
-| <a id="s-6c5dd0c6de"></a>`created_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-2248802671"></a>`updated_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-51edcc7b4b"></a>`failure` | `TEXT` | yes | `—` | — |
+| <a id="s-7b6d8af07d"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-fc9a3dce28"></a>`operation_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-6c19550b0f"></a>`action` | `VARCHAR` | no | `—` | — |
+| <a id="s-80df7fa5c0"></a>`tag` | `TEXT` | no | `—` | — |
+| <a id="s-22d7c7a8c1"></a>`tag_sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-3f1cb21773"></a>`expected_revision` | `BIGINT` | no | `—` | — |
+| <a id="s-9c47c29160"></a>`expected_tag_set_identity` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-ff0c939bec"></a>`result_revision` | `BIGINT` | no | `—` | — |
+| <a id="s-836e80e56f"></a>`result_root_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-0da512b71d"></a>`result_tag_set_identity` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-17e39084a4"></a>`result_head_identity` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-7cdb07c69a"></a>`changed` | `BOOLEAN` | no | `—` | — |
+| <a id="s-f3a735e98b"></a>`state` | `VARCHAR` | no | `—` | — |
+| <a id="s-239a391689"></a>`initiated_by_app` | `VARCHAR` | no | `—` | — |
+| <a id="s-4ceccbf775"></a>`initiated_by_key_id` | `VARCHAR` | yes | `—` | — |
+| <a id="s-6c7a153199"></a>`created_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-7a4f76107e"></a>`updated_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-49406c8440"></a>`failure` | `TEXT` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-823d9f3cd6"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, operation_id)` |
-| <a id="s-e8b482321b"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collections (id) ON DELETE CASCADE` |
-| <a id="s-a782980d78"></a>`check` | `ck_collection_tag_mutations_action` | `CONSTRAINT ck_collection_tag_mutations_action CHECK (action IN ('add','remove'))` |
-| <a id="s-af6b431813"></a>`check` | `ck_collection_tag_mutations_state` | `CONSTRAINT ck_collection_tag_mutations_state CHECK (state IN ('pending','retry_wait','succeeded'))` |
-| <a id="s-2df6940e8c"></a>`check` | `ck_collection_tag_mutations_tag_bytes` | `CONSTRAINT ck_collection_tag_mutations_tag_bytes CHECK (octet_length(tag) > 0 AND octet_length(tag) <= 65536)` |
-| <a id="s-b52d0279a2"></a>`check` | `ck_collection_tag_mutations_expected_revision` | `CONSTRAINT ck_collection_tag_mutations_expected_revision CHECK (expected_revision >= 1 AND expected_revision < 9007199254740991)` |
-| <a id="s-742ea126ee"></a>`check` | `ck_collection_tag_mutations_result_revision` | `CONSTRAINT ck_collection_tag_mutations_result_revision CHECK (changed AND result_revision = expected_revision + 1 OR NOT changed AND result_revision = expected_revision)` |
-| <a id="s-2181ee01c0"></a>`check` | `ck_collection_tag_mutations_tag_sha256` | `CONSTRAINT ck_collection_tag_mutations_tag_sha256 CHECK (length(tag_sha256) = 64 AND lower(tag_sha256) = tag_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-2793e05e58"></a>`check` | `ck_collection_tag_mutations_expected_identity` | `CONSTRAINT ck_collection_tag_mutations_expected_identity CHECK (length(expected_tag_set_identity) = 64 AND lower(expected_tag_set_identity) = expected_tag_set_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(expected_tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-eb0738484a"></a>`check` | `ck_collection_tag_mutations_result_identity` | `CONSTRAINT ck_collection_tag_mutations_result_identity CHECK (length(result_tag_set_identity) = 64 AND lower(result_tag_set_identity) = result_tag_set_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(result_tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-b9bc82136c"></a>`check` | `ck_collection_tag_mutations_head_identity` | `CONSTRAINT ck_collection_tag_mutations_head_identity CHECK (length(result_head_identity) = 64 AND lower(result_head_identity) = result_head_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(result_head_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-fa8f5ceda6"></a>`check` | `ck_collection_tag_mutations_tag_sha256_hex` | `CONSTRAINT ck_collection_tag_mutations_tag_sha256_hex CHECK (length(tag_sha256) = 64 AND lower(tag_sha256) = tag_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-ff1bb5c8d1"></a>`check` | `ck_collection_tag_mutations_expected_tag_set_identity_hex` | `CONSTRAINT ck_collection_tag_mutations_expected_tag_set_identity_hex CHECK (length(expected_tag_set_identity) = 64 AND lower(expected_tag_set_identity) = expected_tag_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(expected_tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-611aeab5af"></a>`check` | `ck_collection_tag_mutations_result_root_sha256_hex` | `CONSTRAINT ck_collection_tag_mutations_result_root_sha256_hex CHECK (result_root_sha256 IS NULL OR length(result_root_sha256) = 64 AND lower(result_root_sha256) = result_root_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(result_root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-e9d984bef8"></a>`check` | `ck_collection_tag_mutations_result_tag_set_identity_hex` | `CONSTRAINT ck_collection_tag_mutations_result_tag_set_identity_hex CHECK (length(result_tag_set_identity) = 64 AND lower(result_tag_set_identity) = result_tag_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(result_tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-544d9f5e68"></a>`check` | `ck_collection_tag_mutations_result_head_identity_hex` | `CONSTRAINT ck_collection_tag_mutations_result_head_identity_hex CHECK (length(result_head_identity) = 64 AND lower(result_head_identity) = result_head_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(result_head_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-18c8dd01ce"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, operation_id)` |
+| <a id="s-e845e376ac"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collections (id) ON DELETE CASCADE` |
+| <a id="s-e6c64907d1"></a>`check` | `ck_collection_tag_mutations_action` | `CONSTRAINT ck_collection_tag_mutations_action CHECK (action IN ('add','remove'))` |
+| <a id="s-41c7ffa546"></a>`check` | `ck_collection_tag_mutations_state` | `CONSTRAINT ck_collection_tag_mutations_state CHECK (state IN ('pending','retry_wait','succeeded'))` |
+| <a id="s-1de05260ae"></a>`check` | `ck_collection_tag_mutations_tag_bytes` | `CONSTRAINT ck_collection_tag_mutations_tag_bytes CHECK (octet_length(tag) > 0 AND octet_length(tag) <= 65536)` |
+| <a id="s-cfe2e87f84"></a>`check` | `ck_collection_tag_mutations_expected_revision` | `CONSTRAINT ck_collection_tag_mutations_expected_revision CHECK (expected_revision >= 1 AND expected_revision < 9007199254740991)` |
+| <a id="s-5a3384acd9"></a>`check` | `ck_collection_tag_mutations_result_revision` | `CONSTRAINT ck_collection_tag_mutations_result_revision CHECK (changed AND result_revision = expected_revision + 1 OR NOT changed AND result_revision = expected_revision)` |
+| <a id="s-a6335d4960"></a>`check` | `ck_collection_tag_mutations_tag_sha256` | `CONSTRAINT ck_collection_tag_mutations_tag_sha256 CHECK (length(tag_sha256) = 64 AND lower(tag_sha256) = tag_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-d416e216f3"></a>`check` | `ck_collection_tag_mutations_expected_identity` | `CONSTRAINT ck_collection_tag_mutations_expected_identity CHECK (length(expected_tag_set_identity) = 64 AND lower(expected_tag_set_identity) = expected_tag_set_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(expected_tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-adfa1fd787"></a>`check` | `ck_collection_tag_mutations_result_identity` | `CONSTRAINT ck_collection_tag_mutations_result_identity CHECK (length(result_tag_set_identity) = 64 AND lower(result_tag_set_identity) = result_tag_set_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(result_tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-ed6e635d30"></a>`check` | `ck_collection_tag_mutations_head_identity` | `CONSTRAINT ck_collection_tag_mutations_head_identity CHECK (length(result_head_identity) = 64 AND lower(result_head_identity) = result_head_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(result_head_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-27e5601b29"></a>`check` | `ck_collection_tag_mutations_tag_sha256_hex` | `CONSTRAINT ck_collection_tag_mutations_tag_sha256_hex CHECK (length(tag_sha256) = 64 AND lower(tag_sha256) = tag_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-03bc2f22d0"></a>`check` | `ck_collection_tag_mutations_expected_tag_set_identity_hex` | `CONSTRAINT ck_collection_tag_mutations_expected_tag_set_identity_hex CHECK (length(expected_tag_set_identity) = 64 AND lower(expected_tag_set_identity) = expected_tag_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(expected_tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-d93c042db5"></a>`check` | `ck_collection_tag_mutations_result_root_sha256_hex` | `CONSTRAINT ck_collection_tag_mutations_result_root_sha256_hex CHECK (result_root_sha256 IS NULL OR length(result_root_sha256) = 64 AND lower(result_root_sha256) = result_root_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(result_root_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-d3375bde9e"></a>`check` | `ck_collection_tag_mutations_result_tag_set_identity_hex` | `CONSTRAINT ck_collection_tag_mutations_result_tag_set_identity_hex CHECK (length(result_tag_set_identity) = 64 AND lower(result_tag_set_identity) = result_tag_set_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(result_tag_set_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-3b4cbd6058"></a>`check` | `ck_collection_tag_mutations_result_head_identity_hex` | `CONSTRAINT ck_collection_tag_mutations_result_head_identity_hex CHECK (length(result_head_identity) = 64 AND lower(result_head_identity) = result_head_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(result_head_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -69,7 +69,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-3f87d118c7"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-72244c953d"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -85,7 +85,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/25`
+- `/external_contract/durable_state/owners/0/structure/tables/26`
 
 ### Exact owned JSON
 

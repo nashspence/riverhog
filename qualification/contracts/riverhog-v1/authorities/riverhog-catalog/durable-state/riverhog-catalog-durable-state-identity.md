@@ -80,6 +80,7 @@ Exact externally visible contract owned by this contract element.
 - [collection_tag_revisions](riverhog-catalog-collection-tag-revisions.md)
 - [collection_tag_visibility](riverhog-catalog-collection-tag-visibility.md)
 - [collection_tags](riverhog-catalog-collection-tags.md)
+- [collection_upload_copy_intents](riverhog-catalog-collection-upload-copy-intents.md)
 - [collection_upload_files](riverhog-catalog-collection-upload-files.md)
 - [collection_upload_provenance_validation_facts](riverhog-catalog-collection-upload-provenance-validation-facts.md)
 - [collection_upload_provenance_archive_volumes](riverhog-catalog-collection-upload-provenance-archive-volumes.md)

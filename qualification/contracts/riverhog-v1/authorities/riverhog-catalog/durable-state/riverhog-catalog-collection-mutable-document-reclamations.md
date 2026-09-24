@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-mutable-docum-e81a9d1020:8fd9b8dd32 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-mutable-docum-e81a9d1020:277208a4f3 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-fe55b29314"></a>
+<a id="s-d8e2cc9a0e"></a>
 
 ### Table: `collection_mutable_document_reclamations`
 
@@ -21,30 +21,30 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-38fc2c9c07"></a>`receipt_identity` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-4c4527acbf"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-164e37b202"></a>`store` | `VARCHAR` | no | `—` | — |
-| <a id="s-1d31451fa0"></a>`document_kind` | `VARCHAR` | no | `—` | — |
-| <a id="s-dc89324046"></a>`object_path` | `VARCHAR` | no | `—` | — |
-| <a id="s-67063f5bfa"></a>`provider_revision` | `VARCHAR` | no | `—` | — |
-| <a id="s-79450aba43"></a>`stored_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-435b2e87a9"></a>`stored_sha256` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-cc405d925e"></a>`state` | `VARCHAR` | no | `—` | — |
-| <a id="s-62a6a202ae"></a>`next_attempt_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-08fa9ba900"></a>`failure` | `TEXT` | yes | `—` | — |
+| <a id="s-5d77180643"></a>`receipt_identity` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-bd66413ccc"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-e8bc9bc109"></a>`store` | `VARCHAR` | no | `—` | — |
+| <a id="s-7a336bd933"></a>`document_kind` | `VARCHAR` | no | `—` | — |
+| <a id="s-99a03b594f"></a>`object_path` | `VARCHAR` | no | `—` | — |
+| <a id="s-9bff7e14d5"></a>`provider_revision` | `VARCHAR` | no | `—` | — |
+| <a id="s-7706fa3f74"></a>`stored_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-cb4f0241c3"></a>`stored_sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-32d503c792"></a>`state` | `VARCHAR` | no | `—` | — |
+| <a id="s-b94d0e4940"></a>`next_attempt_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-21ddb59a23"></a>`failure` | `TEXT` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-6e3d9c9d3a"></a>`primary-key` | `—` | `PRIMARY KEY (receipt_identity)` |
-| <a id="s-1783eaad6c"></a>`check` | `ck_mutable_document_reclamations_identity` | `CONSTRAINT ck_mutable_document_reclamations_identity CHECK (length(receipt_identity) = 64 AND lower(receipt_identity) = receipt_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(receipt_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-997b308a74"></a>`check` | `ck_mutable_document_reclamations_kind` | `CONSTRAINT ck_mutable_document_reclamations_kind CHECK (document_kind IN ('description','tag_head'))` |
-| <a id="s-f2bffe2ff5"></a>`check` | `ck_mutable_document_reclamations_bytes` | `CONSTRAINT ck_mutable_document_reclamations_bytes CHECK (stored_bytes > 0)` |
-| <a id="s-1403a9aa89"></a>`check` | `ck_mutable_document_reclamations_stored_sha256` | `CONSTRAINT ck_mutable_document_reclamations_stored_sha256 CHECK (length(stored_sha256) = 64 AND lower(stored_sha256) = stored_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-883d49e9d3"></a>`check` | `ck_mutable_document_reclamations_state` | `CONSTRAINT ck_mutable_document_reclamations_state CHECK (state IN ('pending','deleting','retry_wait'))` |
-| <a id="s-9a2fe6f1bb"></a>`check` | `ck_sha256_22e6e1bdfada4730` | `CONSTRAINT ck_sha256_22e6e1bdfada4730 CHECK (length(receipt_identity) = 64 AND lower(receipt_identity) = receipt_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(receipt_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-dc7b221cdf"></a>`check` | `ck_sha256_c2ced24a99b9db78` | `CONSTRAINT ck_sha256_c2ced24a99b9db78 CHECK (length(stored_sha256) = 64 AND lower(stored_sha256) = stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-8d9384f18c"></a>`primary-key` | `—` | `PRIMARY KEY (receipt_identity)` |
+| <a id="s-3159d74f9c"></a>`check` | `ck_mutable_document_reclamations_identity` | `CONSTRAINT ck_mutable_document_reclamations_identity CHECK (length(receipt_identity) = 64 AND lower(receipt_identity) = receipt_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(receipt_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-f9f80d0430"></a>`check` | `ck_mutable_document_reclamations_kind` | `CONSTRAINT ck_mutable_document_reclamations_kind CHECK (document_kind IN ('description','tag_head'))` |
+| <a id="s-545d9c713f"></a>`check` | `ck_mutable_document_reclamations_bytes` | `CONSTRAINT ck_mutable_document_reclamations_bytes CHECK (stored_bytes > 0)` |
+| <a id="s-6d38c2a732"></a>`check` | `ck_mutable_document_reclamations_stored_sha256` | `CONSTRAINT ck_mutable_document_reclamations_stored_sha256 CHECK (length(stored_sha256) = 64 AND lower(stored_sha256) = stored_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-dc1e3b2e65"></a>`check` | `ck_mutable_document_reclamations_state` | `CONSTRAINT ck_mutable_document_reclamations_state CHECK (state IN ('pending','deleting','retry_wait'))` |
+| <a id="s-1e470c0bbe"></a>`check` | `ck_sha256_22e6e1bdfada4730` | `CONSTRAINT ck_sha256_22e6e1bdfada4730 CHECK (length(receipt_identity) = 64 AND lower(receipt_identity) = receipt_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(receipt_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-7c88cdbf32"></a>`check` | `ck_sha256_c2ced24a99b9db78` | `CONSTRAINT ck_sha256_c2ced24a99b9db78 CHECK (length(stored_sha256) = 64 AND lower(stored_sha256) = stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -54,7 +54,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-e65f3a7a9c"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-77ed941070"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -70,7 +70,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/58`
+- `/external_contract/durable_state/owners/0/structure/tables/59`
 
 ### Exact owned JSON
 

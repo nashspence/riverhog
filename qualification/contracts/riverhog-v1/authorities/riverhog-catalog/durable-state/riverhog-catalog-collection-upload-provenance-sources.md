@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-upload-proven-7e0f929438:e7cc394b08 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-upload-proven-7e0f929438:ce6d136dd9 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-d332239d07"></a>
+<a id="s-c79285cc95"></a>
 
 ### Table: `collection_upload_provenance_sources`
 
@@ -21,24 +21,24 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-da0d3b8e3f"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-bf2d869b1b"></a>`source_collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-dc393254ef"></a>`journal_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-6bc9e37048"></a>`expanded` | `BOOLEAN` | no | `false` | — |
-| <a id="s-34c470b2f3"></a>`after_to_journal_id` | `VARCHAR` | yes | `—` | — |
-| <a id="s-d5d8bf9e94"></a>`after_entry_id` | `VARCHAR` | yes | `—` | — |
-| <a id="s-8bc40d099b"></a>`after_state_id` | `VARCHAR` | yes | `—` | — |
-| <a id="s-8684c316a7"></a>`copied` | `BOOLEAN` | no | `false` | — |
-| <a id="s-d5c140fadd"></a>`copy_offset` | `BIGINT` | no | `0` | — |
+| <a id="s-cb32636a0a"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-6441c394a3"></a>`source_collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-af281d0fd2"></a>`journal_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-7501722f60"></a>`expanded` | `BOOLEAN` | no | `false` | — |
+| <a id="s-74ec617806"></a>`after_to_journal_id` | `VARCHAR` | yes | `—` | — |
+| <a id="s-b2f6a8b653"></a>`after_entry_id` | `VARCHAR` | yes | `—` | — |
+| <a id="s-0f80beb218"></a>`after_state_id` | `VARCHAR` | yes | `—` | — |
+| <a id="s-76f21e6827"></a>`copied` | `BOOLEAN` | no | `false` | — |
+| <a id="s-883e2ffc0b"></a>`copy_offset` | `BIGINT` | no | `0` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-0200030ffa"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, source_collection_id, journal_id)` |
-| <a id="s-a6fcd34690"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE` |
-| <a id="s-351e0c5a9e"></a>`foreign-key` | `—` | `FOREIGN KEY(source_collection_id, journal_id) REFERENCES collection_provenance_journals (collection_id, journal_id) ON DELETE RESTRICT` |
-| <a id="s-65cc30834f"></a>`check` | `ck_upload_provenance_sources_offset` | `CONSTRAINT ck_upload_provenance_sources_offset CHECK (copy_offset >= 0)` |
+| <a id="s-ec22ab1087"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, source_collection_id, journal_id)` |
+| <a id="s-6edd2ad74d"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE` |
+| <a id="s-271a5ac3f6"></a>`foreign-key` | `—` | `FOREIGN KEY(source_collection_id, journal_id) REFERENCES collection_provenance_journals (collection_id, journal_id) ON DELETE RESTRICT` |
+| <a id="s-c2d9fefd65"></a>`check` | `ck_upload_provenance_sources_offset` | `CONSTRAINT ck_upload_provenance_sources_offset CHECK (copy_offset >= 0)` |
 
 ## Maintained corroboration
 
@@ -48,7 +48,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-71d899abca"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-3737ec0ff6"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -64,7 +64,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/64`
+- `/external_contract/durable_state/owners/0/structure/tables/65`
 
 ### Exact owned JSON
 

@@ -27,13 +27,15 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 | <a id="s-550fa1beb6"></a>`root`<br>`root` | required positional; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded<br>Env: `null` |
 | <a id="s-54765a73dd"></a>`idempotency_key`<br>`--idempotency-key` | optional option; 1 value | text | not recorded<br>Env: `null` |
 | <a id="s-ba892a4d2d"></a>`archive_store`<br>`--archive-store` | optional option; 1 value | text | not recorded<br>Env: `null` |
-| <a id="s-d7bca71bef"></a>`description`<br>`--description` | optional option; 1 value | text | not recorded<br>Env: `null` |
-| <a id="s-95e4104c03"></a>`tag`<br>`--tag` | optional option; 1 value; collects repeats; no declared occurrence maximum | text | not recorded<br>Env: `null` |
-| <a id="s-cd32f431c1"></a>`provenance`<br>`--provenance` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded<br>Env: `null` |
-| <a id="s-3c8c2e70e6"></a>`omit_provenance`<br>`--omit-provenance` | optional option; 1 value | text | not recorded<br>Env: `null` |
-| <a id="s-16fb5d6abe"></a>`provenance_observer`<br>`--provenance-observer` | optional option; 1 value | text | not recorded<br>Env: `"A_RIVERHOG_CLI_PROVENANCE_OBSERVER"` |
-| <a id="s-3e642da5a2"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
-| <a id="s-001a52eaf4"></a>`dry_run`<br>`--dry-run` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
+| <a id="s-d7bca71bef"></a>`use_cache`<br>`--use-cache`, alternate: `--no-use-cache` | optional flag; 0 values | boolean | not recorded<br>Env: `null` |
+| <a id="s-95e4104c03"></a>`copy_to`<br>`--copy-to` | optional option; 1 value; collects repeats; no declared occurrence maximum | text | not recorded<br>Env: `null` |
+| <a id="s-cd32f431c1"></a>`description`<br>`--description` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-3c8c2e70e6"></a>`tag`<br>`--tag` | optional option; 1 value; collects repeats; no declared occurrence maximum | text | not recorded<br>Env: `null` |
+| <a id="s-16fb5d6abe"></a>`provenance`<br>`--provenance` | optional option; 1 value | path; existence not required; regular files allowed; directories allowed; access checks on existing paths: read; resolve absolute path and symlinks: no; dash uses normal path checks | not recorded<br>Env: `null` |
+| <a id="s-3e642da5a2"></a>`omit_provenance`<br>`--omit-provenance` | optional option; 1 value | text | not recorded<br>Env: `null` |
+| <a id="s-001a52eaf4"></a>`provenance_observer`<br>`--provenance-observer` | optional option; 1 value | text | not recorded<br>Env: `"A_RIVERHOG_CLI_PROVENANCE_OBSERVER"` |
+| <a id="s-08e6c6322c"></a>`json_mode`<br>`--json` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
+| <a id="s-233ba77fcd"></a>`dry_run`<br>`--dry-run` | optional flag; 0 values | boolean | `false`<br>Env: `null` |
 
 ### Terminating controls
 
@@ -70,7 +72,8 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [CLI parameter --tag](#s-95e4104c03) | `cardinality · occurrences · operational_policy` | shared above |
+| [CLI parameter --copy-to](#s-95e4104c03) | `cardinality · occurrences · operational_policy` | shared above |
+| [CLI parameter --tag](#s-3c8c2e70e6) | `cardinality · occurrences · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
 
@@ -79,15 +82,17 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
 | [CLI parameter --archive-store](#s-ba892a4d2d) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
-| [CLI parameter --description](#s-d7bca71bef) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
-| [CLI parameter --dry-run](#s-001a52eaf4) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
+| [CLI parameter --copy-to](#s-95e4104c03) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --description](#s-cd32f431c1) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --dry-run](#s-233ba77fcd) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
 | [CLI parameter --idempotency-key](#s-54765a73dd) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
-| [CLI parameter --json](#s-3e642da5a2) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
-| [CLI parameter --omit-provenance](#s-3c8c2e70e6) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
-| [CLI parameter --provenance](#s-cd32f431c1) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
-| [CLI parameter --provenance-observer](#s-16fb5d6abe) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --json](#s-08e6c6322c) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
+| [CLI parameter --omit-provenance](#s-3e642da5a2) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --provenance](#s-16fb5d6abe) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --provenance-observer](#s-001a52eaf4) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
 | [CLI parameter root](#s-550fa1beb6) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
-| [CLI parameter --tag](#s-95e4104c03) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --tag](#s-3c8c2e70e6) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1; source_constraint={"field":"nargs"} |
+| [CLI parameter --use-cache](#s-d7bca71bef) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0; source_constraint={"field":"is_flag"} |
 
 ## Maintained corroboration
 
@@ -131,7 +136,7 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"
 
 - [cli:a-riverhog-cli](../../../evidence/sources/authorities.md#src-d2d8219a30) — [some-implementations/riverhog/applications/a-riverhog-cli/src/a\_riverhog\_cli/main.py::&lt;module&gt;](../../../../../../some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py)
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
-- **Command callback:** [some-implementations/riverhog/applications/a-riverhog-cli/src/a\_riverhog\_cli/main.py::upload\_cmd](../../../../../../some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py#L2185)
+- **Command callback:** [some-implementations/riverhog/applications/a-riverhog-cli/src/a\_riverhog\_cli/main.py::upload\_cmd](../../../../../../some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py#L2197)
 
 ### Machine authority
 
@@ -184,7 +189,7 @@ false
 
 ### `/external_contract/cli/a-riverhog-cli/commands/collection/commands/upload/commands/start/parameters`
 
-<!-- exact-contract-value: 3e2bff14987e095133442c03734880f8aba186037c8b021d2363c52015bcae18 -->
+<!-- exact-contract-value: 3b0f311405014681f38a233566e148b13ee3ba6016f150df2fde280a53d5b3b8 -->
 
 ```json
 [
@@ -239,6 +244,44 @@ false
     "nargs": 1,
     "options": [
       "--archive-store"
+    ],
+    "required": false,
+    "secondary_options": [],
+    "type": {
+      "class": "typer._click.types.StringParamType",
+      "name": "text"
+    }
+  },
+  {
+    "count": false,
+    "envvar": null,
+    "is_flag": true,
+    "kind": "TyperOption",
+    "multiple": false,
+    "name": "use_cache",
+    "nargs": 1,
+    "options": [
+      "--use-cache"
+    ],
+    "required": false,
+    "secondary_options": [
+      "--no-use-cache"
+    ],
+    "type": {
+      "class": "typer._click.types.BoolParamType",
+      "name": "boolean"
+    }
+  },
+  {
+    "count": false,
+    "envvar": null,
+    "is_flag": false,
+    "kind": "TyperOption",
+    "multiple": true,
+    "name": "copy_to",
+    "nargs": 1,
+    "options": [
+      "--copy-to"
     ],
     "required": false,
     "secondary_options": [],

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-lifecycle-events:5f334b1cf0 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-lifecycle-events:9b69315bc8 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-c29b83c623"></a>
+<a id="s-a328098dd8"></a>
 
 ### Table: `lifecycle_events`
 
@@ -21,20 +21,20 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-3ac7e44768"></a>`sequence` | `SERIAL` | no | `—` | — |
-| <a id="s-884731af6c"></a>`event_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-2e0b94d2ef"></a>`owner_principal_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-e59568dd7c"></a>`subject` | `VARCHAR` | yes | `—` | — |
-| <a id="s-dbd374c071"></a>`event_json` | `TEXT` | no | `—` | — |
-| <a id="s-cefb50b33c"></a>`context_json` | `TEXT` | yes | `—` | — |
-| <a id="s-15ca3fce71"></a>`context_expires_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-ea2d86c292"></a>`sequence` | `SERIAL` | no | `—` | — |
+| <a id="s-abbcfaf9f0"></a>`event_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-00c0d65d2d"></a>`owner_principal_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-6d60d395d1"></a>`subject` | `VARCHAR` | yes | `—` | — |
+| <a id="s-53de699040"></a>`event_json` | `TEXT` | no | `—` | — |
+| <a id="s-f17aad4d06"></a>`context_json` | `TEXT` | yes | `—` | — |
+| <a id="s-eda0b3f43b"></a>`context_expires_at` | `VARCHAR` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-a0c685c4a7"></a>`primary-key` | `—` | `PRIMARY KEY (sequence)` |
-| <a id="s-6330a66a8e"></a>`unique` | `—` | `UNIQUE (event_id)` |
+| <a id="s-1f43d8b600"></a>`primary-key` | `—` | `PRIMARY KEY (sequence)` |
+| <a id="s-baf42373de"></a>`unique` | `—` | `UNIQUE (event_id)` |
 
 ## Maintained corroboration
 
@@ -44,7 +44,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-b20e6d1eba"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-b60b34015c"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -60,7 +60,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/12`
+- `/external_contract/durable_state/owners/0/structure/tables/13`
 
 ### Exact owned JSON
 

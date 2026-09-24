@@ -131,7 +131,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "a-riverhog-cli",
       "result_identity": "a-riverhog-cli-result/collection/provenance/agents/v1",
       "source": {
-        "line": 2670,
+        "line": 2694,
         "module": "a_riverhog_cli.main",
         "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "provenance_agents_cmd"
@@ -146,7 +146,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.list_collection_provenance_journal_agents",
       "source": {
-        "line": 1919,
+        "line": 1930,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.list_collection_provenance_journal_agents"

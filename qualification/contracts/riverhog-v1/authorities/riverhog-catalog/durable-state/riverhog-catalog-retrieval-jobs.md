@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-jobs:e2afdbc705 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-jobs:e9f92da66d -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-c4b3febcb2"></a>
+<a id="s-07d9a1b0cb"></a>
 
 ### Table: `retrieval_jobs`
 
@@ -21,36 +21,36 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-1151e04935"></a>`id` | `VARCHAR` | no | `—` | — |
-| <a id="s-d4aec50038"></a>`plan_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-06a2164c54"></a>`principal_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-5f67d51e59"></a>`initiated_by_key_id` | `VARCHAR` | yes | `—` | — |
-| <a id="s-4fd1a6484e"></a>`event_context_json` | `TEXT` | yes | `—` | — |
-| <a id="s-2eadc88986"></a>`state` | `VARCHAR` | no | `—` | — |
-| <a id="s-8be9b06324"></a>`plan_etag` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-0e868aa534"></a>`lease_seconds` | `BIGINT` | no | `—` | — |
-| <a id="s-794fc87403"></a>`created_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-6a017315b8"></a>`requested_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-97a0089309"></a>`restore_requested_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-60127830bb"></a>`ready_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-0a5f753aea"></a>`expires_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-c8e394bad8"></a>`next_poll_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-4f571fa5ab"></a>`completed_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-93c1bb8bc9"></a>`canceled_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-d2faf29d5e"></a>`failure` | `TEXT` | yes | `—` | — |
+| <a id="s-9942861055"></a>`id` | `VARCHAR` | no | `—` | — |
+| <a id="s-692751482a"></a>`plan_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-639a288dcd"></a>`principal_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-5e16f41caf"></a>`initiated_by_key_id` | `VARCHAR` | yes | `—` | — |
+| <a id="s-c86be3b2f0"></a>`event_context_json` | `TEXT` | yes | `—` | — |
+| <a id="s-5faac2e4f4"></a>`state` | `VARCHAR` | no | `—` | — |
+| <a id="s-62bbcd68c5"></a>`plan_etag` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-de5ae5cefc"></a>`lease_seconds` | `BIGINT` | no | `—` | — |
+| <a id="s-6cb8b2ae8d"></a>`created_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-1e0a5aeeac"></a>`requested_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-d1288dc50e"></a>`restore_requested_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-41735a1629"></a>`ready_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-d1aa1af007"></a>`expires_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-4a093cd57d"></a>`next_poll_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-6683d93033"></a>`completed_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-47c367fc6b"></a>`canceled_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-bdaf1de960"></a>`failure` | `TEXT` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-cc81e06afc"></a>`primary-key` | `—` | `PRIMARY KEY (id)` |
-| <a id="s-247213a175"></a>`foreign-key` | `—` | `FOREIGN KEY(plan_id) REFERENCES retrieval_plans (id)` |
-| <a id="s-6a3e91e7e8"></a>`unique` | `—` | `UNIQUE (id, plan_id)` |
-| <a id="s-ef35eeb543"></a>`check` | `ck_retrieval_jobs_state` | `CONSTRAINT ck_retrieval_jobs_state CHECK (state IN ('requested','ready','completed','canceled','expired','failed'))` |
-| <a id="s-54425c0db5"></a>`check` | `ck_retrieval_jobs_plan_etag` | `CONSTRAINT ck_retrieval_jobs_plan_etag CHECK (length(plan_etag) = 64)` |
-| <a id="s-7f34d34303"></a>`check` | `ck_retrieval_jobs_lease` | `CONSTRAINT ck_retrieval_jobs_lease CHECK (lease_seconds > 0)` |
-| <a id="s-5d1aba64d7"></a>`unique` | `—` | `UNIQUE (plan_id)` |
-| <a id="s-dea0761009"></a>`check` | `ck_retrieval_jobs_plan_etag_hex` | `CONSTRAINT ck_retrieval_jobs_plan_etag_hex CHECK (length(plan_etag) = 64 AND lower(plan_etag) = plan_etag AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(plan_etag, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-68f7abe07f"></a>`primary-key` | `—` | `PRIMARY KEY (id)` |
+| <a id="s-95a164f0a5"></a>`foreign-key` | `—` | `FOREIGN KEY(plan_id) REFERENCES retrieval_plans (id)` |
+| <a id="s-b54f413ebf"></a>`unique` | `—` | `UNIQUE (id, plan_id)` |
+| <a id="s-67c3ba74b0"></a>`check` | `ck_retrieval_jobs_state` | `CONSTRAINT ck_retrieval_jobs_state CHECK (state IN ('requested','ready','completed','canceled','expired','failed'))` |
+| <a id="s-c30c7de264"></a>`check` | `ck_retrieval_jobs_plan_etag` | `CONSTRAINT ck_retrieval_jobs_plan_etag CHECK (length(plan_etag) = 64)` |
+| <a id="s-ab18e67502"></a>`check` | `ck_retrieval_jobs_lease` | `CONSTRAINT ck_retrieval_jobs_lease CHECK (lease_seconds > 0)` |
+| <a id="s-9800a75461"></a>`unique` | `—` | `UNIQUE (plan_id)` |
+| <a id="s-cf8ad856c7"></a>`check` | `ck_retrieval_jobs_plan_etag_hex` | `CONSTRAINT ck_retrieval_jobs_plan_etag_hex CHECK (length(plan_etag) = 64 AND lower(plan_etag) = plan_etag AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(plan_etag, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -60,7 +60,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-2dba426323"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-bac46a71fb"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -76,7 +76,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/38`
+- `/external_contract/durable_state/owners/0/structure/tables/39`
 
 ### Exact owned JSON
 

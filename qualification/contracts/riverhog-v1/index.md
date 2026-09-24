@@ -4,7 +4,7 @@
 
 This generated snapshot accounts for the externally exposed surfaces discovered from this repository revision. Discovery means inclusion; no separate acceptance decision is required.
 
-Included contract elements: **4216** · Extent decisions: **2072**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
+Included contract elements: **4223** · Extent decisions: **2085**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
 
 ## Audit references
 
@@ -72,7 +72,7 @@ Included contract elements: **4216** · Extent decisions: **2072**. Complete acc
   - [Configuration Environment](authorities/a-riverhog-b2-store/configuration-environment/index.md) (20)
 
 - [a-riverhog-cli](authorities/a-riverhog-cli/index.md) — Command-line client for Riverhog.
-  - [CLI](authorities/a-riverhog-cli/cli/index.md) (86)
+  - [CLI](authorities/a-riverhog-cli/cli/index.md) (87)
   - [Configuration Environment](authorities/a-riverhog-cli/configuration-environment/index.md) (7)
 
 - [a-riverhog-cli-local](authorities/a-riverhog-cli-local/index.md) — Command-line client for Riverhog.
@@ -219,8 +219,8 @@ Included contract elements: **4216** · Extent decisions: **2072**. Complete acc
   - [Python](authorities/review0-target-lib/python/index.md) (20)
 
 - **[riverhog](authorities/riverhog/index.md)** [📦](authorities/riverhog/evidence-gaps.md) — The Riverhog service API and its maintained cross-interface operation parity.
-  - **[HTTP Operations](authorities/riverhog/http-operations/index.md)** [📦](authorities/riverhog/http-operations/evidence-gaps.md) (109)
-  - **[HTTP Schemas](authorities/riverhog/http-schemas/index.md)** [📦](authorities/riverhog/http-schemas/evidence-gaps.md) (258)
+  - **[HTTP Operations](authorities/riverhog/http-operations/index.md)** [📦](authorities/riverhog/http-operations/evidence-gaps.md) (110)
+  - **[HTTP Schemas](authorities/riverhog/http-schemas/index.md)** [📦](authorities/riverhog/http-schemas/evidence-gaps.md) (261)
   - [HTTP Service Declaration](authorities/riverhog/http-service-declaration/index.md) (1)
   - [HTTP Security Schemes](authorities/riverhog/http-security-schemes/index.md) (1)
 
@@ -238,11 +238,11 @@ Included contract elements: **4216** · Extent decisions: **2072**. Complete acc
   - [Python](authorities/riverhog-canonical-json/python/index.md) (13)
 
 - [riverhog-catalog](authorities/riverhog-catalog/index.md) — Encrypted archive management, catalog, and retrieval.
-  - [Durable State](authorities/riverhog-catalog/durable-state/index.md) (91)
+  - [Durable State](authorities/riverhog-catalog/durable-state/index.md) (92)
 
 - [riverhog-client](authorities/riverhog-client/index.md) — Typed generic Riverhog client and capability-scoped collection-processing runtime.
   - [Configuration Environment](authorities/riverhog-client/configuration-environment/index.md) (12)
-  - [Python](authorities/riverhog-client/python/index.md) (268)
+  - [Python](authorities/riverhog-client/python/index.md) (269)
 
 - [riverhog-protocol](authorities/riverhog-protocol/index.md) — Canonical Riverhog wire and identity contracts.
   - [Schemas](authorities/riverhog-protocol/schema/index.md) (1)

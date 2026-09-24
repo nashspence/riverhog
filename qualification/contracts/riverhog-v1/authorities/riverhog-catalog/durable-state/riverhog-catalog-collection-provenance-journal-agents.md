@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-provenance-jo-9c9be2cec8:b907b77a69 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-provenance-jo-9c9be2cec8:97da077dc9 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-281088bd13"></a>
+<a id="s-b3ee13fb41"></a>
 
 ### Table: `collection_provenance_journal_agents`
 
@@ -21,16 +21,16 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-1b768220bf"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-695240dd63"></a>`journal_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-c23e8fc867"></a>`agent_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-fcdf80f3e2"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-6e4b7c9414"></a>`journal_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-05e24eb8bc"></a>`agent_id` | `VARCHAR` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-6feb5d9763"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, journal_id, agent_id)` |
-| <a id="s-9d8a3d284c"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, journal_id) REFERENCES collection_provenance_journals (collection_id, journal_id) ON DELETE CASCADE` |
+| <a id="s-166cd00937"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, journal_id, agent_id)` |
+| <a id="s-0c8b5c98c2"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, journal_id) REFERENCES collection_provenance_journals (collection_id, journal_id) ON DELETE CASCADE` |
 
 ## Maintained corroboration
 
@@ -40,7 +40,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-162773b0c9"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-57cce8a833"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -56,7 +56,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/50`
+- `/external_contract/durable_state/owners/0/structure/tables/51`
 
 ### Exact owned JSON
 

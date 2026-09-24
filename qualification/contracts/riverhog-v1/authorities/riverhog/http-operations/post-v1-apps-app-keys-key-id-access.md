@@ -123,7 +123,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.add_app_key_access",
       "source": {
-        "line": 2221,
+        "line": 2232,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.add_app_key_access"

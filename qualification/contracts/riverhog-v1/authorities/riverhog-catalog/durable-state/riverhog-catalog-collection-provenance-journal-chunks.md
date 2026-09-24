@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-provenance-jo-4be982345a:b2fed2afb4 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-provenance-jo-4be982345a:c7980fba0d -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-b3ee13fb41"></a>
+<a id="s-fbd7812493"></a>
 
 ### Table: `collection_provenance_journal_chunks`
 
@@ -21,21 +21,21 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-fcdf80f3e2"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-6e4b7c9414"></a>`journal_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-05e24eb8bc"></a>`ordinal` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-792fc35a57"></a>`byte_offset` | `BIGINT` | no | `—` | — |
-| <a id="s-a70bdfdac4"></a>`content` | `BYTEA` | no | `—` | — |
+| <a id="s-749d684cc8"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-873b789d22"></a>`journal_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-b45ab33fc4"></a>`ordinal` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-b56492a0f3"></a>`byte_offset` | `BIGINT` | no | `—` | — |
+| <a id="s-e1413ee494"></a>`content` | `BYTEA` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-166cd00937"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, journal_id, ordinal)` |
-| <a id="s-0c8b5c98c2"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, journal_id) REFERENCES collection_provenance_journals (collection_id, journal_id) ON DELETE CASCADE` |
-| <a id="s-4ad1c6c286"></a>`check` | `ck_provenance_journal_chunks_ordinal` | `CONSTRAINT ck_provenance_journal_chunks_ordinal CHECK (length(ordinal) = 64 AND lower(ordinal) = ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-fb64a14dd9"></a>`check` | `ck_provenance_journal_chunks_offset` | `CONSTRAINT ck_provenance_journal_chunks_offset CHECK (byte_offset >= 0)` |
-| <a id="s-778a11c830"></a>`check` | `ck_provenance_journal_chunks_content` | `CONSTRAINT ck_provenance_journal_chunks_content CHECK (length(content) > 0)` |
+| <a id="s-a3b8778813"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, journal_id, ordinal)` |
+| <a id="s-610ec495c2"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, journal_id) REFERENCES collection_provenance_journals (collection_id, journal_id) ON DELETE CASCADE` |
+| <a id="s-7c49b85df6"></a>`check` | `ck_provenance_journal_chunks_ordinal` | `CONSTRAINT ck_provenance_journal_chunks_ordinal CHECK (length(ordinal) = 64 AND lower(ordinal) = ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-8fca049729"></a>`check` | `ck_provenance_journal_chunks_offset` | `CONSTRAINT ck_provenance_journal_chunks_offset CHECK (byte_offset >= 0)` |
+| <a id="s-1d172c6667"></a>`check` | `ck_provenance_journal_chunks_content` | `CONSTRAINT ck_provenance_journal_chunks_content CHECK (length(content) > 0)` |
 
 ## Maintained corroboration
 
@@ -45,7 +45,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-2771cb151d"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-9828d8c1e0"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -61,7 +61,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/51`
+- `/external_contract/durable_state/owners/0/structure/tables/52`
 
 ### Exact owned JSON
 

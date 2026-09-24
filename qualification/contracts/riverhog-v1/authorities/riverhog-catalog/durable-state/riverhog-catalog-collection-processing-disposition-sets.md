@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-processing-di-c1b37f0046:1446612c9c -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-processing-di-c1b37f0046:ad2bb91cf3 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-cf59823348"></a>
+<a id="s-b2dad9bda9"></a>
 
 ### Table: `collection_processing_disposition_sets`
 
@@ -21,43 +21,43 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-4fe8090c32"></a>`claim_id` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-0f291cd4e2"></a>`state` | `VARCHAR` | no | `—` | — |
-| <a id="s-0f961b500a"></a>`disposition_count` | `BIGINT` | no | `—` | — |
-| <a id="s-23d2a36754"></a>`output_edge_count` | `BIGINT` | no | `—` | — |
-| <a id="s-c787b2f974"></a>`output_artifact_count` | `BIGINT` | no | `—` | — |
-| <a id="s-53c3fd3afc"></a>`transformed_count` | `BIGINT` | no | `—` | — |
-| <a id="s-0e699987d6"></a>`transformed_with_outputs_count` | `BIGINT` | no | `—` | — |
-| <a id="s-65c67f8d99"></a>`validation_phase` | `VARCHAR` | yes | `—` | — |
-| <a id="s-1f6f24b761"></a>`validation_collection_id` | `BIGINT` | yes | `—` | — |
-| <a id="s-159fdff678"></a>`validation_input_path` | `VARCHAR` | yes | `—` | — |
-| <a id="s-2a0942f60e"></a>`validation_output_path` | `VARCHAR` | yes | `—` | — |
-| <a id="s-7d860b1b62"></a>`validation_output_collection_id` | `BIGINT` | yes | `—` | — |
-| <a id="s-5c4f76a891"></a>`validation_output_input_path` | `VARCHAR` | yes | `—` | — |
-| <a id="s-c7fcf52790"></a>`disposition_hash_state` | `TEXT` | yes | `—` | — |
-| <a id="s-710fba49f9"></a>`output_hash_state` | `TEXT` | yes | `—` | — |
-| <a id="s-80e9dac22f"></a>`disposition_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-cf8aeee505"></a>`output_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-ab800383b2"></a>`identity_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-cf60392f04"></a>`failure` | `TEXT` | yes | `—` | — |
-| <a id="s-2013f58a1e"></a>`created_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-2a6edd3948"></a>`updated_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-30cc61f34d"></a>`sealed_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-9352b2d2fb"></a>`claim_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-d6f7163e42"></a>`state` | `VARCHAR` | no | `—` | — |
+| <a id="s-66b66623a5"></a>`disposition_count` | `BIGINT` | no | `—` | — |
+| <a id="s-9397313137"></a>`output_edge_count` | `BIGINT` | no | `—` | — |
+| <a id="s-ebc317ec4e"></a>`output_artifact_count` | `BIGINT` | no | `—` | — |
+| <a id="s-5d609af90e"></a>`transformed_count` | `BIGINT` | no | `—` | — |
+| <a id="s-9864262d45"></a>`transformed_with_outputs_count` | `BIGINT` | no | `—` | — |
+| <a id="s-e95a91a26e"></a>`validation_phase` | `VARCHAR` | yes | `—` | — |
+| <a id="s-f7fb47c2b8"></a>`validation_collection_id` | `BIGINT` | yes | `—` | — |
+| <a id="s-783958ead0"></a>`validation_input_path` | `VARCHAR` | yes | `—` | — |
+| <a id="s-67118c9a78"></a>`validation_output_path` | `VARCHAR` | yes | `—` | — |
+| <a id="s-ea081187ac"></a>`validation_output_collection_id` | `BIGINT` | yes | `—` | — |
+| <a id="s-9f120649f1"></a>`validation_output_input_path` | `VARCHAR` | yes | `—` | — |
+| <a id="s-a2d1514b01"></a>`disposition_hash_state` | `TEXT` | yes | `—` | — |
+| <a id="s-d89490767e"></a>`output_hash_state` | `TEXT` | yes | `—` | — |
+| <a id="s-a2c9609f6d"></a>`disposition_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-e581abb0b8"></a>`output_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-d3aed631fa"></a>`identity_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-bdcd790991"></a>`failure` | `TEXT` | yes | `—` | — |
+| <a id="s-88fb7eb626"></a>`created_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-d8f34f04be"></a>`updated_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-fd25caf97e"></a>`sealed_at` | `VARCHAR` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-9927dc56fe"></a>`primary-key` | `—` | `PRIMARY KEY (claim_id)` |
-| <a id="s-850043dd24"></a>`check` | `ck_processing_disposition_sets_state` | `CONSTRAINT ck_processing_disposition_sets_state CHECK (state IN ('receiving','sealing','sealed','failed'))` |
-| <a id="s-68e5038c1f"></a>`check` | `ck_processing_disposition_sets_phase` | `CONSTRAINT ck_processing_disposition_sets_phase CHECK (validation_phase IS NULL OR validation_phase IN ('dispositions','outputs'))` |
-| <a id="s-d610feb878"></a>`check` | `ck_processing_disposition_sets_counts` | `CONSTRAINT ck_processing_disposition_sets_counts CHECK (disposition_count >= 0 AND output_edge_count >= 0 AND output_artifact_count >= 0 AND transformed_count >= 0 AND transformed_with_outputs_count >= 0)` |
-| <a id="s-612721833c"></a>`check` | `ck_processing_disposition_sets_output_counts` | `CONSTRAINT ck_processing_disposition_sets_output_counts CHECK (output_artifact_count <= output_edge_count)` |
-| <a id="s-2c6a5f9de3"></a>`foreign-key` | `—` | `FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE CASCADE` |
-| <a id="s-82d4157845"></a>`check` | `ck_collection_processing_disposition_sets_claim_id_hex` | `CONSTRAINT ck_collection_processing_disposition_sets_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-68fb3472d8"></a>`check` | `ck_sha256_66cafd8d5821f368` | `CONSTRAINT ck_sha256_66cafd8d5821f368 CHECK (disposition_sha256 IS NULL OR length(disposition_sha256) = 64 AND lower(disposition_sha256) = disposition_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(disposition_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-ea982db0dd"></a>`check` | `ck_collection_processing_disposition_sets_output_sha256_hex` | `CONSTRAINT ck_collection_processing_disposition_sets_output_sha256_hex CHECK (output_sha256 IS NULL OR length(output_sha256) = 64 AND lower(output_sha256) = output_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(output_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-79cb736dfe"></a>`check` | `ck_sha256_11dda87dcbdbf203` | `CONSTRAINT ck_sha256_11dda87dcbdbf203 CHECK (identity_sha256 IS NULL OR length(identity_sha256) = 64 AND lower(identity_sha256) = identity_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(identity_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-8a381f835f"></a>`primary-key` | `—` | `PRIMARY KEY (claim_id)` |
+| <a id="s-24a8c90b7f"></a>`check` | `ck_processing_disposition_sets_state` | `CONSTRAINT ck_processing_disposition_sets_state CHECK (state IN ('receiving','sealing','sealed','failed'))` |
+| <a id="s-d6405fdeac"></a>`check` | `ck_processing_disposition_sets_phase` | `CONSTRAINT ck_processing_disposition_sets_phase CHECK (validation_phase IS NULL OR validation_phase IN ('dispositions','outputs'))` |
+| <a id="s-29e88468e3"></a>`check` | `ck_processing_disposition_sets_counts` | `CONSTRAINT ck_processing_disposition_sets_counts CHECK (disposition_count >= 0 AND output_edge_count >= 0 AND output_artifact_count >= 0 AND transformed_count >= 0 AND transformed_with_outputs_count >= 0)` |
+| <a id="s-4c24554d4a"></a>`check` | `ck_processing_disposition_sets_output_counts` | `CONSTRAINT ck_processing_disposition_sets_output_counts CHECK (output_artifact_count <= output_edge_count)` |
+| <a id="s-205a97f7e4"></a>`foreign-key` | `—` | `FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE CASCADE` |
+| <a id="s-08ab2ea1d4"></a>`check` | `ck_collection_processing_disposition_sets_claim_id_hex` | `CONSTRAINT ck_collection_processing_disposition_sets_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-fc2e2763c5"></a>`check` | `ck_sha256_66cafd8d5821f368` | `CONSTRAINT ck_sha256_66cafd8d5821f368 CHECK (disposition_sha256 IS NULL OR length(disposition_sha256) = 64 AND lower(disposition_sha256) = disposition_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(disposition_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-05f5739594"></a>`check` | `ck_collection_processing_disposition_sets_output_sha256_hex` | `CONSTRAINT ck_collection_processing_disposition_sets_output_sha256_hex CHECK (output_sha256 IS NULL OR length(output_sha256) = 64 AND lower(output_sha256) = output_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(output_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-ae027b16b3"></a>`check` | `ck_sha256_11dda87dcbdbf203` | `CONSTRAINT ck_sha256_11dda87dcbdbf203 CHECK (identity_sha256 IS NULL OR length(identity_sha256) = 64 AND lower(identity_sha256) = identity_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(identity_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -67,7 +67,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-ec6ddb1363"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-2c62f726b7"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -83,7 +83,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/46`
+- `/external_contract/durable_state/owners/0/structure/tables/47`
 
 ### Exact owned JSON
 

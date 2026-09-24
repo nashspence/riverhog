@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-upload-files:e3bb786ec4 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-upload-files:22a976ec9f -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-5c534a7cd1"></a>
+<a id="s-1dab4d0f87"></a>
 
 ### Table: `collection_upload_files`
 
@@ -21,39 +21,39 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-4e8db8a2bd"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-ee0619fdfd"></a>`path` | `VARCHAR` | no | `—` | — |
-| <a id="s-cf60d564c7"></a>`path_sort_key` | `BYTEA` | no | `—` | — |
-| <a id="s-cadad7863c"></a>`semantic_order_rank` | `INTEGER` | no | `—` | — |
-| <a id="s-728dded389"></a>`file_order` | `INTEGER` | no | `—` | — |
-| <a id="s-264662b57d"></a>`bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-d576685a7a"></a>`sha256` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-a6e24e356b"></a>`raw_part_plaintext_bytes` | `BIGINT` | yes | `—` | — |
-| <a id="s-6ddbdfcd05"></a>`raw_part_count` | `BIGINT` | yes | `—` | — |
-| <a id="s-a462acd119"></a>`raw_part_ordered_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-f2c33050ac"></a>`raw_parts_accepted` | `BIGINT` | no | `0` | — |
-| <a id="s-a720fc51d3"></a>`raw_part_commitment_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-097da5de2f"></a>`provenance_status` | `VARCHAR` | no | `—` | — |
-| <a id="s-a163cd3519"></a>`provenance_journal_id` | `VARCHAR` | yes | `—` | — |
-| <a id="s-5f717fcf74"></a>`provenance_current_state_id` | `VARCHAR` | yes | `—` | — |
-| <a id="s-8122da9ae3"></a>`provenance_omission_reason` | `TEXT` | yes | `—` | — |
-| <a id="s-de5a36a077"></a>`custodied_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-e2386b6f71"></a>`custody_receipt_json` | `TEXT` | yes | `—` | — |
+| <a id="s-31df735f31"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-b90d2a8ab8"></a>`path` | `VARCHAR` | no | `—` | — |
+| <a id="s-629b7b318f"></a>`path_sort_key` | `BYTEA` | no | `—` | — |
+| <a id="s-17dab7c5b2"></a>`semantic_order_rank` | `INTEGER` | no | `—` | — |
+| <a id="s-7636188887"></a>`file_order` | `INTEGER` | no | `—` | — |
+| <a id="s-5d2f8f925b"></a>`bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-e8ab9b8b54"></a>`sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-614c18c893"></a>`raw_part_plaintext_bytes` | `BIGINT` | yes | `—` | — |
+| <a id="s-8f3799b1e7"></a>`raw_part_count` | `BIGINT` | yes | `—` | — |
+| <a id="s-81db5709af"></a>`raw_part_ordered_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-739c37117f"></a>`raw_parts_accepted` | `BIGINT` | no | `0` | — |
+| <a id="s-f5ead14acb"></a>`raw_part_commitment_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-e0d19105f9"></a>`provenance_status` | `VARCHAR` | no | `—` | — |
+| <a id="s-69fcb683d4"></a>`provenance_journal_id` | `VARCHAR` | yes | `—` | — |
+| <a id="s-840ef40832"></a>`provenance_current_state_id` | `VARCHAR` | yes | `—` | — |
+| <a id="s-9178d567e9"></a>`provenance_omission_reason` | `TEXT` | yes | `—` | — |
+| <a id="s-12c66daded"></a>`custodied_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-90a54a2284"></a>`custody_receipt_json` | `TEXT` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-ed3b17ea02"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, path)` |
-| <a id="s-f653cbd2a0"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE` |
-| <a id="s-0e2db9fec1"></a>`check` | `ck_collection_upload_files_order` | `CONSTRAINT ck_collection_upload_files_order CHECK (file_order >= 0)` |
-| <a id="s-2f9d7ae2a2"></a>`check` | `ck_collection_upload_files_semantic_order_rank` | `CONSTRAINT ck_collection_upload_files_semantic_order_rank CHECK (semantic_order_rank >= 0 AND semantic_order_rank <= 2)` |
-| <a id="s-35502dfd43"></a>`check` | `ck_collection_upload_files_bytes` | `CONSTRAINT ck_collection_upload_files_bytes CHECK (bytes >= 0)` |
-| <a id="s-0992175ad1"></a>`check` | `ck_collection_upload_files_raw_parts` | `CONSTRAINT ck_collection_upload_files_raw_parts CHECK (raw_parts_accepted >= 0)` |
-| <a id="s-789a57e5c1"></a>`check` | `ck_collection_upload_files_sha256` | `CONSTRAINT ck_collection_upload_files_sha256 CHECK (length(sha256) = 64)` |
-| <a id="s-ce83ac2f2f"></a>`check` | `ck_collection_upload_files_sha256_hex` | `CONSTRAINT ck_collection_upload_files_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-df4c771bbc"></a>`check` | `ck_collection_upload_files_raw_part_ordered_sha256_hex` | `CONSTRAINT ck_collection_upload_files_raw_part_ordered_sha256_hex CHECK (raw_part_ordered_sha256 IS NULL OR length(raw_part_ordered_sha256) = 64 AND lower(raw_part_ordered_sha256) = raw_part_ordered_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(raw_part_ordered_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-55f7a4cbb3"></a>`check` | `ck_collection_upload_files_raw_part_commitment_sha256_hex` | `CONSTRAINT ck_collection_upload_files_raw_part_commitment_sha256_hex CHECK (raw_part_commitment_sha256 IS NULL OR length(raw_part_commitment_sha256) = 64 AND lower(raw_part_commitment_sha256) = raw_part_commitment_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(raw_part_commitment_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-439b567377"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, path)` |
+| <a id="s-8fb81ce7db"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE` |
+| <a id="s-56bb0a08e7"></a>`check` | `ck_collection_upload_files_order` | `CONSTRAINT ck_collection_upload_files_order CHECK (file_order >= 0)` |
+| <a id="s-74c5a686c7"></a>`check` | `ck_collection_upload_files_semantic_order_rank` | `CONSTRAINT ck_collection_upload_files_semantic_order_rank CHECK (semantic_order_rank >= 0 AND semantic_order_rank <= 2)` |
+| <a id="s-a6073c7df6"></a>`check` | `ck_collection_upload_files_bytes` | `CONSTRAINT ck_collection_upload_files_bytes CHECK (bytes >= 0)` |
+| <a id="s-4e3b91c1bd"></a>`check` | `ck_collection_upload_files_raw_parts` | `CONSTRAINT ck_collection_upload_files_raw_parts CHECK (raw_parts_accepted >= 0)` |
+| <a id="s-73266f20d1"></a>`check` | `ck_collection_upload_files_sha256` | `CONSTRAINT ck_collection_upload_files_sha256 CHECK (length(sha256) = 64)` |
+| <a id="s-254a94469e"></a>`check` | `ck_collection_upload_files_sha256_hex` | `CONSTRAINT ck_collection_upload_files_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-5e143704dc"></a>`check` | `ck_collection_upload_files_raw_part_ordered_sha256_hex` | `CONSTRAINT ck_collection_upload_files_raw_part_ordered_sha256_hex CHECK (raw_part_ordered_sha256 IS NULL OR length(raw_part_ordered_sha256) = 64 AND lower(raw_part_ordered_sha256) = raw_part_ordered_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(raw_part_ordered_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-13c8348684"></a>`check` | `ck_collection_upload_files_raw_part_commitment_sha256_hex` | `CONSTRAINT ck_collection_upload_files_raw_part_commitment_sha256_hex CHECK (raw_part_commitment_sha256 IS NULL OR length(raw_part_commitment_sha256) = 64 AND lower(raw_part_commitment_sha256) = raw_part_commitment_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(raw_part_commitment_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -63,7 +63,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-560dc6d600"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-0b59c88cd0"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -79,7 +79,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/28`
+- `/external_contract/durable_state/owners/0/structure/tables/29`
 
 ### Exact owned JSON
 

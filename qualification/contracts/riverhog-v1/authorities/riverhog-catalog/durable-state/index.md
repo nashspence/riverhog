@@ -62,6 +62,7 @@ Persisted structures, schema heads, and v1 transition obligations.
 | [collection_tag_revisions](riverhog-catalog-collection-tag-revisions.md) | Relational table |
 | [collection_tag_visibility](riverhog-catalog-collection-tag-visibility.md) | Relational table |
 | [collection_tags](riverhog-catalog-collection-tags.md) | Relational table |
+| [collection_upload_copy_intents](riverhog-catalog-collection-upload-copy-intents.md) | Relational table |
 | [collection_upload_files](riverhog-catalog-collection-upload-files.md) | Relational table |
 | [collection_upload_provenance_archive_volumes](riverhog-catalog-collection-upload-provenance-archive-volumes.md) | Relational table |
 | [collection_upload_provenance_journal_chunks](riverhog-catalog-collection-upload-provenance-journal-chunks.md) | Relational table |

@@ -84,7 +84,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "a-riverhog-cli",
       "result_identity": "a-riverhog-cli-result/collection/provenance/verify/v1",
       "source": {
-        "line": 2721,
+        "line": 2745,
         "module": "a_riverhog_cli.main",
         "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "provenance_verify_cmd"
@@ -99,7 +99,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.request_collection_provenance_verification",
       "source": {
-        "line": 1942,
+        "line": 1953,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.request_collection_provenance_verification"

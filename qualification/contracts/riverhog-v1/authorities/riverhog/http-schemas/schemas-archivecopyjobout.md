@@ -17,7 +17,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-e85e3e0f34"></a>`type`: `"object"`
 - <a id="s-11abcce352"></a>`additionalProperties`: `false`
-- <a id="s-d8044f6042"></a>`required`: `["collection_id","source_store","destination_store","initiated_by_app","initiated_by_key_id","state","requested_at","ready_at","expires_at","finished_at","failure"]`
+- <a id="s-d8044f6042"></a>`required`: `["collection_id","source_store","destination_store","use_cache","initiated_by_app","initiated_by_key_id","state","requested_at","ready_at","expires_at","finished_at","failure"]`
 - <a id="s-06125bc5d9"></a>`title`: `"ArchiveCopyJobOut"`
 
 ### Fields
@@ -35,6 +35,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-69542ab9df"></a>`requested_at` | yes | type="string"; maxLength=30; minLength=30; pattern="^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{9}Z$"; title="Requested At" |  |
 | <a id="s-7dd0ee0992"></a>`source_store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
 | <a id="s-9877b84351"></a>`state` | yes | [ArchiveCopyJobState](schemas-archivecopyjobstate.md) |  |
+| <a id="s-c6a6e38c82"></a>`use_cache` | yes | type="boolean"; title="Use Cache" |  |
 
 ### All must match (`allOf`)
 
@@ -96,7 +97,7 @@ Shared facts for every subject below: maximum=30; minimum=30; reason="fixed-publ
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e03a0b622c09cc058fa167e3b2f37bb9f68fae994121ca491f9dcc18b6c19269 -->
+<!-- exact-contract-value: 3bcb6833b7fe722a77dbdd935f0394d803e153be4e8f4ce16cdac70743ec49d8 -->
 
 ```json
 {
@@ -240,12 +241,17 @@ The following JSON is the complete value owned at each machine-authority pointer
     },
     "state": {
       "$ref": "#/components/schemas/ArchiveCopyJobState"
+    },
+    "use_cache": {
+      "title": "Use Cache",
+      "type": "boolean"
     }
   },
   "required": [
     "collection_id",
     "source_store",
     "destination_store",
+    "use_cache",
     "initiated_by_app",
     "initiated_by_key_id",
     "state",

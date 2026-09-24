@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-cache-population-claims:51b495a640 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-cache-population-claims:67e7c4a213 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-2587be9bec"></a>
+<a id="s-c4b3febcb2"></a>
 
 ### Table: `retrieval_cache_population_claims`
 
@@ -21,18 +21,18 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-5d63dc10db"></a>`owner` | `VARCHAR` | no | `—` | — |
-| <a id="s-03906f154a"></a>`source_store` | `VARCHAR` | no | `—` | — |
-| <a id="s-0dd7b01539"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-981ea06c39"></a>`object_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-28e0f62854"></a>`created_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-1151e04935"></a>`owner` | `VARCHAR` | no | `—` | — |
+| <a id="s-d4aec50038"></a>`source_store` | `VARCHAR` | no | `—` | — |
+| <a id="s-06a2164c54"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-5f67d51e59"></a>`object_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-4fd1a6484e"></a>`created_at` | `VARCHAR` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-1026e456de"></a>`primary-key` | `—` | `PRIMARY KEY (owner, source_store, collection_id, object_id)` |
-| <a id="s-0d2f68e80d"></a>`foreign-key` | `—` | `FOREIGN KEY(source_store, collection_id, object_id) REFERENCES retrieval_cache_populations (source_store, collection_id, object_id) ON DELETE CASCADE` |
+| <a id="s-cc81e06afc"></a>`primary-key` | `—` | `PRIMARY KEY (owner, source_store, collection_id, object_id)` |
+| <a id="s-247213a175"></a>`foreign-key` | `—` | `FOREIGN KEY(source_store, collection_id, object_id) REFERENCES retrieval_cache_populations (source_store, collection_id, object_id) ON DELETE CASCADE` |
 
 ## Maintained corroboration
 
@@ -42,7 +42,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-79d732d7e4"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-9290ca19cd"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -58,7 +58,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/37`
+- `/external_contract/durable_state/owners/0/structure/tables/38`
 
 ### Exact owned JSON
 

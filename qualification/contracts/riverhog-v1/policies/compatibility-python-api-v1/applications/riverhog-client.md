@@ -59,6 +59,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-client` | [riverhog_client.ApiClient.get_retrieval_cache_object](../../../authorities/riverhog-client/python/riverhog-client-apiclient-get-retrieval-cache-object.md#pa-852bc2b671) |
 | `riverhog-client` | [riverhog_client.ApiClient.get_retrieval_job](../../../authorities/riverhog-client/python/riverhog-client-apiclient-get-retrieval-job.md#pa-ae2615f600) |
 | `riverhog-client` | [riverhog_client.ApiClient.get_retrieval_plan](../../../authorities/riverhog-client/python/riverhog-client-apiclient-get-retrieval-plan.md#pa-0cec9ac241) |
+| `riverhog-client` | [riverhog_client.ApiClient.get_upload_copy_intents](../../../authorities/riverhog-client/python/riverhog-client-apiclient-get-upload-copy-intents.md#pa-33748dac88) |
 | `riverhog-client` | [riverhog_client.ApiClient.heartbeat_collection_upload_session](../../../authorities/riverhog-client/python/riverhog-client-apiclient-heartbeat-collection-upload-session.md#pa-be0b8919df) |
 | `riverhog-client` | [riverhog_client.ApiClient.list_app_key_access](../../../authorities/riverhog-client/python/riverhog-client-apiclient-list-app-key-access.md#pa-eed38506db) |
 | `riverhog-client` | [riverhog_client.ApiClient.list_app_keys](../../../authorities/riverhog-client/python/riverhog-client-apiclient-list-app-keys.md#pa-8b987febcf) |

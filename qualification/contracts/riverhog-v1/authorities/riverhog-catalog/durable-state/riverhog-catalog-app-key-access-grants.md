@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-app-key-access-grants:c636cef3f7 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-app-key-access-grants:c3918d78a1 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-f43be24d3d"></a>
+<a id="s-bb9d642cad"></a>
 
 ### Table: `app_key_access_grants`
 
@@ -21,18 +21,18 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-b86e579b0a"></a>`key_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-36749376fd"></a>`permission` | `VARCHAR` | no | `—` | — |
-| <a id="s-47ee498a3d"></a>`resource` | `VARCHAR` | no | `—` | — |
-| <a id="s-d6b73a2206"></a>`created_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-130a9f5caf"></a>`search_text` | `VARCHAR` | no | `—` | {"generated":"GENERATED ALWAYS AS (lower(permission \|\| ' ' \|\| resource)) STORED"} |
+| <a id="s-a4f3e61862"></a>`key_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-6bd793f5b6"></a>`permission` | `VARCHAR` | no | `—` | — |
+| <a id="s-5dadf4bbd2"></a>`resource` | `VARCHAR` | no | `—` | — |
+| <a id="s-e1af0577c4"></a>`created_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-aa4e0b66fe"></a>`search_text` | `VARCHAR` | no | `—` | {"generated":"GENERATED ALWAYS AS (lower(permission \|\| ' ' \|\| resource)) STORED"} |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-92e3b4b53c"></a>`primary-key` | `—` | `PRIMARY KEY (key_id, permission, resource)` |
-| <a id="s-a87ef7b851"></a>`foreign-key` | `—` | `FOREIGN KEY(key_id) REFERENCES app_keys (id) ON DELETE CASCADE` |
+| <a id="s-edc54df050"></a>`primary-key` | `—` | `PRIMARY KEY (key_id, permission, resource)` |
+| <a id="s-15fd828ce9"></a>`foreign-key` | `—` | `FOREIGN KEY(key_id) REFERENCES app_keys (id) ON DELETE CASCADE` |
 
 ## Maintained corroboration
 
@@ -42,7 +42,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-f421cc5d7b"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-81330c6145"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -58,7 +58,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/16`
+- `/external_contract/durable_state/owners/0/structure/tables/17`
 
 ### Exact owned JSON
 

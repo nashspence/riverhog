@@ -84,7 +84,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "a-riverhog-cli",
       "result_identity": "a-riverhog-cli-result/collection/provenance/verification-cancel/v1",
       "source": {
-        "line": 2751,
+        "line": 2775,
         "module": "a_riverhog_cli.main",
         "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "provenance_verification_cancel_cmd"
@@ -99,7 +99,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.cancel_collection_provenance_verification",
       "source": {
-        "line": 1958,
+        "line": 1969,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.cancel_collection_provenance_verification"

@@ -136,7 +136,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "a-riverhog-cli",
       "result_identity": "a-riverhog-cli-result/collection/upload/list/v1",
       "source": {
-        "line": 2336,
+        "line": 2360,
         "module": "a_riverhog_cli.main",
         "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "upload_list_cmd"
@@ -151,7 +151,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.list_collection_upload_sessions",
       "source": {
-        "line": 1405,
+        "line": 1416,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.list_collection_upload_sessions"

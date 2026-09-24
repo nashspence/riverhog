@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-provenance-ve-666b97fa8c:7ec9baac57 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-provenance-ve-666b97fa8c:7d48a37224 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-fbd7812493"></a>
+<a id="s-bff399aae0"></a>
 
 ### Table: `collection_provenance_verification_agents`
 
@@ -21,16 +21,16 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-749d684cc8"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-873b789d22"></a>`journal_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-b45ab33fc4"></a>`agent_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-6d02f6a2b8"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-ad3369f065"></a>`journal_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-943ada5eec"></a>`agent_id` | `VARCHAR` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-a3b8778813"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, journal_id, agent_id)` |
-| <a id="s-610ec495c2"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collection_provenance_verifications (collection_id) ON DELETE CASCADE` |
+| <a id="s-7caab58088"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, journal_id, agent_id)` |
+| <a id="s-d427c25320"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collection_provenance_verifications (collection_id) ON DELETE CASCADE` |
 
 ## Maintained corroboration
 
@@ -40,7 +40,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-19926ea0f4"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-868cb5d94e"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -56,7 +56,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/52`
+- `/external_contract/durable_state/owners/0/structure/tables/53`
 
 ### Exact owned JSON
 

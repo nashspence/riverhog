@@ -129,7 +129,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "a-riverhog-cli",
       "result_identity": "a-riverhog-cli-result/collection/archive-copies/v1",
       "source": {
-        "line": 2164,
+        "line": 2176,
         "module": "a_riverhog_cli.main",
         "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "collection_archive_copies_cmd"
@@ -144,7 +144,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.list_collection_archive_copies",
       "source": {
-        "line": 1615,
+        "line": 1626,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.list_collection_archive_copies"

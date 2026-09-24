@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-archive-download-reservations:893ea9db45 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-archive-download-reservations:cdb8b96159 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-bb9d642cad"></a>
+<a id="s-a2879b730f"></a>
 
 ### Table: `archive_download_reservations`
 
@@ -21,20 +21,20 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-a4f3e61862"></a>`id` | `VARCHAR` | no | `—` | — |
-| <a id="s-6bd793f5b6"></a>`store` | `VARCHAR` | no | `—` | — |
-| <a id="s-5dadf4bbd2"></a>`month_started_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-e1af0577c4"></a>`reserved_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-aa4e0b66fe"></a>`created_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-d4f087bf52"></a>`expires_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-bd4666ca28"></a>`id` | `VARCHAR` | no | `—` | — |
+| <a id="s-bfefcfb058"></a>`store` | `VARCHAR` | no | `—` | — |
+| <a id="s-10e4b0d4d7"></a>`month_started_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-9ae5495748"></a>`reserved_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-1ef5d906e5"></a>`created_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-249afa008b"></a>`expires_at` | `VARCHAR` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-edc54df050"></a>`primary-key` | `—` | `PRIMARY KEY (id)` |
-| <a id="s-15fd828ce9"></a>`foreign-key` | `—` | `FOREIGN KEY(store) REFERENCES archive_download_usage (store) ON DELETE CASCADE` |
-| <a id="s-26656eb7d8"></a>`check` | `ck_archive_download_reservations_bytes` | `CONSTRAINT ck_archive_download_reservations_bytes CHECK (reserved_bytes >= 0)` |
+| <a id="s-d780583b4c"></a>`primary-key` | `—` | `PRIMARY KEY (id)` |
+| <a id="s-3af3c2b24c"></a>`foreign-key` | `—` | `FOREIGN KEY(store) REFERENCES archive_download_usage (store) ON DELETE CASCADE` |
+| <a id="s-3438fcb898"></a>`check` | `ck_archive_download_reservations_bytes` | `CONSTRAINT ck_archive_download_reservations_bytes CHECK (reserved_bytes >= 0)` |
 
 ## Maintained corroboration
 
@@ -44,7 +44,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-5203ed786c"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-c12f9dd57f"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -60,7 +60,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/17`
+- `/external_contract/durable_state/owners/0/structure/tables/18`
 
 ### Exact owned JSON
 

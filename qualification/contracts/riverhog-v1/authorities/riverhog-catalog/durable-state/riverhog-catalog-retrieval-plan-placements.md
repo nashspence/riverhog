@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-plan-placements:8c5bdc4832 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-plan-placements:adc057cd78 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-f3f1ae97a4"></a>
+<a id="s-08dd5aa791"></a>
 
 ### Table: `retrieval_plan_placements`
 
@@ -21,25 +21,25 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-3955421a30"></a>`plan_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-e028c8ca0a"></a>`file_order` | `INTEGER` | no | `—` | — |
-| <a id="s-b7163d56e6"></a>`sequence` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-bb73a3a476"></a>`object_order` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-493aa58d39"></a>`file_offset` | `BIGINT` | no | `—` | — |
-| <a id="s-8475ff6ab4"></a>`object_offset` | `BIGINT` | no | `—` | — |
-| <a id="s-61fc175fcf"></a>`bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-55e5a19ae4"></a>`member` | `VARCHAR` | yes | `—` | — |
+| <a id="s-daab49b77a"></a>`plan_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-82fcbeab86"></a>`file_order` | `INTEGER` | no | `—` | — |
+| <a id="s-95da31cf0d"></a>`sequence` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-9943017599"></a>`object_order` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-eecedaa9a6"></a>`file_offset` | `BIGINT` | no | `—` | — |
+| <a id="s-d7dfe23e0c"></a>`object_offset` | `BIGINT` | no | `—` | — |
+| <a id="s-879ea2fbca"></a>`bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-e3d71242e8"></a>`member` | `VARCHAR` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-eebf114466"></a>`primary-key` | `—` | `PRIMARY KEY (plan_id, file_order, sequence)` |
-| <a id="s-8fc9256e97"></a>`foreign-key` | `—` | `FOREIGN KEY(plan_id, file_order) REFERENCES retrieval_plan_files (plan_id, file_order) ON DELETE CASCADE` |
-| <a id="s-676149a270"></a>`foreign-key` | `—` | `FOREIGN KEY(plan_id, object_order) REFERENCES retrieval_plan_objects (plan_id, object_order)` |
-| <a id="s-7017ebde56"></a>`check` | `ck_retrieval_plan_placements_file_offset` | `CONSTRAINT ck_retrieval_plan_placements_file_offset CHECK (file_offset >= 0)` |
-| <a id="s-dd24576a7b"></a>`check` | `ck_retrieval_plan_placements_object_offset` | `CONSTRAINT ck_retrieval_plan_placements_object_offset CHECK (object_offset >= 0)` |
-| <a id="s-133507adbc"></a>`check` | `ck_retrieval_plan_placements_bytes` | `CONSTRAINT ck_retrieval_plan_placements_bytes CHECK (bytes >= 0)` |
+| <a id="s-3aae9e857a"></a>`primary-key` | `—` | `PRIMARY KEY (plan_id, file_order, sequence)` |
+| <a id="s-2b05f40028"></a>`foreign-key` | `—` | `FOREIGN KEY(plan_id, file_order) REFERENCES retrieval_plan_files (plan_id, file_order) ON DELETE CASCADE` |
+| <a id="s-e4f645e422"></a>`foreign-key` | `—` | `FOREIGN KEY(plan_id, object_order) REFERENCES retrieval_plan_objects (plan_id, object_order)` |
+| <a id="s-22a91b30a7"></a>`check` | `ck_retrieval_plan_placements_file_offset` | `CONSTRAINT ck_retrieval_plan_placements_file_offset CHECK (file_offset >= 0)` |
+| <a id="s-73a5ce7f29"></a>`check` | `ck_retrieval_plan_placements_object_offset` | `CONSTRAINT ck_retrieval_plan_placements_object_offset CHECK (object_offset >= 0)` |
+| <a id="s-300a2aa345"></a>`check` | `ck_retrieval_plan_placements_bytes` | `CONSTRAINT ck_retrieval_plan_placements_bytes CHECK (bytes >= 0)` |
 
 ## Maintained corroboration
 
@@ -49,7 +49,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-9e0ab1aaf7"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-b323f5f443"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -65,7 +65,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/79`
+- `/external_contract/durable_state/owners/0/structure/tables/80`
 
 ### Exact owned JSON
 

@@ -113,7 +113,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.revoke_app_key",
       "source": {
-        "line": 2153,
+        "line": 2164,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.revoke_app_key"

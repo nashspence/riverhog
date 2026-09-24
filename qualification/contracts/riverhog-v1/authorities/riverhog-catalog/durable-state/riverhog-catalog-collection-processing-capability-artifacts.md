@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-processing-ca-4c6c725d66:18c2c9cddf -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-processing-ca-4c6c725d66:745188a008 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-88bf9910ea"></a>
+<a id="s-4180ec7daa"></a>
 
 ### Table: `collection_processing_capability_artifacts`
 
@@ -21,23 +21,23 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-8e986a5d99"></a>`capability_id` | `VARCHAR(32)` | no | `—` | — |
-| <a id="s-052416dafd"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-2cf457d11d"></a>`path` | `VARCHAR` | no | `—` | — |
-| <a id="s-a5aa6b2d02"></a>`artifact_order` | `BIGINT` | no | `—` | — |
-| <a id="s-59c0bfa9ac"></a>`bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-11181a55cc"></a>`sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-2debc5c694"></a>`capability_id` | `VARCHAR(32)` | no | `—` | — |
+| <a id="s-20fe97cbec"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-56b3816983"></a>`path` | `VARCHAR` | no | `—` | — |
+| <a id="s-6f35ff0483"></a>`artifact_order` | `BIGINT` | no | `—` | — |
+| <a id="s-ced0518992"></a>`bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-3726538d32"></a>`sha256` | `VARCHAR(64)` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-4ab13d9a44"></a>`primary-key` | `—` | `PRIMARY KEY (capability_id, collection_id, path)` |
-| <a id="s-3d92348c64"></a>`check` | `ck_capability_artifacts_bytes` | `CONSTRAINT ck_capability_artifacts_bytes CHECK (bytes >= 0)` |
-| <a id="s-986e99e0a7"></a>`check` | `ck_capability_artifacts_order` | `CONSTRAINT ck_capability_artifacts_order CHECK (artifact_order >= 0)` |
-| <a id="s-551bd4ca17"></a>`check` | `ck_capability_artifacts_sha256` | `CONSTRAINT ck_capability_artifacts_sha256 CHECK (length(sha256) = 64)` |
-| <a id="s-81e5d2d380"></a>`foreign-key` | `—` | `FOREIGN KEY(capability_id) REFERENCES collection_processing_capabilities (id) ON DELETE CASCADE` |
-| <a id="s-3e9933a4e0"></a>`check` | `ck_collection_processing_capability_artifacts_sha256_hex` | `CONSTRAINT ck_collection_processing_capability_artifacts_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-7a90e604b5"></a>`primary-key` | `—` | `PRIMARY KEY (capability_id, collection_id, path)` |
+| <a id="s-e797a7a3e6"></a>`check` | `ck_capability_artifacts_bytes` | `CONSTRAINT ck_capability_artifacts_bytes CHECK (bytes >= 0)` |
+| <a id="s-fdbd7b48b7"></a>`check` | `ck_capability_artifacts_order` | `CONSTRAINT ck_capability_artifacts_order CHECK (artifact_order >= 0)` |
+| <a id="s-ebce6aefad"></a>`check` | `ck_capability_artifacts_sha256` | `CONSTRAINT ck_capability_artifacts_sha256 CHECK (length(sha256) = 64)` |
+| <a id="s-8e936eea02"></a>`foreign-key` | `—` | `FOREIGN KEY(capability_id) REFERENCES collection_processing_capabilities (id) ON DELETE CASCADE` |
+| <a id="s-71c07af414"></a>`check` | `ck_collection_processing_capability_artifacts_sha256_hex` | `CONSTRAINT ck_collection_processing_capability_artifacts_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -47,7 +47,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-40d70582ad"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-b6dca68268"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -63,7 +63,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/73`
+- `/external_contract/durable_state/owners/0/structure/tables/74`
 
 ### Exact owned JSON
 

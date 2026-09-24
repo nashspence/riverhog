@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-e1a4baa9ca"></a>`kind`: `"method"`
-- <a id="s-c2d3a9347f"></a>`signature`: `"\"(self, idempotency_key: 'CollectionUploadIdempotencyKey', *, ingest_source: 'str \| None' = None, description: 'CollectionDescription \| None' = None, tags: 'Sequence[CollectionTag]' = (), initial_tag_set_identity: 'str', archive_store: 'ArchiveStoreName \| None' = None, event_context: 'Mapping[str, Any] \| None' = None, provenance_mode: 'ProvenanceMode' = 'captured', provenance_omission_reason: 'str \| None' = None, custody_mode: 'CollectionUploadCustodyMode' = 'producer-retained') -> 'dict[str, Any]'\""`
+- <a id="s-c2d3a9347f"></a>`signature`: `"\"(self, idempotency_key: 'CollectionUploadIdempotencyKey', *, ingest_source: 'str \| None' = None, description: 'CollectionDescription \| None' = None, tags: 'Sequence[CollectionTag]' = (), initial_tag_set_identity: 'str', archive_store: 'ArchiveStoreName \| None' = None, use_cache: 'bool \| None' = None, copy_to: 'Sequence[ArchiveStoreName] \| None' = None, event_context: 'Mapping[str, Any] \| None' = None, provenance_mode: 'ProvenanceMode' = 'captured', provenance_omission_reason: 'str \| None' = None, custody_mode: 'CollectionUploadCustodyMode' = 'producer-retained') -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 
@@ -61,13 +61,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 11b92fec084c37c29489ded27ffcd32b3a7e2d6bf121237a23ca16e66021aea1 -->
+<!-- exact-contract-value: 775a11ecd84f977c090563d0296138b76b490107b04d1983cb5aeeb9913a8530 -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, idempotency_key: 'CollectionUploadIdempotencyKey', *, ingest_source: 'str | None' = None, description: 'CollectionDescription | None' = None, tags: 'Sequence[CollectionTag]' = (), initial_tag_set_identity: 'str', archive_store: 'ArchiveStoreName | None' = None, event_context: 'Mapping[str, Any] | None' = None, provenance_mode: 'ProvenanceMode' = 'captured', provenance_omission_reason: 'str | None' = None, custody_mode: 'CollectionUploadCustodyMode' = 'producer-retained') -> 'dict[str, Any]'\""
+    "signature": "\"(self, idempotency_key: 'CollectionUploadIdempotencyKey', *, ingest_source: 'str | None' = None, description: 'CollectionDescription | None' = None, tags: 'Sequence[CollectionTag]' = (), initial_tag_set_identity: 'str', archive_store: 'ArchiveStoreName | None' = None, use_cache: 'bool | None' = None, copy_to: 'Sequence[ArchiveStoreName] | None' = None, event_context: 'Mapping[str, Any] | None' = None, provenance_mode: 'ProvenanceMode' = 'captured', provenance_omission_reason: 'str | None' = None, custody_mode: 'CollectionUploadCustodyMode' = 'producer-retained') -> 'dict[str, Any]'\""
   },
   "distribution": "riverhog-client",
   "module": "riverhog_client",

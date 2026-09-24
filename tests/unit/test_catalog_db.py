@@ -29,6 +29,8 @@ def test_upload_creation_identity_binds_every_create_or_resume_input() -> None:
         ingest_source="processing:fixture",
         initial_tag_set_identity="a" * 64,
         archive_store="archive",
+        use_cache=False,
+        copy_to=["secondary"],
         event_context={"source": "fixture"},
         provenance_mode="omitted",
         provenance_omission_reason="fixture source has no provenance",
@@ -39,6 +41,8 @@ def test_upload_creation_identity_binds_every_create_or_resume_input() -> None:
         base.model_copy(update={"ingest_source": "processing:other"}),
         base.model_copy(update={"initial_tag_set_identity": "b" * 64}),
         base.model_copy(update={"archive_store": "secondary"}),
+        base.model_copy(update={"use_cache": True}),
+        base.model_copy(update={"copy_to": ["tertiary"]}),
         base.model_copy(update={"event_context": {"source": "other"}}),
         base.model_copy(
             update={

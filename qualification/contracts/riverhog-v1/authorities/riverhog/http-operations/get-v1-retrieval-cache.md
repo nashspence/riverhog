@@ -77,7 +77,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "a-riverhog-cli",
       "result_identity": "a-riverhog-cli-result/retrieval/cache/status/v1",
       "source": {
-        "line": 2782,
+        "line": 2806,
         "module": "a_riverhog_cli.main",
         "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "retrieval_cache_status_cmd"

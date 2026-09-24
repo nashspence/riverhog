@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-57d5cd4579"></a>`kind`: `"class"`
-- <a id="s-b1b9b3f77c"></a>`signature`: `"'(api: \\'ApiClient\\', *, producer_app: \\'str\\', adapter_id: \\'str\\', adapter_version: \\'str\\', ingest_source: \\'str\\', archive_store: \\'ArchiveStoreName \| None\\' = None, description: \\'CollectionDescription \| None\\' = None, tags: \\'Sequence[CollectionTag]\\' = (), provenance_mode: \"Literal[\\'captured\\', \\'omitted\\']\" = \\'omitted\\', provenance_omission_reason: \\'str\\' = \\'Producer did not receive host provenance; immutable producer evidence records the source boundary.\\', server_generated_provenance: \\'bool\\' = False) -> \\'None\\''"`
+- <a id="s-b1b9b3f77c"></a>`signature`: `"'(api: \\'ApiClient\\', *, producer_app: \\'str\\', adapter_id: \\'str\\', adapter_version: \\'str\\', ingest_source: \\'str\\', archive_store: \\'ArchiveStoreName \| None\\' = None, use_cache: \\'bool \| None\\' = None, copy_to: \\'Sequence[ArchiveStoreName] \| None\\' = None, description: \\'CollectionDescription \| None\\' = None, tags: \\'Sequence[CollectionTag]\\' = (), provenance_mode: \"Literal[\\'captured\\', \\'omitted\\']\" = \\'omitted\\', provenance_omission_reason: \\'str\\' = \\'Producer did not receive host provenance; immutable producer evidence records the source boundary.\\', server_generated_provenance: \\'bool\\' = False) -> \\'None\\''"`
 
 ## Maintained corroboration
 
@@ -58,13 +58,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d02b7d5d6eaf4f4c624bc2cc30e4094884256c0ec5be49afb1c89efd872f74e7 -->
+<!-- exact-contract-value: a4548c707f4ba7eb460bf0790fbaae57f0571aefff2e1ad5a85843e52984e95e -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "signature": "'(api: \\'ApiClient\\', *, producer_app: \\'str\\', adapter_id: \\'str\\', adapter_version: \\'str\\', ingest_source: \\'str\\', archive_store: \\'ArchiveStoreName | None\\' = None, description: \\'CollectionDescription | None\\' = None, tags: \\'Sequence[CollectionTag]\\' = (), provenance_mode: \"Literal[\\'captured\\', \\'omitted\\']\" = \\'omitted\\', provenance_omission_reason: \\'str\\' = \\'Producer did not receive host provenance; immutable producer evidence records the source boundary.\\', server_generated_provenance: \\'bool\\' = False) -> \\'None\\''"
+    "signature": "'(api: \\'ApiClient\\', *, producer_app: \\'str\\', adapter_id: \\'str\\', adapter_version: \\'str\\', ingest_source: \\'str\\', archive_store: \\'ArchiveStoreName | None\\' = None, use_cache: \\'bool | None\\' = None, copy_to: \\'Sequence[ArchiveStoreName] | None\\' = None, description: \\'CollectionDescription | None\\' = None, tags: \\'Sequence[CollectionTag]\\' = (), provenance_mode: \"Literal[\\'captured\\', \\'omitted\\']\" = \\'omitted\\', provenance_omission_reason: \\'str\\' = \\'Producer did not receive host provenance; immutable producer evidence records the source boundary.\\', server_generated_provenance: \\'bool\\' = False) -> \\'None\\''"
   },
   "distribution": "riverhog-client",
   "module": "riverhog_client",

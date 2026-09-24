@@ -56,6 +56,9 @@ from riverhog_core.services.collection_uploads import (
 )
 from riverhog_core.services.lifecycle_events import SqlAlchemyLifecycleEventService
 from riverhog_core.services.provenance import SqlAlchemyProvenanceService
+from riverhog_core.stores.mirrored_archive_resumable_object_store import (
+    MirroredArchiveResumableObjectStore,
+)
 from riverhog_core.throughput import ArchiveThroughputTuning, log_transfer_timing
 from riverhog_protocol import (
     COLLECTION_DESCRIPTION_RELATIVE_PATH,
@@ -717,13 +720,44 @@ def test_restore_required_ingress_uses_archive_only_when_new_archive_cache_is_di
         retrieval_cache=_MemoryResumableCache(),  # type: ignore[arg-type]
     )
 
+    initialize_db(database_url)
+
+    opened = service.create_or_resume(
+        idempotency_key="default-no-cache",
+        ingest_source="fixture",
+        archive_store=None,
+        initiator=_CREATOR,
+        event_context=None,
+        provenance_mode="omitted",
+        provenance_omission_reason="fixture",
+    )
+    assert opened["use_cache"] is False
     selected = service._volume_object_store(
         store_name="archive",
-        collection_id=42,
+        collection_id=int(opened["collection_id"]),
         object_id=f"pack-{0:064x}",
     )
 
     assert selected is archive_resumable
+    explicit = service.create_or_resume(
+        idempotency_key="explicit-cache",
+        ingest_source="fixture",
+        archive_store=None,
+        use_cache=True,
+        initiator=_CREATOR,
+        event_context=None,
+        provenance_mode="omitted",
+        provenance_omission_reason="fixture",
+    )
+    assert explicit["use_cache"] is True
+    assert isinstance(
+        service._volume_object_store(
+            store_name="archive",
+            collection_id=int(explicit["collection_id"]),
+            object_id=f"pack-{0:064x}",
+        ),
+        MirroredArchiveResumableObjectStore,
+    )
 
 
 def test_captured_and_omitted_file_provenance_is_one_immutable_mixed_archive(

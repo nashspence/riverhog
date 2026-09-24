@@ -113,7 +113,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.rotate_app_key",
       "source": {
-        "line": 2161,
+        "line": 2172,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.rotate_app_key"

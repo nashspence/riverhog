@@ -301,7 +301,7 @@ def test_cli_dossiers_expose_exact_result_and_failure_contracts() -> None:
     cli_elements = [item for item in checked.root["elements"] if item["interface"] == "cli"]
     executable = [item for item in cli_elements if item.get("details", {}).get("executable")]
 
-    assert len(executable) == 152
+    assert len(executable) == 153
     assert len({item["details"]["result_identity"] for item in executable}) == len(executable)
     assert {
         tuple(item["details"]["command_path"])
@@ -352,7 +352,7 @@ def test_cli_dossiers_expose_exact_result_and_failure_contracts() -> None:
     a_riverhog_cli_index = checked.files[
         "riverhog-v1/authorities/a-riverhog-cli/cli/index.md"
     ].decode()
-    assert "Executable commands: **66** · Command groups: **20**" in a_riverhog_cli_index
+    assert "Executable commands: **67** · Command groups: **20**" in a_riverhog_cli_index
     assert "### Command tree" in a_riverhog_cli_index
     assert "### Executable commands" not in a_riverhog_cli_index
     assert "### Command groups" not in a_riverhog_cli_index

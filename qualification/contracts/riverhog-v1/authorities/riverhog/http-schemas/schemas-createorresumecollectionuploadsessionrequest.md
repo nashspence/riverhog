@@ -25,6 +25,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-1edb4de319"></a>`archive_store` | no | anyOf=[([ArchiveStoreName](schemas-archivestorename.md)); (type="null")] |  |
+| <a id="s-6db1000c15"></a>`copy_to` | no | anyOf=[(type="array"; items=([ArchiveStoreName](schemas-archivestorename.md))); (type="null")]; title="Copy To" |  |
 | <a id="s-f6c4e0c61a"></a>`custody_mode` | no | type="string"; enum=["producer-retained","custody-transfer"]; default="producer-retained"; title="Custody Mode" |  |
 | <a id="s-1f95c5607e"></a>`description` | no | anyOf=[([CollectionDescription](schemas-collectiondescription.md)); (type="null")] |  |
 | <a id="s-8189380365"></a>`event_context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; title="Event Context" |  |
@@ -34,6 +35,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-8fbd974a3d"></a>`provenance_mode` | no | type="string"; enum=["captured","omitted"]; default="captured"; title="Provenance Mode" |  |
 | <a id="s-cdc66d8038"></a>`provenance_omission_reason` | no | anyOf=[(type="string"; minLength=1; pattern="^\\S(?:[\\s\\S]*\\S)?$"); (type="null")]; title="Provenance Omission Reason" |  |
 | <a id="s-d7947f281e"></a>`tags` | no | type="array"; items=([CollectionTag](schemas-collectiontag.md)); maxItems=100; title="Tags"; x-riverhog-extent={"policy":"segmented_no_total_max","progression":"repeat-request","reason":"bounded-upload-staging-step; collection-tag-set-is-unbounded"} |  |
+| <a id="s-3b236ad8be"></a>`use_cache` | no | anyOf=[(type="boolean"); (type="null")]; title="Use Cache" |  |
 
 ### Exactly one must match (`oneOf`)
 
@@ -79,6 +81,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
+| <a id="s-b1a7ad4848"></a>[field copy_to · array value](#s-6db1000c15) | `cardinality · items · operational_policy` | shared above |
 | <a id="s-8b8b6b1136"></a>[field event_context · object value](#s-8189380365) | `cardinality · entries · operational_policy` | shared above |
 
 #### [extent-rule/schema-bound/v1](../../extent-contract/extent/extent-rule-schema-bound.md#p-c0db822fc0)
@@ -149,7 +152,7 @@ Exact evidence groups for this contract element:
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: dc6291eecb861dbb701cf14027b2438c68f9e11cbe218c22b48f32eec8c478a8 -->
+<!-- exact-contract-value: c2435a22d53b329e98286fca9e65bda955f854bc2d07c2e0f45164cd8375a44c -->
 
 ```json
 {
@@ -190,6 +193,20 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "null"
         }
       ]
+    },
+    "copy_to": {
+      "anyOf": [
+        {
+          "items": {
+            "$ref": "#/components/schemas/ArchiveStoreName"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Copy To"
     },
     "custody_mode": {
       "default": "producer-retained",
@@ -284,6 +301,17 @@ The following JSON is the complete value owned at each machine-authority pointer
         "progression": "repeat-request",
         "reason": "bounded-upload-staging-step; collection-tag-set-is-unbounded"
       }
+    },
+    "use_cache": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Use Cache"
     }
   },
   "required": [

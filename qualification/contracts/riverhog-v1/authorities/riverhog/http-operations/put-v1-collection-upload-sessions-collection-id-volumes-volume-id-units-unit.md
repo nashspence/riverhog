@@ -80,7 +80,7 @@ Put Collection Upload Session Unit
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [riverhog/src/riverhog\_api/routers/collections.py::put\_collection\_upload\_session\_unit](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L582)
+- **Handler:** [riverhog/src/riverhog\_api/routers/collections.py::put\_collection\_upload\_session\_unit](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L584)
 
 ### Structural operation bindings
 
@@ -99,7 +99,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "a-riverhog-cli",
       "result_identity": "a-riverhog-cli-result/collection/upload/start/v1",
       "source": {
-        "line": 2185,
+        "line": 2197,
         "module": "a_riverhog_cli.main",
         "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "upload_cmd"
@@ -114,7 +114,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.put_collection_upload_session_unit",
       "source": {
-        "line": 1527,
+        "line": 1538,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.put_collection_upload_session_unit"

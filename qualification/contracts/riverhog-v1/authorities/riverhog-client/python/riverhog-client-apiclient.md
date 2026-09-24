@@ -78,6 +78,7 @@ Exact externally visible contract owned by this contract element.
 - [get_retrieval_cache_object](riverhog-client-apiclient-get-retrieval-cache-object.md)
 - [get_retrieval_job](riverhog-client-apiclient-get-retrieval-job.md)
 - [get_retrieval_plan](riverhog-client-apiclient-get-retrieval-plan.md)
+- [get_upload_copy_intents](riverhog-client-apiclient-get-upload-copy-intents.md)
 - [heartbeat_collection_upload_session](riverhog-client-apiclient-heartbeat-collection-upload-session.md)
 - [list_app_key_access](riverhog-client-apiclient-list-app-key-access.md)
 - [list_app_keys](riverhog-client-apiclient-list-app-keys.md)

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-cache-populations:5ab855a602 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-cache-populations:3c47070936 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-a328098dd8"></a>
+<a id="s-5367ff929e"></a>
 
 ### Table: `retrieval_cache_populations`
 
@@ -21,26 +21,26 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-ea2d86c292"></a>`source_store` | `VARCHAR` | no | `—` | — |
-| <a id="s-abbcfaf9f0"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-00c0d65d2d"></a>`object_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-6d60d395d1"></a>`cache_store` | `VARCHAR` | yes | `—` | — |
-| <a id="s-53de699040"></a>`object_path` | `VARCHAR` | yes | `—` | — |
-| <a id="s-f17aad4d06"></a>`write_token` | `VARCHAR` | yes | `—` | — |
-| <a id="s-eda0b3f43b"></a>`expected_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-eeb324aaac"></a>`state` | `VARCHAR` | no | `—` | — |
-| <a id="s-298111f4d3"></a>`initiated_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-1439415982"></a>`updated_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-2e9ccace54"></a>`failure` | `TEXT` | yes | `—` | — |
+| <a id="s-8c8a1721c6"></a>`source_store` | `VARCHAR` | no | `—` | — |
+| <a id="s-bd76206005"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-ab21e4863b"></a>`object_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-0c48fe4f11"></a>`cache_store` | `VARCHAR` | yes | `—` | — |
+| <a id="s-dced5fb5ac"></a>`object_path` | `VARCHAR` | yes | `—` | — |
+| <a id="s-a4d897bdd3"></a>`write_token` | `VARCHAR` | yes | `—` | — |
+| <a id="s-cbf7c84e21"></a>`expected_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-5126703673"></a>`state` | `VARCHAR` | no | `—` | — |
+| <a id="s-678c28d4d9"></a>`initiated_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-f99a7e8c27"></a>`updated_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-eee6902c70"></a>`failure` | `TEXT` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-1f43d8b600"></a>`primary-key` | `—` | `PRIMARY KEY (source_store, collection_id, object_id)` |
-| <a id="s-baf42373de"></a>`check` | `ck_retrieval_cache_populations_expected_bytes` | `CONSTRAINT ck_retrieval_cache_populations_expected_bytes CHECK (expected_bytes >= 1)` |
-| <a id="s-32c30a6343"></a>`check` | `ck_retrieval_cache_populations_state` | `CONSTRAINT ck_retrieval_cache_populations_state CHECK (state IN ('waiting','admitting','admitted','writing','abandoning'))` |
-| <a id="s-28103f5224"></a>`check` | `ck_retrieval_cache_populations_session` | `CONSTRAINT ck_retrieval_cache_populations_session CHECK (cache_store IS NULL AND object_path IS NULL AND write_token IS NULL AND state IN ('waiting','abandoning') OR cache_store IS NOT NULL AND object_path IS NOT NULL AND (write_token IS NULL AND state = 'admitting' OR write_token IS NOT NULL AND state IN ('admitted','writing') OR state = 'abandoning'))` |
+| <a id="s-a65fc8e13e"></a>`primary-key` | `—` | `PRIMARY KEY (source_store, collection_id, object_id)` |
+| <a id="s-da7808fbdc"></a>`check` | `ck_retrieval_cache_populations_expected_bytes` | `CONSTRAINT ck_retrieval_cache_populations_expected_bytes CHECK (expected_bytes >= 1)` |
+| <a id="s-dd493bfebe"></a>`check` | `ck_retrieval_cache_populations_state` | `CONSTRAINT ck_retrieval_cache_populations_state CHECK (state IN ('waiting','admitting','admitted','writing','abandoning'))` |
+| <a id="s-45e4776d06"></a>`check` | `ck_retrieval_cache_populations_session` | `CONSTRAINT ck_retrieval_cache_populations_session CHECK (cache_store IS NULL AND object_path IS NULL AND write_token IS NULL AND state IN ('waiting','abandoning') OR cache_store IS NOT NULL AND object_path IS NOT NULL AND (write_token IS NULL AND state = 'admitting' OR write_token IS NOT NULL AND state IN ('admitted','writing') OR state = 'abandoning'))` |
 
 ## Maintained corroboration
 
@@ -50,7 +50,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-4a14133e09"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-b7784cbca8"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -66,7 +66,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/13`
+- `/external_contract/durable_state/owners/0/structure/tables/14`
 
 ### Exact owned JSON
 

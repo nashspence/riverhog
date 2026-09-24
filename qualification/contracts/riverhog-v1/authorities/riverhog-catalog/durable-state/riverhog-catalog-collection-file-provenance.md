@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-file-provenance:1400044141 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-file-provenance:54563855bd -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-5135cc46d8"></a>
+<a id="s-1f62fc72ee"></a>
 
 ### Table: `collection_file_provenance`
 
@@ -21,22 +21,22 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-6dfd570257"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-4f8ba8a21c"></a>`path` | `VARCHAR` | no | `—` | — |
-| <a id="s-e061d4aecb"></a>`status` | `VARCHAR` | no | `—` | — |
-| <a id="s-5442036c1a"></a>`journal_id` | `VARCHAR` | yes | `—` | — |
-| <a id="s-ba869643a0"></a>`current_state_id` | `VARCHAR` | yes | `—` | — |
-| <a id="s-fc0510f0ef"></a>`omission_reason` | `TEXT` | yes | `—` | — |
+| <a id="s-1e69ba9214"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-5f1a354e3c"></a>`path` | `VARCHAR` | no | `—` | — |
+| <a id="s-a9b5205801"></a>`status` | `VARCHAR` | no | `—` | — |
+| <a id="s-de16698aaa"></a>`journal_id` | `VARCHAR` | yes | `—` | — |
+| <a id="s-494ceb87dc"></a>`current_state_id` | `VARCHAR` | yes | `—` | — |
+| <a id="s-40446d7bb4"></a>`omission_reason` | `TEXT` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-2f0fb38e63"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, path)` |
-| <a id="s-fcf4c9fc58"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, path) REFERENCES collection_files (collection_id, path) ON DELETE CASCADE` |
-| <a id="s-caa2e2b8fd"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, journal_id) REFERENCES collection_provenance_journals (collection_id, journal_id) ON DELETE CASCADE` |
-| <a id="s-39108e3409"></a>`check` | `ck_collection_file_provenance_status` | `CONSTRAINT ck_collection_file_provenance_status CHECK (status IN ('captured','omitted'))` |
-| <a id="s-3c88fa1677"></a>`check` | `ck_collection_file_provenance_binding` | `CONSTRAINT ck_collection_file_provenance_binding CHECK (status = 'captured' AND journal_id IS NOT NULL AND current_state_id IS NOT NULL AND omission_reason IS NULL OR status = 'omitted' AND journal_id IS NULL AND current_state_id IS NULL AND omission_reason IS NOT NULL)` |
+| <a id="s-e3d2596a63"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, path)` |
+| <a id="s-47213eeddb"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, path) REFERENCES collection_files (collection_id, path) ON DELETE CASCADE` |
+| <a id="s-10dded44c0"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, journal_id) REFERENCES collection_provenance_journals (collection_id, journal_id) ON DELETE CASCADE` |
+| <a id="s-83725145f0"></a>`check` | `ck_collection_file_provenance_status` | `CONSTRAINT ck_collection_file_provenance_status CHECK (status IN ('captured','omitted'))` |
+| <a id="s-00007ee9c8"></a>`check` | `ck_collection_file_provenance_binding` | `CONSTRAINT ck_collection_file_provenance_binding CHECK (status = 'captured' AND journal_id IS NOT NULL AND current_state_id IS NOT NULL AND omission_reason IS NULL OR status = 'omitted' AND journal_id IS NULL AND current_state_id IS NULL AND omission_reason IS NOT NULL)` |
 
 ## Maintained corroboration
 
@@ -46,7 +46,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-3f4c72df2f"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-a118820db6"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -62,7 +62,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/44`
+- `/external_contract/durable_state/owners/0/structure/tables/45`
 
 ### Exact owned JSON
 

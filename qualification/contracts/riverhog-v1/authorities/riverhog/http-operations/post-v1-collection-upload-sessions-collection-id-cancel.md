@@ -66,7 +66,7 @@ Cancel Collection Upload Session
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [riverhog/src/riverhog\_api/routers/collections.py::cancel\_collection\_upload\_session](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L470)
+- **Handler:** [riverhog/src/riverhog\_api/routers/collections.py::cancel\_collection\_upload\_session](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L472)
 
 ### Structural operation bindings
 
@@ -85,7 +85,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "a-riverhog-cli",
       "result_identity": "a-riverhog-cli-result/collection/upload/cancel/v1",
       "source": {
-        "line": 2408,
+        "line": 2432,
         "module": "a_riverhog_cli.main",
         "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "upload_cancel_cmd"
@@ -100,7 +100,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.cancel_collection_upload_session",
       "source": {
-        "line": 1451,
+        "line": 1462,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.cancel_collection_upload_session"

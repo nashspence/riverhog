@@ -9,6 +9,7 @@ from riverhog_core.domain.retrieval_cache import RetrievalCacheReceipt as Retrie
 if TYPE_CHECKING:
     from riverhog_core.ports.archive_objects import (
         ArchiveResumableObjectStore,
+        ResumableWriteConstraints,
     )
 
 
@@ -27,6 +28,10 @@ class RetrievalCacheAdmission:
 
 
 class RetrievalCache(Protocol):
+    def mirror_write_constraints(
+        self, archive: ResumableWriteConstraints
+    ) -> ResumableWriteConstraints | None: ...
+
     def request_accounting_reconciliation_for_startup(self) -> int: ...
 
     def process_accounting_reconciliation(self, *, limit: int = 100) -> int: ...

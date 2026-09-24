@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-793bc55af1"></a>`kind`: `"class"`
-- <a id="s-df3b24c778"></a>`signature`: `"'(api: \\'ApiClient\\', *, producer_app: \\'str\\', adapter_id: \\'str\\', adapter_version: \\'str\\', ingest_source: \\'str\\', source_event_id: \\'str\\', source_context: \\'Mapping[str, object] \| None\\' = None, idempotency_key: \\'str \| None\\' = None, archive_store: \\'ArchiveStoreName \| None\\' = None, description: \\'CollectionDescription \| None\\' = None, tags: \\'Sequence[CollectionTag]\\' = (), event_context: \\'Mapping[str, object] \| None\\' = None, provenance_mode: \"Literal[\\'captured\\', \\'omitted\\']\" = \\'omitted\\', server_generated_provenance: \\'bool\\' = False, provenance_omission_reason: \\'str\\' = \\'Producer did not receive host provenance; immutable producer evidence records the source boundary.\\', progress: \\'ReadProgress \| None\\' = None) -> \\'None\\''"`
+- <a id="s-df3b24c778"></a>`signature`: `"'(api: \\'ApiClient\\', *, producer_app: \\'str\\', adapter_id: \\'str\\', adapter_version: \\'str\\', ingest_source: \\'str\\', source_event_id: \\'str\\', source_context: \\'Mapping[str, object] \| None\\' = None, idempotency_key: \\'str \| None\\' = None, archive_store: \\'ArchiveStoreName \| None\\' = None, use_cache: \\'bool \| None\\' = None, copy_to: \\'Sequence[ArchiveStoreName] \| None\\' = None, description: \\'CollectionDescription \| None\\' = None, tags: \\'Sequence[CollectionTag]\\' = (), event_context: \\'Mapping[str, object] \| None\\' = None, provenance_mode: \"Literal[\\'captured\\', \\'omitted\\']\" = \\'omitted\\', server_generated_provenance: \\'bool\\' = False, provenance_omission_reason: \\'str\\' = \\'Producer did not receive host provenance; immutable producer evidence records the source boundary.\\', progress: \\'ReadProgress \| None\\' = None) -> \\'None\\''"`
 
 ## Maintained corroboration
 
@@ -62,13 +62,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 0644be8e37f3c7a39edfc7af4c90b0ed614111fc33679df9389df1c86ab97813 -->
+<!-- exact-contract-value: bb36d001dac024b7d031f443e0e322779dfe05f6168bbd55b6c3d019570eb08c -->
 
 ```json
 {
   "contract": {
     "kind": "class",
-    "signature": "'(api: \\'ApiClient\\', *, producer_app: \\'str\\', adapter_id: \\'str\\', adapter_version: \\'str\\', ingest_source: \\'str\\', source_event_id: \\'str\\', source_context: \\'Mapping[str, object] | None\\' = None, idempotency_key: \\'str | None\\' = None, archive_store: \\'ArchiveStoreName | None\\' = None, description: \\'CollectionDescription | None\\' = None, tags: \\'Sequence[CollectionTag]\\' = (), event_context: \\'Mapping[str, object] | None\\' = None, provenance_mode: \"Literal[\\'captured\\', \\'omitted\\']\" = \\'omitted\\', server_generated_provenance: \\'bool\\' = False, provenance_omission_reason: \\'str\\' = \\'Producer did not receive host provenance; immutable producer evidence records the source boundary.\\', progress: \\'ReadProgress | None\\' = None) -> \\'None\\''"
+    "signature": "'(api: \\'ApiClient\\', *, producer_app: \\'str\\', adapter_id: \\'str\\', adapter_version: \\'str\\', ingest_source: \\'str\\', source_event_id: \\'str\\', source_context: \\'Mapping[str, object] | None\\' = None, idempotency_key: \\'str | None\\' = None, archive_store: \\'ArchiveStoreName | None\\' = None, use_cache: \\'bool | None\\' = None, copy_to: \\'Sequence[ArchiveStoreName] | None\\' = None, description: \\'CollectionDescription | None\\' = None, tags: \\'Sequence[CollectionTag]\\' = (), event_context: \\'Mapping[str, object] | None\\' = None, provenance_mode: \"Literal[\\'captured\\', \\'omitted\\']\" = \\'omitted\\', server_generated_provenance: \\'bool\\' = False, provenance_omission_reason: \\'str\\' = \\'Producer did not receive host provenance; immutable producer evidence records the source boundary.\\', progress: \\'ReadProgress | None\\' = None) -> \\'None\\''"
   },
   "distribution": "riverhog-client",
   "module": "riverhog_client",

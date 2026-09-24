@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-cache-objects:df1eb3c41e -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-cache-objects:d0478880d0 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-4180ec7daa"></a>
+<a id="s-4ebb09d713"></a>
 
 ### Table: `retrieval_cache_objects`
 
@@ -21,29 +21,29 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-2debc5c694"></a>`source_store` | `VARCHAR` | no | `—` | — |
-| <a id="s-20fe97cbec"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-56b3816983"></a>`object_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-6f35ff0483"></a>`cache_store` | `VARCHAR` | no | `—` | — |
-| <a id="s-ced0518992"></a>`object_path` | `VARCHAR` | no | `—` | — |
-| <a id="s-3726538d32"></a>`revision` | `VARCHAR` | yes | `—` | — |
-| <a id="s-b18aab701a"></a>`stored_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-3741858bfd"></a>`stored_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-4827eefc45"></a>`cached_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-cb215eafc2"></a>`verified_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-d11b2a4548"></a>`state` | `VARCHAR` | no | `—` | — |
-| <a id="s-3a6f9495a6"></a>`search_text` | `VARCHAR` | no | `—` | {"generated":"GENERATED ALWAYS AS (lower(source_store \|\| ' ' \|\| cache_store \|\| ' ' \|\| object_id)) STORED"} |
+| <a id="s-61245f64ba"></a>`source_store` | `VARCHAR` | no | `—` | — |
+| <a id="s-f72a2f0758"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-cac3e7b313"></a>`object_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-3562c13a99"></a>`cache_store` | `VARCHAR` | no | `—` | — |
+| <a id="s-b71b44941d"></a>`object_path` | `VARCHAR` | no | `—` | — |
+| <a id="s-39ff2eb2b7"></a>`revision` | `VARCHAR` | yes | `—` | — |
+| <a id="s-18d7588136"></a>`stored_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-1cd19941c2"></a>`stored_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-f98b6c6db2"></a>`cached_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-e20f3290bd"></a>`verified_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-fe79c60105"></a>`state` | `VARCHAR` | no | `—` | — |
+| <a id="s-03fe49828f"></a>`search_text` | `VARCHAR` | no | `—` | {"generated":"GENERATED ALWAYS AS (lower(source_store \|\| ' ' \|\| cache_store \|\| ' ' \|\| object_id)) STORED"} |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-7a90e604b5"></a>`primary-key` | `—` | `PRIMARY KEY (source_store, collection_id, object_id)` |
-| <a id="s-e797a7a3e6"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, source_store, object_id) REFERENCES collection_archive_objects (collection_id, store, object_id) ON DELETE CASCADE` |
-| <a id="s-fdbd7b48b7"></a>`check` | `ck_retrieval_cache_objects_bytes` | `CONSTRAINT ck_retrieval_cache_objects_bytes CHECK (stored_bytes >= 0)` |
-| <a id="s-ebce6aefad"></a>`check` | `ck_retrieval_cache_objects_sha256` | `CONSTRAINT ck_retrieval_cache_objects_sha256 CHECK (stored_sha256 IS NULL OR length(stored_sha256) = 64)` |
-| <a id="s-8e936eea02"></a>`check` | `ck_retrieval_cache_objects_state` | `CONSTRAINT ck_retrieval_cache_objects_state CHECK (state IN ('ready','delete_pending','deleting'))` |
-| <a id="s-71c07af414"></a>`check` | `ck_retrieval_cache_objects_stored_sha256_hex` | `CONSTRAINT ck_retrieval_cache_objects_stored_sha256_hex CHECK (stored_sha256 IS NULL OR length(stored_sha256) = 64 AND lower(stored_sha256) = stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-f267298b57"></a>`primary-key` | `—` | `PRIMARY KEY (source_store, collection_id, object_id)` |
+| <a id="s-388b2607bd"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, source_store, object_id) REFERENCES collection_archive_objects (collection_id, store, object_id) ON DELETE CASCADE` |
+| <a id="s-daaf0fc6a5"></a>`check` | `ck_retrieval_cache_objects_bytes` | `CONSTRAINT ck_retrieval_cache_objects_bytes CHECK (stored_bytes >= 0)` |
+| <a id="s-8cbbde8cd4"></a>`check` | `ck_retrieval_cache_objects_sha256` | `CONSTRAINT ck_retrieval_cache_objects_sha256 CHECK (stored_sha256 IS NULL OR length(stored_sha256) = 64)` |
+| <a id="s-488d44bc11"></a>`check` | `ck_retrieval_cache_objects_state` | `CONSTRAINT ck_retrieval_cache_objects_state CHECK (state IN ('ready','delete_pending','deleting'))` |
+| <a id="s-9edfebb989"></a>`check` | `ck_retrieval_cache_objects_stored_sha256_hex` | `CONSTRAINT ck_retrieval_cache_objects_stored_sha256_hex CHECK (stored_sha256 IS NULL OR length(stored_sha256) = 64 AND lower(stored_sha256) = stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -53,7 +53,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-9662f83653"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-88d64abd6a"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -69,7 +69,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/74`
+- `/external_contract/durable_state/owners/0/structure/tables/75`
 
 ### Exact owned JSON
 

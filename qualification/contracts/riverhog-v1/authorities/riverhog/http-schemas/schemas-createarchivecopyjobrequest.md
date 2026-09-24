@@ -28,6 +28,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-cdc17a3c6e"></a>`destination_store` | yes | [ArchiveStoreName](schemas-archivestorename.md) |  |
 | <a id="s-0e74bed2bc"></a>`event_context` | no | anyOf=[(type="object"; additionalProperties=(any JSON value); x-riverhog-encoded-bytes-max=4096; x-riverhog-extent={"policy":"contract_max","reason":"bounded-lifecycle-event-context"}); (type="null")]; title="Event Context" |  |
 | <a id="s-2c0e67bd72"></a>`source_store` | no | anyOf=[([ArchiveStoreName](schemas-archivestorename.md)); (type="null")] |  |
+| <a id="s-608c284501"></a>`use_cache` | no | anyOf=[(type="boolean"); (type="null")]; title="Use Cache" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -85,7 +86,7 @@ Shared facts for every subject below: maximum=4096; reason="bounded-lifecycle-ev
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 8dedb65c1162a3083918e2370850dc84b5909e1c784e1b17edf97099fb850390 -->
+<!-- exact-contract-value: 984a2a87873a949b5560b856ea218d5dcf2b55a394ac7f7392c6db2a0445ca24 -->
 
 ```json
 {
@@ -123,6 +124,17 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "null"
         }
       ]
+    },
+    "use_cache": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Use Cache"
     }
   },
   "required": [

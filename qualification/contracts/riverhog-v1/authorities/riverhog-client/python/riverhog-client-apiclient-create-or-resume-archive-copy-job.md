@@ -23,7 +23,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-b8d225081a"></a>`kind`: `"method"`
-- <a id="s-29817e2866"></a>`signature`: `"\"(self, collection_id: 'CollectionId', *, destination_store: 'ArchiveStoreName', source_store: 'ArchiveStoreName \| None' = None, event_context: 'Mapping[str, Any] \| None' = None) -> 'dict[str, Any]'\""`
+- <a id="s-29817e2866"></a>`signature`: `"\"(self, collection_id: 'CollectionId', *, destination_store: 'ArchiveStoreName', source_store: 'ArchiveStoreName \| None' = None, use_cache: 'bool \| None' = None, event_context: 'Mapping[str, Any] \| None' = None) -> 'dict[str, Any]'\""`
 
 ## Maintained corroboration
 
@@ -48,7 +48,7 @@ Exact externally visible contract owned by this contract element.
 
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [python:riverhog-client:riverhog_client](../../../evidence/sources/authorities.md#src-c149020c71) — [packages/riverhog-client/src/riverhog\_client/\_\_init\_\_.py](../../../../../../packages/riverhog-client/src/riverhog_client/__init__.py)
-- **Client method:** [packages/riverhog-client/src/riverhog\_client/client.py::ApiClient.create\_or\_resume\_archive\_copy\_job](../../../../../../packages/riverhog-client/src/riverhog_client/client.py#L2426)
+- **Client method:** [packages/riverhog-client/src/riverhog\_client/client.py::ApiClient.create\_or\_resume\_archive\_copy\_job](../../../../../../packages/riverhog-client/src/riverhog_client/client.py#L2437)
 
 ### Machine authority
 
@@ -61,13 +61,13 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: f9465f74ce23ebde3dd76837eb9d63b752dd1ea74468e288087033af67033037 -->
+<!-- exact-contract-value: 2b92213333ebb52bc82af1539503b050afd49fd9beb59e47f0f96dd459a0cc25 -->
 
 ```json
 {
   "contract": {
     "kind": "method",
-    "signature": "\"(self, collection_id: 'CollectionId', *, destination_store: 'ArchiveStoreName', source_store: 'ArchiveStoreName | None' = None, event_context: 'Mapping[str, Any] | None' = None) -> 'dict[str, Any]'\""
+    "signature": "\"(self, collection_id: 'CollectionId', *, destination_store: 'ArchiveStoreName', source_store: 'ArchiveStoreName | None' = None, use_cache: 'bool | None' = None, event_context: 'Mapping[str, Any] | None' = None) -> 'dict[str, Any]'\""
   },
   "distribution": "riverhog-client",
   "module": "riverhog_client",

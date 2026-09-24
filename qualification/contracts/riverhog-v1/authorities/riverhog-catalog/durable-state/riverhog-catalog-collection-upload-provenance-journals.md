@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-upload-proven-802158f96a:6d6ce569e8 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-upload-proven-802158f96a:65be0c4cec -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-0a7b502c4e"></a>
+<a id="s-ccf86d0d1d"></a>
 
 ### Table: `collection_upload_provenance_journals`
 
@@ -21,49 +21,49 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-5fb26066c8"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-96b02c1cad"></a>`journal_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-421af34327"></a>`bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-7e8d32cfa9"></a>`sha256` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-ac3195928b"></a>`state` | `VARCHAR` | no | `—` | — |
-| <a id="s-6c2e636236"></a>`accepted_bytes` | `BIGINT` | no | `0` | — |
-| <a id="s-f702a22856"></a>`next_chunk_ordinal` | `VARCHAR(64)` | no | `'0000000000000000000000000000000000000000000000000000000000000000'` | — |
-| <a id="s-bb8fde4e17"></a>`content_hash_state` | `TEXT` | no | `—` | — |
-| <a id="s-62a1cca1e7"></a>`validation_byte_offset` | `BIGINT` | no | `0` | — |
-| <a id="s-994c30a83b"></a>`validation_sequence` | `BIGINT` | no | `0` | — |
-| <a id="s-29e4238001"></a>`validation_previous_entry_id` | `VARCHAR` | yes | `—` | — |
-| <a id="s-3b9243d7b9"></a>`validation_previous_json_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-ac8cf94016"></a>`primary_lineage_id` | `VARCHAR` | yes | `—` | — |
-| <a id="s-74a4dd4ea9"></a>`entity_counts_json` | `TEXT` | no | `'{}'` | — |
-| <a id="s-dbefe2bfa6"></a>`failure` | `TEXT` | yes | `—` | — |
-| <a id="s-b37bd6043f"></a>`current_state_id` | `VARCHAR` | yes | `—` | — |
-| <a id="s-33ff573e88"></a>`current_entry_id` | `VARCHAR` | yes | `—` | — |
-| <a id="s-32ecf49e80"></a>`current_entry_json_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-8681b45c02"></a>`current_path` | `VARCHAR` | yes | `—` | — |
-| <a id="s-bced564447"></a>`current_bytes` | `BIGINT` | yes | `—` | — |
-| <a id="s-124f5c5e31"></a>`current_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-2db47f7470"></a>`generated_output_path` | `VARCHAR` | yes | `—` | — |
-| <a id="s-f3cbea9335"></a>`generation_after_journal_id` | `VARCHAR` | yes | `—` | — |
-| <a id="s-737b81dbdb"></a>`generation_after_state_id` | `VARCHAR` | yes | `—` | — |
+| <a id="s-381cd9629a"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-4ea96d1eff"></a>`journal_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-fe12289701"></a>`bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-6391d15c05"></a>`sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-131f9fd4d2"></a>`state` | `VARCHAR` | no | `—` | — |
+| <a id="s-261eebe213"></a>`accepted_bytes` | `BIGINT` | no | `0` | — |
+| <a id="s-28921ff745"></a>`next_chunk_ordinal` | `VARCHAR(64)` | no | `'0000000000000000000000000000000000000000000000000000000000000000'` | — |
+| <a id="s-d21225e6b5"></a>`content_hash_state` | `TEXT` | no | `—` | — |
+| <a id="s-be6820f9c3"></a>`validation_byte_offset` | `BIGINT` | no | `0` | — |
+| <a id="s-c693cd7b9b"></a>`validation_sequence` | `BIGINT` | no | `0` | — |
+| <a id="s-5b18d8346a"></a>`validation_previous_entry_id` | `VARCHAR` | yes | `—` | — |
+| <a id="s-7580b7444e"></a>`validation_previous_json_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-f460da35ca"></a>`primary_lineage_id` | `VARCHAR` | yes | `—` | — |
+| <a id="s-5fe2a50509"></a>`entity_counts_json` | `TEXT` | no | `'{}'` | — |
+| <a id="s-b518f381d9"></a>`failure` | `TEXT` | yes | `—` | — |
+| <a id="s-564c26ccba"></a>`current_state_id` | `VARCHAR` | yes | `—` | — |
+| <a id="s-a74b0dd743"></a>`current_entry_id` | `VARCHAR` | yes | `—` | — |
+| <a id="s-464c4b292a"></a>`current_entry_json_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-f037b1617b"></a>`current_path` | `VARCHAR` | yes | `—` | — |
+| <a id="s-18378d85f2"></a>`current_bytes` | `BIGINT` | yes | `—` | — |
+| <a id="s-206fe3754a"></a>`current_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-b9279053d4"></a>`generated_output_path` | `VARCHAR` | yes | `—` | — |
+| <a id="s-b3a0ca32e2"></a>`generation_after_journal_id` | `VARCHAR` | yes | `—` | — |
+| <a id="s-184b63da36"></a>`generation_after_state_id` | `VARCHAR` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-62f9c0d071"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, journal_id)` |
-| <a id="s-0e4eccc667"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE` |
-| <a id="s-26369da6d0"></a>`check` | `ck_upload_provenance_journals_bytes` | `CONSTRAINT ck_upload_provenance_journals_bytes CHECK (bytes >= 0)` |
-| <a id="s-b63cf1b5d9"></a>`check` | `ck_upload_provenance_journals_accepted_bytes` | `CONSTRAINT ck_upload_provenance_journals_accepted_bytes CHECK (accepted_bytes >= 0 AND accepted_bytes <= bytes)` |
-| <a id="s-02173694c3"></a>`check` | `ck_upload_provenance_journals_next_chunk_ordinal` | `CONSTRAINT ck_upload_provenance_journals_next_chunk_ordinal CHECK (length(next_chunk_ordinal) = 64 AND lower(next_chunk_ordinal) = next_chunk_ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(next_chunk_ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-a7eb28e2d6"></a>`check` | `ck_upload_provenance_journals_validation_offset` | `CONSTRAINT ck_upload_provenance_journals_validation_offset CHECK (validation_byte_offset >= 0 AND validation_byte_offset <= accepted_bytes)` |
-| <a id="s-fcfbd2e204"></a>`check` | `ck_upload_provenance_journals_validation_sequence` | `CONSTRAINT ck_upload_provenance_journals_validation_sequence CHECK (validation_sequence >= 0)` |
-| <a id="s-a8354d32bb"></a>`check` | `ck_upload_provenance_journals_state` | `CONSTRAINT ck_upload_provenance_journals_state CHECK (state IN ('accepting','generating','validating','sealed','failed'))` |
-| <a id="s-c066e407a9"></a>`check` | `ck_upload_provenance_journals_current_bytes` | `CONSTRAINT ck_upload_provenance_journals_current_bytes CHECK (current_bytes IS NULL OR current_bytes >= 0)` |
-| <a id="s-fe6739f7f4"></a>`check` | `ck_upload_provenance_journals_sha256` | `CONSTRAINT ck_upload_provenance_journals_sha256 CHECK (length(sha256) = 64)` |
-| <a id="s-ba55d0a0aa"></a>`check` | `ck_collection_upload_provenance_journals_sha256_hex` | `CONSTRAINT ck_collection_upload_provenance_journals_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-ab3a68eb28"></a>`check` | `ck_sha256_164241c9bc3b84b3` | `CONSTRAINT ck_sha256_164241c9bc3b84b3 CHECK (validation_previous_json_sha256 IS NULL OR length(validation_previous_json_sha256) = 64 AND lower(validation_previous_json_sha256) = validation_previous_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(validation_previous_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-1285d4f995"></a>`check` | `ck_sha256_beecad13199605d9` | `CONSTRAINT ck_sha256_beecad13199605d9 CHECK (current_entry_json_sha256 IS NULL OR length(current_entry_json_sha256) = 64 AND lower(current_entry_json_sha256) = current_entry_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(current_entry_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-d7efd13ed5"></a>`check` | `ck_collection_upload_provenance_journals_current_sha256_hex` | `CONSTRAINT ck_collection_upload_provenance_journals_current_sha256_hex CHECK (current_sha256 IS NULL OR length(current_sha256) = 64 AND lower(current_sha256) = current_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(current_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-5b95236dcf"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, journal_id)` |
+| <a id="s-f6d3e6c966"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE` |
+| <a id="s-b777884233"></a>`check` | `ck_upload_provenance_journals_bytes` | `CONSTRAINT ck_upload_provenance_journals_bytes CHECK (bytes >= 0)` |
+| <a id="s-ccbacf0434"></a>`check` | `ck_upload_provenance_journals_accepted_bytes` | `CONSTRAINT ck_upload_provenance_journals_accepted_bytes CHECK (accepted_bytes >= 0 AND accepted_bytes <= bytes)` |
+| <a id="s-6fd47b72c8"></a>`check` | `ck_upload_provenance_journals_next_chunk_ordinal` | `CONSTRAINT ck_upload_provenance_journals_next_chunk_ordinal CHECK (length(next_chunk_ordinal) = 64 AND lower(next_chunk_ordinal) = next_chunk_ordinal AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(next_chunk_ordinal, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-8c8789c65a"></a>`check` | `ck_upload_provenance_journals_validation_offset` | `CONSTRAINT ck_upload_provenance_journals_validation_offset CHECK (validation_byte_offset >= 0 AND validation_byte_offset <= accepted_bytes)` |
+| <a id="s-2916a2ee15"></a>`check` | `ck_upload_provenance_journals_validation_sequence` | `CONSTRAINT ck_upload_provenance_journals_validation_sequence CHECK (validation_sequence >= 0)` |
+| <a id="s-f9f9be5c41"></a>`check` | `ck_upload_provenance_journals_state` | `CONSTRAINT ck_upload_provenance_journals_state CHECK (state IN ('accepting','generating','validating','sealed','failed'))` |
+| <a id="s-33ff0c4376"></a>`check` | `ck_upload_provenance_journals_current_bytes` | `CONSTRAINT ck_upload_provenance_journals_current_bytes CHECK (current_bytes IS NULL OR current_bytes >= 0)` |
+| <a id="s-6df4c1d09a"></a>`check` | `ck_upload_provenance_journals_sha256` | `CONSTRAINT ck_upload_provenance_journals_sha256 CHECK (length(sha256) = 64)` |
+| <a id="s-d609f41b7c"></a>`check` | `ck_collection_upload_provenance_journals_sha256_hex` | `CONSTRAINT ck_collection_upload_provenance_journals_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-2a44a8e168"></a>`check` | `ck_sha256_164241c9bc3b84b3` | `CONSTRAINT ck_sha256_164241c9bc3b84b3 CHECK (validation_previous_json_sha256 IS NULL OR length(validation_previous_json_sha256) = 64 AND lower(validation_previous_json_sha256) = validation_previous_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(validation_previous_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-30e308a583"></a>`check` | `ck_sha256_beecad13199605d9` | `CONSTRAINT ck_sha256_beecad13199605d9 CHECK (current_entry_json_sha256 IS NULL OR length(current_entry_json_sha256) = 64 AND lower(current_entry_json_sha256) = current_entry_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(current_entry_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-c6abb10f9f"></a>`check` | `ck_collection_upload_provenance_journals_current_sha256_hex` | `CONSTRAINT ck_collection_upload_provenance_journals_current_sha256_hex CHECK (current_sha256 IS NULL OR length(current_sha256) = 64 AND lower(current_sha256) = current_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(current_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -73,7 +73,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-677ddb002b"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-02249cd6a4"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -89,7 +89,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/30`
+- `/external_contract/durable_state/owners/0/structure/tables/31`
 
 ### Exact owned JSON
 

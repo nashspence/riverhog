@@ -21,6 +21,7 @@ Callable HTTP operations.
 - [GET /v1/archive/copy-jobs/{collection_id}/{destination_store}](get-v1-archive-copy-jobs-collection-id-destination-store.md)
 - **[GET /v1/archive/stores](get-v1-archive-stores.md)** [📦](get-v1-archive-stores.md#evidence-gaps)
 - [GET /v1/archive/stores/{store}](get-v1-archive-stores-store.md)
+- [GET /v1/archive/upload-copy-intents/{collection_id}](get-v1-archive-upload-copy-intents-collection-id.md)
 - **[GET /v1/catalog-sync/changes](get-v1-catalog-sync-changes.md)** [📦](get-v1-catalog-sync-changes.md#evidence-gaps)
 - [GET /v1/catalog-sync/checkpoint](get-v1-catalog-sync-checkpoint.md)
 - **[GET /v1/catalog-sync/collections](get-v1-catalog-sync-collections.md)** [📦](get-v1-catalog-sync-collections.md#evidence-gaps)

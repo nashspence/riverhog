@@ -99,6 +99,9 @@ def test_collection_upload_dry_run_hashes_without_opening_an_api_client(
             "b2",
             "--description",
             "Morning footage — camera seven",
+            "--no-use-cache",
+            "--copy-to",
+            "deep",
             "--dry-run",
             "--json",
         ],
@@ -108,6 +111,8 @@ def test_collection_upload_dry_run_hashes_without_opening_an_api_client(
     payload = json.loads(result.stdout)
     assert payload["collection_id"] is None
     assert payload["archive_store"] == "b2"
+    assert payload["use_cache"] is False
+    assert payload["copy_to"] == ["deep"]
     assert payload["description"] == "Morning footage — camera seven"
     assert payload["files_preview"][0]["sha256"] == hashlib.sha256(b"video").hexdigest()
     human = RUNNER.invoke(
@@ -121,11 +126,15 @@ def test_collection_upload_dry_run_hashes_without_opening_an_api_client(
             "test-upload",
             "--archive-store",
             "b2",
+            "--use-cache",
+            "--copy-to",
+            "deep",
             "--dry-run",
         ],
     )
     assert human.exit_code == 0
     assert "collection upload dry-run" in human.stdout
+    assert "copy to: deep" in human.stdout
 
 
 def test_large_source_hash_includes_server_layout_part_digests(tmp_path: Path) -> None:

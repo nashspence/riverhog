@@ -231,6 +231,26 @@ def format_collection_upload(payload: Mapping[str, object]) -> str:
         f"encryption: {payload.get('encryption_format', 'unknown')}:"
         f"{payload.get('passphrase_id', 'unknown')}",
     ]
+    if "archive_store" in payload:
+        lines.append(f"archive store: {payload['archive_store']}")
+    if "use_cache" in payload:
+        lines.append(f"use cache: {'yes' if payload['use_cache'] else 'no'}")
+    destinations = payload.get("copy_to")
+    if isinstance(destinations, list):
+        lines.append(f"copy to: {', '.join(str(value) for value in destinations) or '(none)'}")
+    intents = payload.get("copy_intents")
+    if isinstance(intents, list):
+        for intent in intents:
+            if isinstance(intent, Mapping):
+                line = (
+                    f"copy intent {intent.get('destination_store', 'unknown')}: "
+                    f"{intent.get('state', 'unknown')}"
+                )
+                if intent.get("job_state"):
+                    line += f" (job {intent['job_state']})"
+                if intent.get("failure_code"):
+                    line += f" ({intent['failure_code']})"
+                lines.append(line)
     if payload.get("archive_phase"):
         lines.append(f"archive phase: {payload['archive_phase']}")
     if payload.get("latest_failure"):
@@ -467,6 +487,12 @@ def format_collection_upload_plan(payload: Mapping[str, object]) -> str:
         f"files: {payload.get('files_total', 0)}",
         f"bytes: {_bytes(payload.get('bytes_total'))}",
     ]
+    lines.append(f"archive store: {payload.get('archive_store') or 'server default'}")
+    cache_choice = payload.get("use_cache")
+    lines.append(f"use cache: {cache_choice if cache_choice is not None else 'server policy'}")
+    destinations = payload.get("copy_to")
+    if isinstance(destinations, list):
+        lines.append(f"copy to: {', '.join(destinations) or '(none)'}")
     observer = payload.get("provenance_observer")
     if isinstance(observer, Mapping):
         lines.append(
@@ -620,6 +646,8 @@ def format_archive_copy_job(payload: Mapping[str, object]) -> str:
         f"route: {route}",
         f"state: {payload.get('state', 'unknown')}",
     ]
+    if "use_cache" in payload:
+        lines.append(f"use cache: {'yes' if payload['use_cache'] else 'no'}")
     if payload.get("initiated_by_app"):
         initiator = str(payload["initiated_by_app"])
         if payload.get("initiated_by_key_id"):

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-plan-files:00b01ee16a -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-plan-files:ea26ed22e4 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-6c12389cec"></a>
+<a id="s-70dff956ac"></a>
 
 ### Table: `retrieval_plan_files`
 
@@ -21,26 +21,26 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-1e83356b20"></a>`plan_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-4e108b72da"></a>`file_order` | `INTEGER` | no | `—` | — |
-| <a id="s-64c0168df7"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-0a8fb37692"></a>`path` | `VARCHAR` | no | `—` | — |
-| <a id="s-d79dd045ab"></a>`bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-076955ac8a"></a>`sha256` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-f12cd9cbdc"></a>`source_store` | `VARCHAR` | no | `—` | — |
-| <a id="s-530927b08e"></a>`requires_restore` | `BOOLEAN` | no | `—` | — |
+| <a id="s-f92835c348"></a>`plan_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-96253ac18b"></a>`file_order` | `INTEGER` | no | `—` | — |
+| <a id="s-866f7ee756"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-601e0242d6"></a>`path` | `VARCHAR` | no | `—` | — |
+| <a id="s-83bd4fc8ad"></a>`bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-2cbe475f98"></a>`sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-6c15bfa6d3"></a>`source_store` | `VARCHAR` | no | `—` | — |
+| <a id="s-a157669199"></a>`requires_restore` | `BOOLEAN` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-ce4246d144"></a>`primary-key` | `—` | `PRIMARY KEY (plan_id, file_order)` |
-| <a id="s-dc42421300"></a>`foreign-key` | `—` | `FOREIGN KEY(plan_id) REFERENCES retrieval_plans (id) ON DELETE CASCADE` |
-| <a id="s-70678ad695"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, path) REFERENCES collection_files (collection_id, path)` |
-| <a id="s-52beae72e1"></a>`unique` | `—` | `UNIQUE (plan_id, collection_id, path)` |
-| <a id="s-4022d650d0"></a>`check` | `ck_retrieval_plan_files_order` | `CONSTRAINT ck_retrieval_plan_files_order CHECK (file_order >= 0)` |
-| <a id="s-d680e923c9"></a>`check` | `ck_retrieval_plan_files_bytes` | `CONSTRAINT ck_retrieval_plan_files_bytes CHECK (bytes >= 0)` |
-| <a id="s-2dbe05c489"></a>`check` | `ck_retrieval_plan_files_sha256_hex` | `CONSTRAINT ck_retrieval_plan_files_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-245840b345"></a>`primary-key` | `—` | `PRIMARY KEY (plan_id, file_order)` |
+| <a id="s-177312beb2"></a>`foreign-key` | `—` | `FOREIGN KEY(plan_id) REFERENCES retrieval_plans (id) ON DELETE CASCADE` |
+| <a id="s-9ec756d0bf"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, path) REFERENCES collection_files (collection_id, path)` |
+| <a id="s-f7c514709f"></a>`unique` | `—` | `UNIQUE (plan_id, collection_id, path)` |
+| <a id="s-ebef67aaac"></a>`check` | `ck_retrieval_plan_files_order` | `CONSTRAINT ck_retrieval_plan_files_order CHECK (file_order >= 0)` |
+| <a id="s-9a56894cb5"></a>`check` | `ck_retrieval_plan_files_bytes` | `CONSTRAINT ck_retrieval_plan_files_bytes CHECK (bytes >= 0)` |
+| <a id="s-178bede1ea"></a>`check` | `ck_retrieval_plan_files_sha256_hex` | `CONSTRAINT ck_retrieval_plan_files_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -50,7 +50,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-fdb19cc8b6"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-081a6b42f0"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -66,7 +66,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/67`
+- `/external_contract/durable_state/owners/0/structure/tables/68`
 
 ### Exact owned JSON
 

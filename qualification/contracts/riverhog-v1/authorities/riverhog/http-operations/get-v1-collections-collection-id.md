@@ -73,7 +73,7 @@ Get Collection
 - [generator:contract-projection](../../../evidence/sources/authorities.md#src-47381a6c4f) — [scripts/contract\_freeze.py::contract\_projection](../../../../../../scripts/contract_freeze.py)
 - [openapi:riverhog](../../../evidence/sources/authorities.md#src-c42f268fc9) — [scripts/operation\_qualification.py::application\_surfaces](../../../../../../scripts/operation_qualification.py#L333)
 - [operations:operation-matrix](../../../evidence/sources/authorities.md#src-b032bdc56b) — [scripts/operation\_qualification.py::operation\_matrix](../../../../../../scripts/operation_qualification.py)
-- **Handler:** [riverhog/src/riverhog\_api/routers/collections.py::get\_collection](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L625)
+- **Handler:** [riverhog/src/riverhog\_api/routers/collections.py::get\_collection](../../../../../../riverhog/src/riverhog_api/routers/collections.py#L627)
 
 ### Structural operation bindings
 
@@ -92,7 +92,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "a-riverhog-cli",
       "result_identity": "a-riverhog-cli-result/collection/show/v1",
       "source": {
-        "line": 2540,
+        "line": 2564,
         "module": "a_riverhog_cli.main",
         "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "show_cmd"
@@ -103,7 +103,7 @@ This generated record links maintained client, CLI, response-authority, and prov
       "executable": "a-riverhog-cli",
       "result_identity": "a-riverhog-cli-result/collection/describe/v1",
       "source": {
-        "line": 2551,
+        "line": 2575,
         "module": "a_riverhog_cli.main",
         "path": "some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py",
         "symbol": "collection_describe_cmd"
@@ -203,7 +203,7 @@ This generated record links maintained client, CLI, response-authority, and prov
     {
       "public_identity": "riverhog_client.ApiClient.get_collection",
       "source": {
-        "line": 1583,
+        "line": 1594,
         "module": "riverhog_client.client",
         "path": "packages/riverhog-client/src/riverhog_client/client.py",
         "symbol": "ApiClient.get_collection"

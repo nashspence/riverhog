@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-tag-node-gc:bbe55cb086 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-tag-node-gc:bf87cf301b -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-d73c4686f2"></a>
+<a id="s-5e15c17a39"></a>
 
 ### Table: `collection_tag_node_gc`
 
@@ -21,27 +21,27 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-1250dfe579"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-4c71906f53"></a>`store` | `VARCHAR` | no | `—` | — |
-| <a id="s-ca4491da34"></a>`node_digest` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-dc20a39a2f"></a>`expected_head_identity` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-d26c896d55"></a>`object_path` | `VARCHAR` | no | `—` | — |
-| <a id="s-a2bfca2a40"></a>`provider_revision` | `VARCHAR` | yes | `—` | — |
-| <a id="s-ce71694687"></a>`state` | `VARCHAR` | no | `—` | — |
-| <a id="s-aa47ae46c1"></a>`next_attempt_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-f0bd2c217b"></a>`failure` | `TEXT` | yes | `—` | — |
+| <a id="s-e372eb26e2"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-4b768c7212"></a>`store` | `VARCHAR` | no | `—` | — |
+| <a id="s-5371ae3ac6"></a>`node_digest` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-60e49570cd"></a>`expected_head_identity` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-2c48cc5719"></a>`object_path` | `VARCHAR` | no | `—` | — |
+| <a id="s-c7b45d8f32"></a>`provider_revision` | `VARCHAR` | yes | `—` | — |
+| <a id="s-683621bb10"></a>`state` | `VARCHAR` | no | `—` | — |
+| <a id="s-bf595fcc67"></a>`next_attempt_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-cb06892ee9"></a>`failure` | `TEXT` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-6144105291"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, store, node_digest)` |
-| <a id="s-7c2cdc0223"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, store, node_digest) REFERENCES collection_tag_published_nodes (collection_id, store, node_digest) ON DELETE CASCADE` |
-| <a id="s-69b2b169cb"></a>`check` | `ck_collection_tag_node_gc_digest` | `CONSTRAINT ck_collection_tag_node_gc_digest CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-d8aace839a"></a>`check` | `ck_collection_tag_node_gc_head` | `CONSTRAINT ck_collection_tag_node_gc_head CHECK (length(expected_head_identity) = 64 AND lower(expected_head_identity) = expected_head_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(expected_head_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-008dede6d0"></a>`check` | `ck_collection_tag_node_gc_state` | `CONSTRAINT ck_collection_tag_node_gc_state CHECK (state IN ('pending','deleting','retry_wait'))` |
-| <a id="s-11c5deb2c5"></a>`check` | `ck_collection_tag_node_gc_node_digest_hex` | `CONSTRAINT ck_collection_tag_node_gc_node_digest_hex CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-10a2c0646f"></a>`check` | `ck_collection_tag_node_gc_expected_head_identity_hex` | `CONSTRAINT ck_collection_tag_node_gc_expected_head_identity_hex CHECK (length(expected_head_identity) = 64 AND lower(expected_head_identity) = expected_head_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(expected_head_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-8e05875b86"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, store, node_digest)` |
+| <a id="s-ac6db663d5"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, store, node_digest) REFERENCES collection_tag_published_nodes (collection_id, store, node_digest) ON DELETE CASCADE` |
+| <a id="s-1c5bd8767a"></a>`check` | `ck_collection_tag_node_gc_digest` | `CONSTRAINT ck_collection_tag_node_gc_digest CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-007f57e27f"></a>`check` | `ck_collection_tag_node_gc_head` | `CONSTRAINT ck_collection_tag_node_gc_head CHECK (length(expected_head_identity) = 64 AND lower(expected_head_identity) = expected_head_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(expected_head_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-783a406675"></a>`check` | `ck_collection_tag_node_gc_state` | `CONSTRAINT ck_collection_tag_node_gc_state CHECK (state IN ('pending','deleting','retry_wait'))` |
+| <a id="s-629d80da66"></a>`check` | `ck_collection_tag_node_gc_node_digest_hex` | `CONSTRAINT ck_collection_tag_node_gc_node_digest_hex CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-b8d9d91daa"></a>`check` | `ck_collection_tag_node_gc_expected_head_identity_hex` | `CONSTRAINT ck_collection_tag_node_gc_expected_head_identity_hex CHECK (length(expected_head_identity) = 64 AND lower(expected_head_identity) = expected_head_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(expected_head_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -51,7 +51,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-cc92a53adf"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-e3464f32de"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -67,7 +67,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/71`
+- `/external_contract/durable_state/owners/0/structure/tables/72`
 
 ### Exact owned JSON
 

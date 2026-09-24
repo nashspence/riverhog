@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-mutable-docum-5d22d086b5:9708ab603c -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-mutable-docum-5d22d086b5:16294b255b -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-e603651366"></a>
+<a id="s-fe55b29314"></a>
 
 ### Table: `collection_mutable_document_publication_attempts`
 
@@ -21,38 +21,38 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-256aa570c4"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-680c6c8297"></a>`store` | `VARCHAR` | no | `—` | — |
-| <a id="s-398eaa9b42"></a>`document_kind` | `VARCHAR` | no | `—` | — |
-| <a id="s-3518585307"></a>`attempt_identity` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-aab5b57aa1"></a>`document_revision` | `BIGINT` | no | `—` | — |
-| <a id="s-250d746ecd"></a>`document_identity` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-93236b7a6e"></a>`document_bytes` | `BYTEA` | no | `—` | — |
-| <a id="s-200b09fb20"></a>`archive_storage_prefix` | `VARCHAR` | no | `—` | — |
-| <a id="s-9137b51056"></a>`passphrase_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-ccddc9e12c"></a>`prior_object_path` | `VARCHAR` | yes | `—` | — |
-| <a id="s-13e9682b08"></a>`prior_provider_revision` | `VARCHAR` | yes | `—` | — |
-| <a id="s-d17a18680a"></a>`prior_stored_bytes` | `BIGINT` | yes | `—` | — |
-| <a id="s-23183b3bcb"></a>`prior_stored_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-c31a5cb7d8"></a>`created_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-38fc2c9c07"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-4c4527acbf"></a>`store` | `VARCHAR` | no | `—` | — |
+| <a id="s-164e37b202"></a>`document_kind` | `VARCHAR` | no | `—` | — |
+| <a id="s-1d31451fa0"></a>`attempt_identity` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-dc89324046"></a>`document_revision` | `BIGINT` | no | `—` | — |
+| <a id="s-67063f5bfa"></a>`document_identity` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-79450aba43"></a>`document_bytes` | `BYTEA` | no | `—` | — |
+| <a id="s-435b2e87a9"></a>`archive_storage_prefix` | `VARCHAR` | no | `—` | — |
+| <a id="s-cc405d925e"></a>`passphrase_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-62a6a202ae"></a>`prior_object_path` | `VARCHAR` | yes | `—` | — |
+| <a id="s-08fa9ba900"></a>`prior_provider_revision` | `VARCHAR` | yes | `—` | — |
+| <a id="s-516b16a157"></a>`prior_stored_bytes` | `BIGINT` | yes | `—` | — |
+| <a id="s-47d1abb064"></a>`prior_stored_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-2d4ef4670c"></a>`created_at` | `VARCHAR` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-502b238b80"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, store, document_kind)` |
-| <a id="s-b2f90327c3"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, store) REFERENCES collection_archive_copies (collection_id, store) ON DELETE CASCADE` |
-| <a id="s-3309eea4fd"></a>`check` | `ck_mutable_document_publication_attempts_kind` | `CONSTRAINT ck_mutable_document_publication_attempts_kind CHECK (document_kind IN ('description','tag_head'))` |
-| <a id="s-80def0e45d"></a>`check` | `ck_mutable_document_publication_attempts_identity` | `CONSTRAINT ck_mutable_document_publication_attempts_identity CHECK (length(attempt_identity) = 64 AND lower(attempt_identity) = attempt_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(attempt_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-1c41895ad3"></a>`check` | `ck_mutable_document_publication_attempts_revision` | `CONSTRAINT ck_mutable_document_publication_attempts_revision CHECK (document_revision >= 1 AND document_revision <= 9007199254740991)` |
-| <a id="s-90d867887b"></a>`check` | `ck_mutable_document_publication_attempts_document_identity` | `CONSTRAINT ck_mutable_document_publication_attempts_document_identity CHECK (length(document_identity) = 64 AND lower(document_identity) = document_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(document_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-e85c1e85a2"></a>`check` | `ck_mutable_document_publication_attempts_bytes` | `CONSTRAINT ck_mutable_document_publication_attempts_bytes CHECK (octet_length(document_bytes) > 0 AND octet_length(document_bytes) <= 65807)` |
-| <a id="s-07534d7c12"></a>`check` | `ck_mutable_document_publication_attempts_prior_receipt` | `CONSTRAINT ck_mutable_document_publication_attempts_prior_receipt CHECK (prior_object_path IS NULL AND prior_provider_revision IS NULL AND prior_stored_bytes IS NULL AND prior_stored_sha256 IS NULL OR prior_object_path IS NOT NULL AND prior_stored_bytes IS NOT NULL AND prior_stored_bytes > 0 AND prior_stored_sha256 IS NOT NULL)` |
-| <a id="s-b84dd2336b"></a>`check` | `ck_mutable_document_publication_attempts_prior_sha256` | `CONSTRAINT ck_mutable_document_publication_attempts_prior_sha256 CHECK (prior_stored_sha256 IS NULL OR length(prior_stored_sha256) = 64 AND lower(prior_stored_sha256) = prior_stored_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(prior_stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-ab127e4002"></a>`check` | `ck_sha256_0f9f415e5b2f4112` | `CONSTRAINT ck_sha256_0f9f415e5b2f4112 CHECK (length(attempt_identity) = 64 AND lower(attempt_identity) = attempt_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(attempt_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-4265bda273"></a>`check` | `ck_sha256_2b9f56df047af7b5` | `CONSTRAINT ck_sha256_2b9f56df047af7b5 CHECK (length(document_identity) = 64 AND lower(document_identity) = document_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(document_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-e22b96e11c"></a>`check` | `ck_sha256_a1e9d33ca9fd7958` | `CONSTRAINT ck_sha256_a1e9d33ca9fd7958 CHECK (prior_stored_sha256 IS NULL OR length(prior_stored_sha256) = 64 AND lower(prior_stored_sha256) = prior_stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(prior_stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-900cf64e93"></a>`unique` | `—` | `UNIQUE (attempt_identity)` |
+| <a id="s-6e3d9c9d3a"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, store, document_kind)` |
+| <a id="s-1783eaad6c"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, store) REFERENCES collection_archive_copies (collection_id, store) ON DELETE CASCADE` |
+| <a id="s-997b308a74"></a>`check` | `ck_mutable_document_publication_attempts_kind` | `CONSTRAINT ck_mutable_document_publication_attempts_kind CHECK (document_kind IN ('description','tag_head'))` |
+| <a id="s-f2bffe2ff5"></a>`check` | `ck_mutable_document_publication_attempts_identity` | `CONSTRAINT ck_mutable_document_publication_attempts_identity CHECK (length(attempt_identity) = 64 AND lower(attempt_identity) = attempt_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(attempt_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-1403a9aa89"></a>`check` | `ck_mutable_document_publication_attempts_revision` | `CONSTRAINT ck_mutable_document_publication_attempts_revision CHECK (document_revision >= 1 AND document_revision <= 9007199254740991)` |
+| <a id="s-883d49e9d3"></a>`check` | `ck_mutable_document_publication_attempts_document_identity` | `CONSTRAINT ck_mutable_document_publication_attempts_document_identity CHECK (length(document_identity) = 64 AND lower(document_identity) = document_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(document_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-9a2fe6f1bb"></a>`check` | `ck_mutable_document_publication_attempts_bytes` | `CONSTRAINT ck_mutable_document_publication_attempts_bytes CHECK (octet_length(document_bytes) > 0 AND octet_length(document_bytes) <= 65807)` |
+| <a id="s-dc7b221cdf"></a>`check` | `ck_mutable_document_publication_attempts_prior_receipt` | `CONSTRAINT ck_mutable_document_publication_attempts_prior_receipt CHECK (prior_object_path IS NULL AND prior_provider_revision IS NULL AND prior_stored_bytes IS NULL AND prior_stored_sha256 IS NULL OR prior_object_path IS NOT NULL AND prior_stored_bytes IS NOT NULL AND prior_stored_bytes > 0 AND prior_stored_sha256 IS NOT NULL)` |
+| <a id="s-15bafacb43"></a>`check` | `ck_mutable_document_publication_attempts_prior_sha256` | `CONSTRAINT ck_mutable_document_publication_attempts_prior_sha256 CHECK (prior_stored_sha256 IS NULL OR length(prior_stored_sha256) = 64 AND lower(prior_stored_sha256) = prior_stored_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(prior_stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-87edeab3f3"></a>`check` | `ck_sha256_0f9f415e5b2f4112` | `CONSTRAINT ck_sha256_0f9f415e5b2f4112 CHECK (length(attempt_identity) = 64 AND lower(attempt_identity) = attempt_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(attempt_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-385072d4fe"></a>`check` | `ck_sha256_2b9f56df047af7b5` | `CONSTRAINT ck_sha256_2b9f56df047af7b5 CHECK (length(document_identity) = 64 AND lower(document_identity) = document_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(document_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-27f9a797ed"></a>`check` | `ck_sha256_a1e9d33ca9fd7958` | `CONSTRAINT ck_sha256_a1e9d33ca9fd7958 CHECK (prior_stored_sha256 IS NULL OR length(prior_stored_sha256) = 64 AND lower(prior_stored_sha256) = prior_stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(prior_stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-45502e4d55"></a>`unique` | `—` | `UNIQUE (attempt_identity)` |
 
 ## Maintained corroboration
 
@@ -62,7 +62,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-22a45f126f"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-7e40a105b6"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -78,7 +78,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/57`
+- `/external_contract/durable_state/owners/0/structure/tables/58`
 
 ### Exact owned JSON
 

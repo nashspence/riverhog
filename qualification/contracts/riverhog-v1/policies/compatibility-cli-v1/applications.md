@@ -34,6 +34,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-riverhog-cli` | [a-riverhog-cli archive](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive.md#pa-cadd1db3dc) |
 | `a-riverhog-cli` | [a-riverhog-cli archive copy-job](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-job.md#pa-e3777e1236) |
 | `a-riverhog-cli` | [a-riverhog-cli archive copy-job cancel](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-job-cancel.md#pa-2469b495f6) |
+| `a-riverhog-cli` | [a-riverhog-cli archive copy-job intents](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-job-intents.md#pa-53bf0fde42) |
 | `a-riverhog-cli` | [a-riverhog-cli archive copy-job list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-job-list.md#pa-2ccf69b8c1) |
 | `a-riverhog-cli` | [a-riverhog-cli archive copy-job show](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-job-show.md#pa-e691acdd17) |
 | `a-riverhog-cli` | [a-riverhog-cli archive copy-job start](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-archive-copy-job-start.md#pa-ec2eb25900) |
