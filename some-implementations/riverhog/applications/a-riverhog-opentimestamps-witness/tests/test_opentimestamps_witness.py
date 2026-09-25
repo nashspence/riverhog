@@ -4,6 +4,8 @@ import hashlib
 import sqlite3
 from pathlib import Path
 
+import a_riverhog_opentimestamps_witness.cli as witness_cli
+import pytest
 from a_riverhog_opentimestamps_witness import proof
 from a_riverhog_opentimestamps_witness.schema import upgrade_state, validate_state
 from a_riverhog_opentimestamps_witness.store import WitnessStore
@@ -17,7 +19,7 @@ from riverhog_protocol import (
     CatalogSyncDeparture,
     CatalogSyncDescriptor,
 )
-from riverhog_protocol.errors import CatalogSyncViewChanged
+from riverhog_protocol.errors import CatalogSyncViewChanged, RiverhogError
 
 URL = "https://calendar.example"
 
@@ -119,3 +121,68 @@ def test_proof_work_is_durable_before_network_and_survives_departure(tmp_path: P
         )
         assert db.execute("SELECT COUNT(*) FROM proof_history").fetchone()[0] == 1
     assert store.evidence(digest)["proof"] == evidence["proof"]
+
+
+@pytest.mark.parametrize("failure", ["reset", "outage"])
+def test_run_matures_due_proof_when_catalog_cannot_advance(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    failure: str,
+) -> None:
+    path = tmp_path / "ots.db"
+    upgrade_state(path)
+    store = WitnessStore(path, (URL,))
+    api = Api()
+    store.ingest_once(api, now=100)
+    store.ingest_once(api, now=100)
+    with sqlite3.connect(path) as db:
+        digest = db.execute("SELECT digest FROM statements").fetchone()[0]
+
+    if failure == "reset":
+        api.view_changed = True
+        assert store.ingest_once(api, now=101).kind == "reset"
+    else:
+
+        class UnavailableApi(Api):
+            def list_catalog_sync_changes(
+                self, cursor: str, *, limit: int = 100
+            ) -> CatalogSyncChangePage:
+                raise RiverhogError("catalog unavailable", code="service_unavailable")
+
+        monkeypatch.setattr(witness_cli, "ApiClient", UnavailableApi)
+
+    calendar = Calendar()
+    result = witness_cli._run_once(store, calendar)
+    assert result["catalog_batch"] is None
+    assert result["matured_statement"] == digest
+    assert calendar.calls == 1
+    assert isinstance(store.evidence(digest)["proof"], bytes)
+    expected = "ingestion paused" if failure == "reset" else "ingestion failed"
+    assert expected in capsys.readouterr().err
+
+
+def test_run_advances_catalog_when_calendar_is_unavailable(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    path = tmp_path / "ots.db"
+    upgrade_state(path)
+    store = WitnessStore(path, (URL,))
+    api = Api()
+    store.ingest_once(api, now=100)
+    store.ingest_once(api, now=100)
+    monkeypatch.setattr(witness_cli, "ApiClient", lambda: api)
+
+    class UnavailableCalendar:
+        def request(self, kind: str, url: str, commitment: bytes, max_bytes: int) -> bytes:
+            raise proof.CalendarError("unavailable", retryable=True)
+
+    result = witness_cli._run_once(store, UnavailableCalendar())
+    assert result["catalog_batch"] == "changes"
+    assert store.progress().position.phase == "following"
+    digest = result["matured_statement"]
+    assert isinstance(digest, str)
+    due = store.evidence(digest)["due"]
+    assert isinstance(due, int)
+    assert store.mature_once(Calendar(), now=due) == digest
+    assert isinstance(store.evidence(digest)["proof"], bytes)

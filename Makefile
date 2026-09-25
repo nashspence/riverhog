@@ -4,7 +4,7 @@ SHELL := bash
 MISE_BIN ?= mise
 FILES ?= .
 TESTS ?= packages some-implementations riverhog tests/unit
-UNIT_PYTEST_ARGS ?= -n 4 --dist=loadscope --durations=30 --durations-min=0.25
+UNIT_PYTEST_ARGS ?= -n 4 --dist=loadscope --instafail --durations=30 --durations-min=0.25
 POSTGRES_TESTS ?= tests/integration/test_catalog_schema_postgres.py tests/integration/test_collection_deletion_concurrency.py tests/integration/test_collection_upload_custody_concurrency.py tests/integration/test_download_allowance_concurrency.py tests/integration/test_lifecycle_event_concurrency.py tests/integration/test_public_selector_plans_postgres.py tests/integration/test_retrieval_cache_admission_concurrency.py tests/integration/test_stove0_postgres_concurrency.py
 PYTHON_PATHS ?= packages some-implementations riverhog scripts tests
 RELEASE_VERSION ?= 1.0.0

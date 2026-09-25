@@ -20,11 +20,13 @@ _RPC_MAX_BYTES = 65_536
 
 
 def _bounded_bytes(response: httpx.Response, maximum: int) -> bytes:
+    if response.headers.get("Content-Encoding", "identity").strip().casefold() != "identity":
+        raise ValueError("encoded network response is unsupported")
     result = bytearray()
-    for chunk in response.iter_bytes():
-        result.extend(chunk)
-        if len(result) > maximum:
+    for chunk in response.iter_raw(chunk_size=min(maximum + 1, 8192)):
+        if len(result) + len(chunk) > maximum:
             raise ValueError("network response exceeds byte budget")
+        result.extend(chunk)
     return bytes(result)
 
 
@@ -55,7 +57,11 @@ class HttpCalendar:
                     "POST" if kind == "submit" else "GET",
                     target,
                     content=commitment if kind == "submit" else None,
-                    headers={"Accept": _MEDIA_TYPE, "Content-Type": "application/octet-stream"},
+                    headers={
+                        "Accept": _MEDIA_TYPE,
+                        "Accept-Encoding": "identity",
+                        "Content-Type": "application/octet-stream",
+                    },
                 ) as response:
                     if response.status_code == 404:
                         raise CalendarError("not_found", retryable=True)
@@ -123,7 +129,9 @@ class BitcoinRpc:
                 transport=self.transport,
                 auth=httpx.BasicAuth(username, password),
             ) as client:
-                with client.stream("POST", self.url, json=body) as response:
+                with client.stream(
+                    "POST", self.url, json=body, headers={"Accept-Encoding": "identity"}
+                ) as response:
                     if response.status_code != 200:
                         raise BitcoinUnavailable("Bitcoin RPC unavailable")
                     raw = _bounded_bytes(response, _RPC_MAX_BYTES)

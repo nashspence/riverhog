@@ -182,11 +182,18 @@ class CatalogReplica:
             try:
                 self._require_serial(db, _required_int(before, "serial"))
                 keep_active = (
-                    before["active_generation"] is not None
+                    bool(before["usable"])
+                    and before["active_generation"] is not None
                     and before["source_identity"] == checkpoint.source_identity
                     and before["authorization_view_identity"]
                     == checkpoint.authorization_view_identity
                 )
+                active = before["active_generation"] if keep_active else None
+                if not keep_active and before["active_generation"] is not None:
+                    db.execute(
+                        "UPDATE catalog_replica_generations SET obsolete = 1 WHERE id = ?",
+                        (before["active_generation"],),
+                    )
                 building = before["building_generation"]
                 if building is not None:
                     db.execute(
@@ -202,12 +209,14 @@ class CatalogReplica:
                     """
                     UPDATE catalog_replica_state
                     SET source_identity = ?, authorization_view_identity = ?,
-                        building_generation = ?, phase = 'catalog', cursor = ?,
-                        through_revision = 0, serial = serial + 1, usable = ?
+                        active_generation = ?, building_generation = ?,
+                        phase = 'catalog', cursor = ?, through_revision = 0,
+                        serial = serial + 1, usable = ?
                     """,
                     (
                         checkpoint.source_identity,
                         checkpoint.authorization_view_identity,
+                        active,
                         generation,
                         checkpoint.cursor,
                         int(keep_active),
@@ -288,7 +297,7 @@ class CatalogReplica:
                         through_revision,
                         generation if promote else active,
                         None if promote else before["building_generation"],
-                        int(active is not None or next_phase == "following"),
+                        int(active is not None or promote),
                     ),
                 )
                 db.commit()
