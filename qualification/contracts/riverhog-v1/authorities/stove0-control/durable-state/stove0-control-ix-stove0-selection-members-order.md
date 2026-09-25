@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:stove0-control:stove0-control-ix-stove0-selection-members-order:a7588d5f5f -->
+<!-- contract-element: durable-state:stove0-control:stove0-control-ix-stove0-selection-members-order:11c4595754 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-cce060c348"></a>
+<a id="s-9cc2c01729"></a>
 
 | Index fact | Value |
 |---|---|
@@ -30,7 +30,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-a9a93649d5"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-d8c1068c98"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -46,7 +46,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/3/structure/unique_indexes/1`
+- `/external_contract/durable_state/owners/5/structure/unique_indexes/1`
 
 ### Exact owned JSON
 

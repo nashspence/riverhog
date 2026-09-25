@@ -95,12 +95,16 @@ MYPY_SOURCES = \
 	scripts/runtime_image_identity.py \
 	scripts/release_installation.py \
 	scripts/test_a_riverhog_event_relay_image.py \
+	scripts/test_witness_image.py \
 	scripts/qualify_installation.py \
 	some-implementations/gogurt/application/src \
-	some-implementations/riverhog/applications/a-riverhog-event-relay/src
+	some-implementations/riverhog/applications/a-riverhog-event-relay/src \
+	some-implementations/riverhog/packages/a-riverhog-witness-contract-lib/src \
+	some-implementations/riverhog/applications/a-riverhog-minisign-witness/src \
+	some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/src
 args ?=
 
-.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit dependency-readiness operation-qualification database-qualification contract-freeze contract-freeze-update implementation-policy implementation-policy-update provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke filesystem-recovery-qualification stove0-scale-qualification a-riverhog-event-relay-smoke transfer-profile dist dist-smoke build build-riverhog build-a-riverhog-ftp-spool build-a-riverhog-aws-store build-a-riverhog-b2-store build-a-riverhog-filesystem-store build-stove0 build-a-stove0-exiftool-observer build-a-stove0-ffprobe-sampling-observer build-a-stove0-nvenc-av1-opus-target build-a-stove0-opus-target build-a-review0-materializer build-a-review0-rclone-target build-a-riverhog-event-relay build-test bootstrap-garage down test
+.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit dependency-readiness operation-qualification database-qualification contract-freeze contract-freeze-update implementation-policy implementation-policy-update provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke filesystem-recovery-qualification stove0-scale-qualification a-riverhog-event-relay-smoke transfer-profile dist dist-smoke build build-riverhog build-a-riverhog-ftp-spool build-a-riverhog-aws-store build-a-riverhog-b2-store build-a-riverhog-filesystem-store build-stove0 build-a-stove0-exiftool-observer build-a-stove0-ffprobe-sampling-observer build-a-stove0-nvenc-av1-opus-target build-a-stove0-opus-target build-a-review0-materializer build-a-review0-rclone-target build-a-riverhog-event-relay build-a-riverhog-minisign-witness build-a-riverhog-opentimestamps-witness build-test bootstrap-garage down test
 
 define UV_CMD
 	@if ! command -v "$(MISE_BIN)" >/dev/null 2>&1; then \
@@ -172,6 +176,8 @@ help:
 		'  make build-a-review0-materializer Build the review materialization target image.' \
 		'  make build-a-review0-rclone-target Build the Review0 rclone target image.' \
 		'  make build-a-riverhog-event-relay  Build the Riverhog event relay image.' \
+		'  make build-a-riverhog-minisign-witness Build the Minisign witness image.' \
+		'  make build-a-riverhog-opentimestamps-witness Build the OpenTimestamps witness image.' \
 		'  make build-test        Build the test image.' \
 		'  make build             Build every application and test image.' \
 		'  make bootstrap-garage  Start Garage and apply the checked-in bucket/key bootstrap.' \
@@ -349,6 +355,12 @@ build-a-review0-rclone-target:
 build-a-riverhog-event-relay:
 	$(call BAKE_IMAGE,a-riverhog-event-relay)
 
+build-a-riverhog-minisign-witness:
+	$(call BAKE_IMAGE,a-riverhog-minisign-witness)
+
+build-a-riverhog-opentimestamps-witness:
+	$(call BAKE_IMAGE,a-riverhog-opentimestamps-witness)
+
 a-riverhog-event-relay-smoke:
 	@if ! command -v "$(MISE_BIN)" >/dev/null 2>&1; then \
 		printf '%s\n' 'Riverhog event relay image smoke requires mise on PATH, or MISE_BIN=/abs/path/to/mise.' >&2; \
@@ -359,7 +371,7 @@ a-riverhog-event-relay-smoke:
 build-test:
 	$(call BAKE_IMAGE,test)
 
-build: build-riverhog build-a-riverhog-ftp-spool build-a-riverhog-aws-store build-a-riverhog-b2-store build-a-riverhog-filesystem-store build-stove0 build-a-stove0-exiftool-observer build-a-stove0-ffprobe-sampling-observer build-a-stove0-nvenc-av1-opus-target build-a-stove0-opus-target build-a-review0-materializer build-a-review0-rclone-target build-a-riverhog-event-relay build-test
+build: build-riverhog build-a-riverhog-ftp-spool build-a-riverhog-aws-store build-a-riverhog-b2-store build-a-riverhog-filesystem-store build-stove0 build-a-stove0-exiftool-observer build-a-stove0-ffprobe-sampling-observer build-a-stove0-nvenc-av1-opus-target build-a-stove0-opus-target build-a-review0-materializer build-a-review0-rclone-target build-a-riverhog-event-relay build-a-riverhog-minisign-witness build-a-riverhog-opentimestamps-witness build-test
 
 bootstrap-garage:
 	@./scripts/bootstrap_garage.sh

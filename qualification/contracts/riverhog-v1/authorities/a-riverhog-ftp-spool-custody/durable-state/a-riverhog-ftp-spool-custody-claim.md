@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:a-riverhog-ftp-spool-custody:a-riverhog-ftp-spool-custody-claim:90dd1485f6 -->
+<!-- contract-element: durable-state:a-riverhog-ftp-spool-custody:a-riverhog-ftp-spool-custody-claim:3e33ee8319 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,113 +13,113 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-121468c8a2"></a>
+<a id="s-aa2ffc6ec0"></a>
 
 - Document: `claim`
 
 ### Document schema
 
 - `kind`: `"json-document"`
-<a id="s-53f07a05ce"></a>
+<a id="s-a228ffa869"></a>
 
-- <a id="s-bde77f1331"></a>`type`: `"object"`
-- <a id="s-d0380f68f9"></a>`additionalProperties`: `false`
-- <a id="s-eb62378bb5"></a>`required`: `["format","claim_id","source_event_id","source","files","journals"]`
-- <a id="s-b0a3a8097d"></a>`title`: `"FtpClaimState"`
+- <a id="s-e4d610ace1"></a>`type`: `"object"`
+- <a id="s-b5c8e32cff"></a>`additionalProperties`: `false`
+- <a id="s-086d336c32"></a>`required`: `["format","claim_id","source_event_id","source","files","journals"]`
+- <a id="s-a43f29c41a"></a>`title`: `"FtpClaimState"`
 
 #### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-624e514537"></a>`claim_id` | yes | type="string"; minLength=1; title="Claim Id" |  |
-| <a id="s-350d0b880f"></a>`completion_event_ids` | no | anyOf=[(type="array"; items=(type="string")); (type="null")]; default=null; title="Completion Event Ids" |  |
-| <a id="s-5dd5626cf9"></a>`files` | yes | type="array"; items=([FtpClaimFileState](#s-16b4ff7d91)); minItems=1; title="Files" |  |
-| <a id="s-59ff4956dc"></a>`format` | yes | type="string"; const="a-riverhog-ftp-spool-claim/v1"; title="Format" |  |
-| <a id="s-200634d957"></a>`journals` | yes | type="object"; additionalProperties=(type="string"); title="Journals" |  |
-| <a id="s-5783ef5049"></a>`source` | yes | type="string"; minLength=1; title="Source" |  |
-| <a id="s-1600aec5fa"></a>`source_event_id` | yes | type="string"; minLength=1; title="Source Event Id" |  |
+| <a id="s-f5f04b925d"></a>`claim_id` | yes | type="string"; minLength=1; title="Claim Id" |  |
+| <a id="s-6b20a4b70e"></a>`completion_event_ids` | no | anyOf=[(type="array"; items=(type="string")); (type="null")]; default=null; title="Completion Event Ids" |  |
+| <a id="s-c9ba3737ad"></a>`files` | yes | type="array"; items=([FtpClaimFileState](#s-625fdcbed1)); minItems=1; title="Files" |  |
+| <a id="s-98291d0730"></a>`format` | yes | type="string"; const="a-riverhog-ftp-spool-claim/v1"; title="Format" |  |
+| <a id="s-c8b539c399"></a>`journals` | yes | type="object"; additionalProperties=(type="string"); title="Journals" |  |
+| <a id="s-79724d6665"></a>`source` | yes | type="string"; minLength=1; title="Source" |  |
+| <a id="s-f22ba3246c"></a>`source_event_id` | yes | type="string"; minLength=1; title="Source Event Id" |  |
 
 #### Definitions
 
-- [CapturedProvenanceState](#s-11aa5d2c36)
-- [CompletionRecordState](#s-85d2e24360)
-- [FtpClaimFileState](#s-16b4ff7d91)
-- [OmittedProvenanceState](#s-9bcafae0b1)
+- [CapturedProvenanceState](#s-25f4e011aa)
+- [CompletionRecordState](#s-be329af1ed)
+- [FtpClaimFileState](#s-625fdcbed1)
+- [OmittedProvenanceState](#s-a7eb521a49)
 
-#### <a id="s-11aa5d2c36"></a>definition `CapturedProvenanceState`
+#### <a id="s-25f4e011aa"></a>definition `CapturedProvenanceState`
 
-- <a id="s-e5a2084756"></a>`type`: `"object"`
-- <a id="s-bb50f1381b"></a>`additionalProperties`: `false`
-- <a id="s-827ab888ec"></a>`required`: `["path","bytes","sha256","status","journal_id","current_state_id"]`
-- <a id="s-49c204eca6"></a>`title`: `"CapturedProvenanceState"`
-
-##### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-59db85b53c"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
-| <a id="s-bf76fa2520"></a>`current_state_id` | yes | type="string"; minLength=1; title="Current State Id" |  |
-| <a id="s-6ded817cb6"></a>`journal_id` | yes | type="string"; minLength=1; title="Journal Id" |  |
-| <a id="s-bb7e9c745a"></a>`path` | yes | type="string"; minLength=1; title="Path" |  |
-| <a id="s-c2f5a99cec"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
-| <a id="s-ea8481fd72"></a>`status` | yes | type="string"; const="captured"; title="Status" |  |
-
-#### <a id="s-85d2e24360"></a>definition `CompletionRecordState`
-
-- <a id="s-bb3a1f64e0"></a>`type`: `"object"`
-- <a id="s-6e1be7d0a5"></a>`additionalProperties`: `false`
-- <a id="s-401e2c16cf"></a>`required`: `["format","event_id","source_id","path","custody","bytes","device","inode"]`
-- <a id="s-719245d5dd"></a>`title`: `"CompletionRecordState"`
+- <a id="s-6d05237f69"></a>`type`: `"object"`
+- <a id="s-667953d3d2"></a>`additionalProperties`: `false`
+- <a id="s-8503547738"></a>`required`: `["path","bytes","sha256","status","journal_id","current_state_id"]`
+- <a id="s-b4dd5e7de4"></a>`title`: `"CapturedProvenanceState"`
 
 ##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ccabd96792"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
-| <a id="s-42b21cdc9a"></a>`custody` | yes | type="string"; minLength=1; title="Custody" |  |
-| <a id="s-5746c5531c"></a>`device` | yes | type="integer"; minimum=0; title="Device" |  |
-| <a id="s-7f4867d982"></a>`event_id` | yes | type="string"; minLength=1; title="Event Id" |  |
-| <a id="s-4a5d92e6d8"></a>`format` | yes | type="string"; const="riverhog-ftp-completion-record/v1"; title="Format" |  |
-| <a id="s-735567f53f"></a>`inode` | yes | type="integer"; minimum=0; title="Inode" |  |
-| <a id="s-cb825df170"></a>`path` | yes | type="string"; minLength=1; title="Path" |  |
-| <a id="s-b7c3510f9d"></a>`source_id` | yes | type="string"; minLength=1; title="Source Id" |  |
+| <a id="s-523596ef08"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-baf9c6260e"></a>`current_state_id` | yes | type="string"; minLength=1; title="Current State Id" |  |
+| <a id="s-634f9d7116"></a>`journal_id` | yes | type="string"; minLength=1; title="Journal Id" |  |
+| <a id="s-ea8f0e60d0"></a>`path` | yes | type="string"; minLength=1; title="Path" |  |
+| <a id="s-fd97b1b37c"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+| <a id="s-3e64c648a6"></a>`status` | yes | type="string"; const="captured"; title="Status" |  |
 
-#### <a id="s-16b4ff7d91"></a>definition `FtpClaimFileState`
+#### <a id="s-be329af1ed"></a>definition `CompletionRecordState`
 
-- <a id="s-7da1dce1f0"></a>`type`: `"object"`
-- <a id="s-9df2b8abe5"></a>`additionalProperties`: `false`
-- <a id="s-611b4a187b"></a>`required`: `["path","bytes","sha256","device","inode","original","provenance"]`
-- <a id="s-60cd2fd8da"></a>`title`: `"FtpClaimFileState"`
+- <a id="s-de0d251fd9"></a>`type`: `"object"`
+- <a id="s-f6203eb97f"></a>`additionalProperties`: `false`
+- <a id="s-8d47a65750"></a>`required`: `["format","event_id","source_id","path","custody","bytes","device","inode"]`
+- <a id="s-ef5a524302"></a>`title`: `"CompletionRecordState"`
 
 ##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-090727027e"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
-| <a id="s-8f3c32b43c"></a>`completion_record` | no | anyOf=[([CompletionRecordState](#s-85d2e24360)); (type="null")]; default=null |  |
-| <a id="s-ad73184375"></a>`device` | yes | type="integer"; minimum=0; title="Device" |  |
-| <a id="s-580e01dc1a"></a>`inode` | yes | type="integer"; minimum=0; title="Inode" |  |
-| <a id="s-0f75c99e66"></a>`original` | yes | type="string"; minLength=1; title="Original" |  |
-| <a id="s-14b8d91149"></a>`path` | yes | type="string"; minLength=1; title="Path" |  |
-| <a id="s-bc12e2032e"></a>`provenance` | yes | anyOf=[([CapturedProvenanceState](#s-11aa5d2c36)); ([OmittedProvenanceState](#s-9bcafae0b1))]; title="Provenance" |  |
-| <a id="s-3c672fd99a"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+| <a id="s-214761c17b"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-f2c30c8004"></a>`custody` | yes | type="string"; minLength=1; title="Custody" |  |
+| <a id="s-751e8f510b"></a>`device` | yes | type="integer"; minimum=0; title="Device" |  |
+| <a id="s-aea2fd23f9"></a>`event_id` | yes | type="string"; minLength=1; title="Event Id" |  |
+| <a id="s-8112e43458"></a>`format` | yes | type="string"; const="riverhog-ftp-completion-record/v1"; title="Format" |  |
+| <a id="s-7942c344b4"></a>`inode` | yes | type="integer"; minimum=0; title="Inode" |  |
+| <a id="s-e2fef4d2ef"></a>`path` | yes | type="string"; minLength=1; title="Path" |  |
+| <a id="s-65d54f76b4"></a>`source_id` | yes | type="string"; minLength=1; title="Source Id" |  |
 
-#### <a id="s-9bcafae0b1"></a>definition `OmittedProvenanceState`
+#### <a id="s-625fdcbed1"></a>definition `FtpClaimFileState`
 
-- <a id="s-2bc5d8cc41"></a>`type`: `"object"`
-- <a id="s-66cfbe64e8"></a>`additionalProperties`: `false`
-- <a id="s-cf8e522e5f"></a>`required`: `["path","bytes","sha256","status","omission_reason"]`
-- <a id="s-a5e0cfb46f"></a>`title`: `"OmittedProvenanceState"`
+- <a id="s-290445e0f6"></a>`type`: `"object"`
+- <a id="s-cc3dba7116"></a>`additionalProperties`: `false`
+- <a id="s-0d4a367f14"></a>`required`: `["path","bytes","sha256","device","inode","original","provenance"]`
+- <a id="s-63c2dcd02c"></a>`title`: `"FtpClaimFileState"`
 
 ##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-804a17ecd7"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
-| <a id="s-2df37f2887"></a>`omission_reason` | yes | type="string"; minLength=1; title="Omission Reason" |  |
-| <a id="s-b914d1d581"></a>`path` | yes | type="string"; minLength=1; title="Path" |  |
-| <a id="s-5d7f77aedf"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
-| <a id="s-e0466263dd"></a>`status` | yes | type="string"; const="omitted"; title="Status" |  |
+| <a id="s-f6219ae377"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-12e6c63650"></a>`completion_record` | no | anyOf=[([CompletionRecordState](#s-be329af1ed)); (type="null")]; default=null |  |
+| <a id="s-41f24d585b"></a>`device` | yes | type="integer"; minimum=0; title="Device" |  |
+| <a id="s-bba168b7af"></a>`inode` | yes | type="integer"; minimum=0; title="Inode" |  |
+| <a id="s-b17a568b27"></a>`original` | yes | type="string"; minLength=1; title="Original" |  |
+| <a id="s-8690e68158"></a>`path` | yes | type="string"; minLength=1; title="Path" |  |
+| <a id="s-76d722bf35"></a>`provenance` | yes | anyOf=[([CapturedProvenanceState](#s-25f4e011aa)); ([OmittedProvenanceState](#s-a7eb521a49))]; title="Provenance" |  |
+| <a id="s-c403e4df49"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+
+#### <a id="s-a7eb521a49"></a>definition `OmittedProvenanceState`
+
+- <a id="s-a7e7b95990"></a>`type`: `"object"`
+- <a id="s-ff137cf2d1"></a>`additionalProperties`: `false`
+- <a id="s-1836376ba3"></a>`required`: `["path","bytes","sha256","status","omission_reason"]`
+- <a id="s-3323ebcd38"></a>`title`: `"OmittedProvenanceState"`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-128141dbea"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-e68ff4c43e"></a>`omission_reason` | yes | type="string"; minLength=1; title="Omission Reason" |  |
+| <a id="s-b3f59a33ac"></a>`path` | yes | type="string"; minLength=1; title="Path" |  |
+| <a id="s-8ff4a12e9b"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+| <a id="s-f3c93409c5"></a>`status` | yes | type="string"; const="omitted"; title="Status" |  |
 
 ## Maintained corroboration
 
@@ -129,7 +129,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-c59372ca25"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-be132a6d21"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -145,7 +145,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/6/structure/units/2`
+- `/external_contract/durable_state/owners/8/structure/units/2`
 
 ### Exact owned JSON
 

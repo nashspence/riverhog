@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:gogurt-listener:gogurt-listener-observed-mounts:54790297ca -->
+<!-- contract-element: durable-state:gogurt-listener:gogurt-listener-observed-mounts:dffe867d8d -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-1982d018ff"></a>
+<a id="s-e9dd8b9955"></a>
 
 ### Table: `observed_mounts`
 
@@ -21,10 +21,10 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-4342ec0d6f"></a>`mount_point` | `TEXT` | no | `—` | {"primary_key":true} |
-| <a id="s-7744cf4205"></a>`present` | `INTEGER` | no | `—` | {"checks":["(present IN (0, 1))"]} |
-| <a id="s-907a253d6d"></a>`generation` | `INTEGER` | no | `—` | {"checks":["(generation >= 1)"]} |
-| <a id="s-fd136fa2a9"></a>`marker_identity` | `TEXT` | yes | `—` | — |
+| <a id="s-897371e851"></a>`mount_point` | `TEXT` | no | `—` | {"primary_key":true} |
+| <a id="s-8ec4d95696"></a>`present` | `INTEGER` | no | `—` | {"checks":["(present IN (0, 1))"]} |
+| <a id="s-242ad10d0c"></a>`generation` | `INTEGER` | no | `—` | {"checks":["(generation >= 1)"]} |
+| <a id="s-ed82425043"></a>`marker_identity` | `TEXT` | yes | `—` | — |
 
 ## Maintained corroboration
 
@@ -34,7 +34,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-e4fb6a8fc8"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-63e28744cd"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/4/structure/tables/1`
+- `/external_contract/durable_state/owners/6/structure/tables/1`
 
 ### Exact owned JSON
 

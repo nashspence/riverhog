@@ -17,16 +17,25 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-riverhog-cli-local` | [a-riverhog-cli-local: settings](../../authorities/a-riverhog-cli-local/durable-state/a-riverhog-cli-local-settings.md#pa-95b367e130) |
 | `a-riverhog-event-relay-cursor` | [a-riverhog-event-relay-cursor durable-state identity](../../authorities/a-riverhog-event-relay-cursor/durable-state/a-riverhog-event-relay-cursor-durable-state-identity.md#pa-7227fa240d) |
 | `a-riverhog-event-relay-cursor` | [a-riverhog-event-relay-cursor: source_cursors](../../authorities/a-riverhog-event-relay-cursor/durable-state/a-riverhog-event-relay-cursor-source-cursors.md#pa-b23785d393) |
-| `a-riverhog-ftp-spool-custody` | [a-riverhog-ftp-spool-custody durable-state identity](../../authorities/a-riverhog-ftp-spool-custody/durable-state/a-riverhog-ftp-spool-custody-durable-state-identity.md#pa-ef197c2397) |
-| `a-riverhog-ftp-spool-custody` | [a-riverhog-ftp-spool-custody: claim](../../authorities/a-riverhog-ftp-spool-custody/durable-state/a-riverhog-ftp-spool-custody-claim.md#pa-c59372ca25) |
-| `a-riverhog-ftp-spool-custody` | [a-riverhog-ftp-spool-custody: completion-log](../../authorities/a-riverhog-ftp-spool-custody/durable-state/a-riverhog-ftp-spool-custody-completion-log.md#pa-f0bcd4a5cf) |
-| `a-riverhog-ftp-spool-custody` | [a-riverhog-ftp-spool-custody: operational-database](../../authorities/a-riverhog-ftp-spool-custody/durable-state/a-riverhog-ftp-spool-custody-operational-database.md#pa-960ca824e6) |
-| `a-riverhog-ftp-spool-custody` | [a-riverhog-ftp-spool-custody: payload](../../authorities/a-riverhog-ftp-spool-custody/durable-state/a-riverhog-ftp-spool-custody-payload.md#pa-d97cf58f9f) |
-| `a-riverhog-ftp-spool-custody` | [a-riverhog-ftp-spool-custody: receipt](../../authorities/a-riverhog-ftp-spool-custody/durable-state/a-riverhog-ftp-spool-custody-receipt.md#pa-12ae7579b8) |
-| `gogurt-listener` | [gogurt-listener durable-state identity](../../authorities/gogurt-listener/durable-state/gogurt-listener-durable-state-identity.md#pa-7ceba5b7a0) |
-| `gogurt-listener` | [gogurt-listener: dispatches](../../authorities/gogurt-listener/durable-state/gogurt-listener-dispatches.md#pa-53b33b8833) |
-| `gogurt-listener` | [gogurt-listener: listener_meta](../../authorities/gogurt-listener/durable-state/gogurt-listener-listener-meta.md#pa-a319da3b00) |
-| `gogurt-listener` | [gogurt-listener: observed_mounts](../../authorities/gogurt-listener/durable-state/gogurt-listener-observed-mounts.md#pa-e4fb6a8fc8) |
+| `a-riverhog-ftp-spool-custody` | [a-riverhog-ftp-spool-custody durable-state identity](../../authorities/a-riverhog-ftp-spool-custody/durable-state/a-riverhog-ftp-spool-custody-durable-state-identity.md#pa-671f448cc5) |
+| `a-riverhog-ftp-spool-custody` | [a-riverhog-ftp-spool-custody: claim](../../authorities/a-riverhog-ftp-spool-custody/durable-state/a-riverhog-ftp-spool-custody-claim.md#pa-be132a6d21) |
+| `a-riverhog-ftp-spool-custody` | [a-riverhog-ftp-spool-custody: completion-log](../../authorities/a-riverhog-ftp-spool-custody/durable-state/a-riverhog-ftp-spool-custody-completion-log.md#pa-b37afd2857) |
+| `a-riverhog-ftp-spool-custody` | [a-riverhog-ftp-spool-custody: operational-database](../../authorities/a-riverhog-ftp-spool-custody/durable-state/a-riverhog-ftp-spool-custody-operational-database.md#pa-7824ec2903) |
+| `a-riverhog-ftp-spool-custody` | [a-riverhog-ftp-spool-custody: payload](../../authorities/a-riverhog-ftp-spool-custody/durable-state/a-riverhog-ftp-spool-custody-payload.md#pa-2a01d11ad7) |
+| `a-riverhog-ftp-spool-custody` | [a-riverhog-ftp-spool-custody: receipt](../../authorities/a-riverhog-ftp-spool-custody/durable-state/a-riverhog-ftp-spool-custody-receipt.md#pa-42c7b391a9) |
+| `a-riverhog-minisign-witness-ledger` | [a-riverhog-minisign-witness-ledger durable-state identity](../../authorities/a-riverhog-minisign-witness-ledger/durable-state/a-riverhog-minisign-witness-ledger-durable-state-identity.md#pa-1ce345191f) |
+| `a-riverhog-minisign-witness-ledger` | [a-riverhog-minisign-witness-ledger: observations](../../authorities/a-riverhog-minisign-witness-ledger/durable-state/a-riverhog-minisign-witness-ledger-observations.md#pa-2f4bf73deb) |
+| `a-riverhog-minisign-witness-ledger` | [a-riverhog-minisign-witness-ledger: progress](../../authorities/a-riverhog-minisign-witness-ledger/durable-state/a-riverhog-minisign-witness-ledger-progress.md#pa-c5b6bb28fa) |
+| `a-riverhog-minisign-witness-ledger` | [a-riverhog-minisign-witness-ledger: statements](../../authorities/a-riverhog-minisign-witness-ledger/durable-state/a-riverhog-minisign-witness-ledger-statements.md#pa-090a7a673d) |
+| `a-riverhog-opentimestamps-witness-ledger` | [a-riverhog-opentimestamps-witness-ledger durable-state identity](../../authorities/a-riverhog-opentimestamps-witness-ledger/durable-state/a-riverhog-opentimestamps-witness-ledger-durable-state-identity.md#pa-28b19d4a1f) |
+| `a-riverhog-opentimestamps-witness-ledger` | [a-riverhog-opentimestamps-witness-ledger: observations](../../authorities/a-riverhog-opentimestamps-witness-ledger/durable-state/a-riverhog-opentimestamps-witness-ledger-observations.md#pa-9e18b49182) |
+| `a-riverhog-opentimestamps-witness-ledger` | [a-riverhog-opentimestamps-witness-ledger: progress](../../authorities/a-riverhog-opentimestamps-witness-ledger/durable-state/a-riverhog-opentimestamps-witness-ledger-progress.md#pa-f56e3fce42) |
+| `a-riverhog-opentimestamps-witness-ledger` | [a-riverhog-opentimestamps-witness-ledger: proof_history](../../authorities/a-riverhog-opentimestamps-witness-ledger/durable-state/a-riverhog-opentimestamps-witness-ledger-proof-history.md#pa-835a5c656d) |
+| `a-riverhog-opentimestamps-witness-ledger` | [a-riverhog-opentimestamps-witness-ledger: statements](../../authorities/a-riverhog-opentimestamps-witness-ledger/durable-state/a-riverhog-opentimestamps-witness-ledger-statements.md#pa-cfb4b2ea2d) |
+| `gogurt-listener` | [gogurt-listener durable-state identity](../../authorities/gogurt-listener/durable-state/gogurt-listener-durable-state-identity.md#pa-7d835a0142) |
+| `gogurt-listener` | [gogurt-listener: dispatches](../../authorities/gogurt-listener/durable-state/gogurt-listener-dispatches.md#pa-97aad20701) |
+| `gogurt-listener` | [gogurt-listener: listener_meta](../../authorities/gogurt-listener/durable-state/gogurt-listener-listener-meta.md#pa-8cc57e2d15) |
+| `gogurt-listener` | [gogurt-listener: observed_mounts](../../authorities/gogurt-listener/durable-state/gogurt-listener-observed-mounts.md#pa-63e28744cd) |
 | `riverhog-catalog` | [riverhog-catalog durable-state identity](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-durable-state-identity.md#pa-665622a720) |
 | `riverhog-catalog` | [riverhog-catalog: app_key_access_grants](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-app-key-access-grants.md#pa-81330c6145) |
 | `riverhog-catalog` | [riverhog-catalog: app_keys](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-app-keys.md#pa-bbe51cde6f) |
@@ -119,33 +128,33 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-catalog` | [riverhog-catalog: ux_collection_archive_object_uploads_sequence](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-ux-collection-archive-object-uploads-sequence.md#pa-f8651ed18a) |
 | `riverhog-catalog` | [riverhog-catalog: ux_collection_upload_files_order](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-ux-collection-upload-files-order.md#pa-6de2428404) |
 | `riverhog-catalog` | [riverhog-catalog: ux_collection_uploads_principal_idempotency_key](../../authorities/riverhog-catalog/durable-state/riverhog-catalog-ux-collection-uploads-principal-idempotency-key.md#pa-5a0bc9d80b) |
-| `riverhog-provenance-installation` | [riverhog-provenance-installation durable state](../../authorities/riverhog-provenance-installation/durable-state/riverhog-provenance-installation-durable-state.md#pa-7845ed3800) |
-| `stove0-control` | [stove0-control durable-state identity](../../authorities/stove0-control/durable-state/stove0-control-durable-state-identity.md#pa-443b48ffb4) |
-| `stove0-control` | [stove0-control: ix_stove0_selection_members_continuation](../../authorities/stove0-control/durable-state/stove0-control-ix-stove0-selection-members-continuation.md#pa-32e00fce9f) |
-| `stove0-control` | [stove0-control: ix_stove0_selection_members_order](../../authorities/stove0-control/durable-state/stove0-control-ix-stove0-selection-members-order.md#pa-a9a93649d5) |
-| `stove0-control` | [stove0-control: stove0_admission_candidates](../../authorities/stove0-control/durable-state/stove0-control-stove0-admission-candidates.md#pa-faa135da31) |
-| `stove0-control` | [stove0-control: stove0_admission_matches](../../authorities/stove0-control/durable-state/stove0-control-stove0-admission-matches.md#pa-4a6ca60613) |
-| `stove0-control` | [stove0-control: stove0_admission_observed_revisions](../../authorities/stove0-control/durable-state/stove0-control-stove0-admission-observed-revisions.md#pa-96249ca178) |
-| `stove0-control` | [stove0-control: stove0_admission_policies](../../authorities/stove0-control/durable-state/stove0-control-stove0-admission-policies.md#pa-293100a754) |
-| `stove0-control` | [stove0-control: stove0_artifact_selection_members](../../authorities/stove0-control/durable-state/stove0-control-stove0-artifact-selection-members.md#pa-7ce0b3e4b9) |
-| `stove0-control` | [stove0-control: stove0_artifact_selections](../../authorities/stove0-control/durable-state/stove0-control-stove0-artifact-selections.md#pa-19cc020046) |
-| `stove0-control` | [stove0-control: stove0_departure_effects](../../authorities/stove0-control/durable-state/stove0-control-stove0-departure-effects.md#pa-65e9eefe91) |
-| `stove0-control` | [stove0-control: stove0_departure_policies](../../authorities/stove0-control/durable-state/stove0-control-stove0-departure-policies.md#pa-a947af3af5) |
-| `stove0-control` | [stove0-control: stove0_departure_seen](../../authorities/stove0-control/durable-state/stove0-control-stove0-departure-seen.md#pa-027e6b481d) |
-| `stove0-control` | [stove0-control: stove0_evaluation_children](../../authorities/stove0-control/durable-state/stove0-control-stove0-evaluation-children.md#pa-bf7f0e9932) |
-| `stove0-control` | [stove0-control: stove0_evaluation_records](../../authorities/stove0-control/durable-state/stove0-control-stove0-evaluation-records.md#pa-fbb40295c1) |
-| `stove0-control` | [stove0-control: stove0_event_cursors](../../authorities/stove0-control/durable-state/stove0-control-stove0-event-cursors.md#pa-be6ae994e1) |
-| `stove0-control` | [stove0-control: stove0_lifecycle_events](../../authorities/stove0-control/durable-state/stove0-control-stove0-lifecycle-events.md#pa-6437d07061) |
-| `stove0-control` | [stove0-control: stove0_target_input_dispositions](../../authorities/stove0-control/durable-state/stove0-control-stove0-target-input-dispositions.md#pa-4034a03980) |
-| `stove0-control` | [stove0-control: stove0_target_outputs](../../authorities/stove0-control/durable-state/stove0-control-stove0-target-outputs.md#pa-1a43153497) |
-| `stove0-control` | [stove0-control: stove0_target_production_seals](../../authorities/stove0-control/durable-state/stove0-control-stove0-target-production-seals.md#pa-7664567b19) |
-| `stove0-control` | [stove0-control: stove0_target_settlement_seals](../../authorities/stove0-control/durable-state/stove0-control-stove0-target-settlement-seals.md#pa-bd767653c4) |
-| `stove0-control` | [stove0-control: stove0_target_source_edges](../../authorities/stove0-control/durable-state/stove0-control-stove0-target-source-edges.md#pa-aa774caed7) |
-| `stove0-control` | [stove0-control: stove0_work_evaluations](../../authorities/stove0-control/durable-state/stove0-control-stove0-work-evaluations.md#pa-d81d3e706b) |
-| `stove0-control` | [stove0-control: stove0_work_records](../../authorities/stove0-control/durable-state/stove0-control-stove0-work-records.md#pa-e9c9a9e137) |
-| `stove0-control` | [stove0-control: stove0_work_relations](../../authorities/stove0-control/durable-state/stove0-control-stove0-work-relations.md#pa-17f997b608) |
-| `stove0-control` | [stove0-control: stove0_work_selection_references](../../authorities/stove0-control/durable-state/stove0-control-stove0-work-selection-references.md#pa-44c2223d66) |
-| `stove0-control` | [stove0-control: uq_stove0_target_outputs_path](../../authorities/stove0-control/durable-state/stove0-control-uq-stove0-target-outputs-path.md#pa-7b77390b3c) |
-| `stove0-target-jobs` | [stove0-target-jobs durable-state identity](../../authorities/stove0-target-jobs/durable-state/stove0-target-jobs-durable-state-identity.md#pa-7b70892ece) |
-| `stove0-target-jobs` | [stove0-target-jobs: AcceptedTargetJob](../../authorities/stove0-target-jobs/durable-state/stove0-target-jobs-acceptedtargetjob.md#pa-899b241fe4) |
-| `stove0-target-jobs` | [stove0-target-jobs: TargetJobStatus](../../authorities/stove0-target-jobs/durable-state/stove0-target-jobs-targetjobstatus.md#pa-ab85be943c) |
+| `riverhog-provenance-installation` | [riverhog-provenance-installation durable state](../../authorities/riverhog-provenance-installation/durable-state/riverhog-provenance-installation-durable-state.md#pa-60dc0c6ac3) |
+| `stove0-control` | [stove0-control durable-state identity](../../authorities/stove0-control/durable-state/stove0-control-durable-state-identity.md#pa-3ef3159cfc) |
+| `stove0-control` | [stove0-control: ix_stove0_selection_members_continuation](../../authorities/stove0-control/durable-state/stove0-control-ix-stove0-selection-members-continuation.md#pa-e648908ec7) |
+| `stove0-control` | [stove0-control: ix_stove0_selection_members_order](../../authorities/stove0-control/durable-state/stove0-control-ix-stove0-selection-members-order.md#pa-d8c1068c98) |
+| `stove0-control` | [stove0-control: stove0_admission_candidates](../../authorities/stove0-control/durable-state/stove0-control-stove0-admission-candidates.md#pa-1ae0c288d0) |
+| `stove0-control` | [stove0-control: stove0_admission_matches](../../authorities/stove0-control/durable-state/stove0-control-stove0-admission-matches.md#pa-0605ef8e2d) |
+| `stove0-control` | [stove0-control: stove0_admission_observed_revisions](../../authorities/stove0-control/durable-state/stove0-control-stove0-admission-observed-revisions.md#pa-f33a617c50) |
+| `stove0-control` | [stove0-control: stove0_admission_policies](../../authorities/stove0-control/durable-state/stove0-control-stove0-admission-policies.md#pa-3541a5a073) |
+| `stove0-control` | [stove0-control: stove0_artifact_selection_members](../../authorities/stove0-control/durable-state/stove0-control-stove0-artifact-selection-members.md#pa-e89ccd481c) |
+| `stove0-control` | [stove0-control: stove0_artifact_selections](../../authorities/stove0-control/durable-state/stove0-control-stove0-artifact-selections.md#pa-f57dfdcd61) |
+| `stove0-control` | [stove0-control: stove0_departure_effects](../../authorities/stove0-control/durable-state/stove0-control-stove0-departure-effects.md#pa-3d6980ac8a) |
+| `stove0-control` | [stove0-control: stove0_departure_policies](../../authorities/stove0-control/durable-state/stove0-control-stove0-departure-policies.md#pa-3323b7ed6f) |
+| `stove0-control` | [stove0-control: stove0_departure_seen](../../authorities/stove0-control/durable-state/stove0-control-stove0-departure-seen.md#pa-b36a5f0d28) |
+| `stove0-control` | [stove0-control: stove0_evaluation_children](../../authorities/stove0-control/durable-state/stove0-control-stove0-evaluation-children.md#pa-f135a8126c) |
+| `stove0-control` | [stove0-control: stove0_evaluation_records](../../authorities/stove0-control/durable-state/stove0-control-stove0-evaluation-records.md#pa-c9c50b7ed2) |
+| `stove0-control` | [stove0-control: stove0_event_cursors](../../authorities/stove0-control/durable-state/stove0-control-stove0-event-cursors.md#pa-19c9ccc85f) |
+| `stove0-control` | [stove0-control: stove0_lifecycle_events](../../authorities/stove0-control/durable-state/stove0-control-stove0-lifecycle-events.md#pa-7c1d349e7b) |
+| `stove0-control` | [stove0-control: stove0_target_input_dispositions](../../authorities/stove0-control/durable-state/stove0-control-stove0-target-input-dispositions.md#pa-16553edf07) |
+| `stove0-control` | [stove0-control: stove0_target_outputs](../../authorities/stove0-control/durable-state/stove0-control-stove0-target-outputs.md#pa-fa073e9520) |
+| `stove0-control` | [stove0-control: stove0_target_production_seals](../../authorities/stove0-control/durable-state/stove0-control-stove0-target-production-seals.md#pa-62eecdce71) |
+| `stove0-control` | [stove0-control: stove0_target_settlement_seals](../../authorities/stove0-control/durable-state/stove0-control-stove0-target-settlement-seals.md#pa-d295db9fa1) |
+| `stove0-control` | [stove0-control: stove0_target_source_edges](../../authorities/stove0-control/durable-state/stove0-control-stove0-target-source-edges.md#pa-afdab02be1) |
+| `stove0-control` | [stove0-control: stove0_work_evaluations](../../authorities/stove0-control/durable-state/stove0-control-stove0-work-evaluations.md#pa-95ab4ebf85) |
+| `stove0-control` | [stove0-control: stove0_work_records](../../authorities/stove0-control/durable-state/stove0-control-stove0-work-records.md#pa-6598ce8015) |
+| `stove0-control` | [stove0-control: stove0_work_relations](../../authorities/stove0-control/durable-state/stove0-control-stove0-work-relations.md#pa-8f61662583) |
+| `stove0-control` | [stove0-control: stove0_work_selection_references](../../authorities/stove0-control/durable-state/stove0-control-stove0-work-selection-references.md#pa-0b0ec5f9de) |
+| `stove0-control` | [stove0-control: uq_stove0_target_outputs_path](../../authorities/stove0-control/durable-state/stove0-control-uq-stove0-target-outputs-path.md#pa-615e0833dc) |
+| `stove0-target-jobs` | [stove0-target-jobs durable-state identity](../../authorities/stove0-target-jobs/durable-state/stove0-target-jobs-durable-state-identity.md#pa-22b5a92577) |
+| `stove0-target-jobs` | [stove0-target-jobs: AcceptedTargetJob](../../authorities/stove0-target-jobs/durable-state/stove0-target-jobs-acceptedtargetjob.md#pa-2eaa218fbf) |
+| `stove0-target-jobs` | [stove0-target-jobs: TargetJobStatus](../../authorities/stove0-target-jobs/durable-state/stove0-target-jobs-targetjobstatus.md#pa-f6badad064) |

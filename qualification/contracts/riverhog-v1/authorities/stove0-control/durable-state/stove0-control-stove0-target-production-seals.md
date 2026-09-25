@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-target-production-seals:9e4340611b -->
+<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-target-production-seals:6bcf81d6f1 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-9371305b6f"></a>
+<a id="s-52a4134f38"></a>
 
 ### Table: `stove0_target_production_seals`
 
@@ -21,25 +21,25 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-4890ea14d9"></a>`work_id` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-08c6e2de43"></a>`job_id` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-b39263426b"></a>`revision` | `INTEGER` | no | `—` | — |
-| <a id="s-70d8ab28ca"></a>`state` | `VARCHAR(32)` | no | `—` | — |
-| <a id="s-21a6452677"></a>`updated_at` | `VARCHAR(40)` | no | `—` | — |
-| <a id="s-137fd10298"></a>`document_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-0e1cb8421b"></a>`document_json` | `TEXT` | no | `—` | — |
+| <a id="s-e1f1b4c6ca"></a>`work_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-ed45d4a782"></a>`job_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-75d51e736d"></a>`revision` | `INTEGER` | no | `—` | — |
+| <a id="s-e54bcfe1a4"></a>`state` | `VARCHAR(32)` | no | `—` | — |
+| <a id="s-5117635ca2"></a>`updated_at` | `VARCHAR(40)` | no | `—` | — |
+| <a id="s-dab21f468b"></a>`document_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-debdc37f1a"></a>`document_json` | `TEXT` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-09d1f0d61a"></a>`primary-key` | `—` | `PRIMARY KEY (work_id, job_id)` |
-| <a id="s-cca31c0cd5"></a>`check` | `ck_stove0_target_production_seals_revision` | `CONSTRAINT ck_stove0_target_production_seals_revision CHECK (revision >= 1)` |
-| <a id="s-d33ae787f1"></a>`check` | `ck_stove0_target_production_seals_state` | `CONSTRAINT ck_stove0_target_production_seals_state CHECK (state IN ('receiving','sealing','sealed','failed'))` |
-| <a id="s-2d0bb86689"></a>`check` | `ck_stove0_target_production_seals_document_bytes` | `CONSTRAINT ck_stove0_target_production_seals_document_bytes CHECK (document_bytes >= 0)` |
-| <a id="s-112d6ac625"></a>`foreign-key` | `—` | `FOREIGN KEY(work_id) REFERENCES stove0_work_records (work_id) ON DELETE CASCADE` |
-| <a id="s-014bf72fe9"></a>`check` | `ck_stove0_target_production_seals_work_id_hex` | `CONSTRAINT ck_stove0_target_production_seals_work_id_hex CHECK (length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-945a52f6bc"></a>`check` | `ck_stove0_target_production_seals_job_id_hex` | `CONSTRAINT ck_stove0_target_production_seals_job_id_hex CHECK (length(job_id) = 64 AND lower(job_id) = job_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(job_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-9edec55eac"></a>`primary-key` | `—` | `PRIMARY KEY (work_id, job_id)` |
+| <a id="s-c7bb2fe947"></a>`check` | `ck_stove0_target_production_seals_revision` | `CONSTRAINT ck_stove0_target_production_seals_revision CHECK (revision >= 1)` |
+| <a id="s-2a5be20b9e"></a>`check` | `ck_stove0_target_production_seals_state` | `CONSTRAINT ck_stove0_target_production_seals_state CHECK (state IN ('receiving','sealing','sealed','failed'))` |
+| <a id="s-0e4cae6475"></a>`check` | `ck_stove0_target_production_seals_document_bytes` | `CONSTRAINT ck_stove0_target_production_seals_document_bytes CHECK (document_bytes >= 0)` |
+| <a id="s-2a779cc54d"></a>`foreign-key` | `—` | `FOREIGN KEY(work_id) REFERENCES stove0_work_records (work_id) ON DELETE CASCADE` |
+| <a id="s-c196dd4846"></a>`check` | `ck_stove0_target_production_seals_work_id_hex` | `CONSTRAINT ck_stove0_target_production_seals_work_id_hex CHECK (length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-68c5108f2a"></a>`check` | `ck_stove0_target_production_seals_job_id_hex` | `CONSTRAINT ck_stove0_target_production_seals_job_id_hex CHECK (length(job_id) = 64 AND lower(job_id) = job_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(job_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -49,7 +49,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-7664567b19"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-62eecdce71"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -65,7 +65,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/3/structure/tables/17`
+- `/external_contract/durable_state/owners/5/structure/tables/17`
 
 ### Exact owned JSON
 

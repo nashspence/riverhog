@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-target-input-dispositions:731231938a -->
+<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-target-input-dispositions:01d3dfa082 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-7d808cfe12"></a>
+<a id="s-4021df5af5"></a>
 
 ### Table: `stove0_target_input_dispositions`
 
@@ -21,21 +21,21 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-9b4d50cbf3"></a>`work_id` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-7ad757da1c"></a>`job_id` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-6acf927b8b"></a>`input_id` | `VARCHAR(160)` | no | `—` | — |
-| <a id="s-3e3b601743"></a>`status` | `VARCHAR(32)` | no | `—` | — |
+| <a id="s-3888018f24"></a>`work_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-a5db4cc7fd"></a>`job_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-d4b7472182"></a>`input_id` | `VARCHAR(160)` | no | `—` | — |
+| <a id="s-6743c81db1"></a>`status` | `VARCHAR(32)` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-7598d16948"></a>`primary-key` | `—` | `PRIMARY KEY (work_id, job_id, input_id)` |
-| <a id="s-0dfa80097a"></a>`check` | `ck_stove0_target_dispositions_id` | `CONSTRAINT ck_stove0_target_dispositions_id CHECK (length(input_id) >= 1)` |
-| <a id="s-754ec5d305"></a>`check` | `ck_stove0_target_dispositions_status` | `CONSTRAINT ck_stove0_target_dispositions_status CHECK (status IN ('omitted','preserved','rejected','transformed'))` |
-| <a id="s-8287588836"></a>`foreign-key` | `—` | `FOREIGN KEY(work_id) REFERENCES stove0_work_records (work_id) ON DELETE CASCADE` |
-| <a id="s-a0c6438a81"></a>`check` | `ck_stove0_target_input_dispositions_work_id_hex` | `CONSTRAINT ck_stove0_target_input_dispositions_work_id_hex CHECK (length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-493169e3b1"></a>`check` | `ck_stove0_target_input_dispositions_job_id_hex` | `CONSTRAINT ck_stove0_target_input_dispositions_job_id_hex CHECK (length(job_id) = 64 AND lower(job_id) = job_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(job_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-fb8f5f3c39"></a>`primary-key` | `—` | `PRIMARY KEY (work_id, job_id, input_id)` |
+| <a id="s-6606f7f329"></a>`check` | `ck_stove0_target_dispositions_id` | `CONSTRAINT ck_stove0_target_dispositions_id CHECK (length(input_id) >= 1)` |
+| <a id="s-7769f421a7"></a>`check` | `ck_stove0_target_dispositions_status` | `CONSTRAINT ck_stove0_target_dispositions_status CHECK (status IN ('omitted','preserved','rejected','transformed'))` |
+| <a id="s-3a800e67b9"></a>`foreign-key` | `—` | `FOREIGN KEY(work_id) REFERENCES stove0_work_records (work_id) ON DELETE CASCADE` |
+| <a id="s-1be3872efe"></a>`check` | `ck_stove0_target_input_dispositions_work_id_hex` | `CONSTRAINT ck_stove0_target_input_dispositions_work_id_hex CHECK (length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-b39d734ca2"></a>`check` | `ck_stove0_target_input_dispositions_job_id_hex` | `CONSTRAINT ck_stove0_target_input_dispositions_job_id_hex CHECK (length(job_id) = 64 AND lower(job_id) = job_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(job_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -45,7 +45,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-4034a03980"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-16553edf07"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -61,7 +61,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/3/structure/tables/14`
+- `/external_contract/durable_state/owners/5/structure/tables/14`
 
 ### Exact owned JSON
 

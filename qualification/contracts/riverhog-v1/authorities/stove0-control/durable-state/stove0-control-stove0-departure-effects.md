@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-departure-effects:ea2e224792 -->
+<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-departure-effects:617f31afba -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-8896d26a74"></a>
+<a id="s-a1f3d3f316"></a>
 
 ### Table: `stove0_departure_effects`
 
@@ -21,32 +21,32 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-f90539a670"></a>`departure_id` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-e734579d57"></a>`policy_id` | `VARCHAR(160)` | no | `—` | — |
-| <a id="s-1bd6cdb6ee"></a>`state` | `VARCHAR(16)` | no | `—` | — |
-| <a id="s-f93b65b455"></a>`document_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-1b5bd822ff"></a>`document_json` | `TEXT` | no | `—` | — |
-| <a id="s-be6b6a135e"></a>`receipt_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-e0092d770e"></a>`receipt_bytes` | `BIGINT` | yes | `—` | — |
-| <a id="s-a16bb34205"></a>`receipt_json` | `TEXT` | yes | `—` | — |
-| <a id="s-2857d2e9bf"></a>`attempt_count` | `INTEGER` | no | `—` | — |
-| <a id="s-2f2766b76c"></a>`next_attempt_at` | `VARCHAR(40)` | yes | `—` | — |
-| <a id="s-2118f84df5"></a>`failure` | `TEXT` | yes | `—` | — |
-| <a id="s-21dc972544"></a>`created_at` | `VARCHAR(40)` | no | `—` | — |
-| <a id="s-64d2402ba1"></a>`updated_at` | `VARCHAR(40)` | no | `—` | — |
+| <a id="s-d1dde0bb12"></a>`departure_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-d52ca4fe5a"></a>`policy_id` | `VARCHAR(160)` | no | `—` | — |
+| <a id="s-274b7076a7"></a>`state` | `VARCHAR(16)` | no | `—` | — |
+| <a id="s-19cf31b5a0"></a>`document_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-dd02e62f6b"></a>`document_json` | `TEXT` | no | `—` | — |
+| <a id="s-4560ffeee0"></a>`receipt_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-096e14879a"></a>`receipt_bytes` | `BIGINT` | yes | `—` | — |
+| <a id="s-3905ca4aed"></a>`receipt_json` | `TEXT` | yes | `—` | — |
+| <a id="s-20940a8015"></a>`attempt_count` | `INTEGER` | no | `—` | — |
+| <a id="s-64ed940f0c"></a>`next_attempt_at` | `VARCHAR(40)` | yes | `—` | — |
+| <a id="s-47c1964fbe"></a>`failure` | `TEXT` | yes | `—` | — |
+| <a id="s-231a754073"></a>`created_at` | `VARCHAR(40)` | no | `—` | — |
+| <a id="s-aea69b7112"></a>`updated_at` | `VARCHAR(40)` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-4ab1932ad4"></a>`primary-key` | `—` | `PRIMARY KEY (departure_id)` |
-| <a id="s-7ed2444305"></a>`check` | `ck_stove0_departure_effect_state` | `CONSTRAINT ck_stove0_departure_effect_state CHECK (state IN ('pending','complete'))` |
-| <a id="s-b25f7c68eb"></a>`check` | `ck_stove0_departure_effect_bytes` | `CONSTRAINT ck_stove0_departure_effect_bytes CHECK (document_bytes >= 0)` |
-| <a id="s-ea8b5724ef"></a>`check` | `ck_stove0_departure_effect_receipt_bytes` | `CONSTRAINT ck_stove0_departure_effect_receipt_bytes CHECK (receipt_bytes IS NULL OR receipt_bytes >= 0)` |
-| <a id="s-6f84756d76"></a>`check` | `ck_stove0_departure_effect_attempts` | `CONSTRAINT ck_stove0_departure_effect_attempts CHECK (attempt_count >= 0)` |
-| <a id="s-7396898a66"></a>`check` | `ck_stove0_departure_effect_stage` | `CONSTRAINT ck_stove0_departure_effect_stage CHECK (state = 'complete' AND receipt_sha256 IS NOT NULL AND receipt_bytes IS NOT NULL AND receipt_json IS NOT NULL AND next_attempt_at IS NULL OR state = 'pending' AND receipt_sha256 IS NULL AND receipt_bytes IS NULL AND receipt_json IS NULL AND next_attempt_at IS NOT NULL)` |
-| <a id="s-047105320f"></a>`check` | `ck_stove0_departure_effects_departure_id_hex` | `CONSTRAINT ck_stove0_departure_effects_departure_id_hex CHECK (length(departure_id) = 64 AND lower(departure_id) = departure_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(departure_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-e1e210d96a"></a>`check` | `ck_stove0_departure_effects_receipt_sha256_hex` | `CONSTRAINT ck_stove0_departure_effects_receipt_sha256_hex CHECK (receipt_sha256 IS NULL OR length(receipt_sha256) = 64 AND lower(receipt_sha256) = receipt_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(receipt_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-4793cb2098"></a>`primary-key` | `—` | `PRIMARY KEY (departure_id)` |
+| <a id="s-9a6ee8944b"></a>`check` | `ck_stove0_departure_effect_state` | `CONSTRAINT ck_stove0_departure_effect_state CHECK (state IN ('pending','complete'))` |
+| <a id="s-e1f47a5341"></a>`check` | `ck_stove0_departure_effect_bytes` | `CONSTRAINT ck_stove0_departure_effect_bytes CHECK (document_bytes >= 0)` |
+| <a id="s-9be6cdd04a"></a>`check` | `ck_stove0_departure_effect_receipt_bytes` | `CONSTRAINT ck_stove0_departure_effect_receipt_bytes CHECK (receipt_bytes IS NULL OR receipt_bytes >= 0)` |
+| <a id="s-cdd9f700b3"></a>`check` | `ck_stove0_departure_effect_attempts` | `CONSTRAINT ck_stove0_departure_effect_attempts CHECK (attempt_count >= 0)` |
+| <a id="s-65158580f6"></a>`check` | `ck_stove0_departure_effect_stage` | `CONSTRAINT ck_stove0_departure_effect_stage CHECK (state = 'complete' AND receipt_sha256 IS NOT NULL AND receipt_bytes IS NOT NULL AND receipt_json IS NOT NULL AND next_attempt_at IS NULL OR state = 'pending' AND receipt_sha256 IS NULL AND receipt_bytes IS NULL AND receipt_json IS NULL AND next_attempt_at IS NOT NULL)` |
+| <a id="s-caef63e49f"></a>`check` | `ck_stove0_departure_effects_departure_id_hex` | `CONSTRAINT ck_stove0_departure_effects_departure_id_hex CHECK (length(departure_id) = 64 AND lower(departure_id) = departure_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(departure_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-90907bd21f"></a>`check` | `ck_stove0_departure_effects_receipt_sha256_hex` | `CONSTRAINT ck_stove0_departure_effects_receipt_sha256_hex CHECK (receipt_sha256 IS NULL OR length(receipt_sha256) = 64 AND lower(receipt_sha256) = receipt_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(receipt_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -56,7 +56,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-65e9eefe91"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-3d6980ac8a"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -72,7 +72,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/3/structure/tables/2`
+- `/external_contract/durable_state/owners/5/structure/tables/2`
 
 ### Exact owned JSON
 

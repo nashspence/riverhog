@@ -116,6 +116,28 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool run](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-run.md#pa-bba5ad7683) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool serve](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-serve.md#pa-90509ac9d0) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool status](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-status.md#pa-e5f197d21a) |
+| `a-riverhog-minisign-witness` | [a-riverhog-minisign-witness](../../authorities/a-riverhog-minisign-witness/cli/a-riverhog-minisign-witness.md#pa-55a832cb95) |
+| `a-riverhog-minisign-witness` | [a-riverhog-minisign-witness evidence](../../authorities/a-riverhog-minisign-witness/cli/a-riverhog-minisign-witness-evidence.md#pa-0e29d0ec2c) |
+| `a-riverhog-minisign-witness` | [a-riverhog-minisign-witness ingest](../../authorities/a-riverhog-minisign-witness/cli/a-riverhog-minisign-witness-ingest.md#pa-2a440a5f73) |
+| `a-riverhog-minisign-witness` | [a-riverhog-minisign-witness rebaseline](../../authorities/a-riverhog-minisign-witness/cli/a-riverhog-minisign-witness-rebaseline.md#pa-fb16b4ecb6) |
+| `a-riverhog-minisign-witness` | [a-riverhog-minisign-witness run](../../authorities/a-riverhog-minisign-witness/cli/a-riverhog-minisign-witness-run.md#pa-4331105ebc) |
+| `a-riverhog-minisign-witness` | [a-riverhog-minisign-witness sign](../../authorities/a-riverhog-minisign-witness/cli/a-riverhog-minisign-witness-sign.md#pa-3d203cdf3b) |
+| `a-riverhog-minisign-witness` | [a-riverhog-minisign-witness state](../../authorities/a-riverhog-minisign-witness/cli/a-riverhog-minisign-witness-state.md#pa-c2d68305dd) |
+| `a-riverhog-minisign-witness` | [a-riverhog-minisign-witness state status](../../authorities/a-riverhog-minisign-witness/cli/a-riverhog-minisign-witness-state-status.md#pa-f17044c871) |
+| `a-riverhog-minisign-witness` | [a-riverhog-minisign-witness state upgrade](../../authorities/a-riverhog-minisign-witness/cli/a-riverhog-minisign-witness-state-upgrade.md#pa-1dbb2e47c2) |
+| `a-riverhog-minisign-witness` | [a-riverhog-minisign-witness state verify](../../authorities/a-riverhog-minisign-witness/cli/a-riverhog-minisign-witness-state-verify.md#pa-40b6547ae4) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness.md#pa-155d63922b) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness evidence](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness-evidence.md#pa-a6eebef010) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness ingest](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness-ingest.md#pa-167c23c70a) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness mature](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness-mature.md#pa-396b021490) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness rebaseline](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness-rebaseline.md#pa-0f277caeb2) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness reschedule](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness-reschedule.md#pa-1022029e05) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness run](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness-run.md#pa-11521d6066) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness state](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness-state.md#pa-df8a8033c4) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness state status](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness-state-status.md#pa-576b0dc53f) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness state upgrade](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness-state-upgrade.md#pa-c315963bfc) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness state verify](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness-state-verify.md#pa-481bbdf0f1) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness verify](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness-verify.md#pa-23244d31e0) |
 | `a-riverhog-recovery-tool` | [a-riverhog-recovery-tool](../../authorities/a-riverhog-recovery-tool/cli/a-riverhog-recovery-tool.md#pa-f58bc73f71) |
 | `a-stove0-cli` | [stove0](../../authorities/a-stove0-cli/cli/stove0.md#pa-cf8f172231) |
 | `a-stove0-cli` | [stove0 admission](../../authorities/a-stove0-cli/cli/stove0-admission.md#pa-c5ed43c6cf) |

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-admission-observed-revisions:cf351034ab -->
+<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-admission-observed-revisions:b06b2d777d -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-2815e2a68e"></a>
+<a id="s-3e74d64c74"></a>
 
 ### Table: `stove0_admission_observed_revisions`
 
@@ -21,22 +21,22 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-29ddb78c38"></a>`policy_id` | `VARCHAR(160)` | no | `—` | — |
-| <a id="s-44a1a4de48"></a>`generation` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-2ab402d7bf"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-046771c8a6"></a>`descriptor_revision` | `VARCHAR(19)` | no | `—` | — |
-| <a id="s-8edce34fcf"></a>`operation` | `VARCHAR(9)` | no | `—` | — |
-| <a id="s-bf157de57b"></a>`authority_sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-bbf68ff5e1"></a>`policy_id` | `VARCHAR(160)` | no | `—` | — |
+| <a id="s-3738d68ee8"></a>`generation` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-151d8026a9"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-23bafd913f"></a>`descriptor_revision` | `VARCHAR(19)` | no | `—` | — |
+| <a id="s-9122045307"></a>`operation` | `VARCHAR(9)` | no | `—` | — |
+| <a id="s-42fe0b29b6"></a>`authority_sha256` | `VARCHAR(64)` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-cc8dddb416"></a>`primary-key` | `—` | `PRIMARY KEY (policy_id, generation, collection_id)` |
-| <a id="s-e4a5ec9b5a"></a>`check` | `ck_stove0_admission_observed_revision_collection` | `CONSTRAINT ck_stove0_admission_observed_revision_collection CHECK (collection_id >= 1)` |
-| <a id="s-2b3a2ed99c"></a>`check` | `ck_stove0_admission_observed_revision_operation` | `CONSTRAINT ck_stove0_admission_observed_revision_operation CHECK (operation IN ('upsert','departure'))` |
-| <a id="s-136ff96364"></a>`check` | `ck_stove0_admission_observed_revisions_generation_hex` | `CONSTRAINT ck_stove0_admission_observed_revisions_generation_hex CHECK (length(generation) = 64 AND lower(generation) = generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-d8433e13a6"></a>`check` | `ck_stove0_admission_observed_revisions_authority_sha256_hex` | `CONSTRAINT ck_stove0_admission_observed_revisions_authority_sha256_hex CHECK (length(authority_sha256) = 64 AND lower(authority_sha256) = authority_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(authority_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-d74e61bc74"></a>`primary-key` | `—` | `PRIMARY KEY (policy_id, generation, collection_id)` |
+| <a id="s-a5839b3b92"></a>`check` | `ck_stove0_admission_observed_revision_collection` | `CONSTRAINT ck_stove0_admission_observed_revision_collection CHECK (collection_id >= 1)` |
+| <a id="s-e08a96e96d"></a>`check` | `ck_stove0_admission_observed_revision_operation` | `CONSTRAINT ck_stove0_admission_observed_revision_operation CHECK (operation IN ('upsert','departure'))` |
+| <a id="s-d34c3a16d3"></a>`check` | `ck_stove0_admission_observed_revisions_generation_hex` | `CONSTRAINT ck_stove0_admission_observed_revisions_generation_hex CHECK (length(generation) = 64 AND lower(generation) = generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-f033646381"></a>`check` | `ck_stove0_admission_observed_revisions_authority_sha256_hex` | `CONSTRAINT ck_stove0_admission_observed_revisions_authority_sha256_hex CHECK (length(authority_sha256) = 64 AND lower(authority_sha256) = authority_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(authority_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -46,7 +46,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-96249ca178"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-f33a617c50"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -62,7 +62,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/3/structure/tables/5`
+- `/external_contract/durable_state/owners/5/structure/tables/5`
 
 ### Exact owned JSON
 

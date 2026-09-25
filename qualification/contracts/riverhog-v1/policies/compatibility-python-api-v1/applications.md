@@ -28,6 +28,7 @@ Choose an authority to inspect this policy's indexed contract-element applicatio
 | [a-riverhog-recovery-tool](applications/a-riverhog-recovery-tool.md) | 7 |
 | [a-riverhog-s3-store-lib](applications/a-riverhog-s3-store-lib.md) | 24 |
 | [a-riverhog-windows-provenance-contract-lib](applications/a-riverhog-windows-provenance-contract-lib.md) | 4 |
+| [a-riverhog-witness-contract-lib](applications/a-riverhog-witness-contract-lib.md) | 6 |
 | [a-stove0-exiftool-observer](applications/a-stove0-exiftool-observer.md) | 4 |
 | [a-stove0-ffprobe-sampling-observer](applications/a-stove0-ffprobe-sampling-observer.md) | 4 |
 | [a-stove0-media-archive-contract-lib](applications/a-stove0-media-archive-contract-lib.md) | 30 |
@@ -50,7 +51,7 @@ Choose an authority to inspect this policy's indexed contract-element applicatio
 | [riverhog-application-access](applications/riverhog-application-access.md) | 47 |
 | [riverhog-archive-contracts](applications/riverhog-archive-contracts.md) | 72 |
 | [riverhog-canonical-json](applications/riverhog-canonical-json.md) | 13 |
-| [riverhog-client](applications/riverhog-client.md) | 269 |
+| [riverhog-client](applications/riverhog-client.md) | 280 |
 | [riverhog-protocol](applications/riverhog-protocol.md) | 326 |
 | [riverhog-provenance](applications/riverhog-provenance.md) | 105 |
 | [riverhog-provenance-contracts](applications/riverhog-provenance-contracts.md) | 16 |

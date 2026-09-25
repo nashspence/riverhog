@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-target-settlement-seals:147d885161 -->
+<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-target-settlement-seals:8b8376b29c -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-70f1384381"></a>
+<a id="s-a2e41688a9"></a>
 
 ### Table: `stove0_target_settlement_seals`
 
@@ -21,25 +21,25 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-6e7e13eb87"></a>`work_id` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-12f9a9052b"></a>`job_id` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-6145360cab"></a>`revision` | `INTEGER` | no | `—` | — |
-| <a id="s-a50cae398b"></a>`state` | `VARCHAR(32)` | no | `—` | — |
-| <a id="s-59f0f0868e"></a>`updated_at` | `VARCHAR(40)` | no | `—` | — |
-| <a id="s-28e5a0cb38"></a>`document_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-0fbb7dd552"></a>`document_json` | `TEXT` | no | `—` | — |
+| <a id="s-8ec66d7a7b"></a>`work_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-760710e11d"></a>`job_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-423c26be70"></a>`revision` | `INTEGER` | no | `—` | — |
+| <a id="s-12ac689291"></a>`state` | `VARCHAR(32)` | no | `—` | — |
+| <a id="s-d4ac397be7"></a>`updated_at` | `VARCHAR(40)` | no | `—` | — |
+| <a id="s-e7ac16a47d"></a>`document_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-db719d10aa"></a>`document_json` | `TEXT` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-9b8e998371"></a>`primary-key` | `—` | `PRIMARY KEY (work_id, job_id)` |
-| <a id="s-4669678759"></a>`check` | `ck_stove0_target_settlement_seals_revision` | `CONSTRAINT ck_stove0_target_settlement_seals_revision CHECK (revision >= 1)` |
-| <a id="s-b57bdd7a4f"></a>`check` | `ck_stove0_target_settlement_seals_state` | `CONSTRAINT ck_stove0_target_settlement_seals_state CHECK (state IN ('binding','sealed','failed'))` |
-| <a id="s-064d959acf"></a>`check` | `ck_stove0_target_settlement_seals_document_bytes` | `CONSTRAINT ck_stove0_target_settlement_seals_document_bytes CHECK (document_bytes >= 0)` |
-| <a id="s-b645c65fcc"></a>`foreign-key` | `—` | `FOREIGN KEY(work_id) REFERENCES stove0_work_records (work_id) ON DELETE CASCADE` |
-| <a id="s-54aba04e63"></a>`check` | `ck_stove0_target_settlement_seals_work_id_hex` | `CONSTRAINT ck_stove0_target_settlement_seals_work_id_hex CHECK (length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-fe7bad857b"></a>`check` | `ck_stove0_target_settlement_seals_job_id_hex` | `CONSTRAINT ck_stove0_target_settlement_seals_job_id_hex CHECK (length(job_id) = 64 AND lower(job_id) = job_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(job_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-8cd4ea1091"></a>`primary-key` | `—` | `PRIMARY KEY (work_id, job_id)` |
+| <a id="s-bea3bd1190"></a>`check` | `ck_stove0_target_settlement_seals_revision` | `CONSTRAINT ck_stove0_target_settlement_seals_revision CHECK (revision >= 1)` |
+| <a id="s-e20ae32d64"></a>`check` | `ck_stove0_target_settlement_seals_state` | `CONSTRAINT ck_stove0_target_settlement_seals_state CHECK (state IN ('binding','sealed','failed'))` |
+| <a id="s-7782ca7ec3"></a>`check` | `ck_stove0_target_settlement_seals_document_bytes` | `CONSTRAINT ck_stove0_target_settlement_seals_document_bytes CHECK (document_bytes >= 0)` |
+| <a id="s-ce06aff8ad"></a>`foreign-key` | `—` | `FOREIGN KEY(work_id) REFERENCES stove0_work_records (work_id) ON DELETE CASCADE` |
+| <a id="s-8452ca6873"></a>`check` | `ck_stove0_target_settlement_seals_work_id_hex` | `CONSTRAINT ck_stove0_target_settlement_seals_work_id_hex CHECK (length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-3efc81129f"></a>`check` | `ck_stove0_target_settlement_seals_job_id_hex` | `CONSTRAINT ck_stove0_target_settlement_seals_job_id_hex CHECK (length(job_id) = 64 AND lower(job_id) = job_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(job_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -49,7 +49,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-bd767653c4"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-d295db9fa1"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -65,7 +65,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/3/structure/tables/18`
+- `/external_contract/durable_state/owners/5/structure/tables/18`
 
 ### Exact owned JSON
 

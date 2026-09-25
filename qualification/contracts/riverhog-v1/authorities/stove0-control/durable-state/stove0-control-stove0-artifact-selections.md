@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-artifact-selections:81bb543dd4 -->
+<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-artifact-selections:097926f237 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-1a24f3ea03"></a>
+<a id="s-832a5b9429"></a>
 
 ### Table: `stove0_artifact_selections`
 
@@ -21,19 +21,19 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-0a70aa7b1a"></a>`selection_sha256` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-65a1cd9f71"></a>`artifact_count` | `INTEGER` | no | `—` | — |
-| <a id="s-dfc00cda2e"></a>`total_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-ff791530e7"></a>`selection_sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-41cfaf192d"></a>`artifact_count` | `INTEGER` | no | `—` | — |
+| <a id="s-3d6a9f170f"></a>`total_bytes` | `BIGINT` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-39f07eb53f"></a>`primary-key` | `—` | `PRIMARY KEY (selection_sha256)` |
-| <a id="s-8044b13c40"></a>`check` | `ck_stove0_selections_id` | `CONSTRAINT ck_stove0_selections_id CHECK (length(selection_sha256) = 64)` |
-| <a id="s-c0170bbe8e"></a>`check` | `ck_stove0_selections_count` | `CONSTRAINT ck_stove0_selections_count CHECK (artifact_count >= 0)` |
-| <a id="s-347b50185a"></a>`check` | `ck_stove0_selections_bytes` | `CONSTRAINT ck_stove0_selections_bytes CHECK (total_bytes >= 0)` |
-| <a id="s-d4d0402660"></a>`check` | `ck_stove0_artifact_selections_selection_sha256_hex` | `CONSTRAINT ck_stove0_artifact_selections_selection_sha256_hex CHECK (length(selection_sha256) = 64 AND lower(selection_sha256) = selection_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(selection_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-fab135a0d4"></a>`primary-key` | `—` | `PRIMARY KEY (selection_sha256)` |
+| <a id="s-8c53bec223"></a>`check` | `ck_stove0_selections_id` | `CONSTRAINT ck_stove0_selections_id CHECK (length(selection_sha256) = 64)` |
+| <a id="s-ed960edbed"></a>`check` | `ck_stove0_selections_count` | `CONSTRAINT ck_stove0_selections_count CHECK (artifact_count >= 0)` |
+| <a id="s-92450efd39"></a>`check` | `ck_stove0_selections_bytes` | `CONSTRAINT ck_stove0_selections_bytes CHECK (total_bytes >= 0)` |
+| <a id="s-931d820a9a"></a>`check` | `ck_stove0_artifact_selections_selection_sha256_hex` | `CONSTRAINT ck_stove0_artifact_selections_selection_sha256_hex CHECK (length(selection_sha256) = 64 AND lower(selection_sha256) = selection_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(selection_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -43,7 +43,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-19cc020046"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-f57dfdcd61"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -59,7 +59,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/3/structure/tables/7`
+- `/external_contract/durable_state/owners/5/structure/tables/7`
 
 ### Exact owned JSON
 

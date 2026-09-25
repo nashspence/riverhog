@@ -33,6 +33,9 @@ document at `/openapi.json`.
 - [V1 contract atlas](qualification/contracts/riverhog-v1/index.md) provides the generated,
   human-routable view of the exact checked external contract.
 - [Licensing](LICENSE.md) defines the repository's release terms.
+- [Minisign](some-implementations/riverhog/applications/a-riverhog-minisign-witness/README.md)
+  and [OpenTimestamps](some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/README.md)
+  document the supplied independent collection witnesses.
 
 Release-level reference documentation belongs to tagged releases. The documentation on
 `main` is intentionally limited to current context that cannot be recovered quickly from

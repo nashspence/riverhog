@@ -109,6 +109,18 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-riverhog-ftp-spool` | [schemas: CustodyReadyPayload](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-custodyreadypayload.md#pa-308b1ac6f4) |
 | `a-riverhog-ftp-spool` | [schemas: FtpEventPage](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-ftpeventpage.md#pa-2d13662503) |
 | `a-riverhog-ftp-spool` | [schemas: FtpSpoolStatus](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-ftpspoolstatus.md#pa-997bbdab65) |
+| `a-riverhog-minisign-witness` | [a-riverhog-minisign-witness](../../authorities/a-riverhog-minisign-witness/cli/a-riverhog-minisign-witness.md#pa-4be7fb49ac) |
+| `a-riverhog-minisign-witness` | [a-riverhog-minisign-witness evidence](../../authorities/a-riverhog-minisign-witness/cli/a-riverhog-minisign-witness-evidence.md#pa-f53ff10fec) |
+| `a-riverhog-minisign-witness` | [a-riverhog-minisign-witness ingest](../../authorities/a-riverhog-minisign-witness/cli/a-riverhog-minisign-witness-ingest.md#pa-971a838222) |
+| `a-riverhog-minisign-witness` | [a-riverhog-minisign-witness run](../../authorities/a-riverhog-minisign-witness/cli/a-riverhog-minisign-witness-run.md#pa-a42ac489c7) |
+| `a-riverhog-minisign-witness` | [a-riverhog-minisign-witness sign](../../authorities/a-riverhog-minisign-witness/cli/a-riverhog-minisign-witness-sign.md#pa-6bfde02a3a) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness.md#pa-ce5d48cc77) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness evidence](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness-evidence.md#pa-33a32d2704) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness ingest](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness-ingest.md#pa-3317715737) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness mature](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness-mature.md#pa-018d1c4bea) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness reschedule](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness-reschedule.md#pa-625b9cdf9b) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness run](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness-run.md#pa-d5224e3ff3) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness verify](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness-verify.md#pa-dda5c6f76c) |
 | `a-riverhog-recovery-tool` | [a-riverhog-recovery-tool](../../authorities/a-riverhog-recovery-tool/cli/a-riverhog-recovery-tool.md#pa-489b7704cf) |
 | `a-riverhog-windows-provenance-contract-lib` | [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-object-id.json](../../authorities/a-riverhog-windows-provenance-contract-lib/schema/https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-windows-o-1ecc3df38c.md#pa-ed705d281a) |
 | `a-stove0-cli` | [stove0](../../authorities/a-stove0-cli/cli/stove0.md#pa-56cef3f197) |

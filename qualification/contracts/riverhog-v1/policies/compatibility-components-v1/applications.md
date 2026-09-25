@@ -55,10 +55,13 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `release` | [Python distribution: a-riverhog-linux-provenance-observer](../../authorities/release/python-distributions/python-distribution-a-riverhog-linux-provenance-observer.md#pa-aced699562) |
 | `release` | [Python distribution: a-riverhog-macos-provenance-contract-lib](../../authorities/release/python-distributions/python-distribution-a-riverhog-macos-provenance-contract-lib.md#pa-32c668dba1) |
 | `release` | [Python distribution: a-riverhog-macos-provenance-observer](../../authorities/release/python-distributions/python-distribution-a-riverhog-macos-provenance-observer.md#pa-06d4e7ba5a) |
+| `release` | [Python distribution: a-riverhog-minisign-witness](../../authorities/release/python-distributions/python-distribution-a-riverhog-minisign-witness.md#pa-56a78347b4) |
+| `release` | [Python distribution: a-riverhog-opentimestamps-witness](../../authorities/release/python-distributions/python-distribution-a-riverhog-opentimestamps-witness.md#pa-b7b0d2572a) |
 | `release` | [Python distribution: a-riverhog-recovery-tool](../../authorities/release/python-distributions/python-distribution-a-riverhog-recovery-tool.md#pa-3e05c9b7a0) |
 | `release` | [Python distribution: a-riverhog-s3-store-lib](../../authorities/release/python-distributions/python-distribution-a-riverhog-s3-store-lib.md#pa-24f875dca7) |
 | `release` | [Python distribution: a-riverhog-windows-provenance-contract-lib](../../authorities/release/python-distributions/python-distribution-a-riverhog-windows-provenance-contract-lib.md#pa-5a453536b2) |
 | `release` | [Python distribution: a-riverhog-windows-provenance-observer](../../authorities/release/python-distributions/python-distribution-a-riverhog-windows-provenance-observer.md#pa-844843b28a) |
+| `release` | [Python distribution: a-riverhog-witness-contract-lib](../../authorities/release/python-distributions/python-distribution-a-riverhog-witness-contract-lib.md#pa-c6b856fe2f) |
 | `release` | [Python distribution: a-stove0-cli](../../authorities/release/python-distributions/python-distribution-a-stove0-cli.md#pa-bc1ad7d856) |
 | `release` | [Python distribution: a-stove0-exiftool-observer](../../authorities/release/python-distributions/python-distribution-a-stove0-exiftool-observer.md#pa-6286456e7f) |
 | `release` | [Python distribution: a-stove0-ffprobe-sampling-observer](../../authorities/release/python-distributions/python-distribution-a-stove0-ffprobe-sampling-observer.md#pa-182b6dab47) |
@@ -124,6 +127,8 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `release` | [Runtime image: a-riverhog-event-relay](../../authorities/release/runtime-images/runtime-image-a-riverhog-event-relay.md#pa-97033aa434) |
 | `release` | [Runtime image: a-riverhog-filesystem-store](../../authorities/release/runtime-images/runtime-image-a-riverhog-filesystem-store.md#pa-5c9f117247) |
 | `release` | [Runtime image: a-riverhog-ftp-spool](../../authorities/release/runtime-images/runtime-image-a-riverhog-ftp-spool.md#pa-805ddab07a) |
+| `release` | [Runtime image: a-riverhog-minisign-witness](../../authorities/release/runtime-images/runtime-image-a-riverhog-minisign-witness.md#pa-b7b1a80d3a) |
+| `release` | [Runtime image: a-riverhog-opentimestamps-witness](../../authorities/release/runtime-images/runtime-image-a-riverhog-opentimestamps-witness.md#pa-b26384ae32) |
 | `release` | [Runtime image: a-stove0-exiftool-observer](../../authorities/release/runtime-images/runtime-image-a-stove0-exiftool-observer.md#pa-be39fc0fa2) |
 | `release` | [Runtime image: a-stove0-ffprobe-sampling-observer](../../authorities/release/runtime-images/runtime-image-a-stove0-ffprobe-sampling-observer.md#pa-99b89e8ae7) |
 | `release` | [Runtime image: a-stove0-nvenc-av1-opus-target](../../authorities/release/runtime-images/runtime-image-a-stove0-nvenc-av1-opus-target.md#pa-3b7f0a14f8) |

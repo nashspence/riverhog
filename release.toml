@@ -23,6 +23,8 @@ required_checks = [
   "build a-riverhog-event-relay",
   "build a-riverhog-filesystem-store",
   "build a-riverhog-ftp-spool",
+  "build a-riverhog-minisign-witness",
+  "build a-riverhog-opentimestamps-witness",
   "build a-stove0-exiftool-observer",
   "build a-stove0-ffprobe-sampling-observer",
   "build a-stove0-nvenc-av1-opus-target",
@@ -78,7 +80,7 @@ provider_qualification_runtime = "provider-qualification"
 
 [governance.boundary_freeze]
 status = "frozen"
-protected_boundary_sha256 = "dabcb5af8a795b547cfa94c1f79ad2fee2378744f12c34242770e6399cb58267"
+protected_boundary_sha256 = "69403f3c35a07e5708e76194c079cc209af9b61096aa5c385de135c3727508cc"
 protected_components = [
   "config-validation",
   "gogurt",
@@ -94,6 +96,9 @@ protected_components = [
   "http-api-contracts",
   "lifecycle-events",
   "a-riverhog-event-relay",
+  "a-riverhog-minisign-witness",
+  "a-riverhog-opentimestamps-witness",
+  "a-riverhog-witness-contract-lib",
   "a-riverhog-cli",
   "riverhog-age",
   "riverhog-application-access",
@@ -154,6 +159,8 @@ protected_components = [
 ]
 protected_runtime_images = [
   "a-riverhog-event-relay",
+  "a-riverhog-minisign-witness",
+  "a-riverhog-opentimestamps-witness",
   "riverhog",
   "a-riverhog-ftp-spool",
   "a-riverhog-aws-store",
@@ -215,6 +222,24 @@ head = "v1_0001"
 transition = "forward-migration-chain"
 structure = { kind = "sql-ddl", dialect = "sqlite", module = "a_riverhog_event_relay.state_migrations.v1_ddl", symbol = "SQLITE_DDL" }
 fixtures = ["tests/fixtures/state/v1_0001/a-riverhog-event-relay.sqlite.sql"]
+
+[[state.owners]]
+id = "a-riverhog-minisign-witness-ledger"
+distribution = "a-riverhog-minisign-witness"
+format = "state-schema/sqlite"
+head = "v1_0001"
+transition = "forward-migration-chain"
+structure = { kind = "sql-ddl", dialect = "sqlite", module = "a_riverhog_minisign_witness.state_migrations.v1_ddl", symbol = "SQLITE_DDL" }
+fixtures = ["tests/fixtures/state/v1_0001/a-riverhog-minisign-witness.sqlite.sql"]
+
+[[state.owners]]
+id = "a-riverhog-opentimestamps-witness-ledger"
+distribution = "a-riverhog-opentimestamps-witness"
+format = "state-schema/sqlite"
+head = "v1_0001"
+transition = "forward-migration-chain"
+structure = { kind = "sql-ddl", dialect = "sqlite", module = "a_riverhog_opentimestamps_witness.state_migrations.v1_ddl", symbol = "SQLITE_DDL" }
+fixtures = ["tests/fixtures/state/v1_0001/a-riverhog-opentimestamps-witness.sqlite.sql"]
 
 [[state.owners]]
 id = "stove0-control"
@@ -342,6 +367,8 @@ deployed_implementation = [
 application = [
   "some-implementations/gogurt/application",
   "some-implementations/riverhog/applications/a-riverhog-event-relay",
+  "some-implementations/riverhog/applications/a-riverhog-minisign-witness",
+  "some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness",
   "some-implementations/riverhog/applications/a-riverhog-cli",
   "some-implementations/riverhog/recovery",
   "some-implementations/stove0/application/client",
@@ -380,6 +407,7 @@ component = [
 ]
 reusable_library = [
   "some-implementations/gogurt/mounted-volume/path-support",
+  "some-implementations/riverhog/packages/a-riverhog-witness-contract-lib",
   "some-implementations/riverhog/storage/s3-support",
   "some-implementations/stove0/targets/media-archive/contracts",
   "some-implementations/stove0/review0/contracts",
@@ -430,6 +458,8 @@ platforms = ["linux/amd64"]
 [images.runtime]
 riverhog = { role = "product", description = "Riverhog archive service.", distributions = ["riverhog-server"], repository = "ghcr.io/nashspence/riverhog" }
 a-riverhog-event-relay = { role = "application", description = "Native lifecycle-event to CloudEvents webhook relay.", distributions = ["a-riverhog-event-relay"], repository = "ghcr.io/nashspence/a-riverhog-event-relay" }
+a-riverhog-minisign-witness = { role = "application", description = "Independent Minisign collection witness for Riverhog.", distributions = ["a-riverhog-minisign-witness"], repository = "ghcr.io/nashspence/a-riverhog-minisign-witness" }
+a-riverhog-opentimestamps-witness = { role = "application", description = "Independent OpenTimestamps collection witness for Riverhog.", distributions = ["a-riverhog-opentimestamps-witness"], repository = "ghcr.io/nashspence/a-riverhog-opentimestamps-witness" }
 a-riverhog-ftp-spool = { role = "component", description = "FTP upload spool and ingestion adapter for Riverhog.", distributions = ["a-riverhog-ftp-spool", "a-riverhog-linux-provenance-observer"], repository = "ghcr.io/nashspence/a-riverhog-ftp-spool" }
 a-riverhog-aws-store = { role = "component", description = "AWS-backed Riverhog archive and retrieval store.", distributions = ["a-riverhog-aws-store"], repository = "ghcr.io/nashspence/a-riverhog-aws-store" }
 a-riverhog-b2-store = { role = "component", description = "Backblaze B2-backed Riverhog archive and retrieval store.", distributions = ["a-riverhog-b2-store"], repository = "ghcr.io/nashspence/a-riverhog-b2-store" }

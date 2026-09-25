@@ -17,6 +17,8 @@ Published OCI runtime-image identities.
 | [a-riverhog-event-relay](runtime-image-a-riverhog-event-relay.md) | `application` |
 | [a-riverhog-filesystem-store](runtime-image-a-riverhog-filesystem-store.md) | `component` |
 | [a-riverhog-ftp-spool](runtime-image-a-riverhog-ftp-spool.md) | `component` |
+| [a-riverhog-minisign-witness](runtime-image-a-riverhog-minisign-witness.md) | `application` |
+| [a-riverhog-opentimestamps-witness](runtime-image-a-riverhog-opentimestamps-witness.md) | `application` |
 | [a-stove0-exiftool-observer](runtime-image-a-stove0-exiftool-observer.md) | `component` |
 | [a-stove0-ffprobe-sampling-observer](runtime-image-a-stove0-ffprobe-sampling-observer.md) | `component` |
 | [a-stove0-nvenc-av1-opus-target](runtime-image-a-stove0-nvenc-av1-opus-target.md) | `component` |

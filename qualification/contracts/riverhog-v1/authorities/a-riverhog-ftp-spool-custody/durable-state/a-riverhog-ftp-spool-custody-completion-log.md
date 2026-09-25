@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:a-riverhog-ftp-spool-custody:a-riverhog-ftp-spool-custody-completion-log:20885a870b -->
+<!-- contract-element: durable-state:a-riverhog-ftp-spool-custody:a-riverhog-ftp-spool-custody-completion-log:1386ead835 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,37 +13,37 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-b65835b959"></a>
+<a id="s-73f151460c"></a>
 
 
 
 | Field | Value |
 |---|---|
-| <a id="s-7ffe049967"></a>`header` | `"riverhog-ftp-completion-log/v1 <canonical-uuid>"` |
-| <a id="s-8eb9c6fee5"></a>`id` | `"completion-log"` |
-| <a id="s-d12290b797"></a>`kind` | `"append-only-json-sequence"` |
+| <a id="s-0e624e796c"></a>`header` | `"riverhog-ftp-completion-log/v1 <canonical-uuid>"` |
+| <a id="s-007d90bfd3"></a>`id` | `"completion-log"` |
+| <a id="s-12f14f89f3"></a>`kind` | `"append-only-json-sequence"` |
 
 ### Record schema
 
-<a id="s-343bf7cb65"></a>
+<a id="s-88e143bc7d"></a>
 
-- <a id="s-6a33552b85"></a>`type`: `"object"`
-- <a id="s-6d380fc0be"></a>`additionalProperties`: `false`
-- <a id="s-e40f88665e"></a>`required`: `["format","event_id","source_id","path","custody","bytes","device","inode"]`
-- <a id="s-9671c143a0"></a>`title`: `"CompletionRecordState"`
+- <a id="s-7711a4e7a6"></a>`type`: `"object"`
+- <a id="s-5faef76ab4"></a>`additionalProperties`: `false`
+- <a id="s-18906449dc"></a>`required`: `["format","event_id","source_id","path","custody","bytes","device","inode"]`
+- <a id="s-628cfa2262"></a>`title`: `"CompletionRecordState"`
 
 #### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-4dd43b05e3"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
-| <a id="s-c397d4f500"></a>`custody` | yes | type="string"; minLength=1; title="Custody" |  |
-| <a id="s-c5c5a0d551"></a>`device` | yes | type="integer"; minimum=0; title="Device" |  |
-| <a id="s-cd3d8c2278"></a>`event_id` | yes | type="string"; minLength=1; title="Event Id" |  |
-| <a id="s-1123dbdc3b"></a>`format` | yes | type="string"; const="riverhog-ftp-completion-record/v1"; title="Format" |  |
-| <a id="s-0ac116f9e2"></a>`inode` | yes | type="integer"; minimum=0; title="Inode" |  |
-| <a id="s-57ea26efac"></a>`path` | yes | type="string"; minLength=1; title="Path" |  |
-| <a id="s-4e1045d512"></a>`source_id` | yes | type="string"; minLength=1; title="Source Id" |  |
+| <a id="s-b95009d127"></a>`bytes` | yes | type="integer"; minimum=0; title="Bytes" |  |
+| <a id="s-f42fcf5b02"></a>`custody` | yes | type="string"; minLength=1; title="Custody" |  |
+| <a id="s-9205b0a84a"></a>`device` | yes | type="integer"; minimum=0; title="Device" |  |
+| <a id="s-c92de62cb0"></a>`event_id` | yes | type="string"; minLength=1; title="Event Id" |  |
+| <a id="s-529746f93b"></a>`format` | yes | type="string"; const="riverhog-ftp-completion-record/v1"; title="Format" |  |
+| <a id="s-5af51d3229"></a>`inode` | yes | type="integer"; minimum=0; title="Inode" |  |
+| <a id="s-38312d3990"></a>`path` | yes | type="string"; minLength=1; title="Path" |  |
+| <a id="s-8074627bd1"></a>`source_id` | yes | type="string"; minLength=1; title="Source Id" |  |
 
 ## Maintained corroboration
 
@@ -53,7 +53,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-f0bcd4a5cf"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-b37afd2857"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -69,7 +69,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/6/structure/units/1`
+- `/external_contract/durable_state/owners/8/structure/units/1`
 
 ### Exact owned JSON
 

@@ -23,6 +23,8 @@ from riverhog_protocol import (
 )
 from riverhog_protocol.errors import RiverhogError
 
+from riverhog_client._catalog_sync import _start, _step, _SyncState
+
 
 class CatalogSyncApi(Protocol):
     def create_catalog_sync_checkpoint(self) -> CatalogSyncCheckpoint: ...
@@ -165,10 +167,16 @@ class CatalogReplica:
 
         before = self.status()
         try:
-            checkpoint = api.create_catalog_sync_checkpoint()
+            batch = _start(api, _SyncState())
         except RiverhogError as exc:
             self._invalidate(exc, serial=_required_int(before, "serial"))
             raise
+        if batch.error is not None:
+            self._invalidate(batch.error, serial=_required_int(before, "serial"))
+            raise batch.error
+        if batch.kind != "checkpoint":
+            raise RuntimeError("catalog checkpoint did not establish traversal authority")
+        checkpoint = batch.next_state
         with closing(self._connect()) as db:
             db.execute("BEGIN IMMEDIATE")
             try:
@@ -201,7 +209,7 @@ class CatalogReplica:
                         checkpoint.source_identity,
                         checkpoint.authorization_view_identity,
                         generation,
-                        checkpoint.catalog_cursor,
+                        checkpoint.cursor,
                         int(keep_active),
                     ),
                 )
@@ -225,20 +233,18 @@ class CatalogReplica:
         if pending_tags is not None:
             return self._step_tags(api, before=before, pending=pending_tags, limit=limit)
         try:
-            if phase == "catalog":
-                page: CatalogSyncCollectionPage | CatalogSyncChangePage = (
-                    api.list_catalog_sync_collections(cursor, limit=limit)
-                )
-            else:
-                page = api.list_catalog_sync_changes(cursor, limit=limit)
+            batch = _step(api, self._sync_state(before), limit=limit)
         except RiverhogError as exc:
             self._invalidate(exc, serial=_required_int(before, "serial"))
             raise
-        if (
-            page.source_identity != before["source_identity"]
-            or page.authorization_view_identity != before["authorization_view_identity"]
-        ):
+        if batch.error is not None:
+            self._invalidate(batch.error, serial=_required_int(before, "serial"))
+            raise batch.error
+        if batch.kind == "reset":
             raise ValueError("catalog synchronization response changed its bound authority")
+        page = batch.page
+        if page is None:
+            raise RuntimeError("catalog synchronization step omitted its validated page")
 
         with closing(self._connect()) as db:
             db.execute("BEGIN IMMEDIATE")
@@ -249,29 +255,16 @@ class CatalogReplica:
                     raise RuntimeError("catalog replica generation is unavailable")
                 if isinstance(page, CatalogSyncCollectionPage):
                     self._apply_catalog_page(db, generation, page)
-                    if page.next_cursor is not None:
-                        if not page.collections or page.changes_cursor is not None:
-                            raise ValueError("catalog page continuation is inconsistent")
-                        next_cursor = page.next_cursor
-                        next_phase = "catalog"
-                    else:
-                        if page.changes_cursor is None:
-                            raise ValueError("final catalog page omitted its change cursor")
-                        next_cursor = page.changes_cursor
-                        next_phase = "catchup"
-                    through_revision = 0
                 else:
-                    through_revision = int(page.through_revision)
-                    if through_revision < _required_int(before, "through_revision"):
-                        raise ValueError("catalog change page moved its revision backward")
                     self._apply_change_page(
                         db,
                         generation,
                         page,
                         after=_required_int(before, "through_revision"),
                     )
-                    next_cursor = page.next_cursor
-                    next_phase = "following" if page.caught_up else phase
+                next_cursor = batch.next_state.cursor
+                next_phase = batch.next_state.phase
+                through_revision = int(batch.next_state.through_revision)
                 promote = (
                     before["building_generation"] is not None
                     and next_phase == "following"
@@ -303,6 +296,32 @@ class CatalogReplica:
                 db.rollback()
                 raise
         return self.status()
+
+    def _sync_state(self, before: dict[str, object]) -> _SyncState:
+        last_collection_id: str | None = None
+        if before["phase"] == "catalog":
+            generation = before["building_generation"]
+            if not isinstance(generation, str):
+                raise RuntimeError("catalog replica building generation is unavailable")
+            with closing(self._connect()) as db:
+                self._require_serial(db, _required_int(before, "serial"))
+                row = db.execute(
+                    "SELECT MAX(collection_id) AS last_collection_id "
+                    "FROM catalog_replica_collections WHERE generation = ?",
+                    (generation,),
+                ).fetchone()
+                if row is not None and row["last_collection_id"] is not None:
+                    last_collection_id = str(row["last_collection_id"])
+        return _SyncState.model_validate(
+            {
+                "phase": before["phase"],
+                "source_identity": before["source_identity"],
+                "authorization_view_identity": before["authorization_view_identity"],
+                "cursor": before["cursor"],
+                "through_revision": str(before["through_revision"]),
+                "last_collection_id": last_collection_id,
+            }
+        )
 
     def page(
         self,

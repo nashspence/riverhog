@@ -41,6 +41,9 @@ def test_runtime_payload_attribution_is_derived_from_final_stage_copies() -> Non
     assert observed == {
         "some-implementations/stove0/observers/exiftool/Dockerfile": {"exiftool": "13.59"},
         "some-implementations/stove0/review0/rclone-effect-target/Dockerfile": {"rclone": "1.75.0"},
+        "some-implementations/riverhog/applications/a-riverhog-minisign-witness/Dockerfile": {
+            "minisign": "0.12"
+        },
     }
 
 

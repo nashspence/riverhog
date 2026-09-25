@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:a-riverhog-ftp-spool-custody:a-riverhog-ftp-spool-custody-durable-state-identity:9a89823557 -->
+<!-- contract-element: durable-state:a-riverhog-ftp-spool-custody:a-riverhog-ftp-spool-custody-durable-state-identity:fb169a51d4 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -15,12 +15,12 @@ Exact externally visible contract owned by this contract element.
 
 | Authority fact | Value |
 |---|---|
-| <a id="s-aeab17033c"></a>`distribution` | `"a-riverhog-ftp-spool"` |
-| <a id="s-45f323bd69"></a>`format` | `"a-riverhog-ftp-spool-claim/v1"` |
-| <a id="s-6120d9ea81"></a>`head` | `"v1"` |
-| <a id="s-d8152214b0"></a>`id` | `"a-riverhog-ftp-spool-custody"` |
-| <a id="s-2f406dd2b5"></a>`kind` | `"composite"` |
-| <a id="s-0cc49e1a8c"></a>`transition` | `"backward-readable-documents"` |
+| <a id="s-ec7df46444"></a>`distribution` | `"a-riverhog-ftp-spool"` |
+| <a id="s-17f7d86dfc"></a>`format` | `"a-riverhog-ftp-spool-claim/v1"` |
+| <a id="s-d746b6b126"></a>`head` | `"v1"` |
+| <a id="s-1c960e6a40"></a>`id` | `"a-riverhog-ftp-spool-custody"` |
+| <a id="s-264b2e76ca"></a>`kind` | `"composite"` |
+| <a id="s-aa75bc1607"></a>`transition` | `"backward-readable-documents"` |
 
 ## Maintained corroboration
 
@@ -34,7 +34,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-ef197c2397"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-671f448cc5"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -50,12 +50,12 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/6/distribution`
-- `/external_contract/durable_state/owners/6/format`
-- `/external_contract/durable_state/owners/6/head`
-- `/external_contract/durable_state/owners/6/id`
-- `/external_contract/durable_state/owners/6/structure/kind`
-- `/external_contract/durable_state/owners/6/transition`
+- `/external_contract/durable_state/owners/8/distribution`
+- `/external_contract/durable_state/owners/8/format`
+- `/external_contract/durable_state/owners/8/head`
+- `/external_contract/durable_state/owners/8/id`
+- `/external_contract/durable_state/owners/8/structure/kind`
+- `/external_contract/durable_state/owners/8/transition`
 
 ### Exact owned JSON
 
@@ -64,7 +64,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-### `/external_contract/durable_state/owners/6/distribution`
+### `/external_contract/durable_state/owners/8/distribution`
 
 <!-- exact-contract-value: dad0a7c651a3726342a74cf71b13d83f48ca68a5c1d5dc4dd8678d8a1d0e0bc3 -->
 
@@ -72,7 +72,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 "a-riverhog-ftp-spool"
 ```
 
-### `/external_contract/durable_state/owners/6/format`
+### `/external_contract/durable_state/owners/8/format`
 
 <!-- exact-contract-value: 0137f3a22a6d9e902f75d849e9ba2f948c50fd730522605d82178897a09d9b27 -->
 
@@ -80,7 +80,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 "a-riverhog-ftp-spool-claim/v1"
 ```
 
-### `/external_contract/durable_state/owners/6/head`
+### `/external_contract/durable_state/owners/8/head`
 
 <!-- exact-contract-value: 161078e42e8fef3ba4b9c984035baa2e431a50b31a18ac95614cc6820394af13 -->
 
@@ -88,7 +88,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 "v1"
 ```
 
-### `/external_contract/durable_state/owners/6/id`
+### `/external_contract/durable_state/owners/8/id`
 
 <!-- exact-contract-value: f0478de2b359f2c565529a1c87c53a3ce1ca2534ddc6b76d28cf0f9399f900b7 -->
 
@@ -96,7 +96,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 "a-riverhog-ftp-spool-custody"
 ```
 
-### `/external_contract/durable_state/owners/6/structure/kind`
+### `/external_contract/durable_state/owners/8/structure/kind`
 
 <!-- exact-contract-value: d2d4cf08a4befc0ed75da38873a70dbab2fc8fc1039ee50bb98c84c0901d6847 -->
 
@@ -104,7 +104,7 @@ The following JSON is the complete value owned at each machine-authority pointer
 "composite"
 ```
 
-### `/external_contract/durable_state/owners/6/transition`
+### `/external_contract/durable_state/owners/8/transition`
 
 <!-- exact-contract-value: d40b2eb8aff31b7b5e876bd3f0f82e1968a5520ea99afe32514134d4f988d7c7 -->
 

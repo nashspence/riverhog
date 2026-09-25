@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:gogurt-listener:gogurt-listener-dispatches:6e2e657bb9 -->
+<!-- contract-element: durable-state:gogurt-listener:gogurt-listener-dispatches:a44bb60fc3 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-dd804d3f81"></a>
+<a id="s-d23dd460cd"></a>
 
 ### Table: `dispatches`
 
@@ -21,20 +21,20 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-35e81c8718"></a>`dispatch_id` | `TEXT` | no | `—` | {"primary_key":true} |
-| <a id="s-245d35832a"></a>`mount_point` | `TEXT` | no | `—` | — |
-| <a id="s-d545428730"></a>`generation` | `INTEGER` | no | `—` | {"checks":["(generation >= 1)"]} |
-| <a id="s-5af5d654b2"></a>`marker_identity` | `TEXT` | no | `—` | — |
-| <a id="s-e0e7779d0d"></a>`route` | `TEXT` | no | `—` | — |
-| <a id="s-6dc92ddf56"></a>`plan_json` | `TEXT` | no | `—` | {"checks":["(json_valid(plan_json))"]} |
-| <a id="s-3f964a509b"></a>`state` | `TEXT` | no | `—` | {"checks":["(\n        state IN ('queued', 'running', 'retry', 'uncertain', 'completed', 'failed')\n    )"]} |
-| <a id="s-34a1b2b93f"></a>`attempts` | `INTEGER` | no | `0` | {"checks":["(attempts >= 0)"]} |
-| <a id="s-5a18d9b950"></a>`observed_at` | `REAL` | no | `—` | — |
-| <a id="s-e8266ba831"></a>`started_at` | `REAL` | yes | `—` | — |
-| <a id="s-f33a179b60"></a>`completed_at` | `REAL` | yes | `—` | — |
-| <a id="s-8ef0ed5e17"></a>`next_retry_at` | `REAL` | yes | `—` | — |
-| <a id="s-b093998e63"></a>`exit_code` | `INTEGER` | yes | `—` | — |
-| <a id="s-184e163e2e"></a>`error` | `TEXT` | yes | `—` | — |
+| <a id="s-30c311fcc3"></a>`dispatch_id` | `TEXT` | no | `—` | {"primary_key":true} |
+| <a id="s-1f94f6115e"></a>`mount_point` | `TEXT` | no | `—` | — |
+| <a id="s-dd4e8e0b50"></a>`generation` | `INTEGER` | no | `—` | {"checks":["(generation >= 1)"]} |
+| <a id="s-46ebe8a40e"></a>`marker_identity` | `TEXT` | no | `—` | — |
+| <a id="s-46780e5fb0"></a>`route` | `TEXT` | no | `—` | — |
+| <a id="s-e5565c959a"></a>`plan_json` | `TEXT` | no | `—` | {"checks":["(json_valid(plan_json))"]} |
+| <a id="s-6ce781081f"></a>`state` | `TEXT` | no | `—` | {"checks":["(\n        state IN ('queued', 'running', 'retry', 'uncertain', 'completed', 'failed')\n    )"]} |
+| <a id="s-dad5c3530f"></a>`attempts` | `INTEGER` | no | `0` | {"checks":["(attempts >= 0)"]} |
+| <a id="s-d178e919ed"></a>`observed_at` | `REAL` | no | `—` | — |
+| <a id="s-980a917893"></a>`started_at` | `REAL` | yes | `—` | — |
+| <a id="s-96e788a101"></a>`completed_at` | `REAL` | yes | `—` | — |
+| <a id="s-fe445d637c"></a>`next_retry_at` | `REAL` | yes | `—` | — |
+| <a id="s-d4062257ec"></a>`exit_code` | `INTEGER` | yes | `—` | — |
+| <a id="s-ad1b66fd6a"></a>`error` | `TEXT` | yes | `—` | — |
 
 ## Maintained corroboration
 
@@ -44,7 +44,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-53b33b8833"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-97aad20701"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -60,7 +60,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/4/structure/tables/2`
+- `/external_contract/durable_state/owners/6/structure/tables/2`
 
 ### Exact owned JSON
 

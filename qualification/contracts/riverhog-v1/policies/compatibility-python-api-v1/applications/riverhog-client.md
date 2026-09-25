@@ -127,6 +127,17 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-client` | [riverhog_client.ApplicationResource](../../../authorities/riverhog-client/python/riverhog-client-applicationresource.md#pa-7463779f44) |
 | `riverhog-client` | [riverhog_client.BadRequest](../../../authorities/riverhog-client/python/riverhog-client-badrequest.md#pa-44bc410e8c) |
 | `riverhog-client` | [riverhog_client.COLLECTION_UPLOAD_REGISTRATION_BATCH_FILES](../../../authorities/riverhog-client/python/riverhog-client-collection-upload-registration-batch-files.md#pa-289a26051a) |
+| `riverhog-client` | [riverhog_client.CatalogFollowApi](../../../authorities/riverhog-client/python/riverhog-client-catalogfollowapi.md#pa-9f2676ee48) |
+| `riverhog-client` | [riverhog_client.CatalogFollowApi.create_catalog_sync_checkpoint](../../../authorities/riverhog-client/python/riverhog-client-catalogfollowapi-create-catalog-sync-checkpoint.md#pa-b67359390e) |
+| `riverhog-client` | [riverhog_client.CatalogFollowApi.list_catalog_sync_changes](../../../authorities/riverhog-client/python/riverhog-client-catalogfollowapi-list-catalog-sync-changes.md#pa-8236c4c4b1) |
+| `riverhog-client` | [riverhog_client.CatalogFollowApi.list_catalog_sync_collections](../../../authorities/riverhog-client/python/riverhog-client-catalogfollowapi-list-catalog-sync-collections.md#pa-da5400328f) |
+| `riverhog-client` | [riverhog_client.CatalogFollowBatch](../../../authorities/riverhog-client/python/riverhog-client-catalogfollowbatch.md#pa-349b25fd44) |
+| `riverhog-client` | [riverhog_client.CatalogFollowKind](../../../authorities/riverhog-client/python/riverhog-client-catalogfollowkind.md#pa-f8696d838b) |
+| `riverhog-client` | [riverhog_client.CatalogFollowPhase](../../../authorities/riverhog-client/python/riverhog-client-catalogfollowphase.md#pa-542232c383) |
+| `riverhog-client` | [riverhog_client.CatalogFollowPosition](../../../authorities/riverhog-client/python/riverhog-client-catalogfollowposition.md#pa-18e75cacee) |
+| `riverhog-client` | [riverhog_client.CatalogFollower](../../../authorities/riverhog-client/python/riverhog-client-catalogfollower.md#pa-70f8d5d636) |
+| `riverhog-client` | [riverhog_client.CatalogFollower.start](../../../authorities/riverhog-client/python/riverhog-client-catalogfollower-start.md#pa-e3851a6e0e) |
+| `riverhog-client` | [riverhog_client.CatalogFollower.step](../../../authorities/riverhog-client/python/riverhog-client-catalogfollower-step.md#pa-878b6b9814) |
 | `riverhog-client` | [riverhog_client.CatalogReplica](../../../authorities/riverhog-client/python/riverhog-client-catalogreplica.md#pa-e45a7267dd) |
 | `riverhog-client` | [riverhog_client.CatalogReplica.get](../../../authorities/riverhog-client/python/riverhog-client-catalogreplica-get.md#pa-e44c47c370) |
 | `riverhog-client` | [riverhog_client.CatalogReplica.page](../../../authorities/riverhog-client/python/riverhog-client-catalogreplica-page.md#pa-e09e7f319c) |

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-departure-seen:e7fe7afc43 -->
+<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-departure-seen:9829f7b937 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-e58bef7e49"></a>
+<a id="s-6090d5937b"></a>
 
 ### Table: `stove0_departure_seen`
 
@@ -21,26 +21,26 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-14cfe6c26b"></a>`policy_id` | `VARCHAR(160)` | no | `—` | — |
-| <a id="s-3c62a5ea32"></a>`generation` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-0fcbee6a32"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-9d801259b9"></a>`revision` | `VARCHAR(19)` | no | `—` | — |
-| <a id="s-d2ca25b581"></a>`operation` | `VARCHAR(9)` | no | `—` | — |
-| <a id="s-a7549c86bf"></a>`authority_sha256` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-863698b0d2"></a>`matched` | `BOOLEAN` | no | `—` | — |
-| <a id="s-9e18cd2ef1"></a>`document_bytes` | `BIGINT` | yes | `—` | — |
-| <a id="s-2fe5dbb4b6"></a>`document_json` | `TEXT` | yes | `—` | — |
+| <a id="s-d883d07fe8"></a>`policy_id` | `VARCHAR(160)` | no | `—` | — |
+| <a id="s-ec0b255c10"></a>`generation` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-60a465a091"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-56e0172cdd"></a>`revision` | `VARCHAR(19)` | no | `—` | — |
+| <a id="s-43d89b68c6"></a>`operation` | `VARCHAR(9)` | no | `—` | — |
+| <a id="s-3f74a75dee"></a>`authority_sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-b226e0eb2e"></a>`matched` | `BOOLEAN` | no | `—` | — |
+| <a id="s-ec5964f7bb"></a>`document_bytes` | `BIGINT` | yes | `—` | — |
+| <a id="s-37b65a83e3"></a>`document_json` | `TEXT` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-c6d0508442"></a>`primary-key` | `—` | `PRIMARY KEY (policy_id, generation, collection_id)` |
-| <a id="s-c6dc358e18"></a>`check` | `ck_stove0_departure_seen_collection` | `CONSTRAINT ck_stove0_departure_seen_collection CHECK (collection_id >= 1)` |
-| <a id="s-39b80fd0d2"></a>`check` | `ck_stove0_departure_seen_operation` | `CONSTRAINT ck_stove0_departure_seen_operation CHECK (operation IN ('upsert','departure'))` |
-| <a id="s-e7473b9e05"></a>`check` | `ck_stove0_departure_seen_document` | `CONSTRAINT ck_stove0_departure_seen_document CHECK (document_bytes IS NULL AND document_json IS NULL OR document_bytes >= 0 AND document_json IS NOT NULL)` |
-| <a id="s-5021d18387"></a>`check` | `ck_stove0_departure_seen_generation_hex` | `CONSTRAINT ck_stove0_departure_seen_generation_hex CHECK (length(generation) = 64 AND lower(generation) = generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-16667e052f"></a>`check` | `ck_stove0_departure_seen_authority_sha256_hex` | `CONSTRAINT ck_stove0_departure_seen_authority_sha256_hex CHECK (length(authority_sha256) = 64 AND lower(authority_sha256) = authority_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(authority_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-d37e21b8ba"></a>`primary-key` | `—` | `PRIMARY KEY (policy_id, generation, collection_id)` |
+| <a id="s-1a9e4c0a4a"></a>`check` | `ck_stove0_departure_seen_collection` | `CONSTRAINT ck_stove0_departure_seen_collection CHECK (collection_id >= 1)` |
+| <a id="s-c4b70ead99"></a>`check` | `ck_stove0_departure_seen_operation` | `CONSTRAINT ck_stove0_departure_seen_operation CHECK (operation IN ('upsert','departure'))` |
+| <a id="s-db1184188c"></a>`check` | `ck_stove0_departure_seen_document` | `CONSTRAINT ck_stove0_departure_seen_document CHECK (document_bytes IS NULL AND document_json IS NULL OR document_bytes >= 0 AND document_json IS NOT NULL)` |
+| <a id="s-589e9a73ee"></a>`check` | `ck_stove0_departure_seen_generation_hex` | `CONSTRAINT ck_stove0_departure_seen_generation_hex CHECK (length(generation) = 64 AND lower(generation) = generation AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(generation, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-d55869541b"></a>`check` | `ck_stove0_departure_seen_authority_sha256_hex` | `CONSTRAINT ck_stove0_departure_seen_authority_sha256_hex CHECK (length(authority_sha256) = 64 AND lower(authority_sha256) = authority_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(authority_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -50,7 +50,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-027e6b481d"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-b36a5f0d28"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -66,7 +66,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/3/structure/tables/1`
+- `/external_contract/durable_state/owners/5/structure/tables/1`
 
 ### Exact owned JSON
 

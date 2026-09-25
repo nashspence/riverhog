@@ -19,6 +19,10 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-riverhog-ftp-spool` | [schemas: ErrorBody](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-errorbody.md#pa-24ec92c55f) |
 | `a-riverhog-ftp-spool` | [schemas: HTTPValidationError](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-httpvalidationerror.md#pa-ac60aff257) |
 | `a-riverhog-ftp-spool` | [schemas: ValidationError](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-validationerror.md#pa-1bbb29f7ef) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness ingest](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness-ingest.md#pa-6d54d1c03c) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness mature](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness-mature.md#pa-05f2df2a2c) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness reschedule](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness-reschedule.md#pa-029c3dc59b) |
+| `a-riverhog-opentimestamps-witness` | [a-riverhog-opentimestamps-witness run](../../authorities/a-riverhog-opentimestamps-witness/cli/a-riverhog-opentimestamps-witness-run.md#pa-83347c8483) |
 | `a-stove0-cli` | [stove0 preview](../../authorities/a-stove0-cli/cli/stove0-preview.md#pa-754e1c9400) |
 | `a-stove0-cli` | [stove0 work create](../../authorities/a-stove0-cli/cli/stove0-work-create.md#pa-147ac44921) |
 | `review0-sampler-lib` | [generated:review0-sampler: ErrorOut](../../authorities/review0-sampler-lib/process-protocol-schemas/generated-review0-sampler-errorout.md#pa-607402a776) |

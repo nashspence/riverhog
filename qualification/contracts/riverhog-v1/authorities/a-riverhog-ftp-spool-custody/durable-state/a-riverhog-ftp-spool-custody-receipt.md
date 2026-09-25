@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:a-riverhog-ftp-spool-custody:a-riverhog-ftp-spool-custody-receipt:d9cd6951fe -->
+<!-- contract-element: durable-state:a-riverhog-ftp-spool-custody:a-riverhog-ftp-spool-custody-receipt:a0356e73f6 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,45 +13,45 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-e5f2534f2d"></a>
+<a id="s-486c778eb0"></a>
 
 - Document: `receipt`
 
 ### Document schema
 
 - `kind`: `"json-document"`
-<a id="s-17735bcaf1"></a>
+<a id="s-9a63fe3830"></a>
 
-- <a id="s-ff823cb7b9"></a>`type`: `"object"`
-- <a id="s-29ba16c9b6"></a>`additionalProperties`: `false`
-- <a id="s-cdfb368732"></a>`required`: `["format","claim_id","source_event_id","collection_id","archive_root_sha256","content_identity","riverhog_receipt"]`
-- <a id="s-35b8fede2a"></a>`title`: `"FtpReceiptState"`
+- <a id="s-3acc71663e"></a>`type`: `"object"`
+- <a id="s-60899f10c0"></a>`additionalProperties`: `false`
+- <a id="s-7aacb42c83"></a>`required`: `["format","claim_id","source_event_id","collection_id","archive_root_sha256","content_identity","riverhog_receipt"]`
+- <a id="s-7017a0d9c4"></a>`title`: `"FtpReceiptState"`
 
 #### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-9d7edc41a5"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Root Sha256" |  |
-| <a id="s-a02010b383"></a>`claim_id` | yes | type="string"; minLength=1; title="Claim Id" |  |
-| <a id="s-26fb5dc079"></a>`collection_id` | yes | [CollectionId](#s-fa11e063f9) |  |
-| <a id="s-02b9d25461"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Content Identity" |  |
-| <a id="s-fb0e5e377d"></a>`format` | yes | type="string"; const="a-riverhog-ftp-spool-receipt/v1"; title="Format" |  |
-| <a id="s-085dd88286"></a>`riverhog_receipt` | yes | type="object"; additionalProperties=(any JSON value); title="Riverhog Receipt" |  |
-| <a id="s-a6edc25a15"></a>`source_event_id` | yes | type="string"; minLength=1; title="Source Event Id" |  |
+| <a id="s-660b49138f"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Root Sha256" |  |
+| <a id="s-647ea8b010"></a>`claim_id` | yes | type="string"; minLength=1; title="Claim Id" |  |
+| <a id="s-aa03e1b292"></a>`collection_id` | yes | [CollectionId](#s-5d80024177) |  |
+| <a id="s-0750752ce5"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Content Identity" |  |
+| <a id="s-c23e998a72"></a>`format` | yes | type="string"; const="a-riverhog-ftp-spool-receipt/v1"; title="Format" |  |
+| <a id="s-b5e201d141"></a>`riverhog_receipt` | yes | type="object"; additionalProperties=(any JSON value); title="Riverhog Receipt" |  |
+| <a id="s-dafb646060"></a>`source_event_id` | yes | type="string"; minLength=1; title="Source Event Id" |  |
 
 #### Definitions
 
-- [CollectionId](#s-fa11e063f9)
+- [CollectionId](#s-5d80024177)
 
-#### <a id="s-fa11e063f9"></a>definition `CollectionId`
+#### <a id="s-5d80024177"></a>definition `CollectionId`
 
 
 ##### All must match (`allOf`)
 
 | Alternative | Schema |
 |---|---|
-| <a id="s-d37124a68c"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
-| <a id="s-24935dac01"></a>2 | not=(const="0") |
+| <a id="s-2dbe0b45da"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
+| <a id="s-512f3a92ca"></a>2 | not=(const="0") |
 
 ## Maintained corroboration
 
@@ -61,7 +61,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-12ae7579b8"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-42c7b391a9"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -77,7 +77,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/6/structure/units/3`
+- `/external_contract/durable_state/owners/8/structure/units/3`
 
 ### Exact owned JSON
 

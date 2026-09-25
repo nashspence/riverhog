@@ -4,9 +4,9 @@
 
 Typed generic Riverhog client and capability-scoped collection-processing runtime.
 
-Contract elements: **281** · Extent decisions: **7**
+Contract elements: **292** · Extent decisions: **7**
 
 ## Interfaces
 
 - [Configuration Environment](configuration-environment/index.md) (12)
-- [Python](python/index.md) (269)
+- [Python](python/index.md) (280)

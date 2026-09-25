@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:a-riverhog-ftp-spool-custody:a-riverhog-ftp-spool-custody-operational-database:a78d412e76 -->
+<!-- contract-element: durable-state:a-riverhog-ftp-spool-custody:a-riverhog-ftp-spool-custody-operational-database:20d65e4294 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,19 +13,19 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-992b75bfec"></a>
+<a id="s-fccbb8e17c"></a>
 
 
 
 | Field | Value |
 |---|---|
-| <a id="s-9c6dbe1166"></a>`dialect` | `"sqlite"` |
-| <a id="s-a30d878c25"></a>`id` | `"operational-database"` |
-| <a id="s-41e1afd5b1"></a>`kind` | `"relational-schema"` |
-| <a id="s-bc4deff50d"></a>`unique_indexes` | `[]` |
-| <a id="s-0d88293dad"></a>`user_version` | `3` |
+| <a id="s-130d2b802b"></a>`dialect` | `"sqlite"` |
+| <a id="s-916a6ae7f2"></a>`id` | `"operational-database"` |
+| <a id="s-2d0f540bea"></a>`kind` | `"relational-schema"` |
+| <a id="s-ec209454a2"></a>`unique_indexes` | `[]` |
+| <a id="s-a80b3bf11e"></a>`user_version` | `3` |
 
-<a id="s-9d10de3bf6"></a>
+<a id="s-3f18564fa3"></a>
 
 ### Table: `claims`
 
@@ -33,12 +33,12 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-c2d025d372"></a>`ordinal` | `INTEGER` | no | `—` | {"primary_key":true} |
-| <a id="s-f05d73dc5b"></a>`claim_id` | `TEXT` | no | `—` | {"unique":true} |
-| <a id="s-bc267481ba"></a>`manifest_json` | `TEXT` | no | `—` | — |
-| <a id="s-a74c0b238b"></a>`claim_bytes` | `INTEGER` | no | `—` | {"checks":["(claim_bytes >= 0)"]} |
+| <a id="s-aeebe7c5fd"></a>`ordinal` | `INTEGER` | no | `—` | {"primary_key":true} |
+| <a id="s-0bef2975e8"></a>`claim_id` | `TEXT` | no | `—` | {"unique":true} |
+| <a id="s-e8a539f047"></a>`manifest_json` | `TEXT` | no | `—` | — |
+| <a id="s-ee11d22ff5"></a>`claim_bytes` | `INTEGER` | no | `—` | {"checks":["(claim_bytes >= 0)"]} |
 
-<a id="s-af955cbda3"></a>
+<a id="s-25b73bc528"></a>
 
 ### Table: `adapter_state`
 
@@ -46,10 +46,10 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-8e6cc5f51d"></a>`key` | `TEXT` | yes | `—` | {"primary_key":true} |
-| <a id="s-3e385f1523"></a>`value` | `TEXT` | no | `—` | — |
+| <a id="s-5a11255c05"></a>`key` | `TEXT` | yes | `—` | {"primary_key":true} |
+| <a id="s-fafd99244a"></a>`value` | `TEXT` | no | `—` | — |
 
-<a id="s-2364ff26c0"></a>
+<a id="s-8bce6b4ef6"></a>
 
 ### Table: `completion_events`
 
@@ -57,10 +57,10 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-cdbbd2f9e5"></a>`event_id` | `TEXT` | yes | `—` | {"primary_key":true} |
-| <a id="s-9b5453ce77"></a>`claim_id` | `TEXT` | no | `—` | — |
+| <a id="s-1db4db2c8b"></a>`event_id` | `TEXT` | yes | `—` | {"primary_key":true} |
+| <a id="s-ab175f668b"></a>`claim_id` | `TEXT` | no | `—` | — |
 
-<a id="s-e2331c1394"></a>
+<a id="s-38849a284e"></a>
 
 ### Table: `completion_failures`
 
@@ -68,16 +68,16 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-7ffa6be99d"></a>`ordinal` | `INTEGER` | no | `—` | {"primary_key":true} |
-| <a id="s-7eba67e027"></a>`failure_id` | `TEXT` | no | `—` | {"unique":true} |
-| <a id="s-30c0c26ff5"></a>`generation` | `TEXT` | no | `—` | — |
-| <a id="s-6a29c38391"></a>`record_offset` | `INTEGER` | no | `—` | {"checks":["(record_offset >= 0)"]} |
-| <a id="s-edbc45528f"></a>`raw` | `BLOB` | no | `—` | — |
-| <a id="s-5965aeadd4"></a>`reason` | `TEXT` | no | `—` | — |
-| <a id="s-0b8258b646"></a>`retryable` | `INTEGER` | no | `—` | {"checks":["(retryable IN (0, 1))"]} |
-| <a id="s-edc8fa5a3a"></a>`attempts` | `INTEGER` | no | `0` | {"checks":["(attempts >= 0)"]} |
+| <a id="s-15f4e086e3"></a>`ordinal` | `INTEGER` | no | `—` | {"primary_key":true} |
+| <a id="s-81a59b74f1"></a>`failure_id` | `TEXT` | no | `—` | {"unique":true} |
+| <a id="s-fdbb5e2173"></a>`generation` | `TEXT` | no | `—` | — |
+| <a id="s-60408db64f"></a>`record_offset` | `INTEGER` | no | `—` | {"checks":["(record_offset >= 0)"]} |
+| <a id="s-2036eaba00"></a>`raw` | `BLOB` | no | `—` | — |
+| <a id="s-9b941b0847"></a>`reason` | `TEXT` | no | `—` | — |
+| <a id="s-6c187171b3"></a>`retryable` | `INTEGER` | no | `—` | {"checks":["(retryable IN (0, 1))"]} |
+| <a id="s-7a093a3457"></a>`attempts` | `INTEGER` | no | `0` | {"checks":["(attempts >= 0)"]} |
 
-<a id="s-054445226e"></a>
+<a id="s-7737955f07"></a>
 
 ### Table: `lifecycle_events`
 
@@ -85,9 +85,9 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-a271ff830f"></a>`sequence` | `INTEGER` | no | `—` | {"primary_key":true} |
-| <a id="s-e9325bb000"></a>`event_id` | `TEXT` | no | `—` | {"unique":true} |
-| <a id="s-e34edb8ed2"></a>`event_json` | `TEXT` | no | `—` | — |
+| <a id="s-eee332fd4c"></a>`sequence` | `INTEGER` | no | `—` | {"primary_key":true} |
+| <a id="s-e770fc8844"></a>`event_id` | `TEXT` | no | `—` | {"unique":true} |
+| <a id="s-b0ea76facc"></a>`event_json` | `TEXT` | no | `—` | — |
 
 ## Maintained corroboration
 
@@ -97,7 +97,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-960ca824e6"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-7824ec2903"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -113,7 +113,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/6/structure/units/0`
+- `/external_contract/durable_state/owners/8/structure/units/0`
 
 ### Exact owned JSON
 

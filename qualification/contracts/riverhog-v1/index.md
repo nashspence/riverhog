@@ -4,7 +4,7 @@
 
 This generated snapshot accounts for the externally exposed surfaces discovered from this repository revision. Discovery means inclusion; no separate acceptance decision is required.
 
-Included contract elements: **4321** · Extent decisions: **2151**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
+Included contract elements: **4374** · Extent decisions: **2176**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
 
 ## Audit references
 
@@ -115,6 +115,18 @@ Included contract elements: **4321** · Extent decisions: **2151**. Complete acc
   - [Schemas](authorities/a-riverhog-macos-provenance-contract-lib/schema/index.md) (4)
   - [Python](authorities/a-riverhog-macos-provenance-contract-lib/python/index.md) (4)
 
+- [a-riverhog-minisign-witness](authorities/a-riverhog-minisign-witness/index.md) — Independent Minisign collection witness for Riverhog.
+  - [CLI](authorities/a-riverhog-minisign-witness/cli/index.md) (10)
+
+- [a-riverhog-minisign-witness-ledger](authorities/a-riverhog-minisign-witness-ledger/index.md) — Independent Minisign collection witness for Riverhog.
+  - [Durable State](authorities/a-riverhog-minisign-witness-ledger/durable-state/index.md) (4)
+
+- [a-riverhog-opentimestamps-witness](authorities/a-riverhog-opentimestamps-witness/index.md) — Independent OpenTimestamps collection witness for Riverhog.
+  - [CLI](authorities/a-riverhog-opentimestamps-witness/cli/index.md) (12)
+
+- [a-riverhog-opentimestamps-witness-ledger](authorities/a-riverhog-opentimestamps-witness-ledger/index.md) — Independent OpenTimestamps collection witness for Riverhog.
+  - [Durable State](authorities/a-riverhog-opentimestamps-witness-ledger/durable-state/index.md) (5)
+
 - [a-riverhog-recovery-tool](authorities/a-riverhog-recovery-tool/index.md) — Independent recovery tool for Riverhog archives.
   - [CLI](authorities/a-riverhog-recovery-tool/cli/index.md) (1)
   - [Python](authorities/a-riverhog-recovery-tool/python/index.md) (7)
@@ -125,6 +137,9 @@ Included contract elements: **4321** · Extent decisions: **2151**. Complete acc
 - [a-riverhog-windows-provenance-contract-lib](authorities/a-riverhog-windows-provenance-contract-lib/index.md) — Windows filesystem observation contracts for Riverhog provenance. Provider for extension: [riverhog.provenance-contracts](extensions/extension-point-riverhog-provenance-contracts.md).
   - [Schemas](authorities/a-riverhog-windows-provenance-contract-lib/schema/index.md) (10)
   - [Python](authorities/a-riverhog-windows-provenance-contract-lib/python/index.md) (4)
+
+- [a-riverhog-witness-contract-lib](authorities/a-riverhog-witness-contract-lib/index.md) — Shared collection witness statement for supplied Riverhog witness applications.
+  - [Python](authorities/a-riverhog-witness-contract-lib/python/index.md) (6)
 
 - [a-stove0-cli](authorities/a-stove0-cli/index.md) — Command-line client for Stove0.
   - [CLI](authorities/a-stove0-cli/cli/index.md) (43)
@@ -184,8 +199,8 @@ Included contract elements: **4321** · Extent decisions: **2151**. Complete acc
   - [Python](authorities/lifecycle-events/python/index.md) (23)
 
 - [release](authorities/release/index.md) — Coordinated v1 compatibility and publication promises.
-  - [Runtime Images](authorities/release/runtime-images/index.md) (13)
-  - [Python Distributions](authorities/release/python-distributions/index.md) (72)
+  - [Runtime Images](authorities/release/runtime-images/index.md) (15)
+  - [Python Distributions](authorities/release/python-distributions/index.md) (75)
   - [Installation Roots](authorities/release/installation-roots/index.md) (4)
   - [Release Artifacts](authorities/release/release-artifacts/index.md) (12)
   - [Publication Locations](authorities/release/publication-locations/index.md) (2)
@@ -242,7 +257,7 @@ Included contract elements: **4321** · Extent decisions: **2151**. Complete acc
 
 - [riverhog-client](authorities/riverhog-client/index.md) — Typed generic Riverhog client and capability-scoped collection-processing runtime.
   - [Configuration Environment](authorities/riverhog-client/configuration-environment/index.md) (12)
-  - [Python](authorities/riverhog-client/python/index.md) (269)
+  - [Python](authorities/riverhog-client/python/index.md) (280)
 
 - [riverhog-protocol](authorities/riverhog-protocol/index.md) — Canonical Riverhog wire and identity contracts.
   - [Schemas](authorities/riverhog-protocol/schema/index.md) (1)

@@ -32,10 +32,13 @@ Published Python distribution identities and artifact forms.
 | [a-riverhog-linux-provenance-observer](python-distribution-a-riverhog-linux-provenance-observer.md) | `component` |
 | [a-riverhog-macos-provenance-contract-lib](python-distribution-a-riverhog-macos-provenance-contract-lib.md) | `component` |
 | [a-riverhog-macos-provenance-observer](python-distribution-a-riverhog-macos-provenance-observer.md) | `component` |
+| [a-riverhog-minisign-witness](python-distribution-a-riverhog-minisign-witness.md) | `application` |
+| [a-riverhog-opentimestamps-witness](python-distribution-a-riverhog-opentimestamps-witness.md) | `application` |
 | [a-riverhog-recovery-tool](python-distribution-a-riverhog-recovery-tool.md) | `application` |
 | [a-riverhog-s3-store-lib](python-distribution-a-riverhog-s3-store-lib.md) | `reusable_library` |
 | [a-riverhog-windows-provenance-contract-lib](python-distribution-a-riverhog-windows-provenance-contract-lib.md) | `component` |
 | [a-riverhog-windows-provenance-observer](python-distribution-a-riverhog-windows-provenance-observer.md) | `component` |
+| [a-riverhog-witness-contract-lib](python-distribution-a-riverhog-witness-contract-lib.md) | `reusable_library` |
 | [a-stove0-cli](python-distribution-a-stove0-cli.md) | `application` |
 | [a-stove0-exiftool-observer](python-distribution-a-stove0-exiftool-observer.md) | `component` |
 | [a-stove0-ffprobe-sampling-observer](python-distribution-a-stove0-ffprobe-sampling-observer.md) | `component` |

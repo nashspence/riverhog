@@ -4,14 +4,14 @@
 
 Coordinated v1 compatibility and publication promises.
 
-Contract elements: **120** · Extent decisions: **0**
+Contract elements: **125** · Extent decisions: **0**
 
 ## Interfaces
 
 [Publication policies](../../policies/publication/index.md) — promises owned directly by release policy records.
 
-- [Runtime Images](runtime-images/index.md) (13)
-- [Python Distributions](python-distributions/index.md) (72)
+- [Runtime Images](runtime-images/index.md) (15)
+- [Python Distributions](python-distributions/index.md) (75)
 - [Installation Roots](installation-roots/index.md) (4)
 - [Release Artifacts](release-artifacts/index.md) (12)
 - [Publication Locations](publication-locations/index.md) (2)

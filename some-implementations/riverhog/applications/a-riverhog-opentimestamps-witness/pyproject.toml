@@ -1,0 +1,44 @@
+[build-system]
+requires = ["hatchling>=1.31.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "a-riverhog-opentimestamps-witness"
+version = "0.1.0"
+description = "Independent OpenTimestamps collection witness for Riverhog."
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+readme = { text = "Independent OpenTimestamps collection witness for Riverhog.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
+authors = [{ name = "Nash Spence" }]
+maintainers = [{ name = "Nash Spence" }]
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Typing :: Typed",
+]
+urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
+dependencies = [
+  "a-riverhog-witness-contract-lib>=0.1,<0.2",
+  "alembic>=1.18.5,<2.0",
+  "httpx>=0.27,<1.0",
+  "opentimestamps==0.4.5",
+  "pycryptodomex==3.23.0",
+  "python-bitcoinlib==0.12.2",
+  "riverhog-client>=0.1,<0.2",
+  "riverhog-protocol>=0.1,<0.2",
+  "state-schema>=0.1,<0.2",
+  "SQLAlchemy>=2.0,<3.0",
+]
+
+[project.scripts]
+a-riverhog-opentimestamps-witness = "a_riverhog_opentimestamps_witness.cli:main"
+
+[tool.uv.sources]
+a-riverhog-witness-contract-lib = { workspace = true }
+riverhog-client = { workspace = true }
+riverhog-protocol = { workspace = true }
+state-schema = { workspace = true }
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/a_riverhog_opentimestamps_witness"]

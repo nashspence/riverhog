@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:gogurt-listener:gogurt-listener-listener-meta:ea8d253c08 -->
+<!-- contract-element: durable-state:gogurt-listener:gogurt-listener-listener-meta:13ff9dfa58 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-636a85068a"></a>
+<a id="s-be593d91e5"></a>
 
 ### Table: `listener_meta`
 
@@ -21,8 +21,8 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-0a6bcdef95"></a>`key` | `TEXT` | no | `—` | {"primary_key":true} |
-| <a id="s-8705138789"></a>`value` | `TEXT` | no | `—` | — |
+| <a id="s-52b2350075"></a>`key` | `TEXT` | no | `—` | {"primary_key":true} |
+| <a id="s-7f7f97fada"></a>`value` | `TEXT` | no | `—` | — |
 
 ## Maintained corroboration
 
@@ -32,7 +32,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-a319da3b00"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-8cc57e2d15"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -48,7 +48,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/4/structure/tables/0`
+- `/external_contract/durable_state/owners/6/structure/tables/0`
 
 ### Exact owned JSON
 

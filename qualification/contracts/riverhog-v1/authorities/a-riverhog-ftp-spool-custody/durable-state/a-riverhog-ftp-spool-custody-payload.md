@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:a-riverhog-ftp-spool-custody:a-riverhog-ftp-spool-custody-payload:29a05bf3c6 -->
+<!-- contract-element: durable-state:a-riverhog-ftp-spool-custody:a-riverhog-ftp-spool-custody-payload:0c976dfbb4 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,15 +13,15 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-ebd9b486a9"></a>
+<a id="s-72eb037d2c"></a>
 
 
 
 | Field | Value |
 |---|---|
-| <a id="s-1be383ed84"></a>`id` | `"payload"` |
-| <a id="s-8061ff2e68"></a>`identity` | `"claim file path, byte length, and SHA-256"` |
-| <a id="s-5d95aebccb"></a>`kind` | `"opaque-bytes"` |
+| <a id="s-34d3fea01b"></a>`id` | `"payload"` |
+| <a id="s-fd8092e924"></a>`identity` | `"claim file path, byte length, and SHA-256"` |
+| <a id="s-a6b5245403"></a>`kind` | `"opaque-bytes"` |
 
 ## Maintained corroboration
 
@@ -31,7 +31,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-d97cf58f9f"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-2a01d11ad7"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -47,7 +47,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/6/structure/units/4`
+- `/external_contract/durable_state/owners/8/structure/units/4`
 
 ### Exact owned JSON
 

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-work-relations:7b87fca16d -->
+<!-- contract-element: durable-state:stove0-control:stove0-control-stove0-work-relations:ca8e4a438d -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-f3606ccc76"></a>
+<a id="s-ea70ea1bfb"></a>
 
 ### Table: `stove0_work_relations`
 
@@ -21,18 +21,18 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-73ead595df"></a>`work_id` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-e2e6c8bf82"></a>`related_work_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-6cc37f9bc4"></a>`work_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-d764721de0"></a>`related_work_id` | `VARCHAR(64)` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-711fd24aa7"></a>`primary-key` | `—` | `PRIMARY KEY (work_id, related_work_id)` |
-| <a id="s-c85c687924"></a>`check` | `ck_stove0_work_relations_distinct` | `CONSTRAINT ck_stove0_work_relations_distinct CHECK (work_id <> related_work_id)` |
-| <a id="s-a414718166"></a>`foreign-key` | `—` | `FOREIGN KEY(work_id) REFERENCES stove0_work_records (work_id) ON DELETE CASCADE` |
-| <a id="s-23b8b1c8de"></a>`check` | `ck_stove0_work_relations_work_id_hex` | `CONSTRAINT ck_stove0_work_relations_work_id_hex CHECK (length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-bea34d1ff7"></a>`check` | `ck_stove0_work_relations_related_work_id_hex` | `CONSTRAINT ck_stove0_work_relations_related_work_id_hex CHECK (length(related_work_id) = 64 AND lower(related_work_id) = related_work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(related_work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-0609da6f12"></a>`primary-key` | `—` | `PRIMARY KEY (work_id, related_work_id)` |
+| <a id="s-72abb96667"></a>`check` | `ck_stove0_work_relations_distinct` | `CONSTRAINT ck_stove0_work_relations_distinct CHECK (work_id <> related_work_id)` |
+| <a id="s-b7a30ec8a5"></a>`foreign-key` | `—` | `FOREIGN KEY(work_id) REFERENCES stove0_work_records (work_id) ON DELETE CASCADE` |
+| <a id="s-96b8ccba32"></a>`check` | `ck_stove0_work_relations_work_id_hex` | `CONSTRAINT ck_stove0_work_relations_work_id_hex CHECK (length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-6d564663a7"></a>`check` | `ck_stove0_work_relations_related_work_id_hex` | `CONSTRAINT ck_stove0_work_relations_related_work_id_hex CHECK (length(related_work_id) = 64 AND lower(related_work_id) = related_work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(related_work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -42,7 +42,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-17f997b608"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-8f61662583"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -58,7 +58,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/3/structure/tables/20`
+- `/external_contract/durable_state/owners/5/structure/tables/20`
 
 ### Exact owned JSON
 

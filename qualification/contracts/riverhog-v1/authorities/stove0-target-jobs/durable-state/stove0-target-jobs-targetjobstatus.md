@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:stove0-target-jobs:stove0-target-jobs-targetjobstatus:e0ff216756 -->
+<!-- contract-element: durable-state:stove0-target-jobs:stove0-target-jobs-targetjobstatus:b16bcfbf8f -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,246 +13,246 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-bda4c8b11d"></a>
+<a id="s-7b308e55b6"></a>
 
 - Document: `TargetJobStatus`
 
 ### Document schema
 
-<a id="s-c6d4e24c5d"></a>
+<a id="s-5da2d280f3"></a>
 
-- <a id="s-c122f3742c"></a>`type`: `"object"`
-- <a id="s-5b74c3c6b4"></a>`additionalProperties`: `false`
-- <a id="s-af6e588cc7"></a>`required`: `["job_id","state","attempt","request_sha256","plan_sha256","progress"]`
-- <a id="s-dfc60cdd41"></a>`title`: `"TargetJobStatus"`
+- <a id="s-9be61aa957"></a>`type`: `"object"`
+- <a id="s-380002984e"></a>`additionalProperties`: `false`
+- <a id="s-25beff784a"></a>`required`: `["job_id","state","attempt","request_sha256","plan_sha256","progress"]`
+- <a id="s-e0a21eaa2a"></a>`title`: `"TargetJobStatus"`
 
 #### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-3df251316d"></a>`attempt` | yes | type="integer"; minimum=1; title="Attempt" |  |
-| <a id="s-c6836f380a"></a>`derivation` | no | anyOf=[(type="object"; additionalProperties=(any JSON value)); (type="null")]; default=null; title="Derivation" |  |
-| <a id="s-5e317243bc"></a>`effect_receipt` | no | anyOf=[([ExternalEffectReceipt](#s-26a5e8c3b1)); (type="null")]; default=null |  |
-| <a id="s-18f9ef6552"></a>`execution_evidence` | no | anyOf=[([TargetExecutionEvidence](#s-4cb88d14a9)); (type="null")]; default=null |  |
-| <a id="s-ae3c3516eb"></a>`failure` | no | anyOf=[([TargetFailure](#s-9a77996437)); (type="null")]; default=null |  |
-| <a id="s-4637ad6e2c"></a>`inapplicable` | no | anyOf=[([TargetInapplicable](#s-9eef827dbc)); (type="null")]; default=null |  |
-| <a id="s-251d0845a8"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Job Id" |  |
-| <a id="s-82ccbbb62d"></a>`output_collection` | no | anyOf=[([OutputCollectionRef](#s-d7db2264de)); (type="null")]; default=null |  |
-| <a id="s-30b6e78e10"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
-| <a id="s-5126e9e1e1"></a>`production` | no | anyOf=[([TargetProductionAuthority](#s-960e8adbc4)); (type="null")]; default=null |  |
-| <a id="s-3c2424e430"></a>`progress` | yes | [TargetProgress](#s-80fe077bf8) |  |
-| <a id="s-e91fef0a8f"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"]; default="stove0-transform-target/v1"; title="Protocol" |  |
-| <a id="s-6dc483ad49"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Request Sha256" |  |
-| <a id="s-79937baa0d"></a>`state` | yes | type="string"; enum=["queued","running","canceling","interrupted","inapplicable","succeeded","failed","canceled"]; title="State" |  |
+| <a id="s-de27795472"></a>`attempt` | yes | type="integer"; minimum=1; title="Attempt" |  |
+| <a id="s-b016ea6af2"></a>`derivation` | no | anyOf=[(type="object"; additionalProperties=(any JSON value)); (type="null")]; default=null; title="Derivation" |  |
+| <a id="s-6855ffda36"></a>`effect_receipt` | no | anyOf=[([ExternalEffectReceipt](#s-8b4a24b0e7)); (type="null")]; default=null |  |
+| <a id="s-1433170bd4"></a>`execution_evidence` | no | anyOf=[([TargetExecutionEvidence](#s-413264cab5)); (type="null")]; default=null |  |
+| <a id="s-b2f7acab2d"></a>`failure` | no | anyOf=[([TargetFailure](#s-caf82a2bb7)); (type="null")]; default=null |  |
+| <a id="s-96106d58e1"></a>`inapplicable` | no | anyOf=[([TargetInapplicable](#s-126011d14e)); (type="null")]; default=null |  |
+| <a id="s-62ff5af90a"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Job Id" |  |
+| <a id="s-d10dc5a215"></a>`output_collection` | no | anyOf=[([OutputCollectionRef](#s-60aceae91c)); (type="null")]; default=null |  |
+| <a id="s-b3fe4d5d58"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
+| <a id="s-a3f8f9e8b4"></a>`production` | no | anyOf=[([TargetProductionAuthority](#s-50f71a9fe6)); (type="null")]; default=null |  |
+| <a id="s-aee7a1585b"></a>`progress` | yes | [TargetProgress](#s-62dc4927bc) |  |
+| <a id="s-b7f3c1237b"></a>`protocol` | no | type="string"; enum=["stove0-transform-target/v1","stove0-effect-target/v1"]; default="stove0-transform-target/v1"; title="Protocol" |  |
+| <a id="s-1ccbe7ea38"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Request Sha256" |  |
+| <a id="s-2bbcd2e963"></a>`state` | yes | type="string"; enum=["queued","running","canceling","interrupted","inapplicable","succeeded","failed","canceled"]; title="State" |  |
 
 #### All must match (`allOf`)
 
 | Rule | If schema matches | Then must match | Otherwise must match |
 |---|---|---|---|
-| <a id="s-31d17d4e31"></a>1 | properties={state: (const="failed")} | properties={failure: (type="object")}; required=["failure"] | properties={failure: (type="null")} |
+| <a id="s-bcf99bff0f"></a>1 | properties={state: (const="failed")} | properties={failure: (type="object")}; required=["failure"] | properties={failure: (type="null")} |
 
 #### Definitions
 
-- [ArtifactDispositionSetIdentity](#s-94e71eb9c2)
-- [CollectionId](#s-090ac9d376)
-- [ExternalEffectReceipt](#s-26a5e8c3b1)
-- [JsonValue](#s-18dd5136d0)
-- [NonnegativeDecimal](#s-b901e6587e)
-- [OutputArtifactRoleCount](#s-b4c30465ea)
-- [OutputArtifactSetIdentity](#s-c8fdc5e154)
-- [OutputCollectionRef](#s-d7db2264de)
-- [TargetExecutionEvidence](#s-4cb88d14a9)
-- [TargetFailure](#s-9a77996437)
-- [TargetInapplicable](#s-9eef827dbc)
-- [TargetProductionAuthority](#s-960e8adbc4)
-- [TargetProgress](#s-80fe077bf8)
+- [ArtifactDispositionSetIdentity](#s-2f5c39b47e)
+- [CollectionId](#s-bab28859a4)
+- [ExternalEffectReceipt](#s-8b4a24b0e7)
+- [JsonValue](#s-0c331f06c8)
+- [NonnegativeDecimal](#s-57b7598da1)
+- [OutputArtifactRoleCount](#s-fac44d866e)
+- [OutputArtifactSetIdentity](#s-f27e97cc6d)
+- [OutputCollectionRef](#s-60aceae91c)
+- [TargetExecutionEvidence](#s-413264cab5)
+- [TargetFailure](#s-caf82a2bb7)
+- [TargetInapplicable](#s-126011d14e)
+- [TargetProductionAuthority](#s-50f71a9fe6)
+- [TargetProgress](#s-62dc4927bc)
 
-#### <a id="s-94e71eb9c2"></a>definition `ArtifactDispositionSetIdentity`
+#### <a id="s-2f5c39b47e"></a>definition `ArtifactDispositionSetIdentity`
 
-- <a id="s-e68bec7a0f"></a>`type`: `"object"`
-- <a id="s-c7b28e0ddd"></a>`description`: `"Small identity for one sealed claim-scoped relational disposition set."`
-- <a id="s-83514e7595"></a>`required`: `["disposition_count","output_edge_count","output_artifact_count","sha256"]`
-- <a id="s-ae2ce283b9"></a>`title`: `"ArtifactDispositionSetIdentity"`
+- <a id="s-46473810c8"></a>`type`: `"object"`
+- <a id="s-e5cc5112fe"></a>`description`: `"Small identity for one sealed claim-scoped relational disposition set."`
+- <a id="s-710d710ef4"></a>`required`: `["disposition_count","output_edge_count","output_artifact_count","sha256"]`
+- <a id="s-f57640a4c2"></a>`title`: `"ArtifactDispositionSetIdentity"`
 
 ##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-635c6a2b10"></a>`disposition_count` | yes | type="integer"; title="Disposition Count" |  |
-| <a id="s-90b06c7fc3"></a>`output_artifact_count` | yes | type="integer"; title="Output Artifact Count" |  |
-| <a id="s-3c1b9626a3"></a>`output_edge_count` | yes | type="integer"; title="Output Edge Count" |  |
-| <a id="s-3f9386eaac"></a>`sha256` | yes | type="string"; title="Sha256" |  |
+| <a id="s-fa8f656fc2"></a>`disposition_count` | yes | type="integer"; title="Disposition Count" |  |
+| <a id="s-3a57761d96"></a>`output_artifact_count` | yes | type="integer"; title="Output Artifact Count" |  |
+| <a id="s-b99d8e4e7b"></a>`output_edge_count` | yes | type="integer"; title="Output Edge Count" |  |
+| <a id="s-ad2cdc889a"></a>`sha256` | yes | type="string"; title="Sha256" |  |
 
-#### <a id="s-090ac9d376"></a>definition `CollectionId`
+#### <a id="s-bab28859a4"></a>definition `CollectionId`
 
 
 ##### All must match (`allOf`)
 
 | Alternative | Schema |
 |---|---|
-| <a id="s-a53ba4f16c"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
-| <a id="s-89c51abb37"></a>2 | not=(const="0") |
+| <a id="s-efb1a15bf3"></a>1 | type="string"; pattern="^(?:0\|[1-9][0-9]{0,17}\|[1-8][0-9]{18}\|9[0-1][0-9]{17}\|92[0-1][0-9]{16}\|922[0-2][0-9]{15}\|9223[0-2][0-9]{14}\|92233[0-6][0-9]{13}\|922337[0-1][0-9]{12}\|92233720[0-2][0-9]{10}\|922337203[0-5][0-9]{9}\|9223372036[0-7][0-9]{8}\|92233720368[0-4][0-9]{7}\|922337203685[0-3][0-9]{6}\|9223372036854[0-6][0-9]{5}\|92233720368547[0-6][0-9]{4}\|922337203685477[0-4][0-9]{3}\|9223372036854775[0-7][0-9]{2}\|922337203685477580[0-6][0-9]{0}\|9223372036854775807)(?![\\s\\S])" |
+| <a id="s-1d7cea718d"></a>2 | not=(const="0") |
 
-#### <a id="s-26a5e8c3b1"></a>definition `ExternalEffectReceipt`
+#### <a id="s-8b4a24b0e7"></a>definition `ExternalEffectReceipt`
 
-- <a id="s-70ea327e16"></a>`type`: `"object"`
-- <a id="s-7f93ed9ac5"></a>`additionalProperties`: `false`
-- <a id="s-250396edcd"></a>`required`: `["job_id","request_sha256","target_descriptor_sha256","operation_contract_sha256","plan_sha256","execution_sha256","result","receipt_sha256"]`
-- <a id="s-063e652328"></a>`title`: `"ExternalEffectReceipt"`
+- <a id="s-7b5416af66"></a>`type`: `"object"`
+- <a id="s-8b1f6081e5"></a>`additionalProperties`: `false`
+- <a id="s-f407863d84"></a>`required`: `["job_id","request_sha256","target_descriptor_sha256","operation_contract_sha256","plan_sha256","execution_sha256","result","receipt_sha256"]`
+- <a id="s-c50534f80c"></a>`title`: `"ExternalEffectReceipt"`
 
 ##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-66e5e40c8b"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Execution Sha256" |  |
-| <a id="s-c9718428cc"></a>`format` | no | type="string"; const="stove0-external-effect-receipt/v1"; default="stove0-external-effect-receipt/v1"; title="Format" |  |
-| <a id="s-a531b71ead"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Job Id" |  |
-| <a id="s-23f2cf0420"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Operation Contract Sha256" |  |
-| <a id="s-81bfaf3744"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
-| <a id="s-c2db6755fa"></a>`receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Receipt Sha256" |  |
-| <a id="s-0790af0e1f"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Request Sha256" |  |
-| <a id="s-c3664b2b45"></a>`result` | yes | type="object"; additionalProperties=([JsonValue](#s-18dd5136d0)); title="Result"; x-riverhog-encoded-bytes-max=65536; x-riverhog-extent={"policy":"contract_max","reason":"bounded-external-effect-receipt"} |  |
-| <a id="s-db0587814e"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Descriptor Sha256" |  |
+| <a id="s-17c900e603"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Execution Sha256" |  |
+| <a id="s-38ae3f6900"></a>`format` | no | type="string"; const="stove0-external-effect-receipt/v1"; default="stove0-external-effect-receipt/v1"; title="Format" |  |
+| <a id="s-677708f0f8"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Job Id" |  |
+| <a id="s-4e8040051b"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Operation Contract Sha256" |  |
+| <a id="s-52cf4b6f40"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
+| <a id="s-ae2cf80fb4"></a>`receipt_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Receipt Sha256" |  |
+| <a id="s-ac5775bff1"></a>`request_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Request Sha256" |  |
+| <a id="s-fa745d2441"></a>`result` | yes | type="object"; additionalProperties=([JsonValue](#s-0c331f06c8)); title="Result"; x-riverhog-encoded-bytes-max=65536; x-riverhog-extent={"policy":"contract_max","reason":"bounded-external-effect-receipt"} |  |
+| <a id="s-2caf532154"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Descriptor Sha256" |  |
 
-#### <a id="s-18dd5136d0"></a>definition `JsonValue`
+#### <a id="s-0c331f06c8"></a>definition `JsonValue`
 
 - Accepts: any JSON value.
 
-#### <a id="s-b901e6587e"></a>definition `NonnegativeDecimal`
+#### <a id="s-57b7598da1"></a>definition `NonnegativeDecimal`
 
-- <a id="s-674f67cd69"></a>`type`: `"string"`
-- <a id="s-32435f5f55"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
+- <a id="s-7520a1b1e5"></a>`type`: `"string"`
+- <a id="s-51700ff7f0"></a>`pattern`: `"^(?:0\|[1-9][0-9]*)(?![\\s\\S])"`
 
-#### <a id="s-b4c30465ea"></a>definition `OutputArtifactRoleCount`
+#### <a id="s-fac44d866e"></a>definition `OutputArtifactRoleCount`
 
-- <a id="s-6277cce134"></a>`type`: `"object"`
-- <a id="s-1926b5f08c"></a>`additionalProperties`: `false`
-- <a id="s-28097273b1"></a>`required`: `["role","count"]`
-- <a id="s-ec65b666d1"></a>`title`: `"OutputArtifactRoleCount"`
-
-##### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-0a73b6b5b2"></a>`count` | yes | type="integer"; minimum=1; title="Count" |  |
-| <a id="s-9d4ffd86a4"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Role" |  |
-
-#### <a id="s-c8fdc5e154"></a>definition `OutputArtifactSetIdentity`
-
-- <a id="s-a182ca978f"></a>`type`: `"object"`
-- <a id="s-1097f340d2"></a>`additionalProperties`: `false`
-- <a id="s-1b01f5c24a"></a>`description`: `"Small identity for target outputs already registered with Riverhog."`
-- <a id="s-e299601079"></a>`required`: `["artifact_count","total_bytes","roles","sha256"]`
-- <a id="s-8a0dbfda42"></a>`title`: `"OutputArtifactSetIdentity"`
+- <a id="s-ef38a5af8a"></a>`type`: `"object"`
+- <a id="s-998e38b79b"></a>`additionalProperties`: `false`
+- <a id="s-2f61202137"></a>`required`: `["role","count"]`
+- <a id="s-773e490c7a"></a>`title`: `"OutputArtifactRoleCount"`
 
 ##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-99ce2e4b72"></a>`artifact_count` | yes | type="integer"; minimum=1; title="Artifact Count" |  |
-| <a id="s-36b452d6ec"></a>`roles` | yes | type="array"; items=([OutputArtifactRoleCount](#s-b4c30465ea)); minItems=1; title="Roles" |  |
-| <a id="s-377a936112"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
-| <a id="s-f8cf3bdd48"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-b901e6587e); ge=0 |  |
+| <a id="s-aa07d4fe99"></a>`count` | yes | type="integer"; minimum=1; title="Count" |  |
+| <a id="s-56d080345c"></a>`role` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Role" |  |
 
-#### <a id="s-d7db2264de"></a>definition `OutputCollectionRef`
+#### <a id="s-f27e97cc6d"></a>definition `OutputArtifactSetIdentity`
 
-- <a id="s-8278105b90"></a>`type`: `"object"`
-- <a id="s-dcece5f6e2"></a>`additionalProperties`: `false`
-- <a id="s-f5fd0ae51b"></a>`required`: `["collection_id","archive_root_sha256","content_identity","derivation_sha256"]`
-- <a id="s-a3cbc45873"></a>`title`: `"OutputCollectionRef"`
-
-##### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-58ab77b442"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Root Sha256" |  |
-| <a id="s-0f5224b449"></a>`collection_id` | yes | [CollectionId](#s-090ac9d376) |  |
-| <a id="s-8f846d43bd"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Content Identity" |  |
-| <a id="s-4fbe73b16e"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Derivation Sha256" |  |
-
-#### <a id="s-4cb88d14a9"></a>definition `TargetExecutionEvidence`
-
-- <a id="s-59f2f97a12"></a>`type`: `"object"`
-- <a id="s-002dfc2fd8"></a>`additionalProperties`: `false`
-- <a id="s-595d66c52f"></a>`required`: `["target_descriptor_sha256","operation_contract_sha256","plan_sha256","execution_sha256"]`
-- <a id="s-b4f4caab5a"></a>`title`: `"TargetExecutionEvidence"`
+- <a id="s-e6f3dcb857"></a>`type`: `"object"`
+- <a id="s-581bfea580"></a>`additionalProperties`: `false`
+- <a id="s-9f563a4e4f"></a>`description`: `"Small identity for target outputs already registered with Riverhog."`
+- <a id="s-1681b1efac"></a>`required`: `["artifact_count","total_bytes","roles","sha256"]`
+- <a id="s-f0d4a50dbd"></a>`title`: `"OutputArtifactSetIdentity"`
 
 ##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-61474f96b9"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Execution Sha256" |  |
-| <a id="s-0eef83b952"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Operation Contract Sha256" |  |
-| <a id="s-c18700d500"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
-| <a id="s-091a3f50e3"></a>`runtime` | no | type="object"; additionalProperties=([JsonValue](#s-18dd5136d0)); title="Runtime" |  |
-| <a id="s-3304eb04a4"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Descriptor Sha256" |  |
+| <a id="s-9e2386c043"></a>`artifact_count` | yes | type="integer"; minimum=1; title="Artifact Count" |  |
+| <a id="s-84184668b6"></a>`roles` | yes | type="array"; items=([OutputArtifactRoleCount](#s-fac44d866e)); minItems=1; title="Roles" |  |
+| <a id="s-926db34d54"></a>`sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Sha256" |  |
+| <a id="s-4f51972e03"></a>`total_bytes` | yes | [NonnegativeDecimal](#s-57b7598da1); ge=0 |  |
 
-#### <a id="s-9a77996437"></a>definition `TargetFailure`
+#### <a id="s-60aceae91c"></a>definition `OutputCollectionRef`
 
-- <a id="s-ef73be6926"></a>`type`: `"object"`
-- <a id="s-15c6fd2c7f"></a>`additionalProperties`: `false`
-- <a id="s-35d524b8a2"></a>`required`: `["code","message","retryable"]`
-- <a id="s-5f46bc6d80"></a>`title`: `"TargetFailure"`
-
-##### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-f9c643473a"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Code" |  |
-| <a id="s-90af34e7b1"></a>`message` | yes | type="string"; maxLength=1000; minLength=1; title="Message" |  |
-| <a id="s-fbbc38cd27"></a>`retryable` | yes | type="boolean"; title="Retryable" |  |
-
-#### <a id="s-9eef827dbc"></a>definition `TargetInapplicable`
-
-- <a id="s-2d911ea833"></a>`type`: `"object"`
-- <a id="s-ea9e6a2700"></a>`additionalProperties`: `false`
-- <a id="s-8f7fc1754e"></a>`required`: `["code","message"]`
-- <a id="s-ce2175d8c1"></a>`title`: `"TargetInapplicable"`
+- <a id="s-7eee187521"></a>`type`: `"object"`
+- <a id="s-1bb1ac9666"></a>`additionalProperties`: `false`
+- <a id="s-e1ca610c9b"></a>`required`: `["collection_id","archive_root_sha256","content_identity","derivation_sha256"]`
+- <a id="s-7887032e4e"></a>`title`: `"OutputCollectionRef"`
 
 ##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-ac13c28d94"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Code" |  |
-| <a id="s-3811ed56e0"></a>`message` | yes | type="string"; maxLength=1000; minLength=1; title="Message" |  |
+| <a id="s-c99f2e6392"></a>`archive_root_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Archive Root Sha256" |  |
+| <a id="s-15287554e8"></a>`collection_id` | yes | [CollectionId](#s-bab28859a4) |  |
+| <a id="s-0e3e738b4d"></a>`content_identity` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Content Identity" |  |
+| <a id="s-713ee791ec"></a>`derivation_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Derivation Sha256" |  |
 
-#### <a id="s-960e8adbc4"></a>definition `TargetProductionAuthority`
+#### <a id="s-413264cab5"></a>definition `TargetExecutionEvidence`
 
-- <a id="s-ba045bb97a"></a>`type`: `"object"`
-- <a id="s-ddb7083026"></a>`additionalProperties`: `false`
-- <a id="s-92007b35c5"></a>`required`: `["job_id","plan_sha256","outputs","disposition_count","disposition_sha256","source_edge_count","source_edge_sha256","riverhog_disposition_set","production_sha256"]`
-- <a id="s-f8ff575923"></a>`title`: `"TargetProductionAuthority"`
-
-##### Fields
-
-| Field | Required | Shape | Description |
-|---|---:|---|---|
-| <a id="s-d1fb71c948"></a>`disposition_count` | yes | type="integer"; minimum=1; title="Disposition Count" |  |
-| <a id="s-45a44bb1c6"></a>`disposition_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Disposition Sha256" |  |
-| <a id="s-7972e0c80b"></a>`format` | no | type="string"; const="stove0-target-production/v1"; default="stove0-target-production/v1"; title="Format" |  |
-| <a id="s-46322034bd"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Job Id" |  |
-| <a id="s-32d00c74c0"></a>`outputs` | yes | [OutputArtifactSetIdentity](#s-c8fdc5e154) |  |
-| <a id="s-73ee2930fb"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
-| <a id="s-10ffde1857"></a>`production_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Production Sha256" |  |
-| <a id="s-8845685917"></a>`riverhog_disposition_set` | yes | [ArtifactDispositionSetIdentity](#s-94e71eb9c2) |  |
-| <a id="s-e633c91a10"></a>`source_edge_count` | yes | type="integer"; minimum=1; title="Source Edge Count" |  |
-| <a id="s-79a7c159d0"></a>`source_edge_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Source Edge Sha256" |  |
-
-#### <a id="s-80fe077bf8"></a>definition `TargetProgress`
-
-- <a id="s-eaca2fd175"></a>`type`: `"object"`
-- <a id="s-bd7e4e71c3"></a>`additionalProperties`: `false`
-- <a id="s-6f43a1a08a"></a>`required`: `["phase","completed"]`
-- <a id="s-f9be5850f2"></a>`title`: `"TargetProgress"`
+- <a id="s-6de0bc7184"></a>`type`: `"object"`
+- <a id="s-f38e0e42da"></a>`additionalProperties`: `false`
+- <a id="s-4be196a246"></a>`required`: `["target_descriptor_sha256","operation_contract_sha256","plan_sha256","execution_sha256"]`
+- <a id="s-98b691e67f"></a>`title`: `"TargetExecutionEvidence"`
 
 ##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
-| <a id="s-1c2dbad5d8"></a>`completed` | yes | type="integer"; minimum=0; title="Completed" |  |
-| <a id="s-2625063851"></a>`phase` | yes | type="string"; maxLength=120; minLength=1; title="Phase" |  |
-| <a id="s-ea22572b4f"></a>`total` | no | anyOf=[(type="integer"; minimum=0); (type="null")]; default=null; title="Total" |  |
-| <a id="s-1581b61c21"></a>`unit` | no | anyOf=[(type="string"; maxLength=40; minLength=1); (type="null")]; default=null; title="Unit" |  |
+| <a id="s-b40ce4b9d5"></a>`execution_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Execution Sha256" |  |
+| <a id="s-d11a81b728"></a>`operation_contract_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Operation Contract Sha256" |  |
+| <a id="s-654bd8746c"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
+| <a id="s-3d678754f5"></a>`runtime` | no | type="object"; additionalProperties=([JsonValue](#s-0c331f06c8)); title="Runtime" |  |
+| <a id="s-714e134378"></a>`target_descriptor_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Target Descriptor Sha256" |  |
+
+#### <a id="s-caf82a2bb7"></a>definition `TargetFailure`
+
+- <a id="s-6156f92246"></a>`type`: `"object"`
+- <a id="s-9571b04a2e"></a>`additionalProperties`: `false`
+- <a id="s-a89e21b510"></a>`required`: `["code","message","retryable"]`
+- <a id="s-7bf8b8123c"></a>`title`: `"TargetFailure"`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-e7bbfb87c2"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Code" |  |
+| <a id="s-ce010009f8"></a>`message` | yes | type="string"; maxLength=1000; minLength=1; title="Message" |  |
+| <a id="s-f42601805a"></a>`retryable` | yes | type="boolean"; title="Retryable" |  |
+
+#### <a id="s-126011d14e"></a>definition `TargetInapplicable`
+
+- <a id="s-68bd2fc352"></a>`type`: `"object"`
+- <a id="s-4b69b590ce"></a>`additionalProperties`: `false`
+- <a id="s-f03fc342b3"></a>`required`: `["code","message"]`
+- <a id="s-9422b6169e"></a>`title`: `"TargetInapplicable"`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-36e6c2712e"></a>`code` | yes | type="string"; pattern="^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$"; title="Code" |  |
+| <a id="s-a92b91acbf"></a>`message` | yes | type="string"; maxLength=1000; minLength=1; title="Message" |  |
+
+#### <a id="s-50f71a9fe6"></a>definition `TargetProductionAuthority`
+
+- <a id="s-b210bdd337"></a>`type`: `"object"`
+- <a id="s-7a448b4bd4"></a>`additionalProperties`: `false`
+- <a id="s-b024d723f2"></a>`required`: `["job_id","plan_sha256","outputs","disposition_count","disposition_sha256","source_edge_count","source_edge_sha256","riverhog_disposition_set","production_sha256"]`
+- <a id="s-3e9c35a032"></a>`title`: `"TargetProductionAuthority"`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-958323e96e"></a>`disposition_count` | yes | type="integer"; minimum=1; title="Disposition Count" |  |
+| <a id="s-63066746ec"></a>`disposition_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Disposition Sha256" |  |
+| <a id="s-e8fa9aecdf"></a>`format` | no | type="string"; const="stove0-target-production/v1"; default="stove0-target-production/v1"; title="Format" |  |
+| <a id="s-3aa0564b2d"></a>`job_id` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Job Id" |  |
+| <a id="s-a63066f535"></a>`outputs` | yes | [OutputArtifactSetIdentity](#s-f27e97cc6d) |  |
+| <a id="s-7e90687aec"></a>`plan_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Plan Sha256" |  |
+| <a id="s-79c217acc0"></a>`production_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Production Sha256" |  |
+| <a id="s-0e3d62ff72"></a>`riverhog_disposition_set` | yes | [ArtifactDispositionSetIdentity](#s-2f5c39b47e) |  |
+| <a id="s-a76592efac"></a>`source_edge_count` | yes | type="integer"; minimum=1; title="Source Edge Count" |  |
+| <a id="s-1bbaca524f"></a>`source_edge_sha256` | yes | type="string"; pattern="^[0-9a-f]{64}$"; title="Source Edge Sha256" |  |
+
+#### <a id="s-62dc4927bc"></a>definition `TargetProgress`
+
+- <a id="s-a4de29cbf2"></a>`type`: `"object"`
+- <a id="s-2b3969e400"></a>`additionalProperties`: `false`
+- <a id="s-a944eaa94b"></a>`required`: `["phase","completed"]`
+- <a id="s-1b9f54f9e8"></a>`title`: `"TargetProgress"`
+
+##### Fields
+
+| Field | Required | Shape | Description |
+|---|---:|---|---|
+| <a id="s-9de0286290"></a>`completed` | yes | type="integer"; minimum=0; title="Completed" |  |
+| <a id="s-b06ae78987"></a>`phase` | yes | type="string"; maxLength=120; minLength=1; title="Phase" |  |
+| <a id="s-107bc1fc82"></a>`total` | no | anyOf=[(type="integer"; minimum=0); (type="null")]; default=null; title="Total" |  |
+| <a id="s-02711c2df8"></a>`unit` | no | anyOf=[(type="string"; maxLength=40; minLength=1); (type="null")]; default=null; title="Unit" |  |
 
 ## Maintained corroboration
 
@@ -262,7 +262,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-ab85be943c"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-f6badad064"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -278,7 +278,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/5/structure/documents/1`
+- `/external_contract/durable_state/owners/7/structure/documents/1`
 
 ### Exact owned JSON
 

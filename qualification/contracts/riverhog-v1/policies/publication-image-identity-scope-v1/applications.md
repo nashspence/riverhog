@@ -15,6 +15,8 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `release` | [Runtime image: a-riverhog-event-relay](../../authorities/release/runtime-images/runtime-image-a-riverhog-event-relay.md#pa-0657df1b69) |
 | `release` | [Runtime image: a-riverhog-filesystem-store](../../authorities/release/runtime-images/runtime-image-a-riverhog-filesystem-store.md#pa-d62eff9939) |
 | `release` | [Runtime image: a-riverhog-ftp-spool](../../authorities/release/runtime-images/runtime-image-a-riverhog-ftp-spool.md#pa-6e29c9b328) |
+| `release` | [Runtime image: a-riverhog-minisign-witness](../../authorities/release/runtime-images/runtime-image-a-riverhog-minisign-witness.md#pa-b163f5d44b) |
+| `release` | [Runtime image: a-riverhog-opentimestamps-witness](../../authorities/release/runtime-images/runtime-image-a-riverhog-opentimestamps-witness.md#pa-24045aac8f) |
 | `release` | [Runtime image: a-stove0-exiftool-observer](../../authorities/release/runtime-images/runtime-image-a-stove0-exiftool-observer.md#pa-93c01c2903) |
 | `release` | [Runtime image: a-stove0-ffprobe-sampling-observer](../../authorities/release/runtime-images/runtime-image-a-stove0-ffprobe-sampling-observer.md#pa-916f3535fe) |
 | `release` | [Runtime image: a-stove0-nvenc-av1-opus-target](../../authorities/release/runtime-images/runtime-image-a-stove0-nvenc-av1-opus-target.md#pa-0b4a49c605) |
