@@ -165,6 +165,7 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
         "compile",
         "unit",
         "guidance",
+        "performance-objectives",
         "c2sp-vectors",
         "postgres-concurrency",
         "compose-smoke",

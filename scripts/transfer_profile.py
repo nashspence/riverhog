@@ -3,16 +3,23 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
+import sys
+import tempfile
 import time
-from collections import Counter
+from collections import Counter, defaultdict
 from collections.abc import Mapping, Sequence
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from uuid import uuid4
+
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from scripts import performance_objectives as performance
 
 MIB = 1024 * 1024
-NETWORK_TARGET = 0.90
 
 SCENARIO_OPERATIONS: Mapping[str, frozenset[str]] = {
     "riverhog-ingress": frozenset(
@@ -43,6 +50,8 @@ SCENARIO_OPERATIONS: Mapping[str, frozenset[str]] = {
 }
 NETWORK_SCENARIOS = frozenset(SCENARIO_OPERATIONS) - {"a-riverhog-recovery-tool"}
 WORKLOADS = ("large-file", "many-small-files", "resume")
+if NETWORK_SCENARIOS != performance.NETWORK_SCENARIOS or set(WORKLOADS) != performance.WORKLOADS:
+    raise RuntimeError("performance objective scope differs from transfer profiler scope")
 _FIELD_RE = re.compile(r"([a-z_]+)=([^ ]+)")
 
 
@@ -56,33 +65,10 @@ class TransferLogSummary:
     stored_bytes: int
 
 
-@dataclass(frozen=True)
-class ProfileResult:
-    baseline_mib_per_second: float | None
-    elapsed_seconds: float
-    items: int
-    items_per_second: float
-    mib_per_second: float
-    payload_bytes: int
-    scenario: str
-    target_utilization: float | None
-    seconds_per_item: float
-    transfer_log: TransferLogSummary | None
-    utilization: float | None
-    workload: str
-
-
 def _positive_int(value: str) -> int:
     parsed = int(value)
     if parsed <= 0:
         raise argparse.ArgumentTypeError("must be a positive integer")
-    return parsed
-
-
-def _positive_float(value: str) -> float:
-    parsed = float(value)
-    if parsed <= 0:
-        raise argparse.ArgumentTypeError("must be positive")
     return parsed
 
 
@@ -102,7 +88,7 @@ def summarize_transfer_log(
 ) -> TransferLogSummary:
     operations: Counter[str] = Counter()
     bottlenecks: Counter[str] = Counter()
-    phases: Counter[str] = Counter()
+    phases: defaultdict[str, float] = defaultdict(float)
     plaintext_bytes = 0
     stored_bytes = 0
     for line in text.splitlines():
@@ -142,23 +128,28 @@ def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description=(
             "Run one supported transfer or recovery command and emit a secret-free JSON "
-            "goodput profile. The command and its arguments are never copied into the result."
-        )
+            "performance profile. The command and its arguments are never copied into the result."
+        ),
+        epilog=(
+            "For comparable goodput, supply --context and a measured --reference. The command "
+            "receives RIVERHOG_PERFORMANCE_RUN_ID and RIVERHOG_PERFORMANCE_RECEIPT; a successful "
+            "exit without an exact verified-completion receipt remains an observation. See the "
+            "generated Performance accounting view in the repository Context links."
+        ),
     )
     parser.add_argument("--scenario", choices=sorted(SCENARIO_OPERATIONS), required=True)
     parser.add_argument("--workload", choices=WORKLOADS, required=True)
     parser.add_argument("--payload-bytes", type=_positive_int, required=True)
     parser.add_argument("--items", type=_positive_int, default=1)
     parser.add_argument(
-        "--baseline-mib-per-second",
-        type=_positive_float,
-        help="raw transport baseline measured on the same path",
+        "--context",
+        type=Path,
+        help="safe comparison-context JSON for a measured workload",
     )
     parser.add_argument(
-        "--target-utilization",
-        type=_positive_float,
-        default=NETWORK_TARGET,
-        help="qualification target as a baseline fraction (default: 0.90)",
+        "--reference",
+        type=Path,
+        help="another measured matching v2 profile; nominal capacity is not a reference",
     )
     parser.add_argument(
         "--transfer-log",
@@ -179,10 +170,10 @@ def _validate_args(args: argparse.Namespace, parser: argparse.ArgumentParser) ->
         command.pop(0)
     if not command:
         parser.error("a command is required after --")
-    if args.scenario in NETWORK_SCENARIOS and args.baseline_mib_per_second is None:
-        parser.error("network scenarios require --baseline-mib-per-second")
-    if args.target_utilization > 1:
-        parser.error("--target-utilization must be at most 1")
+    if args.reference is not None and args.context is None:
+        parser.error("--reference requires --context")
+    if args.scenario not in NETWORK_SCENARIOS and args.reference is not None:
+        parser.error("recovery profiles have no registered goodput objective")
     expected = SCENARIO_OPERATIONS[args.scenario]
     if args.transfer_log is not None and not expected:
         parser.error("a-riverhog-recovery-tool has no server transfer log")
@@ -193,42 +184,97 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = _parser()
     args = parser.parse_args(argv)
     command = _validate_args(args, parser)
-    started = time.perf_counter()
-    completed = subprocess.run(
-        command,
-        check=False,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
-    elapsed = time.perf_counter() - started
-    if completed.returncode:
-        return completed.returncode
-
-    mib_per_second = args.payload_bytes / MIB / elapsed
-    baseline = args.baseline_mib_per_second
-    utilization = mib_per_second / baseline if baseline is not None else None
-    log_summary = None
-    if args.transfer_log is not None:
-        log_summary = summarize_transfer_log(
-            args.transfer_log.read_text(encoding="utf-8"),
-            expected_operations=SCENARIO_OPERATIONS[args.scenario],
+    try:
+        context = (
+            performance.validate_context(performance.read_json(args.context))
+            if args.context is not None
+            else None
         )
-    result = ProfileResult(
-        baseline_mib_per_second=round(baseline, 3) if baseline is not None else None,
-        elapsed_seconds=round(elapsed, 6),
-        items=args.items,
-        items_per_second=round(args.items / elapsed, 3),
-        mib_per_second=round(mib_per_second, 3),
-        payload_bytes=args.payload_bytes,
-        scenario=args.scenario,
-        target_utilization=args.target_utilization if baseline is not None else None,
-        seconds_per_item=round(elapsed / args.items, 6),
-        transfer_log=log_summary,
-        utilization=round(utilization, 4) if utilization is not None else None,
-        workload=args.workload,
-    )
-    print(json.dumps(asdict(result), sort_keys=True), flush=True)
-    return 0
+        reference = None
+        if args.reference is not None:
+            prior = performance.read_json(args.reference)
+            if prior.get("format") != "riverhog-transfer-profile/v2":
+                raise performance.PerformanceError(
+                    "reference is not a measured v2 transfer profile"
+                )
+            reference = prior["sample"]
+        run_id = str(uuid4())
+        with tempfile.TemporaryDirectory(prefix="riverhog-performance-") as temporary:
+            receipt_path = Path(temporary) / "completion.json"
+            environment = dict(os.environ)
+            environment["RIVERHOG_PERFORMANCE_RUN_ID"] = run_id
+            environment["RIVERHOG_PERFORMANCE_RECEIPT"] = str(receipt_path)
+            started = time.perf_counter()
+            completed = subprocess.run(
+                command,
+                check=False,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                env=environment,
+            )
+            elapsed = time.perf_counter() - started
+            if completed.returncode:
+                return (
+                    completed.returncode if completed.returncode > 0 else 128 - completed.returncode
+                )
+            verified = False
+            if receipt_path.exists():
+                receipt = performance.read_json(receipt_path)
+                if (
+                    set(receipt)
+                    != {"format", "run_id", "completed_bytes", "completed_items", "verified"}
+                    or receipt["format"] != "riverhog-performance-completion/v1"
+                    or receipt["run_id"] != run_id
+                    or type(receipt["completed_bytes"]) is not int
+                    or receipt["completed_bytes"] != args.payload_bytes
+                    or type(receipt["completed_items"]) is not int
+                    or receipt["completed_items"] != args.items
+                    or receipt["verified"] is not True
+                ):
+                    raise performance.PerformanceError(
+                        "completion receipt is not exact and verified"
+                    )
+                verified = True
+        measured = performance.sample(
+            objective_id="transfer-goodput" if args.scenario in NETWORK_SCENARIOS else None,
+            scenario=args.scenario,
+            workload=args.workload,
+            context=context,
+            completed_bytes=args.payload_bytes,
+            elapsed_seconds=elapsed,
+            completion_verified=verified,
+            run_id=run_id,
+        )
+        log_summary = (
+            asdict(
+                summarize_transfer_log(
+                    args.transfer_log.read_text(encoding="utf-8"),
+                    expected_operations=SCENARIO_OPERATIONS[args.scenario],
+                )
+            )
+            if args.transfer_log is not None
+            else None
+        )
+        result = {
+            "format": "riverhog-transfer-profile/v2",
+            "sample": measured,
+            "evaluation": performance.evaluate_sample(measured, reference),
+            "rate_basis": "receipt-verified" if verified else "declared-workload-unverified",
+            "mib_per_second": args.payload_bytes / elapsed / MIB,
+            "items": args.items,
+            "items_per_second": round(args.items / elapsed, 3),
+            "seconds_per_item": round(elapsed / args.items, 6),
+            "transfer_log": log_summary,
+            "transfer_log_scope": (
+                "diagnostic segment and phase totals; not unique end-to-end goodput"
+            ),
+        }
+        print(json.dumps(result, sort_keys=True, allow_nan=False), flush=True)
+        return 0  # An objective miss is only a report.
+    except (OSError, ValueError, KeyError, TypeError):
+        # Never echo the command, log, environment, or potentially private input paths.
+        print("transfer profile failed: invalid measurement input or execution", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":

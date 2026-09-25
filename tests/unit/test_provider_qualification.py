@@ -20,6 +20,8 @@ from riverhog_protocol import (
     CollectionUploadWorkBatchDocument,
 )
 
+from scripts import performance_objectives as performance
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "scripts/provider_qualification.py"
 CONFIG = REPO_ROOT / "qualification/provider/config.toml"
@@ -578,6 +580,15 @@ def test_checkpoint_is_restartable_tamper_evident_and_emits_bounded_evidence(
     assert restored.collection_id == 42
     assert restored.retrieval_job_id == "retrieval-42"
     assert evidence["status"] == "passed"
+    assert evidence["performance"] == {
+        "objective_ids": [],
+        "observation_ids": ["provider-qualification-elapsed"],
+        "source": "scripts/performance_objectives.py",
+        "measured_fields": ["started_at", "completed_at", "phases"],
+    }
+    assert set(evidence["performance"]["observation_ids"]) <= {
+        item.id for item in performance.OBSERVATIONS
+    }
     assert evidence["providers"] == [
         {
             "logical_name": "aws-deep-archive",

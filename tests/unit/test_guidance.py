@@ -261,8 +261,8 @@ class GuidanceRepositoryTests(unittest.TestCase):
     def test_current_register_references_and_render(self) -> None:
         self.assertEqual(guidance.main(["check", "--root", str(ROOT)]), 0)
 
-    def test_contract_generation_does_not_consume_guidance(self) -> None:
-        """Compare fresh projections, then deny guidance imports/reads in the second run."""
+    def test_contract_generation_does_not_consume_noncontractual_accounting(self) -> None:
+        """Fresh contract generation cannot consume guidance or performance records."""
         source = r"""
 import hashlib, json, os, sys
 from pathlib import Path
@@ -273,21 +273,26 @@ class GuidanceDependency(BaseException):
     pass
 if guarded:
     def audit(event, args):
-        forbidden = event == "import" and args[0] in {"guidance", "scripts.guidance"}
+        forbidden = event == "import" and args[0] in {
+            "guidance", "scripts.guidance", "performance_objectives",
+            "scripts.performance_objectives"
+        }
         if event in {"open", "os.listdir", "os.scandir"} and args:
             value = args[0]
             if isinstance(value, (str, bytes, os.PathLike)):
                 # Do not perform filesystem calls within an audit hook.
                 path = Path(os.path.abspath(os.fsdecode(value)))
                 forbidden = forbidden or path.is_relative_to(root / "guidance")
+                forbidden = forbidden or path.is_relative_to(root / "qualification/performance")
                 forbidden = forbidden or path == root / "scripts/guidance.py"
+                forbidden = forbidden or path == root / "scripts/performance_objectives.py"
                 forbidden = forbidden or (
                     path.parent == root / "scripts/__pycache__"
-                    and path.name.startswith("guidance.")
+                    and path.name.startswith(("guidance.", "performance_objectives."))
                 )
         if forbidden:
             seen.append((event, str(args)))
-            raise GuidanceDependency("contract generation attempted to consume guidance")
+            raise GuidanceDependency("contract generation consumed noncontractual accounting")
     sys.addaudithook(audit)
 sys.path.insert(0, str(root / "scripts"))
 import contract_freeze

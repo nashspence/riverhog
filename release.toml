@@ -66,6 +66,7 @@ required_checks = [
   "make filesystem-recovery-qualification",
   "make guidance",
   "make lint",
+  "make performance-objectives",
   "make postgres-concurrency",
   "make unit",
 ]
