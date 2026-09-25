@@ -72,7 +72,7 @@ jobs:
           path: ${{ runner.temp }}/riverhog-pages
 
   deploy:
-    name: Publish reviewed candidate
+    name: Publish checked candidate
     needs: build
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -80,9 +80,9 @@ jobs:
       pages: write
       id-token: write
     environment:
-      name: github-pages
+      name: contract-candidate-pages
       url: https://nashspence.github.io/riverhog/contract-candidate/riverhog-v1/
     steps:
-      - name: Deploy approved candidate
+      - name: Deploy checked candidate
         id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

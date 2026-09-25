@@ -19,7 +19,7 @@ MISE_LOCK = REPO_ROOT / "mise.lock"
 DATABASE_QUALIFICATION_SCRIPT = REPO_ROOT / "scripts/database_qualification.py"
 
 
-def test_contract_candidate_pages_uses_exact_green_main_and_protected_deployment() -> None:
+def test_contract_candidate_pages_uses_exact_green_main_and_preview_environment() -> None:
     workflow = yaml.load(CONTRACT_PAGES_WORKFLOW.read_text(), Loader=yaml.BaseLoader)
     assert set(workflow["on"]) == {"workflow_dispatch"}
     assert workflow["jobs"]["build"]["permissions"] == {"actions": "read", "contents": "read"}
@@ -35,7 +35,7 @@ def test_contract_candidate_pages_uses_exact_green_main_and_protected_deployment
     )
     deploy = workflow["jobs"]["deploy"]
     assert deploy["needs"] == "build"
-    assert deploy["environment"]["name"] == "github-pages"
+    assert deploy["environment"]["name"] == "contract-candidate-pages"
     assert deploy["permissions"] == {"pages": "write", "id-token": "write"}
 
 
