@@ -62,6 +62,7 @@ class _MemoryAdapter:
 
     def descriptor(self) -> AdapterDescriptor:
         return AdapterDescriptor(
+            storage_incarnation_id="00000000-0000-4000-8000-000000000001",
             implementation_id="fixture.storage/v1",
             implementation_version="1.0.0",
             read_mode=self.read_mode,  # type: ignore[arg-type]

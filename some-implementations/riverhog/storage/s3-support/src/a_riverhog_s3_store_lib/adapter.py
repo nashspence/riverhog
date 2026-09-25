@@ -43,6 +43,12 @@ from riverhog_storage_adapter_protocol import (
 )
 from time_formats import format_utc_timestamp, utc_now
 
+from a_riverhog_s3_store_lib.incarnation import (
+    STORAGE_INCARNATION_MARKER_PREFIX,
+    StorageIncarnationError,
+    read_storage_incarnation,
+)
+
 _MINIMUM_NONFINAL_PART_BYTES = 5 * 1024 * 1024
 _MAXIMUM_PART_BYTES = 5 * 1024 * 1024 * 1024
 _MAXIMUM_PART_COUNT = 10_000
@@ -199,9 +205,23 @@ class S3StorageAdapter:
         self._config = config
         self._read_preparation = read_preparation
         self._object_reader = object_reader or _DirectS3ObjectReader()
+        self._incarnation_id = read_storage_incarnation(
+            client, bucket=config.bucket, root_prefix=config.root_prefix
+        )
+
+    def _require_incarnation(self) -> None:
+        observed = read_storage_incarnation(
+            self._client,
+            bucket=self._config.bucket,
+            root_prefix=self._config.root_prefix,
+        )
+        if observed != self._incarnation_id:
+            raise StorageIncarnationError("S3 storage incarnation changed")
 
     def descriptor(self) -> AdapterDescriptor:
+        self._require_incarnation()
         return AdapterDescriptor(
+            storage_incarnation_id=self._incarnation_id,
             implementation_id=self._config.implementation_id,
             implementation_version=self._config.implementation_version,
             read_mode=self._config.read_mode,
@@ -211,6 +231,7 @@ class S3StorageAdapter:
         )
 
     def begin_write(self, request: WriteStartRequest) -> WriteSession:
+        self._require_incarnation()
         object_key = self._key(request.object_path)
         active_upload = self._active_write_for_key(object_key)
         if active_upload is not None:
@@ -249,6 +270,7 @@ class S3StorageAdapter:
         stored_bytes: int,
         content: BinaryContent,
     ) -> WriteSegmentReceipt:
+        self._require_incarnation()
         if number < 1 or number > _MAXIMUM_PART_COUNT:
             raise StorageAdapterRejection(
                 "invalid_request",
@@ -282,6 +304,7 @@ class S3StorageAdapter:
         )
 
     def list_segments(self, request: WriteSegmentListRequest) -> WriteSegmentPage:
+        self._require_incarnation()
         parts = self._listed_segments(request.session)
         traversal_token = _segment_traversal_token(parts)
         if request.traversal_token is not None and request.traversal_token != traversal_token:
@@ -339,6 +362,7 @@ class S3StorageAdapter:
         self,
         request: WriteCompleteRequest,
     ) -> CompletedObjectReceipt:
+        self._require_incarnation()
         lookup = CompletedWriteLookupRequest(
             object_path=request.session.object_path,
             expected_bytes=request.expected_bytes,
@@ -420,6 +444,7 @@ class S3StorageAdapter:
         self,
         request: CompletedWriteLookupRequest,
     ) -> CompletedObjectReceipt | None:
+        self._require_incarnation()
         head = self._head(request.object_path)
         if head is None:
             return None
@@ -446,6 +471,7 @@ class S3StorageAdapter:
         )
 
     def abort_write(self, session: WriteSession) -> None:
+        self._require_incarnation()
         try:
             self._client.abort_multipart_upload(
                 Bucket=self._config.bucket,
@@ -463,6 +489,7 @@ class S3StorageAdapter:
         request: SmallObjectWriteRequest,
         content: BinaryContent,
     ) -> ImmutableObjectReceipt:
+        self._require_incarnation()
         observed = _ObservedContentReader(
             content,
             expected_bytes=request.stored_bytes,
@@ -554,6 +581,7 @@ class S3StorageAdapter:
         return receipt
 
     def head_object(self, request: ObjectHeadRequest) -> ObjectMetadataReceipt | None:
+        self._require_incarnation()
         head = self._head(request.object.object_path, revision=request.object.revision)
         if head is None:
             return None
@@ -579,6 +607,7 @@ class S3StorageAdapter:
         )
 
     def read_object(self, request: ObjectReadRequest) -> ObjectReadStream:
+        self._require_incarnation()
         return self._object_reader.read_object(
             client=self._client,
             bucket=self._config.bucket,
@@ -592,6 +621,7 @@ class S3StorageAdapter:
         )
 
     def delete_object(self, request: DeleteObjectRequest) -> None:
+        self._require_incarnation()
         key = self._key(request.object.object_path)
         if request.mode == "all_versions":
             _delete_exact_all_versions(self._client, bucket=self._config.bucket, key=key)
@@ -628,6 +658,11 @@ class S3StorageAdapter:
             raise
 
     def delete_prefix(self, request: DeletePrefixRequest) -> int:
+        self._require_incarnation()
+        if not self._config.root_prefix and STORAGE_INCARNATION_MARKER_PREFIX.startswith(
+            request.object_prefix
+        ):
+            raise StorageAdapterRejection("invalid_path", "reserved storage identity prefix")
         return _delete_prefix_all_versions(
             self._client,
             bucket=self._config.bucket,
@@ -635,6 +670,7 @@ class S3StorageAdapter:
         )
 
     def prepare_read(self, request: ReadPreparationRequest) -> ReadStatus:
+        self._require_incarnation()
         if self._read_preparation is None:
             readiness: ReadReadiness = ReadReady()
         else:
@@ -649,6 +685,7 @@ class S3StorageAdapter:
         )
 
     def read_status(self, request: ReadPreparationRequest) -> ReadStatus:
+        self._require_incarnation()
         if self._read_preparation is None:
             readiness: ReadReadiness = ReadReady()
         else:
@@ -663,6 +700,7 @@ class S3StorageAdapter:
         )
 
     def cleanup_read(self, request: ReadPreparationRequest) -> None:
+        self._require_incarnation()
         if self._read_preparation is not None:
             self._read_preparation.cleanup(
                 client=self._client,
@@ -690,6 +728,8 @@ class S3StorageAdapter:
         return None
 
     def _key(self, object_path: str) -> str:
+        if object_path.lstrip("/").startswith(STORAGE_INCARNATION_MARKER_PREFIX):
+            raise StorageAdapterRejection("invalid_path", "reserved storage identity path")
         return "/".join(
             part for part in (self._config.root_prefix, object_path.lstrip("/")) if part
         )

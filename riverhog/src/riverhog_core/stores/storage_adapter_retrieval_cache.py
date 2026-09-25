@@ -76,11 +76,31 @@ class StorageAdapterRetrievalCache:
         ):
             raise ValueError("retrieval cache write segment size is outside adapter limits")
         self.name = name
+        self._source_adapter = adapter
         self._adapter = validated_adapter
         self._descriptor = descriptor
         self._segment_bytes = write_segment_bytes
         self._throughput = throughput_tuning
         self._resources = transfer_resources
+
+    @property
+    def incarnation_id(self) -> str:
+        return self._descriptor.storage_incarnation_id
+
+    def is_current_incarnation(self, incarnation_id: str) -> bool:
+        try:
+            check_readiness = getattr(self._source_adapter, "check_readiness", None)
+            if check_readiness is not None:
+                check_readiness()
+            refresh_descriptor = getattr(self._source_adapter, "refresh_descriptor", None)
+            descriptor = (
+                refresh_descriptor()
+                if refresh_descriptor is not None
+                else self._source_adapter.descriptor()
+            )
+            return descriptor.storage_incarnation_id == incarnation_id
+        except Exception:
+            return False
 
     @staticmethod
     def object_path(source_store: str, collection_id: int, object_id: str) -> str:

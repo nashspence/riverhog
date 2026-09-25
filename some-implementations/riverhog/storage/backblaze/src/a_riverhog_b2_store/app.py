@@ -18,6 +18,7 @@ from a_riverhog_s3_store_lib import (
     S3TransportTuning,
     create_s3_client,
 )
+from a_riverhog_s3_store_lib.incarnation import provision_storage_incarnation
 from riverhog_storage_adapter_asgi_support import create_storage_adapter_app
 
 SERVICE = "a-riverhog-b2-store"
@@ -68,12 +69,12 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--version", action="version", version=importlib.metadata.version(SERVICE))
     parser.add_argument("--host", default=os.getenv(f"{_PREFIX}HOST", "127.0.0.1"))
     parser.add_argument("--port", type=int, default=int(os.getenv(f"{_PREFIX}PORT", "8080")))
+    parser.add_argument("--provision-root", action="store_true")
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
-    token = _secret("TOKEN")
     bucket = _required("BUCKET")
     client = create_s3_client(
         S3ClientConfig(
@@ -92,13 +93,18 @@ def main(argv: Sequence[str] | None = None) -> int:
             tcp_keepalive=_bool("TCP_KEEPALIVE", True),
         ),
     )
+    root_prefix = _optional("ROOT_PREFIX") or ""
+    if args.provision_root:
+        provision_storage_incarnation(client, bucket=bucket, root_prefix=root_prefix)
+        return 0
+    token = _secret("TOKEN")
     adapter = S3StorageAdapter(
         client,
         S3StorageAdapterConfig(
             implementation_id="a-riverhog-b2-store/v1",
             implementation_version=importlib.metadata.version(SERVICE),
             bucket=bucket,
-            root_prefix=_optional("ROOT_PREFIX") or "",
+            root_prefix=root_prefix,
             read_mode="immediate",
             read_chunk_bytes=_int("READ_CHUNK_BYTES", 8 * 1024 * 1024),
         ),

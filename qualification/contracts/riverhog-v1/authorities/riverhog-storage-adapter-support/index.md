@@ -4,7 +4,7 @@
 
 HTTP binding and conformance support for Riverhog storage adapters.
 
-Contract elements: **86** · Extent decisions: **71**
+Contract elements: **88** · Extent decisions: **71**
 
 ## Interfaces
 
@@ -14,4 +14,4 @@ Contract elements: **86** · Extent decisions: **71**
 - [Process Protocol Operations](process-protocol-operations/index.md) (15)
 - **[Process Protocol Schemas](process-protocol-schemas/index.md)** [📦](process-protocol-schemas/evidence-gaps.md) (23)
 - [CLI](cli/index.md) (2)
-- [Python](python/index.md) (45)
+- [Python](python/index.md) (47)

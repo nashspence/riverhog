@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-tag-node-reclamations:d8f3861ef1 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-tag-node-reclamations:d50b04ae6e -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-4d3d34b691"></a>
+<a id="s-ad68eae1ff"></a>
 
 ### Table: `collection_tag_node_reclamations`
 
@@ -21,16 +21,16 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-763105ac20"></a>`node_digest` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-f0101b7481"></a>`claimed_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-772cb5f04d"></a>`node_digest` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-599dab012a"></a>`claimed_at` | `VARCHAR` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-e0b3aac648"></a>`primary-key` | `—` | `PRIMARY KEY (node_digest)` |
-| <a id="s-1ddad5ce22"></a>`check` | `ck_collection_tag_node_reclamations_digest` | `CONSTRAINT ck_collection_tag_node_reclamations_digest CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-477ebc2d37"></a>`check` | `ck_collection_tag_node_reclamations_node_digest_hex` | `CONSTRAINT ck_collection_tag_node_reclamations_node_digest_hex CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-9d1a4fe4bf"></a>`primary-key` | `—` | `PRIMARY KEY (node_digest)` |
+| <a id="s-a0d85149e2"></a>`check` | `ck_collection_tag_node_reclamations_digest` | `CONSTRAINT ck_collection_tag_node_reclamations_digest CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-adfbb39d2a"></a>`check` | `ck_collection_tag_node_reclamations_node_digest_hex` | `CONSTRAINT ck_collection_tag_node_reclamations_node_digest_hex CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -40,7 +40,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-773d132af1"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-49bf671dce"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -56,7 +56,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/6`
+- `/external_contract/durable_state/owners/0/structure/tables/7`
 
 ### Exact owned JSON
 

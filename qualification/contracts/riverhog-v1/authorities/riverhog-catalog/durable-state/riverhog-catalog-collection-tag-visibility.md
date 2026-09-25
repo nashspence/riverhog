@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-tag-visibility:6e1d37abf0 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-tag-visibility:313bbcba09 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-836867470f"></a>
+<a id="s-2941fcb793"></a>
 
 ### Table: `collection_tag_visibility`
 
@@ -21,20 +21,20 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-543f1173bd"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-8cf50124da"></a>`tag_sha256` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-b581846f01"></a>`start_revision` | `BIGINT` | no | `—` | — |
-| <a id="s-c015ab3577"></a>`end_revision` | `BIGINT` | yes | `—` | — |
+| <a id="s-e6a3102ca4"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-45a26679f2"></a>`tag_sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-f7e0e7026b"></a>`start_revision` | `BIGINT` | no | `—` | — |
+| <a id="s-c4cdabcd66"></a>`end_revision` | `BIGINT` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-c046d2085b"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, tag_sha256, start_revision)` |
-| <a id="s-48169f3bfb"></a>`check` | `ck_collection_tag_visibility_sha256` | `CONSTRAINT ck_collection_tag_visibility_sha256 CHECK (length(tag_sha256) = 64 AND lower(tag_sha256) = tag_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-e35b6107ac"></a>`check` | `ck_collection_tag_visibility_start` | `CONSTRAINT ck_collection_tag_visibility_start CHECK (start_revision >= 1 AND start_revision <= 9007199254740991)` |
-| <a id="s-57df76227e"></a>`check` | `ck_collection_tag_visibility_end` | `CONSTRAINT ck_collection_tag_visibility_end CHECK (end_revision IS NULL OR end_revision > start_revision AND end_revision <= 9007199254740991)` |
-| <a id="s-f704d0b8d6"></a>`check` | `ck_collection_tag_visibility_tag_sha256_hex` | `CONSTRAINT ck_collection_tag_visibility_tag_sha256_hex CHECK (length(tag_sha256) = 64 AND lower(tag_sha256) = tag_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-4530713694"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, tag_sha256, start_revision)` |
+| <a id="s-2730127e5c"></a>`check` | `ck_collection_tag_visibility_sha256` | `CONSTRAINT ck_collection_tag_visibility_sha256 CHECK (length(tag_sha256) = 64 AND lower(tag_sha256) = tag_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-945a2aeec6"></a>`check` | `ck_collection_tag_visibility_start` | `CONSTRAINT ck_collection_tag_visibility_start CHECK (start_revision >= 1 AND start_revision <= 9007199254740991)` |
+| <a id="s-2c57e5524e"></a>`check` | `ck_collection_tag_visibility_end` | `CONSTRAINT ck_collection_tag_visibility_end CHECK (end_revision IS NULL OR end_revision > start_revision AND end_revision <= 9007199254740991)` |
+| <a id="s-1411e97bbc"></a>`check` | `ck_collection_tag_visibility_tag_sha256_hex` | `CONSTRAINT ck_collection_tag_visibility_tag_sha256_hex CHECK (length(tag_sha256) = 64 AND lower(tag_sha256) = tag_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(tag_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -44,7 +44,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-e069ecb4ba"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-ff39690edf"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -60,7 +60,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/8`
+- `/external_contract/durable_state/owners/0/structure/tables/9`
 
 ### Exact owned JSON
 

@@ -42,6 +42,7 @@ from tests.unit.archive_object_fixtures import (
     archive_store_binding,
     seed_archive_copy,
 )
+from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
 
 FILES = {"one.txt": b"first file\n", "two.txt": b"second file\n"}
 DELETER = Principal(
@@ -79,7 +80,7 @@ def _service(path: Path, *, retrieval_cache: object | None = None):
     archive_store = MemoryArchiveStore(archive)
     service = SqlAlchemyCollectionDeletionService(
         config,
-        ArchiveStoreRegistry({"deep": archive_store_binding(archive_store)}),
+        ArchiveStoreRegistry({"deep": archive_store_binding(archive_store, name="deep")}),
         retrieval_cache,  # type: ignore[arg-type]
     )
     return config, archive_store, service
@@ -371,6 +372,7 @@ def test_deletion_reclaims_a_multi_collection_retrieval_plan_as_one_authority(
                     bytes=len(FILES["one.txt"]),
                     sha256=target_file.sha256,
                     source_store="deep",
+                    source_incarnation_id=seed_storage_incarnation(session, "archive", "deep"),
                 ),
                 RetrievalPlanFileRecord(
                     plan_id="multi-collection-plan",
@@ -380,6 +382,7 @@ def test_deletion_reclaims_a_multi_collection_retrieval_plan_as_one_authority(
                     bytes=1,
                     sha256="5" * 64,
                     source_store="deep",
+                    source_incarnation_id=seed_storage_incarnation(session, "archive", "deep"),
                 ),
             )
         )
@@ -412,9 +415,13 @@ def test_cache_deletion_waits_for_lease_and_accounts_once_after_ambiguous_respon
             session.add(
                 RetrievalCacheObjectRecord(
                     source_store=current.store,
+                    source_incarnation_id=seed_storage_incarnation(
+                        session, "archive", current.store
+                    ),
                     collection_id=current.collection_id,
                     object_id=current.object_id,
                     cache_store="local",
+                    cache_incarnation_id=seed_storage_incarnation(session, "cache", "local"),
                     object_path=f"cache/{index}",
                     revision="cache-revision",
                     stored_bytes=11 + index,
@@ -428,6 +435,7 @@ def test_cache_deletion_waits_for_lease_and_accounts_once_after_ambiguous_respon
         session.add(
             RetrievalCacheStoreAccountingRecord(
                 cache_store="local",
+                cache_incarnation_id=seed_storage_incarnation(session, "cache", "local"),
                 reserved_bytes=0,
                 committed_bytes=23,
                 updated_at=UPLOADED_AT,

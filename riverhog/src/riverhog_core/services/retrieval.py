@@ -33,6 +33,7 @@ from riverhog_protocol.errors import (
     NotFound,
     PreconditionFailed,
     RiverhogError,
+    ServiceUnavailable,
 )
 from riverhog_protocol.paths import (
     PathNormalizationError,
@@ -803,6 +804,7 @@ class SqlAlchemyRetrievalService:
                     bytes=file_record.bytes,
                     sha256=file_record.sha256,
                     source_store=copy.store,
+                    source_incarnation_id=copy.incarnation_id,
                     requires_restore=False,
                 )
                 session.add(plan_file)
@@ -881,16 +883,21 @@ class SqlAlchemyRetrievalService:
                     )
                     if cached is not None and cached.state != "ready":
                         cached = None
+                    if cached is not None and not self._cache_record_is_usable(cached):
+                        cached = None
                     read_mode = (
                         "cache"
                         if cached is not None
-                        else self._archive_stores.require(plan_file.source_store).store.read_mode()
+                        else self._archive_stores.require_incarnation(
+                            plan_file.source_store, plan_file.source_incarnation_id
+                        ).store.read_mode()
                     )
                     planned_object = RetrievalPlanObjectRecord(
                         plan_id=plan.id,
                         object_order=plan.object_count,
                         collection_id=collection_id,
                         source_store=plan_file.source_store,
+                        source_incarnation_id=plan_file.source_incarnation_id,
                         object_id=object_record.object_id,
                         kind=object_record.kind,
                         plaintext_bytes=object_record.plaintext_bytes,
@@ -898,6 +905,9 @@ class SqlAlchemyRetrievalService:
                         sha256=object_record.sha256,
                         read_mode=read_mode,
                         cache_store=cached.cache_store if cached is not None else None,
+                        cache_incarnation_id=(
+                            cached.cache_incarnation_id if cached is not None else None
+                        ),
                         retrieval_bytes=0,
                     )
                     session.add(planned_object)
@@ -1325,6 +1335,7 @@ class SqlAlchemyRetrievalService:
             chunks = PackMemberRangeReader(
                 self._range_store(
                     source_store=source_store,
+                    source_incarnation_id=plan_file.source_incarnation_id,
                     object_record=record,
                     cached=cached,
                     attribution=attribution,
@@ -1385,7 +1396,20 @@ class SqlAlchemyRetrievalService:
             )
             if cached is None or cached.state != "ready":
                 raise InvalidState("retrieval cache object is unavailable")
+            if cached.source_incarnation_id != planned.source_incarnation_id or (
+                planned.cache_incarnation_id is not None
+                and cached.cache_incarnation_id != planned.cache_incarnation_id
+            ):
+                raise InvalidState("retrieval cache incarnation changed")
+            if not self._cache_record_is_usable(cached):
+                raise ServiceUnavailable("retrieval cache incarnation is unavailable")
             return cached
+
+    def _cache_record_is_usable(self, cached: RetrievalCacheObjectRecord) -> bool:
+        return self._cache is not None and self._cache.is_usable_store(
+            cache_store=cached.cache_store,
+            incarnation_id=cached.cache_incarnation_id,
+        )
 
     def _iter_raw_plan_range(
         self,
@@ -1464,6 +1488,7 @@ class SqlAlchemyRetrievalService:
                 reader = RawVolumeRangeReader(
                     self._range_store(
                         source_store=source_store,
+                        source_incarnation_id=planned_object.source_incarnation_id,
                         object_record=record,
                         cached=cached,
                         attribution=attribution,
@@ -1497,12 +1522,15 @@ class SqlAlchemyRetrievalService:
         self,
         *,
         source_store: str,
+        source_incarnation_id: str,
         object_record: CollectionArchiveObjectRecord,
         cached: RetrievalCacheObjectRecord | None,
         attribution: DownloadAttribution | None,
     ) -> ArchiveObjectRangeStore:
         if cached is None:
-            base = self._archive_stores.require(source_store).object_ranges
+            base = self._archive_stores.require_incarnation(
+                source_store, source_incarnation_id
+            ).object_ranges
             tracked_store = source_store
         else:
             if self._cache is None:
@@ -1746,8 +1774,14 @@ class SqlAlchemyRetrievalService:
             if archive_copy_is_complete(copy) and copy.store not in retiring_stores
         }
         for store in self._config.archive_read_order:
-            if store in copies:
-                return copies[store]
+            copy = copies.get(store)
+            if copy is None:
+                continue
+            try:
+                self._archive_stores.require_incarnation(store, copy.incarnation_id)
+            except ServiceUnavailable:
+                continue
+            return copy
         raise InvalidState(f"collection has no readable archive copy: {collection_id}")
 
     def _process_one(self, job_id: str) -> None:
@@ -1763,7 +1797,9 @@ class SqlAlchemyRetrievalService:
                         self._download_allowance.release_retrieval(job_id=job_id)
                 return
             action, planned, object_identity, attribution = work
-            store = self._archive_stores.require(planned.source_store).store
+            store = self._archive_stores.require_incarnation(
+                planned.source_store, planned.source_incarnation_id
+            ).store
             if action == "prepare":
                 if self._cache is None:
                     raise RuntimeError("retrieval cache is unavailable")
@@ -1921,7 +1957,13 @@ class SqlAlchemyRetrievalService:
                     RetrievalCacheObjectRecord,
                     (planned.source_store, planned.collection_id, planned.object_id),
                 )
-                state = "ready" if cached is not None and cached.state == "ready" else "preparing"
+                ready = (
+                    cached is not None
+                    and cached.state == "ready"
+                    and cached.source_incarnation_id == planned.source_incarnation_id
+                    and self._cache_record_is_usable(cached)
+                )
+                state = "ready" if ready else "preparing"
                 session.add(
                     RetrievalJobObjectProgressRecord(
                         job_id=job.id,
@@ -1929,10 +1971,9 @@ class SqlAlchemyRetrievalService:
                         object_order=planned.object_order,
                         state=state,
                         next_poll_at=now_text,
-                        cache_store=(
-                            cached.cache_store
-                            if cached is not None and cached.state == "ready"
-                            else None
+                        cache_store=(cached.cache_store if ready and cached is not None else None),
+                        cache_incarnation_id=(
+                            cached.cache_incarnation_id if ready and cached is not None else None
                         ),
                     )
                 )
@@ -2018,9 +2059,15 @@ class SqlAlchemyRetrievalService:
                 job = session.get(RetrievalJobRecord, job_id)
                 if progress is None or job is None or job.state != "requested":
                     return
-                if cached is not None and cached.state == "ready":
+                if (
+                    cached is not None
+                    and cached.state == "ready"
+                    and cached.source_incarnation_id == planned.source_incarnation_id
+                    and self._cache_record_is_usable(cached)
+                ):
                     progress.state = "ready"
                     progress.cache_store = cached.cache_store
+                    progress.cache_incarnation_id = cached.cache_incarnation_id
                     progress.next_poll_at = format_utc_timestamp(utc_now())
                     job.next_poll_at = progress.next_poll_at
                 else:
@@ -2060,6 +2107,7 @@ class SqlAlchemyRetrievalService:
                 object_id=planned.object_id,
                 receipt=receipt,
             )
+            session.flush()
             progress = session.get(
                 RetrievalJobObjectProgressRecord,
                 (job_id, planned.object_order),
@@ -2068,6 +2116,12 @@ class SqlAlchemyRetrievalService:
             if progress is not None and job is not None and job.state == "requested":
                 progress.state = "ready"
                 progress.cache_store = receipt.cache_store
+                ready_cache = session.get(
+                    RetrievalCacheObjectRecord,
+                    (planned.source_store, planned.collection_id, planned.object_id),
+                )
+                assert ready_cache is not None
+                progress.cache_incarnation_id = ready_cache.cache_incarnation_id
                 progress.next_poll_at = format_utc_timestamp(utc_now())
                 job.next_poll_at = progress.next_poll_at
                 job.failure = None

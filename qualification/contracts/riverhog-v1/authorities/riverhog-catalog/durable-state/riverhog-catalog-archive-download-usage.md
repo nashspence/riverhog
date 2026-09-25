@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-archive-download-usage:f4b954fac4 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-archive-download-usage:8c05804459 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-9842cd22e0"></a>
+<a id="s-fa8f69a215"></a>
 
 ### Table: `archive_download_usage`
 
@@ -21,17 +21,17 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-aa0999b65f"></a>`store` | `VARCHAR` | no | `—` | — |
-| <a id="s-73df17342b"></a>`month_started_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-51e4125711"></a>`accounted_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-9aca377aaa"></a>`updated_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-1e52ad9c40"></a>`store` | `VARCHAR` | no | `—` | — |
+| <a id="s-1e5460704b"></a>`month_started_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-0898bbdc0b"></a>`accounted_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-9af8ae4edd"></a>`updated_at` | `VARCHAR` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-423ebc7e40"></a>`primary-key` | `—` | `PRIMARY KEY (store)` |
-| <a id="s-8372093c32"></a>`check` | `ck_archive_download_usage_bytes` | `CONSTRAINT ck_archive_download_usage_bytes CHECK (accounted_bytes >= 0)` |
+| <a id="s-a5cb3a6dcb"></a>`primary-key` | `—` | `PRIMARY KEY (store)` |
+| <a id="s-999db9919c"></a>`check` | `ck_archive_download_usage_bytes` | `CONSTRAINT ck_archive_download_usage_bytes CHECK (accounted_bytes >= 0)` |
 
 ## Maintained corroboration
 
@@ -41,7 +41,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-e6c000cbff"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-f787e8c4a6"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -57,7 +57,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/1`
+- `/external_contract/durable_state/owners/0/structure/tables/2`
 
 ### Exact owned JSON
 

@@ -65,6 +65,7 @@ class _Adapter:
 
     def descriptor(self) -> AdapterDescriptor:
         return AdapterDescriptor(
+            storage_incarnation_id="00000000-0000-4000-8000-000000000001",
             implementation_id="fixture.cache/v1",
             implementation_version="1.0.0",
             read_mode="immediate",

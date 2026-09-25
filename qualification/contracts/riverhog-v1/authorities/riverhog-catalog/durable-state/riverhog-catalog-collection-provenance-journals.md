@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-provenance-journals:24f3a38be5 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-provenance-journals:4e6c1c1d66 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-cdcb1f6979"></a>
+<a id="s-41a27eabce"></a>
 
 ### Table: `collection_provenance_journals`
 
@@ -21,34 +21,34 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-07ebf8459c"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-7bce079e89"></a>`journal_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-bd0e3adf01"></a>`bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-3c3cdbea2d"></a>`sha256` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-cf9dd4e770"></a>`entries` | `BIGINT` | no | `—` | — |
-| <a id="s-ea80d070a1"></a>`agent_count` | `BIGINT` | no | `—` | — |
-| <a id="s-a9faf9bb93"></a>`entity_counts_json` | `TEXT` | no | `—` | — |
-| <a id="s-da4ba78197"></a>`current_state_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-bdecebffeb"></a>`current_entry_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-9ec1eac004"></a>`current_entry_json_sha256` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-806733c487"></a>`current_path` | `VARCHAR` | no | `—` | — |
-| <a id="s-999291f417"></a>`current_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-e0704b41ee"></a>`current_sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-223457f6a8"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-336a144acc"></a>`journal_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-4137247875"></a>`bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-def11e2d0b"></a>`sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-34f95eee04"></a>`entries` | `BIGINT` | no | `—` | — |
+| <a id="s-4ed9a280ee"></a>`agent_count` | `BIGINT` | no | `—` | — |
+| <a id="s-68308b08da"></a>`entity_counts_json` | `TEXT` | no | `—` | — |
+| <a id="s-b4167b202b"></a>`current_state_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-febe25e0e6"></a>`current_entry_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-afacd708bc"></a>`current_entry_json_sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-8ed8e2a3c7"></a>`current_path` | `VARCHAR` | no | `—` | — |
+| <a id="s-f86de28e76"></a>`current_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-8c3adb7a28"></a>`current_sha256` | `VARCHAR(64)` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-4df441e800"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, journal_id)` |
-| <a id="s-0bbd6dcf33"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collections (id) ON DELETE CASCADE` |
-| <a id="s-209a37b756"></a>`check` | `ck_provenance_journals_bytes` | `CONSTRAINT ck_provenance_journals_bytes CHECK (bytes >= 0)` |
-| <a id="s-bb8ae1de7b"></a>`check` | `ck_provenance_journals_entries` | `CONSTRAINT ck_provenance_journals_entries CHECK (entries >= 0)` |
-| <a id="s-b1ceeea1fa"></a>`check` | `ck_provenance_journals_agent_count` | `CONSTRAINT ck_provenance_journals_agent_count CHECK (agent_count >= 0)` |
-| <a id="s-034874e652"></a>`check` | `ck_provenance_journals_current_bytes` | `CONSTRAINT ck_provenance_journals_current_bytes CHECK (current_bytes >= 0)` |
-| <a id="s-b2563a8fa9"></a>`check` | `ck_provenance_journals_sha256` | `CONSTRAINT ck_provenance_journals_sha256 CHECK (length(sha256) = 64)` |
-| <a id="s-b9298ad14a"></a>`check` | `ck_collection_provenance_journals_sha256_hex` | `CONSTRAINT ck_collection_provenance_journals_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-565604bb88"></a>`check` | `ck_sha256_4b4f04aff752e0e1` | `CONSTRAINT ck_sha256_4b4f04aff752e0e1 CHECK (length(current_entry_json_sha256) = 64 AND lower(current_entry_json_sha256) = current_entry_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(current_entry_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-7265895dc1"></a>`check` | `ck_collection_provenance_journals_current_sha256_hex` | `CONSTRAINT ck_collection_provenance_journals_current_sha256_hex CHECK (length(current_sha256) = 64 AND lower(current_sha256) = current_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(current_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-f6bebec933"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, journal_id)` |
+| <a id="s-742acfcd0e"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collections (id) ON DELETE CASCADE` |
+| <a id="s-9c4daf586c"></a>`check` | `ck_provenance_journals_bytes` | `CONSTRAINT ck_provenance_journals_bytes CHECK (bytes >= 0)` |
+| <a id="s-ca4308bcf6"></a>`check` | `ck_provenance_journals_entries` | `CONSTRAINT ck_provenance_journals_entries CHECK (entries >= 0)` |
+| <a id="s-d3140f161a"></a>`check` | `ck_provenance_journals_agent_count` | `CONSTRAINT ck_provenance_journals_agent_count CHECK (agent_count >= 0)` |
+| <a id="s-a1e2f8b682"></a>`check` | `ck_provenance_journals_current_bytes` | `CONSTRAINT ck_provenance_journals_current_bytes CHECK (current_bytes >= 0)` |
+| <a id="s-4064352e56"></a>`check` | `ck_provenance_journals_sha256` | `CONSTRAINT ck_provenance_journals_sha256 CHECK (length(sha256) = 64)` |
+| <a id="s-d5d358cace"></a>`check` | `ck_collection_provenance_journals_sha256_hex` | `CONSTRAINT ck_collection_provenance_journals_sha256_hex CHECK (length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-234807c88c"></a>`check` | `ck_sha256_4b4f04aff752e0e1` | `CONSTRAINT ck_sha256_4b4f04aff752e0e1 CHECK (length(current_entry_json_sha256) = 64 AND lower(current_entry_json_sha256) = current_entry_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(current_entry_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-c1c61061e3"></a>`check` | `ck_collection_provenance_journals_current_sha256_hex` | `CONSTRAINT ck_collection_provenance_journals_current_sha256_hex CHECK (length(current_sha256) = 64 AND lower(current_sha256) = current_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(current_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -58,7 +58,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-bc93963bdc"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-21095b60fa"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -74,7 +74,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/23`
+- `/external_contract/durable_state/owners/0/structure/tables/24`
 
 ### Exact owned JSON
 

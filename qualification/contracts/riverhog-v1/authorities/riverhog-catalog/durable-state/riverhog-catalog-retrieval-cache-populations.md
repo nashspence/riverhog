@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-cache-populations:3c47070936 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-cache-populations:e4aaee9324 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-5367ff929e"></a>
+<a id="s-a2c14f3731"></a>
 
 ### Table: `retrieval_cache_populations`
 
@@ -21,26 +21,30 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-8c8a1721c6"></a>`source_store` | `VARCHAR` | no | `—` | — |
-| <a id="s-bd76206005"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-ab21e4863b"></a>`object_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-0c48fe4f11"></a>`cache_store` | `VARCHAR` | yes | `—` | — |
-| <a id="s-dced5fb5ac"></a>`object_path` | `VARCHAR` | yes | `—` | — |
-| <a id="s-a4d897bdd3"></a>`write_token` | `VARCHAR` | yes | `—` | — |
-| <a id="s-cbf7c84e21"></a>`expected_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-5126703673"></a>`state` | `VARCHAR` | no | `—` | — |
-| <a id="s-678c28d4d9"></a>`initiated_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-f99a7e8c27"></a>`updated_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-eee6902c70"></a>`failure` | `TEXT` | yes | `—` | — |
+| <a id="s-4746cd74e6"></a>`source_store` | `VARCHAR` | no | `—` | — |
+| <a id="s-ab1db00bfb"></a>`source_incarnation_id` | `VARCHAR(36)` | no | `—` | — |
+| <a id="s-75af01c0c0"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-1be2709ecf"></a>`object_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-d0add89604"></a>`cache_store` | `VARCHAR` | yes | `—` | — |
+| <a id="s-05c5e1fa0f"></a>`cache_incarnation_id` | `VARCHAR(36)` | yes | `—` | — |
+| <a id="s-fc5c0a24fc"></a>`object_path` | `VARCHAR` | yes | `—` | — |
+| <a id="s-560d19365f"></a>`write_token` | `VARCHAR` | yes | `—` | — |
+| <a id="s-35daadf574"></a>`expected_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-02e2b60c11"></a>`state` | `VARCHAR` | no | `—` | — |
+| <a id="s-488da60f6d"></a>`initiated_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-d816727e85"></a>`updated_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-51a07b362e"></a>`failure` | `TEXT` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-a65fc8e13e"></a>`primary-key` | `—` | `PRIMARY KEY (source_store, collection_id, object_id)` |
-| <a id="s-da7808fbdc"></a>`check` | `ck_retrieval_cache_populations_expected_bytes` | `CONSTRAINT ck_retrieval_cache_populations_expected_bytes CHECK (expected_bytes >= 1)` |
-| <a id="s-dd493bfebe"></a>`check` | `ck_retrieval_cache_populations_state` | `CONSTRAINT ck_retrieval_cache_populations_state CHECK (state IN ('waiting','admitting','admitted','writing','abandoning'))` |
-| <a id="s-45e4776d06"></a>`check` | `ck_retrieval_cache_populations_session` | `CONSTRAINT ck_retrieval_cache_populations_session CHECK (cache_store IS NULL AND object_path IS NULL AND write_token IS NULL AND state IN ('waiting','abandoning') OR cache_store IS NOT NULL AND object_path IS NOT NULL AND (write_token IS NULL AND state = 'admitting' OR write_token IS NOT NULL AND state IN ('admitted','writing') OR state = 'abandoning'))` |
+| <a id="s-1ada749bca"></a>`primary-key` | `—` | `PRIMARY KEY (source_store, collection_id, object_id)` |
+| <a id="s-03ba25055d"></a>`foreign-key` | `—` | `FOREIGN KEY(source_incarnation_id, source_store) REFERENCES storage_incarnations (id, name)` |
+| <a id="s-34f714e0dd"></a>`foreign-key` | `—` | `FOREIGN KEY(cache_incarnation_id, cache_store) REFERENCES storage_incarnations (id, name)` |
+| <a id="s-161ec1b5d5"></a>`check` | `ck_retrieval_cache_populations_expected_bytes` | `CONSTRAINT ck_retrieval_cache_populations_expected_bytes CHECK (expected_bytes >= 1)` |
+| <a id="s-588cdfc014"></a>`check` | `ck_retrieval_cache_populations_state` | `CONSTRAINT ck_retrieval_cache_populations_state CHECK (state IN ('waiting','admitting','admitted','writing','abandoning'))` |
+| <a id="s-c8f2a5e0db"></a>`check` | `ck_retrieval_cache_populations_session` | `CONSTRAINT ck_retrieval_cache_populations_session CHECK (cache_store IS NULL AND object_path IS NULL AND write_token IS NULL AND state IN ('waiting','abandoning') OR cache_store IS NOT NULL AND object_path IS NOT NULL AND (write_token IS NULL AND state = 'admitting' OR write_token IS NOT NULL AND state IN ('admitted','writing') OR state = 'abandoning'))` |
 
 ## Maintained corroboration
 
@@ -50,7 +54,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-b7784cbca8"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-7a2a5cc932"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -66,7 +70,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/14`
+- `/external_contract/durable_state/owners/0/structure/tables/15`
 
 ### Exact owned JSON
 
@@ -75,7 +79,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 3657ea485cc7c5762c66a684ae616093b4dd77c3e0f377e272259983ff12d4e6 -->
+<!-- exact-contract-value: 8eb32a2d55d39561be64c13b1991afcc9d72cddba87cb73fe9cf6066ea0cfc2a -->
 
 ```json
 {
@@ -85,6 +89,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       "name": "source_store",
       "nullable": false,
       "type": "VARCHAR"
+    },
+    {
+      "definition": "source_incarnation_id VARCHAR(36) NOT NULL",
+      "name": "source_incarnation_id",
+      "nullable": false,
+      "type": "VARCHAR(36)"
     },
     {
       "definition": "collection_id BIGINT NOT NULL",
@@ -103,6 +113,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       "name": "cache_store",
       "nullable": true,
       "type": "VARCHAR"
+    },
+    {
+      "definition": "cache_incarnation_id VARCHAR(36)",
+      "name": "cache_incarnation_id",
+      "nullable": true,
+      "type": "VARCHAR(36)"
     },
     {
       "definition": "object_path VARCHAR",
@@ -156,6 +172,36 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "definition": "PRIMARY KEY (source_store, collection_id, object_id)",
       "kind": "primary-key"
+    },
+    {
+      "columns": [
+        "source_incarnation_id",
+        "source_store"
+      ],
+      "definition": "FOREIGN KEY(source_incarnation_id, source_store) REFERENCES storage_incarnations (id, name)",
+      "kind": "foreign-key",
+      "references": {
+        "columns": [
+          "id",
+          "name"
+        ],
+        "table": "storage_incarnations"
+      }
+    },
+    {
+      "columns": [
+        "cache_incarnation_id",
+        "cache_store"
+      ],
+      "definition": "FOREIGN KEY(cache_incarnation_id, cache_store) REFERENCES storage_incarnations (id, name)",
+      "kind": "foreign-key",
+      "references": {
+        "columns": [
+          "id",
+          "name"
+        ],
+        "table": "storage_incarnations"
+      }
     },
     {
       "definition": "CONSTRAINT ck_retrieval_cache_populations_expected_bytes CHECK (expected_bytes >= 1)",

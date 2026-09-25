@@ -56,8 +56,8 @@ Choose an authority to inspect this policy's indexed contract-element applicatio
 | [riverhog-provenance](applications/riverhog-provenance.md) | 105 |
 | [riverhog-provenance-contracts](applications/riverhog-provenance-contracts.md) | 16 |
 | [riverhog-storage-adapter-asgi-support](applications/riverhog-storage-adapter-asgi-support.md) | 1 |
-| [riverhog-storage-adapter-protocol](applications/riverhog-storage-adapter-protocol.md) | 116 |
-| [riverhog-storage-adapter-support](applications/riverhog-storage-adapter-support.md) | 45 |
+| [riverhog-storage-adapter-protocol](applications/riverhog-storage-adapter-protocol.md) | 118 |
+| [riverhog-storage-adapter-support](applications/riverhog-storage-adapter-support.md) | 47 |
 | [state-schema](applications/state-schema.md) | 58 |
 | [stove0-api-client](applications/stove0-api-client.md) | 38 |
 | [stove0-observer-client](applications/stove0-observer-client.md) | 6 |

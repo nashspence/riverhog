@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-provenance-ve-38316a8888:aad2dfd041 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-provenance-ve-38316a8888:3fde6b68d5 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-6a734109c9"></a>
+<a id="s-b88d9bcea4"></a>
 
 ### Table: `collection_provenance_verification_entities`
 
@@ -21,19 +21,19 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-9bf7f7a1e2"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-474c1f9cd6"></a>`journal_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-cad2a54c30"></a>`entity_type` | `VARCHAR` | no | `—` | — |
-| <a id="s-303f8cd283"></a>`entity_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-e09be07555"></a>`entry_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-bbd2c8342f"></a>`document_json` | `TEXT` | no | `—` | — |
+| <a id="s-177b291522"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-aad9a6b897"></a>`journal_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-ab515c1989"></a>`entity_type` | `VARCHAR` | no | `—` | — |
+| <a id="s-5e639700b6"></a>`entity_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-ddc11ba90e"></a>`entry_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-cd1333726f"></a>`document_json` | `TEXT` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-32c375db91"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, journal_id, entity_type, entity_id)` |
-| <a id="s-1b394ef3b0"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collection_provenance_verifications (collection_id) ON DELETE CASCADE` |
+| <a id="s-3b04e35b7b"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, journal_id, entity_type, entity_id)` |
+| <a id="s-ed86862a2a"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collection_provenance_verifications (collection_id) ON DELETE CASCADE` |
 
 ## Maintained corroboration
 
@@ -43,7 +43,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-a67426c0f6"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-a32caeefad"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -59,7 +59,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/54`
+- `/external_contract/durable_state/owners/0/structure/tables/55`
 
 ### Exact owned JSON
 

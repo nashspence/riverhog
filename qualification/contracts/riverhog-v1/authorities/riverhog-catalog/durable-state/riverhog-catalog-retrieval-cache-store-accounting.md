@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-cache-store-accounting:ed8e0ba290 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-cache-store-accounting:646a4219ae -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-a2c14f3731"></a>
+<a id="s-f43be24d3d"></a>
 
 ### Table: `retrieval_cache_store_accounting`
 
@@ -21,20 +21,22 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-4746cd74e6"></a>`cache_store` | `VARCHAR` | no | `—` | — |
-| <a id="s-ab1db00bfb"></a>`reserved_bytes` | `BIGINT` | no | `0` | — |
-| <a id="s-75af01c0c0"></a>`committed_bytes` | `BIGINT` | no | `0` | — |
-| <a id="s-1be2709ecf"></a>`generation` | `BIGINT` | no | `0` | — |
-| <a id="s-d0add89604"></a>`updated_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-b86e579b0a"></a>`cache_store` | `VARCHAR` | no | `—` | — |
+| <a id="s-36749376fd"></a>`cache_incarnation_id` | `VARCHAR(36)` | no | `—` | — |
+| <a id="s-47ee498a3d"></a>`reserved_bytes` | `BIGINT` | no | `0` | — |
+| <a id="s-d6b73a2206"></a>`committed_bytes` | `BIGINT` | no | `0` | — |
+| <a id="s-130a9f5caf"></a>`generation` | `BIGINT` | no | `0` | — |
+| <a id="s-3ad1c99d8e"></a>`updated_at` | `VARCHAR` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-1ada749bca"></a>`primary-key` | `—` | `PRIMARY KEY (cache_store)` |
-| <a id="s-03ba25055d"></a>`check` | `ck_retrieval_cache_store_accounting_reserved` | `CONSTRAINT ck_retrieval_cache_store_accounting_reserved CHECK (reserved_bytes >= 0)` |
-| <a id="s-34f714e0dd"></a>`check` | `ck_retrieval_cache_store_accounting_committed` | `CONSTRAINT ck_retrieval_cache_store_accounting_committed CHECK (committed_bytes >= 0)` |
-| <a id="s-161ec1b5d5"></a>`check` | `ck_retrieval_cache_store_accounting_generation` | `CONSTRAINT ck_retrieval_cache_store_accounting_generation CHECK (generation >= 0)` |
+| <a id="s-92e3b4b53c"></a>`primary-key` | `—` | `PRIMARY KEY (cache_store)` |
+| <a id="s-a87ef7b851"></a>`foreign-key` | `—` | `FOREIGN KEY(cache_incarnation_id, cache_store) REFERENCES storage_incarnations (id, name)` |
+| <a id="s-711642855e"></a>`check` | `ck_retrieval_cache_store_accounting_reserved` | `CONSTRAINT ck_retrieval_cache_store_accounting_reserved CHECK (reserved_bytes >= 0)` |
+| <a id="s-ef575f5074"></a>`check` | `ck_retrieval_cache_store_accounting_committed` | `CONSTRAINT ck_retrieval_cache_store_accounting_committed CHECK (committed_bytes >= 0)` |
+| <a id="s-892ef661e3"></a>`check` | `ck_retrieval_cache_store_accounting_generation` | `CONSTRAINT ck_retrieval_cache_store_accounting_generation CHECK (generation >= 0)` |
 
 ## Maintained corroboration
 
@@ -44,7 +46,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-175b481e84"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-0d7acc59f2"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -60,7 +62,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/15`
+- `/external_contract/durable_state/owners/0/structure/tables/16`
 
 ### Exact owned JSON
 
@@ -69,7 +71,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: d92b9a871ccaed6aae395e7d06cdbdf7d89b4da2bfb2aa4c14d5a859e374e092 -->
+<!-- exact-contract-value: 0abfeb6482add1b221bff6fc17e4cfd9750c9e592fabc106f5212a16268dac5f -->
 
 ```json
 {
@@ -79,6 +81,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       "name": "cache_store",
       "nullable": false,
       "type": "VARCHAR"
+    },
+    {
+      "definition": "cache_incarnation_id VARCHAR(36) NOT NULL",
+      "name": "cache_incarnation_id",
+      "nullable": false,
+      "type": "VARCHAR(36)"
     },
     {
       "default": "0",
@@ -115,6 +123,21 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "definition": "PRIMARY KEY (cache_store)",
       "kind": "primary-key"
+    },
+    {
+      "columns": [
+        "cache_incarnation_id",
+        "cache_store"
+      ],
+      "definition": "FOREIGN KEY(cache_incarnation_id, cache_store) REFERENCES storage_incarnations (id, name)",
+      "kind": "foreign-key",
+      "references": {
+        "columns": [
+          "id",
+          "name"
+        ],
+        "table": "storage_incarnations"
+      }
     },
     {
       "definition": "CONSTRAINT ck_retrieval_cache_store_accounting_reserved CHECK (reserved_bytes >= 0)",

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-cache-accounti-b67d40a5ef:6cdb5bf615 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-cache-accounti-b67d40a5ef:c069eb3861 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-2587be9bec"></a>
+<a id="s-c4b3febcb2"></a>
 
 ### Table: `retrieval_cache_accounting_reconciliations`
 
@@ -21,23 +21,23 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-5d63dc10db"></a>`cache_store` | `VARCHAR` | no | `—` | — |
-| <a id="s-03906f154a"></a>`generation` | `BIGINT` | no | `—` | — |
-| <a id="s-0dd7b01539"></a>`after_source_store` | `VARCHAR` | yes | `—` | — |
-| <a id="s-981ea06c39"></a>`after_collection_id` | `BIGINT` | yes | `—` | — |
-| <a id="s-28e0f62854"></a>`after_object_id` | `VARCHAR` | yes | `—` | — |
-| <a id="s-bd6e647a8d"></a>`accumulated_bytes` | `BIGINT` | no | `0` | — |
-| <a id="s-9da1160522"></a>`started_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-5a7b548d13"></a>`updated_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-1151e04935"></a>`cache_store` | `VARCHAR` | no | `—` | — |
+| <a id="s-d4aec50038"></a>`generation` | `BIGINT` | no | `—` | — |
+| <a id="s-06a2164c54"></a>`after_source_store` | `VARCHAR` | yes | `—` | — |
+| <a id="s-5f67d51e59"></a>`after_collection_id` | `BIGINT` | yes | `—` | — |
+| <a id="s-4fd1a6484e"></a>`after_object_id` | `VARCHAR` | yes | `—` | — |
+| <a id="s-2eadc88986"></a>`accumulated_bytes` | `BIGINT` | no | `0` | — |
+| <a id="s-8be9b06324"></a>`started_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-0e868aa534"></a>`updated_at` | `VARCHAR` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-1026e456de"></a>`primary-key` | `—` | `PRIMARY KEY (cache_store)` |
-| <a id="s-0d2f68e80d"></a>`foreign-key` | `—` | `FOREIGN KEY(cache_store) REFERENCES retrieval_cache_store_accounting (cache_store) ON DELETE CASCADE` |
-| <a id="s-ed616bb308"></a>`check` | `ck_cache_accounting_reconciliations_generation` | `CONSTRAINT ck_cache_accounting_reconciliations_generation CHECK (generation >= 0)` |
-| <a id="s-da9ea9e753"></a>`check` | `ck_cache_accounting_reconciliations_bytes` | `CONSTRAINT ck_cache_accounting_reconciliations_bytes CHECK (accumulated_bytes >= 0)` |
+| <a id="s-cc81e06afc"></a>`primary-key` | `—` | `PRIMARY KEY (cache_store)` |
+| <a id="s-247213a175"></a>`foreign-key` | `—` | `FOREIGN KEY(cache_store) REFERENCES retrieval_cache_store_accounting (cache_store) ON DELETE CASCADE` |
+| <a id="s-6a3e91e7e8"></a>`check` | `ck_cache_accounting_reconciliations_generation` | `CONSTRAINT ck_cache_accounting_reconciliations_generation CHECK (generation >= 0)` |
+| <a id="s-ef35eeb543"></a>`check` | `ck_cache_accounting_reconciliations_bytes` | `CONSTRAINT ck_cache_accounting_reconciliations_bytes CHECK (accumulated_bytes >= 0)` |
 
 ## Maintained corroboration
 
@@ -47,7 +47,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-f6255909c2"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-cc22184fc7"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -63,7 +63,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/37`
+- `/external_contract/durable_state/owners/0/structure/tables/38`
 
 ### Exact owned JSON
 

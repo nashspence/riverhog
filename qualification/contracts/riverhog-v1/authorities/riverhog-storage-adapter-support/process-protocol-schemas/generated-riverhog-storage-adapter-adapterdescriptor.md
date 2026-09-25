@@ -17,7 +17,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-eca284d012"></a>`type`: `"object"`
 - <a id="s-808a2f7150"></a>`additionalProperties`: `false`
-- <a id="s-59e897ad89"></a>`required`: `["implementation_id","implementation_version","read_mode","minimum_nonfinal_segment_bytes"]`
+- <a id="s-59e897ad89"></a>`required`: `["storage_incarnation_id","implementation_id","implementation_version","read_mode","minimum_nonfinal_segment_bytes"]`
 - <a id="s-c33981da12"></a>`title`: `"AdapterDescriptor"`
 
 ### Fields
@@ -31,6 +31,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-7886488551"></a>`minimum_nonfinal_segment_bytes` | yes | [PositiveDecimal](#s-dd88e4b546) |  |
 | <a id="s-f345896a9f"></a>`protocol` | no | type="string"; const="riverhog-storage-adapter/v1"; default="riverhog-storage-adapter/v1"; title="Protocol" |  |
 | <a id="s-33e9ebd76a"></a>`read_mode` | yes | type="string"; enum=["immediate","restore_required"]; title="Read Mode" |  |
+| <a id="s-b3fb003a0d"></a>`storage_incarnation_id` | yes | type="string"; pattern="^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"; title="Storage Incarnation Id" |  |
 
 ### Definitions
 
@@ -87,7 +88,7 @@ Shared facts for every subject below: maximum=120; minimum=1; reason="schema-max
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e6b394d55122f3c9c40d70fe2e00ae9c6c372574e448b9b6f9695a044dd965b8 -->
+<!-- exact-contract-value: f3adb99db4c16193a0f47afd71dbf859e35137515f3e6248d39ca31af85bcdf5 -->
 
 ```json
 {
@@ -148,9 +149,15 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "title": "Read Mode",
       "type": "string"
+    },
+    "storage_incarnation_id": {
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "title": "Storage Incarnation Id",
+      "type": "string"
     }
   },
   "required": [
+    "storage_incarnation_id",
     "implementation_id",
     "implementation_version",
     "read_mode",

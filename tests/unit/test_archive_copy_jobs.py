@@ -31,7 +31,6 @@ from riverhog_core.catalog_models import (
     RetrievalCacheLeaseRecord,
     RetrievalCacheObjectRecord,
 )
-from riverhog_core.placement_choices import archive_binding_sha256
 from riverhog_core.ports.archive_objects import (
     WriteSegmentReceipt,
     WriteSession,
@@ -58,6 +57,10 @@ from tests.unit.archive_object_fixtures import (
     make_captured_provenance_archive,
     seed_archive_copy,
     sqlite_url,
+)
+from tests.unit.storage_incarnation_fixtures import (
+    fixture_storage_incarnation_id,
+    seed_storage_incarnation,
 )
 
 FILES = {"document.txt": b"archive copy service\n", "notes.txt": b"small notes\n"}
@@ -179,14 +182,17 @@ def _service(
         config,
         archive_stores={"deep": config.archive_store("deep"), "b2": b2_config},
     )
+    with session_scope(make_session_factory(config.database_url)) as session:
+        seed_storage_incarnation(session, "archive", "b2")
+        seed_storage_incarnation(session, "cache", "memory")
     source = MemoryArchiveStore(archive, ready=source_ready)
     destination = destination or MemoryArchiveStore(new_archive_prefix="archives/b2/new-copy")
     service = SqlAlchemyArchiveCopyJobService(
         config,
         ArchiveStoreRegistry(
             {
-                "deep": archive_store_binding(source),
-                "b2": archive_store_binding(destination),
+                "deep": archive_store_binding(source, name="deep"),
+                "b2": archive_store_binding(destination, name="b2"),
             },
         ),
     )
@@ -196,6 +202,7 @@ def _service(
 def _pending_upload_copy_intent(config: RuntimeConfig) -> None:
     now = format_utc_timestamp(utc_now())
     with session_scope(make_session_factory(config.database_url)) as session:
+        seed_storage_incarnation(session, "archive", "b2")
         collection = session.get(CollectionRecord, COLLECTION_ID)
         assert collection is not None
         collection.creation_archive_store = "deep"
@@ -222,9 +229,9 @@ def _pending_upload_copy_intent(config: RuntimeConfig) -> None:
             CollectionUploadCopyIntentRecord(
                 collection_id=COLLECTION_ID,
                 destination_store="b2",
+                destination_incarnation_id=fixture_storage_incarnation_id("archive", "b2"),
                 source_store="deep",
-                destination_binding_sha256=archive_binding_sha256(config, "b2"),
-                source_binding_sha256=archive_binding_sha256(config, "deep"),
+                source_incarnation_id=fixture_storage_incarnation_id("archive", "deep"),
                 initiated_by_app="operator",
                 initiated_by_key_id=COPY_INTENT_KEY,
                 event_context_json=None,
@@ -369,12 +376,15 @@ def test_upload_publication_atomically_queues_the_accepted_copy(tmp_path: Path) 
         archive_scrypt_work_factor=1,
     )
     initialize_db(database_url)
+    with session_scope(make_session_factory(database_url)) as session:
+        seed_storage_incarnation(session, "archive", "deep")
+        seed_storage_incarnation(session, "archive", "b2")
     source = MemoryArchiveStore(new_archive_prefix="archives/deep/upload")
     destination = MemoryArchiveStore(new_archive_prefix="archives/b2/copy")
     registry = ArchiveStoreRegistry(
         {
-            "deep": archive_store_binding(source),
-            "b2": archive_store_binding(destination),
+            "deep": archive_store_binding(source, name="deep"),
+            "b2": archive_store_binding(destination, name="b2"),
         }
     )
     now = format_utc_timestamp(utc_now())
@@ -504,7 +514,7 @@ def test_upload_copy_handoff_fails_closed_after_key_revocation(tmp_path: Path) -
     assert observed["intents"][0]["failure_code"] == "authorization_denied"
 
 
-def test_upload_copy_handoff_rejects_a_remapped_destination(tmp_path: Path) -> None:
+def test_upload_copy_handoff_accepts_new_url_for_same_incarnation(tmp_path: Path) -> None:
     config, _, _, _, service = _service(tmp_path / "catalog.sqlite3")
     _pending_upload_copy_intent(config)
     service._config = replace(
@@ -517,17 +527,19 @@ def test_upload_copy_handoff_rejects_a_remapped_destination(tmp_path: Path) -> N
     assert service.process_due_upload_copy_intents(limit=1) == 1
     with session_scope(make_session_factory(config.database_url)) as session:
         intent = session.get(CollectionUploadCopyIntentRecord, (COLLECTION_ID, "b2"))
-        assert intent is not None and intent.state == "failed"
-        assert intent.failure_code == "configuration_changed"
-        assert session.get(ArchiveCopyJobRecord, (COLLECTION_ID, "b2")) is None
+        assert intent is not None and intent.state == "handed_off"
+        job = session.get(ArchiveCopyJobRecord, (COLLECTION_ID, "b2"))
+        assert (
+            job is not None and job.destination_incarnation_id == intent.destination_incarnation_id
+        )
 
 
 def test_copy_job_explicit_cache_choice_overrides_direct_store_policy(tmp_path: Path) -> None:
     config, _, source, destination, service = _service(tmp_path / "catalog.sqlite3")
     registry = ArchiveStoreRegistry(
         {
-            "deep": archive_store_binding(source),
-            "b2": archive_store_binding(destination),
+            "deep": archive_store_binding(source, name="deep"),
+            "b2": archive_store_binding(destination, name="b2"),
         }
     )
     cached = SqlAlchemyArchiveCopyJobService(
@@ -841,6 +853,9 @@ def test_archive_copy_to_restore_required_store_writes_final_custody(
         FILES,
         store="b2",
     )
+    with session_scope(make_session_factory(config.database_url)) as session:
+        seed_storage_incarnation(session, "archive", "deep")
+        seed_storage_incarnation(session, "cache", "memory")
     deep = replace(
         config.archive_store("b2"),
         name="deep",
@@ -861,8 +876,8 @@ def test_archive_copy_to_restore_required_store_writes_final_custody(
         config,
         ArchiveStoreRegistry(
             {
-                "b2": archive_store_binding(source),
-                "deep": archive_store_binding(destination),
+                "b2": archive_store_binding(source, name="b2"),
+                "deep": archive_store_binding(destination, name="deep"),
             }
         ),
         retrieval_cache=cache,  # type: ignore[arg-type]
@@ -910,6 +925,9 @@ def test_restore_required_copy_uses_archive_only_when_new_archive_cache_is_disab
         FILES,
         store="b2",
     )
+    with session_scope(make_session_factory(config.database_url)) as session:
+        seed_storage_incarnation(session, "archive", "deep")
+        seed_storage_incarnation(session, "cache", "memory")
     deep = replace(
         config.archive_store("b2"),
         name="deep",
@@ -929,8 +947,8 @@ def test_restore_required_copy_uses_archive_only_when_new_archive_cache_is_disab
         config,
         ArchiveStoreRegistry(
             {
-                "b2": archive_store_binding(source),
-                "deep": archive_store_binding(destination),
+                "b2": archive_store_binding(source, name="b2"),
+                "deep": archive_store_binding(destination, name="deep"),
             }
         ),
         retrieval_cache=_ArchiveCopyCache(),  # type: ignore[arg-type]

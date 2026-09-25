@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Callable
 from contextlib import ExitStack
 from dataclasses import dataclass
-from functools import lru_cache
+from functools import lru_cache, partial
 from typing import Annotated
 
 from fastapi import Depends
@@ -64,6 +65,7 @@ from riverhog_core.services.provenance import SqlAlchemyProvenanceService
 from riverhog_core.services.retrieval import SqlAlchemyRetrievalService
 from riverhog_core.services.retrieval_cache import SqlAlchemyRetrievalCache
 from riverhog_core.services.search import SqlAlchemySearchService
+from riverhog_core.storage_incarnations import StorageName, reconcile_storage_incarnations
 from riverhog_core.stores.storage_adapter_archive_objects import (
     StorageAdapterArchiveObjectRangeStore,
     StorageAdapterArchiveResumableObjectStore,
@@ -72,7 +74,7 @@ from riverhog_core.stores.storage_adapter_archive_objects import (
 from riverhog_core.stores.storage_adapter_archive_store import StorageAdapterArchiveStore
 from riverhog_core.stores.storage_adapter_retrieval_cache import StorageAdapterRetrievalCache
 from riverhog_core.throughput import ArchiveThroughputTuning, ArchiveTransferResources
-from riverhog_storage_adapter_protocol import validated_storage_adapter
+from riverhog_storage_adapter_protocol import StorageAdapterRejection, validated_storage_adapter
 from riverhog_storage_adapter_support import StorageAdapterClient
 from sqlalchemy import select
 
@@ -99,6 +101,7 @@ class ServiceContainer:
     session_factory: SessionFactory
     browse_tokens: BrowseTokenCodec
     storage_adapter_clients: tuple[StorageAdapterClient, ...] = ()
+    storage_readiness: Callable[[], None] | None = None
 
     def close(self) -> None:
         dispose_session_factory(self.session_factory)
@@ -111,6 +114,7 @@ def _archive_store_registry(
     *,
     adapters: dict[str, StorageAdapterClient],
     download_allowance: DownloadAllowance,
+    unavailable: dict[str, str] | None = None,
 ) -> ArchiveStoreRegistry:
     validated_adapters = {
         name: validated_storage_adapter(adapter) for name, adapter in adapters.items()
@@ -118,6 +122,7 @@ def _archive_store_registry(
     return ArchiveStoreRegistry(
         {
             name: ArchiveStoreBinding(
+                incarnation_id=validated_adapters[name].descriptor().storage_incarnation_id,
                 store=StorageAdapterArchiveStore(
                     config,
                     name=name,
@@ -132,9 +137,20 @@ def _archive_store_registry(
                 ),
                 object_ranges=StorageAdapterArchiveObjectRangeStore(validated_adapters[name]),
             )
-            for name in config.archive_stores
-        }
+            for name in adapters
+        },
+        unavailable=unavailable,
+        probes={
+            name: partial(_probe_storage_adapter, client)
+            for name, client in adapters.items()
+            if isinstance(client, StorageAdapterClient)
+        },
     )
+
+
+def _probe_storage_adapter(client: StorageAdapterClient) -> None:
+    client.check_readiness()
+    client.refresh_descriptor()
 
 
 def _adapter_client(registration: StorageAdapterRegistration) -> StorageAdapterClient:
@@ -157,19 +173,56 @@ def _build_default_container(
     throughput_tuning = ArchiveThroughputTuning.from_env(os.environ)
     transfer_resources = ArchiveTransferResources.from_tuning(throughput_tuning)
     adapters: dict[str, StorageAdapterClient] = {}
+    all_clients: list[StorageAdapterClient] = []
+    observations: dict[StorageName, str | None] = {}
+    read_modes: dict[StorageName, str] = {}
+    unavailable: dict[str, str] = {}
     for name, store in config.archive_stores.items():
         client = _adapter_client(store)
         startup_cleanup.callback(client.close)
-        adapters[name] = client
-    for client in adapters.values():
-        client.check_readiness()
+        all_clients.append(client)
+        try:
+            client.check_readiness()
+            descriptor = client.refresh_descriptor()
+            observations[("archive", name)] = descriptor.storage_incarnation_id
+            read_modes[("archive", name)] = descriptor.read_mode
+            adapters[name] = client
+        except StorageAdapterRejection:
+            observations[("archive", name)] = None
+            unavailable[name] = "adapter unavailable"
+    restore_required = [
+        name
+        for name, client in adapters.items()
+        if client.descriptor().read_mode == "restore_required"
+    ]
+    if restore_required and not config.retrieval_cache_stores:
+        raise ValueError(
+            "restore-required archive adapters require a retrieval cache adapter: "
+            + ", ".join(restore_required)
+        )
     cache_clients: dict[str, StorageAdapterClient] = {}
     cache_stores: dict[str, StorageAdapterRetrievalCache] = {}
     for name, registration in config.retrieval_cache_stores.items():
         client = _adapter_client(registration.adapter)
         startup_cleanup.callback(client.close)
-        client.check_readiness()
+        all_clients.append(client)
+        try:
+            client.check_readiness()
+            descriptor = client.refresh_descriptor()
+            observations[("cache", name)] = descriptor.storage_incarnation_id
+            read_modes[("cache", name)] = descriptor.read_mode
+        except StorageAdapterRejection:
+            observations[("cache", name)] = None
+            continue
         cache_clients[name] = client
+    reservations = reconcile_storage_incarnations(
+        session_factory, observations, read_modes=read_modes
+    )
+    for name, client in adapters.items():
+        client.pin_incarnation(reservations[("archive", name)])
+    for name, client in cache_clients.items():
+        client.pin_incarnation(reservations[("cache", name)])
+    for name, client in cache_clients.items():
         cache_stores[name] = StorageAdapterRetrievalCache(
             name,
             client,
@@ -180,22 +233,12 @@ def _build_default_container(
     retrieval_cache = (
         SqlAlchemyRetrievalCache(
             cache_stores,
-            config.retrieval_cache_stores,
+            {name: config.retrieval_cache_stores[name] for name in cache_stores},
             session_factory=session_factory,
         )
         if cache_stores
         else None
     )
-    restore_required = [
-        name
-        for name, client in adapters.items()
-        if client.descriptor().read_mode == "restore_required"
-    ]
-    if restore_required and retrieval_cache is None:
-        raise ValueError(
-            "restore-required archive adapters require a retrieval cache adapter: "
-            + ", ".join(restore_required)
-        )
     download_allowance = SqlAlchemyDownloadAllowance(
         config,
         session_factory=session_factory,
@@ -204,7 +247,30 @@ def _build_default_container(
         config,
         adapters=adapters,
         download_allowance=download_allowance,
+        unavailable=unavailable,
     )
+
+    def check_storage_readiness() -> None:
+        archive_stores.require(config.archive_write_store)
+        usable_names = set(archive_stores.names)
+        readable = [
+            archive_stores.require(name)
+            for name in config.archive_read_order
+            if name in usable_names
+        ]
+        if not readable:
+            raise RuntimeError("no verified archive read binding is available")
+        if all(binding.store.read_mode() == "restore_required" for binding in readable):
+            for client in cache_clients.values():
+                try:
+                    client.check_readiness()
+                    client.refresh_descriptor()
+                except StorageAdapterRejection:
+                    continue
+                break
+            else:
+                raise RuntimeError("no verified retrieval cache is available")
+
     return ServiceContainer(
         app_keys=SqlAlchemyAppKeyService(config, session_factory=session_factory),
         collection_access=SqlAlchemyCollectionAccessService(
@@ -281,7 +347,8 @@ def _build_default_container(
             config.browse_token_signing_key,
             lifetime_seconds=int(config.browse_token_lifetime.total_seconds()),
         ),
-        storage_adapter_clients=tuple([*adapters.values(), *cache_clients.values()]),
+        storage_adapter_clients=tuple(all_clients),
+        storage_readiness=check_storage_readiness,
     )
 
 

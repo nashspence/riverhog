@@ -54,7 +54,9 @@ def harness(tmp_path: Path) -> Harness:
             after_tags=(),
         )
     memory_store = MemoryArchiveStore(archive)
-    archive_stores = ArchiveStoreRegistry({"deep": archive_store_binding(memory_store)})
+    archive_stores = ArchiveStoreRegistry(
+        {"deep": archive_store_binding(memory_store, name="deep")}
+    )
     return Harness(
         collections=SqlAlchemyCollectionService(config),
         search=SqlAlchemySearchService(config),

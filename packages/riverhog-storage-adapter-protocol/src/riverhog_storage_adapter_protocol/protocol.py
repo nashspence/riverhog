@@ -35,6 +35,9 @@ from time_formats import CanonicalUtcTimestamp
 STORAGE_ADAPTER_PROTOCOL: Literal["riverhog-storage-adapter/v1"] = "riverhog-storage-adapter/v1"
 ADAPTER_PRIVATE_ASSERTION_PREFIX = "riverhog-adapter-"
 _SHA256_PATTERN = r"^[0-9a-f]{64}$"
+_STORAGE_INCARNATION_ID_PATTERN = (
+    r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+)
 _SEMANTIC_ID_PATTERN = r"^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$"
 _METADATA_KEY_PATTERN = re.compile(r"^[a-z0-9](?:[a-z0-9._-]{0,126}[a-z0-9])?$")
 _MAX_IDENTITY_ASSERTIONS_ITEMS = 64
@@ -44,6 +47,17 @@ _MAX_WRITE_COMPLETION_PRECONDITION_TOKEN_LENGTH = 4000
 
 Sha256 = Annotated[str, StringConstraints(pattern=_SHA256_PATTERN)]
 SemanticId = Annotated[str, StringConstraints(pattern=_SEMANTIC_ID_PATTERN)]
+StorageIncarnationId = Annotated[str, StringConstraints(pattern=_STORAGE_INCARNATION_ID_PATTERN)]
+
+
+def validate_storage_incarnation_id(value: str) -> str:
+    """Require the exact canonical UUID4 used to identify one storage authority."""
+
+    if not isinstance(value, str) or re.fullmatch(_STORAGE_INCARNATION_ID_PATTERN, value) is None:
+        raise ValueError("storage incarnation ID must be a canonical lowercase UUID4")
+    return value
+
+
 ObjectPlacementPolicy = Annotated[
     Literal["archive_default", "immediate_default"],
     Field(
@@ -174,6 +188,7 @@ class StorageAdapterModel(BaseModel):
 
 class AdapterDescriptor(StorageAdapterModel):
     protocol: Literal["riverhog-storage-adapter/v1"] = STORAGE_ADAPTER_PROTOCOL
+    storage_incarnation_id: StorageIncarnationId
     implementation_id: SemanticId
     implementation_version: str = Field(min_length=1, max_length=120)
     read_mode: ReadMode

@@ -4,13 +4,13 @@ from collections.abc import Iterator
 
 from http_api_contracts import closed_literal_values
 from riverhog_protocol import ArchiveStoreSort, SortOrder
-from riverhog_protocol.errors import BadRequest, NotFound
+from riverhog_protocol.errors import BadRequest, NotFound, ServiceUnavailable
 from sqlalchemy import func, literal, select, union_all
 from sqlalchemy.orm import Session
 from state_schema import read_snapshot
 
 from riverhog_core.app_permissions import ARCHIVES_READ, Principal
-from riverhog_core.archive_store_registry import ArchiveStoreRegistry
+from riverhog_core.archive_store_registry import ArchiveStoreBinding, ArchiveStoreRegistry
 from riverhog_core.browse import bounded_page, validate_page_size
 from riverhog_core.catalog_db import SessionFactory, make_session_factory
 from riverhog_core.catalog_models import (
@@ -19,6 +19,7 @@ from riverhog_core.catalog_models import (
     CollectionDescriptionPublicationRecord,
     CollectionTagPublicationRecord,
     CollectionTagPublishedNodeRecord,
+    StorageIncarnationRecord,
 )
 from riverhog_core.collection_access import collection_access_filter
 from riverhog_core.domain.models import (
@@ -27,7 +28,7 @@ from riverhog_core.domain.models import (
     ArchiveStoreSummary,
 )
 from riverhog_core.ports.download_allowance import DownloadAllowance
-from riverhog_core.runtime_config import RuntimeConfig, StorageAdapterRegistration
+from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.download_allowances import SqlAlchemyDownloadAllowance
 
 _SORT_FIELDS = closed_literal_values(ArchiveStoreSort)
@@ -61,18 +62,24 @@ class SqlAlchemyArchiveStoreService:
         principal: Principal | None = None,
     ) -> ArchiveStoreSummary:
         normalized = store.strip().casefold()
-        config = self._config.archive_stores.get(normalized)
-        if config is None:
-            raise NotFound(f"archive store not found: {normalized}")
         with read_snapshot(self._session_factory) as session:
+            record = session.scalar(
+                select(StorageIncarnationRecord).where(
+                    StorageIncarnationRecord.kind == "archive",
+                    StorageIncarnationRecord.name == normalized,
+                )
+            )
+            if record is None and normalized not in self._config.archive_stores:
+                raise NotFound(f"archive store not found: {normalized}")
             aggregates = _store_aggregates(
                 session,
                 stores=(normalized,),
                 principal=principal,
             )
         return self._summary(
-            config,
-            read_mode=self._archive_stores.require(normalized).store.read_mode(),
+            normalized,
+            record=record,
+            binding=self._usable_binding(normalized),
             aggregate=aggregates.get(normalized, (0, 0, 0)),
             allowances=self._allowances(),
         )
@@ -94,34 +101,40 @@ class SqlAlchemyArchiveStoreService:
             raise BadRequest("order must be asc or desc")
 
         needle = q.strip().casefold() if q and q.strip() else None
-        configs = [
-            current
-            for current in self._config.archive_stores.values()
-            if needle is None
-            or needle
-            in " ".join(
-                (current.name, self._archive_stores.require(current.name).store.read_mode())
-            ).casefold()
-        ]
         with read_snapshot(self._session_factory) as session:
+            records = {
+                row.name: row
+                for row in session.scalars(
+                    select(StorageIncarnationRecord).where(
+                        StorageIncarnationRecord.kind == "archive"
+                    )
+                )
+            }
+            names = tuple(dict.fromkeys((*self._config.archive_stores, *records)))
             aggregates = _store_aggregates(
                 session,
-                stores=tuple(current.name for current in configs),
+                stores=names,
                 principal=principal,
             )
         allowances = self._allowances()
         summaries = [
             self._summary(
-                current,
-                read_mode=self._archive_stores.require(current.name).store.read_mode(),
-                aggregate=aggregates.get(current.name, (0, 0, 0)),
+                name,
+                record=records.get(name),
+                binding=self._usable_binding(name),
+                aggregate=aggregates.get(name, (0, 0, 0)),
                 allowances=allowances,
             )
-            for current in configs
+            for name in names
         ]
+        if needle is not None:
+            summaries = [
+                current
+                for current in summaries
+                if needle in f"{current.store} {current.read_mode or ''}".casefold()
+            ]
         summaries.sort(
-            key=lambda current: (getattr(current, sort), current.store),
-            reverse=order == "desc",
+            key=lambda current: _archive_store_position(current, sort=sort), reverse=order == "desc"
         )
         if position is not None:
             if len(position) != 2:
@@ -157,38 +170,67 @@ class SqlAlchemyArchiveStoreService:
         order: str,
         principal: Principal | None = None,
     ) -> Iterator[ArchiveStoreSummary]:
-        page = self.list(
-            page_size=max(1, len(self._config.archive_stores)),
-            position=None,
-            q=q,
-            sort=sort,
-            order=order,
-            principal=principal,
-        )
-        yield from page.stores
+        position = None
+        while True:
+            page = self.list(
+                page_size=100,
+                position=position,
+                q=q,
+                sort=sort,
+                order=order,
+                principal=principal,
+            )
+            yield from page.stores
+            if page.next_position is None:
+                return
+            position = page.next_position
 
     def _allowances(self) -> dict[str, ArchiveDownloadAllowance]:
         return {current.store: current for current in self._download_allowance.get_statuses()}
 
     def _summary(
         self,
-        config: StorageAdapterRegistration,
+        name: str,
         *,
-        read_mode: str,
+        record: StorageIncarnationRecord | None,
+        binding: ArchiveStoreBinding | None,
         aggregate: tuple[int, int, int],
         allowances: dict[str, ArchiveDownloadAllowance],
     ) -> ArchiveStoreSummary:
         collections, objects, stored_bytes = aggregate
+        configured = name in self._config.archive_stores
+        reachable = binding is not None
+        admitted = reachable and record is not None and record.state == "bound"
         return ArchiveStoreSummary(
-            store=config.name,
-            read_mode=read_mode,
-            read_priority=self._read_priorities[config.name],
-            write_target=config.name == self._config.archive_write_store,
+            store=name,
+            incarnation_id=record.id if record is not None else None,
+            administrative_state=record.state if record is not None else None,
+            configured=configured,
+            reachable=reachable,
+            readable=admitted,
+            writable=admitted,
+            read_mode=(
+                binding.store.read_mode()
+                if binding is not None
+                else record.last_read_mode
+                if record is not None
+                else None
+            ),
+            read_priority=self._read_priorities.get(name, len(self._read_priorities) + 1),
+            write_target=configured and name == self._config.archive_write_store,
             collections=collections,
             objects=objects,
             stored_bytes=stored_bytes,
-            download_allowance=allowances.get(config.name),
+            download_allowance=allowances.get(name),
         )
+
+    def _usable_binding(self, name: str) -> ArchiveStoreBinding | None:
+        if name not in self._config.archive_stores:
+            return None
+        try:
+            return self._archive_stores.require(name)
+        except (ServiceUnavailable, ValueError):
+            return None
 
 
 def _archive_store_position(
@@ -197,6 +239,8 @@ def _archive_store_position(
     sort: str,
 ) -> tuple[str | int, str]:
     value = getattr(summary, sort)
+    if value is None:
+        value = ""
     if not isinstance(value, (str, int)) or isinstance(value, bool):
         raise RuntimeError("archive-store browse position has an invalid value")
     return value, summary.store
@@ -216,7 +260,6 @@ def _store_aggregates(
             CollectionArchiveCopyRecord.store.label("store"),
         )
         .where(
-            CollectionArchiveCopyRecord.state == "uploaded",
             CollectionArchiveCopyRecord.store.in_(stores),
             collection_access_filter(
                 CollectionArchiveCopyRecord.collection_id,

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-upload-tag-no-6f8aaa3bc6:96b42e3dd6 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-upload-tag-no-6f8aaa3bc6:e6e5aa5667 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-f06902722f"></a>
+<a id="s-6ca2e182f7"></a>
 
 ### Table: `collection_upload_tag_node_references`
 
@@ -21,18 +21,18 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-e042748c52"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-7908bd2ac1"></a>`node_digest` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-3db65fc7b0"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-ef924f4d34"></a>`node_digest` | `VARCHAR(64)` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-e6fdbc79b0"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, node_digest)` |
-| <a id="s-7f3de5ebe4"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE` |
-| <a id="s-ff8105ac0b"></a>`foreign-key` | `—` | `FOREIGN KEY(node_digest) REFERENCES collection_tag_nodes (digest) ON DELETE RESTRICT` |
-| <a id="s-e6d6330067"></a>`check` | `ck_collection_upload_tag_node_references_digest` | `CONSTRAINT ck_collection_upload_tag_node_references_digest CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-b17d650acc"></a>`check` | `ck_collection_upload_tag_node_references_node_digest_hex` | `CONSTRAINT ck_collection_upload_tag_node_references_node_digest_hex CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-f30d6f28b6"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, node_digest)` |
+| <a id="s-f932533996"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE` |
+| <a id="s-4a7bd078df"></a>`foreign-key` | `—` | `FOREIGN KEY(node_digest) REFERENCES collection_tag_nodes (digest) ON DELETE RESTRICT` |
+| <a id="s-1415db01e5"></a>`check` | `ck_collection_upload_tag_node_references_digest` | `CONSTRAINT ck_collection_upload_tag_node_references_digest CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-2193b9b918"></a>`check` | `ck_collection_upload_tag_node_references_node_digest_hex` | `CONSTRAINT ck_collection_upload_tag_node_references_node_digest_hex CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -42,7 +42,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-977da1283a"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-6ad182eaef"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -58,7 +58,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/33`
+- `/external_contract/durable_state/owners/0/structure/tables/34`
 
 ### Exact owned JSON
 

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-archive-copy-jobs:f7ab7aa3a4 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-archive-copy-jobs:69e030ac91 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-574565769b"></a>
+<a id="s-2ebafc64bb"></a>
 
 ### Table: `archive_copy_jobs`
 
@@ -21,37 +21,41 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-0c082cc8f9"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-78195d1637"></a>`destination_store` | `VARCHAR` | no | `—` | — |
-| <a id="s-b41bf71615"></a>`destination_storage_prefix` | `VARCHAR` | no | `—` | — |
-| <a id="s-0a2c76d81d"></a>`source_store` | `VARCHAR` | no | `—` | — |
-| <a id="s-6d53532837"></a>`use_cache` | `BOOLEAN` | no | `—` | — |
-| <a id="s-53f44a7a77"></a>`initiated_by_app` | `VARCHAR` | no | `—` | — |
-| <a id="s-d7036af01a"></a>`initiated_by_key_id` | `VARCHAR` | yes | `—` | — |
-| <a id="s-4d6cbd363f"></a>`event_context_json` | `TEXT` | yes | `—` | — |
-| <a id="s-31d0d1bf15"></a>`state` | `VARCHAR` | no | `—` | — |
-| <a id="s-7c1511c985"></a>`requested_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-5d7355ee61"></a>`read_requested_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-8cf34deff9"></a>`ready_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-84fd0d7c7e"></a>`expires_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-d03bfe3ea1"></a>`batch_start_order` | `VARCHAR(65)` | yes | `—` | — |
-| <a id="s-edf3849c11"></a>`batch_end_order` | `VARCHAR(65)` | yes | `—` | — |
-| <a id="s-80b81f4c83"></a>`destination_discarded_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-e4cf59c186"></a>`next_attempt_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-7d1ddd5d38"></a>`finished_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-4014929736"></a>`failure` | `VARCHAR` | yes | `—` | — |
-| <a id="s-1e50287243"></a>`search_text` | `VARCHAR` | no | `—` | {"generated":"GENERATED ALWAYS AS (lower(CAST(collection_id AS TEXT) \|\| ' ' \|\| source_store \|\| ' ' \|\| destination_store \|\| ' ' \|\| state)) STORED"} |
+| <a id="s-f63ffef409"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-57624bf7ea"></a>`destination_store` | `VARCHAR` | no | `—` | — |
+| <a id="s-5cdf070c38"></a>`destination_incarnation_id` | `VARCHAR(36)` | no | `—` | — |
+| <a id="s-4feee4738f"></a>`destination_storage_prefix` | `VARCHAR` | no | `—` | — |
+| <a id="s-5f19f7960d"></a>`source_store` | `VARCHAR` | no | `—` | — |
+| <a id="s-1ffe295c16"></a>`source_incarnation_id` | `VARCHAR(36)` | no | `—` | — |
+| <a id="s-9b4616192e"></a>`use_cache` | `BOOLEAN` | no | `—` | — |
+| <a id="s-574d54fde2"></a>`initiated_by_app` | `VARCHAR` | no | `—` | — |
+| <a id="s-b8571c4ae6"></a>`initiated_by_key_id` | `VARCHAR` | yes | `—` | — |
+| <a id="s-46eba23a11"></a>`event_context_json` | `TEXT` | yes | `—` | — |
+| <a id="s-ebf01e77f7"></a>`state` | `VARCHAR` | no | `—` | — |
+| <a id="s-630171d91d"></a>`requested_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-05f311b0ff"></a>`read_requested_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-12ec9e615b"></a>`ready_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-d1ae132b78"></a>`expires_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-d3804ee5f6"></a>`batch_start_order` | `VARCHAR(65)` | yes | `—` | — |
+| <a id="s-a9377ecb0b"></a>`batch_end_order` | `VARCHAR(65)` | yes | `—` | — |
+| <a id="s-20b0468032"></a>`destination_discarded_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-07fbe8eeff"></a>`next_attempt_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-e35738d567"></a>`finished_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-f8f75f2f77"></a>`failure` | `VARCHAR` | yes | `—` | — |
+| <a id="s-859caa1df6"></a>`search_text` | `VARCHAR` | no | `—` | {"generated":"GENERATED ALWAYS AS (lower(CAST(collection_id AS TEXT) \|\| ' ' \|\| source_store \|\| ' ' \|\| destination_store \|\| ' ' \|\| state)) STORED"} |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-6f09699701"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, destination_store)` |
-| <a id="s-937cb9f3c0"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, source_store) REFERENCES collection_archive_copies (collection_id, store) ON DELETE CASCADE` |
-| <a id="s-96318ec69c"></a>`check` | `ck_archive_copy_jobs_state` | `CONSTRAINT ck_archive_copy_jobs_state CHECK (state IN ('requested','waiting','checking','copying','canceling','completed','failed','canceled'))` |
-| <a id="s-70e93ea9e9"></a>`check` | `ck_archive_copy_jobs_batch` | `CONSTRAINT ck_archive_copy_jobs_batch CHECK (batch_start_order IS NULL AND batch_end_order IS NULL OR batch_start_order IS NOT NULL AND batch_end_order >= batch_start_order)` |
-| <a id="s-2009624b22"></a>`check` | `ck_archive_copy_jobs_batch_start_order` | `CONSTRAINT ck_archive_copy_jobs_batch_start_order CHECK (batch_start_order IS NULL OR length(batch_start_order) = 65 AND lower(batch_start_order) = batch_start_order AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(batch_start_order, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-b57b139db2"></a>`check` | `ck_archive_copy_jobs_batch_end_order` | `CONSTRAINT ck_archive_copy_jobs_batch_end_order CHECK (batch_end_order IS NULL OR length(batch_end_order) = 65 AND lower(batch_end_order) = batch_end_order AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(batch_end_order, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-464336e6f6"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, destination_store)` |
+| <a id="s-360f676840"></a>`foreign-key` | `—` | `FOREIGN KEY(source_incarnation_id, source_store) REFERENCES storage_incarnations (id, name)` |
+| <a id="s-5c23c1927e"></a>`foreign-key` | `—` | `FOREIGN KEY(destination_incarnation_id, destination_store) REFERENCES storage_incarnations (id, name)` |
+| <a id="s-f8be7174b7"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, source_store) REFERENCES collection_archive_copies (collection_id, store) ON DELETE CASCADE` |
+| <a id="s-d02c86d25a"></a>`check` | `ck_archive_copy_jobs_state` | `CONSTRAINT ck_archive_copy_jobs_state CHECK (state IN ('requested','waiting','checking','copying','canceling','completed','failed','canceled'))` |
+| <a id="s-71e9a5c5a3"></a>`check` | `ck_archive_copy_jobs_batch` | `CONSTRAINT ck_archive_copy_jobs_batch CHECK (batch_start_order IS NULL AND batch_end_order IS NULL OR batch_start_order IS NOT NULL AND batch_end_order >= batch_start_order)` |
+| <a id="s-94d70ff825"></a>`check` | `ck_archive_copy_jobs_batch_start_order` | `CONSTRAINT ck_archive_copy_jobs_batch_start_order CHECK (batch_start_order IS NULL OR length(batch_start_order) = 65 AND lower(batch_start_order) = batch_start_order AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(batch_start_order, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-402f976223"></a>`check` | `ck_archive_copy_jobs_batch_end_order` | `CONSTRAINT ck_archive_copy_jobs_batch_end_order CHECK (batch_end_order IS NULL OR length(batch_end_order) = 65 AND lower(batch_end_order) = batch_end_order AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(batch_end_order, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
 
 ## Maintained corroboration
 
@@ -61,7 +65,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-9724f8ac8e"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-a8483e73b1"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -77,7 +81,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/40`
+- `/external_contract/durable_state/owners/0/structure/tables/41`
 
 ### Exact owned JSON
 
@@ -86,7 +90,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 80da1f7efd05ce6eeef0d96570e96e3ef15d3e26884b0b81c11d6e633efa028f -->
+<!-- exact-contract-value: 2c46e828aafddb334194a931de6aa68d2eff24f7f045c673fe4ba5327ed699dd -->
 
 ```json
 {
@@ -104,6 +108,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "VARCHAR"
     },
     {
+      "definition": "destination_incarnation_id VARCHAR(36) NOT NULL",
+      "name": "destination_incarnation_id",
+      "nullable": false,
+      "type": "VARCHAR(36)"
+    },
+    {
       "definition": "destination_storage_prefix VARCHAR NOT NULL",
       "name": "destination_storage_prefix",
       "nullable": false,
@@ -114,6 +124,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       "name": "source_store",
       "nullable": false,
       "type": "VARCHAR"
+    },
+    {
+      "definition": "source_incarnation_id VARCHAR(36) NOT NULL",
+      "name": "source_incarnation_id",
+      "nullable": false,
+      "type": "VARCHAR(36)"
     },
     {
       "definition": "use_cache BOOLEAN NOT NULL",
@@ -221,6 +237,36 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "definition": "PRIMARY KEY (collection_id, destination_store)",
       "kind": "primary-key"
+    },
+    {
+      "columns": [
+        "source_incarnation_id",
+        "source_store"
+      ],
+      "definition": "FOREIGN KEY(source_incarnation_id, source_store) REFERENCES storage_incarnations (id, name)",
+      "kind": "foreign-key",
+      "references": {
+        "columns": [
+          "id",
+          "name"
+        ],
+        "table": "storage_incarnations"
+      }
+    },
+    {
+      "columns": [
+        "destination_incarnation_id",
+        "destination_store"
+      ],
+      "definition": "FOREIGN KEY(destination_incarnation_id, destination_store) REFERENCES storage_incarnations (id, name)",
+      "kind": "foreign-key",
+      "references": {
+        "columns": [
+          "id",
+          "name"
+        ],
+        "table": "storage_incarnations"
+      }
     },
     {
       "columns": [

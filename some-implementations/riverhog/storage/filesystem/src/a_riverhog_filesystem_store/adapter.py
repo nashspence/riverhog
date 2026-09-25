@@ -55,6 +55,11 @@ from riverhog_storage_adapter_protocol import (
 )
 from time_formats import format_utc_timestamp, utc_now
 
+from a_riverhog_filesystem_store.incarnation import (
+    StorageIncarnationError,
+    read_storage_incarnation_fd,
+)
+
 _WRITE_FORMAT = "riverhog-filesystem-write/v1"
 _OBJECT_FORMAT = "riverhog-filesystem-object/v1"
 _SEGMENT_DATABASE = "segments.sqlite3"
@@ -449,30 +454,44 @@ class FilesystemStorageAdapter:
 
     def __init__(self, config: FilesystemStorageAdapterConfig) -> None:
         self._config = config
-        if config.root.exists() and config.root.is_symlink():
+        if config.root.is_symlink():
             raise ValueError("filesystem adapter root must not be a symbolic link")
-        self._root = config.root.resolve(strict=False)
-        self._capacity_lock = threading.RLock()
-        self._gates = tuple(_ObjectGate() for _ in range(_GATE_SHARDS))
-        self._closed = False
-        self._initialize_root()
-        self._instance_fd = os.open(
-            self._root / "instance.lock",
-            os.O_RDWR | os.O_CREAT | os.O_CLOEXEC | os.O_NOFOLLOW,
-            _FILE_MODE,
+        root_fd = os.open(
+            config.root,
+            os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC,
         )
+        instance_fd: int | None = None
+        instance_locked = False
         try:
-            fcntl.flock(self._instance_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except OSError as exc:
-            os.close(self._instance_fd)
-            raise RuntimeError(
-                "filesystem adapter root is already owned by another process"
-            ) from exc
-        try:
+            self._incarnation_id = read_storage_incarnation_fd(root_fd)
+            self._root_fd = root_fd
+            # The /proc path resolves through this open directory, even if the
+            # configured pathname is later replaced with a different mount.
+            self._root = Path(f"/proc/self/fd/{root_fd}")
+            self._capacity_lock = threading.RLock()
+            self._gates = tuple(_ObjectGate() for _ in range(_GATE_SHARDS))
+            self._closed = False
+            self._initialize_root()
+            instance_fd = os.open(
+                self._root / "instance.lock",
+                os.O_RDWR | os.O_CREAT | os.O_CLOEXEC | os.O_NOFOLLOW,
+                _FILE_MODE,
+            )
+            try:
+                fcntl.flock(instance_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except OSError as exc:
+                raise RuntimeError(
+                    "filesystem adapter root is already owned by another process"
+                ) from exc
+            instance_locked = True
+            self._instance_fd = instance_fd
             self._reconcile_private_state()
         except BaseException:
-            fcntl.flock(self._instance_fd, fcntl.LOCK_UN)
-            os.close(self._instance_fd)
+            if instance_fd is not None:
+                if instance_locked:
+                    fcntl.flock(instance_fd, fcntl.LOCK_UN)
+                os.close(instance_fd)
+            os.close(root_fd)
             raise
 
     def close(self) -> None:
@@ -481,6 +500,7 @@ class FilesystemStorageAdapter:
         self._closed = True
         fcntl.flock(self._instance_fd, fcntl.LOCK_UN)
         os.close(self._instance_fd)
+        os.close(self._root_fd)
 
     def __enter__(self) -> Self:
         return self
@@ -489,7 +509,9 @@ class FilesystemStorageAdapter:
         self.close()
 
     def descriptor(self) -> AdapterDescriptor:
+        self._require_open()
         return AdapterDescriptor(
+            storage_incarnation_id=self._incarnation_id,
             implementation_id=self._config.implementation_id,
             implementation_version=self._config.implementation_version,
             read_mode="immediate",
@@ -1011,11 +1033,10 @@ class FilesystemStorageAdapter:
         del request
 
     def _initialize_root(self) -> None:
-        self._root.mkdir(parents=True, mode=_INTERNAL_MODE, exist_ok=True)
-        root_details = self._root.stat(follow_symlinks=False)
+        root_details = os.fstat(self._root_fd)
         if not stat.S_ISDIR(root_details.st_mode):
             raise ValueError("filesystem adapter root must be a real directory")
-        os.chmod(self._root, _INTERNAL_MODE)
+        os.fchmod(self._root_fd, _INTERNAL_MODE)
         for name in ("objects", "writes", "staging"):
             path = self._root / name
             path.mkdir(mode=_INTERNAL_MODE, exist_ok=True)
@@ -1110,6 +1131,8 @@ class FilesystemStorageAdapter:
     def _require_open(self) -> None:
         if self._closed:
             raise RuntimeError("filesystem storage adapter is closed")
+        if read_storage_incarnation_fd(self._root_fd) != self._incarnation_id:
+            raise StorageIncarnationError("filesystem storage incarnation changed")
 
     def _gate(self, object_key: str) -> _ObjectGate:
         shard = int(object_key[:8], 16) % len(self._gates)

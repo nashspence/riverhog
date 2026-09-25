@@ -333,7 +333,9 @@ class SqlAlchemyCollectionDescriptionService:
             expected_current_stored_sha256 = attempt.prior_stored_sha256
             attempt_identity = attempt.attempt_identity
 
-        receipt = self._archive_stores.require(store).store.publish_collection_description(
+        receipt = self._archive_stores.require_incarnation(
+            store, attempt.incarnation_id
+        ).store.publish_collection_description(
             collection_id=collection_id,
             archive_storage_prefix=prefix,
             document=encoded,
@@ -566,7 +568,9 @@ class SqlAlchemyCollectionDescriptionService:
             prefix = attempt.archive_storage_prefix
             passphrase_id = attempt.passphrase_id
             expected_current_stored_sha256 = attempt.prior_stored_sha256
-        receipt = self._archive_stores.require(store).store.publish_collection_description(
+        receipt = self._archive_stores.require_incarnation(
+            store, attempt.incarnation_id
+        ).store.publish_collection_description(
             collection_id=collection_id,
             archive_storage_prefix=prefix,
             document=encoded,
@@ -681,6 +685,7 @@ def ensure_description_publication_for_copy(
         publication = CollectionDescriptionPublicationRecord(
             collection_id=collection.id,
             store=copy.store,
+            incarnation_id=copy.incarnation_id,
             desired_revision=collection.description_revision,
             desired_identity=collection.description_identity,
             published_revision=0,

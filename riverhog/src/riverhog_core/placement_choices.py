@@ -2,23 +2,12 @@
 
 from __future__ import annotations
 
-import hashlib
-
 from riverhog_protocol.errors import BadRequest
 
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.ports.archive_objects import ResumableWriteConstraints
 from riverhog_core.ports.retrieval_cache import RetrievalCache
 from riverhog_core.runtime_config import RuntimeConfig
-
-
-def archive_binding_sha256(config: RuntimeConfig, store_name: str) -> str:
-    """Fence a configured store name to its adapter endpoint for a pending handoff."""
-
-    registration = config.archive_store(store_name)
-    return hashlib.sha256(
-        f"riverhog-archive-binding/v1\0{registration.name}\0{registration.base_url}".encode()
-    ).hexdigest()
 
 
 def resolve_use_cache(

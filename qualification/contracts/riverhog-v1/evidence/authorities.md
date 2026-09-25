@@ -13,7 +13,7 @@ The ordinary atlas map owns the authority/interface inventory and its scope desc
 | `compatibility-guarantees` | 9 |
 | `configuration` | 8 |
 | `configuration-environment` | 253 |
-| `durable-state` | 150 |
+| `durable-state` | 151 |
 | `extent` | 12 |
 | `http-operations` | 153 |
 | `http-schemas` | 427 |
@@ -24,7 +24,7 @@ The ordinary atlas map owns the authority/interface inventory and its scope desc
 | `process-protocol-operations` | 24 |
 | `process-protocol-schemas` | 43 |
 | `publication-locations` | 2 |
-| `python` | 2919 |
+| `python` | 2923 |
 | `python-distributions` | 75 |
 | `release-artifacts` | 12 |
 | `runtime-images` | 15 |

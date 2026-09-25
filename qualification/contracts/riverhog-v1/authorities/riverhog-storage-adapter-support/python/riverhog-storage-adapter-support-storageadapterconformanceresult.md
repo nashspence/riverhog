@@ -52,7 +52,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-c64fad8784"></a>`type`: `"object"`
 - <a id="s-52eb44b68b"></a>`additionalProperties`: `false`
-- <a id="s-ab60e192ef"></a>`required`: `["implementation_id","implementation_version","read_mode","minimum_nonfinal_segment_bytes"]`
+- <a id="s-ab60e192ef"></a>`required`: `["storage_incarnation_id","implementation_id","implementation_version","read_mode","minimum_nonfinal_segment_bytes"]`
 
 ###### Fields
 
@@ -65,6 +65,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-6d037170cc"></a>`minimum_nonfinal_segment_bytes` | yes | [PositiveDecimal](#s-4102a7d979) |  |
 | <a id="s-622e7d89c3"></a>`protocol` | no | type="string"; const="riverhog-storage-adapter/v1"; default="riverhog-storage-adapter/v1" |  |
 | <a id="s-e01b0c45e9"></a>`read_mode` | yes | type="string"; enum=["immediate","restore_required"] |  |
+| <a id="s-92ee075a76"></a>`storage_incarnation_id` | yes | type="string"; pattern="^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" |  |
 
 ##### <a id="s-4102a7d979"></a>definition `PositiveDecimal`
 
@@ -104,7 +105,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 258416729c53cfb3c9f94b40ceb5f55ecb3ce5d8b46e5252fe87edcdad4509e9 -->
+<!-- exact-contract-value: 5fe89ca8d061b8a0570199cf0c8d1de252d91148f39e038b0a5201ebe02724f1 -->
 
 ```json
 {
@@ -160,9 +161,14 @@ The following JSON is the complete value owned at each machine-authority pointer
                 "restore_required"
               ],
               "type": "string"
+            },
+            "storage_incarnation_id": {
+              "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+              "type": "string"
             }
           },
           "required": [
+            "storage_incarnation_id",
             "implementation_id",
             "implementation_version",
             "read_mode",

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-upload-proven-3e5c83c955:9ee2b35392 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-upload-proven-3e5c83c955:ae4fa7e866 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-35e966f894"></a>
+<a id="s-6c12389cec"></a>
 
 ### Table: `collection_upload_provenance_validation_facts`
 
@@ -21,19 +21,19 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-ea493bbffc"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-29c9d79c71"></a>`journal_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-3717432186"></a>`kind` | `VARCHAR` | no | `—` | — |
-| <a id="s-dad8e45b59"></a>`fact_key` | `VARCHAR` | no | `—` | — |
-| <a id="s-bc6c485679"></a>`value_json` | `TEXT` | no | `—` | — |
+| <a id="s-1e83356b20"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-4e108b72da"></a>`journal_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-64c0168df7"></a>`kind` | `VARCHAR` | no | `—` | — |
+| <a id="s-0a8fb37692"></a>`fact_key` | `VARCHAR` | no | `—` | — |
+| <a id="s-d79dd045ab"></a>`value_json` | `TEXT` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-7241ef41e2"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, journal_id, kind, fact_key)` |
-| <a id="s-cbb2e7b7d5"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE` |
-| <a id="s-7340734734"></a>`check` | `ck_upload_provenance_validation_fact_kind` | `CONSTRAINT ck_upload_provenance_validation_fact_kind CHECK (kind IN ('entry','agent','event','state','binding','entity','external-state'))` |
+| <a id="s-ce4246d144"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, journal_id, kind, fact_key)` |
+| <a id="s-dc42421300"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, journal_id) REFERENCES collection_upload_provenance_journals (collection_id, journal_id) ON DELETE CASCADE` |
+| <a id="s-70678ad695"></a>`check` | `ck_upload_provenance_validation_fact_kind` | `CONSTRAINT ck_upload_provenance_validation_fact_kind CHECK (kind IN ('entry','agent','event','state','binding','entity','external-state'))` |
 
 ## Maintained corroboration
 
@@ -43,7 +43,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-72af3478d5"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-cf091ce936"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -59,7 +59,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/66`
+- `/external_contract/durable_state/owners/0/structure/tables/67`
 
 ### Exact owned JSON
 

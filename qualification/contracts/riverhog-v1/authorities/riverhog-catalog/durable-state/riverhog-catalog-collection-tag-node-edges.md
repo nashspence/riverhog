@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-tag-node-edges:656d0bbcdb -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-tag-node-edges:de1d5b8551 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-ad68eae1ff"></a>
+<a id="s-836867470f"></a>
 
 ### Table: `collection_tag_node_edges`
 
@@ -21,20 +21,20 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-772cb5f04d"></a>`parent_digest` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-599dab012a"></a>`child_digest` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-543f1173bd"></a>`parent_digest` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-8cf50124da"></a>`child_digest` | `VARCHAR(64)` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-9d1a4fe4bf"></a>`primary-key` | `—` | `PRIMARY KEY (parent_digest, child_digest)` |
-| <a id="s-a0d85149e2"></a>`foreign-key` | `—` | `FOREIGN KEY(parent_digest) REFERENCES collection_tag_nodes (digest)` |
-| <a id="s-adfbb39d2a"></a>`foreign-key` | `—` | `FOREIGN KEY(child_digest) REFERENCES collection_tag_nodes (digest)` |
-| <a id="s-53ea7e434f"></a>`check` | `ck_collection_tag_node_edges_parent_digest` | `CONSTRAINT ck_collection_tag_node_edges_parent_digest CHECK (length(parent_digest) = 64 AND lower(parent_digest) = parent_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(parent_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-899a8c9a94"></a>`check` | `ck_collection_tag_node_edges_child_digest` | `CONSTRAINT ck_collection_tag_node_edges_child_digest CHECK (length(child_digest) = 64 AND lower(child_digest) = child_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(child_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-fd126391c1"></a>`check` | `ck_collection_tag_node_edges_parent_digest_hex` | `CONSTRAINT ck_collection_tag_node_edges_parent_digest_hex CHECK (length(parent_digest) = 64 AND lower(parent_digest) = parent_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(parent_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-7e5a930328"></a>`check` | `ck_collection_tag_node_edges_child_digest_hex` | `CONSTRAINT ck_collection_tag_node_edges_child_digest_hex CHECK (length(child_digest) = 64 AND lower(child_digest) = child_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(child_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-c046d2085b"></a>`primary-key` | `—` | `PRIMARY KEY (parent_digest, child_digest)` |
+| <a id="s-48169f3bfb"></a>`foreign-key` | `—` | `FOREIGN KEY(parent_digest) REFERENCES collection_tag_nodes (digest)` |
+| <a id="s-e35b6107ac"></a>`foreign-key` | `—` | `FOREIGN KEY(child_digest) REFERENCES collection_tag_nodes (digest)` |
+| <a id="s-57df76227e"></a>`check` | `ck_collection_tag_node_edges_parent_digest` | `CONSTRAINT ck_collection_tag_node_edges_parent_digest CHECK (length(parent_digest) = 64 AND lower(parent_digest) = parent_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(parent_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-f704d0b8d6"></a>`check` | `ck_collection_tag_node_edges_child_digest` | `CONSTRAINT ck_collection_tag_node_edges_child_digest CHECK (length(child_digest) = 64 AND lower(child_digest) = child_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(child_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-12a89352f2"></a>`check` | `ck_collection_tag_node_edges_parent_digest_hex` | `CONSTRAINT ck_collection_tag_node_edges_parent_digest_hex CHECK (length(parent_digest) = 64 AND lower(parent_digest) = parent_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(parent_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-fd1b651dcb"></a>`check` | `ck_collection_tag_node_edges_child_digest_hex` | `CONSTRAINT ck_collection_tag_node_edges_child_digest_hex CHECK (length(child_digest) = 64 AND lower(child_digest) = child_digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(child_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -44,7 +44,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-9f3ff220c3"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-2ab8b63614"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -60,7 +60,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/7`
+- `/external_contract/durable_state/owners/0/structure/tables/8`
 
 ### Exact owned JSON
 

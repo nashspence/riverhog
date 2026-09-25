@@ -60,6 +60,12 @@ def map_archive_download_allowance(
 def map_archive_store(summary: ArchiveStoreSummary) -> dict[str, object]:
     return {
         "store": summary.store,
+        "incarnation_id": summary.incarnation_id,
+        "administrative_state": summary.administrative_state,
+        "configured": summary.configured,
+        "reachable": summary.reachable,
+        "readable": summary.readable,
+        "writable": summary.writable,
         "read_mode": summary.read_mode,
         "read_priority": summary.read_priority,
         "write_target": summary.write_target,

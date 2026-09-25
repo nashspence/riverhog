@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-key-download-usage:df9455dc63 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-key-download-usage:9f9665b922 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-b88b0fdc06"></a>
+<a id="s-2587be9bec"></a>
 
 ### Table: `key_download_usage`
 
@@ -21,18 +21,18 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-6f2fd4b89b"></a>`key_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-f844582a96"></a>`month_started_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-2450f8b7e5"></a>`accounted_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-78564f81ec"></a>`updated_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-5d63dc10db"></a>`key_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-03906f154a"></a>`month_started_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-0dd7b01539"></a>`accounted_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-981ea06c39"></a>`updated_at` | `VARCHAR` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-c179159514"></a>`primary-key` | `—` | `PRIMARY KEY (key_id)` |
-| <a id="s-723775cae8"></a>`foreign-key` | `—` | `FOREIGN KEY(key_id) REFERENCES app_keys (id) ON DELETE CASCADE` |
-| <a id="s-3f69376baf"></a>`check` | `ck_key_download_usage_bytes` | `CONSTRAINT ck_key_download_usage_bytes CHECK (accounted_bytes >= 0)` |
+| <a id="s-1026e456de"></a>`primary-key` | `—` | `PRIMARY KEY (key_id)` |
+| <a id="s-0d2f68e80d"></a>`foreign-key` | `—` | `FOREIGN KEY(key_id) REFERENCES app_keys (id) ON DELETE CASCADE` |
+| <a id="s-ed616bb308"></a>`check` | `ck_key_download_usage_bytes` | `CONSTRAINT ck_key_download_usage_bytes CHECK (accounted_bytes >= 0)` |
 
 ## Maintained corroboration
 
@@ -42,7 +42,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-2130079249"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-458005b547"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -58,7 +58,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/36`
+- `/external_contract/durable_state/owners/0/structure/tables/37`
 
 ### Exact owned JSON
 

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-archive-object-uploads:f926209313 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-archive-object-uploads:c0183c59f4 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-2729cfe6c9"></a>
+<a id="s-478693b7ab"></a>
 
 ### Table: `collection_archive_object_uploads`
 
@@ -21,48 +21,48 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-36c735cf5e"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-2dd54321a8"></a>`object_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-ae0229fc91"></a>`sequence` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-3334dd13c2"></a>`kind` | `VARCHAR` | no | `—` | — |
-| <a id="s-c462329e99"></a>`relative_path` | `VARCHAR` | no | `—` | — |
-| <a id="s-38d74ddcc7"></a>`object_path` | `VARCHAR` | no | `—` | — |
-| <a id="s-54b239eebf"></a>`plaintext_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-5cbf479950"></a>`source_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-7ae27d824f"></a>`source_path` | `VARCHAR` | yes | `—` | — |
-| <a id="s-06ebf345c6"></a>`source_first_part` | `BIGINT` | yes | `—` | — |
-| <a id="s-02fc2a8a88"></a>`source_part_count` | `BIGINT` | yes | `—` | — |
-| <a id="s-5d0a624fd4"></a>`unit_plaintext_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-7c8d15b0dc"></a>`plan_json` | `TEXT` | no | `—` | — |
-| <a id="s-449c9bc05a"></a>`plan_sha256` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-c8ac7d0d6b"></a>`state` | `VARCHAR` | no | `—` | — |
-| <a id="s-59f14e2d9b"></a>`checkpoint_json` | `TEXT` | yes | `—` | — |
-| <a id="s-d0cddcf0b0"></a>`sealed_receipt_json` | `TEXT` | yes | `—` | — |
-| <a id="s-7ce0ecebe2"></a>`metadata_receipt_json` | `TEXT` | yes | `—` | — |
-| <a id="s-79ff963236"></a>`failure` | `TEXT` | yes | `—` | — |
-| <a id="s-7606461346"></a>`uploaded_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-f25cf77f4d"></a>`uploaded_units` | `INTEGER` | no | `—` | — |
-| <a id="s-52ea707285"></a>`total_units` | `INTEGER` | no | `—` | — |
-| <a id="s-d15c4c57e7"></a>`updated_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-059a515440"></a>`sealed_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-7e8b800be8"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-6f450dc8a0"></a>`object_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-4992dd437b"></a>`sequence` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-41479d28b2"></a>`kind` | `VARCHAR` | no | `—` | — |
+| <a id="s-64c18c5dcb"></a>`relative_path` | `VARCHAR` | no | `—` | — |
+| <a id="s-f3058a0634"></a>`object_path` | `VARCHAR` | no | `—` | — |
+| <a id="s-fd476dcfa2"></a>`plaintext_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-2a8d8794d3"></a>`source_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-3d0067dbda"></a>`source_path` | `VARCHAR` | yes | `—` | — |
+| <a id="s-368c897c64"></a>`source_first_part` | `BIGINT` | yes | `—` | — |
+| <a id="s-bed5dab861"></a>`source_part_count` | `BIGINT` | yes | `—` | — |
+| <a id="s-64bda1811d"></a>`unit_plaintext_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-5dfd0e565d"></a>`plan_json` | `TEXT` | no | `—` | — |
+| <a id="s-7b9bc626bb"></a>`plan_sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-018582e80b"></a>`state` | `VARCHAR` | no | `—` | — |
+| <a id="s-6138493270"></a>`checkpoint_json` | `TEXT` | yes | `—` | — |
+| <a id="s-fdece8f838"></a>`sealed_receipt_json` | `TEXT` | yes | `—` | — |
+| <a id="s-56d43600de"></a>`metadata_receipt_json` | `TEXT` | yes | `—` | — |
+| <a id="s-fb28d4c9cd"></a>`failure` | `TEXT` | yes | `—` | — |
+| <a id="s-e0686803a0"></a>`uploaded_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-b94b15812b"></a>`uploaded_units` | `INTEGER` | no | `—` | — |
+| <a id="s-564fc67988"></a>`total_units` | `INTEGER` | no | `—` | — |
+| <a id="s-a6ff9cab0a"></a>`updated_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-ad632d8027"></a>`sealed_at` | `VARCHAR` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-1de11207d3"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, object_id)` |
-| <a id="s-02e5aeae57"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE` |
-| <a id="s-be9a17bd71"></a>`check` | `ck_archive_object_uploads_sequence` | `CONSTRAINT ck_archive_object_uploads_sequence CHECK (length(sequence) = 64 AND lower(sequence) = sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-7d4f3eec9b"></a>`check` | `ck_archive_object_uploads_plaintext` | `CONSTRAINT ck_archive_object_uploads_plaintext CHECK (plaintext_bytes >= 0)` |
-| <a id="s-eb09cd1164"></a>`check` | `ck_archive_object_uploads_source` | `CONSTRAINT ck_archive_object_uploads_source CHECK (source_bytes >= 0)` |
-| <a id="s-8709c6f8ea"></a>`check` | `ck_archive_object_uploads_source_parts` | `CONSTRAINT ck_archive_object_uploads_source_parts CHECK (kind = 'pack' AND source_path IS NULL AND source_first_part IS NULL AND source_part_count IS NULL OR kind = 'segment' AND source_path IS NOT NULL AND source_first_part >= 0 AND source_part_count > 0)` |
-| <a id="s-302c4acf70"></a>`check` | `ck_archive_object_uploads_unit` | `CONSTRAINT ck_archive_object_uploads_unit CHECK (unit_plaintext_bytes > 0)` |
-| <a id="s-3bc0c0f9c8"></a>`check` | `ck_archive_object_uploads_state` | `CONSTRAINT ck_archive_object_uploads_state CHECK (state IN ('planned','uploading','sealed'))` |
-| <a id="s-f5f55fa909"></a>`check` | `ck_archive_object_uploads_uploaded_bytes` | `CONSTRAINT ck_archive_object_uploads_uploaded_bytes CHECK (uploaded_bytes >= 0)` |
-| <a id="s-28c9ef04d4"></a>`check` | `ck_archive_object_uploads_uploaded_units` | `CONSTRAINT ck_archive_object_uploads_uploaded_units CHECK (uploaded_units >= 0)` |
-| <a id="s-ad69a448fc"></a>`check` | `ck_archive_object_uploads_total_units` | `CONSTRAINT ck_archive_object_uploads_total_units CHECK (total_units >= 0)` |
-| <a id="s-48d1059751"></a>`check` | `ck_archive_object_uploads_unit_progress` | `CONSTRAINT ck_archive_object_uploads_unit_progress CHECK (uploaded_units <= total_units)` |
-| <a id="s-6788773293"></a>`check` | `ck_collection_archive_object_uploads_plan_sha256_hex` | `CONSTRAINT ck_collection_archive_object_uploads_plan_sha256_hex CHECK (length(plan_sha256) = 64 AND lower(plan_sha256) = plan_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(plan_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-d8c8b0e273"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, object_id)` |
+| <a id="s-145dbd0b05"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collection_uploads (collection_id) ON DELETE CASCADE` |
+| <a id="s-7de19128fa"></a>`check` | `ck_archive_object_uploads_sequence` | `CONSTRAINT ck_archive_object_uploads_sequence CHECK (length(sequence) = 64 AND lower(sequence) = sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-0ce1453820"></a>`check` | `ck_archive_object_uploads_plaintext` | `CONSTRAINT ck_archive_object_uploads_plaintext CHECK (plaintext_bytes >= 0)` |
+| <a id="s-54e2cb8112"></a>`check` | `ck_archive_object_uploads_source` | `CONSTRAINT ck_archive_object_uploads_source CHECK (source_bytes >= 0)` |
+| <a id="s-32d808aa1f"></a>`check` | `ck_archive_object_uploads_source_parts` | `CONSTRAINT ck_archive_object_uploads_source_parts CHECK (kind = 'pack' AND source_path IS NULL AND source_first_part IS NULL AND source_part_count IS NULL OR kind = 'segment' AND source_path IS NOT NULL AND source_first_part >= 0 AND source_part_count > 0)` |
+| <a id="s-a179979bce"></a>`check` | `ck_archive_object_uploads_unit` | `CONSTRAINT ck_archive_object_uploads_unit CHECK (unit_plaintext_bytes > 0)` |
+| <a id="s-7857358f39"></a>`check` | `ck_archive_object_uploads_state` | `CONSTRAINT ck_archive_object_uploads_state CHECK (state IN ('planned','uploading','sealed'))` |
+| <a id="s-60084fe685"></a>`check` | `ck_archive_object_uploads_uploaded_bytes` | `CONSTRAINT ck_archive_object_uploads_uploaded_bytes CHECK (uploaded_bytes >= 0)` |
+| <a id="s-219c087f16"></a>`check` | `ck_archive_object_uploads_uploaded_units` | `CONSTRAINT ck_archive_object_uploads_uploaded_units CHECK (uploaded_units >= 0)` |
+| <a id="s-5194863962"></a>`check` | `ck_archive_object_uploads_total_units` | `CONSTRAINT ck_archive_object_uploads_total_units CHECK (total_units >= 0)` |
+| <a id="s-0d5abeb5d5"></a>`check` | `ck_archive_object_uploads_unit_progress` | `CONSTRAINT ck_archive_object_uploads_unit_progress CHECK (uploaded_units <= total_units)` |
+| <a id="s-cc5d1cec3a"></a>`check` | `ck_collection_archive_object_uploads_plan_sha256_hex` | `CONSTRAINT ck_collection_archive_object_uploads_plan_sha256_hex CHECK (length(plan_sha256) = 64 AND lower(plan_sha256) = plan_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(plan_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -72,7 +72,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-d9d2b5d4a8"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-35cc6772f8"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -88,7 +88,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/20`
+- `/external_contract/durable_state/owners/0/structure/tables/21`
 
 ### Exact owned JSON
 

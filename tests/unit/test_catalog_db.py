@@ -192,6 +192,7 @@ def test_initialize_db_creates_current_catalog(tmp_path: Path) -> None:
         "bytes",
         "sha256",
         "source_store",
+        "source_incarnation_id",
         "requires_restore",
     }
     assert {column["name"] for column in inspector.get_columns("retrieval_plan_placements")} == {
@@ -209,6 +210,7 @@ def test_initialize_db_creates_current_catalog(tmp_path: Path) -> None:
         "object_order",
         "collection_id",
         "source_store",
+        "source_incarnation_id",
         "object_id",
         "kind",
         "plaintext_bytes",
@@ -216,6 +218,7 @@ def test_initialize_db_creates_current_catalog(tmp_path: Path) -> None:
         "sha256",
         "read_mode",
         "cache_store",
+        "cache_incarnation_id",
         "retrieval_bytes",
     }
     assert {
@@ -228,6 +231,7 @@ def test_initialize_db_creates_current_catalog(tmp_path: Path) -> None:
         "prepare_requested_at",
         "next_poll_at",
         "cache_store",
+        "cache_incarnation_id",
     }
     collection_columns = {column["name"]: column for column in inspector.get_columns("collections")}
     assert collection_columns["creation_identity_sha256"]["nullable"] is False

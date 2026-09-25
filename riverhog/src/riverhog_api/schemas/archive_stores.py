@@ -5,6 +5,7 @@ from typing import Literal
 from http_api_contracts import BrowsePageToken
 from pydantic import Field
 from riverhog_protocol import ArchiveStoreName, ArchiveStoreSort, SortOrder
+from riverhog_storage_adapter_protocol import StorageIncarnationId
 from time_formats import CanonicalUtcTimestamp
 
 from riverhog_api.schemas.common import RiverhogModel
@@ -25,7 +26,13 @@ class ArchiveDownloadAllowanceOut(RiverhogModel):
 
 class ArchiveStoreOut(RiverhogModel):
     store: ArchiveStoreName
-    read_mode: Literal["immediate", "restore_required"]
+    incarnation_id: StorageIncarnationId | None
+    administrative_state: Literal["bound", "disabled", "retired"] | None
+    configured: bool
+    reachable: bool
+    readable: bool
+    writable: bool
+    read_mode: Literal["immediate", "restore_required"] | None
     read_priority: int
     write_target: bool
     collections: int

@@ -41,7 +41,7 @@ Stable positive evidence returned after the complete check set passes.
 
 - <a id="s-1bbfa1af1b"></a>`type`: `"object"`
 - <a id="s-e8c19c8ddb"></a>`additionalProperties`: `false`
-- <a id="s-0e8429e873"></a>`required`: `["implementation_id","implementation_version","read_mode","minimum_nonfinal_segment_bytes"]`
+- <a id="s-0e8429e873"></a>`required`: `["storage_incarnation_id","implementation_id","implementation_version","read_mode","minimum_nonfinal_segment_bytes"]`
 - <a id="s-a417bb9ca6"></a>`title`: `"AdapterDescriptor"`
 
 #### Fields
@@ -55,6 +55,7 @@ Stable positive evidence returned after the complete check set passes.
 | <a id="s-65f932beae"></a>`minimum_nonfinal_segment_bytes` | yes | [PositiveDecimal](#s-cd091ef405) |  |
 | <a id="s-f2cd45f88a"></a>`protocol` | no | type="string"; const="riverhog-storage-adapter/v1"; default="riverhog-storage-adapter/v1"; title="Protocol" |  |
 | <a id="s-849366dd4b"></a>`read_mode` | yes | type="string"; enum=["immediate","restore_required"]; title="Read Mode" |  |
+| <a id="s-b443feaf91"></a>`storage_incarnation_id` | yes | type="string"; pattern="^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"; title="Storage Incarnation Id" |  |
 
 ### <a id="s-cd091ef405"></a>definition `PositiveDecimal`
 
@@ -116,7 +117,7 @@ Shared facts for every subject below: maximum=120; minimum=1; reason="schema-max
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: e07646cceeda153401636004dbd3bb358f3a48f4b515e25327bc651a64be8cd9 -->
+<!-- exact-contract-value: 2cc8fbeb061edfb5b63da00cb3627ef7288f521e67db6a3033e81202776727b2 -->
 
 ```json
 {
@@ -173,9 +174,15 @@ The following JSON is the complete value owned at each machine-authority pointer
           ],
           "title": "Read Mode",
           "type": "string"
+        },
+        "storage_incarnation_id": {
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "title": "Storage Incarnation Id",
+          "type": "string"
         }
       },
       "required": [
+        "storage_incarnation_id",
         "implementation_id",
         "implementation_version",
         "read_mode",

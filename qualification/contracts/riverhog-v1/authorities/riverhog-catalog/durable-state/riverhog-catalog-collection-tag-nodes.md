@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-tag-nodes:e1f7c64925 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-tag-nodes:2a8c388d13 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-6f68f9e318"></a>
+<a id="s-4d3d34b691"></a>
 
 ### Table: `collection_tag_nodes`
 
@@ -21,18 +21,18 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-a8f138f787"></a>`digest` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-a799814f1d"></a>`encoded` | `BYTEA` | no | `—` | — |
-| <a id="s-eca992f774"></a>`created_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-763105ac20"></a>`digest` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-f0101b7481"></a>`encoded` | `BYTEA` | no | `—` | — |
+| <a id="s-f9bf45a961"></a>`created_at` | `VARCHAR` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-30364acc57"></a>`primary-key` | `—` | `PRIMARY KEY (digest)` |
-| <a id="s-23d0e4cee7"></a>`check` | `ck_collection_tag_nodes_digest` | `CONSTRAINT ck_collection_tag_nodes_digest CHECK (length(digest) = 64 AND lower(digest) = digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-f908bf6951"></a>`check` | `ck_collection_tag_nodes_bytes` | `CONSTRAINT ck_collection_tag_nodes_bytes CHECK (length(encoded) > 0 AND length(encoded) <= 131072)` |
-| <a id="s-82d846d0a9"></a>`check` | `ck_collection_tag_nodes_digest_hex` | `CONSTRAINT ck_collection_tag_nodes_digest_hex CHECK (length(digest) = 64 AND lower(digest) = digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-e0b3aac648"></a>`primary-key` | `—` | `PRIMARY KEY (digest)` |
+| <a id="s-1ddad5ce22"></a>`check` | `ck_collection_tag_nodes_digest` | `CONSTRAINT ck_collection_tag_nodes_digest CHECK (length(digest) = 64 AND lower(digest) = digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-477ebc2d37"></a>`check` | `ck_collection_tag_nodes_bytes` | `CONSTRAINT ck_collection_tag_nodes_bytes CHECK (length(encoded) > 0 AND length(encoded) <= 131072)` |
+| <a id="s-99b620a604"></a>`check` | `ck_collection_tag_nodes_digest_hex` | `CONSTRAINT ck_collection_tag_nodes_digest_hex CHECK (length(digest) = 64 AND lower(digest) = digest AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -42,7 +42,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-cb9c33f408"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-704ee7204a"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -58,7 +58,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/5`
+- `/external_contract/durable_state/owners/0/structure/tables/6`
 
 ### Exact owned JSON
 

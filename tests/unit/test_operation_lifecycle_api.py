@@ -67,6 +67,7 @@ from tests.operation_observer import OperationObserver, TimeoutNeutralTestClient
 from tests.provenance_observer import native_provenance_observer
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
 from tests.unit.db_helpers import sqlite_url
+from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
 
 
 def _tag_set_identity(*tags: str) -> str:
@@ -95,10 +96,13 @@ def _container(tmp_path: Path) -> ServiceContainer:
     )
     initialize_db(database_url)
     session_factory = make_session_factory(database_url)
+    with session_scope(session_factory) as session:
+        seed_storage_incarnation(session, "archive", "primary")
+        seed_storage_incarnation(session, "archive", "secondary")
     stores = ArchiveStoreRegistry(
         {
-            "primary": archive_store_binding(MemoryArchiveStore()),
-            "secondary": archive_store_binding(MemoryArchiveStore()),
+            "primary": archive_store_binding(MemoryArchiveStore(), name="primary"),
+            "secondary": archive_store_binding(MemoryArchiveStore(), name="secondary"),
         }
     )
     allowances = SqlAlchemyDownloadAllowance(config, session_factory=session_factory)

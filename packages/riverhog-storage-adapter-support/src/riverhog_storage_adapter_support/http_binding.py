@@ -110,6 +110,7 @@ class StorageAdapterHttpBinding:
     ) -> None:
         if maximum_control_bytes < 1:
             raise ValueError("storage adapter control request limit must be positive")
+        self._source_adapter = adapter
         self.adapter = validated_storage_adapter(adapter)
         self.maximum_control_bytes = maximum_control_bytes
 
@@ -140,7 +141,12 @@ class StorageAdapterHttpBinding:
                         "invalid_request",
                         "adapter descriptor request must not contain a body",
                     )
-                return _model_response(self.adapter.descriptor())
+                descriptor = self._source_adapter.descriptor()
+                if not isinstance(descriptor, AdapterDescriptor):
+                    raise StorageAdapterServiceError(
+                        503, "provider_unavailable", "storage adapter descriptor is invalid"
+                    )
+                return _model_response(descriptor)
             if normalized_method == "POST" and path == "/v1/writes/begin":
                 start_request = self._parse(body, WriteStartRequest)
                 session = self.adapter.begin_write(start_request)

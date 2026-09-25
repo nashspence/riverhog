@@ -114,6 +114,7 @@ Exact externally visible contract owned by this contract element.
 - [retrieval_plan_objects](riverhog-catalog-retrieval-plan-objects.md)
 - [retrieval_plan_placements](riverhog-catalog-retrieval-plan-placements.md)
 - [retrieval_plans](riverhog-catalog-retrieval-plans.md)
+- [storage_incarnations](riverhog-catalog-storage-incarnations.md)
 - [ux_app_keys_token_sha256](riverhog-catalog-ux-app-keys-token-sha256.md)
 - [ux_collection_archive_object_uploads_sequence](riverhog-catalog-ux-collection-archive-object-uploads-sequence.md)
 - [ux_collection_upload_files_order](riverhog-catalog-ux-collection-upload-files-order.md)

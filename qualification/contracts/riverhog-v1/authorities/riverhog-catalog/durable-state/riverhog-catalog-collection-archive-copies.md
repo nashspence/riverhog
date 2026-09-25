@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-archive-copies:60e87a9b2b -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-archive-copies:4fccc9cfe4 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-fc8d1d92cf"></a>
+<a id="s-2729cfe6c9"></a>
 
 ### Table: `collection_archive_copies`
 
@@ -21,21 +21,23 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-ece90bd4cf"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-5df0aae33f"></a>`store` | `VARCHAR` | no | `—` | — |
-| <a id="s-1c59f17454"></a>`state` | `VARCHAR` | no | `—` | — |
-| <a id="s-ada38e2f6a"></a>`archive_storage_prefix` | `VARCHAR` | yes | `—` | — |
-| <a id="s-b656f1317a"></a>`last_uploaded_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-a7a308f106"></a>`last_verified_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-ad1b8c9435"></a>`failure` | `VARCHAR` | yes | `—` | — |
+| <a id="s-36c735cf5e"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-2dd54321a8"></a>`store` | `VARCHAR` | no | `—` | — |
+| <a id="s-ae0229fc91"></a>`incarnation_id` | `VARCHAR(36)` | no | `—` | — |
+| <a id="s-3334dd13c2"></a>`state` | `VARCHAR` | no | `—` | — |
+| <a id="s-c462329e99"></a>`archive_storage_prefix` | `VARCHAR` | yes | `—` | — |
+| <a id="s-38d74ddcc7"></a>`last_uploaded_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-54b239eebf"></a>`last_verified_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-5cbf479950"></a>`failure` | `VARCHAR` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-f3d5d14e20"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, store)` |
-| <a id="s-c146b926df"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collections (id) ON DELETE CASCADE` |
-| <a id="s-2f65e84d6a"></a>`check` | `ck_collection_archive_copies_state` | `CONSTRAINT ck_collection_archive_copies_state CHECK (state IN ('pending','uploading','uploaded','retrying','failed'))` |
+| <a id="s-1de11207d3"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, store)` |
+| <a id="s-02e5aeae57"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collections (id) ON DELETE CASCADE` |
+| <a id="s-be9a17bd71"></a>`foreign-key` | `—` | `FOREIGN KEY(incarnation_id, store) REFERENCES storage_incarnations (id, name)` |
+| <a id="s-7d4f3eec9b"></a>`check` | `ck_collection_archive_copies_state` | `CONSTRAINT ck_collection_archive_copies_state CHECK (state IN ('pending','uploading','uploaded','retrying','failed'))` |
 
 ## Maintained corroboration
 
@@ -45,7 +47,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-1b97c21950"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-5f9017ba28"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -61,7 +63,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/19`
+- `/external_contract/durable_state/owners/0/structure/tables/20`
 
 ### Exact owned JSON
 
@@ -70,7 +72,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 35c9bfcd5b72565fb246c456a2eaff585e35a9ff74d17a33b8b79697e50ea88a -->
+<!-- exact-contract-value: bed1b6a2ce1a45133d1bca3a23c2c0695551a754c9b4c6bac74933a5df29c93a -->
 
 ```json
 {
@@ -86,6 +88,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       "name": "store",
       "nullable": false,
       "type": "VARCHAR"
+    },
+    {
+      "definition": "incarnation_id VARCHAR(36) NOT NULL",
+      "name": "incarnation_id",
+      "nullable": false,
+      "type": "VARCHAR(36)"
     },
     {
       "definition": "state VARCHAR NOT NULL",
@@ -139,6 +147,21 @@ The following JSON is the complete value owned at each machine-authority pointer
           "id"
         ],
         "table": "collections"
+      }
+    },
+    {
+      "columns": [
+        "incarnation_id",
+        "store"
+      ],
+      "definition": "FOREIGN KEY(incarnation_id, store) REFERENCES storage_incarnations (id, name)",
+      "kind": "foreign-key",
+      "references": {
+        "columns": [
+          "id",
+          "name"
+        ],
+        "table": "storage_incarnations"
       }
     },
     {

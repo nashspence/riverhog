@@ -167,15 +167,20 @@ class SqlAlchemyArchiveCopyRetirementService:
                     ArchiveCopyRetirementRecord(
                         collection_id=normalized_id,
                         store=normalized_store,
+                        incarnation_id=target.incarnation_id,
                         challenge=supplied_challenge,
                         plan_json=json.dumps(plan, sort_keys=True, separators=(",", ":")),
                         started_at=format_utc_timestamp(utc_now()),
                     )
                 )
 
-        target_store = self._archive_stores.require(normalized_store).store
         if already_absent:
             return _result(plan, status="already_absent", verified_store=None)
+        if target is None:
+            raise Conflict("archive copy disappeared during retirement")
+        target_store = self._archive_stores.require_incarnation(
+            normalized_store, target.incarnation_id
+        ).store
 
         try:
             verified_store = self._verify_retained_copy(
@@ -255,7 +260,9 @@ class SqlAlchemyArchiveCopyRetirementService:
                     continue
                 identity = archive_copy_identity(copy)
             try:
-                self._archive_stores.require(store).store.verify_collection_archive(
+                self._archive_stores.require_incarnation(
+                    store, copy.incarnation_id
+                ).store.verify_collection_archive(
                     collection_id=collection_id,
                     archive=identity,
                 )

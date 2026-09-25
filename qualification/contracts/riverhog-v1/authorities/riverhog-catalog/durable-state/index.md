@@ -96,6 +96,7 @@ Persisted structures, schema heads, and v1 transition obligations.
 | [retrieval_plan_objects](riverhog-catalog-retrieval-plan-objects.md) | Relational table |
 | [retrieval_plan_placements](riverhog-catalog-retrieval-plan-placements.md) | Relational table |
 | [retrieval_plans](riverhog-catalog-retrieval-plans.md) | Relational table |
+| [storage_incarnations](riverhog-catalog-storage-incarnations.md) | Relational table |
 | [ux_app_keys_token_sha256](riverhog-catalog-ux-app-keys-token-sha256.md) | Unique index |
 | [ux_collection_archive_object_uploads_sequence](riverhog-catalog-ux-collection-archive-object-uploads-sequence.md) | Unique index |
 | [ux_collection_upload_files_order](riverhog-catalog-ux-collection-upload-files-order.md) | Unique index |

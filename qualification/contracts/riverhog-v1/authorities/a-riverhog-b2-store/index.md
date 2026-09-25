@@ -4,7 +4,7 @@
 
 Backblaze B2-backed Riverhog archive and retrieval store.
 
-Contract elements: **21** · Extent decisions: **7**
+Contract elements: **21** · Extent decisions: **8**
 
 ## Interfaces
 

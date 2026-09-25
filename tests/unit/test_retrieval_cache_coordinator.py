@@ -24,6 +24,7 @@ from riverhog_core.services.retrieval_cache import SqlAlchemyRetrievalCache
 from riverhog_storage_adapter_protocol import StorageAdapterRejection
 
 from tests.unit.db_helpers import sqlite_url
+from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
 
 
 class _Candidate:
@@ -95,6 +96,10 @@ def _coordinator(
     database_url = sqlite_url(tmp_path / "catalog.sqlite3")
     initialize_db(database_url)
     factory = make_session_factory(database_url)
+    with session_scope(factory) as session:
+        seed_storage_incarnation(session, "archive", "deep")
+        for candidate in candidates:
+            seed_storage_incarnation(session, "cache", candidate.name)
     return (
         SqlAlchemyRetrievalCache(
             {candidate.name: candidate for candidate in candidates},  # type: ignore[arg-type]
@@ -143,6 +148,7 @@ def _seed_ready_object(
                 CollectionArchiveCopyRecord(
                     collection_id=1,
                     store="deep",
+                    incarnation_id=seed_storage_incarnation(session, "archive", "deep"),
                     state="uploaded",
                     archive_storage_prefix="archives/1",
                     last_uploaded_at=now,
@@ -176,9 +182,11 @@ def _seed_ready_object(
         session.add(
             RetrievalCacheObjectRecord(
                 source_store="deep",
+                source_incarnation_id=seed_storage_incarnation(session, "archive", "deep"),
                 collection_id=1,
                 object_id=object_id,
                 cache_store=cache_store,
+                cache_incarnation_id=seed_storage_incarnation(session, "cache", cache_store),
                 object_path=f"cache/{object_id}",
                 revision="cache-revision",
                 stored_bytes=stored_bytes,

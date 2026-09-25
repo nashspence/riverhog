@@ -61,6 +61,7 @@ from sqlalchemy import delete, select
 
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
 from tests.unit.db_helpers import sqlite_url
+from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
 
 NOW = "2026-09-07T00:00:00.000000000Z"
 DESCRIPTION = TypeAdapter(CollectionDescription)
@@ -239,6 +240,7 @@ def _seed(
             CollectionArchiveCopyRecord(
                 collection_id=1,
                 store="archive",
+                incarnation_id=seed_storage_incarnation(session, "archive", "archive"),
                 state="uploaded",
                 archive_storage_prefix="archives/1",
                 last_uploaded_at=NOW,
@@ -249,6 +251,7 @@ def _seed(
             CollectionDescriptionPublicationRecord(
                 collection_id=1,
                 store="archive",
+                incarnation_id=seed_storage_incarnation(session, "archive", "archive"),
                 desired_revision=0,
                 desired_identity=collection.description_identity,
                 published_revision=0,
@@ -297,9 +300,11 @@ def _seed(
         session.add(
             RetrievalCacheObjectRecord(
                 source_store="archive",
+                source_incarnation_id=seed_storage_incarnation(session, "archive", "archive"),
                 collection_id=1,
                 object_id="manifest",
                 cache_store="local",
+                cache_incarnation_id=seed_storage_incarnation(session, "cache", "local"),
                 object_path="cache/1/manifest.json.age",
                 revision="cache-revision",
                 stored_bytes=1,
@@ -898,6 +903,7 @@ def test_delayed_description_replica_cannot_overwrite_newer_authority(
             CollectionArchiveCopyRecord(
                 collection_id=1,
                 store="mirror",
+                incarnation_id=seed_storage_incarnation(session, "archive", "mirror"),
                 state="uploaded",
                 archive_storage_prefix="archives/mirror/1",
                 last_uploaded_at=NOW,
@@ -908,6 +914,7 @@ def test_delayed_description_replica_cannot_overwrite_newer_authority(
             CollectionDescriptionPublicationRecord(
                 collection_id=1,
                 store="mirror",
+                incarnation_id=seed_storage_incarnation(session, "archive", "mirror"),
                 desired_revision=0,
                 desired_identity=initial_identity,
                 published_revision=0,
@@ -920,7 +927,7 @@ def test_delayed_description_replica_cannot_overwrite_newer_authority(
     registry = ArchiveStoreRegistry(
         {
             "archive": archive_store_binding(primary),
-            "mirror": archive_store_binding(mirror),
+            "mirror": archive_store_binding(mirror, name="mirror"),
         }
     )
     service = SqlAlchemyCollectionDescriptionService(
@@ -992,6 +999,7 @@ def test_description_acknowledges_one_copy_then_reconciles_every_retained_copy(
             CollectionArchiveCopyRecord(
                 collection_id=1,
                 store="mirror",
+                incarnation_id=seed_storage_incarnation(session, "archive", "mirror"),
                 state="uploaded",
                 archive_storage_prefix="archives/mirror/1",
                 last_uploaded_at=NOW,
@@ -1002,6 +1010,7 @@ def test_description_acknowledges_one_copy_then_reconciles_every_retained_copy(
             CollectionDescriptionPublicationRecord(
                 collection_id=1,
                 store="mirror",
+                incarnation_id=seed_storage_incarnation(session, "archive", "mirror"),
                 desired_revision=0,
                 desired_identity=initial_identity,
                 published_revision=0,
@@ -1016,7 +1025,7 @@ def test_description_acknowledges_one_copy_then_reconciles_every_retained_copy(
         ArchiveStoreRegistry(
             {
                 "archive": archive_store_binding(primary),
-                "mirror": archive_store_binding(mirror),
+                "mirror": archive_store_binding(mirror, name="mirror"),
             }
         ),
         session_factory=factory,
@@ -1059,6 +1068,7 @@ def test_description_replica_reconciles_exact_ambiguous_attempt_before_newer_des
             CollectionArchiveCopyRecord(
                 collection_id=1,
                 store="mirror",
+                incarnation_id=seed_storage_incarnation(session, "archive", "mirror"),
                 state="uploaded",
                 archive_storage_prefix="archives/mirror/1",
                 last_uploaded_at=NOW,
@@ -1069,6 +1079,7 @@ def test_description_replica_reconciles_exact_ambiguous_attempt_before_newer_des
             CollectionDescriptionPublicationRecord(
                 collection_id=1,
                 store="mirror",
+                incarnation_id=seed_storage_incarnation(session, "archive", "mirror"),
                 desired_revision=0,
                 desired_identity=initial_identity,
                 published_revision=0,
@@ -1081,7 +1092,7 @@ def test_description_replica_reconciles_exact_ambiguous_attempt_before_newer_des
     registry = ArchiveStoreRegistry(
         {
             "archive": archive_store_binding(primary),
-            "mirror": archive_store_binding(mirror),
+            "mirror": archive_store_binding(mirror, name="mirror"),
         }
     )
     service = SqlAlchemyCollectionDescriptionService(
@@ -1172,6 +1183,7 @@ def test_description_status_excludes_incomplete_archive_copies(tmp_path: Path) -
             CollectionArchiveCopyRecord(
                 collection_id=1,
                 store="incomplete",
+                incarnation_id=seed_storage_incarnation(session, "archive", "incomplete"),
                 state="failed",
                 archive_storage_prefix="archives/incomplete/1",
             )

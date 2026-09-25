@@ -4,7 +4,7 @@
 
 This generated snapshot accounts for the externally exposed surfaces discovered from this repository revision. Discovery means inclusion; no separate acceptance decision is required.
 
-Included contract elements: **4374** · Extent decisions: **2176**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
+Included contract elements: **4379** · Extent decisions: **2178**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
 
 ## Audit references
 
@@ -253,7 +253,7 @@ Included contract elements: **4374** · Extent decisions: **2176**. Complete acc
   - [Python](authorities/riverhog-canonical-json/python/index.md) (13)
 
 - [riverhog-catalog](authorities/riverhog-catalog/index.md) — Encrypted archive management, catalog, and retrieval.
-  - [Durable State](authorities/riverhog-catalog/durable-state/index.md) (92)
+  - [Durable State](authorities/riverhog-catalog/durable-state/index.md) (93)
 
 - [riverhog-client](authorities/riverhog-client/index.md) — Typed generic Riverhog client and capability-scoped collection-processing runtime.
   - [Configuration Environment](authorities/riverhog-client/configuration-environment/index.md) (12)
@@ -282,14 +282,14 @@ Included contract elements: **4374** · Extent decisions: **2176**. Complete acc
   - [Python](authorities/riverhog-storage-adapter-asgi-support/python/index.md) (1)
 
 - [riverhog-storage-adapter-protocol](authorities/riverhog-storage-adapter-protocol/index.md) — Provider-neutral opaque-object capability contracts for Riverhog storage adapters.
-  - [Python](authorities/riverhog-storage-adapter-protocol/python/index.md) (116) — Defines protocol: [riverhog-storage-adapter](extensions/process-protocol-riverhog-storage-adapter.md).
+  - [Python](authorities/riverhog-storage-adapter-protocol/python/index.md) (118) — Defines protocol: [riverhog-storage-adapter](extensions/process-protocol-riverhog-storage-adapter.md).
 
 - **[riverhog-storage-adapter-support](authorities/riverhog-storage-adapter-support/index.md)** [📦](authorities/riverhog-storage-adapter-support/evidence-gaps.md) — HTTP binding and conformance support for Riverhog storage adapters.
   - [Process Protocol](authorities/riverhog-storage-adapter-support/process-protocol/index.md) (1)
   - [Process Protocol Operations](authorities/riverhog-storage-adapter-support/process-protocol-operations/index.md) (15)
   - **[Process Protocol Schemas](authorities/riverhog-storage-adapter-support/process-protocol-schemas/index.md)** [📦](authorities/riverhog-storage-adapter-support/process-protocol-schemas/evidence-gaps.md) (23)
   - [CLI](authorities/riverhog-storage-adapter-support/cli/index.md) (2)
-  - [Python](authorities/riverhog-storage-adapter-support/python/index.md) (45)
+  - [Python](authorities/riverhog-storage-adapter-support/python/index.md) (47)
 
 - [state-schema](authorities/state-schema/index.md) — Forward-only relational state schema and migration contracts.
   - [Python](authorities/state-schema/python/index.md) (58)

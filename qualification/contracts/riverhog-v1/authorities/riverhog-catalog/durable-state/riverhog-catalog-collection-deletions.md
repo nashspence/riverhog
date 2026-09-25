@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-deletions:79a632e711 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-deletions:d28f50530c -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-f811bc04ba"></a>
+<a id="s-6f68f9e318"></a>
 
 ### Table: `collection_deletions`
 
@@ -21,16 +21,16 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-07e2993f28"></a>`collection_id` | `BIGSERIAL` | no | `—` | — |
-| <a id="s-06a852d00a"></a>`challenge` | `VARCHAR` | no | `—` | — |
-| <a id="s-902e86644e"></a>`plan_json` | `TEXT` | no | `—` | — |
-| <a id="s-641cebaa4c"></a>`started_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-a8f138f787"></a>`collection_id` | `BIGSERIAL` | no | `—` | — |
+| <a id="s-a799814f1d"></a>`challenge` | `VARCHAR` | no | `—` | — |
+| <a id="s-eca992f774"></a>`plan_json` | `TEXT` | no | `—` | — |
+| <a id="s-6373b0f920"></a>`started_at` | `VARCHAR` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-60f0632d57"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id)` |
+| <a id="s-30364acc57"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id)` |
 
 ## Maintained corroboration
 
@@ -40,7 +40,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-9320b19343"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-345ac90421"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -56,7 +56,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/4`
+- `/external_contract/durable_state/owners/0/structure/tables/5`
 
 ### Exact owned JSON
 

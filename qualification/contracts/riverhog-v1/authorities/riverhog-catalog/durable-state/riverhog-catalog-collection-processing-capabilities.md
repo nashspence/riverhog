@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-processing-capabilities:33e76a00ad -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-processing-capabilities:a3e60641c7 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-14a1d0b03b"></a>
+<a id="s-e6abdf96d1"></a>
 
 ### Table: `collection_processing_capabilities`
 
@@ -21,35 +21,35 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-511a1c3d43"></a>`id` | `VARCHAR(32)` | no | `—` | — |
-| <a id="s-07a19f8cac"></a>`claim_id` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-e5d2e81b45"></a>`fence` | `BIGINT` | no | `—` | — |
-| <a id="s-a29f71867b"></a>`audience` | `VARCHAR(300)` | no | `—` | — |
-| <a id="s-39e90c3d97"></a>`token_sha256` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-09f22f601e"></a>`actions_json` | `TEXT` | no | `—` | — |
-| <a id="s-5e13ffa7f0"></a>`artifact_count` | `BIGINT` | no | `—` | — |
-| <a id="s-63bc2cb3cb"></a>`artifact_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-d6951231cc"></a>`artifact_hash_state` | `TEXT` | yes | `—` | — |
-| <a id="s-4612fee12c"></a>`artifact_set_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-dd247888f7"></a>`artifacts_sealed_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-8c96cc8b98"></a>`state` | `VARCHAR` | no | `—` | — |
-| <a id="s-974fb83ce0"></a>`expires_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-10737e5933"></a>`created_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-048b72c039"></a>`revoked_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-20c7e3e7df"></a>`id` | `VARCHAR(32)` | no | `—` | — |
+| <a id="s-d3d91fea84"></a>`claim_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-97155ab8ee"></a>`fence` | `BIGINT` | no | `—` | — |
+| <a id="s-0c3c5db4f5"></a>`audience` | `VARCHAR(300)` | no | `—` | — |
+| <a id="s-6d02810359"></a>`token_sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-ed0c757167"></a>`actions_json` | `TEXT` | no | `—` | — |
+| <a id="s-377ffe2db5"></a>`artifact_count` | `BIGINT` | no | `—` | — |
+| <a id="s-a898258ac6"></a>`artifact_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-4351dfa192"></a>`artifact_hash_state` | `TEXT` | yes | `—` | — |
+| <a id="s-47e9d07f4a"></a>`artifact_set_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-4125f2eca9"></a>`artifacts_sealed_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-391ef847fb"></a>`state` | `VARCHAR` | no | `—` | — |
+| <a id="s-0b8f6e07b2"></a>`expires_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-d0b1b9a6af"></a>`created_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-e22474c0b2"></a>`revoked_at` | `VARCHAR` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-d17edcac9e"></a>`primary-key` | `—` | `PRIMARY KEY (id)` |
-| <a id="s-634d13d6c4"></a>`check` | `ck_collection_processing_capabilities_state` | `CONSTRAINT ck_collection_processing_capabilities_state CHECK (state IN ('receiving','active','revoked'))` |
-| <a id="s-8772df329a"></a>`check` | `ck_collection_processing_capabilities_fence` | `CONSTRAINT ck_collection_processing_capabilities_fence CHECK (fence >= 1)` |
-| <a id="s-089433720a"></a>`check` | `ck_collection_processing_capabilities_artifact_totals` | `CONSTRAINT ck_collection_processing_capabilities_artifact_totals CHECK (artifact_count >= 0 AND artifact_bytes >= 0)` |
-| <a id="s-243ab0fdd4"></a>`foreign-key` | `—` | `FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE CASCADE` |
-| <a id="s-36aaba944c"></a>`unique` | `—` | `UNIQUE (token_sha256)` |
-| <a id="s-672d1a8050"></a>`check` | `ck_collection_processing_capabilities_claim_id_hex` | `CONSTRAINT ck_collection_processing_capabilities_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-b08d9f68c9"></a>`check` | `ck_collection_processing_capabilities_token_sha256_hex` | `CONSTRAINT ck_collection_processing_capabilities_token_sha256_hex CHECK (length(token_sha256) = 64 AND lower(token_sha256) = token_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(token_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-8a8b7a80de"></a>`check` | `ck_sha256_f421ad4e24e487cb` | `CONSTRAINT ck_sha256_f421ad4e24e487cb CHECK (artifact_set_sha256 IS NULL OR length(artifact_set_sha256) = 64 AND lower(artifact_set_sha256) = artifact_set_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_set_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-8bfc344ae4"></a>`primary-key` | `—` | `PRIMARY KEY (id)` |
+| <a id="s-b589cf0895"></a>`check` | `ck_collection_processing_capabilities_state` | `CONSTRAINT ck_collection_processing_capabilities_state CHECK (state IN ('receiving','active','revoked'))` |
+| <a id="s-e38219ad8c"></a>`check` | `ck_collection_processing_capabilities_fence` | `CONSTRAINT ck_collection_processing_capabilities_fence CHECK (fence >= 1)` |
+| <a id="s-0b0f9dd8f7"></a>`check` | `ck_collection_processing_capabilities_artifact_totals` | `CONSTRAINT ck_collection_processing_capabilities_artifact_totals CHECK (artifact_count >= 0 AND artifact_bytes >= 0)` |
+| <a id="s-f3c765618f"></a>`foreign-key` | `—` | `FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE CASCADE` |
+| <a id="s-f4c4b6398f"></a>`unique` | `—` | `UNIQUE (token_sha256)` |
+| <a id="s-ab45166100"></a>`check` | `ck_collection_processing_capabilities_claim_id_hex` | `CONSTRAINT ck_collection_processing_capabilities_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-21a3062f73"></a>`check` | `ck_collection_processing_capabilities_token_sha256_hex` | `CONSTRAINT ck_collection_processing_capabilities_token_sha256_hex CHECK (length(token_sha256) = 64 AND lower(token_sha256) = token_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(token_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-ef0db0772e"></a>`check` | `ck_sha256_f421ad4e24e487cb` | `CONSTRAINT ck_sha256_f421ad4e24e487cb CHECK (artifact_set_sha256 IS NULL OR length(artifact_set_sha256) = 64 AND lower(artifact_set_sha256) = artifact_set_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_set_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -59,7 +59,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-bd2d1fb80e"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-a85d29d2c3"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -75,7 +75,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/62`
+- `/external_contract/durable_state/owners/0/structure/tables/63`
 
 ### Exact owned JSON
 

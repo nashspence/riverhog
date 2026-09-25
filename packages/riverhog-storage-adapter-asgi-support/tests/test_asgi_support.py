@@ -30,11 +30,13 @@ from riverhog_storage_adapter_support import (
 class _Adapter:
     def __init__(self) -> None:
         self.descriptor_calls = 0
+        self.incarnation_id = "00000000-0000-4000-8000-000000000001"
         self.upload_chunks: list[bytes] = []
 
     def descriptor(self) -> AdapterDescriptor:
         self.descriptor_calls += 1
         return AdapterDescriptor(
+            storage_incarnation_id=self.incarnation_id,
             implementation_id="fixture.storage/v1",
             implementation_version="1.0.0",
             read_mode="immediate",
@@ -112,7 +114,10 @@ def test_asgi_shell_streams_exact_adapter_responses() -> None:
 
     response = client.post(
         "/v1/objects/read",
-        headers={"Authorization": "Bearer secret-token"},
+        headers={
+            "Authorization": "Bearer secret-token",
+            "Riverhog-Expected-Storage-Incarnation": "00000000-0000-4000-8000-000000000001",
+        },
         content=request.model_dump_json(),
     )
 
@@ -166,6 +171,55 @@ def test_asgi_readiness_uses_the_validated_adapter_descriptor() -> None:
     assert response.json()["error"]["code"] == "provider_unavailable"
 
 
+def test_asgi_rejects_effect_without_matching_incarnation() -> None:
+    adapter = _Adapter()
+    app = create_storage_adapter_app(
+        service="fixture-storage-adapter",
+        token="secret-token",
+        adapter=cast(StorageAdapterPort, adapter),
+    )
+    request = ObjectReadRequest(
+        object=ObjectLocator(object_path="objects/item"),
+        expected_bytes=14,
+    )
+    client = TestClient(app)
+    missing = client.post(
+        "/v1/objects/read",
+        headers={"Authorization": "Bearer secret-token"},
+        content=request.model_dump_json(),
+    )
+    changed = client.post(
+        "/v1/objects/read",
+        headers={
+            "Authorization": "Bearer secret-token",
+            "Riverhog-Expected-Storage-Incarnation": "00000000-0000-4000-8000-000000000002",
+        },
+        content=request.model_dump_json(),
+    )
+    assert missing.status_code == 400
+    assert changed.status_code == 503
+    assert changed.json()["error"]["code"] == "provider_unavailable"
+
+
+def test_asgi_descriptor_rechecks_live_incarnation_after_backend_swap() -> None:
+    adapter = _Adapter()
+    client = TestClient(
+        create_storage_adapter_app(
+            service="fixture-storage-adapter",
+            token="secret-token",
+            adapter=cast(StorageAdapterPort, adapter),
+        )
+    )
+    headers = {"Authorization": "Bearer secret-token"}
+    assert client.get("/v1/adapter", headers=headers).json()["storage_incarnation_id"] == (
+        "00000000-0000-4000-8000-000000000001"
+    )
+    adapter.incarnation_id = "00000000-0000-4000-8000-000000000002"
+    assert client.get("/v1/adapter", headers=headers).json()["storage_incarnation_id"] == (
+        "00000000-0000-4000-8000-000000000002"
+    )
+
+
 def test_asgi_shell_streams_framed_uploads_without_materializing_request_body(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -195,6 +249,7 @@ def test_asgi_shell_streams_framed_uploads_without_materializing_request_body(
         "/v1/objects/put",
         headers={
             "Authorization": "Bearer secret-token",
+            "Riverhog-Expected-Storage-Incarnation": "00000000-0000-4000-8000-000000000001",
             "Content-Type": FRAMED_BODY_MEDIA_TYPE,
             "Content-Length": str(framed_body_length(declaration)),
         },

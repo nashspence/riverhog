@@ -95,6 +95,19 @@ services:
       retries: 30
       start_period: 2s
 
+  filesystem-cache-init:
+    profiles: ["development"]
+    image: ${A_RIVERHOG_FILESYSTEM_STORE_IMAGE_REF:-a-riverhog-filesystem-store:dev}
+    build:
+      context: ..
+      dockerfile: some-implementations/riverhog/storage/filesystem/Dockerfile
+      args:
+        SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
+    restart: "no"
+    command: ["python", "-m", "a_riverhog_filesystem_store.incarnation", "/var/lib/riverhog-filesystem"]
+    volumes:
+      - filesystem-cache-data:/var/lib/riverhog-filesystem
+
   filesystem-cache-adapter:
     profiles: ["development"]
     image: ${A_RIVERHOG_FILESYSTEM_STORE_IMAGE_REF:-a-riverhog-filesystem-store:dev}
@@ -104,6 +117,9 @@ services:
       args:
         SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
     restart: unless-stopped
+    depends_on:
+      filesystem-cache-init:
+        condition: service_completed_successfully
     environment:
       A_RIVERHOG_FILESYSTEM_STORE_TOKEN_FILE: /run/secrets/riverhog-storage-adapter.token
       A_RIVERHOG_FILESYSTEM_STORE_ROOT: /var/lib/riverhog-filesystem

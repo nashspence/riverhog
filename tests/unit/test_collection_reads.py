@@ -25,6 +25,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
 from tests.unit.db_helpers import sqlite_url
+from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
 
 NOW = "2026-01-01T00:00:00.000000000Z"
 
@@ -56,6 +57,7 @@ def _seed_collections(database: Path, *, count: int) -> tuple[RuntimeConfig, Eng
                 CollectionArchiveCopyRecord(
                     collection_id=collection_id,
                     store="archive",
+                    incarnation_id=seed_storage_incarnation(session, "archive", "archive"),
                     state="uploaded",
                     archive_storage_prefix=f"archives/{collection_id}",
                     last_uploaded_at=NOW,

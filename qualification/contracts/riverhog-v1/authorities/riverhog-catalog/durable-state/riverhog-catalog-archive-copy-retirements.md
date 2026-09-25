@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-archive-copy-retirements:c7fd950a35 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-archive-copy-retirements:8be794fd4d -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-2ebafc64bb"></a>
+<a id="s-ab45e839c8"></a>
 
 ### Table: `archive_copy_retirements`
 
@@ -21,18 +21,20 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-f63ffef409"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-57624bf7ea"></a>`store` | `VARCHAR` | no | `—` | — |
-| <a id="s-5cdf070c38"></a>`challenge` | `VARCHAR` | no | `—` | — |
-| <a id="s-4feee4738f"></a>`plan_json` | `TEXT` | no | `—` | — |
-| <a id="s-5f19f7960d"></a>`started_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-12f5a54864"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-1c25434298"></a>`store` | `VARCHAR` | no | `—` | — |
+| <a id="s-7247072f13"></a>`incarnation_id` | `VARCHAR(36)` | no | `—` | — |
+| <a id="s-b515fe882d"></a>`challenge` | `VARCHAR` | no | `—` | — |
+| <a id="s-01c30ec5f4"></a>`plan_json` | `TEXT` | no | `—` | — |
+| <a id="s-5a3ad16631"></a>`started_at` | `VARCHAR` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-464336e6f6"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, store)` |
-| <a id="s-360f676840"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, store) REFERENCES collection_archive_copies (collection_id, store) ON DELETE CASCADE` |
+| <a id="s-c082fccc70"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, store)` |
+| <a id="s-36929b7cff"></a>`foreign-key` | `—` | `FOREIGN KEY(incarnation_id, store) REFERENCES storage_incarnations (id, name)` |
+| <a id="s-d07370ba6c"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, store) REFERENCES collection_archive_copies (collection_id, store) ON DELETE CASCADE` |
 
 ## Maintained corroboration
 
@@ -42,7 +44,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-f167f8dc7e"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-03814ca54b"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -58,7 +60,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/41`
+- `/external_contract/durable_state/owners/0/structure/tables/42`
 
 ### Exact owned JSON
 
@@ -67,7 +69,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: aa36175648284b8fd0498175538998bf7faad12308390c7fe455c5bd6b949037 -->
+<!-- exact-contract-value: 30edcfd0fccdc05e6ab1aa642f800ae838ee4b6fd5d9db8f8b54ea0b685837ee -->
 
 ```json
 {
@@ -83,6 +85,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       "name": "store",
       "nullable": false,
       "type": "VARCHAR"
+    },
+    {
+      "definition": "incarnation_id VARCHAR(36) NOT NULL",
+      "name": "incarnation_id",
+      "nullable": false,
+      "type": "VARCHAR(36)"
     },
     {
       "definition": "challenge VARCHAR NOT NULL",
@@ -111,6 +119,21 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "definition": "PRIMARY KEY (collection_id, store)",
       "kind": "primary-key"
+    },
+    {
+      "columns": [
+        "incarnation_id",
+        "store"
+      ],
+      "definition": "FOREIGN KEY(incarnation_id, store) REFERENCES storage_incarnations (id, name)",
+      "kind": "foreign-key",
+      "references": {
+        "columns": [
+          "id",
+          "name"
+        ],
+        "table": "storage_incarnations"
+      }
     },
     {
       "columns": [

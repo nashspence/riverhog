@@ -74,6 +74,7 @@ from tests.unit.archive_object_fixtures import (
     MemoryArchiveStore,
     archive_store_binding,
 )
+from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
 from tests.unit.test_collection_descriptions import PRINCIPAL as description_principal
 from tests.unit.test_collection_descriptions import (
     DelayedDescriptionStore,
@@ -200,6 +201,8 @@ def test_postgres_upload_idempotency_is_independent_per_principal(
     isolated_database_url: str,
 ) -> None:
     initialize_db(isolated_database_url)
+    with session_scope(make_session_factory(isolated_database_url)) as session:
+        seed_storage_incarnation(session, "archive", "archive")
     access = frozenset({ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES)})
     memory_store = MemoryArchiveStore()
     archive_stores = ArchiveStoreRegistry({"archive": archive_store_binding(memory_store)})
@@ -646,6 +649,7 @@ def test_postgres_mutable_replica_attempt_serializes_reconciliation_before_newer
             CollectionArchiveCopyRecord(
                 collection_id=1,
                 store="mirror",
+                incarnation_id=seed_storage_incarnation(session, "archive", "mirror"),
                 state="uploaded",
                 archive_storage_prefix="archives/mirror/1",
                 last_uploaded_at="2026-09-07T00:00:00.000000000Z",
@@ -656,6 +660,7 @@ def test_postgres_mutable_replica_attempt_serializes_reconciliation_before_newer
             CollectionDescriptionPublicationRecord(
                 collection_id=1,
                 store="mirror",
+                incarnation_id=seed_storage_incarnation(session, "archive", "mirror"),
                 desired_revision=0,
                 desired_identity=initial_identity,
                 published_revision=0,
@@ -668,7 +673,7 @@ def test_postgres_mutable_replica_attempt_serializes_reconciliation_before_newer
     stores = ArchiveStoreRegistry(
         {
             "archive": archive_store_binding(primary),
-            "mirror": archive_store_binding(mirror),
+            "mirror": archive_store_binding(mirror, name="mirror"),
         }
     )
     service = SqlAlchemyCollectionDescriptionService(
@@ -858,6 +863,8 @@ def test_postgres_archive_sequence_state_round_trips_full_v1_domain(
     isolated_database_url: str,
 ) -> None:
     initialize_db(isolated_database_url)
+    with session_scope(make_session_factory(isolated_database_url)) as session:
+        seed_storage_incarnation(session, "archive", "archive")
     access = frozenset({ApplicationAccess(COLLECTIONS_CREATE, ALL_RESOURCES)})
     service = SqlAlchemyCollectionUploadService(
         RuntimeConfig.for_testing(database_url=isolated_database_url),

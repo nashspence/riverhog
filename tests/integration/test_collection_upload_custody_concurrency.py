@@ -52,6 +52,7 @@ from sqlalchemy import event, func, select, text
 from sqlalchemy.engine import make_url
 
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
+from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
 
 pytestmark = pytest.mark.integration
 
@@ -97,6 +98,8 @@ def database_url() -> Iterator[str]:
         .render_as_string(hide_password=False)
     )
     initialize_db(scoped)
+    with session_scope(make_session_factory(scoped)) as session:
+        seed_storage_incarnation(session, "archive", "archive")
     try:
         yield scoped
     finally:

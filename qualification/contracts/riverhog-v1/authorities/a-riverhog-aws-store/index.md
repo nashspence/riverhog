@@ -4,7 +4,7 @@
 
 AWS-backed Riverhog archive and retrieval store.
 
-Contract elements: **38** · Extent decisions: **7**
+Contract elements: **38** · Extent decisions: **8**
 
 ## Interfaces
 

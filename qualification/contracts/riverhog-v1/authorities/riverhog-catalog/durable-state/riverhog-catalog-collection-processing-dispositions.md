@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-processing-dispositions:83cbc99e7e -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-processing-dispositions:c62c319649 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-e666abd22e"></a>
+<a id="s-7369fcabeb"></a>
 
 ### Table: `collection_processing_dispositions`
 
@@ -21,23 +21,23 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-850d878517"></a>`claim_id` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-200a837398"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-07eb624d96"></a>`path` | `VARCHAR` | no | `—` | — |
-| <a id="s-b803f5e5ba"></a>`disposition_order` | `BIGINT` | yes | `—` | — |
-| <a id="s-156946567e"></a>`status` | `VARCHAR` | no | `—` | — |
-| <a id="s-da6130dfb0"></a>`failure_code` | `VARCHAR` | yes | `—` | — |
-| <a id="s-3c0493031e"></a>`failure_message` | `TEXT` | yes | `—` | — |
+| <a id="s-cc82627a80"></a>`claim_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-4ab8f3c1a7"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-f3243ab53a"></a>`path` | `VARCHAR` | no | `—` | — |
+| <a id="s-c1891cfedf"></a>`disposition_order` | `BIGINT` | yes | `—` | — |
+| <a id="s-83c13196e8"></a>`status` | `VARCHAR` | no | `—` | — |
+| <a id="s-f965282383"></a>`failure_code` | `VARCHAR` | yes | `—` | — |
+| <a id="s-ab326bc70c"></a>`failure_message` | `TEXT` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-0604a034db"></a>`primary-key` | `—` | `PRIMARY KEY (claim_id, collection_id, path)` |
-| <a id="s-112a664b68"></a>`foreign-key` | `—` | `FOREIGN KEY(claim_id, collection_id, path) REFERENCES collection_processing_claim_artifacts (claim_id, collection_id, path) ON DELETE CASCADE` |
-| <a id="s-913026d94c"></a>`check` | `ck_processing_dispositions_status` | `CONSTRAINT ck_processing_dispositions_status CHECK (status IN ('transformed','preserved','omitted','rejected'))` |
-| <a id="s-d58b710bdc"></a>`check` | `ck_processing_dispositions_order_nonnegative` | `CONSTRAINT ck_processing_dispositions_order_nonnegative CHECK (disposition_order IS NULL OR disposition_order >= 0)` |
-| <a id="s-0ebddc89e0"></a>`check` | `ck_collection_processing_dispositions_claim_id_hex` | `CONSTRAINT ck_collection_processing_dispositions_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-b4e44dde84"></a>`primary-key` | `—` | `PRIMARY KEY (claim_id, collection_id, path)` |
+| <a id="s-99ecd1b587"></a>`foreign-key` | `—` | `FOREIGN KEY(claim_id, collection_id, path) REFERENCES collection_processing_claim_artifacts (claim_id, collection_id, path) ON DELETE CASCADE` |
+| <a id="s-3c802dfcd1"></a>`check` | `ck_processing_dispositions_status` | `CONSTRAINT ck_processing_dispositions_status CHECK (status IN ('transformed','preserved','omitted','rejected'))` |
+| <a id="s-8c14194e23"></a>`check` | `ck_processing_dispositions_order_nonnegative` | `CONSTRAINT ck_processing_dispositions_order_nonnegative CHECK (disposition_order IS NULL OR disposition_order >= 0)` |
+| <a id="s-b421078584"></a>`check` | `ck_collection_processing_dispositions_claim_id_hex` | `CONSTRAINT ck_collection_processing_dispositions_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -47,7 +47,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-ccd49f9902"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-d8524a311b"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -63,7 +63,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/77`
+- `/external_contract/durable_state/owners/0/structure/tables/78`
 
 ### Exact owned JSON
 

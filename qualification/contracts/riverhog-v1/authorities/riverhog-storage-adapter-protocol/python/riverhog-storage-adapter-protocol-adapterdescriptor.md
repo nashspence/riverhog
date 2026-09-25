@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-ea83e34bf9"></a>`kind`: `"class"`
-- <a id="s-5503e8069a"></a>`signature`: `"\"(*, protocol: Literal['riverhog-storage-adapter/v1'] = 'riverhog-storage-adapter/v1', implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], implementation_version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], read_mode: Literal['immediate', 'restore_required'], minimum_nonfinal_segment_bytes: PositiveDecimal, maximum_segment_bytes: PositiveDecimal \| None = None, maximum_segment_count: PositiveDecimal \| None = None) -> None\""`
+- <a id="s-5503e8069a"></a>`signature`: `"\"(*, protocol: Literal['riverhog-storage-adapter/v1'] = 'riverhog-storage-adapter/v1', storage_incarnation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$', ascii_only=None)], implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]&#40;?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], implementation_version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], read_mode: Literal['immediate', 'restore_required'], minimum_nonfinal_segment_bytes: PositiveDecimal, maximum_segment_bytes: PositiveDecimal \| None = None, maximum_segment_count: PositiveDecimal \| None = None) -> None\""`
 
 #### Validated model schema
 
@@ -30,7 +30,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-b14721e05d"></a>`type`: `"object"`
 - <a id="s-df5e49bf4d"></a>`additionalProperties`: `false`
-- <a id="s-5005f5c155"></a>`required`: `["implementation_id","implementation_version","read_mode","minimum_nonfinal_segment_bytes"]`
+- <a id="s-5005f5c155"></a>`required`: `["storage_incarnation_id","implementation_id","implementation_version","read_mode","minimum_nonfinal_segment_bytes"]`
 
 ##### Fields
 
@@ -43,6 +43,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-5b5c395f56"></a>`minimum_nonfinal_segment_bytes` | yes | [PositiveDecimal](#s-77d8f06d74) |  |
 | <a id="s-c01ebffa91"></a>`protocol` | no | type="string"; const="riverhog-storage-adapter/v1"; default="riverhog-storage-adapter/v1" |  |
 | <a id="s-f27205a52f"></a>`read_mode` | yes | type="string"; enum=["immediate","restore_required"] |  |
+| <a id="s-7621da1f83"></a>`storage_incarnation_id` | yes | type="string"; pattern="^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$" |  |
 
 ##### Definitions
 
@@ -86,7 +87,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 9cab497d8d5c36daf57e9ab3ff10651627bfe47a1fd330c86e1d0c1303da977e -->
+<!-- exact-contract-value: 7dd8c7d209fa4eb64539931bc381fa3157c62894886568920bcded5bdd00d51c -->
 
 ```json
 {
@@ -146,9 +147,14 @@ The following JSON is the complete value owned at each machine-authority pointer
             "restore_required"
           ],
           "type": "string"
+        },
+        "storage_incarnation_id": {
+          "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+          "type": "string"
         }
       },
       "required": [
+        "storage_incarnation_id",
         "implementation_id",
         "implementation_version",
         "read_mode",
@@ -156,7 +162,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "type": "object"
     },
-    "signature": "\"(*, protocol: Literal['riverhog-storage-adapter/v1'] = 'riverhog-storage-adapter/v1', implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], implementation_version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], read_mode: Literal['immediate', 'restore_required'], minimum_nonfinal_segment_bytes: PositiveDecimal, maximum_segment_bytes: PositiveDecimal | None = None, maximum_segment_count: PositiveDecimal | None = None) -> None\""
+    "signature": "\"(*, protocol: Literal['riverhog-storage-adapter/v1'] = 'riverhog-storage-adapter/v1', storage_incarnation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$', ascii_only=None)], implementation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern='^[a-z0-9]\u0028?:[a-z0-9._/-]{0,158}[a-z0-9])?$', ascii_only=None)], implementation_version: Annotated[str, MinLen(min_length=1), MaxLen(max_length=120)], read_mode: Literal['immediate', 'restore_required'], minimum_nonfinal_segment_bytes: PositiveDecimal, maximum_segment_bytes: PositiveDecimal | None = None, maximum_segment_count: PositiveDecimal | None = None) -> None\""
   },
   "distribution": "riverhog-storage-adapter-protocol",
   "module": "riverhog_storage_adapter_protocol",

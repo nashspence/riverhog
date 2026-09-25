@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-upload-copy-intents:dbd9f3e9b5 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-upload-copy-intents:e0c1a6f5ad -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-0dcdf28a9e"></a>
+<a id="s-9f17464520"></a>
 
 ### Table: `collection_upload_copy_intents`
 
@@ -21,30 +21,32 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-d601b16a2d"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-8d00d34a79"></a>`destination_store` | `VARCHAR` | no | `—` | — |
-| <a id="s-bff7e96752"></a>`source_store` | `VARCHAR` | no | `—` | — |
-| <a id="s-5fc246700a"></a>`destination_binding_sha256` | `VARCHAR` | no | `—` | — |
-| <a id="s-a48ee9c9b4"></a>`source_binding_sha256` | `VARCHAR` | no | `—` | — |
-| <a id="s-384daf9286"></a>`initiated_by_app` | `VARCHAR` | no | `—` | — |
-| <a id="s-280d24f4aa"></a>`initiated_by_key_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-b0c3b1b8cc"></a>`event_context_json` | `TEXT` | yes | `—` | — |
-| <a id="s-bb5ce35505"></a>`use_cache` | `BOOLEAN` | no | `—` | — |
-| <a id="s-be3c5e03ab"></a>`state` | `VARCHAR` | no | `—` | — |
-| <a id="s-ed5bd755d3"></a>`accepted_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-00862a3d88"></a>`next_attempt_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-85a482cece"></a>`attempts` | `INTEGER` | no | `—` | — |
-| <a id="s-b4db2f1365"></a>`handed_off_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-8886a5121a"></a>`job_created` | `BOOLEAN` | yes | `—` | — |
-| <a id="s-a1cc0f61ff"></a>`failure_code` | `VARCHAR` | yes | `—` | — |
+| <a id="s-1683c8820f"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-f399da7285"></a>`destination_store` | `VARCHAR` | no | `—` | — |
+| <a id="s-b3e44d0509"></a>`destination_incarnation_id` | `VARCHAR(36)` | no | `—` | — |
+| <a id="s-be2edcf9a0"></a>`source_store` | `VARCHAR` | no | `—` | — |
+| <a id="s-cd859c2958"></a>`source_incarnation_id` | `VARCHAR(36)` | no | `—` | — |
+| <a id="s-cf6f09bdb4"></a>`initiated_by_app` | `VARCHAR` | no | `—` | — |
+| <a id="s-60a24873ef"></a>`initiated_by_key_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-3e8e3b39be"></a>`event_context_json` | `TEXT` | yes | `—` | — |
+| <a id="s-c22939e57b"></a>`use_cache` | `BOOLEAN` | no | `—` | — |
+| <a id="s-c7ddb3cc39"></a>`state` | `VARCHAR` | no | `—` | — |
+| <a id="s-4781da89b7"></a>`accepted_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-3ae8a4b083"></a>`next_attempt_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-a3c200b128"></a>`attempts` | `INTEGER` | no | `—` | — |
+| <a id="s-770ae5b08d"></a>`handed_off_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-f292b70346"></a>`job_created` | `BOOLEAN` | yes | `—` | — |
+| <a id="s-4fe82066b8"></a>`failure_code` | `VARCHAR` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-2bda372a88"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, destination_store)` |
-| <a id="s-0c435c0da4"></a>`check` | `ck_collection_upload_copy_intents_state` | `CONSTRAINT ck_collection_upload_copy_intents_state CHECK (state IN ('accepted','pending','handed_off','failed','canceled'))` |
-| <a id="s-c6d82b9c25"></a>`check` | `ck_collection_upload_copy_intents_attempts` | `CONSTRAINT ck_collection_upload_copy_intents_attempts CHECK (attempts >= 0)` |
+| <a id="s-a77d7bc5f1"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, destination_store)` |
+| <a id="s-3f1ce690b9"></a>`foreign-key` | `—` | `FOREIGN KEY(source_incarnation_id, source_store) REFERENCES storage_incarnations (id, name)` |
+| <a id="s-98ec8eb1b1"></a>`foreign-key` | `—` | `FOREIGN KEY(destination_incarnation_id, destination_store) REFERENCES storage_incarnations (id, name)` |
+| <a id="s-6be6d760af"></a>`check` | `ck_collection_upload_copy_intents_state` | `CONSTRAINT ck_collection_upload_copy_intents_state CHECK (state IN ('accepted','pending','handed_off','failed','canceled'))` |
+| <a id="s-6074530449"></a>`check` | `ck_collection_upload_copy_intents_attempts` | `CONSTRAINT ck_collection_upload_copy_intents_attempts CHECK (attempts >= 0)` |
 
 ## Maintained corroboration
 
@@ -54,7 +56,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-e2a0a464f4"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-1548dddc28"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -70,7 +72,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/10`
+- `/external_contract/durable_state/owners/0/structure/tables/11`
 
 ### Exact owned JSON
 
@@ -79,7 +81,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: abe66a2fdd8f97652b9a463b05de726b69ee5345e28ae3106c624c97f7aecc39 -->
+<!-- exact-contract-value: d07fb819b52eb2f1c9919c8ff256dda5e59580f961c8546291fdcadd747b201c -->
 
 ```json
 {
@@ -97,22 +99,22 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "VARCHAR"
     },
     {
+      "definition": "destination_incarnation_id VARCHAR(36) NOT NULL",
+      "name": "destination_incarnation_id",
+      "nullable": false,
+      "type": "VARCHAR(36)"
+    },
+    {
       "definition": "source_store VARCHAR NOT NULL",
       "name": "source_store",
       "nullable": false,
       "type": "VARCHAR"
     },
     {
-      "definition": "destination_binding_sha256 VARCHAR NOT NULL",
-      "name": "destination_binding_sha256",
+      "definition": "source_incarnation_id VARCHAR(36) NOT NULL",
+      "name": "source_incarnation_id",
       "nullable": false,
-      "type": "VARCHAR"
-    },
-    {
-      "definition": "source_binding_sha256 VARCHAR NOT NULL",
-      "name": "source_binding_sha256",
-      "nullable": false,
-      "type": "VARCHAR"
+      "type": "VARCHAR(36)"
     },
     {
       "definition": "initiated_by_app VARCHAR NOT NULL",
@@ -189,6 +191,36 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "definition": "PRIMARY KEY (collection_id, destination_store)",
       "kind": "primary-key"
+    },
+    {
+      "columns": [
+        "source_incarnation_id",
+        "source_store"
+      ],
+      "definition": "FOREIGN KEY(source_incarnation_id, source_store) REFERENCES storage_incarnations (id, name)",
+      "kind": "foreign-key",
+      "references": {
+        "columns": [
+          "id",
+          "name"
+        ],
+        "table": "storage_incarnations"
+      }
+    },
+    {
+      "columns": [
+        "destination_incarnation_id",
+        "destination_store"
+      ],
+      "definition": "FOREIGN KEY(destination_incarnation_id, destination_store) REFERENCES storage_incarnations (id, name)",
+      "kind": "foreign-key",
+      "references": {
+        "columns": [
+          "id",
+          "name"
+        ],
+        "table": "storage_incarnations"
+      }
     },
     {
       "definition": "CONSTRAINT ck_collection_upload_copy_intents_state CHECK (state IN ('accepted','pending','handed_off','failed','canceled'))",

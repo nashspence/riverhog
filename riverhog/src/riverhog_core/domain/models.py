@@ -43,7 +43,13 @@ class ArchiveDownloadAllowance:
 @dataclass(frozen=True)
 class ArchiveStoreSummary:
     store: str
-    read_mode: str
+    incarnation_id: str | None
+    administrative_state: str | None
+    configured: bool
+    reachable: bool
+    readable: bool
+    writable: bool
+    read_mode: str | None
     read_priority: int
     write_target: bool
     collections: int

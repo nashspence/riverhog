@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-provenance-ve-ef3d32a52e:dd9fbf6419 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-provenance-ve-ef3d32a52e:ef040d914e -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-b81a0cf307"></a>
+<a id="s-e603651366"></a>
 
 ### Table: `collection_provenance_verification_external_states`
 
@@ -21,20 +21,20 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-e08077c713"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-2412974457"></a>`from_journal_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-932a56e23f"></a>`to_journal_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-15617fdaa6"></a>`entry_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-8185a2b191"></a>`state_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-e7483ddddf"></a>`entry_json_sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-256aa570c4"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-680c6c8297"></a>`from_journal_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-398eaa9b42"></a>`to_journal_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-3518585307"></a>`entry_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-aab5b57aa1"></a>`state_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-250d746ecd"></a>`entry_json_sha256` | `VARCHAR(64)` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-6a27a45e4e"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, from_journal_id, to_journal_id, entry_id, state_id)` |
-| <a id="s-df72f04a91"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collection_provenance_verifications (collection_id) ON DELETE CASCADE` |
-| <a id="s-b685a95c8e"></a>`check` | `ck_sha256_5bae1ac3001e4f72` | `CONSTRAINT ck_sha256_5bae1ac3001e4f72 CHECK (length(entry_json_sha256) = 64 AND lower(entry_json_sha256) = entry_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(entry_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-502b238b80"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, from_journal_id, to_journal_id, entry_id, state_id)` |
+| <a id="s-b2f90327c3"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collection_provenance_verifications (collection_id) ON DELETE CASCADE` |
+| <a id="s-3309eea4fd"></a>`check` | `ck_sha256_5bae1ac3001e4f72` | `CONSTRAINT ck_sha256_5bae1ac3001e4f72 CHECK (length(entry_json_sha256) = 64 AND lower(entry_json_sha256) = entry_json_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(entry_json_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -44,7 +44,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-5292ed6b05"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-10eaea37ac"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -60,7 +60,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/56`
+- `/external_contract/durable_state/owners/0/structure/tables/57`
 
 ### Exact owned JSON
 

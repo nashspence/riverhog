@@ -15,6 +15,7 @@ from a_riverhog_s3_store_lib import (
     S3TransportTuning,
     create_s3_client,
 )
+from a_riverhog_s3_store_lib.incarnation import StorageIncarnationError, marker_document, marker_key
 from botocore.exceptions import ClientError
 from riverhog_storage_adapter_protocol import (
     CompletedWriteLookupRequest,
@@ -100,6 +101,7 @@ class _Paginator:
 
 class _FakeS3Client:
     def __init__(self) -> None:
+        self.incarnation_id = "00000000-0000-4000-8000-000000000001"
         self.current: dict[str, str] = {}
         self.versions: dict[tuple[str, str], dict[str, Any]] = {}
         self.uploads: dict[str, dict[str, Any]] = {}
@@ -199,8 +201,11 @@ class _FakeS3Client:
         return {name: current for name, current in value.items() if name != "Body"}
 
     def get_object(self, **request: Any) -> dict[str, object]:
-        self.get_attempts += 1
         key = str(request["Key"])
+        if key in {marker_key("owned"), marker_key("")}:
+            document = marker_document(self.incarnation_id)
+            return {"Body": _Body(document), "ContentLength": len(document)}
+        self.get_attempts += 1
         version = str(request.get("VersionId") or self.current[key])
         content = bytes(self.versions[(key, version)]["Body"])
         if "Range" not in request:
@@ -274,6 +279,23 @@ def _small_request(
         stored_bytes=len(content),
         stored_sha256=hashlib.sha256(content).hexdigest(),
     )
+
+
+def test_repointed_s3_incarnation_refuses_destructive_effect() -> None:
+    client = _FakeS3Client()
+    adapter = S3StorageAdapter(client, _config())
+    content = b"historical archive"
+    receipt = adapter.put_small_object(_small_request(content), content)
+    client.incarnation_id = "00000000-0000-4000-8000-000000000002"
+
+    with pytest.raises(StorageIncarnationError, match="incarnation changed"):
+        adapter.delete_object(
+            DeleteObjectRequest(
+                object=ObjectLocator(object_path=receipt.object_path, revision=receipt.revision),
+                mode="exact_revision",
+            )
+        )
+    assert ("owned/archives/collection/manifest.age", receipt.revision or "") in client.versions
 
 
 def test_small_object_retry_uses_exact_identity_without_rereading_ciphertext() -> None:
@@ -669,6 +691,15 @@ def test_deletion_is_exact_and_prefix_cleanup_removes_all_versions() -> None:
     assert not client.current
     assert not client.versions
     assert all(item["Key"] == "owned/archives/collection/manifest.age" for item in client.deleted)
+
+
+def test_prefix_cleanup_cannot_delete_root_incarnation_marker() -> None:
+    client = _FakeS3Client()
+    adapter = S3StorageAdapter(client, _config(root_prefix=""))
+    for prefix in (".river", ".riverhog-storage-incarnation"):
+        with pytest.raises(StorageAdapterRejection, match="reserved storage identity"):
+            adapter.delete_prefix(DeletePrefixRequest(object_prefix=prefix))
+    assert client.deleted == []
 
 
 def test_fenced_current_removal_then_exact_reclamation_removes_data_revision() -> None:

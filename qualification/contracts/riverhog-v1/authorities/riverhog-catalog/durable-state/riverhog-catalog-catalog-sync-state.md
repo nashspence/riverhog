@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-catalog-sync-state:6e68fe1db3 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-catalog-sync-state:5931f18de1 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-08ed02092e"></a>
+<a id="s-f811bc04ba"></a>
 
 ### Table: `catalog_sync_state`
 
@@ -21,20 +21,20 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-a977a0f315"></a>`singleton` | `SERIAL` | no | `—` | — |
-| <a id="s-aaa5b757fb"></a>`source_identity` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-445eb048f6"></a>`committed_revision` | `BIGINT` | no | `0` | — |
-| <a id="s-21ccb15417"></a>`retained_revision` | `BIGINT` | no | `0` | — |
+| <a id="s-07e2993f28"></a>`singleton` | `SERIAL` | no | `—` | — |
+| <a id="s-06a852d00a"></a>`source_identity` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-902e86644e"></a>`committed_revision` | `BIGINT` | no | `0` | — |
+| <a id="s-641cebaa4c"></a>`retained_revision` | `BIGINT` | no | `0` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-382bfdb1d4"></a>`primary-key` | `—` | `PRIMARY KEY (singleton)` |
-| <a id="s-50e2b09328"></a>`check` | `ck_catalog_sync_state_singleton` | `CONSTRAINT ck_catalog_sync_state_singleton CHECK (singleton = 1)` |
-| <a id="s-70a38d8476"></a>`check` | `ck_catalog_sync_state_committed_revision` | `CONSTRAINT ck_catalog_sync_state_committed_revision CHECK (committed_revision >= 0)` |
-| <a id="s-87abe469e7"></a>`check` | `ck_catalog_sync_state_retained_revision` | `CONSTRAINT ck_catalog_sync_state_retained_revision CHECK (retained_revision >= 0 AND retained_revision <= committed_revision)` |
-| <a id="s-239c48418a"></a>`check` | `ck_catalog_sync_state_source_identity_hex` | `CONSTRAINT ck_catalog_sync_state_source_identity_hex CHECK (length(source_identity) = 64 AND lower(source_identity) = source_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-60f0632d57"></a>`primary-key` | `—` | `PRIMARY KEY (singleton)` |
+| <a id="s-9c20ad55da"></a>`check` | `ck_catalog_sync_state_singleton` | `CONSTRAINT ck_catalog_sync_state_singleton CHECK (singleton = 1)` |
+| <a id="s-4af155a3e4"></a>`check` | `ck_catalog_sync_state_committed_revision` | `CONSTRAINT ck_catalog_sync_state_committed_revision CHECK (committed_revision >= 0)` |
+| <a id="s-8da1e3d40c"></a>`check` | `ck_catalog_sync_state_retained_revision` | `CONSTRAINT ck_catalog_sync_state_retained_revision CHECK (retained_revision >= 0 AND retained_revision <= committed_revision)` |
+| <a id="s-87c840366a"></a>`check` | `ck_catalog_sync_state_source_identity_hex` | `CONSTRAINT ck_catalog_sync_state_source_identity_hex CHECK (length(source_identity) = 64 AND lower(source_identity) = source_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(source_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -44,7 +44,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-eb6bbbf01b"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-c4af785dc0"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -60,7 +60,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/3`
+- `/external_contract/durable_state/owners/0/structure/tables/4`
 
 ### Exact owned JSON
 

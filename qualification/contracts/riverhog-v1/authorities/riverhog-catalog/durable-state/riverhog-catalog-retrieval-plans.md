@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-plans:51592d3801 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-plans:d3e1dc97a8 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-f43be24d3d"></a>
+<a id="s-bb9d642cad"></a>
 
 ### Table: `retrieval_plans`
 
@@ -21,42 +21,42 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-b86e579b0a"></a>`id` | `VARCHAR` | no | `—` | — |
-| <a id="s-36749376fd"></a>`principal_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-47ee498a3d"></a>`initiated_by_key_id` | `VARCHAR` | yes | `—` | — |
-| <a id="s-d6b73a2206"></a>`idempotency_key` | `VARCHAR` | no | `—` | — |
-| <a id="s-130a9f5caf"></a>`creation_identity_sha256` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-3ad1c99d8e"></a>`state` | `VARCHAR` | no | `—` | — |
-| <a id="s-9d69a6a023"></a>`request_json` | `TEXT` | no | `—` | — |
-| <a id="s-83a22533c6"></a>`lease_seconds` | `BIGINT` | no | `—` | — |
-| <a id="s-24f7748d58"></a>`restore_policy` | `VARCHAR` | no | `—` | — |
-| <a id="s-ba18dc97d4"></a>`created_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-d40d8ea029"></a>`ready_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-e0e6317db7"></a>`expires_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-3436492270"></a>`failure` | `TEXT` | yes | `—` | — |
-| <a id="s-21799f3024"></a>`next_file_order` | `INTEGER` | no | `—` | — |
-| <a id="s-ee45cde7b3"></a>`next_placement_sequence` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-8fff849204"></a>`object_count` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-1b3ce4c775"></a>`retrieval_bytes` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-1ebd2cd070"></a>`requires_restore` | `BOOLEAN` | no | `—` | — |
-| <a id="s-780714a5fe"></a>`file_commitment_sha256` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-5cd547d94d"></a>`segment_commitment_sha256` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-fb92ee17b5"></a>`etag` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-a4f3e61862"></a>`id` | `VARCHAR` | no | `—` | — |
+| <a id="s-6bd793f5b6"></a>`principal_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-5dadf4bbd2"></a>`initiated_by_key_id` | `VARCHAR` | yes | `—` | — |
+| <a id="s-e1af0577c4"></a>`idempotency_key` | `VARCHAR` | no | `—` | — |
+| <a id="s-aa4e0b66fe"></a>`creation_identity_sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-d4f087bf52"></a>`state` | `VARCHAR` | no | `—` | — |
+| <a id="s-2ab443d7c8"></a>`request_json` | `TEXT` | no | `—` | — |
+| <a id="s-34777f44f6"></a>`lease_seconds` | `BIGINT` | no | `—` | — |
+| <a id="s-73603871ed"></a>`restore_policy` | `VARCHAR` | no | `—` | — |
+| <a id="s-4906f017bf"></a>`created_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-7883166877"></a>`ready_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-1a0f2b4e33"></a>`expires_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-28cae38c65"></a>`failure` | `TEXT` | yes | `—` | — |
+| <a id="s-ec7a97eca9"></a>`next_file_order` | `INTEGER` | no | `—` | — |
+| <a id="s-f1de83d968"></a>`next_placement_sequence` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-6e5da0198e"></a>`object_count` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-f6e8d3c1c3"></a>`retrieval_bytes` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-899b1341ea"></a>`requires_restore` | `BOOLEAN` | no | `—` | — |
+| <a id="s-158e7edfb0"></a>`file_commitment_sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-e78961ba14"></a>`segment_commitment_sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-099106b0dc"></a>`etag` | `VARCHAR(64)` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-92e3b4b53c"></a>`primary-key` | `—` | `PRIMARY KEY (id)` |
-| <a id="s-a87ef7b851"></a>`unique` | `uq_retrieval_plans_key_idempotency` | `CONSTRAINT uq_retrieval_plans_key_idempotency UNIQUE (principal_id, initiated_by_key_id, idempotency_key)` |
-| <a id="s-711642855e"></a>`check` | `ck_retrieval_plans_state` | `CONSTRAINT ck_retrieval_plans_state CHECK (state IN ('planning','ready','consumed','expired','failed'))` |
-| <a id="s-ef575f5074"></a>`check` | `ck_retrieval_plans_lease` | `CONSTRAINT ck_retrieval_plans_lease CHECK (lease_seconds > 0)` |
-| <a id="s-892ef661e3"></a>`check` | `ck_retrieval_plans_restore_policy` | `CONSTRAINT ck_retrieval_plans_restore_policy CHECK (restore_policy IN ('allow','never'))` |
-| <a id="s-13740d8ac3"></a>`check` | `ck_retrieval_plans_file_order` | `CONSTRAINT ck_retrieval_plans_file_order CHECK (next_file_order >= 0)` |
-| <a id="s-9d75aa9f79"></a>`check` | `ck_retrieval_plans_creation_identity_sha256_hex` | `CONSTRAINT ck_retrieval_plans_creation_identity_sha256_hex CHECK (length(creation_identity_sha256) = 64 AND lower(creation_identity_sha256) = creation_identity_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(creation_identity_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-a55a612fe3"></a>`check` | `ck_retrieval_plans_file_commitment_sha256_hex` | `CONSTRAINT ck_retrieval_plans_file_commitment_sha256_hex CHECK (length(file_commitment_sha256) = 64 AND lower(file_commitment_sha256) = file_commitment_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(file_commitment_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-5d958a7f44"></a>`check` | `ck_retrieval_plans_segment_commitment_sha256_hex` | `CONSTRAINT ck_retrieval_plans_segment_commitment_sha256_hex CHECK (length(segment_commitment_sha256) = 64 AND lower(segment_commitment_sha256) = segment_commitment_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(segment_commitment_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-63c9e5e59d"></a>`check` | `ck_retrieval_plans_etag_hex` | `CONSTRAINT ck_retrieval_plans_etag_hex CHECK (etag IS NULL OR length(etag) = 64 AND lower(etag) = etag AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(etag, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-edc54df050"></a>`primary-key` | `—` | `PRIMARY KEY (id)` |
+| <a id="s-15fd828ce9"></a>`unique` | `uq_retrieval_plans_key_idempotency` | `CONSTRAINT uq_retrieval_plans_key_idempotency UNIQUE (principal_id, initiated_by_key_id, idempotency_key)` |
+| <a id="s-26656eb7d8"></a>`check` | `ck_retrieval_plans_state` | `CONSTRAINT ck_retrieval_plans_state CHECK (state IN ('planning','ready','consumed','expired','failed'))` |
+| <a id="s-54089c70fa"></a>`check` | `ck_retrieval_plans_lease` | `CONSTRAINT ck_retrieval_plans_lease CHECK (lease_seconds > 0)` |
+| <a id="s-eb8c95967a"></a>`check` | `ck_retrieval_plans_restore_policy` | `CONSTRAINT ck_retrieval_plans_restore_policy CHECK (restore_policy IN ('allow','never'))` |
+| <a id="s-6779a43897"></a>`check` | `ck_retrieval_plans_file_order` | `CONSTRAINT ck_retrieval_plans_file_order CHECK (next_file_order >= 0)` |
+| <a id="s-a92669e0fc"></a>`check` | `ck_retrieval_plans_creation_identity_sha256_hex` | `CONSTRAINT ck_retrieval_plans_creation_identity_sha256_hex CHECK (length(creation_identity_sha256) = 64 AND lower(creation_identity_sha256) = creation_identity_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(creation_identity_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-d461d1a235"></a>`check` | `ck_retrieval_plans_file_commitment_sha256_hex` | `CONSTRAINT ck_retrieval_plans_file_commitment_sha256_hex CHECK (length(file_commitment_sha256) = 64 AND lower(file_commitment_sha256) = file_commitment_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(file_commitment_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-d4799a905b"></a>`check` | `ck_retrieval_plans_segment_commitment_sha256_hex` | `CONSTRAINT ck_retrieval_plans_segment_commitment_sha256_hex CHECK (length(segment_commitment_sha256) = 64 AND lower(segment_commitment_sha256) = segment_commitment_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(segment_commitment_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-6a8a96a482"></a>`check` | `ck_retrieval_plans_etag_hex` | `CONSTRAINT ck_retrieval_plans_etag_hex CHECK (etag IS NULL OR length(etag) = 64 AND lower(etag) = etag AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(etag, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -66,7 +66,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-61da383841"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-f565caca72"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -82,7 +82,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/16`
+- `/external_contract/durable_state/owners/0/structure/tables/17`
 
 ### Exact owned JSON
 

@@ -21,6 +21,7 @@ from riverhog_core.ports.archive_objects import (
 from riverhog_core.ports.archive_store import ArchiveObjectIdentity
 from riverhog_core.runtime_config import StorageAdapterRegistration, load_runtime_config
 from riverhog_core.services.retrieval_cache import SqlAlchemyRetrievalCache
+from riverhog_core.storage_incarnations import reconcile_storage_incarnations
 from riverhog_core.stores.mirrored_archive_resumable_object_store import (
     MirroredArchiveResumableObjectStore,
 )
@@ -90,10 +91,24 @@ def test_canonical_archive_capabilities_against_garage_adapter(tmp_path: Path) -
     )
     cache_database_url = sqlite_url(tmp_path / "retrieval-cache.sqlite3")
     initialize_db(cache_database_url)
+    cache_session_factory = make_session_factory(cache_database_url)
+    admitted = reconcile_storage_incarnations(
+        cache_session_factory,
+        {
+            ("archive", config.archive_write_store): (
+                archive_client.refresh_descriptor().storage_incarnation_id
+            ),
+            ("cache", cache_registration.name): (
+                cache_client.refresh_descriptor().storage_incarnation_id
+            ),
+        },
+    )
+    archive_client.pin_incarnation(admitted[("archive", config.archive_write_store)])
+    cache_client.pin_incarnation(admitted[("cache", cache_registration.name)])
     cache = SqlAlchemyRetrievalCache(
         {cache_registration.name: cache_candidate},
         {cache_registration.name: cache_registration},
-        session_factory=make_session_factory(cache_database_url),
+        session_factory=cache_session_factory,
     )
 
     plaintext = b"canonical direct-final Garage archive volume"

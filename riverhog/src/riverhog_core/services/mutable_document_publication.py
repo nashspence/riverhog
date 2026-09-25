@@ -9,7 +9,10 @@ from riverhog_protocol import CollectionDescriptionDocument, CollectionTagHeadDo
 from sqlalchemy.orm import Session
 from time_formats import utc_timestamp_now
 
-from riverhog_core.catalog_models import CollectionMutableDocumentPublicationAttemptRecord
+from riverhog_core.catalog_models import (
+    CollectionArchiveCopyRecord,
+    CollectionMutableDocumentPublicationAttemptRecord,
+)
 from riverhog_core.services.mutable_document_reclamation import (
     MutableDocumentKind,
     MutableDocumentReceipt,
@@ -50,9 +53,13 @@ def create_mutable_document_publication_attempt(
         raise RuntimeError("prior mutable collection document receipt is incomplete")
     if prior_object_path is None and prior_provider_revision is not None:
         raise RuntimeError("prior provider revision has no mutable document receipt")
+    source_copy = session.get(CollectionArchiveCopyRecord, (collection_id, store))
+    if source_copy is None:
+        raise RuntimeError("mutable document publication has no owned archive copy")
     attempt_identity = _attempt_identity(
         collection_id=collection_id,
         store=store,
+        incarnation_id=source_copy.incarnation_id,
         document_kind=document_kind,
         document=document,
         archive_storage_prefix=archive_storage_prefix,
@@ -65,6 +72,7 @@ def create_mutable_document_publication_attempt(
     attempt = CollectionMutableDocumentPublicationAttemptRecord(
         collection_id=collection_id,
         store=store,
+        incarnation_id=source_copy.incarnation_id,
         document_kind=document_kind,
         attempt_identity=attempt_identity,
         document_revision=revision,
@@ -94,6 +102,7 @@ def validate_mutable_document_publication_attempt(
     expected = _attempt_identity(
         collection_id=attempt.collection_id,
         store=attempt.store,
+        incarnation_id=attempt.incarnation_id,
         document_kind=attempt.document_kind,
         document=attempt.document_bytes,
         archive_storage_prefix=attempt.archive_storage_prefix,
@@ -147,6 +156,7 @@ def _attempt_identity(
     *,
     collection_id: int,
     store: str,
+    incarnation_id: str,
     document_kind: str,
     document: bytes,
     archive_storage_prefix: str,
@@ -160,6 +170,7 @@ def _attempt_identity(
     for value in (
         str(collection_id),
         store,
+        incarnation_id,
         document_kind,
         hashlib.sha256(document).hexdigest(),
         archive_storage_prefix,

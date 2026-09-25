@@ -29,6 +29,7 @@ from tests.unit.archive_object_fixtures import (
     archive_store_binding,
     seed_archive_copy,
 )
+from tests.unit.storage_incarnation_fixtures import fixture_storage_incarnation_id
 
 FILES = {"document.txt": b"archive copy retirement\n"}
 
@@ -59,6 +60,7 @@ def _set_current_description(
                 CollectionDescriptionPublicationRecord(
                     collection_id=COLLECTION_ID,
                     store=store,
+                    incarnation_id=copy.incarnation_id,
                     desired_revision=document.revision,
                     desired_identity=document.description_identity,
                     published_revision=document.revision,
@@ -105,7 +107,10 @@ def _service(
     service = SqlAlchemyArchiveCopyRetirementService(
         config,
         ArchiveStoreRegistry(
-            {"deep": archive_store_binding(deep_store), "b2": archive_store_binding(b2_store)},
+            {
+                "deep": archive_store_binding(deep_store, name="deep"),
+                "b2": archive_store_binding(b2_store, name="b2"),
+            },
         ),
     )
     return config, deep_store, b2_store, service
@@ -198,6 +203,7 @@ def test_retirement_blocks_an_active_plan_and_reclaims_its_expired_authority(
                 object_order=0,
                 collection_id=COLLECTION_ID,
                 source_store="deep",
+                source_incarnation_id=fixture_storage_incarnation_id("archive", "deep"),
                 object_id=archive_object.object_id,
                 kind=archive_object.kind,
                 plaintext_bytes=archive_object.plaintext_bytes,

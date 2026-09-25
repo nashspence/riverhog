@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-archive-objects:c1b9b5c840 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-archive-objects:cb4b525317 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-ab45e839c8"></a>
+<a id="s-534a86f2be"></a>
 
 ### Table: `collection_archive_objects`
 
@@ -21,37 +21,37 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-12f5a54864"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-1c25434298"></a>`store` | `VARCHAR` | no | `—` | — |
-| <a id="s-7247072f13"></a>`object_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-b515fe882d"></a>`object_order` | `VARCHAR(65)` | no | `—` | — |
-| <a id="s-01c30ec5f4"></a>`kind` | `VARCHAR` | no | `—` | — |
-| <a id="s-5a3ad16631"></a>`object_path` | `VARCHAR` | no | `—` | — |
-| <a id="s-61a2e88027"></a>`plaintext_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-83e42d1879"></a>`stored_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-da3b5fcd9a"></a>`sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-350c3a811d"></a>`stored_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-5d9fb27760"></a>`revision` | `VARCHAR` | yes | `—` | — |
-| <a id="s-2bb02b082d"></a>`age_state_json` | `TEXT` | yes | `—` | — |
-| <a id="s-506820d965"></a>`archive_parts_json` | `TEXT` | yes | `—` | — |
-| <a id="s-f7bf506b34"></a>`plan_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-04fa0555f0"></a>`index_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-02f1a0e319"></a>`uploaded_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-64f9eb473f"></a>`verified_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-6917b0905f"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-2fc0f38afc"></a>`store` | `VARCHAR` | no | `—` | — |
+| <a id="s-53bc220b21"></a>`object_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-922a4eccea"></a>`object_order` | `VARCHAR(65)` | no | `—` | — |
+| <a id="s-652e226f59"></a>`kind` | `VARCHAR` | no | `—` | — |
+| <a id="s-774413c21c"></a>`object_path` | `VARCHAR` | no | `—` | — |
+| <a id="s-e5af529259"></a>`plaintext_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-1ebf4f6c5c"></a>`stored_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-e585fb2533"></a>`sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-0cfd24fd6c"></a>`stored_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-869bc32ca5"></a>`revision` | `VARCHAR` | yes | `—` | — |
+| <a id="s-5059ed65b2"></a>`age_state_json` | `TEXT` | yes | `—` | — |
+| <a id="s-3b68f49d21"></a>`archive_parts_json` | `TEXT` | yes | `—` | — |
+| <a id="s-fa182ec714"></a>`plan_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-35a7d7ae01"></a>`index_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-72d455c9b7"></a>`uploaded_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-8a8e5fc9e1"></a>`verified_at` | `VARCHAR` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-c082fccc70"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, store, object_id)` |
-| <a id="s-36929b7cff"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, store) REFERENCES collection_archive_copies (collection_id, store) ON DELETE CASCADE` |
-| <a id="s-d07370ba6c"></a>`check` | `ck_collection_archive_objects_order` | `CONSTRAINT ck_collection_archive_objects_order CHECK (length(object_order) = 65 AND lower(object_order) = object_order AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(object_order, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
-| <a id="s-9d2f6de980"></a>`check` | `ck_collection_archive_objects_plaintext` | `CONSTRAINT ck_collection_archive_objects_plaintext CHECK (plaintext_bytes >= 0)` |
-| <a id="s-d738b0e592"></a>`check` | `ck_collection_archive_objects_stored` | `CONSTRAINT ck_collection_archive_objects_stored CHECK (stored_bytes >= 0)` |
-| <a id="s-8a430f59f8"></a>`check` | `ck_collection_archive_objects_sha256_hex` | `CONSTRAINT ck_collection_archive_objects_sha256_hex CHECK (sha256 IS NULL OR length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-ceb9d03972"></a>`check` | `ck_collection_archive_objects_stored_sha256_hex` | `CONSTRAINT ck_collection_archive_objects_stored_sha256_hex CHECK (stored_sha256 IS NULL OR length(stored_sha256) = 64 AND lower(stored_sha256) = stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-ea3064e932"></a>`check` | `ck_collection_archive_objects_plan_sha256_hex` | `CONSTRAINT ck_collection_archive_objects_plan_sha256_hex CHECK (plan_sha256 IS NULL OR length(plan_sha256) = 64 AND lower(plan_sha256) = plan_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(plan_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-1ef77c1908"></a>`check` | `ck_collection_archive_objects_index_sha256_hex` | `CONSTRAINT ck_collection_archive_objects_index_sha256_hex CHECK (index_sha256 IS NULL OR length(index_sha256) = 64 AND lower(index_sha256) = index_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(index_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-cbe8c47225"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, store, object_id)` |
+| <a id="s-2f7025a01f"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, store) REFERENCES collection_archive_copies (collection_id, store) ON DELETE CASCADE` |
+| <a id="s-162ff679de"></a>`check` | `ck_collection_archive_objects_order` | `CONSTRAINT ck_collection_archive_objects_order CHECK (length(object_order) = 65 AND lower(object_order) = object_order AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(object_order, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-54986f64d2"></a>`check` | `ck_collection_archive_objects_plaintext` | `CONSTRAINT ck_collection_archive_objects_plaintext CHECK (plaintext_bytes >= 0)` |
+| <a id="s-d9b0a86b7b"></a>`check` | `ck_collection_archive_objects_stored` | `CONSTRAINT ck_collection_archive_objects_stored CHECK (stored_bytes >= 0)` |
+| <a id="s-2ad719db32"></a>`check` | `ck_collection_archive_objects_sha256_hex` | `CONSTRAINT ck_collection_archive_objects_sha256_hex CHECK (sha256 IS NULL OR length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-07d688fe63"></a>`check` | `ck_collection_archive_objects_stored_sha256_hex` | `CONSTRAINT ck_collection_archive_objects_stored_sha256_hex CHECK (stored_sha256 IS NULL OR length(stored_sha256) = 64 AND lower(stored_sha256) = stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-77b405af46"></a>`check` | `ck_collection_archive_objects_plan_sha256_hex` | `CONSTRAINT ck_collection_archive_objects_plan_sha256_hex CHECK (plan_sha256 IS NULL OR length(plan_sha256) = 64 AND lower(plan_sha256) = plan_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(plan_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-e7e5dfb58a"></a>`check` | `ck_collection_archive_objects_index_sha256_hex` | `CONSTRAINT ck_collection_archive_objects_index_sha256_hex CHECK (index_sha256 IS NULL OR length(index_sha256) = 64 AND lower(index_sha256) = index_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(index_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -61,7 +61,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-cbd1205919"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-fb8734460b"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -77,7 +77,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/42`
+- `/external_contract/durable_state/owners/0/structure/tables/43`
 
 ### Exact owned JSON
 

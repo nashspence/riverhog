@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-derivations:d0e1e378d5 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-derivations:412ae73067 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-534a86f2be"></a>
+<a id="s-5135cc46d8"></a>
 
 ### Table: `collection_derivations`
 
@@ -21,26 +21,26 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-6917b0905f"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-2fc0f38afc"></a>`execution_id` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-53bc220b21"></a>`claim_id` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-922a4eccea"></a>`fence` | `BIGINT` | no | `—` | — |
-| <a id="s-652e226f59"></a>`document_json` | `TEXT` | no | `—` | — |
-| <a id="s-774413c21c"></a>`document_sha256` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-e5af529259"></a>`created_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-6dfd570257"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-4f8ba8a21c"></a>`execution_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-e061d4aecb"></a>`claim_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-5442036c1a"></a>`fence` | `BIGINT` | no | `—` | — |
+| <a id="s-ba869643a0"></a>`document_json` | `TEXT` | no | `—` | — |
+| <a id="s-fc0510f0ef"></a>`document_sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-bd919e02c0"></a>`created_at` | `VARCHAR` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-cbe8c47225"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id)` |
-| <a id="s-2f7025a01f"></a>`foreign-key` | `—` | `FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE RESTRICT` |
-| <a id="s-162ff679de"></a>`check` | `ck_collection_derivations_fence` | `CONSTRAINT ck_collection_derivations_fence CHECK (fence >= 1)` |
-| <a id="s-54986f64d2"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collections (id) ON DELETE CASCADE` |
-| <a id="s-d9b0a86b7b"></a>`unique` | `—` | `UNIQUE (execution_id)` |
-| <a id="s-2ad719db32"></a>`check` | `ck_collection_derivations_execution_id_hex` | `CONSTRAINT ck_collection_derivations_execution_id_hex CHECK (length(execution_id) = 64 AND lower(execution_id) = execution_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(execution_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-07d688fe63"></a>`check` | `ck_collection_derivations_claim_id_hex` | `CONSTRAINT ck_collection_derivations_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-77b405af46"></a>`check` | `ck_collection_derivations_document_sha256_hex` | `CONSTRAINT ck_collection_derivations_document_sha256_hex CHECK (length(document_sha256) = 64 AND lower(document_sha256) = document_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(document_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-2f0fb38e63"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id)` |
+| <a id="s-fcf4c9fc58"></a>`foreign-key` | `—` | `FOREIGN KEY(claim_id) REFERENCES collection_processing_claims (id) ON DELETE RESTRICT` |
+| <a id="s-caa2e2b8fd"></a>`check` | `ck_collection_derivations_fence` | `CONSTRAINT ck_collection_derivations_fence CHECK (fence >= 1)` |
+| <a id="s-39108e3409"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id) REFERENCES collections (id) ON DELETE CASCADE` |
+| <a id="s-3c88fa1677"></a>`unique` | `—` | `UNIQUE (execution_id)` |
+| <a id="s-450b7c8a71"></a>`check` | `ck_collection_derivations_execution_id_hex` | `CONSTRAINT ck_collection_derivations_execution_id_hex CHECK (length(execution_id) = 64 AND lower(execution_id) = execution_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(execution_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-36fab2d022"></a>`check` | `ck_collection_derivations_claim_id_hex` | `CONSTRAINT ck_collection_derivations_claim_id_hex CHECK (length(claim_id) = 64 AND lower(claim_id) = claim_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(claim_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-463f13a9c1"></a>`check` | `ck_collection_derivations_document_sha256_hex` | `CONSTRAINT ck_collection_derivations_document_sha256_hex CHECK (length(document_sha256) = 64 AND lower(document_sha256) = document_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(document_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -50,7 +50,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-1ca48c3b82"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-630702247e"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -66,7 +66,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/43`
+- `/external_contract/durable_state/owners/0/structure/tables/44`
 
 ### Exact owned JSON
 

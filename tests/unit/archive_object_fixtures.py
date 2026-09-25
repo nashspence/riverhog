@@ -100,6 +100,10 @@ from sqlalchemy.orm import Session
 
 from tests.provenance_observer import native_provenance_observer
 from tests.unit.db_helpers import sqlite_url
+from tests.unit.storage_incarnation_fixtures import (
+    fixture_storage_incarnation_id,
+    seed_storage_incarnation,
+)
 
 
 def _completion_precondition(
@@ -605,7 +609,11 @@ def add_archive_copy(
     *,
     store: str,
 ) -> CollectionArchiveCopyRecord:
-    copy = CollectionArchiveCopyRecord(collection_id=archive.collection_id, store=store)
+    copy = CollectionArchiveCopyRecord(
+        collection_id=archive.collection_id,
+        store=store,
+        incarnation_id=seed_storage_incarnation(session, "archive", store),
+    )
     session.add(copy)
     session.flush()
     prefix = f"archives/{store}/opaque-docs"
@@ -620,6 +628,7 @@ def add_archive_copy(
         CollectionTagPublicationRecord(
             collection_id=archive.collection_id,
             store=store,
+            incarnation_id=copy.incarnation_id,
             desired_revision=collection.tag_revision,
             desired_tag_set_identity=collection.tag_set_identity,
             desired_head_identity=collection.tag_head_identity,
@@ -1390,8 +1399,11 @@ class MemoryArchiveStore:
         )
 
 
-def archive_store_binding(store: MemoryArchiveStore) -> ArchiveStoreBinding:
+def archive_store_binding(
+    store: MemoryArchiveStore, *, name: str = "archive"
+) -> ArchiveStoreBinding:
     return ArchiveStoreBinding(
+        incarnation_id=fixture_storage_incarnation_id("archive", name),
         store=cast(ArchiveStore, store),
         resumable_objects=store,
         immutable_objects=store,

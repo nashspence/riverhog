@@ -51,6 +51,45 @@ def _fixed_lowercase_integer_check(column: str, width: int) -> str:
     return f"length({column}) = {width} AND lower({column}) = {column} AND length({remainder}) = 0"
 
 
+class StorageIncarnationRecord(Base):
+    """Durable owner of one storage authority and its reserved operator name."""
+
+    __tablename__ = "storage_incarnations"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    kind: Mapped[str] = mapped_column(String, nullable=False)
+    name: Mapped[str] = mapped_column(String, nullable=False)
+    state: Mapped[str] = mapped_column(String, nullable=False)
+    binding_generation: Mapped[int] = mapped_column(BigInteger, nullable=False, default=1)
+    created_at: Mapped[str] = mapped_column(String, nullable=False)
+    last_bound_at: Mapped[str | None] = mapped_column(String, nullable=True)
+    last_read_mode: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    __table_args__ = (
+        UniqueConstraint("kind", "name", name="uq_storage_incarnations_reserved_name"),
+        UniqueConstraint("id", "name", name="uq_storage_incarnations_id_name"),
+        CheckConstraint("kind IN ('archive','cache')", name="ck_storage_incarnations_kind"),
+        CheckConstraint(
+            "state IN ('bound','disabled','retired')",
+            name="ck_storage_incarnations_state",
+        ),
+        CheckConstraint("binding_generation >= 1", name="ck_storage_incarnations_generation"),
+        CheckConstraint(
+            "last_read_mode IS NULL OR last_read_mode IN ('immediate','restore_required')",
+            name="ck_storage_incarnations_read_mode",
+        ),
+        CheckConstraint(
+            "length(id) = 36 AND substr(id, 9, 1) = '-' AND "
+            "substr(id, 14, 1) = '-' AND substr(id, 19, 1) = '-' AND "
+            "substr(id, 24, 1) = '-' AND substr(id, 15, 1) = '4' AND "
+            "substr(id, 20, 1) >= '8' AND substr(id, 20, 1) <= 'b' AND "
+            + _fixed_lowercase_integer_check("replace(id, '-', '')", 32),
+            name="ck_storage_incarnations_uuid4",
+        ),
+        Index("ix_storage_incarnations_state", "kind", "state", "name"),
+    )
+
+
 class CollectionTagRecord(Base):
     """Rebuildable catalog projection of one exact canonical tag value."""
 
@@ -539,11 +578,16 @@ class ArchiveCopyRetirementRecord(Base):
 
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
     store: Mapped[str] = mapped_column(String, primary_key=True)
+    incarnation_id: Mapped[str] = mapped_column(String(36), nullable=False)
     challenge: Mapped[str] = mapped_column(String)
     plan_json: Mapped[str] = mapped_column(Text)
     started_at: Mapped[str] = mapped_column(String)
 
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["incarnation_id", "store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
         ForeignKeyConstraint(
             ["collection_id", "store"],
             ["collection_archive_copies.collection_id", "collection_archive_copies.store"],
@@ -968,6 +1012,7 @@ class CollectionArchiveCopyRecord(Base):
 
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
     store: Mapped[str] = mapped_column(String, primary_key=True)
+    incarnation_id: Mapped[str] = mapped_column(String(36), nullable=False)
     state: Mapped[str] = mapped_column(String, default="pending")
     archive_storage_prefix: Mapped[str | None] = mapped_column(String, nullable=True)
     last_uploaded_at: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -985,6 +1030,9 @@ class CollectionArchiveCopyRecord(Base):
             ["collection_id"],
             ["collections.id"],
             ondelete="CASCADE",
+        ),
+        ForeignKeyConstraint(
+            ["incarnation_id", "store"], ["storage_incarnations.id", "storage_incarnations.name"]
         ),
         CheckConstraint(
             "state IN ('pending','uploading','uploaded','retrying','failed')",
@@ -1010,6 +1058,7 @@ class CollectionDescriptionPublicationRecord(Base):
 
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
     store: Mapped[str] = mapped_column(String, primary_key=True)
+    incarnation_id: Mapped[str] = mapped_column(String(36), nullable=False)
     desired_revision: Mapped[int] = mapped_column(BigInteger)
     desired_identity: Mapped[str] = mapped_column(String(64))
     published_revision: Mapped[int] = mapped_column(BigInteger)
@@ -1026,6 +1075,10 @@ class CollectionDescriptionPublicationRecord(Base):
     published_at: Mapped[str | None] = mapped_column(String, nullable=True)
 
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["incarnation_id", "store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
         ForeignKeyConstraint(
             ["collection_id", "store"],
             ["collection_archive_copies.collection_id", "collection_archive_copies.store"],
@@ -1086,6 +1139,7 @@ class CollectionMutableDocumentReclamationRecord(Base):
     receipt_identity: Mapped[str] = mapped_column(String(64), primary_key=True)
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE)
     store: Mapped[str] = mapped_column(String)
+    incarnation_id: Mapped[str] = mapped_column(String(36), nullable=False)
     document_kind: Mapped[str] = mapped_column(String)
     object_path: Mapped[str] = mapped_column(String)
     provider_revision: Mapped[str] = mapped_column(String)
@@ -1096,6 +1150,10 @@ class CollectionMutableDocumentReclamationRecord(Base):
     failure: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["incarnation_id", "store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
         CheckConstraint(
             _fixed_lowercase_integer_check("receipt_identity", 64),
             name="ck_mutable_document_reclamations_identity",
@@ -1135,6 +1193,7 @@ class CollectionMutableDocumentPublicationAttemptRecord(Base):
 
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
     store: Mapped[str] = mapped_column(String, primary_key=True)
+    incarnation_id: Mapped[str] = mapped_column(String(36), nullable=False)
     document_kind: Mapped[str] = mapped_column(String, primary_key=True)
     attempt_identity: Mapped[str] = mapped_column(String(64), unique=True)
     document_revision: Mapped[int] = mapped_column(BigInteger)
@@ -1149,6 +1208,10 @@ class CollectionMutableDocumentPublicationAttemptRecord(Base):
     created_at: Mapped[str] = mapped_column(String)
 
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["incarnation_id", "store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
         ForeignKeyConstraint(
             ["collection_id", "store"],
             ["collection_archive_copies.collection_id", "collection_archive_copies.store"],
@@ -1203,6 +1266,7 @@ class CollectionTagPublicationRecord(Base):
 
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
     store: Mapped[str] = mapped_column(String, primary_key=True)
+    incarnation_id: Mapped[str] = mapped_column(String(36), nullable=False)
     desired_revision: Mapped[int] = mapped_column(BigInteger)
     desired_tag_set_identity: Mapped[str] = mapped_column(String(64))
     desired_head_identity: Mapped[str] = mapped_column(String(64))
@@ -1221,6 +1285,10 @@ class CollectionTagPublicationRecord(Base):
     published_at: Mapped[str | None] = mapped_column(String, nullable=True)
 
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["incarnation_id", "store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
         ForeignKeyConstraint(
             ["collection_id", "store"],
             ["collection_archive_copies.collection_id", "collection_archive_copies.store"],
@@ -1335,6 +1403,7 @@ class CollectionTagNodeGcRecord(Base):
 
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
     store: Mapped[str] = mapped_column(String, primary_key=True)
+    incarnation_id: Mapped[str] = mapped_column(String(36), nullable=False)
     node_digest: Mapped[str] = mapped_column(String(64), primary_key=True)
     expected_head_identity: Mapped[str] = mapped_column(String(64))
     object_path: Mapped[str] = mapped_column(String)
@@ -1344,6 +1413,10 @@ class CollectionTagNodeGcRecord(Base):
     failure: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["incarnation_id", "store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
         ForeignKeyConstraint(
             ["collection_id", "store", "node_digest"],
             [
@@ -1507,8 +1580,10 @@ class ArchiveCopyJobRecord(Base):
 
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
     destination_store: Mapped[str] = mapped_column(String, primary_key=True)
+    destination_incarnation_id: Mapped[str] = mapped_column(String(36), nullable=False)
     destination_storage_prefix: Mapped[str] = mapped_column(String)
     source_store: Mapped[str] = mapped_column(String)
+    source_incarnation_id: Mapped[str] = mapped_column(String(36), nullable=False)
     use_cache: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     initiated_by_app: Mapped[str] = mapped_column(String)
     initiated_by_key_id: Mapped[str | None] = mapped_column(String, nullable=True)
@@ -1535,6 +1610,14 @@ class ArchiveCopyJobRecord(Base):
     )
 
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["source_incarnation_id", "source_store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
+        ForeignKeyConstraint(
+            ["destination_incarnation_id", "destination_store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
         ForeignKeyConstraint(
             ["collection_id", "source_store"],
             ["collection_archive_copies.collection_id", "collection_archive_copies.store"],
@@ -1953,9 +2036,14 @@ class RetrievalPlanFileRecord(Base):
     bytes: Mapped[int] = mapped_column(BigInteger)
     sha256: Mapped[str] = mapped_column(String(64))
     source_store: Mapped[str] = mapped_column(String)
+    source_incarnation_id: Mapped[str] = mapped_column(String(36), nullable=False)
     requires_restore: Mapped[bool] = mapped_column(Boolean, default=False)
 
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["source_incarnation_id", "source_store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
         ForeignKeyConstraint(["plan_id"], ["retrieval_plans.id"], ondelete="CASCADE"),
         ForeignKeyConstraint(
             ["collection_id", "path"],
@@ -1977,6 +2065,7 @@ class RetrievalPlanObjectRecord(Base):
     object_order: Mapped[int] = mapped_column(authority_ordinal_type(), primary_key=True)
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE)
     source_store: Mapped[str] = mapped_column(String)
+    source_incarnation_id: Mapped[str] = mapped_column(String(36), nullable=False)
     object_id: Mapped[str] = mapped_column(String)
     kind: Mapped[str] = mapped_column(String)
     plaintext_bytes: Mapped[int] = mapped_column(BigInteger)
@@ -1984,9 +2073,18 @@ class RetrievalPlanObjectRecord(Base):
     sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
     read_mode: Mapped[str] = mapped_column(String)
     cache_store: Mapped[str | None] = mapped_column(String, nullable=True)
+    cache_incarnation_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
     retrieval_bytes: Mapped[int] = mapped_column(authority_ordinal_type(), default=0)
 
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["source_incarnation_id", "source_store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
+        ForeignKeyConstraint(
+            ["cache_incarnation_id", "cache_store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
         ForeignKeyConstraint(["plan_id"], ["retrieval_plans.id"], ondelete="CASCADE"),
         ForeignKeyConstraint(
             ["collection_id", "source_store", "object_id"],
@@ -2094,8 +2192,13 @@ class RetrievalJobObjectProgressRecord(Base):
     prepare_requested_at: Mapped[str | None] = mapped_column(String, nullable=True)
     next_poll_at: Mapped[str] = mapped_column(String)
     cache_store: Mapped[str | None] = mapped_column(String, nullable=True)
+    cache_incarnation_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
 
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["cache_incarnation_id", "cache_store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
         ForeignKeyConstraint(
             ["job_id", "plan_id"],
             ["retrieval_jobs.id", "retrieval_jobs.plan_id"],
@@ -2119,9 +2222,11 @@ class RetrievalCacheObjectRecord(Base):
     __tablename__ = "retrieval_cache_objects"
 
     source_store: Mapped[str] = mapped_column(String, primary_key=True)
+    source_incarnation_id: Mapped[str] = mapped_column(String(36), nullable=False)
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
     object_id: Mapped[str] = mapped_column(String, primary_key=True)
     cache_store: Mapped[str] = mapped_column(String)
+    cache_incarnation_id: Mapped[str] = mapped_column(String(36), nullable=False)
     object_path: Mapped[str] = mapped_column(String)
     revision: Mapped[str | None] = mapped_column(String, nullable=True)
     stored_bytes: Mapped[int] = mapped_column(BigInteger)
@@ -2135,6 +2240,14 @@ class RetrievalCacheObjectRecord(Base):
     )
 
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["source_incarnation_id", "source_store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
+        ForeignKeyConstraint(
+            ["cache_incarnation_id", "cache_store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
         ForeignKeyConstraint(
             ["collection_id", "source_store", "object_id"],
             [
@@ -2206,9 +2319,11 @@ class RetrievalCachePopulationRecord(Base):
     __tablename__ = "retrieval_cache_populations"
 
     source_store: Mapped[str] = mapped_column(String, primary_key=True)
+    source_incarnation_id: Mapped[str] = mapped_column(String(36), nullable=False)
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
     object_id: Mapped[str] = mapped_column(String, primary_key=True)
     cache_store: Mapped[str | None] = mapped_column(String, nullable=True)
+    cache_incarnation_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
     object_path: Mapped[str | None] = mapped_column(String, nullable=True)
     write_token: Mapped[str | None] = mapped_column(String, nullable=True)
     expected_bytes: Mapped[int] = mapped_column(BigInteger)
@@ -2218,6 +2333,14 @@ class RetrievalCachePopulationRecord(Base):
     failure: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["source_incarnation_id", "source_store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
+        ForeignKeyConstraint(
+            ["cache_incarnation_id", "cache_store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
         Index(
             "ix_retrieval_cache_populations_store_state",
             "cache_store",
@@ -2280,12 +2403,17 @@ class RetrievalCacheStoreAccountingRecord(Base):
     __tablename__ = "retrieval_cache_store_accounting"
 
     cache_store: Mapped[str] = mapped_column(String, primary_key=True)
+    cache_incarnation_id: Mapped[str] = mapped_column(String(36), nullable=False)
     reserved_bytes: Mapped[int] = mapped_column(BigInteger, default=0, server_default=text("0"))
     committed_bytes: Mapped[int] = mapped_column(BigInteger, default=0, server_default=text("0"))
     generation: Mapped[int] = mapped_column(BigInteger, default=0, server_default=text("0"))
     updated_at: Mapped[str] = mapped_column(String)
 
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["cache_incarnation_id", "cache_store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
         CheckConstraint(
             "reserved_bytes >= 0",
             name="ck_retrieval_cache_store_accounting_reserved",
@@ -2371,9 +2499,9 @@ class CollectionUploadCopyIntentRecord(Base):
 
     collection_id: Mapped[int] = mapped_column(COLLECTION_ID_TYPE, primary_key=True)
     destination_store: Mapped[str] = mapped_column(String, primary_key=True)
+    destination_incarnation_id: Mapped[str] = mapped_column(String(36), nullable=False)
     source_store: Mapped[str] = mapped_column(String, nullable=False)
-    destination_binding_sha256: Mapped[str] = mapped_column(String, nullable=False)
-    source_binding_sha256: Mapped[str] = mapped_column(String, nullable=False)
+    source_incarnation_id: Mapped[str] = mapped_column(String(36), nullable=False)
     initiated_by_app: Mapped[str] = mapped_column(String, nullable=False)
     initiated_by_key_id: Mapped[str] = mapped_column(String, nullable=False)
     event_context_json: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -2387,6 +2515,14 @@ class CollectionUploadCopyIntentRecord(Base):
     failure_code: Mapped[str | None] = mapped_column(String, nullable=True)
 
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["source_incarnation_id", "source_store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
+        ForeignKeyConstraint(
+            ["destination_incarnation_id", "destination_store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
         CheckConstraint(
             "state IN ('accepted','pending','handed_off','failed','canceled')",
             name="ck_collection_upload_copy_intents_state",
@@ -2439,6 +2575,7 @@ class CollectionUploadRecord(Base):
     lease_expires_at: Mapped[str | None] = mapped_column(String, nullable=True)
     orphaned_at: Mapped[str | None] = mapped_column(String, nullable=True)
     archive_store: Mapped[str] = mapped_column(String, nullable=False)
+    archive_incarnation_id: Mapped[str] = mapped_column(String(36), nullable=False)
     use_cache: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     copy_to_json: Mapped[str] = mapped_column(Text, nullable=False, default="[]")
     opened_at: Mapped[str] = mapped_column(String)
@@ -2560,6 +2697,10 @@ class CollectionUploadRecord(Base):
         )
     )
     __table_args__ = (
+        ForeignKeyConstraint(
+            ["archive_incarnation_id", "archive_store"],
+            ["storage_incarnations.id", "storage_incarnations.name"],
+        ),
         Index(
             "ux_collection_uploads_principal_idempotency_key",
             "initiated_by_principal_id",

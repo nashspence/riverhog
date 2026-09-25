@@ -87,6 +87,7 @@ from sqlalchemy import select
 from tests.provenance_observer import native_provenance_observer
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
 from tests.unit.db_helpers import sqlite_url
+from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
 from tests.unit.test_archive_root import MemoryImmutableStore
 from tests.unit.test_pack_upload import MemoryResumableStore
 
@@ -455,6 +456,8 @@ def _service_with_archive_objects(
     database_url = sqlite_url(tmp_path / "catalog.sqlite3")
     config = RuntimeConfig.for_testing(database_url=database_url, archive_scrypt_work_factor=1)
     initialize_db(database_url)
+    with session_scope(make_session_factory(database_url)) as session:
+        seed_storage_incarnation(session, "archive", "archive")
     archive_store = MemoryArchiveStore()
     resumable = MemoryResumableStore()
     root = MemoryImmutableStore()
@@ -503,6 +506,8 @@ def test_collection_ingress_uses_the_configured_source_read_chunk(
 def test_upload_resume_keeps_its_frozen_key_generation_after_rotation(tmp_path: Path) -> None:
     database_url = sqlite_url(tmp_path / "catalog.sqlite3")
     initialize_db(database_url)
+    with session_scope(make_session_factory(database_url)) as session:
+        seed_storage_incarnation(session, "archive", "archive")
     passphrases = {
         "collection-test-key-v1": "first archive secret",
         "collection-test-key-v2": "second archive secret",
@@ -624,6 +629,9 @@ def test_restore_required_ingress_commits_encrypted_cache_with_initial_lease(
         archive_stores={"archive": archive},
     )
     initialize_db(database_url)
+    with session_scope(make_session_factory(database_url)) as session:
+        seed_storage_incarnation(session, "archive", "archive")
+        seed_storage_incarnation(session, "cache", "memory")
     archive_resumable = MemoryResumableStore()
     cache = _MemoryResumableCache()
     binding = replace(
@@ -721,6 +729,8 @@ def test_restore_required_ingress_uses_archive_only_when_new_archive_cache_is_di
     )
 
     initialize_db(database_url)
+    with session_scope(make_session_factory(database_url)) as session:
+        seed_storage_incarnation(session, "archive", "archive")
 
     opened = service.create_or_resume(
         idempotency_key="default-no-cache",

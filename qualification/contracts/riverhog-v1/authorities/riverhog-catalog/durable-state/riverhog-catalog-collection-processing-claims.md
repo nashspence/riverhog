@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-processing-claims:fc7a7686d3 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-collection-processing-claims:f69aa54d48 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-3811e19ab2"></a>
+<a id="s-cdcb1f6979"></a>
 
 ### Table: `collection_processing_claims`
 
@@ -21,74 +21,74 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-603e1ec3dc"></a>`id` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-27b968f672"></a>`work_id` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-cc8df404f2"></a>`consumer_app` | `VARCHAR` | no | `—` | — |
-| <a id="s-3d3eecca03"></a>`consumer_key_id` | `VARCHAR` | yes | `—` | — |
-| <a id="s-015771d2cc"></a>`purpose` | `VARCHAR` | no | `—` | — |
-| <a id="s-1db36a3f8f"></a>`work_document_json` | `TEXT` | no | `—` | — |
-| <a id="s-571a8a09e3"></a>`work_document_sha256` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-c80f98a8ee"></a>`execution_id` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-1da64bc09c"></a>`controller_evidence_json` | `TEXT` | yes | `—` | — |
-| <a id="s-34a1c08489"></a>`controller_evidence_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-a8de762bf9"></a>`operation_id` | `VARCHAR` | yes | `—` | — |
-| <a id="s-12aff18420"></a>`operation_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-a386f46988"></a>`input_count` | `BIGINT` | no | `—` | — |
-| <a id="s-d5074a8025"></a>`input_hash_state` | `TEXT` | yes | `—` | — |
-| <a id="s-faa7d394c6"></a>`input_set_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-d10c04a483"></a>`inputs_sealed_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-090f3c5f02"></a>`artifact_count` | `BIGINT` | no | `—` | — |
-| <a id="s-b26ec1d100"></a>`artifact_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-19c4dcff44"></a>`artifact_hash_state` | `TEXT` | yes | `—` | — |
-| <a id="s-e1e81ea7be"></a>`artifact_set_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-e733febda4"></a>`artifacts_sealed_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-9b8542265f"></a>`outcome_count` | `BIGINT` | no | `—` | — |
-| <a id="s-c7746647b5"></a>`outcome_state` | `VARCHAR` | no | `—` | — |
-| <a id="s-3732c0ac26"></a>`outcome_hash_state` | `TEXT` | yes | `—` | — |
-| <a id="s-ef127f8e69"></a>`outcome_validation_cursor` | `VARCHAR` | yes | `—` | — |
-| <a id="s-8685b55b8d"></a>`outcome_validation_count` | `BIGINT` | no | `—` | — |
-| <a id="s-4207494166"></a>`outcome_set_sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-082b84b55f"></a>`outcome_failure` | `TEXT` | yes | `—` | — |
-| <a id="s-1a41087a1f"></a>`outcomes_sealed_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-cf04e7c3e1"></a>`source_collection_retirement_policy` | `VARCHAR` | yes | `—` | — |
-| <a id="s-7e1a3f0704"></a>`source_collection_retirement_grace_seconds` | `BIGINT` | no | `—` | — |
-| <a id="s-5cbe75c5a7"></a>`plan_sealed_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-87de9877ba"></a>`state` | `VARCHAR` | no | `—` | — |
-| <a id="s-fef47034bb"></a>`fence` | `BIGINT` | no | `—` | — |
-| <a id="s-002cd6ee37"></a>`expires_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-0d3e0e0f4b"></a>`output_collection_id` | `BIGINT` | yes | `—` | — |
-| <a id="s-4b4287da81"></a>`created_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-02e3489acc"></a>`updated_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-c3298dfbd9"></a>`settled_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-e58e18258b"></a>`abandoned_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-5a3f264075"></a>`abandonment_reason` | `TEXT` | yes | `—` | — |
-| <a id="s-954b4e81ba"></a>`released_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-07ebf8459c"></a>`id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-7bce079e89"></a>`work_id` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-bd0e3adf01"></a>`consumer_app` | `VARCHAR` | no | `—` | — |
+| <a id="s-3c3cdbea2d"></a>`consumer_key_id` | `VARCHAR` | yes | `—` | — |
+| <a id="s-cf9dd4e770"></a>`purpose` | `VARCHAR` | no | `—` | — |
+| <a id="s-ea80d070a1"></a>`work_document_json` | `TEXT` | no | `—` | — |
+| <a id="s-a9faf9bb93"></a>`work_document_sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-da4ba78197"></a>`execution_id` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-bdecebffeb"></a>`controller_evidence_json` | `TEXT` | yes | `—` | — |
+| <a id="s-9ec1eac004"></a>`controller_evidence_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-806733c487"></a>`operation_id` | `VARCHAR` | yes | `—` | — |
+| <a id="s-999291f417"></a>`operation_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-e0704b41ee"></a>`input_count` | `BIGINT` | no | `—` | — |
+| <a id="s-ab025259df"></a>`input_hash_state` | `TEXT` | yes | `—` | — |
+| <a id="s-a6af54333c"></a>`input_set_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-7a438a1152"></a>`inputs_sealed_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-a263bcd2d2"></a>`artifact_count` | `BIGINT` | no | `—` | — |
+| <a id="s-e68287adf8"></a>`artifact_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-3a2ccd272d"></a>`artifact_hash_state` | `TEXT` | yes | `—` | — |
+| <a id="s-d708435eeb"></a>`artifact_set_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-da95c96dac"></a>`artifacts_sealed_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-2d34fb1a27"></a>`outcome_count` | `BIGINT` | no | `—` | — |
+| <a id="s-1a7f589ecb"></a>`outcome_state` | `VARCHAR` | no | `—` | — |
+| <a id="s-4ac0c3b625"></a>`outcome_hash_state` | `TEXT` | yes | `—` | — |
+| <a id="s-27b611cf30"></a>`outcome_validation_cursor` | `VARCHAR` | yes | `—` | — |
+| <a id="s-fbc2cf0c24"></a>`outcome_validation_count` | `BIGINT` | no | `—` | — |
+| <a id="s-71bbfc5775"></a>`outcome_set_sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-18e4f213c1"></a>`outcome_failure` | `TEXT` | yes | `—` | — |
+| <a id="s-1ab9edbe28"></a>`outcomes_sealed_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-59035f7559"></a>`source_collection_retirement_policy` | `VARCHAR` | yes | `—` | — |
+| <a id="s-77e18dc9d1"></a>`source_collection_retirement_grace_seconds` | `BIGINT` | no | `—` | — |
+| <a id="s-233f47cf3d"></a>`plan_sealed_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-2f5575d059"></a>`state` | `VARCHAR` | no | `—` | — |
+| <a id="s-804270c0d1"></a>`fence` | `BIGINT` | no | `—` | — |
+| <a id="s-02600262a2"></a>`expires_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-f550043af2"></a>`output_collection_id` | `BIGINT` | yes | `—` | — |
+| <a id="s-09ac8f7765"></a>`created_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-cf1314068d"></a>`updated_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-7b57ef6b07"></a>`settled_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-acb8cbf42d"></a>`abandoned_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-8996a3f4fc"></a>`abandonment_reason` | `TEXT` | yes | `—` | — |
+| <a id="s-76e9a5eb23"></a>`released_at` | `VARCHAR` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-cd362c9a0c"></a>`primary-key` | `—` | `PRIMARY KEY (id)` |
-| <a id="s-06b97722b5"></a>`unique` | `uq_collection_processing_claims_owner_work` | `CONSTRAINT uq_collection_processing_claims_owner_work UNIQUE (consumer_app, purpose, work_id)` |
-| <a id="s-df5e0b99f0"></a>`check` | `ck_collection_processing_claims_state` | `CONSTRAINT ck_collection_processing_claims_state CHECK (state IN ('active','settled','retiring','abandoned','released'))` |
-| <a id="s-5511f8445a"></a>`check` | `ck_collection_processing_claims_outcome_state` | `CONSTRAINT ck_collection_processing_claims_outcome_state CHECK (outcome_state IN ('receiving','sealing','sealed','failed'))` |
-| <a id="s-77366b2e95"></a>`check` | `ck_collection_processing_claims_fence` | `CONSTRAINT ck_collection_processing_claims_fence CHECK (fence >= 1)` |
-| <a id="s-a6b03442de"></a>`check` | `ck_collection_processing_claims_grace` | `CONSTRAINT ck_collection_processing_claims_grace CHECK (source_collection_retirement_grace_seconds >= 0)` |
-| <a id="s-13ac8be7e6"></a>`check` | `ck_collection_processing_claims_artifact_count` | `CONSTRAINT ck_collection_processing_claims_artifact_count CHECK (input_count >= 0 AND artifact_count >= 0 AND artifact_bytes >= 0 AND outcome_count >= 0 AND outcome_validation_count >= 0)` |
-| <a id="s-4da4891634"></a>`check` | `ck_collection_processing_claims_id` | `CONSTRAINT ck_collection_processing_claims_id CHECK (length(id) = 64)` |
-| <a id="s-ebb811eed6"></a>`check` | `ck_collection_processing_claims_work_id` | `CONSTRAINT ck_collection_processing_claims_work_id CHECK (length(work_id) = 64)` |
-| <a id="s-262b01a414"></a>`check` | `ck_collection_processing_claims_document_sha256` | `CONSTRAINT ck_collection_processing_claims_document_sha256 CHECK (length(work_document_sha256) = 64)` |
-| <a id="s-0523679da0"></a>`unique` | `—` | `UNIQUE (execution_id)` |
-| <a id="s-87bb301d81"></a>`foreign-key` | `—` | `FOREIGN KEY(output_collection_id) REFERENCES collections (id) ON DELETE SET NULL` |
-| <a id="s-c51d243459"></a>`check` | `ck_collection_processing_claims_id_hex` | `CONSTRAINT ck_collection_processing_claims_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-6584b84656"></a>`check` | `ck_collection_processing_claims_work_id_hex` | `CONSTRAINT ck_collection_processing_claims_work_id_hex CHECK (length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-b4b4c736c7"></a>`check` | `ck_collection_processing_claims_work_document_sha256_hex` | `CONSTRAINT ck_collection_processing_claims_work_document_sha256_hex CHECK (length(work_document_sha256) = 64 AND lower(work_document_sha256) = work_document_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_document_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-6997b15df2"></a>`check` | `ck_collection_processing_claims_execution_id_hex` | `CONSTRAINT ck_collection_processing_claims_execution_id_hex CHECK (execution_id IS NULL OR length(execution_id) = 64 AND lower(execution_id) = execution_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(execution_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-728bb3c7b4"></a>`check` | `ck_sha256_c09acb3cbfceaefd` | `CONSTRAINT ck_sha256_c09acb3cbfceaefd CHECK (controller_evidence_sha256 IS NULL OR length(controller_evidence_sha256) = 64 AND lower(controller_evidence_sha256) = controller_evidence_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(controller_evidence_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-57250e2d6d"></a>`check` | `ck_collection_processing_claims_operation_sha256_hex` | `CONSTRAINT ck_collection_processing_claims_operation_sha256_hex CHECK (operation_sha256 IS NULL OR length(operation_sha256) = 64 AND lower(operation_sha256) = operation_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(operation_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-49665841bc"></a>`check` | `ck_collection_processing_claims_input_set_sha256_hex` | `CONSTRAINT ck_collection_processing_claims_input_set_sha256_hex CHECK (input_set_sha256 IS NULL OR length(input_set_sha256) = 64 AND lower(input_set_sha256) = input_set_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(input_set_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-aa51d58e70"></a>`check` | `ck_collection_processing_claims_artifact_set_sha256_hex` | `CONSTRAINT ck_collection_processing_claims_artifact_set_sha256_hex CHECK (artifact_set_sha256 IS NULL OR length(artifact_set_sha256) = 64 AND lower(artifact_set_sha256) = artifact_set_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_set_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
-| <a id="s-3657bde370"></a>`check` | `ck_collection_processing_claims_outcome_set_sha256_hex` | `CONSTRAINT ck_collection_processing_claims_outcome_set_sha256_hex CHECK (outcome_set_sha256 IS NULL OR length(outcome_set_sha256) = 64 AND lower(outcome_set_sha256) = outcome_set_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(outcome_set_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-4df441e800"></a>`primary-key` | `—` | `PRIMARY KEY (id)` |
+| <a id="s-0bbd6dcf33"></a>`unique` | `uq_collection_processing_claims_owner_work` | `CONSTRAINT uq_collection_processing_claims_owner_work UNIQUE (consumer_app, purpose, work_id)` |
+| <a id="s-209a37b756"></a>`check` | `ck_collection_processing_claims_state` | `CONSTRAINT ck_collection_processing_claims_state CHECK (state IN ('active','settled','retiring','abandoned','released'))` |
+| <a id="s-bb8ae1de7b"></a>`check` | `ck_collection_processing_claims_outcome_state` | `CONSTRAINT ck_collection_processing_claims_outcome_state CHECK (outcome_state IN ('receiving','sealing','sealed','failed'))` |
+| <a id="s-b1ceeea1fa"></a>`check` | `ck_collection_processing_claims_fence` | `CONSTRAINT ck_collection_processing_claims_fence CHECK (fence >= 1)` |
+| <a id="s-034874e652"></a>`check` | `ck_collection_processing_claims_grace` | `CONSTRAINT ck_collection_processing_claims_grace CHECK (source_collection_retirement_grace_seconds >= 0)` |
+| <a id="s-b2563a8fa9"></a>`check` | `ck_collection_processing_claims_artifact_count` | `CONSTRAINT ck_collection_processing_claims_artifact_count CHECK (input_count >= 0 AND artifact_count >= 0 AND artifact_bytes >= 0 AND outcome_count >= 0 AND outcome_validation_count >= 0)` |
+| <a id="s-b9298ad14a"></a>`check` | `ck_collection_processing_claims_id` | `CONSTRAINT ck_collection_processing_claims_id CHECK (length(id) = 64)` |
+| <a id="s-565604bb88"></a>`check` | `ck_collection_processing_claims_work_id` | `CONSTRAINT ck_collection_processing_claims_work_id CHECK (length(work_id) = 64)` |
+| <a id="s-7265895dc1"></a>`check` | `ck_collection_processing_claims_document_sha256` | `CONSTRAINT ck_collection_processing_claims_document_sha256 CHECK (length(work_document_sha256) = 64)` |
+| <a id="s-0cfa973282"></a>`unique` | `—` | `UNIQUE (execution_id)` |
+| <a id="s-39b88ac575"></a>`foreign-key` | `—` | `FOREIGN KEY(output_collection_id) REFERENCES collections (id) ON DELETE SET NULL` |
+| <a id="s-6a77d1d8b3"></a>`check` | `ck_collection_processing_claims_id_hex` | `CONSTRAINT ck_collection_processing_claims_id_hex CHECK (length(id) = 64 AND lower(id) = id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-7913f3642b"></a>`check` | `ck_collection_processing_claims_work_id_hex` | `CONSTRAINT ck_collection_processing_claims_work_id_hex CHECK (length(work_id) = 64 AND lower(work_id) = work_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-ae457b9654"></a>`check` | `ck_collection_processing_claims_work_document_sha256_hex` | `CONSTRAINT ck_collection_processing_claims_work_document_sha256_hex CHECK (length(work_document_sha256) = 64 AND lower(work_document_sha256) = work_document_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(work_document_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-3eead30940"></a>`check` | `ck_collection_processing_claims_execution_id_hex` | `CONSTRAINT ck_collection_processing_claims_execution_id_hex CHECK (execution_id IS NULL OR length(execution_id) = 64 AND lower(execution_id) = execution_id AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(execution_id, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-d5893aa427"></a>`check` | `ck_sha256_c09acb3cbfceaefd` | `CONSTRAINT ck_sha256_c09acb3cbfceaefd CHECK (controller_evidence_sha256 IS NULL OR length(controller_evidence_sha256) = 64 AND lower(controller_evidence_sha256) = controller_evidence_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(controller_evidence_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-acefa617da"></a>`check` | `ck_collection_processing_claims_operation_sha256_hex` | `CONSTRAINT ck_collection_processing_claims_operation_sha256_hex CHECK (operation_sha256 IS NULL OR length(operation_sha256) = 64 AND lower(operation_sha256) = operation_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(operation_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-11b700da98"></a>`check` | `ck_collection_processing_claims_input_set_sha256_hex` | `CONSTRAINT ck_collection_processing_claims_input_set_sha256_hex CHECK (input_set_sha256 IS NULL OR length(input_set_sha256) = 64 AND lower(input_set_sha256) = input_set_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(input_set_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-165d1696e4"></a>`check` | `ck_collection_processing_claims_artifact_set_sha256_hex` | `CONSTRAINT ck_collection_processing_claims_artifact_set_sha256_hex CHECK (artifact_set_sha256 IS NULL OR length(artifact_set_sha256) = 64 AND lower(artifact_set_sha256) = artifact_set_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(artifact_set_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-3baf948b21"></a>`check` | `ck_collection_processing_claims_outcome_set_sha256_hex` | `CONSTRAINT ck_collection_processing_claims_outcome_set_sha256_hex CHECK (outcome_set_sha256 IS NULL OR length(outcome_set_sha256) = 64 AND lower(outcome_set_sha256) = outcome_set_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(outcome_set_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -98,7 +98,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-75bc1660b4"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-b6bd37fb44"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -114,7 +114,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/22`
+- `/external_contract/durable_state/owners/0/structure/tables/23`
 
 ### Exact owned JSON
 

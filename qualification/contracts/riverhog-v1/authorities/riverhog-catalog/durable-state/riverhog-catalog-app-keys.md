@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-app-keys:dbb9820649 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-app-keys:94284e5d3e -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-578253b2fe"></a>
+<a id="s-9842cd22e0"></a>
 
 ### Table: `app_keys`
 
@@ -21,24 +21,24 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-e44fb490ed"></a>`id` | `VARCHAR` | no | `—` | — |
-| <a id="s-783c2ae605"></a>`app` | `VARCHAR` | no | `—` | — |
-| <a id="s-22ee02e7b4"></a>`token_sha256` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-9e3258cae2"></a>`monthly_download_quota_bytes` | `BIGINT` | yes | `—` | — |
-| <a id="s-1d3e2eea6e"></a>`created_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-f528281c4f"></a>`expires_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-0bea5f8cba"></a>`revoked_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-078b54c5df"></a>`last_used_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-bd792d9e56"></a>`search_text` | `VARCHAR` | no | `—` | {"generated":"GENERATED ALWAYS AS (lower(app \|\| ' ' \|\| id)) STORED"} |
+| <a id="s-aa0999b65f"></a>`id` | `VARCHAR` | no | `—` | — |
+| <a id="s-73df17342b"></a>`app` | `VARCHAR` | no | `—` | — |
+| <a id="s-51e4125711"></a>`token_sha256` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-9aca377aaa"></a>`monthly_download_quota_bytes` | `BIGINT` | yes | `—` | — |
+| <a id="s-cbd43b7067"></a>`created_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-c56cd0553e"></a>`expires_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-302680c724"></a>`revoked_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-8bad4b9ad6"></a>`last_used_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-f30d8defca"></a>`search_text` | `VARCHAR` | no | `—` | {"generated":"GENERATED ALWAYS AS (lower(app \|\| ' ' \|\| id)) STORED"} |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-3250a87917"></a>`primary-key` | `—` | `PRIMARY KEY (id)` |
-| <a id="s-8d6e1f6ff9"></a>`check` | `ck_app_keys_download_quota` | `CONSTRAINT ck_app_keys_download_quota CHECK (monthly_download_quota_bytes IS NULL OR monthly_download_quota_bytes >= 0)` |
-| <a id="s-0c0b741b50"></a>`check` | `ck_app_keys_token_sha256` | `CONSTRAINT ck_app_keys_token_sha256 CHECK (length(token_sha256) = 64)` |
-| <a id="s-9ac08b25f4"></a>`check` | `ck_app_keys_token_sha256_hex` | `CONSTRAINT ck_app_keys_token_sha256_hex CHECK (length(token_sha256) = 64 AND lower(token_sha256) = token_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(token_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-423ebc7e40"></a>`primary-key` | `—` | `PRIMARY KEY (id)` |
+| <a id="s-8372093c32"></a>`check` | `ck_app_keys_download_quota` | `CONSTRAINT ck_app_keys_download_quota CHECK (monthly_download_quota_bytes IS NULL OR monthly_download_quota_bytes >= 0)` |
+| <a id="s-abc2f28eb8"></a>`check` | `ck_app_keys_token_sha256` | `CONSTRAINT ck_app_keys_token_sha256 CHECK (length(token_sha256) = 64)` |
+| <a id="s-b024993bf2"></a>`check` | `ck_app_keys_token_sha256_hex` | `CONSTRAINT ck_app_keys_token_sha256_hex CHECK (length(token_sha256) = 64 AND lower(token_sha256) = token_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(token_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -48,7 +48,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-bbe51cde6f"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-4bd1979fce"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -64,7 +64,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/0`
+- `/external_contract/durable_state/owners/0/structure/tables/1`
 
 ### Exact owned JSON
 

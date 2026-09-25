@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-job-object-progress:2f3c179864 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-retrieval-job-object-progress:43117c0ee8 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-f3f1ae97a4"></a>
+<a id="s-08dd5aa791"></a>
 
 ### Table: `retrieval_job_object_progress`
 
@@ -21,22 +21,24 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-3955421a30"></a>`job_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-e028c8ca0a"></a>`object_order` | `VARCHAR(64)` | no | `—` | — |
-| <a id="s-b7163d56e6"></a>`plan_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-bb73a3a476"></a>`state` | `VARCHAR` | no | `—` | — |
-| <a id="s-493aa58d39"></a>`prepare_requested_at` | `VARCHAR` | yes | `—` | — |
-| <a id="s-8475ff6ab4"></a>`next_poll_at` | `VARCHAR` | no | `—` | — |
-| <a id="s-61fc175fcf"></a>`cache_store` | `VARCHAR` | yes | `—` | — |
+| <a id="s-daab49b77a"></a>`job_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-82fcbeab86"></a>`object_order` | `VARCHAR(64)` | no | `—` | — |
+| <a id="s-95da31cf0d"></a>`plan_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-9943017599"></a>`state` | `VARCHAR` | no | `—` | — |
+| <a id="s-eecedaa9a6"></a>`prepare_requested_at` | `VARCHAR` | yes | `—` | — |
+| <a id="s-d7dfe23e0c"></a>`next_poll_at` | `VARCHAR` | no | `—` | — |
+| <a id="s-879ea2fbca"></a>`cache_store` | `VARCHAR` | yes | `—` | — |
+| <a id="s-e3d71242e8"></a>`cache_incarnation_id` | `VARCHAR(36)` | yes | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-eebf114466"></a>`primary-key` | `—` | `PRIMARY KEY (job_id, object_order)` |
-| <a id="s-8fc9256e97"></a>`foreign-key` | `—` | `FOREIGN KEY(job_id, plan_id) REFERENCES retrieval_jobs (id, plan_id) ON DELETE CASCADE` |
-| <a id="s-676149a270"></a>`foreign-key` | `—` | `FOREIGN KEY(plan_id, object_order) REFERENCES retrieval_plan_objects (plan_id, object_order)` |
-| <a id="s-7017ebde56"></a>`check` | `ck_retrieval_job_object_progress_state` | `CONSTRAINT ck_retrieval_job_object_progress_state CHECK (state IN ('preparing','requested','ready'))` |
+| <a id="s-3aae9e857a"></a>`primary-key` | `—` | `PRIMARY KEY (job_id, object_order)` |
+| <a id="s-2b05f40028"></a>`foreign-key` | `—` | `FOREIGN KEY(cache_incarnation_id, cache_store) REFERENCES storage_incarnations (id, name)` |
+| <a id="s-e4f645e422"></a>`foreign-key` | `—` | `FOREIGN KEY(job_id, plan_id) REFERENCES retrieval_jobs (id, plan_id) ON DELETE CASCADE` |
+| <a id="s-22a91b30a7"></a>`foreign-key` | `—` | `FOREIGN KEY(plan_id, object_order) REFERENCES retrieval_plan_objects (plan_id, object_order)` |
+| <a id="s-73a5ce7f29"></a>`check` | `ck_retrieval_job_object_progress_state` | `CONSTRAINT ck_retrieval_job_object_progress_state CHECK (state IN ('preparing','requested','ready'))` |
 
 ## Maintained corroboration
 
@@ -46,7 +48,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-ecbfc71c51"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-37a2ce959c"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -62,7 +64,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/79`
+- `/external_contract/durable_state/owners/0/structure/tables/80`
 
 ### Exact owned JSON
 
@@ -71,7 +73,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 479cdf2f485159368add0b6b694682d568fbebcad61a7ec23aefd4aede96418d -->
+<!-- exact-contract-value: e09be67edf79a6cc769398cedd4ce1c7714c4614deb9e6052c3ffbf46a664afe -->
 
 ```json
 {
@@ -117,6 +119,12 @@ The following JSON is the complete value owned at each machine-authority pointer
       "name": "cache_store",
       "nullable": true,
       "type": "VARCHAR"
+    },
+    {
+      "definition": "cache_incarnation_id VARCHAR(36)",
+      "name": "cache_incarnation_id",
+      "nullable": true,
+      "type": "VARCHAR(36)"
     }
   ],
   "constraints": [
@@ -127,6 +135,21 @@ The following JSON is the complete value owned at each machine-authority pointer
       ],
       "definition": "PRIMARY KEY (job_id, object_order)",
       "kind": "primary-key"
+    },
+    {
+      "columns": [
+        "cache_incarnation_id",
+        "cache_store"
+      ],
+      "definition": "FOREIGN KEY(cache_incarnation_id, cache_store) REFERENCES storage_incarnations (id, name)",
+      "kind": "foreign-key",
+      "references": {
+        "columns": [
+          "id",
+          "name"
+        ],
+        "table": "storage_incarnations"
+      }
     },
     {
       "columns": [

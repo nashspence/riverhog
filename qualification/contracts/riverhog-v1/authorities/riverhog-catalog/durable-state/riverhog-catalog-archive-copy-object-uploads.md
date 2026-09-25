@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-archive-copy-object-uploads:5564479f83 -->
+<!-- contract-element: durable-state:riverhog-catalog:riverhog-catalog-archive-copy-object-uploads:13d696de2e -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,7 +13,7 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-dcea214d6b"></a>
+<a id="s-841b96ee19"></a>
 
 ### Table: `archive_copy_object_uploads`
 
@@ -21,31 +21,31 @@ Exact externally visible contract owned by this contract element.
 
 | Column | Type | Nullable | Default | Other constraints |
 |---|---|---:|---|---|
-| <a id="s-84e33dea59"></a>`collection_id` | `BIGINT` | no | `—` | — |
-| <a id="s-01e4ab62b3"></a>`destination_store` | `VARCHAR` | no | `—` | — |
-| <a id="s-91b79ad15a"></a>`object_id` | `VARCHAR` | no | `—` | — |
-| <a id="s-2895a5a292"></a>`kind` | `VARCHAR` | no | `—` | — |
-| <a id="s-0f69aae951"></a>`object_path` | `VARCHAR` | no | `—` | — |
-| <a id="s-f4eae8af8f"></a>`plaintext_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-8e9588bd72"></a>`sha256` | `VARCHAR(64)` | yes | `—` | — |
-| <a id="s-4b05d6272b"></a>`write_token` | `VARCHAR` | yes | `—` | — |
-| <a id="s-7fbb554fa1"></a>`expected_stored_bytes` | `BIGINT` | yes | `—` | — |
-| <a id="s-e34547daf1"></a>`uploaded_bytes` | `BIGINT` | no | `—` | — |
-| <a id="s-05636761b0"></a>`uploaded_segments` | `BIGINT` | no | `—` | — |
-| <a id="s-ddb9434d31"></a>`total_segments` | `BIGINT` | no | `—` | — |
+| <a id="s-20abc2cef1"></a>`collection_id` | `BIGINT` | no | `—` | — |
+| <a id="s-5297f0c8b1"></a>`destination_store` | `VARCHAR` | no | `—` | — |
+| <a id="s-0628c3d37c"></a>`object_id` | `VARCHAR` | no | `—` | — |
+| <a id="s-0bf019998a"></a>`kind` | `VARCHAR` | no | `—` | — |
+| <a id="s-37e23b17c5"></a>`object_path` | `VARCHAR` | no | `—` | — |
+| <a id="s-3ffac4b9c2"></a>`plaintext_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-2cc72194df"></a>`sha256` | `VARCHAR(64)` | yes | `—` | — |
+| <a id="s-030b053228"></a>`write_token` | `VARCHAR` | yes | `—` | — |
+| <a id="s-585f88fbe1"></a>`expected_stored_bytes` | `BIGINT` | yes | `—` | — |
+| <a id="s-3bd5ad1bf8"></a>`uploaded_bytes` | `BIGINT` | no | `—` | — |
+| <a id="s-4e3d20386b"></a>`uploaded_segments` | `BIGINT` | no | `—` | — |
+| <a id="s-265cf5db23"></a>`total_segments` | `BIGINT` | no | `—` | — |
 
 #### Table constraints
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-41ec05c921"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, destination_store, object_id)` |
-| <a id="s-3080f32aac"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, destination_store) REFERENCES archive_copy_jobs (collection_id, destination_store) ON DELETE CASCADE` |
-| <a id="s-5833f4eb0b"></a>`check` | `ck_archive_copy_uploads_plaintext` | `CONSTRAINT ck_archive_copy_uploads_plaintext CHECK (plaintext_bytes >= 0)` |
-| <a id="s-aa27c23f66"></a>`check` | `ck_archive_copy_uploads_uploaded_bytes` | `CONSTRAINT ck_archive_copy_uploads_uploaded_bytes CHECK (uploaded_bytes >= 0)` |
-| <a id="s-e50cc0b2df"></a>`check` | `ck_archive_copy_uploads_uploaded_segments` | `CONSTRAINT ck_archive_copy_uploads_uploaded_segments CHECK (uploaded_segments >= 0)` |
-| <a id="s-f5fb204bd6"></a>`check` | `ck_archive_copy_uploads_total_segments` | `CONSTRAINT ck_archive_copy_uploads_total_segments CHECK (total_segments >= 0)` |
-| <a id="s-24251e3321"></a>`check` | `ck_archive_copy_uploads_segment_progress` | `CONSTRAINT ck_archive_copy_uploads_segment_progress CHECK (uploaded_segments <= total_segments)` |
-| <a id="s-a281875a0d"></a>`check` | `ck_archive_copy_object_uploads_sha256_hex` | `CONSTRAINT ck_archive_copy_object_uploads_sha256_hex CHECK (sha256 IS NULL OR length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
+| <a id="s-0ef405d0d8"></a>`primary-key` | `—` | `PRIMARY KEY (collection_id, destination_store, object_id)` |
+| <a id="s-76bb1574ec"></a>`foreign-key` | `—` | `FOREIGN KEY(collection_id, destination_store) REFERENCES archive_copy_jobs (collection_id, destination_store) ON DELETE CASCADE` |
+| <a id="s-f3944a6def"></a>`check` | `ck_archive_copy_uploads_plaintext` | `CONSTRAINT ck_archive_copy_uploads_plaintext CHECK (plaintext_bytes >= 0)` |
+| <a id="s-e6bfdc2d01"></a>`check` | `ck_archive_copy_uploads_uploaded_bytes` | `CONSTRAINT ck_archive_copy_uploads_uploaded_bytes CHECK (uploaded_bytes >= 0)` |
+| <a id="s-18d99c735a"></a>`check` | `ck_archive_copy_uploads_uploaded_segments` | `CONSTRAINT ck_archive_copy_uploads_uploaded_segments CHECK (uploaded_segments >= 0)` |
+| <a id="s-5fe26466b6"></a>`check` | `ck_archive_copy_uploads_total_segments` | `CONSTRAINT ck_archive_copy_uploads_total_segments CHECK (total_segments >= 0)` |
+| <a id="s-2000575e14"></a>`check` | `ck_archive_copy_uploads_segment_progress` | `CONSTRAINT ck_archive_copy_uploads_segment_progress CHECK (uploaded_segments <= total_segments)` |
+| <a id="s-6de35da074"></a>`check` | `ck_archive_copy_object_uploads_sha256_hex` | `CONSTRAINT ck_archive_copy_object_uploads_sha256_hex CHECK (sha256 IS NULL OR length(sha256) = 64 AND lower(sha256) = sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')` |
 
 ## Maintained corroboration
 
@@ -55,7 +55,7 @@ Exact externally visible contract owned by this contract element.
 
 ## Governing policies
 
-- <a id="pa-d4326abae3"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
+- <a id="pa-f4fe42bebf"></a>[compatibility/durable-state/v1](../../release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de)
 
 ## Evidence
 
@@ -71,7 +71,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Machine authority
 
-- `/external_contract/durable_state/owners/0/structure/tables/69`
+- `/external_contract/durable_state/owners/0/structure/tables/70`
 
 ### Exact owned JSON
 
