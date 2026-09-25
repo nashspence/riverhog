@@ -6,6 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import Any
 
 import pytest
 import riverhog_core.services.catalog_sync as catalog_sync_service
@@ -423,6 +424,59 @@ def test_catalog_replica_uses_one_request_per_step_and_publishes_atomically(
 
     replica.start(api)
     assert [item.collection_id for item in replica.page()] == [1]
+
+
+@pytest.mark.parametrize("changed_field", ["source_identity", "authorization_view_identity"])
+def test_catalog_replica_never_republishes_an_old_authorization_generation(
+    tmp_path: Path, changed_field: str
+) -> None:
+    class ChangedAuthority(_ReplicaApi):
+        authority = "9" * 64
+
+        def _changed(self, result: Any) -> Any:
+            return result.model_copy(update={changed_field: self.authority})
+
+        def create_catalog_sync_checkpoint(self) -> CatalogSyncCheckpoint:
+            return self._changed(super().create_catalog_sync_checkpoint())
+
+        def list_catalog_sync_collections(
+            self, cursor: str, *, limit: int = 100
+        ) -> CatalogSyncCollectionPage:
+            return self._changed(super().list_catalog_sync_collections(cursor, limit=limit))
+
+        def list_catalog_sync_changes(
+            self, cursor: str, *, limit: int = 100
+        ) -> CatalogSyncChangePage:
+            return self._changed(super().list_catalog_sync_changes(cursor, limit=limit))
+
+    database = tmp_path / "replica.sqlite3"
+    original = _ReplicaApi()
+    replica = CatalogReplica(database)
+    replica.start(original)
+    for _ in range(3):
+        replica.step(original, limit=1)
+    assert replica.page()[0].collection_id == 1
+
+    changed = ChangedAuthority()
+    for _ in range(2):
+        status = replica.start(changed)
+        assert status["active_generation"] is None
+        assert status["usable"] == 0
+        restarted = CatalogReplica(database)
+        with pytest.raises(RuntimeError, match="not synchronized"):
+            restarted.page()
+        with pytest.raises(RuntimeError, match="not synchronized"):
+            restarted.get(1)
+        with pytest.raises(RuntimeError, match="not synchronized"):
+            restarted.tag_page(1)
+        replica.step(changed, limit=1)
+        assert replica.status()["usable"] == 0
+
+    replica.step(changed, limit=1)  # complete tag hydration
+    assert replica.status()["usable"] == 0
+    replica.step(changed, limit=1)  # publish the replacement generation
+    assert replica.status()["usable"] == 1
+    assert replica.page()[0].collection_id == 1
 
 
 def test_catalog_replica_retries_a_lost_page_without_advancing_local_state(

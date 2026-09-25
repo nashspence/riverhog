@@ -133,9 +133,6 @@ def test_readme_states_archive_and_adapter_authority() -> None:
         REPO / "SECURITY.md",
         REPO / "docs/architecture.md",
         REPO / "qualification/contracts/riverhog-v1/index.md",
-        REPO / "some-implementations/riverhog/applications/a-riverhog-minisign-witness/README.md",
-        REPO
-        / "some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/README.md",
     }
 
 

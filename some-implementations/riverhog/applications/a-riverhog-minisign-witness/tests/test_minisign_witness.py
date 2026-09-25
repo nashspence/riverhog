@@ -4,10 +4,11 @@ import sqlite3
 import subprocess
 from pathlib import Path
 
+import a_riverhog_minisign_witness.cli as witness_cli
 import pytest
 from a_riverhog_minisign_witness.minisign import MinisignSigner, public_key_identity
 from a_riverhog_minisign_witness.schema import upgrade_state, validate_state
-from a_riverhog_minisign_witness.store import Signature, WitnessStore
+from a_riverhog_minisign_witness.store import Signature, SignerError, WitnessStore
 from riverhog_protocol import (
     CatalogSyncChangePage,
     CatalogSyncCheckpoint,
@@ -16,7 +17,7 @@ from riverhog_protocol import (
     CatalogSyncDescriptor,
     CatalogSyncUpsert,
 )
-from riverhog_protocol.errors import CatalogSyncViewChanged
+from riverhog_protocol.errors import CatalogSyncViewChanged, RiverhogError
 
 
 class Api:
@@ -150,6 +151,45 @@ def test_equal_revision_conflict_rolls_back_cursor_and_evidence(tmp_path: Path) 
         assert db.execute("SELECT COUNT(*) FROM statements").fetchone()[0] == 1
 
 
+@pytest.mark.parametrize("failure", ["reset", "outage"])
+def test_run_signs_due_statement_when_catalog_cannot_advance(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    failure: str,
+) -> None:
+    path = tmp_path / "minisign.db"
+    upgrade_state(path)
+    store = WitnessStore(path)
+    api = Api()
+    store.ingest_once(api, now=100)
+    store.ingest_once(api, now=100)
+    with sqlite3.connect(path) as db:
+        digest = db.execute("SELECT digest FROM statements").fetchone()[0]
+
+    if failure == "reset":
+        api.view_changed = True
+        assert store.ingest_once(api, now=101).kind == "reset"
+    else:
+
+        class UnavailableApi(Api):
+            def list_catalog_sync_changes(
+                self, cursor: str, *, limit: int = 100
+            ) -> CatalogSyncChangePage:
+                raise RiverhogError("catalog unavailable", code="service_unavailable")
+
+        monkeypatch.setattr(witness_cli, "ApiClient", UnavailableApi)
+
+    signer = Signer()
+    result = witness_cli._run_once(store, signer)
+    assert result["catalog_batch"] is None
+    assert result["signed_statement"] == digest
+    assert signer.calls == 1
+    assert store.evidence(digest)["signature"] == b"signed"
+    expected = "ingestion paused" if failure == "reset" else "ingestion failed"
+    assert expected in capsys.readouterr().err
+
+
 def test_real_minisign_key_signs_exact_statement(tmp_path: Path) -> None:
     try:
         executable = subprocess.run(
@@ -194,4 +234,51 @@ def test_real_minisign_key_signs_exact_statement(tmp_path: Path) -> None:
             check=False,
         ).returncode
         != 0
+    )
+
+
+def test_real_minisign_rotation_cannot_misattribute_a_signature(tmp_path: Path) -> None:
+    try:
+        executable = subprocess.run(
+            ["mise", "which", "minisign"], check=True, capture_output=True, text=True
+        ).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        pytest.skip("locked Minisign tool is unavailable")
+
+    secret = tmp_path / "secret.key"
+    public = tmp_path / "public.key"
+    next_secret = tmp_path / "next-secret.key"
+    next_public = tmp_path / "next-public.key"
+    for secret_path, public_path in ((secret, public), (next_secret, next_public)):
+        subprocess.run(
+            [executable, "-G", "-W", "-s", str(secret_path), "-p", str(public_path)],
+            check=True,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    previous_identity = public_key_identity(public)
+    next_identity = public_key_identity(next_public)
+    assert previous_identity != next_identity
+    signer = MinisignSigner(secret, public, executable=executable)
+    statement = b"a-riverhog-collection-witness/v1\nrotated\n"
+    assert signer.sign(statement).key_identity == previous_identity
+
+    next_secret.replace(secret)
+    with pytest.raises(SignerError):
+        signer.sign(statement)  # mismatched pair must not produce a signature claim
+    next_public.replace(public)
+    rotated = signer.sign(statement)
+    assert rotated.key_identity == next_identity
+
+    message = tmp_path / "rotated-statement"
+    signature = tmp_path / "rotated.minisig"
+    message.write_bytes(statement)
+    signature.write_bytes(rotated.payload)
+    subprocess.run(
+        [executable, "-Vm", str(message), "-p", str(public), "-x", str(signature), "-q"],
+        check=True,
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     )

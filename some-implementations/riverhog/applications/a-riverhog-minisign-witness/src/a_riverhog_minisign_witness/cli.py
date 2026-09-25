@@ -10,6 +10,7 @@ import sys
 import time
 from pathlib import Path
 
+import httpx
 from a_riverhog_witness_contract_lib._cli_contract import (
     COUNT,
     OPTIONAL_COUNT,
@@ -26,7 +27,7 @@ from state_schema import StateSchemaError
 
 from a_riverhog_minisign_witness.minisign import MinisignSigner
 from a_riverhog_minisign_witness.schema import state_schema
-from a_riverhog_minisign_witness.store import SignerError, StaleProposal, WitnessStore
+from a_riverhog_minisign_witness.store import Signer, SignerError, StaleProposal, WitnessStore
 
 _CLI_RESULT_CONTRACT = result_contract(
     "a-riverhog-minisign-witness",
@@ -100,10 +101,21 @@ def _progress(store: WitnessStore) -> dict[str, object]:
     }
 
 
-def _run_once(store: WitnessStore, signer: MinisignSigner) -> dict[str, object]:
-    batch = store.ingest_once(ApiClient())
-    digest = store.sign_once(signer)
-    return {"catalog_batch": batch.kind, "signed_statement": digest, "progress": _progress(store)}
+def _run_once(store: WitnessStore, signer: Signer) -> dict[str, object]:
+    batch_kind: str | None = None
+    if store.progress().position.phase == "reset_required":
+        print("witness run ingestion paused: explicit rebaseline required", file=sys.stderr)
+    else:
+        try:
+            batch_kind = store.ingest_once(ApiClient()).kind
+        except (RiverhogError, httpx.HTTPError, OSError, StaleProposal) as exc:
+            print(f"witness run ingestion failed: {type(exc).__name__}", file=sys.stderr)
+    digest: str | None = None
+    try:
+        digest = store.sign_once(signer)
+    except (OSError, StaleProposal) as exc:
+        print(f"witness run signing failed: {type(exc).__name__}", file=sys.stderr)
+    return {"catalog_batch": batch_kind, "signed_statement": digest, "progress": _progress(store)}
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -11,6 +11,7 @@ import time
 from dataclasses import asdict
 from pathlib import Path
 
+import httpx
 from a_riverhog_witness_contract_lib._cli_contract import (
     BOOLEAN,
     COUNT,
@@ -156,10 +157,21 @@ def _progress(store: WitnessStore) -> dict[str, object]:
     }
 
 
-def _run_once(store: WitnessStore, calendar: HttpCalendar) -> dict[str, object]:
-    batch = store.ingest_once(ApiClient())
-    digest = store.mature_once(calendar)
-    return {"catalog_batch": batch.kind, "matured_statement": digest, "progress": _progress(store)}
+def _run_once(store: WitnessStore, calendar: proof.Calendar) -> dict[str, object]:
+    batch_kind: str | None = None
+    if store.progress().position.phase == "reset_required":
+        print("witness run ingestion paused: explicit rebaseline required", file=sys.stderr)
+    else:
+        try:
+            batch_kind = store.ingest_once(ApiClient()).kind
+        except (RiverhogError, httpx.HTTPError, OSError, StaleProposal) as exc:
+            print(f"witness run ingestion failed: {type(exc).__name__}", file=sys.stderr)
+    digest: str | None = None
+    try:
+        digest = store.mature_once(calendar)
+    except (proof.CalendarError, httpx.HTTPError, OSError, StaleProposal) as exc:
+        print(f"witness run maturation failed: {type(exc).__name__}", file=sys.stderr)
+    return {"catalog_batch": batch_kind, "matured_statement": digest, "progress": _progress(store)}
 
 
 def main(argv: list[str] | None = None) -> int:
