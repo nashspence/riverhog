@@ -28,6 +28,7 @@ document at `/openapi.json`.
   repository layout.
 - [V1 contract atlas](qualification/contracts/riverhog-v1/index.md) provides the generated,
   human-routable view of the exact checked external contract.
+- [Guiding heuristics](guidance/README.md) records nonbinding, noncontractual design guidance.
 - [Licensing](LICENSE.md) defines the repository's release terms.
 
 Release-level reference documentation belongs to tagged releases. The documentation on

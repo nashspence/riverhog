@@ -207,6 +207,54 @@ def validate_atlas(
         raise ContractAtlasError(f"contract elements use unknown interfaces: {unknown_interfaces}")
     projection_value = cast(Mapping[str, object], root["projection"])
     trace_value = cast(Mapping[str, object], root["trace"])
+    read_witnesses = trace_value.get("read_authority_witnesses")
+    if not isinstance(read_witnesses, list):
+        raise ContractAtlasError("read-authority witness trace is missing")
+    read_witness_ids: set[str] = set()
+    for witness in read_witnesses:
+        if not isinstance(witness, dict) or set(witness) != {
+            "id",
+            "scope",
+            "status",
+            "subject_pointers",
+            "test_node_ids",
+        }:
+            raise ContractAtlasError("read-authority witness trace is malformed")
+        identity = witness["id"]
+        pointers = witness["subject_pointers"]
+        test_nodes = witness["test_node_ids"]
+        if (
+            not isinstance(identity, str)
+            or not identity
+            or identity in read_witness_ids
+            or not isinstance(witness["scope"], str)
+            or not witness["scope"]
+            or witness["status"] != "candidate-association"
+            or not isinstance(pointers, list)
+            or not pointers
+            or not all(isinstance(pointer, str) for pointer in pointers)
+            or len(pointers) != len(set(pointers))
+            or not isinstance(test_nodes, list)
+            or not test_nodes
+            or not all(isinstance(node, str) for node in test_nodes)
+            or len(test_nodes) != len(set(test_nodes))
+            or not all("::" in node for node in test_nodes)
+        ):
+            raise ContractAtlasError("read-authority witness trace is invalid")
+        read_witness_ids.add(identity)
+        for pointer in pointers:
+            if not isinstance(pointer, str) or not pointer.startswith("/external_contract/"):
+                raise ContractAtlasError("read-authority witness subject is not contractual")
+            try:
+                pointer_value(projection_value, pointer)
+            except (ContractAtlasError, IndexError, KeyError, ValueError) as exc:
+                raise ContractAtlasError(
+                    f"read-authority witness has missing subject: {identity}: {pointer}"
+                ) from exc
+    if cast(Mapping[str, object], trace_value["coverage"]).get("read_authority_witnesses") != len(
+        read_witnesses
+    ):
+        raise ContractAtlasError("read-authority witness coverage count is inconsistent")
     _validate_process_protocol_units(elements, projection_value)
     _validate_python_units(elements, projection_value, trace_value)
     _validate_release_units(elements, projection_value)

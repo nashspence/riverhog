@@ -1,0 +1,349 @@
+# The schema is an internal register format, not a product contract.
+schema = "riverhog-nonbinding-guidance/v1"
+
+[[heuristics]]
+id = "exact-external-effect-authority"
+guidance = """
+Prefer sealing explicit intent and acquiring destination-specific ownership before starting
+an external effect; use that same attempt when reconciling ambiguous outcomes.
+"""
+scope = """
+Design and maintenance of collection-description and collection-tag-head publication where
+database acceptance and provider I/O cannot commit atomically.
+"""
+rationale = """
+This favors a design in which delayed work and retries remain attributable to one intended
+effect. It does not prescribe a public protocol or weaken independently required
+correctness.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_collection_descriptions.py::test_primary_description_claim_excludes_replica_worker_for_the_same_destination"
+note = """
+Existing witness association for primary-versus-replica destination exclusion; not a newly
+audited general proof.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_collection_descriptions.py::test_replica_description_claim_excludes_primary_writer_for_the_same_destination"
+note = """
+Existing witness association for the reverse destination-exclusion case.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_collection_tags.py::test_delayed_old_head_writer_cannot_overwrite_newer_acknowledged_authority"
+note = """
+Existing witness association for a delayed older head writer.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/integration/test_catalog_schema_postgres.py::test_postgres_primary_description_claim_excludes_replica_worker"
+note = """
+Existing PostgreSQL association for competing publication ownership.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/integration/test_catalog_schema_postgres.py::test_postgres_mutable_replica_attempt_serializes_reconciliation_before_newer_desired"
+note = """
+Existing PostgreSQL association for reconciliation ordering.
+"""
+
+[[heuristics]]
+id = "structured-authority-dependency-liveness"
+guidance = """
+Prefer establishing successor protection for referenced immutable dependencies before
+releasing predecessor protection; distinguish content equality from retained storage.
+"""
+scope = """
+Design and maintenance of collection-tag authority whose nodes can be reclaimed
+independently.
+"""
+rationale = """
+This favors explicit lifetime accounting across reuse, publication, and reclamation. Any
+actual retention promise remains independently defined.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_collection_tags.py::test_tag_edit_inherits_complete_published_subtrees_without_rewalking_them"
+note = """
+Existing witness association for subtree reuse.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_collection_tags.py::test_pending_mutation_reuses_a_retiring_root_without_a_retention_gap"
+note = """
+Existing witness association for reuse during retirement.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_collection_tags.py::test_delayed_gc_cannot_delete_a_node_republished_by_a_newer_authority"
+note = """
+Existing witness association for delayed reclamation and republication.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_collection_tags.py::test_provider_nodes_for_retained_exact_revisions_remain_recoverable"
+note = """
+Existing witness association for nodes of retained revisions; does not create a retention
+promise.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/integration/test_catalog_schema_postgres.py::test_postgres_reused_tag_node_gc_and_publication_workers_converge"
+note = """
+Existing PostgreSQL association for reclamation/publication races.
+"""
+
+[[heuristics]]
+id = "external-result-acceptance-and-cleanup-custody"
+guidance = """
+Prefer explicit durable acceptance and cleanup receipts for external results, including
+superseded results; carry that bookkeeping through ambiguity, restart, retirement, and
+reuse.
+"""
+scope = """
+Design and maintenance of collection-description publication, collection-tag publication,
+tag-node reclamation, and mutable-document reclamation.
+"""
+rationale = """
+This favors recoverable accounting over inferring completion from a provider call returning.
+It neither defines an external completion guarantee nor waives existing regression checks.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_collection_descriptions.py::test_description_projection_waits_for_durable_publication_and_restarts"
+note = """
+Existing witness association for publication acceptance and restart.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_collection_descriptions.py::test_description_replacement_reconciles_receipts_after_an_ambiguous_response"
+note = """
+Existing witness association for ambiguous replacement responses.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_collection_descriptions.py::test_superseded_document_cleanup_receipt_survives_collection_retirement"
+note = """
+Existing witness association for cleanup custody across retirement.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_collection_tags.py::test_superseded_tag_heads_retain_exact_cleanup_custody"
+note = """
+Existing witness association for superseded tag-head receipts.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_collection_tags.py::test_tag_node_gc_resumes_idempotently_after_an_ambiguous_delete"
+note = """
+Existing witness association for ambiguous deletion and retry.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_collection_tags.py::test_delayed_success_from_old_tag_gc_cannot_consume_successor"
+note = """
+Existing witness association for delayed successful reclamation results.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_collection_tags.py::test_delayed_failure_from_old_tag_gc_cannot_reschedule_successor"
+note = """
+Existing witness association for delayed failed reclamation results.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/integration/test_catalog_schema_postgres.py::test_postgres_delayed_success_from_old_tag_gc_cannot_consume_successor"
+note = """
+Existing PostgreSQL association for delayed successful reclamation results.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/integration/test_catalog_schema_postgres.py::test_postgres_delayed_failure_from_old_tag_gc_cannot_reschedule_successor"
+note = """
+Existing PostgreSQL association for delayed failed reclamation results.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_collection_tags.py::test_unrelated_head_advance_preserves_interrupted_tag_gc_until_reuse_is_safe"
+note = """
+Existing witness association for interrupted reclamation during head advancement.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/integration/test_catalog_schema_postgres.py::test_postgres_unrelated_head_advance_preserves_interrupted_tag_gc_until_reuse_is_safe"
+note = """
+Existing PostgreSQL association for interrupted reclamation during head advancement.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/integration/test_catalog_schema_postgres.py::test_postgres_superseded_document_cleanup_workers_claim_distinct_receipts"
+note = """
+Existing PostgreSQL association for concurrent cleanup receipt claims.
+"""
+
+[[heuristics]]
+id = "bounded-obligation-progression"
+guidance = """
+Prefer durable, restartable continuation for work that can exceed one bounded step; account
+for attempted work separately from semantic completion and consider the progress of
+unrelated runnable work.
+"""
+scope = """
+Design and maintenance of mutable-collection publication and mutable-document reclamation,
+including segmented work, provider effects, and retry scheduling.
+"""
+rationale = """
+This favors bounded resource use without casually turning an operational budget into a
+logical size limit. Exact limits, progress obligations, and completion semantics come from
+their independent authorities.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_collection_descriptions.py::test_maximum_description_document_is_retained_before_provider_io"
+note = """
+Existing witness association for representability before provider I/O.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_collection_tags.py::test_tag_publication_budget_defers_but_does_not_limit_logical_mutation"
+note = """
+Existing witness association for an operational budget distinct from logical mutation size.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_collection_tags.py::test_persistent_tag_gc_failure_is_bounded_and_does_not_starve_other_publication"
+note = """
+Existing witness association for bounded failed reclamation alongside publication.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_collection_tags.py::test_tag_node_reclamation_counts_every_edge_and_node_row_at_work_one"
+note = """
+Existing witness association for row-level work accounting.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/integration/test_catalog_schema_postgres.py::test_postgres_description_attempt_accepts_maximum_canonical_document"
+note = """
+Existing PostgreSQL association for description representability.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/integration/test_catalog_schema_postgres.py::test_postgres_tag_history_cleanup_serializes_its_row_work_budget"
+note = """
+Existing PostgreSQL association for cleanup-budget accounting.
+"""
+
+[[heuristics]]
+id = "presentation-is-a-projection"
+guidance = """
+Prefer deriving human and machine presentations from the same operation result, with output
+mode changing presentation rather than the selected operation or its inputs.
+"""
+scope = """
+Maintenance of existing Piggity collection-list, collection-show, and archive-store views.
+Consider the same approach for comparable new views; this record does not declare universal
+interface parity.
+"""
+rationale = """
+A shared result reduces duplicated response models and accidental divergence. Human text can
+summarize; this guidance does not require textual equality or promise that every JSON field
+appears in human output.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_cli_json_output.py::test_collection_list_json_emits_the_api_response_without_a_second_model"
+note = """
+Uses a fake client: identical list-call arguments, full JSON payload, and selected human
+fields. No live-API or traversal claim.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_cli_json_output.py::test_collection_show_human_and_json_use_one_identical_api_response"
+note = """
+Uses a fake client: the same collection lookup, complete JSON payload, and selected human
+fields.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_cli_json_output.py::test_archive_store_views_project_the_same_api_models_in_human_and_json"
+note = """
+Uses a fake client: matching list/show calls and JSON payloads, plus selected human fields.
+"""
+
+[[heuristics]]
+id = "audience-aware-interface-design"
+guidance = """
+When extending a maintained interface family, consider its intended audience and reuse the
+operation classification before deciding whether to add a human command, a client primitive,
+or a standard-protocol path.
+"""
+scope = """
+Design review of Riverhog, Stove0, and FTP-adapter interface additions; the existing
+operation matrix remains independently authoritative for its own classified surfaces.
+"""
+rationale = """
+This makes parity a deliberate, scoped design choice rather than an assumption that every
+endpoint needs every interface. It does not add, change, or interpret any operation-matrix
+or contract entry.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_operation_qualification.py::test_generated_operation_matrix_is_complete_and_fail_closed"
+note = """
+Checks current matrix identities, classifications, and client/CLI presence for relevant
+classes; not end-to-end behavioral equivalence.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_operation_qualification.py::test_operation_audiences_distinguish_commands_wires_and_protocols"
+note = """
+Checks representative current audience classifications, not full interface parity.
+"""
+
+[[heuristics]]
+id = "derive-references-from-canonical-sources"
+guidance = """
+Prefer generating secondary reference material and checking it against its established
+executable source instead of keeping a parallel hand-maintained inventory.
+"""
+scope = """
+Design of repository reference generators and release-installation outputs; consider the
+same approach when adding documentation about existing contract surfaces.
+"""
+rationale = """
+This reduces opportunities for competing descriptions to diverge. The guidance neither
+appoints a source as contractual authority nor makes a generated document contractual.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_release_installation.py::test_installation_artifacts_are_derived_and_mutually_consistent"
+note = """
+Builds and verifies fixture installation artifacts, manifest relationships, and reference
+content; the external-lock export is stubbed. This is not a real-platform installation
+result.
+"""
+
+[[heuristics]]
+id = "scope-evidence-to-what-was-exercised"
+guidance = """
+Prefer describing a check at the level it actually exercises, distinguishing structural
+correspondence, fake-client checks, live behavior, and exact-run results.
+"""
+scope = """
+Maintenance of qualification reporting and cross-interface parity explanations; related test
+links in this register remain contextual only.
+"""
+rationale = """
+This avoids turning test presence or a narrow successful response into a broader assurance.
+Evidence required by an actual contract is still handled independently.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_operation_qualification.py::test_exact_sha_evidence_contains_only_generated_current_rows"
+note = """
+Uses constructed timing evidence and checks that broader lifecycle, CLI projection, bounded-
+access, and restart qualifications remain not established; this test does not itself
+establish those behaviors.
+"""

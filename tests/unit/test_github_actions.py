@@ -164,7 +164,7 @@ def test_ci_uses_thin_repository_and_image_build_adapters() -> None:
         "lint",
         "compile",
         "unit",
-        "implementation-policy",
+        "guidance",
         "c2sp-vectors",
         "postgres-concurrency",
         "compose-smoke",

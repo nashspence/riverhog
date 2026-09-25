@@ -77,6 +77,58 @@ LEGACY_TRACE_OUTPUT = ROOT / "qualification/contracts/riverhog-v1-trace.json"
 CONTRACT_FREEZE_EXCEPTIONS = ROOT / "qualification/contract-freeze-exceptions.toml"
 FORMAT = "riverhog-contract-freeze/v1"
 TRACE_FORMAT = "riverhog-contract-trace/v1"
+READ_AUTHORITY_WITNESS_BINDINGS = (
+    {
+        "id": "catalog-sync-read-authority-lifetime/v1",
+        "subject_pointers": (
+            "/external_contract/http_openapi/riverhog/paths/"
+            "~1v1~1catalog-sync~1changes/get/responses/410",
+            "/external_contract/http_openapi/riverhog/paths/"
+            "~1v1~1catalog-sync~1collections/get/responses/409",
+            "/external_contract/http_openapi/riverhog/paths/"
+            "~1v1~1catalog-sync~1collections/get/responses/410",
+            "/external_contract/configuration_documents/"
+            "riverhog-server:configuration:riverhog-document/properties/"
+            "catalog_sync_cursor_lifetime",
+            "/external_contract/configuration_documents/"
+            "riverhog-server:configuration:riverhog-document/properties/"
+            "catalog_sync_history_retention",
+        ),
+        "test_node_ids": (
+            "tests/unit/test_catalog_sync.py::"
+            "test_catalog_sync_cursor_fails_closed_for_authority_changes",
+            "tests/unit/test_catalog_sync.py::test_catalog_sync_cursor_expiry_is_explicit",
+            "tests/unit/test_catalog_sync.py::"
+            "test_catalog_sync_history_reaping_has_an_explicit_gap_error",
+            "tests/unit/test_runtime_config.py::"
+            "test_catalog_sync_cursor_lifetimes_fit_the_retained_history",
+        ),
+        "scope": (
+            "Candidate test associations for declared CatalogSync error responses and "
+            "retention settings; these links do not certify an executed result or add a "
+            "general snapshot guarantee."
+        ),
+    },
+    {
+        "id": "exact-tag-revision-lifetime/v1",
+        "subject_pointers": (
+            "/external_contract/http_openapi/riverhog/paths/"
+            "~1v1~1collections~1{collection_id}~1tags/get/responses/404",
+            "/external_contract/configuration_documents/"
+            "riverhog-server:configuration:riverhog-document/properties/"
+            "catalog_sync_history_retention",
+        ),
+        "test_node_ids": (
+            "tests/unit/test_collection_tags.py::"
+            "test_exact_tag_revisions_expire_with_the_catalog_history_that_names_them",
+        ),
+        "scope": (
+            "Candidate test association for exact tag-revision expiry; the declared 404 "
+            "response and retention setting do not independently promise a particular "
+            "retention duration for every tag revision."
+        ),
+    },
+)
 CONFIGURATION_DISCOVERY_FORMAT = "riverhog-configuration-discovery/v1"
 AUTHORITY_REGISTRY_FORMAT = "riverhog-contract-authority-registry/v1"
 NONCONTRACTUAL_PROJECTION_AUTHORITIES: tuple[dict[str, object], ...] = (
@@ -2073,11 +2125,25 @@ def _configuration_environment_patterns(
     return []
 
 
+def _repository_schema_paths() -> list[Path]:
+    """Discover schemas only under implementation-owned source roots.
+
+    Guidance and other repository context cannot become a contract authority
+    merely because it contains a file with a schema suffix.
+    """
+
+    roots = (ROOT / "packages", ROOT / "riverhog", ROOT / "some-implementations")
+    return sorted(
+        path
+        for source_root in roots
+        for path in source_root.rglob("*.schema.json")
+        if ".venv" not in path.parts and ".git" not in path.parts
+    )
+
+
 def _schema_documents() -> dict[str, object]:
     documents: dict[str, object] = {}
-    for path in sorted(ROOT.glob("**/*.schema.json")):
-        if ".venv" in path.parts or ".git" in path.parts:
-            continue
+    for path in _repository_schema_paths():
         document = json.loads(path.read_text(encoding="utf-8"))
         authority = document.get("$id")
         if not isinstance(authority, str) or not authority:
@@ -2354,9 +2420,7 @@ def _configuration_trace(
 
 def _protocol_trace() -> list[dict[str, object]]:
     traced: list[dict[str, object]] = []
-    for path in sorted(ROOT.glob("**/*.schema.json")):
-        if ".venv" in path.parts or ".git" in path.parts:
-            continue
+    for path in _repository_schema_paths():
         relative = path.relative_to(ROOT).as_posix()
         document = json.loads(path.read_text(encoding="utf-8"))
         authority = document.get("$id")
@@ -2725,6 +2789,51 @@ def _release_surface_registries(
     }
 
 
+def _read_authority_witnesses(projection: Mapping[str, object]) -> list[dict[str, object]]:
+    """Bind prior contract-classified test links to declared subjects, as audit context."""
+
+    ids: set[str] = set()
+    records: list[dict[str, object]] = []
+    for binding in READ_AUTHORITY_WITNESS_BINDINGS:
+        identity = cast(str, binding["id"])
+        if identity in ids:
+            raise ContractFreezeError(f"duplicate read-authority witness: {identity}")
+        ids.add(identity)
+        pointers = cast(tuple[str, ...], binding["subject_pointers"])
+        test_nodes = cast(tuple[str, ...], binding["test_node_ids"])
+        if (
+            not pointers
+            or len(pointers) != len(set(pointers))
+            or not test_nodes
+            or len(test_nodes) != len(set(test_nodes))
+        ):
+            raise ContractFreezeError(f"unscoped read-authority witness: {identity}")
+        for pointer in pointers:
+            if not pointer.startswith("/external_contract/"):
+                raise ContractFreezeError(f"read-authority subject is not contractual: {pointer}")
+            try:
+                pointer_value(projection, pointer)
+            except (ContractAtlasError, IndexError, KeyError, ValueError) as exc:
+                raise ContractFreezeError(
+                    f"read-authority witness has missing subject: {identity}: {pointer}"
+                ) from exc
+        for node in test_nodes:
+            if extent_witnesses._test_source(ROOT, node) is None:
+                raise ContractFreezeError(
+                    f"read-authority witness has stale test node: {identity}: {node}"
+                )
+        records.append(
+            {
+                "id": identity,
+                "subject_pointers": list(pointers),
+                "test_node_ids": list(test_nodes),
+                "scope": binding["scope"],
+                "status": "candidate-association",
+            }
+        )
+    return records
+
+
 def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
     boundaries = cast(Mapping[str, object], projection["boundaries"])
     external = cast(Mapping[str, object], projection["external_contract"])
@@ -2818,6 +2927,7 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
         "boundary_canonical_sha256": _boundary_canonical_sha256(boundaries),
         "contract_projection_sha256": hashlib.sha256(rendered_payload).hexdigest(),
         "sources": sources,
+        "read_authority_witnesses": _read_authority_witnesses(projection),
         "segmented_extent_witnesses": segmented_extent_witnesses,
         "extent_sources": [
             {
@@ -2854,6 +2964,7 @@ def trace_projection(projection: Mapping[str, object]) -> dict[str, object]:
             "segmented_decisions": len(segmented_links),
             "segmented_extent_witness_links": segmented_extent_witness_link_count,
             "segmented_extent_witnesses": len(segmented_extent_witnesses),
+            "read_authority_witnesses": len(READ_AUTHORITY_WITNESS_BINDINGS),
         },
     }
 

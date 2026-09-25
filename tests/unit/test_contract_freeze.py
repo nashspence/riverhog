@@ -109,6 +109,43 @@ def test_operation_trace_binds_the_actual_parser_callback_and_rejects_ambiguity(
         module._operation_trace(external)
 
 
+def test_prior_read_authority_links_remain_contract_side_audit_context() -> None:
+    trace = json.loads(ARTIFACT.read_text(encoding="utf-8"))["trace"]
+    witnesses = {item["id"]: item for item in trace["read_authority_witnesses"]}
+    assert set(witnesses) == {
+        "catalog-sync-read-authority-lifetime/v1",
+        "exact-tag-revision-lifetime/v1",
+    }
+    assert all(item["status"] == "candidate-association" for item in witnesses.values())
+    assert {node for item in witnesses.values() for node in item["test_node_ids"]} == {
+        "tests/unit/test_catalog_sync.py::test_catalog_sync_cursor_fails_closed_for_authority_changes",
+        "tests/unit/test_catalog_sync.py::test_catalog_sync_cursor_expiry_is_explicit",
+        "tests/unit/test_catalog_sync.py::test_catalog_sync_history_reaping_has_an_explicit_gap_error",
+        "tests/unit/test_runtime_config.py::test_catalog_sync_cursor_lifetimes_fit_the_retained_history",
+        "tests/unit/test_collection_tags.py::test_exact_tag_revisions_expire_with_the_catalog_history_that_names_them",
+    }
+    assert all(
+        pointer.startswith("/external_contract/")
+        for item in witnesses.values()
+        for pointer in item["subject_pointers"]
+    )
+
+
+def test_schema_discovery_does_not_consume_guidance(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    module = load_script()
+    source = tmp_path / "packages/protocol/example.schema.json"
+    source.parent.mkdir(parents=True)
+    source.write_text('{"$id":"example"}', encoding="utf-8")
+    context = tmp_path / "guidance/unrelated.schema.json"
+    context.parent.mkdir()
+    context.write_text('{"$id":"unrelated"}', encoding="utf-8")
+    monkeypatch.setattr(module, "ROOT", tmp_path)
+
+    assert module._repository_schema_paths() == [source]
+
+
 def test_checked_contract_freeze_matches_every_executable_authority(
     checked_contract_closure: dict[str, Any],
 ) -> None:
