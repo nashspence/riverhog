@@ -2447,7 +2447,7 @@ def _build_release_images(
             "--set",
             f"{target}.args.BUILD_CREATED={created}",
             "--set",
-            f"{target}.args.SOURCE_DATE_EPOCH={source_epoch}",
+            f"{target}.args.SOURCE_DATE_EPOCH=0",
             "--set",
             f"{target}.args.RELEASE_VERSION={version}",
             "--set",
@@ -2459,14 +2459,14 @@ def _build_release_images(
                     "--set",
                     f"{target}.cache-from=type=gha,scope={target}",
                     "--set",
-                    f"{target}.cache-to=type=gha,scope={target},mode=min,ignore-error=true",
+                    f"{target}.cache-to=type=gha,scope={target},mode=max,ignore-error=true",
                 ]
             )
         build_command.append(target)
         _run(
             build_command,
             cwd=root,
-            env={"SOURCE_DATE_EPOCH": str(source_epoch)},
+            env={"SOURCE_DATE_EPOCH": "0"},
         )
         _run(["docker", "tag", local_version_tag, local_sha_tag], cwd=root)
         inspect = cast(

@@ -149,6 +149,10 @@ RUN apt-get update --snapshot "${UBUNTU_APT_SNAPSHOT}" \
 COPY --from=ffmpeg-build /opt/ffmpeg /usr/local
 COPY --from=python-build /opt/venv /opt/venv
 
+COPY LICENSES/Apache-2.0.txt /usr/share/licenses/riverhog/Apache-2.0.txt
+COPY LICENSES/CAL-1.0.txt /usr/share/licenses/riverhog/CAL-1.0.txt
+COPY THIRD_PARTY_NOTICES.md /usr/share/doc/riverhog/THIRD_PARTY_NOTICES.md
+
 ARG BUILD_CREATED=1970-01-01T00:00:00Z
 ARG RELEASE_VERSION=development
 ARG SOURCE_REVISION=unknown
@@ -162,9 +166,6 @@ LABEL org.opencontainers.image.title="stove0 NVENC AV1 + Opus target" \
       io.github.nashspence.riverhog.release-role="component" \
       org.opencontainers.image.documentation="https://nashspence.github.io/riverhog/v1/"
 
-COPY LICENSES/Apache-2.0.txt /usr/share/licenses/riverhog/Apache-2.0.txt
-COPY LICENSES/CAL-1.0.txt /usr/share/licenses/riverhog/CAL-1.0.txt
-COPY THIRD_PARTY_NOTICES.md /usr/share/doc/riverhog/THIRD_PARTY_NOTICES.md
 
 USER 65532:65532
 EXPOSE 8080

@@ -47,6 +47,17 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
+COPY LICENSES/Apache-2.0.txt /usr/share/licenses/riverhog/Apache-2.0.txt
+COPY THIRD_PARTY_NOTICES.md /usr/share/doc/riverhog/THIRD_PARTY_NOTICES.md
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates tini \
+    && rm -rf /var/lib/apt/lists/* \
+    && install -d -o 65532 -g 65532 -m 0770 /intake /intake/ftp \
+    && ! command -v mise
+
+COPY --from=build /opt/venv /opt/venv
+
 ARG BUILD_CREATED=1970-01-01T00:00:00Z
 ARG RELEASE_VERSION=development
 ARG SOURCE_REVISION=unknown
@@ -60,16 +71,6 @@ LABEL org.opencontainers.image.title="Riverhog FTP spool" \
       io.github.nashspence.riverhog.release-role="component" \
       org.opencontainers.image.documentation="https://nashspence.github.io/riverhog/v1/"
 
-COPY LICENSES/Apache-2.0.txt /usr/share/licenses/riverhog/Apache-2.0.txt
-COPY THIRD_PARTY_NOTICES.md /usr/share/doc/riverhog/THIRD_PARTY_NOTICES.md
-
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates tini \
-    && rm -rf /var/lib/apt/lists/* \
-    && install -d -o 65532 -g 65532 -m 0770 /intake /intake/ftp \
-    && ! command -v mise
-
-COPY --from=build /opt/venv /opt/venv
 
 USER 65532:65532
 EXPOSE 8080 2121 30000-30039

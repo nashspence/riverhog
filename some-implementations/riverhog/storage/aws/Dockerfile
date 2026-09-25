@@ -39,6 +39,17 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
+COPY LICENSES/Apache-2.0.txt /usr/share/licenses/riverhog/Apache-2.0.txt
+COPY LICENSES/CAL-1.0.txt /usr/share/licenses/riverhog/CAL-1.0.txt
+COPY THIRD_PARTY_NOTICES.md /usr/share/doc/riverhog/THIRD_PARTY_NOTICES.md
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates tini \
+    && rm -rf /var/lib/apt/lists/* \
+    && ! command -v mise
+
+COPY --from=build /opt/venv /opt/venv
+
 ARG BUILD_CREATED=1970-01-01T00:00:00Z
 ARG RELEASE_VERSION=development
 ARG SOURCE_REVISION=unknown
@@ -52,16 +63,6 @@ LABEL org.opencontainers.image.title="Riverhog AWS store" \
       io.github.nashspence.riverhog.release-role="component" \
       org.opencontainers.image.documentation="https://nashspence.github.io/riverhog/v1/"
 
-COPY LICENSES/Apache-2.0.txt /usr/share/licenses/riverhog/Apache-2.0.txt
-COPY LICENSES/CAL-1.0.txt /usr/share/licenses/riverhog/CAL-1.0.txt
-COPY THIRD_PARTY_NOTICES.md /usr/share/doc/riverhog/THIRD_PARTY_NOTICES.md
-
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates tini \
-    && rm -rf /var/lib/apt/lists/* \
-    && ! command -v mise
-
-COPY --from=build /opt/venv /opt/venv
 
 USER 65532:65532
 EXPOSE 8080

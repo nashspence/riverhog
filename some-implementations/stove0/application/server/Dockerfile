@@ -57,16 +57,10 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-ARG BUILD_CREATED=1970-01-01T00:00:00Z
-ARG RELEASE_VERSION=development
-ARG SOURCE_REVISION=unknown
 LABEL org.opencontainers.image.title="stove0" \
       org.opencontainers.image.description="Content-opaque transformation application for Riverhog." \
       org.opencontainers.image.licenses="CAL-1.0" \
       org.opencontainers.image.source="https://github.com/nashspence/riverhog" \
-      org.opencontainers.image.revision="${SOURCE_REVISION}" \
-      org.opencontainers.image.version="${RELEASE_VERSION}" \
-      org.opencontainers.image.created="${BUILD_CREATED}" \
       org.opencontainers.image.documentation="https://nashspence.github.io/riverhog/v1/"
 
 COPY LICENSES/Apache-2.0.txt /usr/share/licenses/riverhog/Apache-2.0.txt
@@ -88,7 +82,21 @@ FROM runtime-base AS bundled-components
 LABEL io.github.nashspence.riverhog.composition="bundled-components"
 COPY --from=bundled-components-build /opt/venv /opt/venv
 
+ARG BUILD_CREATED=1970-01-01T00:00:00Z
+ARG RELEASE_VERSION=development
+ARG SOURCE_REVISION=unknown
+LABEL org.opencontainers.image.revision="${SOURCE_REVISION}" \
+      org.opencontainers.image.version="${RELEASE_VERSION}" \
+      org.opencontainers.image.created="${BUILD_CREATED}"
+
 FROM runtime-base AS runtime
 
 LABEL io.github.nashspence.riverhog.release-role="application"
 COPY --from=build /opt/venv /opt/venv
+
+ARG BUILD_CREATED=1970-01-01T00:00:00Z
+ARG RELEASE_VERSION=development
+ARG SOURCE_REVISION=unknown
+LABEL org.opencontainers.image.revision="${SOURCE_REVISION}" \
+      org.opencontainers.image.version="${RELEASE_VERSION}" \
+      org.opencontainers.image.created="${BUILD_CREATED}"
