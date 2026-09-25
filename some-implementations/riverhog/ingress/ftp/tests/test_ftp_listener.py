@@ -198,7 +198,8 @@ def test_incomplete_upload_is_not_handed_off_and_resumes_after_restart(
                 time.sleep(0.05)
             else:
                 raise AssertionError("FTP listener did not receive the exact prefix")
-            ftp.close()
+            assert ftp.abort().startswith("426 ")
+            assert ftp.getresp().startswith("226 ")
             assert incomplete_received.wait(timeout=5)
         finally:
             ftp.close()
