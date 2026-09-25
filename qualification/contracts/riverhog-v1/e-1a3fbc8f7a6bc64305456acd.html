@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,124 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-09dc1e38a978cb3e071a9885.html">riverhog · HTTP Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>schemas: PortableCollectionInventoryAuthority</h1>
+<p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
 <section id="contract" data-contract="http-schemas:riverhog:schemas-portablecollectioninventoryauthority:f6afc209b1">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-da66940f25c69cff9d49ffe1">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>PortableCollectionInventoryAuthority</code>
+</dd>
+<dt>description</dt>
+<dd>
+<code>The immutable authority shared by every bounded inventory page.</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;header&quot;,&quot;inventory_identity&quot;,&quot;file_count&quot;,&quot;file_bytes&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>file_bytes</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">#/components/schemas/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>file_count</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">#/components/schemas/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>header</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9b5f99ff9017b132bdb39428.html#v-b136bcb9c120c3e727e476d0">#/components/schemas/PortableCollectionHeader</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>inventory_identity</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionInventoryAuthority</code>
-</h3>
+</h4>
 <table id="v-da66940f25c69cff9d49ffe1">
 <tbody>
 <tr>
@@ -266,170 +366,62 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>http:riverhog:components:/schemas/PortableCollectionInventoryAuthority/properties/inventory_identity:length</code>
-<table id="v-c136e25c077c4821c538e762">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-1bfddad4983b07611f38ba29">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1PortableCollectionInventoryAuthority~1properties~1inventory_identity:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionInventoryAuthority/properties/inventory_identity</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-bb14841e24d2d7ad08a4cf32">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1PortableCollectionInventoryAuthority~1properties~1inventory_identity:length/id">http:riverhog:components:/schemas/PortableCollectionInventoryAuthority/properties/inventory_identity:length</code>
-<span class="kind">string</span>
-</span>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
+<td>length · characters · fixed</td>
 <td>
-<span id="v-187fb1ba50364c00dbebf2d4">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1PortableCollectionInventoryAuthority~1properties~1inventory_identity:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-ae7275ff8a023e358a413370">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1PortableCollectionInventoryAuthority~1properties~1inventory_identity:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-bf3a31baec498ec53306057a">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1PortableCollectionInventoryAuthority~1properties~1inventory_identity:length/owner">riverhog</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-1cc0484ed5e7f068ce49c8bd">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1PortableCollectionInventoryAuthority~1properties~1inventory_identity:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-62d920f30416c61ca8a0f8fa">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1PortableCollectionInventoryAuthority~1properties~1inventory_identity:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-af9a4f2c8f2c4c1f0e5db8c9">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1PortableCollectionInventoryAuthority~1properties~1inventory_identity:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-2662c7a916c0a0db71473069">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-66bdecfbd1b98d15405ec6cf">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1PortableCollectionInventoryAuthority~1properties~1inventory_identity:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-8be3dc00aa5532f74d58557d">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1PortableCollectionInventoryAuthority~1properties~1inventory_identity:length/source_pointer">/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionInventoryAuthority/properties/inventory_identity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-056fd6f6cd5ea225fc7b49ff">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1PortableCollectionInventoryAuthority~1properties~1inventory_identity:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

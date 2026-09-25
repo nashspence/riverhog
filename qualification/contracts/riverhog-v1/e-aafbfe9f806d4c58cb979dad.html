@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,138 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>schemas: CoordinationBranchPlan</h1>
+<p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
 <section id="contract" data-contract="http-schemas:stove0:schemas-coordinationbranchplan:6cd5d5c6dc">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-88cc4139d6a81c2e0d45c35f">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>CoordinationBranchPlan</code>
+</dd>
+<dt>description</dt>
+<dd>
+<code>One named required branch-bound child coordinator.</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;branch_id&quot;,&quot;artifact_selection&quot;,&quot;work&quot;,&quot;branch_set_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>artifact_selection</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-d0ddf7c7a04ac3bd6c4ff651.html#v-bd12209c434d86438c5c5efb">#/components/schemas/ArtifactSelectionRef</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>branch_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>branch_set_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>kind</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>coordination</code>; default: <code>coordination</code>
+</td>
+<td>
+<code>coordination</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>work</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-1110829e373d996c619f19a2.html#v-4f74f11a9ba26db932e44a71">#/components/schemas/WorkIdentity</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan</code>
-</h3>
+</h4>
 <table id="v-88cc4139d6a81c2e0d45c35f">
 <tbody>
 <tr>
@@ -332,170 +446,62 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>http:stove0:components:/schemas/CoordinationBranchPlan/properties/branch_set_sha256:length</code>
-<table id="v-1b46ac0db4da2f69040ec7a5">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-01dc9a541f1f90d2ff012d9e">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/properties/branch_set_sha256</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-d0114dcc9bc7890c89d67e26">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/id">http:stove0:components:/schemas/CoordinationBranchPlan/properties/branch_set_sha256:length</code>
-<span class="kind">string</span>
-</span>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
+<td>length · characters · fixed</td>
 <td>
-<span id="v-c95e382a407cd7d9730314f0">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-61a2b2cf6bcdad54efac7312">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-3bb389ef9550dcbaae8c7c7d">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-e2e62a1722e1b73937279f3b">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-6b5412aa5a2666149e6efb04">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-cf1cc43956704b4aa66c95c9">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-366e7d158396747b7f98bba9">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-29f2e00ddb4c12aa2137fce8">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-48d24ad87248c7e00217408a">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/properties/branch_set_sha256</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-32de9c343ed9430c581589a8">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

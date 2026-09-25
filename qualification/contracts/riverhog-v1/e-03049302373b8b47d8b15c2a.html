@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,391 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-694563cdf23c738aa6e5ce68.html">a-stove0-media-metadata-contract-lib · Python</a>
+<a href="index.html">All authorities</a> / <a href="a-702ca9e84f677c2a85b03c36.html">a-stove0-media-metadata-contract-lib</a> / <a href="i-694563cdf23c738aa6e5ce68.html">Python</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>a_stove0_media_metadata_contract_lib.MediaArtifactFacts</h1>
+<p class="context">Media metadata observation contracts for Stove0. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:a-stove0-media-metadata-contract-lib:a-stove0-media-metadata-contract-lib-medi-2f4d1153a2:83207977d8">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>a-stove0-media-metadata-contract-lib</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>a_stove0_media_metadata_contract_lib</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>MediaArtifactFacts</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(*, artifact_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], state: Literal[&#x27;observed&#x27;, &#x27;unsupported&#x27;], facts: tuple[a_stove0_media_metadata_contract_lib.contracts.MediaMetadataFact, ...] = ()) -&gt; None&quot;</code>
+</dd>
+</dl>
+<section class="schema-section" id="s-fdc3562bc113be7f4bfba551">
+<h3>Validated model schema</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>; all of: structured schema</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;artifact_id&quot;,&quot;state&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>artifact_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-3bd0c8e09dfc4a18e4330472">facts</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-03049302373b8b47d8b15c2a.html#v-bfea879bd4855bc91f562737">#/$defs/MediaMetadataFact</a>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>state</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;observed&quot;,&quot;unsupported&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>All must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-4fe3e4020ed256854ddfe893">1</a>
+</td>
+<td>structured schema</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-a351879f450b8a44354eba6e">JsonValue</a>
+</li>
+<li>
+<a href="#s-d2df346d47d56d6d60c48dd4">MediaFactEvidence</a>
+</li>
+<li>
+<a href="#s-bfea879bd4855bc91f562737">MediaMetadataFact</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-3bd0c8e09dfc4a18e4330472">
+<h3>Field: facts</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-03049302373b8b47d8b15c2a.html#v-bfea879bd4855bc91f562737">#/$defs/MediaMetadataFact</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-4fe3e4020ed256854ddfe893">
+<h3>All must match: 1</h3>
+<p class="shape">structured schema</p>
+<p>
+<a href="#s-01e574f79ee6c65c95a28af3">if schema</a>
+</p>
+<p>
+<a href="#s-d9c406daf3d968c7a41fd8b8">then schema</a>
+</p>
+</section>
+<section class="schema-section" id="s-a351879f450b8a44354eba6e">
+<h3>Definition: JsonValue</h3>
+<p class="shape">any JSON value</p>
+</section>
+<section class="schema-section" id="s-d2df346d47d56d6d60c48dd4">
+<h3>Definition: MediaFactEvidence</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;artifact_id&quot;,&quot;field&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>artifact_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>field</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>240</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-bfea879bd4855bc91f562737">
+<h3>Definition: MediaMetadataFact</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;name&quot;,&quot;value&quot;,&quot;evidence&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>evidence</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-03049302373b8b47d8b15c2a.html#v-d2df346d47d56d6d60c48dd4">#/$defs/MediaFactEvidence</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>name</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;capture-time&quot;,&quot;container-format&quot;,&quot;creator&quot;,&quot;device-make&quot;,&quot;device-model&quot;,&quot;gps-latitude&quot;,&quot;gps-longitude&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>value</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-03049302373b8b47d8b15c2a.html#v-a351879f450b8a44354eba6e">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-01e574f79ee6c65c95a28af3">
+<h3>if schema</h3>
+<p class="shape">1 fields</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;state&quot;]</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>state</code>
+</td>
+<td>yes</td>
+<td>const: <code>unsupported</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-d9c406daf3d968c7a41fd8b8">
+<h3>then schema</h3>
+<p class="shape">1 fields</p>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>facts</code>
+</td>
+<td>no</td>
+<td>maxItems: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/python/a_stove0_media_metadata_contract_lib.MediaArtifactFacts</code>
-</h3>
+</h4>
 <table id="v-bcd9327e0a19f804bd17cf63">
 <tbody>
 <tr>
@@ -904,25 +1271,40 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-cb7d167fd1169f5b87aff1a8.html">a_stove0_media_metadata_contract_lib.MediaArtifactFacts.valid_state</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/stove0/observers/contracts/media-metadata/src/a_stove0_media_metadata_contract_lib/__init__.py">some-implementations/stove0/observers/contracts/media-metadata/src/a_stove0_media_metadata_contract_lib/__init__.py</code>
+<a href="source-authorities.html#source-9ad9aed69d279e66fb82427a">python:a-stove0-media-metadata-contract-lib:a_stove0_media_metadata_contract_lib</a> — <code data-source-path="some-implementations/stove0/observers/contracts/media-metadata/src/a_stove0_media_metadata_contract_lib/__init__.py">some-implementations/stove0/observers/contracts/media-metadata/src/a_stove0_media_metadata_contract_lib/__init__.py</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

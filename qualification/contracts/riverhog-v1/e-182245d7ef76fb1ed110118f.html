@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,294 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-395b2911103a1ed2c62300ce.html">lifecycle-events · Python</a>
+<a href="index.html">All authorities</a> / <a href="a-df5e76723e9407b9c14259de.html">lifecycle-events</a> / <a href="i-395b2911103a1ed2c62300ce.html">Python</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>lifecycle_events.EventPage</h1>
+<p class="context">Durable native lifecycle-event log and client primitives. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:lifecycle-events:lifecycle-events-eventpage:8ee91e3310">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>lifecycle-events</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>lifecycle_events</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>EventPage</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&#x27;(*, events: list[lifecycle_events.models.LifecycleEvent], next_cursor: str, has_more: bool) -&gt; None&#x27;</code>
+</dd>
+</dl>
+<section class="schema-section" id="s-0d4a6f7d8e9ff17ea3728f74">
+<h3>Validated model schema</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;events&quot;,&quot;next_cursor&quot;,&quot;has_more&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-0facf2cec704fda2db0b5064">events</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-182245d7ef76fb1ed110118f.html#v-ae9e965a9ec3a697a4cb54d2">#/$defs/LifecycleEvent</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>has_more</code>
+</td>
+<td>yes</td>
+<td>
+<code>boolean</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>next_cursor</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-ae9e965a9ec3a697a4cb54d2">LifecycleEvent</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-0facf2cec704fda2db0b5064">
+<h3>Field: events</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-182245d7ef76fb1ed110118f.html#v-ae9e965a9ec3a697a4cb54d2">#/$defs/LifecycleEvent</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-ae9e965a9ec3a697a4cb54d2">
+<h3>Definition: LifecycleEvent</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;type&quot;,&quot;occurred_at&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>occurred_at</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-4bc03a082d6458c31405393d">payload</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <code>true</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-00ec5282e28ee187efc36a5a">subject</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>type</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-4bc03a082d6458c31405393d">
+<h3>Field: payload</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <code>true</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>true</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-00ec5282e28ee187efc36a5a">
+<h3>Field: subject</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; minLength: <code>1</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/python/lifecycle_events.EventPage</code>
-</h3>
+</h4>
 <table id="v-97fc9498e1af51cfc41729f6">
 <tbody>
 <tr>
@@ -629,25 +899,40 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-e9d5ccba156d676dba4ea186.html">lifecycle_events.EventPage.require_progress_after</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="packages/lifecycle-events/src/lifecycle_events/__init__.py">packages/lifecycle-events/src/lifecycle_events/__init__.py</code>
+<a href="source-authorities.html#source-7ab82f5e279a3e295fa78834">python:lifecycle-events:lifecycle_events</a> — <code data-source-path="packages/lifecycle-events/src/lifecycle_events/__init__.py">packages/lifecycle-events/src/lifecycle_events/__init__.py</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

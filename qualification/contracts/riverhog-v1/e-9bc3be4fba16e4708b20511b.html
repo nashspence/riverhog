@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,254 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-4cb6451250139576fc538025.html">riverhog-storage-adapter-support · Process Protocol Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-20f64efed79fb2e94ef137f4.html">riverhog-storage-adapter-support</a> / <a href="i-4cb6451250139576fc538025.html">Process Protocol Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>generated:riverhog-storage-adapter: AdapterDescriptor</h1>
+<p class="context">HTTP binding and conformance support for Riverhog storage adapters. Structured values exchanged by a process protocol.</p>
 <section id="contract" data-contract="process-protocol-schemas:riverhog-storage-adapter-support:generated-riverhog-storage-adapter-adapterdescriptor:e309d8ef07">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-4d4503852a5b07b0bbfda32d">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 8 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>AdapterDescriptor</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;storage_incarnation_id&quot;,&quot;implementation_id&quot;,&quot;implementation_version&quot;,&quot;read_mode&quot;,&quot;minimum_nonfinal_segment_bytes&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>implementation_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>implementation_version</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>120</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-e4c53eefe80effeb4edf01f9">maximum_segment_bytes</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9bc3be4fba16e4708b20511b.html#v-dd88e4b546253fcb50438c62">#/$defs/PositiveDecimal</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-bca1f9556e0a6da9793c1da6">maximum_segment_count</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9bc3be4fba16e4708b20511b.html#v-dd88e4b546253fcb50438c62">#/$defs/PositiveDecimal</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>minimum_nonfinal_segment_bytes</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9bc3be4fba16e4708b20511b.html#v-dd88e4b546253fcb50438c62">#/$defs/PositiveDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>protocol</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>riverhog-storage-adapter/v1</code>; default: <code>riverhog-storage-adapter/v1</code>
+</td>
+<td>
+<code>riverhog-storage-adapter/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>read_mode</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;immediate&quot;,&quot;restore_required&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>storage_incarnation_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-dd88e4b546253fcb50438c62">PositiveDecimal</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-e4c53eefe80effeb4edf01f9">
+<h3>Field: maximum_segment_bytes</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9bc3be4fba16e4708b20511b.html#v-dd88e4b546253fcb50438c62">#/$defs/PositiveDecimal</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9bc3be4fba16e4708b20511b.html#v-dd88e4b546253fcb50438c62">#/$defs/PositiveDecimal</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-bca1f9556e0a6da9793c1da6">
+<h3>Field: maximum_segment_count</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9bc3be4fba16e4708b20511b.html#v-dd88e4b546253fcb50438c62">#/$defs/PositiveDecimal</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9bc3be4fba16e4708b20511b.html#v-dd88e4b546253fcb50438c62">#/$defs/PositiveDecimal</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-dd88e4b546253fcb50438c62">
+<h3>Definition: PositiveDecimal</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^[1-9][0-9]*(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^[1-9][0-9]*(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/AdapterDescriptor</code>
-</h3>
+</h4>
 <table id="v-4d4503852a5b07b0bbfda32d">
 <tbody>
 <tr>
@@ -629,148 +859,70 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-653149bb33087ee097954552.html">generated:riverhog-storage-adapter protocol</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py">packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle</code>
+<a href="source-authorities.html#source-ef281f2471a91ed8e39ea04c">protocol:generated:riverhog-storage-adapter</a> — <code data-source-path="packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py">packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>protocol:generated:riverhog-storage-adapter:/schemas/AdapterDescriptor/properties/implementation_version:length</code>
-<table id="v-f8bd80a1301d915081a2d0a0">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-e8ee2be649c378c9510ba7c4">
-<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1AdapterDescriptor~1properties~1implementation_version:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/AdapterDescriptor/properties/implementation_version</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-dc4f6eb306cfa1366f1eef48">
-<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1AdapterDescriptor~1properties~1implementation_version:length/id">protocol:generated:riverhog-storage-adapter:/schemas/AdapterDescriptor/properties/implementation_version:length</code>
-<span class="kind">string</span>
-</span>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
+<td>length · characters · contract_max</td>
 <td>
-<span id="v-4530c4fb8e9a3b8bb4c76f92">
-<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1AdapterDescriptor~1properties~1implementation_version:length/maximum">120</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-eabb67436bbb3c4e010d4634">
-<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1AdapterDescriptor~1properties~1implementation_version:length/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-0f0bc7042b2d2a1ebccd1929">
-<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1AdapterDescriptor~1properties~1implementation_version:length/owner">riverhog-storage-adapter-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-289907b8d2d46da36053b5c5">
-<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1AdapterDescriptor~1properties~1implementation_version:length/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-ae10f40494b64a4a4512d0c2">
-<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1AdapterDescriptor~1properties~1implementation_version:length/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-af8c85c7af7e13720a3a60a0">
-<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1AdapterDescriptor~1properties~1implementation_version:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-d8597189fbf448907d33c2a6">
-<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1AdapterDescriptor~1properties~1implementation_version:length/source_pointer">/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/AdapterDescriptor/properties/implementation_version</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-42de72f7337dcc3606f79c74">
-<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1AdapterDescriptor~1properties~1implementation_version:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:120,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

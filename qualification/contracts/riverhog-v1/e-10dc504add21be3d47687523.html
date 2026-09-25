@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,400 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-09dc1e38a978cb3e071a9885.html">riverhog · HTTP Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>schemas: AppAccessListItemOut</h1>
+<p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
 <section id="contract" data-contract="http-schemas:riverhog:schemas-appaccesslistitemout:2c1fa51506">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-3254e40cf484aa5776fc164b">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>; all of: <a href="#s-5cd9df2132c37f7d35fdc245">exactly one of 4 alternatives</a>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>AppAccessListItemOut</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;permission&quot;,&quot;app&quot;,&quot;key_id&quot;,&quot;key_status&quot;,&quot;created_at&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>app</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-752b67abefe9328e2cd917bb.html#v-f3fdd9e23cf672dcd378a792">#/components/schemas/ApplicationName</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>created_at</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>key_id</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-348f10fba1a6859da4355ca7.html#v-430110c5819a9e01cdc19126">#/components/schemas/ApplicationKeyId</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>key_status</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;active&quot;,&quot;expired&quot;,&quot;revoked&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>permission</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-c5de15aeca8ad0f33a297445.html#v-7455dc9b56b3db5fe085641e">#/components/schemas/ApplicationPermission</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>resource</code>
+</td>
+<td>no</td>
+<td>
+<a href="e-05427da9595943eba8b6a05f.html#v-08a55fd79a3c8026e92b3ab8">#/components/schemas/ApplicationResource</a>; default: <code>*</code>
+</td>
+<td>
+<code>*</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>All must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-5cd9df2132c37f7d35fdc245">1</a>
+</td>
+<td>exactly one of: 2 fields; 2 fields; 2 fields; 2 fields</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-5cd9df2132c37f7d35fdc245">
+<h3>All must match: 1</h3>
+<p class="shape">exactly one of: 2 fields; 2 fields; 2 fields; 2 fields</p>
+<h4>Exactly one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-6b98e6a89a61885b280e9b43">1</a>
+</td>
+<td>2 fields</td>
+</tr>
+<tr>
+<td>
+<a href="#s-06abadca6cfc0c9dbea12605">2</a>
+</td>
+<td>2 fields</td>
+</tr>
+<tr>
+<td>
+<a href="#s-b6fce7008385b0ca55f3c5e3">3</a>
+</td>
+<td>2 fields</td>
+</tr>
+<tr>
+<td>
+<a href="#s-8d9f16ce160529e971bde15a">4</a>
+</td>
+<td>2 fields</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-6b98e6a89a61885b280e9b43">
+<h3>Exactly one must match: 1</h3>
+<p class="shape">2 fields</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;permission&quot;]</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>permission</code>
+</td>
+<td>yes</td>
+<td>const: <code>*</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>resource</code>
+</td>
+<td>no</td>
+<td>const: <code>*</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-06abadca6cfc0c9dbea12605">
+<h3>Exactly one must match: 2</h3>
+<p class="shape">2 fields</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;permission&quot;]</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>permission</code>
+</td>
+<td>yes</td>
+<td>const: <code>collections:create</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>resource</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; pattern: <code>^(?:\*|tag:.+)$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-b6fce7008385b0ca55f3c5e3">
+<h3>Exactly one must match: 3</h3>
+<p class="shape">2 fields</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;permission&quot;]</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>permission</code>
+</td>
+<td>yes</td>
+<td>enum: <code>[&quot;archives:manage&quot;,&quot;archives:read&quot;,&quot;catalog:read&quot;,&quot;collection-descriptions:manage&quot;,&quot;collection-tags:manage&quot;,&quot;collections:delete&quot;,&quot;provenance:export&quot;,&quot;provenance:read&quot;,&quot;retrieval:manage&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>resource</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; pattern: <code>^(?:\*|tag:.+|collection:[1-9][0-9]*)$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-8d9f16ce160529e971bde15a">
+<h3>Exactly one must match: 4</h3>
+<p class="shape">2 fields</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;permission&quot;]</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>permission</code>
+</td>
+<td>yes</td>
+<td>enum: <code>[&quot;collection-processing:control&quot;,&quot;collection-processing:execute&quot;,&quot;events:read&quot;,&quot;events:read_all&quot;,&quot;keys:manage&quot;,&quot;quotas:manage&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>resource</code>
+</td>
+<td>no</td>
+<td>const: <code>*</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut</code>
-</h3>
+</h4>
 <table id="v-3254e40cf484aa5776fc164b">
 <tbody>
 <tr>
@@ -959,148 +1335,62 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>http:riverhog:components:/schemas/AppAccessListItemOut/properties/created_at:length</code>
-<table id="v-1f8695c1066cede9aa41f871">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-34b455670122d23ccee0ac4e">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1AppAccessListItemOut~1properties~1created_at:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/properties/created_at</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-5c4253ad91d0ba0908006248">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1AppAccessListItemOut~1properties~1created_at:length/id">http:riverhog:components:/schemas/AppAccessListItemOut/properties/created_at:length</code>
-<span class="kind">string</span>
-</span>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
+<td>length · characters · fixed</td>
 <td>
-<span id="v-32958fd496869a0bdb72e004">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1AppAccessListItemOut~1properties~1created_at:length/maximum">30</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-055f60d75bc816cc784ef0e8">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1AppAccessListItemOut~1properties~1created_at:length/minimum">30</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-d3fb5dd076e97744984f3f4a">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1AppAccessListItemOut~1properties~1created_at:length/owner">riverhog</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-e48bb0b4cf902fc30c862876">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1AppAccessListItemOut~1properties~1created_at:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-2ecce7018246a48c549216ca">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1AppAccessListItemOut~1properties~1created_at:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-2ef4df0f9a72d996c8e330e1">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1AppAccessListItemOut~1properties~1created_at:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-75ccd12bd6a197e23c2da0e0">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1AppAccessListItemOut~1properties~1created_at:length/source_pointer">/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut/properties/created_at</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-2ff08490c5a4341c0ab1ab99">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1AppAccessListItemOut~1properties~1created_at:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:30,&quot;minimum&quot;:30,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

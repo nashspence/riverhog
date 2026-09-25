@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,1179 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-8d2f26db060d0a0b4b7c8c64.html">stove0-target-support · Python</a>
+<a href="index.html">All authorities</a> / <a href="a-a23132e8892754e98db86957.html">stove0-target-support</a> / <a href="i-8d2f26db060d0a0b4b7c8c64.html">Python</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>stove0_target_support.TargetPreflightResponse</h1>
+<p class="context">Hardware-neutral target protocol, runtime, and conformance support for Stove0. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:stove0-target-support:stove0-target-support-targetpreflightresponse:cb5681b311">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>stove0-target-support</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>stove0_target_support</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>TargetPreflightResponse</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&#x27;(*, descriptor: stove0_target_protocol.protocol.TargetDescriptor, plan: stove0_target_protocol.protocol.TransformPlan | stove0_target_protocol.protocol.EffectPlan) -&gt; None&#x27;</code>
+</dd>
+</dl>
+<section class="schema-section" id="s-f3ea57d221f057f8806a82bf">
+<h3>Validated model schema</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;descriptor&quot;,&quot;plan&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>descriptor</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-2137a786d41177c8406932dd.html#v-ba18d828e310b2bd18b4d295">#/$defs/TargetDescriptor</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-67122c79602f34cf560b47d8">plan</a>
+</td>
+<td>yes</td>
+<td>exactly one of: <a href="e-2137a786d41177c8406932dd.html#v-a567e96002f3f8e625b15526">#/$defs/TransformPlan</a>; <a href="e-2137a786d41177c8406932dd.html#v-7749ef86f4d209e05eae62e2">#/$defs/EffectPlan</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-575c19c319605248805407ed">ArtifactSelectionRef</a>
+</li>
+<li>
+<a href="#s-7749ef86f4d209e05eae62e2">EffectPlan</a>
+</li>
+<li>
+<a href="#s-e9e14dc8e81a84d579440d37">JsonSchemaValidationProfile</a>
+</li>
+<li>
+<a href="#s-fdd6b5bb87d3598473789f13">JsonValue</a>
+</li>
+<li>
+<a href="#s-4862d2b44589695c8e7a4c90">NonnegativeDecimal</a>
+</li>
+<li>
+<a href="#s-ba18d828e310b2bd18b4d295">TargetDescriptor</a>
+</li>
+<li>
+<a href="#s-09f382d4937ef283f0aa4b44">TargetInputAuthority</a>
+</li>
+<li>
+<a href="#s-f2000ee207e2355fb98d27f0">TargetInputRoleCount</a>
+</li>
+<li>
+<a href="#s-95fe3a7a5b7a0d31368c3cdf">TargetOperationSupport</a>
+</li>
+<li>
+<a href="#s-a567e96002f3f8e625b15526">TransformPlan</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-67122c79602f34cf560b47d8">
+<h3>Field: plan</h3>
+<p class="shape">exactly one of: <a href="e-2137a786d41177c8406932dd.html#v-a567e96002f3f8e625b15526">#/$defs/TransformPlan</a>; <a href="e-2137a786d41177c8406932dd.html#v-7749ef86f4d209e05eae62e2">#/$defs/EffectPlan</a>
+</p>
+<dl class="facts">
+<dt>discriminator</dt>
+<dd>
+<code>{&quot;mapping&quot;:{&quot;stove0-effect-target/v1&quot;:&quot;#/$defs/EffectPlan&quot;,&quot;stove0-transform-target/v1&quot;:&quot;#/$defs/TransformPlan&quot;},&quot;propertyName&quot;:&quot;protocol&quot;}</code>
+</dd>
+</dl>
+<h4>Exactly one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-2137a786d41177c8406932dd.html#v-a567e96002f3f8e625b15526">#/$defs/TransformPlan</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<a href="e-2137a786d41177c8406932dd.html#v-7749ef86f4d209e05eae62e2">#/$defs/EffectPlan</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-575c19c319605248805407ed">
+<h3>Definition: ArtifactSelectionRef</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;selection_sha256&quot;,&quot;artifact_count&quot;,&quot;total_bytes&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>artifact_count</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>selection_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>total_bytes</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-2137a786d41177c8406932dd.html#v-4862d2b44589695c8e7a4c90">#/$defs/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-7749ef86f4d209e05eae62e2">
+<h3>Definition: EffectPlan</h3>
+<p class="shape">
+<code>object</code>; 10 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;operation_id&quot;,&quot;operation_contract_sha256&quot;,&quot;inputs&quot;,&quot;intent&quot;,&quot;target_implementation_id&quot;,&quot;target_descriptor_sha256&quot;,&quot;plan_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>inputs</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-2137a786d41177c8406932dd.html#v-09f382d4937ef283f0aa4b44">#/$defs/TargetInputAuthority</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-6068f2a7e1c296933a40beaf">intent</a>
+</td>
+<td>yes</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-2137a786d41177c8406932dd.html#v-fdd6b5bb87d3598473789f13">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-0431da507a8340e2cc6fbb43">observation_result_sha256s</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>operation_contract_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>operation_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>plan_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>protocol</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-effect-target/v1</code>; default: <code>stove0-effect-target/v1</code>
+</td>
+<td>
+<code>stove0-effect-target/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>target_descriptor_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>target_implementation_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-0ae892e6887a37b3667b154c">target_options</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-2137a786d41177c8406932dd.html#v-fdd6b5bb87d3598473789f13">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-e9e14dc8e81a84d579440d37">
+<h3>Definition: JsonSchemaValidationProfile</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;profile_sha256&quot;,&quot;schema&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>dialect</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>https://json-schema.org/draft/2020-12/schema</code>; default: <code>https://json-schema.org/draft/2020-12/schema</code>
+</td>
+<td>
+<code>https://json-schema.org/draft/2020-12/schema</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>format_policy</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>annotation-only</code>; default: <code>annotation-only</code>
+</td>
+<td>
+<code>annotation-only</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>profile_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-d2b0d4c2206a0357e55b2821">schema</a>
+</td>
+<td>yes</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-2137a786d41177c8406932dd.html#v-fdd6b5bb87d3598473789f13">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-fdd6b5bb87d3598473789f13">
+<h3>Definition: JsonValue</h3>
+<p class="shape">any JSON value</p>
+</section>
+<section class="schema-section" id="s-4862d2b44589695c8e7a4c90">
+<h3>Definition: NonnegativeDecimal</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-ba18d828e310b2bd18b4d295">
+<h3>Definition: TargetDescriptor</h3>
+<p class="shape">
+<code>object</code>; 8 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;implementation_id&quot;,&quot;implementation_version&quot;,&quot;source_revision&quot;,&quot;image_id&quot;,&quot;operations&quot;,&quot;descriptor_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>descriptor_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>image_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^sha256:[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>implementation_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>implementation_version</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>120</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-1f4770bb5df15dbeedfb56c9">operations</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-2137a786d41177c8406932dd.html#v-95fe3a7a5b7a0d31368c3cdf">#/$defs/TargetOperationSupport</a>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>protocol</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;stove0-transform-target/v1&quot;,&quot;stove0-effect-target/v1&quot;]</code>; default: <code>stove0-transform-target/v1</code>
+</td>
+<td>
+<code>stove0-transform-target/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_revision</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>200</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>transport</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>riverhog-capability/v1</code>; default: <code>riverhog-capability/v1</code>
+</td>
+<td>
+<code>riverhog-capability/v1</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-09f382d4937ef283f0aa4b44">
+<h3>Definition: TargetInputAuthority</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;selection&quot;,&quot;roles&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-545193afc739e2bc6728c84c">roles</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-2137a786d41177c8406932dd.html#v-f2000ee207e2355fb98d27f0">#/$defs/TargetInputRoleCount</a>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>selection</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-2137a786d41177c8406932dd.html#v-575c19c319605248805407ed">#/$defs/ArtifactSelectionRef</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-f2000ee207e2355fb98d27f0">
+<h3>Definition: TargetInputRoleCount</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;role&quot;,&quot;count&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>count</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>role</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-95fe3a7a5b7a0d31368c3cdf">
+<h3>Definition: TargetOperationSupport</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;operation_id&quot;,&quot;operation_contract_sha256&quot;,&quot;options_schema&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>operation_contract_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>operation_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>options_schema</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-2137a786d41177c8406932dd.html#v-e9e14dc8e81a84d579440d37">#/$defs/JsonSchemaValidationProfile</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>result_kind</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;collection&quot;,&quot;external-effect&quot;]</code>; default: <code>collection</code>
+</td>
+<td>
+<code>collection</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-a567e96002f3f8e625b15526">
+<h3>Definition: TransformPlan</h3>
+<p class="shape">
+<code>object</code>; 10 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;operation_id&quot;,&quot;operation_contract_sha256&quot;,&quot;inputs&quot;,&quot;intent&quot;,&quot;target_implementation_id&quot;,&quot;target_descriptor_sha256&quot;,&quot;plan_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>inputs</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-2137a786d41177c8406932dd.html#v-09f382d4937ef283f0aa4b44">#/$defs/TargetInputAuthority</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-f08e189c04717766cf6f2188">intent</a>
+</td>
+<td>yes</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-2137a786d41177c8406932dd.html#v-fdd6b5bb87d3598473789f13">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-0c95c7066bc9e6ca866a50eb">observation_result_sha256s</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>operation_contract_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>operation_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>plan_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>protocol</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-transform-target/v1</code>; default: <code>stove0-transform-target/v1</code>
+</td>
+<td>
+<code>stove0-transform-target/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>target_descriptor_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>target_implementation_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-8ffa2c9c6f33ed6d4a2e2494">target_options</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-2137a786d41177c8406932dd.html#v-fdd6b5bb87d3598473789f13">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-6068f2a7e1c296933a40beaf">
+<h3>Field: intent</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-2137a786d41177c8406932dd.html#v-fdd6b5bb87d3598473789f13">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-0431da507a8340e2cc6fbb43">
+<h3>Field: observation_result_sha256s</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-0ae892e6887a37b3667b154c">
+<h3>Field: target_options</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-2137a786d41177c8406932dd.html#v-fdd6b5bb87d3598473789f13">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-d2b0d4c2206a0357e55b2821">
+<h3>Field: schema</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-2137a786d41177c8406932dd.html#v-fdd6b5bb87d3598473789f13">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-1f4770bb5df15dbeedfb56c9">
+<h3>Field: operations</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-2137a786d41177c8406932dd.html#v-95fe3a7a5b7a0d31368c3cdf">#/$defs/TargetOperationSupport</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-545193afc739e2bc6728c84c">
+<h3>Field: roles</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-2137a786d41177c8406932dd.html#v-f2000ee207e2355fb98d27f0">#/$defs/TargetInputRoleCount</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-f08e189c04717766cf6f2188">
+<h3>Field: intent</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-2137a786d41177c8406932dd.html#v-fdd6b5bb87d3598473789f13">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-0c95c7066bc9e6ca866a50eb">
+<h3>Field: observation_result_sha256s</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-8ffa2c9c6f33ed6d4a2e2494">
+<h3>Field: target_options</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-2137a786d41177c8406932dd.html#v-fdd6b5bb87d3598473789f13">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/python/stove0_target_support.TargetPreflightResponse</code>
-</h3>
+</h4>
 <table id="v-fd7781d2085e299b4414fa4e">
 <tbody>
 <tr>
@@ -2906,25 +4061,40 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-1d358ff17bc30303f1bd9232.html">stove0_target_support.TargetPreflightResponse.bind_protocol</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/stove0/packages/target-support/src/stove0_target_support/__init__.py">some-implementations/stove0/packages/target-support/src/stove0_target_support/__init__.py</code>
+<a href="source-authorities.html#source-3c01163237a9830888156f6e">python:stove0-target-support:stove0_target_support</a> — <code data-source-path="some-implementations/stove0/packages/target-support/src/stove0_target_support/__init__.py">some-implementations/stove0/packages/target-support/src/stove0_target_support/__init__.py</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

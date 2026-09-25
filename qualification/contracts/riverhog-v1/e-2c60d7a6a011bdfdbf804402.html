@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,61 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-6c0c68dab977066c2d607683.html">stove0-server · Python</a>
+<a href="index.html">All authorities</a> / <a href="a-38913a60d95bc167e38ef46d.html">stove0-server</a> / <a href="i-6c0c68dab977066c2d607683.html">Python</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>stove0_core.SqlAlchemyStateStore</h1>
+<p class="context">Content-opaque transformation application for Riverhog. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:stove0-server:stove0-core-sqlalchemystatestore:0bbf7e527a">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>stove0-server</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>stove0_core</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>SqlAlchemyStateStore</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(database_url: &#x27;str&#x27;, *, engine: &#x27;Engine | None&#x27; = None, initialize: &#x27;bool&#x27; = True) -&gt; &#x27;None&#x27;&quot;</code>
+</dd>
+</dl>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/python/stove0_core.SqlAlchemyStateStore</code>
-</h3>
+</h4>
 <table id="v-3880bd2f0341d30757c53f7c">
 <tbody>
 <tr>
@@ -112,25 +149,172 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-1ccfc923df9fa6859295d440.html">stove0_core.SqlAlchemyStateStore.admit_branch_set</a>
+</li>
+<li>
+<a href="e-cbada8cca508517be79f0688.html">stove0_core.SqlAlchemyStateStore.admit_join</a>
+</li>
+<li>
+<a href="e-9582ad0c84da9c1cf595bdf8.html">stove0_core.SqlAlchemyStateStore.compare_and_swap_evaluation</a>
+</li>
+<li>
+<a href="e-3ab8a68e741445b4ace98117.html">stove0_core.SqlAlchemyStateStore.compare_and_swap_target_production_seal</a>
+</li>
+<li>
+<a href="e-8b4de962eda99ae5ff82830d.html">stove0_core.SqlAlchemyStateStore.compare_and_swap</a>
+</li>
+<li>
+<a href="e-0fe97b223976d70f6fa0251f.html">stove0_core.SqlAlchemyStateStore.compare_and_swap_cursor</a>
+</li>
+<li>
+<a href="e-04b2d4bb0ca126cdb4b767d3.html">stove0_core.SqlAlchemyStateStore.compare_and_swap_target_settlement_seal</a>
+</li>
+<li>
+<a href="e-44b77f826740caab822881f6.html">stove0_core.SqlAlchemyStateStore.create_evaluation</a>
+</li>
+<li>
+<a href="e-1489010c99ef02e09d43df39.html">stove0_core.SqlAlchemyStateStore.create</a>
+</li>
+<li>
+<a href="e-6dbfae0fde3236ca0634348b.html">stove0_core.SqlAlchemyStateStore.ensure_target_production_receiving</a>
+</li>
+<li>
+<a href="e-52ee10244dd05304205720f4.html">stove0_core.SqlAlchemyStateStore.ensure_target_settlement_binding</a>
+</li>
+<li>
+<a href="e-56e7dbe950728cdb54d1f60c.html">stove0_core.SqlAlchemyStateStore.evaluation_store</a>
+</li>
+<li>
+<a href="e-e2c170df099a43fb15346e14.html">stove0_core.SqlAlchemyStateStore.iter_evaluations</a>
+</li>
+<li>
+<a href="e-f14a15d1114b86b525c8adf5.html">stove0_core.SqlAlchemyStateStore.iter_selection_artifacts</a>
+</li>
+<li>
+<a href="e-fecdd383f8798aea49143962.html">stove0_core.SqlAlchemyStateStore.iter_target_outputs_by_path</a>
+</li>
+<li>
+<a href="e-bf10cc31213a07280b3927f2.html">stove0_core.SqlAlchemyStateStore.iter_target_source_edges_by_input</a>
+</li>
+<li>
+<a href="e-615f7c674a3591466092f18b.html">stove0_core.SqlAlchemyStateStore.iter_target_dispositions</a>
+</li>
+<li>
+<a href="e-a60e1b3f2a3f4f2aa35c4e84.html">stove0_core.SqlAlchemyStateStore.iter_target_source_edges</a>
+</li>
+<li>
+<a href="e-ffa8991058e047a2ac7be3eb.html">stove0_core.SqlAlchemyStateStore.iter_target_outputs</a>
+</li>
+<li>
+<a href="e-7ecb8c92eb4ccb092a52aa2f.html">stove0_core.SqlAlchemyStateStore.iter_work</a>
+</li>
+<li>
+<a href="e-a82ad56fb6c007e0699a1244.html">stove0_core.SqlAlchemyStateStore.list_evaluations</a>
+</li>
+<li>
+<a href="e-9976b251c5d8f811e511c939.html">stove0_core.SqlAlchemyStateStore.list_events</a>
+</li>
+<li>
+<a href="e-9fb6243f0fffe56476c663ad.html">stove0_core.SqlAlchemyStateStore.list_work</a>
+</li>
+<li>
+<a href="e-3e64b69fff26bf58c8b26f59.html">stove0_core.SqlAlchemyStateStore.load_cursor</a>
+</li>
+<li>
+<a href="e-9f9f34c3145d69f271a4bad2.html">stove0_core.SqlAlchemyStateStore.load_evaluation</a>
+</li>
+<li>
+<a href="e-c907fe3388a2c20488217c58.html">stove0_core.SqlAlchemyStateStore.load_selection_artifact</a>
+</li>
+<li>
+<a href="e-fb0206299f5e4c9ee8b09ae9.html">stove0_core.SqlAlchemyStateStore.load_selection_ref</a>
+</li>
+<li>
+<a href="e-0632786ac6b4e7f22f4eb7c4.html">stove0_core.SqlAlchemyStateStore.load_selection</a>
+</li>
+<li>
+<a href="e-7c3a9341d49359c29b5545ef.html">stove0_core.SqlAlchemyStateStore.load_target_settlement_seal</a>
+</li>
+<li>
+<a href="e-05836d74cced98dac611d32e.html">stove0_core.SqlAlchemyStateStore.load_target_disposition</a>
+</li>
+<li>
+<a href="e-826b66b6a8f742cd3f71048a.html">stove0_core.SqlAlchemyStateStore.load_target_production_seal</a>
+</li>
+<li>
+<a href="e-69012cfe0b992d10d309d98d.html">stove0_core.SqlAlchemyStateStore.load_target_output</a>
+</li>
+<li>
+<a href="e-d1d03252fc95c4f27a814aa5.html">stove0_core.SqlAlchemyStateStore.load</a>
+</li>
+<li>
+<a href="e-68f262edf78949d5691293eb.html">stove0_core.SqlAlchemyStateStore.prune_operational_state</a>
+</li>
+<li>
+<a href="e-35912aca6532ddadf9c81d9e.html">stove0_core.SqlAlchemyStateStore.record_target_disposition</a>
+</li>
+<li>
+<a href="e-ad7729dfb903c18927910fcd.html">stove0_core.SqlAlchemyStateStore.record_target_output</a>
+</li>
+<li>
+<a href="e-9b2175b90746bd8387e87071.html">stove0_core.SqlAlchemyStateStore.record_target_source_edge</a>
+</li>
+<li>
+<a href="e-98aa083ea9ccf105ee13e765.html">stove0_core.SqlAlchemyStateStore.retain_selection</a>
+</li>
+<li>
+<a href="e-76123e8423ae58b4c4d6bacc.html">stove0_core.SqlAlchemyStateStore.scan_target_production_seals</a>
+</li>
+<li>
+<a href="e-20bbab0a4017f30b4593dbdf.html">stove0_core.SqlAlchemyStateStore.scan_work</a>
+</li>
+<li>
+<a href="e-668cafbdbed58f3872f7fc89.html">stove0_core.SqlAlchemyStateStore.selection_artifact_page</a>
+</li>
+<li>
+<a href="e-cf3270587728a5b94fa581c0.html">stove0_core.SqlAlchemyStateStore.target_disposition_page</a>
+</li>
+<li>
+<a href="e-a2c09de22b697b75ada8fde6.html">stove0_core.SqlAlchemyStateStore.target_output_path_page</a>
+</li>
+<li>
+<a href="e-11a9ab8dcf1cd3b0a69032d9.html">stove0_core.SqlAlchemyStateStore.target_output_page</a>
+</li>
+<li>
+<a href="e-16210e22d638c456f40a0246.html">stove0_core.SqlAlchemyStateStore.target_source_edge_page</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/stove0/application/server/src/stove0_core/__init__.py">some-implementations/stove0/application/server/src/stove0_core/__init__.py</code>
+<a href="source-authorities.html#source-7558b08e7fed034d624d9aed">python:stove0-server:stove0_core</a> — <code data-source-path="some-implementations/stove0/application/server/src/stove0_core/__init__.py">some-implementations/stove0/application/server/src/stove0_core/__init__.py</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

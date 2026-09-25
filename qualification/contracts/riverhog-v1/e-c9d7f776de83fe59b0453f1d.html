@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,671 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-c059e91201cfe1498c912a09.html">a-riverhog-ftp-spool · Python</a>
+<a href="index.html">All authorities</a> / <a href="a-ddde5b8757ae966f662aa0b7.html">a-riverhog-ftp-spool</a> / <a href="i-c059e91201cfe1498c912a09.html">Python</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>a_riverhog_ftp_spool.FtpSpoolConfig</h1>
+<p class="context">FTP upload spool and ingestion adapter for Riverhog. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:a-riverhog-ftp-spool:a-riverhog-ftp-spool-ftpspoolconfig:e464ec01eb">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>a-riverhog-ftp-spool</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>a_riverhog_ftp_spool</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>FtpSpoolConfig</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&#x27;(*, host_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], riverhog_base_url: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2048)], allow_insecure_http: bool = False, provenance_observer: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=255)] = None, sources: Annotated[tuple[a_riverhog_ftp_spool.config.SourceConfig, ...], MinLen(min_length=1)], poll_seconds: Annotated[float, Ge(ge=0.1), Le(le=3600)] = 5.0, pending_claim_capacity: Annotated[int, Ge(ge=1)] = 128, claim_attempt_budget: Annotated[int, Ge(ge=2)] = 8, discovery_entry_budget: Annotated[int, Ge(ge=1)] = 4096, completion_failure_capacity: Annotated[int, Ge(ge=1)] = 128, completion_failure_attempt_budget: Annotated[int, Ge(ge=1)] = 8, riverhog_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], api_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)]) -&gt; None&#x27;</code>
+</dd>
+</dl>
+<section class="schema-section" id="s-14ceb68bfa243599b129d462">
+<h3>Validated model schema</h3>
+<p class="shape">
+<code>object</code>; 13 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;host_id&quot;,&quot;riverhog_base_url&quot;,&quot;sources&quot;,&quot;riverhog_token&quot;,&quot;api_token&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>allow_insecure_http</code>
+</td>
+<td>no</td>
+<td>
+<code>boolean</code>; default: <code>false</code>
+</td>
+<td>
+<code>false</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>api_token</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>claim_attempt_budget</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>2</code>; default: <code>8</code>
+</td>
+<td>
+<code>8</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>completion_failure_attempt_budget</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; default: <code>8</code>
+</td>
+<td>
+<code>8</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>completion_failure_capacity</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; default: <code>128</code>
+</td>
+<td>
+<code>128</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>discovery_entry_budget</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; default: <code>4096</code>
+</td>
+<td>
+<code>4096</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>host_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>pending_claim_capacity</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; default: <code>128</code>
+</td>
+<td>
+<code>128</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>poll_seconds</code>
+</td>
+<td>no</td>
+<td>
+<code>number</code>; minimum: <code>0.1</code>; maximum: <code>3600</code>; default: <code>5</code>
+</td>
+<td>
+<code>5</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-f1fa4299945b92564195dda7">provenance_observer</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>riverhog_base_url</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>2048</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>riverhog_token</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-3a070ed225123cb66109df37">sources</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-c9d7f776de83fe59b0453f1d.html#v-460987e5ccbc102ea185fd38">#/$defs/SourceConfig</a>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-b81d3d46c376242c2b433aaa">CollectionDescription</a>
+</li>
+<li>
+<a href="#s-042348bdc460ebe8df1b790c">CollectionTag</a>
+</li>
+<li>
+<a href="#s-460987e5ccbc102ea185fd38">SourceConfig</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-f1fa4299945b92564195dda7">
+<h3>Field: provenance_observer</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-3a070ed225123cb66109df37">
+<h3>Field: sources</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-c9d7f776de83fe59b0453f1d.html#v-460987e5ccbc102ea185fd38">#/$defs/SourceConfig</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-b81d3d46c376242c2b433aaa">
+<h3>Definition: CollectionDescription</h3>
+<p class="shape">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>32768</code>; x-riverhog-encoded-bytes-max: <code>32768</code>; x-unicode-normalization: <code>NFC</code>; x-riverhog-extent: structured schema</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>minLength</dt>
+<dd>
+<code>1</code>
+</dd>
+<dt>maxLength</dt>
+<dd>
+<code>32768</code>
+</dd>
+<dt>x-unicode-normalization</dt>
+<dd>
+<code>NFC</code>
+</dd>
+<dt>x-riverhog-encoded-bytes-max</dt>
+<dd>
+<code>32768</code>
+</dd>
+<dt>x-riverhog-extent</dt>
+<dd>
+<code>{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-human-authored-catalog-description&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-042348bdc460ebe8df1b790c">
+<h3>Definition: CollectionTag</h3>
+<p class="shape">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>65536</code>; x-riverhog-encoded-bytes-max: <code>65536</code>; x-unicode-normalization: <code>NFC</code>; x-riverhog-extent: structured schema</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>minLength</dt>
+<dd>
+<code>1</code>
+</dd>
+<dt>maxLength</dt>
+<dd>
+<code>65536</code>
+</dd>
+<dt>x-unicode-normalization</dt>
+<dd>
+<code>NFC</code>
+</dd>
+<dt>x-riverhog-encoded-bytes-max</dt>
+<dd>
+<code>65536</code>
+</dd>
+<dt>x-riverhog-extent</dt>
+<dd>
+<code>{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-human-authored-collection-tag&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-460987e5ccbc102ea185fd38">
+<h3>Definition: SourceConfig</h3>
+<p class="shape">
+<code>object</code>; 11 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;root&quot;,&quot;ingest_source&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-70e992d8cda08c59fca22170">archive_store</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>close_mode</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;stable&quot;,&quot;explicit-flush&quot;]</code>; default: <code>stable</code>
+</td>
+<td>
+<code>stable</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-4898219fe79f6a8f8cd58797">description</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-c9d7f776de83fe59b0453f1d.html#v-b81d3d46c376242c2b433aaa">#/$defs/CollectionDescription</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._-]{0,118}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>ingest_source</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>512</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>max_bytes</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; default: <code>107374182400</code>
+</td>
+<td>
+<code>107374182400</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>max_files</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; default: <code>1000</code>
+</td>
+<td>
+<code>1000</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>provenance</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;capture&quot;,&quot;omit&quot;]</code>; default: <code>capture</code>
+</td>
+<td>
+<code>capture</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-81f66c843bacdb0a6b2704a8">provenance_omission_reason</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; maxLength: <code>1000</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>root</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; format: <code>path</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-cd866ec8cf7da8d40c1a4179">tags</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-c9d7f776de83fe59b0453f1d.html#v-042348bdc460ebe8df1b790c">#/$defs/CollectionTag</a>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-70e992d8cda08c59fca22170">
+<h3>Field: archive_store</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-4898219fe79f6a8f8cd58797">
+<h3>Field: description</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-c9d7f776de83fe59b0453f1d.html#v-b81d3d46c376242c2b433aaa">#/$defs/CollectionDescription</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-c9d7f776de83fe59b0453f1d.html#v-b81d3d46c376242c2b433aaa">#/$defs/CollectionDescription</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-81f66c843bacdb0a6b2704a8">
+<h3>Field: provenance_omission_reason</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; maxLength: <code>1000</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; maxLength: <code>1000</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-cd866ec8cf7da8d40c1a4179">
+<h3>Field: tags</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-c9d7f776de83fe59b0453f1d.html#v-042348bdc460ebe8df1b790c">#/$defs/CollectionTag</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/python/a_riverhog_ftp_spool.FtpSpoolConfig</code>
-</h3>
+</h4>
 <table id="v-94e1b43f403f6a9b52890eb4">
 <tbody>
 <tr>
@@ -1806,25 +2453,46 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-11a53fd01702cba161568d56.html">a_riverhog_ftp_spool.FtpSpoolConfig.provenance_authority</a>
+</li>
+<li>
+<a href="e-f98f96165145d0021f603db8.html">a_riverhog_ftp_spool.FtpSpoolConfig.source</a>
+</li>
+<li>
+<a href="e-76453d8c567c3388dfb95c80.html">a_riverhog_ftp_spool.FtpSpoolConfig.unique_sources</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/__init__.py">some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/__init__.py</code>
+<a href="source-authorities.html#source-ab8cadf46c3a9917ec9ecbf4">python:a-riverhog-ftp-spool:a_riverhog_ftp_spool</a> — <code data-source-path="some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/__init__.py">some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/__init__.py</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,203 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-97662ede32d19804481410b5.html">riverhog · HTTP Operations</a>
+<a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-97662ede32d19804481410b5.html">HTTP Operations</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>POST /v1/apps/{app}/keys/{key_id}/revoke</h1>
+<p class="context">Riverhog archive service. Callable HTTP operations.</p>
 <section id="contract" data-contract="http-operations:riverhog:post-v1-apps-app-keys-key-id-revoke:de52e07c81">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Operation</h3>
+<p class="lead">Revoke App Key</p>
+<dl class="facts">
+<dt>operationId</dt>
+<dd>
+<code>revoke_app_key</code>
+</dd>
+<dt>tags</dt>
+<dd>
+<code>[&quot;apps&quot;]</code>
+</dd>
+<dt>security</dt>
+<dd>
+<code>[{&quot;HTTPBearer&quot;:[]}]</code>
+</dd>
+<dt>x-riverhog-permission-requirements</dt>
+<dd>
+<code>[{&quot;any_of&quot;:[&quot;keys:manage&quot;]}]</code>
+</dd>
+</dl>
+<h3>Parameters</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Name</th>
+<th scope="col">In</th>
+<th scope="col">Required</th>
+<th scope="col">Default</th>
+<th scope="col">Schema</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>app</code>
+</td>
+<td>
+<code>path</code>
+</td>
+<td>yes</td>
+<td>not declared</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9]+(?:-[a-z0-9]+)*$</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>key_id</code>
+</td>
+<td>
+<code>path</code>
+</td>
+<td>yes</td>
+<td>not declared</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{16}$</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Responses</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Status</th>
+<th scope="col">Description</th>
+<th scope="col">Media type</th>
+<th scope="col">Schema</th>
+<th scope="col">Error codes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>200</code>
+</td>
+<td>Successful Response</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-2d295efc68d2af39e8eee04d.html#v-30b79f4da38a3c018d56485d">#/components/schemas/AppKeyOut</a>
+</td>
+<td>not declared</td>
+</tr>
+<tr>
+<td>
+<code>400</code>
+</td>
+<td>Bad Request</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>bad_request</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>401</code>
+</td>
+<td>Unauthorized</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>unauthorized</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>403</code>
+</td>
+<td>Forbidden</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>forbidden</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>404</code>
+</td>
+<td>Not Found</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>not_found</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>500</code>
+</td>
+<td>Internal Server Error</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>internal_error</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1revoke/post</code>
-</h3>
+</h4>
 <table id="v-34033d480c45e385b07a337c">
 <tbody>
 <tr>
@@ -860,139 +1039,227 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-c46433c86731068ce7477d17.html">a-riverhog-cli app key revoke</a>
+</li>
+<li>
+<a href="e-c8d337b787db16fd5c81bad0.html">riverhog_client.ApiClient.revoke_app_key</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 <li>
-<code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
+<a href="source-authorities.html#source-b032bdc56b3fbe541165d1d2">operations:operation-matrix</a> — <code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>http:riverhog:operation:revoke_app_key:parameter:path:key_id:/:length</code>
-<table id="v-7e19ac738291b6a2b6ba4664">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1revoke/post/parameters/1/schema</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:16,&quot;minimum&quot;:16,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{16}$&quot;}}</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<details>
+<summary>Structural operation bindings</summary>
+<p>These bind maintained client, CLI, response authority, and provider routes. They are not executed qualification results.</p>
+<table id="v-01cebc637f511659f0533e40">
 <tbody>
 <tr>
 <th scope="row">
-<code>dimension</code>
+<code>application</code>
 </th>
 <td>
-<span id="v-c2a29552095e39aee68aa920">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:revoke_app_key:parameter:path:key_id:~1:length/dimension">length</code>
+<span id="v-d74bec042b54aed60bd6d4c9">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/application">riverhog</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>id</code>
+<code>classification</code>
 </th>
 <td>
-<span id="v-d0111de49d84e0b6cd410397">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:revoke_app_key:parameter:path:key_id:~1:length/id">http:riverhog:operation:revoke_app_key:parameter:path:key_id:/:length</code>
+<span id="v-2b5dc5b991dc57c4e79ae3f8">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/classification">human-cli+json</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>maximum</code>
+<code>cli_bindings</code>
 </th>
 <td>
-<span id="v-e491bb9fe4ea4fb370f6e04b">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:revoke_app_key:parameter:path:key_id:~1:length/maximum">16</code>
+<table id="v-f34ded277f5ad89c3f43bd0c">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-ef2160f7859a5f4a8af908b7">
+<tbody>
+<tr>
+<th scope="row">
+<code>command</code>
+</th>
+<td>
+<span id="v-55ab333001d82752f9a39ae2">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/cli_bindings/0/command">app key revoke</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>executable</code>
+</th>
+<td>
+<span id="v-a733f12e1ca50594b60fadf8">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/cli_bindings/0/executable">a-riverhog-cli</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>result_identity</code>
+</th>
+<td>
+<span id="v-140cc357bd49f7c8366207d0">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/cli_bindings/0/result_identity">a-riverhog-cli-result/app/key/revoke/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source</code>
+</th>
+<td>
+<table id="v-aac7dc8fdad852189bc31ed9">
+<tbody>
+<tr>
+<th scope="row">
+<code>line</code>
+</th>
+<td>
+<span id="v-e0687321fb21c2033b6f6c9a">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/cli_bindings/0/source/line">1211</code>
 <span class="kind">number</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>minimum</code>
+<code>module</code>
 </th>
 <td>
-<span id="v-ede3b1e56f4879dc9060ec67">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:revoke_app_key:parameter:path:key_id:~1:length/minimum">16</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-58373cbe2fd03500d00d2242">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:revoke_app_key:parameter:path:key_id:~1:length/owner">riverhog</code>
+<span id="v-aaf64d48d96fcd248c5bfa70">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/cli_bindings/0/source/module">a_riverhog_cli.main</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>policy</code>
+<code>path</code>
 </th>
 <td>
-<span id="v-4236f87c6cdb639aafecffbb">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:revoke_app_key:parameter:path:key_id:~1:length/policy">fixed</code>
+<span id="v-528a4bde73e94eba580bfe4e">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/cli_bindings/0/source/path">some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>reason</code>
+<code>symbol</code>
 </th>
 <td>
-<span id="v-56cacfc7ce80540b1774de3a">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:revoke_app_key:parameter:path:key_id:~1:length/reason">fixed-public-representation</code>
+<span id="v-fed2a7bd5e6318a881e319f5">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/cli_bindings/0/source/symbol">app_key_revoke_cmd</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-34b96a9e45fdde7072626c8c">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:revoke_app_key:parameter:path:key_id:~1:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>source_constraint</code>
+<code>cli_commands</code>
 </th>
 <td>
-<table id="v-42e2ef74dd80fd3291f3c55b">
+<table id="v-983699968f4f92f08011aebd">
 <tbody>
 <tr>
 <th scope="row">
-<code>pattern</code>
+<code>0</code>
 </th>
 <td>
-<span id="v-8cf4bc4ad73c88c6e5a3d03f">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:revoke_app_key:parameter:path:key_id:~1:length/source_constraint/pattern">^[0-9a-f]{16}$</code>
+<span id="v-e3d24d342988b6a25625fbcb">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/cli_commands/0">app key revoke</code>
 <span class="kind">string</span>
 </span>
 </td>
@@ -1003,30 +1270,172 @@
 </tr>
 <tr>
 <th scope="row">
-<code>source_pointer</code>
+<code>client</code>
 </th>
 <td>
-<span id="v-3451ab5c830247a9120a8a94">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:revoke_app_key:parameter:path:key_id:~1:length/source_pointer">/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1revoke/post/parameters/1/schema</code>
+<span id="v-3f434b8ab8ce6d104d930346">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/client">ApiClient</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>unit</code>
+<code>client_bindings</code>
 </th>
 <td>
-<span id="v-35a460bf2a633c8674a482ee">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:revoke_app_key:parameter:path:key_id:~1:length/unit">characters</code>
+<table id="v-9fb3cee6a4c33bb8dcc6fcbe">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-998be67e27fa84292883ca52">
+<tbody>
+<tr>
+<th scope="row">
+<code>public_identity</code>
+</th>
+<td>
+<span id="v-5aabd6580a4623ab7e884de8">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/client_bindings/0/public_identity">riverhog_client.ApiClient.revoke_app_key</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source</code>
+</th>
+<td>
+<table id="v-3e29f6fd70ce9d79468ae2d2">
+<tbody>
+<tr>
+<th scope="row">
+<code>line</code>
+</th>
+<td>
+<span id="v-8e0941479c1ef0544a660eb9">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/client_bindings/0/source/line">2164</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-3c058fcbc87f935210f5db13">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/client_bindings/0/source/module">riverhog_client.client</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<span id="v-99e1c8afeee7fdb51034fdee">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/client_bindings/0/source/path">packages/riverhog-client/src/riverhog_client/client.py</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>symbol</code>
+</th>
+<td>
+<span id="v-b0f1ecb0ea0bdaabbd89a763">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/client_bindings/0/source/symbol">ApiClient.revoke_app_key</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>method</code>
+</th>
+<td>
+<span id="v-355a6ba8ee6ba09368d8cb85">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/method">POST</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>operation_id</code>
+</th>
+<td>
+<span id="v-89a694e8b8029b2192a8786d">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/operation_id">revoke_app_key</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<span id="v-0b7eb81e20b745383d37dac5">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/path">/v1/apps/{app}/keys/{key_id}/revoke</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>provider_evidence</code>
+</th>
+<td>
+<span id="v-691f9c14724bba81f49cb689">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/provider_evidence">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>read_collection</code>
+</th>
+<td>
+<span id="v-f2cf73d79a883159f22457ba">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/read_collection">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>response_authority</code>
+</th>
+<td>
+<span id="v-637b21fac1ec5b7d1ed56438">
+<code data-value-pointer="/audit/operation-qualification/revoke_app_key/response_authority">http-json</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</details>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,175 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-97662ede32d19804481410b5.html">riverhog · HTTP Operations</a>
+<a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-97662ede32d19804481410b5.html">HTTP Operations</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>POST /v1/collection-upload-sessions/{collection_id}/heartbeat</h1>
+<p class="context">Riverhog archive service. Callable HTTP operations.</p>
 <section id="contract" data-contract="http-operations:riverhog:post-v1-collection-upload-sessions-collec-882159f1ab:82d740575d">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Operation</h3>
+<p class="lead">Heartbeat Collection Upload Session</p>
+<dl class="facts">
+<dt>operationId</dt>
+<dd>
+<code>heartbeat_collection_upload_session</code>
+</dd>
+<dt>tags</dt>
+<dd>
+<code>[&quot;collections&quot;]</code>
+</dd>
+<dt>security</dt>
+<dd>
+<code>[{&quot;HTTPBearer&quot;:[]}]</code>
+</dd>
+<dt>x-riverhog-permission-requirements</dt>
+<dd>
+<code>[{&quot;any_of&quot;:[&quot;collections:create&quot;]}]</code>
+</dd>
+<dt>x-riverhog-interface</dt>
+<dd>
+<code>client-only-primitive</code>
+</dd>
+</dl>
+<h3>Parameters</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Name</th>
+<th scope="col">In</th>
+<th scope="col">Required</th>
+<th scope="col">Default</th>
+<th scope="col">Schema</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>collection_id</code>
+</td>
+<td>
+<code>path</code>
+</td>
+<td>yes</td>
+<td>not declared</td>
+<td>all of: <code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>; structured schema</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Responses</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Status</th>
+<th scope="col">Description</th>
+<th scope="col">Media type</th>
+<th scope="col">Schema</th>
+<th scope="col">Error codes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>200</code>
+</td>
+<td>Successful Response</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-2f98c57dcf1cbaf8cb475024.html#v-8ffd85b110ef922b0e10d7bc">#/components/schemas/CollectionUploadSessionOut</a>
+</td>
+<td>not declared</td>
+</tr>
+<tr>
+<td>
+<code>400</code>
+</td>
+<td>Bad Request</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>bad_request</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>401</code>
+</td>
+<td>Unauthorized</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>unauthorized</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>403</code>
+</td>
+<td>Forbidden</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>forbidden</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>500</code>
+</td>
+<td>Internal Server Error</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>internal_error</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1heartbeat/post</code>
-</h3>
+</h4>
 <table id="v-2de8c0a8da087e99ca971fb2">
 <tbody>
 <tr>
@@ -750,30 +901,262 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-518721f8e9c5667964be92e8.html">riverhog_client.ApiClient.heartbeat_collection_upload_session</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 <li>
-<code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
+<a href="source-authorities.html#source-b032bdc56b3fbe541165d1d2">operations:operation-matrix</a> — <code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
+<details>
+<summary>Structural operation bindings</summary>
+<p>These bind maintained client, CLI, response authority, and provider routes. They are not executed qualification results.</p>
+<table id="v-4d85f25b3ea47c176a8a0fe6">
+<tbody>
+<tr>
+<th scope="row">
+<code>application</code>
+</th>
+<td>
+<span id="v-04fec2f84308163a6d8fd3a8">
+<code data-value-pointer="/audit/operation-qualification/heartbeat_collection_upload_session/application">riverhog</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>classification</code>
+</th>
+<td>
+<span id="v-f2c0d74487fcf46b9b21c1cb">
+<code data-value-pointer="/audit/operation-qualification/heartbeat_collection_upload_session/classification">client-only-primitive</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>cli_bindings</code>
+</th>
+<td>
+<span id="v-e74deaac01f414701341c7ad">
+<code data-value-pointer="/audit/operation-qualification/heartbeat_collection_upload_session/cli_bindings">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>cli_commands</code>
+</th>
+<td>
+<span id="v-c09ad4613d21efeff7507bb0">
+<code data-value-pointer="/audit/operation-qualification/heartbeat_collection_upload_session/cli_commands">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>client</code>
+</th>
+<td>
+<span id="v-ccbbc70db1ed1405a2e51c8f">
+<code data-value-pointer="/audit/operation-qualification/heartbeat_collection_upload_session/client">ApiClient</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>client_bindings</code>
+</th>
+<td>
+<table id="v-ca485c68f8be41e8207b0932">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-65b864b8d5cdd7506050747f">
+<tbody>
+<tr>
+<th scope="row">
+<code>public_identity</code>
+</th>
+<td>
+<span id="v-54b6389a3611f3f3536aab35">
+<code data-value-pointer="/audit/operation-qualification/heartbeat_collection_upload_session/client_bindings/0/public_identity">riverhog_client.ApiClient.heartbeat_collection_upload_session</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source</code>
+</th>
+<td>
+<table id="v-84e4a1d43140d229fa94d93f">
+<tbody>
+<tr>
+<th scope="row">
+<code>line</code>
+</th>
+<td>
+<span id="v-de4a64c86e2bb845f576829a">
+<code data-value-pointer="/audit/operation-qualification/heartbeat_collection_upload_session/client_bindings/0/source/line">1477</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-4aacee7836c2c995d62cb79e">
+<code data-value-pointer="/audit/operation-qualification/heartbeat_collection_upload_session/client_bindings/0/source/module">riverhog_client.client</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<span id="v-b1f8e76e811c19fafd5fefac">
+<code data-value-pointer="/audit/operation-qualification/heartbeat_collection_upload_session/client_bindings/0/source/path">packages/riverhog-client/src/riverhog_client/client.py</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>symbol</code>
+</th>
+<td>
+<span id="v-c2505ef287aee643a9e578a7">
+<code data-value-pointer="/audit/operation-qualification/heartbeat_collection_upload_session/client_bindings/0/source/symbol">ApiClient.heartbeat_collection_upload_session</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>method</code>
+</th>
+<td>
+<span id="v-f5a2d1c20cecf12a52f4c1ef">
+<code data-value-pointer="/audit/operation-qualification/heartbeat_collection_upload_session/method">POST</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>operation_id</code>
+</th>
+<td>
+<span id="v-db1e872eb0f79a9a74a6110a">
+<code data-value-pointer="/audit/operation-qualification/heartbeat_collection_upload_session/operation_id">heartbeat_collection_upload_session</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<span id="v-8a20d7cc52b6f3f15615529e">
+<code data-value-pointer="/audit/operation-qualification/heartbeat_collection_upload_session/path">/v1/collection-upload-sessions/{collection_id}/heartbeat</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>provider_evidence</code>
+</th>
+<td>
+<span id="v-214ec8d839fd91019dc8d2b3">
+<code data-value-pointer="/audit/operation-qualification/heartbeat_collection_upload_session/provider_evidence">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>read_collection</code>
+</th>
+<td>
+<span id="v-ada005e2bfe7e0d1ce5df3e5">
+<code data-value-pointer="/audit/operation-qualification/heartbeat_collection_upload_session/read_collection">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>response_authority</code>
+</th>
+<td>
+<span id="v-be3ee88f5c7a888ad7ff7672">
+<code data-value-pointer="/audit/operation-qualification/heartbeat_collection_upload_session/response_authority">http-json</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</details>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,42 +12,246 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-293fbfb5013055c05e885cb9.html">a-review0-materializer · CLI</a>
+<a href="index.html">All authorities</a> / <a href="a-515aafaf4215b2b35c4a7f47.html">a-review0-materializer</a> / <a href="i-293fbfb5013055c05e885cb9.html">CLI</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>a-review0-materializer</h1>
+<p class="context">Review0 materialization target for Stove0. CLI contract owned by a-review0-materializer.</p>
 <section id="contract" data-contract="cli:a-review0-materializer:a-review0-materializer:8ebe951a1b">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Command</h3>
+<dl class="facts">
+<dt>name</dt>
+<dd>
+<code>a-review0-materializer</code>
+</dd>
+<dt>allow abbrev</dt>
+<dd>
+<code>true</code>
+</dd>
+</dl>
+<p>Parser flags and defaults are recorded inputs. A missing default does not assert an explicit null value or rule out other configured fallbacks.</p>
+<h3>Arguments and options</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Parameter and spelling</th>
+<th scope="col">Invocation</th>
+<th scope="col">Type and constraints</th>
+<th scope="col">Default and environment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>host</code>
+<br>
+<code>--host</code>
+</td>
+<td>optional; option; None value(s) per use</td>
+<td>
+<code>not recorded</code>
+</td>
+<td>
+<code>127.0.0.1</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>port</code>
+<br>
+<code>--port</code>
+</td>
+<td>optional; option; None value(s) per use</td>
+<td>
+<code>int</code>
+</td>
+<td>
+<code>8080</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>config</code>
+<br>
+<code>--config</code>
+</td>
+<td>optional; option; None value(s) per use</td>
+<td>
+<code>Path</code>
+</td>
+<td>not recorded</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Result contract</h3>
+<dl class="facts">
+<dt>identity</dt>
+<dd>
+<code>a-review0-materializer-cli-result/root/v1</code>
+</dd>
+<dt>profile id</dt>
+<dd>
+<code>a-review0-materializer-cli-runtime/v1</code>
+</dd>
+<dt>structured output</dt>
+<dd>
+<code>none</code>
+</dd>
+<dt>human json relationship</dt>
+<dd>
+<code>not-applicable</code>
+</dd>
+</dl>
+<h4>Success outcomes</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Outcome</th>
+<th scope="col">Exit</th>
+<th scope="col">Selection</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>stopped</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>kind: <code>service-runtime-returned</code>
+</td>
+<td>all: <code>no-command-result</code>
+</td>
+<td>all: <code>noncontractual-runtime-log</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Failure outcomes</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Outcome</th>
+<th scope="col">Exit</th>
+<th scope="col">Selection</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>usage</code>
+</td>
+<td>
+<code>2</code>
+</td>
+<td>kind: <code>parser-rejected-invocation</code>
+</td>
+<td>all: <code>empty</code>
+</td>
+<td>all: <code>noncontractual-usage-diagnostic</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Terminating controls</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Control</th>
+<th scope="col">Trigger</th>
+<th scope="col">Exit</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>help</code>
+</td>
+<td>
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;-h&quot;,&quot;--help&quot;]}</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>
+<code>noncontractual-framework-help</code>
+</td>
+<td>
+<code>empty</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>version</code>
+</td>
+<td>
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;--version&quot;]}</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>
+<code>{&quot;distribution&quot;:&quot;a-review0-materializer&quot;,&quot;kind&quot;:&quot;installed-coordinated-release-version&quot;,&quot;serialization&quot;:&quot;noncontractual&quot;}</code>
+</td>
+<td>
+<code>empty</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-review0-materializer/allow_abbrev</code>
-</h3>
+</h4>
 <span id="v-f8605f7d6ca463bd97760d72">
 <code data-value-pointer="/external_contract/cli/a-review0-materializer/allow_abbrev">true</code>
 <span class="kind">boolean</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-review0-materializer/name</code>
-</h3>
+</h4>
 <span id="v-34d8f148b679f2320f0e1a7a">
 <code data-value-pointer="/external_contract/cli/a-review0-materializer/name">a-review0-materializer</code>
 <span class="kind">string</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-review0-materializer/parameters</code>
-</h3>
+</h4>
 <table id="v-b0634ba0b82d44458ae7a1d1">
 <tbody>
 <tr>
@@ -329,9 +533,9 @@
 </table>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-review0-materializer/result_contract</code>
-</h3>
+</h4>
 <table id="v-cf852151e9ac83cb4122d31f">
 <tbody>
 <tr>
@@ -602,9 +806,9 @@
 </table>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-review0-materializer/terminating_controls</code>
-</h3>
+</h4>
 <table id="v-b02689494753666fa41d6232">
 <tbody>
 <tr>
@@ -852,448 +1056,86 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-48a89776de7f91b173b46d03">compatibility/cli/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="some-implementations/stove0/review0/materialize-target/src/a_review0_materializer/app.py">some-implementations/stove0/review0/materialize-target/src/a_review0_materializer/app.py::&lt;module&gt;</code>
+<a href="source-authorities.html#source-50b76fd01e0e2a8403c66c75">cli:a-review0-materializer</a> — <code data-source-path="some-implementations/stove0/review0/materialize-target/src/a_review0_materializer/app.py">some-implementations/stove0/review0/materialize-target/src/a_review0_materializer/app.py::&lt;module&gt;</code>
 </li>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>cli:a-review0-materializer:a-review0-materializer:parameter:0:values-per-occurrence</code>
-<table id="v-2d319285515d2719abb9b6f8">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-f09c2bc0ebe4f38f87679a29">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:0:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/a-review0-materializer/parameters/0</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-5eff8be38132fb0e8d191c49">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:0:values-per-occurrence/id">cli:a-review0-materializer:a-review0-materializer:parameter:0:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/a-review0-materializer/parameters/1</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-fc1258f381bec5747f1fc84d">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:0:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/cli/a-review0-materializer/parameters/2</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
 <td>
-<span id="v-e5f91a96ff027cab7b5761af">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:0:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
+<td>cardinality · values-per-occurrence · fixed</td>
 <td>
-<span id="v-2b19ed193b6cbef39799fe25">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:0:values-per-occurrence/owner">a-review0-materializer</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-658b5aa7878ad046d48eb361">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:0:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-4dc69ac7d1202f9daa9b0d6d">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:0:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-d7ee6dab9cdaf1bc59e41cad">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:0:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-06447f51ba0764e0389dc2ef">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-c3b73ebebacef7f5682bf30b">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:0:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-e67d7941a5e5eceb05f71290">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:0:values-per-occurrence/source_pointer">/external_contract/cli/a-review0-materializer/parameters/0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-21ff21c3ad427a78591cc23b">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:0:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:a-review0-materializer:a-review0-materializer:parameter:1:values-per-occurrence</code>
-<table id="v-91e4103900d328e8f7f11bb6">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-14c5a131b64e7b0882ea26b2">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:1:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-262cf40004945fa480040907">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:1:values-per-occurrence/id">cli:a-review0-materializer:a-review0-materializer:parameter:1:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-02ad40a19b76c66c560269ae">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:1:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-2cb7135176123ae8d0eb884e">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:1:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-47fd7567e0c5a563868757e9">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:1:values-per-occurrence/owner">a-review0-materializer</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-6ae45a959485d4061f2e7be1">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:1:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-cc8e59512eab860aa6f16085">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:1:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-8294c99612799143823d57a7">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:1:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-d00d5f5c364d78cf62d87d7d">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-f2dc3eda5eb559e96e1193e9">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:1:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-fb5d6fe0cebd361e90850fc6">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:1:values-per-occurrence/source_pointer">/external_contract/cli/a-review0-materializer/parameters/1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-10d4fcdf88515ab51a47b77c">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:1:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:a-review0-materializer:a-review0-materializer:parameter:2:values-per-occurrence</code>
-<table id="v-25ba21b71a004e5a745a6d2f">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-5350b0e5747460297f0c2fdb">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:2:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-520b6358044646b7ef9a17b4">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:2:values-per-occurrence/id">cli:a-review0-materializer:a-review0-materializer:parameter:2:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-0820c6d572ac7b0c33042252">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:2:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-74971a39f58e86070011388d">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:2:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-71858869a3ea9585cb2be9bf">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:2:values-per-occurrence/owner">a-review0-materializer</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-6a7b79956edf784ad7332ffa">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:2:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-6c9bc7c74496e5100983d97b">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:2:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-3a4fcfbe5a459853967ada68">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:2:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-2a09d2ac514076c4fc61d56d">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-95c2cd6f05a19dd1ec536a29">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:2:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-39801a1780f866e29af5c332">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:2:values-per-occurrence/source_pointer">/external_contract/cli/a-review0-materializer/parameters/2</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-c7de3f13e6453c47465c9e46">
-<code data-value-pointer="/audit/decisions/cli:a-review0-materializer:a-review0-materializer:parameter:2:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

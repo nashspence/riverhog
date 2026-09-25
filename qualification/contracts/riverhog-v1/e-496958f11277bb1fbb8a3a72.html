@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,165 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-09dc1e38a978cb3e071a9885.html">riverhog · HTTP Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>schemas: ProcessingCapabilityCreateDocument</h1>
+<p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
 <section id="contract" data-contract="http-schemas:riverhog:schemas-processingcapabilitycreatedocument:04d4b95630">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-4bcfa552e1d839bdb47db500">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>ProcessingCapabilityCreateDocument</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;fence&quot;,&quot;audience&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-849b08848721fb7b7fe49584">actions</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code>; minItems: <code>1</code>; exactly one of: const: <code>[&quot;read-inputs&quot;]</code>; const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>audience</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9][a-z0-9._:/-]{0,299}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>fence</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">#/components/schemas/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>ttl_seconds</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>30</code>; maximum: <code>86400</code>; default: <code>900</code>
+</td>
+<td>
+<code>900</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-849b08848721fb7b7fe49584">
+<h3>Field: actions</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code>; minItems: <code>1</code>; exactly one of: const: <code>[&quot;read-inputs&quot;]</code>; const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Actions</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+<h4>Exactly one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>const: <code>[&quot;read-inputs&quot;]</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>const: <code>[&quot;read-inputs&quot;,&quot;write-output&quot;]</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityCreateDocument</code>
-</h3>
+</h4>
 <table id="v-4bcfa552e1d839bdb47db500">
 <tbody>
 <tr>
@@ -442,298 +583,74 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>http:riverhog:components:/schemas/ProcessingCapabilityCreateDocument/properties/actions:cardinality</code>
-<table id="v-9a88e6ed1657b6fa913ec5a3">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
 <td>
-<table id="v-47c96078877f4e2360355e19">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityCreateDocument/properties/actions</code>
+</td>
 <td>
-<span id="v-934b71c8dddc362a0bc8a258">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1actions:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;riverhog&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
 <td>
-<span id="v-bdf8263489378dd2bd89ca3a">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1actions:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityCreateDocument/properties/ttl_seconds</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-2ec7388535d95f005ec9a16e">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1actions:cardinality/capacity_authority/owner">riverhog</code>
-<span class="kind">string</span>
-</span>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>value · schema-value · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:86400,&quot;minimum&quot;:30,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-d99f6ea9fcf8492d416a4fdd">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1actions:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-9a1bdb05185e419d97e67ed1">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1actions:cardinality/id">http:riverhog:components:/schemas/ProcessingCapabilityCreateDocument/properties/actions:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-37f47b1c49b6c2c3f72d4675">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1actions:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-aa63fb0827adaf502858eda6">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1actions:cardinality/owner">riverhog</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-76984ee8b436d090010aadc3">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1actions:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-017ba6a5fc08c0c6f23bc305">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1actions:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-db833421b57bf99344bbbfc6">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1actions:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-4baff8635d0db537e3f62f78">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1actions:cardinality/source_pointer">/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityCreateDocument/properties/actions</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-b4e61b9ba5ea503c0fb433e9">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1actions:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:riverhog:components:/schemas/ProcessingCapabilityCreateDocument/properties/ttl_seconds:value</code>
-<table id="v-9b48257f07d184d9b712d41a">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-6f65d605b924b678cc335140">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1ttl_seconds:value/dimension">value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-bad2b610ca4a2a926951090a">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1ttl_seconds:value/id">http:riverhog:components:/schemas/ProcessingCapabilityCreateDocument/properties/ttl_seconds:value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-7b5ea1a2dfb6e87f80eddf4f">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1ttl_seconds:value/maximum">86400</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-f8d1af6eb14600ad2b6ba01c">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1ttl_seconds:value/minimum">30</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-405afda7a1a7ad6fc9376a58">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1ttl_seconds:value/owner">riverhog</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-61aae9e1e7f27399f8ebf6c6">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1ttl_seconds:value/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-8662d7697b57acc783a0343a">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1ttl_seconds:value/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-2255c67d0fa18e31073ba0e8">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1ttl_seconds:value/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-215cc9a7a47f8c3a52659743">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1ttl_seconds:value/source_pointer">/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityCreateDocument/properties/ttl_seconds</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-607016c5592d7842283dec45">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ProcessingCapabilityCreateDocument~1properties~1ttl_seconds:value/unit">schema-value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

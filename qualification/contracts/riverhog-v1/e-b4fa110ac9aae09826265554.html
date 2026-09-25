@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,42 +12,296 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-eb2bbae5d54fd426e6161031.html">a-riverhog-filesystem-store · CLI</a>
+<a href="index.html">All authorities</a> / <a href="a-989e9eba616081d95a567a0b.html">a-riverhog-filesystem-store</a> / <a href="i-eb2bbae5d54fd426e6161031.html">CLI</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>a-riverhog-filesystem-store-materialize</h1>
+<p class="context">Filesystem-backed Riverhog archive and retrieval store. CLI contract owned by a-riverhog-filesystem-store.</p>
 <section id="contract" data-contract="cli:a-riverhog-filesystem-store:a-riverhog-filesystem-store-materialize:b7eed44930">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Command</h3>
+<dl class="facts">
+<dt>name</dt>
+<dd>
+<code>a-riverhog-filesystem-store-materialize</code>
+</dd>
+<dt>allow abbrev</dt>
+<dd>
+<code>true</code>
+</dd>
+</dl>
+<p>Parser flags and defaults are recorded inputs. A missing default does not assert an explicit null value or rule out other configured fallbacks.</p>
+<h3>Arguments and options</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Parameter and spelling</th>
+<th scope="col">Invocation</th>
+<th scope="col">Type and constraints</th>
+<th scope="col">Default and environment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>source</code>
+</td>
+<td>required; argument; None value(s) per use</td>
+<td>
+<code>Path</code>
+</td>
+<td>not recorded</td>
+</tr>
+<tr>
+<td>
+<code>destination</code>
+</td>
+<td>required; argument; None value(s) per use</td>
+<td>
+<code>Path</code>
+</td>
+<td>not recorded</td>
+</tr>
+<tr>
+<td>
+<code>path</code>
+<br>
+<code>--path</code>
+</td>
+<td>optional; option; None value(s) per use</td>
+<td>
+<code>not recorded</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>prefix</code>
+<br>
+<code>--prefix</code>
+</td>
+<td>optional; option; None value(s) per use</td>
+<td>
+<code>not recorded</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>all_objects</code>
+<br>
+<code>--all</code>
+</td>
+<td>optional; option; 0 value(s) per use</td>
+<td>
+<code>not recorded</code>
+</td>
+<td>
+<code>false</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>json</code>
+<br>
+<code>--json</code>
+</td>
+<td>optional; option; 0 value(s) per use</td>
+<td>
+<code>not recorded</code>
+</td>
+<td>
+<code>false</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Result contract</h3>
+<dl class="facts">
+<dt>identity</dt>
+<dd>
+<code>a-riverhog-filesystem-store-materialize-cli-result/root/v1</code>
+</dd>
+<dt>profile id</dt>
+<dd>
+<code>a-riverhog-filesystem-store-materialize-cli/v1</code>
+</dd>
+<dt>structured output</dt>
+<dd>
+<code>optional-json</code>
+</dd>
+<dt>human json relationship</dt>
+<dd>
+<code>same-semantic-result</code>
+</dd>
+</dl>
+<h4>Success outcomes</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Outcome</th>
+<th scope="col">Exit</th>
+<th scope="col">Selection</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>completed</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>kind: <code>materialization-completed</code>
+</td>
+<td>human: <code>noncontractual-presentation-of-command-result</code>; json: identity: <code>riverhog-filesystem-materialization-result/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;copied_bytes&quot;:{&quot;minimum&quot;:0,&quot;type&quot;:&quot;integer&quot;},&quot;copied_objects&quot;:{&quot;minimum&quot;:0,&quot;type&quot;:&quot;integer&quot;},&quot;destination&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;destination_verified_bytes&quot;:{&quot;minimum&quot;:0,&quot;type&quot;:&quot;integer&quot;},&quot;destination_verified_objects&quot;:{&quot;minimum&quot;:0,&quot;type&quot;:&quot;integer&quot;},&quot;format&quot;:{&quot;const&quot;:&quot;riverhog-filesystem-materialization-result/v1&quot;},&quot;selected_bytes&quot;:{&quot;minimum&quot;:0,&quot;type&quot;:&quot;integer&quot;},&quot;selected_objects&quot;:{&quot;minimum&quot;:0,&quot;type&quot;:&quot;integer&quot;},&quot;source_metadata_bytes&quot;:{&quot;minimum&quot;:0,&quot;type&quot;:&quot;integer&quot;},&quot;staging_verified_bytes&quot;:{&quot;minimum&quot;:0,&quot;type&quot;:&quot;integer&quot;}},&quot;required&quot;:[&quot;format&quot;,&quot;destination&quot;,&quot;selected_objects&quot;,&quot;selected_bytes&quot;,&quot;source_metadata_bytes&quot;,&quot;destination_verified_objects&quot;,&quot;destination_verified_bytes&quot;,&quot;staging_verified_bytes&quot;,&quot;copied_objects&quot;,&quot;copied_bytes&quot;],&quot;type&quot;:&quot;object&quot;}</code>
+</td>
+<td>all: <code>empty</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Failure outcomes</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Outcome</th>
+<th scope="col">Exit</th>
+<th scope="col">Selection</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>usage</code>
+</td>
+<td>
+<code>2</code>
+</td>
+<td>kind: <code>parser-rejected-invocation</code>
+</td>
+<td>all: <code>empty</code>
+</td>
+<td>all: <code>noncontractual-usage-diagnostic</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>materialization</code>
+</td>
+<td>
+<code>1</code>
+</td>
+<td>kind: <code>materialization-error</code>
+</td>
+<td>all: <code>empty</code>
+</td>
+<td>all: <code>noncontractual-diagnostic</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Terminating controls</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Control</th>
+<th scope="col">Trigger</th>
+<th scope="col">Exit</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>help</code>
+</td>
+<td>
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;-h&quot;,&quot;--help&quot;]}</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>
+<code>noncontractual-framework-help</code>
+</td>
+<td>
+<code>empty</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>version</code>
+</td>
+<td>
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;--version&quot;]}</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>
+<code>{&quot;distribution&quot;:&quot;a-riverhog-filesystem-store&quot;,&quot;kind&quot;:&quot;installed-coordinated-release-version&quot;,&quot;serialization&quot;:&quot;noncontractual&quot;}</code>
+</td>
+<td>
+<code>empty</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-riverhog-filesystem-store-materialize/allow_abbrev</code>
-</h3>
+</h4>
 <span id="v-a39c97212d402a09121d9b7d">
 <code data-value-pointer="/external_contract/cli/a-riverhog-filesystem-store-materialize/allow_abbrev">true</code>
 <span class="kind">boolean</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-riverhog-filesystem-store-materialize/name</code>
-</h3>
+</h4>
 <span id="v-3f32fb828d8a70defc5f8a9d">
 <code data-value-pointer="/external_contract/cli/a-riverhog-filesystem-store-materialize/name">a-riverhog-filesystem-store-materialize</code>
 <span class="kind">string</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-riverhog-filesystem-store-materialize/parameters</code>
-</h3>
+</h4>
 <table id="v-1375b9fe580361053fc69511">
 <tbody>
 <tr>
@@ -560,9 +814,9 @@
 </table>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-riverhog-filesystem-store-materialize/result_contract</code>
-</h3>
+</h4>
 <table id="v-2b0b08bf9c1de1855a523fed">
 <tbody>
 <tr>
@@ -1438,9 +1692,9 @@
 </table>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-riverhog-filesystem-store-materialize/terminating_controls</code>
-</h3>
+</h4>
 <table id="v-d7b748e7769afaa4ee98a999">
 <tbody>
 <tr>
@@ -1688,1209 +1942,146 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-48a89776de7f91b173b46d03">compatibility/cli/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="some-implementations/riverhog/storage/filesystem/src/a_riverhog_filesystem_store/materialize_cli.py">some-implementations/riverhog/storage/filesystem/src/a_riverhog_filesystem_store/materialize_cli.py::&lt;module&gt;</code>
+<a href="source-authorities.html#source-f31202d8f6b6cf84b94b1e3b">cli:a-riverhog-filesystem-store-materialize</a> — <code data-source-path="some-implementations/riverhog/storage/filesystem/src/a_riverhog_filesystem_store/materialize_cli.py">some-implementations/riverhog/storage/filesystem/src/a_riverhog_filesystem_store/materialize_cli.py::&lt;module&gt;</code>
 </li>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:0:values-per-occurrence</code>
-<table id="v-8cb50a2f5e60556143f29365">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-3efb940a1ac752fe52314589">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:0:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/a-riverhog-filesystem-store-materialize/parameters/0</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-a855bc5e2b9109b131436170">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:0:values-per-occurrence/id">cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:0:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/a-riverhog-filesystem-store-materialize/parameters/1</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-3cfb9f0d03cf8250c7ae0f36">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:0:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/cli/a-riverhog-filesystem-store-materialize/parameters/2</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · occurrences · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;a-riverhog-filesystem-store-materialize&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;kind&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>minimum</code>
-</th>
 <td>
-<span id="v-be2235efd77f23ea790de895">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:0:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/cli/a-riverhog-filesystem-store-materialize/parameters/2</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-1d5634b484c715d967c63e8c">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:0:values-per-occurrence/owner">a-riverhog-filesystem-store-materialize</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/a-riverhog-filesystem-store-materialize/parameters/3</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · occurrences · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;a-riverhog-filesystem-store-materialize&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;kind&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>policy</code>
-</th>
 <td>
-<span id="v-2541d01ffe352f2803f85d50">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:0:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/a-riverhog-filesystem-store-materialize/parameters/3</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>reason</code>
-</th>
 <td>
-<span id="v-ffafc3c725a2e59acd91b3d4">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:0:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/a-riverhog-filesystem-store-materialize/parameters/4</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:0,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>rule</code>
-</th>
 <td>
-<span id="v-8222adc2b0783a2807540702">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:0:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/a-riverhog-filesystem-store-materialize/parameters/5</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
 <td>
-<table id="v-5623a891083966a0e6e8e6df">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
 <td>
-<span id="v-ac0af04bd198752142ed5793">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:0:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:0,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-6f991ae7ee63a36dbea558eb">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:0:values-per-occurrence/source_pointer">/external_contract/cli/a-riverhog-filesystem-store-materialize/parameters/0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-d9ff8755b1a7bba2d06c1b59">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:0:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:1:values-per-occurrence</code>
-<table id="v-2210070c2782004c02edd361">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-69fcf97b10331e9892a258b7">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:1:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-f735138e15db8b081da85df9">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:1:values-per-occurrence/id">cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:1:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-218f231cce592559f3b46109">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:1:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-ce2a6f067785854f0b73fa74">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:1:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-de7fcd65a375332347ce1254">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:1:values-per-occurrence/owner">a-riverhog-filesystem-store-materialize</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-d22ae0774a3dc7369f4e43dc">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:1:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-098d03a303ba9241edfe5695">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:1:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-db4ed5011d5bf1bb96dea9f6">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:1:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-bf2039248b6ffcbade54320e">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-7ddd44f13d7f80b75cd532f9">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:1:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-185b808e39d6ad314fd2a670">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:1:values-per-occurrence/source_pointer">/external_contract/cli/a-riverhog-filesystem-store-materialize/parameters/1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-30a9936a22b950fc218c6529">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:1:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:occurrences</code>
-<table id="v-a5685eac09cbe89807e80353">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-40121fb82770e34ed42011ff">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-2f0bb75ca91c95334e612689">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:occurrences/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-b4d5335e82d59370ec62925a">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:occurrences/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-88d184dccf27b767703c8f43">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:occurrences/capacity_authority/owner">a-riverhog-filesystem-store-materialize</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-fe39696f38072bc6b4eba856">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:occurrences/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-bef56e01e154b50672dd3d33">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:occurrences/id">cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:occurrences</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-232d707a15f8e8495d23c69c">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:occurrences/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-1efd6f627218f7f88f017020">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:occurrences/owner">a-riverhog-filesystem-store-materialize</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-1305bcd78fa2004a1a59d4d7">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:occurrences/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-55c813dc2cede790fa17d021">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:occurrences/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-98fc1589bbdc2ea4116d58fd">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:occurrences/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-cb2d67c129c6820c4faf301b">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-ce47e7333a7f1c298a68b176">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:occurrences/source_constraint/field">kind</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-09a4f0b66e7b5202bae513b7">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:occurrences/source_pointer">/external_contract/cli/a-riverhog-filesystem-store-materialize/parameters/2</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-a52fb73091091dd98d7d80c7">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:occurrences/unit">occurrences</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:values-per-occurrence</code>
-<table id="v-82667f6255e112137bece4f2">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-915e29a0de4782150dc6e49f">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-779f258f330f75e3b8a22b19">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:values-per-occurrence/id">cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-0f24447b96c6e64f363b76d9">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-3ab6e4020781093f74bb7a83">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-246e51b0c1285db7cf4791a5">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:values-per-occurrence/owner">a-riverhog-filesystem-store-materialize</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-f183d2daf63315dbceb408fe">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-2dc44877396ffd557715b6d5">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-952539b20660bbc3a0a313ee">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-d0272e67e2a21e331ecfda2a">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-399796d9a90b693c10489762">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-cdb2e22c3e93bc9acacd3a9d">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:values-per-occurrence/source_pointer">/external_contract/cli/a-riverhog-filesystem-store-materialize/parameters/2</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-3cab148092c127d9c8e3f4be">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:2:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:occurrences</code>
-<table id="v-b5dd35c1ebc24d144e9dc3a1">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-c235ffcedcd942f71fd42f3c">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-75fffe99c69991f2202f5e4f">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:occurrences/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-60b3cf8071ec7e52f35152e3">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:occurrences/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-e7d049757022bb803e0314db">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:occurrences/capacity_authority/owner">a-riverhog-filesystem-store-materialize</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-76a546f0f36417023ae48d7b">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:occurrences/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-c3ce47d3c9d2a8ed99ea6276">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:occurrences/id">cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:occurrences</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-527260650fbae37287aef360">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:occurrences/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-ccd62300d1009c2ab881cb8d">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:occurrences/owner">a-riverhog-filesystem-store-materialize</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-7ad2b5ed850781cac0197434">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:occurrences/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-dd980a4663ff2f10c929f5bb">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:occurrences/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-5096f693bcf0314bcfb880e7">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:occurrences/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-404967ac24c1d84c924a450d">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-8a707099db14fe1f286c240a">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:occurrences/source_constraint/field">kind</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-685508585d7cb930b2d13d0a">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:occurrences/source_pointer">/external_contract/cli/a-riverhog-filesystem-store-materialize/parameters/3</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-f1c974f3307e1f5b390223f2">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:occurrences/unit">occurrences</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:values-per-occurrence</code>
-<table id="v-ee1f4768cc0ee0a20e34edc9">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-6bf3928a33ee2bb23f4195f4">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-3829b3e899be782416e10ab1">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:values-per-occurrence/id">cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-e94f385ac9ce482d5680369c">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-7af52692a9ce00bd7e41cd26">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-5deaa32984e78426c9bec633">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:values-per-occurrence/owner">a-riverhog-filesystem-store-materialize</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-081a24e08792f5428d6f9733">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-6c7ee21579eecf3bbc2aae89">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-1c5a3aeea306eb6328553f5c">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-ec9a62ff97b0a7725b488ccc">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-7ffe6300bce07d6731827e56">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-17c93d964c4127462391a372">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:values-per-occurrence/source_pointer">/external_contract/cli/a-riverhog-filesystem-store-materialize/parameters/3</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-07627304f762b0d74ec3ecc8">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:3:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:4:values-per-occurrence</code>
-<table id="v-d6fc44df053662f12f459e99">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-355815911eebd3e814bcbfa2">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:4:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-7855c009899762e1f690a7f9">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:4:values-per-occurrence/id">cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:4:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-eb6903c0c4f1803359d72208">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:4:values-per-occurrence/maximum">0</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-0c43983aefa340101a7a37bd">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:4:values-per-occurrence/minimum">0</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-c9f727e7a1e9836cd49650f4">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:4:values-per-occurrence/owner">a-riverhog-filesystem-store-materialize</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-4952ad614c0bd276a3782d25">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:4:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-20bc11e58a164f2af915251e">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:4:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-8c231ea257c11cf2e38efd29">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:4:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-2c66630123786288b07662d1">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-c40b24198cb9f205b3a39410">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:4:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-f793c1b9ebf2293d116b6ef3">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:4:values-per-occurrence/source_pointer">/external_contract/cli/a-riverhog-filesystem-store-materialize/parameters/4</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-d26ed9acc03ee83c43eb5936">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:4:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:5:values-per-occurrence</code>
-<table id="v-b3f81d23f02acd43ec6a11b6">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-a5c893640b22941831bff47a">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:5:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-fbed45d5287e74bff41f1486">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:5:values-per-occurrence/id">cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:5:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-199eafdb97b6780223873937">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:5:values-per-occurrence/maximum">0</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-c9752f56dff7d25046b43657">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:5:values-per-occurrence/minimum">0</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-7f09a7cb04ebb24858039f43">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:5:values-per-occurrence/owner">a-riverhog-filesystem-store-materialize</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-f0fb3c933835e8316cf0d816">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:5:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-c390edaf611b76ca49192659">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:5:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-4db38812b6aaf71787734e25">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:5:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-19d5312947e99d4e9da18dd3">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-2261979252b0e46a11522b6c">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:5:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-6f4f9945d1e5d7279631ffd2">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:5:values-per-occurrence/source_pointer">/external_contract/cli/a-riverhog-filesystem-store-materialize/parameters/5</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-2fbf83bacc41f27a9ba612c1">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-filesystem-store-materialize:a-riverhog-filesystem-store-materialize:parameter:5:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="on">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Extent qualification: a-riverhog-ftp-spool-read-collection-progression/v1 · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="qualifications.html">Audit references</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>Extent qualification: a-riverhog-ftp-spool-read-collection-progression/v1</h1>
+<aside class="audit">
+<section id="audit">
+<h2>Open extent qualification</h2>
+<p class="lead">End-to-end progression across the declared route group has no recorded execution result here. The associated checks are candidates with stated scopes; one-page or structural checks do not establish traversal for every listed route.</p>
+<p>Recorded owner: <code>a-riverhog-ftp-spool</code>. Association: candidate; executed result: none.</p>
+<p>Recorded scope: All current a-riverhog-ftp-spool route-progression declarations; no traversal result implied.</p>
+<p>Governing declared rule: <a href="policies.html#definition-c35859ad2c6c8a34ef05c100">route-progression/v1</a>
+</p>
+<table id="v-c35859ad2c6c8a34ef05c100">
+<tbody>
+<tr>
+<th scope="row">
+<code>authority</code>
+</th>
+<td>
+<span id="v-1aeb3f70a7135f8d78e85a7d">
+<code data-value-pointer="/external_contract/extents/rules/route-progression~1v1/authority">the route-owned x-riverhog-read-collection declaration</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>completion</code>
+</th>
+<td>
+<span id="v-3f1439835ede704473c224d4">
+<code data-value-pointer="/external_contract/extents/rules/route-progression~1v1/completion">the owning progression contract</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-aa5edca8dffb0e884a14230f">
+<code data-value-pointer="/external_contract/extents/rules/route-progression~1v1/policy">segmented_no_total_max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Exact affected subjects</h3>
+<ul>
+<li>
+<a href="e-8b5990a74d5c7347129395dd.html">schemas: FtpEventPage</a> · <code>/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/FtpEventPage/properties/events</code>
+</li>
+<li>
+<a href="e-951c5e9287c9b3e684980412.html">schemas: FtpSpoolStatus</a> · <code>/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/FtpSpoolStatus/properties/sources</code>
+</li>
+<li>
+<a href="e-2ff4d8e7b14f1db8ea1330c3.html">GET /v1/sources/{source_id}/events</a> · <code>/external_contract/http_openapi/a-riverhog-ftp-spool/paths/~1v1~1sources~1{source_id}~1events/get</code>
+</li>
+<li>
+<a href="e-fab461551ce86970684810f4.html">GET /v1/status</a> · <code>/external_contract/http_openapi/a-riverhog-ftp-spool/paths/~1v1~1status/get</code>
+</li>
+</ul>
+<h3>Candidate commands</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-ce47068f504c25a93bdddb64">make unit</a>
+</li>
+<li>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
+</li>
+</ul>
+<h3>Candidate test associations, not execution results</h3>
+<ul>
+<li>
+<code>tests/unit/test_public_interface_parity.py::test_public_read_collection_selectors_are_bounded_and_frozen</code> — <code data-source-path="tests/unit/test_public_interface_parity.py">tests/unit/test_public_interface_parity.py</code>
+</li>
+<li>
+<code>tests/unit/test_event_cursor_restart.py::test_event_cursor_continues_across_process_restart</code> — <code data-source-path="tests/unit/test_event_cursor_restart.py">tests/unit/test_event_cursor_restart.py</code>
+</li>
+<li>
+<code>some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::test_lifecycle_feed_is_bounded_source_fenced_and_replays_exact_claim_events</code> — <code data-source-path="some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py">some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py</code>
+</li>
+<li>
+<code>some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::test_durable_receipt_replays_publication_event_after_process_stop</code> — <code data-source-path="some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py">some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py</code>
+</li>
+<li>
+<code>some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::test_status_pages_sources_without_claiming_an_exact_backlog_snapshot</code> — <code data-source-path="some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py">some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py</code>
+</li>
+<li>
+<code>some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::test_large_unavailable_backlog_is_bounded_then_drains_exactly_after_restart</code> — <code data-source-path="some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py">some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py</code>
+</li>
+<li>
+<code>some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::test_completion_discovery_progresses_beyond_persistent_prefix_across_restart</code> — <code data-source-path="some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py">some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py</code>
+</li>
+<li>
+<code>some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::test_adapter_owned_completion_authority_is_restartable_and_hidden</code> — <code data-source-path="some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py">some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py</code>
+</li>
+<li>
+<code>some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::test_full_batch_returns_before_bad_lookahead_record</code> — <code data-source-path="some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py">some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py</code>
+</li>
+<li>
+<code>some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::test_completion_failure_capacity_backpressures_at_exact_cursor</code> — <code data-source-path="some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py">some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py</code>
+</li>
+<li>
+<code>some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::test_lowered_admission_capacity_preserves_bounded_status_and_claim_drain</code> — <code data-source-path="some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py">some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py</code>
+</li>
+<li>
+<code>some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::test_durable_receipt_finishes_claim_cleanup_after_process_stop</code> — <code data-source-path="some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py">some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py</code>
+</li>
+<li>
+<code>some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::test_completion_event_replay_guard_survives_until_exact_log_tip</code> — <code data-source-path="some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py">some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py</code>
+</li>
+<li>
+<code>some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::test_completion_event_replay_state_reclaims_in_bounded_restartable_pages</code> — <code data-source-path="some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py">some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py</code>
+</li>
+<li>
+<code>some-implementations/riverhog/ingress/ftp/tests/test_ftp_listener.py::test_incomplete_upload_is_not_handed_off_and_resumes_after_restart</code> — <code data-source-path="some-implementations/riverhog/ingress/ftp/tests/test_ftp_listener.py">some-implementations/riverhog/ingress/ftp/tests/test_ftp_listener.py</code>
+</li>
+<li>
+<code>some-implementations/riverhog/ingress/ftp/tests/test_ftp_listener.py::test_success_ack_follows_exact_durable_handoff_and_path_reuse</code> — <code data-source-path="some-implementations/riverhog/ingress/ftp/tests/test_ftp_listener.py">some-implementations/riverhog/ingress/ftp/tests/test_ftp_listener.py</code>
+</li>
+<li>
+<code>some-implementations/riverhog/ingress/ftp/tests/test_ftp_listener.py::test_same_path_replay_and_new_event_partition_into_restartable_claims</code> — <code data-source-path="some-implementations/riverhog/ingress/ftp/tests/test_ftp_listener.py">some-implementations/riverhog/ingress/ftp/tests/test_ftp_listener.py</code>
+</li>
+<li>
+<code>some-implementations/riverhog/ingress/ftp/tests/test_ftp_listener.py::test_listener_recovers_published_intent_after_exact_adapter_acquisition</code> — <code data-source-path="some-implementations/riverhog/ingress/ftp/tests/test_ftp_listener.py">some-implementations/riverhog/ingress/ftp/tests/test_ftp_listener.py</code>
+</li>
+<li>
+<code>some-implementations/riverhog/ingress/ftp/tests/test_ftp_listener.py::test_intent_retirement_and_adapter_acquisition_race_converges_repeatedly</code> — <code data-source-path="some-implementations/riverhog/ingress/ftp/tests/test_ftp_listener.py">some-implementations/riverhog/ingress/ftp/tests/test_ftp_listener.py</code>
+</li>
+<li>
+<code>some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py::test_completed_portable_sidecar_follows_payload_into_claim</code> — <code data-source-path="some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py">some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_custody.py</code>
+</li>
+<li>
+<code>some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_api_parity.py::test_management_api_and_client_share_versioned_routes</code> — <code data-source-path="some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_api_parity.py">some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_api_parity.py</code>
+</li>
+</ul>
+</section>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

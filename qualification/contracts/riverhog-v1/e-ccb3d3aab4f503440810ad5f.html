@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,164 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>schemas: SchedulerWorkBatch</h1>
+<p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
 <section id="contract" data-contract="http-schemas:stove0:schemas-schedulerworkbatch:d408216246">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-91b2b76dcb782a5afe908ec4">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>SchedulerWorkBatch</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;role&quot;,&quot;cursor&quot;,&quot;next_cursor&quot;,&quot;progressed&quot;,&quot;failures&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>cursor</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-d6d47a1ee9053dbf0ee301ee">failures</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-5d29d6b6758ba600b41f9882.html#v-b7d5d741d5c07e496c9eef4c">#/components/schemas/SchedulerFailure</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>next_cursor</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-66986d978d4ba26d66f9330b">progressed</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>role</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;controller&quot;,&quot;worker&quot;,&quot;combined&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-d6d47a1ee9053dbf0ee301ee">
+<h3>Field: failures</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-5d29d6b6758ba600b41f9882.html#v-b7d5d741d5c07e496c9eef4c">#/components/schemas/SchedulerFailure</a>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Failures</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-66986d978d4ba26d66f9330b">
+<h3>Field: progressed</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Progressed</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch</code>
-</h3>
+</h4>
 <table id="v-91b2b76dcb782a5afe908ec4">
 <tbody>
 <tr>
@@ -409,470 +549,86 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>http:stove0:components:/schemas/SchedulerWorkBatch/properties/failures:cardinality</code>
-<table id="v-48478ce179d62802dc8cfe1d">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
 <td>
-<table id="v-91866ec1b37981b3631b69de">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
+<code>/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/failures</code>
+</td>
 <td>
-<span id="v-9040aa088bc90d12d33fb3f0">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
 <td>
-<span id="v-181e43cf8afe5d59f298ccb9">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/progressed/items</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-e914e153e1bfd299b22dead0">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/capacity_authority/owner">stove0</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/progressed</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-d0359a39d4aff5cca619907b">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-61a1d673d8803b260142a889">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/id">http:stove0:components:/schemas/SchedulerWorkBatch/properties/failures:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-3cb316064292aff6c325b892">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-4d49dce9944782f73e54f5ad">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-ffcd1fb5100568902e1b2b82">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-61452fd638d860cd75fe6af1">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-c08e32ba66d19096c339a64d">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-b041b9b6d62e0b3b096d528c">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/failures</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-6334c4a782419c0cc629df91">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/SchedulerWorkBatch/properties/progressed/items:length</code>
-<table id="v-bd6687bb81c94d5d2759166f">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-f7dd37bbe73fbf705484e45e">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-af0453ae4d418fbc2c0537ec">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/id">http:stove0:components:/schemas/SchedulerWorkBatch/properties/progressed/items:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-adbe6e3aa450db3761fc4f63">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-78bd99271b5bd4642e9bfa9d">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-696fc26b9021ea720057335c">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-e199988b26fd870cf57fde61">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-cdf069ceed770b46edcdbdba">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-9aedc7eeb4874614f692ae96">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-76d1185cd6441af1b49b766d">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-774687b956f1e5f3a25164f1">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-ec6ca0db79af8f0e8b34e952">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/progressed/items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-20f74d0ce2bbdd97862ff11b">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/SchedulerWorkBatch/properties/progressed:cardinality</code>
-<table id="v-565a3153ecb753411ff21f12">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-09e07e2f5b3fb94ca27959c9">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-632de51921329941d45c83d4">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-be4d2622b2dc102b0a4ad59c">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-e4f7013255ed8fb22de84e2d">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/capacity_authority/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-c0082d749518acca7f591a9f">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-e28af67f47e0309cc0926659">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/id">http:stove0:components:/schemas/SchedulerWorkBatch/properties/progressed:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-4565730f8220a9c349b419e2">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-2b64f12341e12d9706b71d6c">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-aa04aac0506786d7e2a7f150">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-6e4daa2b7f2d78f744c8c453">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-cb8a0ef094fe9f01319683b1">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-1d6a3809d022ac3f23e38219">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/progressed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-1e4ce2b96f8cb1179bb8df38">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

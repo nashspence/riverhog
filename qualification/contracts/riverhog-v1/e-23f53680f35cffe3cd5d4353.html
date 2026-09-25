@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,2840 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-6c0c68dab977066c2d607683.html">stove0-server · Python</a>
+<a href="index.html">All authorities</a> / <a href="a-38913a60d95bc167e38ef46d.html">stove0-server</a> / <a href="i-6c0c68dab977066c2d607683.html">Python</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>stove0_core.RecipeCatalog</h1>
+<p class="context">Content-opaque transformation application for Riverhog. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:stove0-server:stove0-core-recipecatalog:212333cc41">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>stove0-server</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>stove0_core</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>RecipeCatalog</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(*, format: Literal[&#x27;stove0-recipes/v1&#x27;] = &#x27;stove0-recipes/v1&#x27;, operations: tuple[stove0_target_protocol.protocol.OperationContract, ...], recipes: tuple[stove0_recipe_config.models.RecipeDefinition, ...]) -&gt; None&quot;</code>
+</dd>
+</dl>
+<section class="schema-section" id="s-7eab2c5d80ad8f27e0626061">
+<h3>Validated model schema</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;operations&quot;,&quot;recipes&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-recipes/v1</code>; default: <code>stove0-recipes/v1</code>
+</td>
+<td>
+<code>stove0-recipes/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-e8c4db3c48d3f66ae3b4ea5b">operations</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-42d3f33c91e2c5ac2d25616f">#/$defs/OperationContract</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-d2dd1a7761e4dbdaad777f40">recipes</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-d7a456910cb562f5c9ce1113">#/$defs/RecipeDefinition</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-4ea94d6958ced02d5b86317b">ArtifactAssociation</a>
+</li>
+<li>
+<a href="#s-f35ed8e977a1256f2964ae33">ArtifactFactBinding</a>
+</li>
+<li>
+<a href="#s-321bcd01813c063f94108622">ArtifactRule</a>
+</li>
+<li>
+<a href="#s-faa5d4d6cc4b82cca8135f54">FactPredicate</a>
+</li>
+<li>
+<a href="#s-893e7a1885869f14029e7aab">InputArtifactContract</a>
+</li>
+<li>
+<a href="#s-aabf2229991b76740ffb4c91">JsonSchemaValidationProfile</a>
+</li>
+<li>
+<a href="#s-655fdbe95a30ab0911b78f60">JsonValue</a>
+</li>
+<li>
+<a href="#s-10c577a5e3109830bff120af">NonnegativeDecimal</a>
+</li>
+<li>
+<a href="#s-ead92c6441a2dff0233b2c4b">ObserverUse</a>
+</li>
+<li>
+<a href="#s-42d3f33c91e2c5ac2d25616f">OperationContract</a>
+</li>
+<li>
+<a href="#s-bd29d8e8f0f9c091d7140b92">OperationProjection</a>
+</li>
+<li>
+<a href="#s-4ebe2c544b63d19a498abb45">OutputArtifactContract</a>
+</li>
+<li>
+<a href="#s-0e7e1d36890d3f354398e24f">RecipeCoordinationRoute</a>
+</li>
+<li>
+<a href="#s-d7a456910cb562f5c9ce1113">RecipeDefinition</a>
+</li>
+<li>
+<a href="#s-01617b07dfe4d3a7633ecc51">RecipeIdentityRef</a>
+</li>
+<li>
+<a href="#s-ffedb1726b00f71066a33840">RecipeJoin</a>
+</li>
+<li>
+<a href="#s-33c0aa00c7af9d9b723805f4">RecipeJoinMember</a>
+</li>
+<li>
+<a href="#s-e0a28488455f13f0de3fbd3e">RecipeRoute</a>
+</li>
+<li>
+<a href="#s-467a54d0560a0c35da8a8fbd">SemanticValidationProfile</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-e8c4db3c48d3f66ae3b4ea5b">
+<h3>Field: operations</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-42d3f33c91e2c5ac2d25616f">#/$defs/OperationContract</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-d2dd1a7761e4dbdaad777f40">
+<h3>Field: recipes</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-d7a456910cb562f5c9ce1113">#/$defs/RecipeDefinition</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-4ea94d6958ced02d5b86317b">
+<h3>Definition: ArtifactAssociation</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;primary_role&quot;,&quot;associated_roles&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-2a54a855b3860754d496fb3f">associated_roles</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>path_identity</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>same-parent-stem</code>; default: <code>same-parent-stem</code>
+</td>
+<td>
+<code>same-parent-stem</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>primary_role</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-f35ed8e977a1256f2964ae33">
+<h3>Definition: ArtifactFactBinding</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;records_pointer&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>artifact_id_pointer</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>; default: <code>/artifact_id</code>
+</td>
+<td>
+<code>/artifact_id</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>records_pointer</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-321bcd01813c063f94108622">
+<h3>Definition: ArtifactRule</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>glob</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; default: <code>*</code>
+</td>
+<td>
+<code>*</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-5976115f870e9d56496d66f6">media_type</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>role</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; default: <code>stove0.source/v1</code>
+</td>
+<td>
+<code>stove0.source/v1</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-faa5d4d6cc4b82cca8135f54">
+<h3>Definition: FactPredicate</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;observation_contract_id&quot;,&quot;pointer&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-38c4e17d27ba12940fb415b0">artifact_facts</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-23f53680f35cffe3cd5d4353.html#v-f35ed8e977a1256f2964ae33">#/$defs/ArtifactFactBinding</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-dc2e7337db5d06300f6de5d1">artifact_roles</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>observation_contract_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>operator</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;equals&quot;,&quot;not-equals&quot;,&quot;contains&quot;,&quot;exists&quot;]</code>; default: <code>equals</code>
+</td>
+<td>
+<code>equals</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>pointer</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>value</code>
+</td>
+<td>no</td>
+<td>
+<a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">#/$defs/JsonValue</a>; default: <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-893e7a1885869f14029e7aab">
+<h3>Definition: InputArtifactContract</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;role&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-feac620b6f105c67c283f936">allowed_dispositions</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>array</code>; items: <code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-57da8275577076fc13761103">maximum</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>integer</code>; minimum: <code>1</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>minimum</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>; default: <code>1</code>
+</td>
+<td>
+<code>1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>role</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-aabf2229991b76740ffb4c91">
+<h3>Definition: JsonSchemaValidationProfile</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;profile_sha256&quot;,&quot;schema&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>dialect</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>https://json-schema.org/draft/2020-12/schema</code>; default: <code>https://json-schema.org/draft/2020-12/schema</code>
+</td>
+<td>
+<code>https://json-schema.org/draft/2020-12/schema</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>format_policy</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>annotation-only</code>; default: <code>annotation-only</code>
+</td>
+<td>
+<code>annotation-only</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>profile_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-4673823f157d41f37674961e">schema</a>
+</td>
+<td>yes</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-655fdbe95a30ab0911b78f60">
+<h3>Definition: JsonValue</h3>
+<p class="shape">any JSON value</p>
+</section>
+<section class="schema-section" id="s-10c577a5e3109830bff120af">
+<h3>Definition: NonnegativeDecimal</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-ead92c6441a2dff0233b2c4b">
+<h3>Definition: ObserverUse</h3>
+<p class="shape">
+<code>object</code>; 8 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;registration_id&quot;,&quot;contract_id&quot;,&quot;contract_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-2912a35e6540ba472c7aef97">artifact_rules</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-321bcd01813c063f94108622">#/$defs/ArtifactRule</a>; default: <code>[{&quot;glob&quot;:&quot;*&quot;,&quot;media_type&quot;:null,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code>
+</td>
+<td>
+<code>[{&quot;glob&quot;:&quot;*&quot;,&quot;media_type&quot;:null,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>contract_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>contract_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>maximum_result_bytes</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>67108864</code>; default: <code>1048576</code>
+</td>
+<td>
+<code>1048576</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-5f6bc3b49357d25869f95e0c">options</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>registration_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>retrieval_policy</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;available-only&quot;,&quot;allow&quot;]</code>; default: <code>available-only</code>
+</td>
+<td>
+<code>available-only</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>timeout_seconds</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>86400</code>; default: <code>300</code>
+</td>
+<td>
+<code>300</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-42d3f33c91e2c5ac2d25616f">
+<h3>Definition: OperationContract</h3>
+<p class="shape">
+<code>object</code>; 9 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;intent_schema&quot;,&quot;intent_semantics&quot;,&quot;inputs&quot;,&quot;contract_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>contract_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-a75ce4856f3be81ed2bd9e61">effect_receipt_schema</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-23f53680f35cffe3cd5d4353.html#v-aabf2229991b76740ffb4c91">#/$defs/JsonSchemaValidationProfile</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-fe1578028d1608b362fba1e2">inputs</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-893e7a1885869f14029e7aab">#/$defs/InputArtifactContract</a>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>intent_schema</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-23f53680f35cffe3cd5d4353.html#v-aabf2229991b76740ffb4c91">#/$defs/JsonSchemaValidationProfile</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>intent_semantics</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-23f53680f35cffe3cd5d4353.html#v-467a54d0560a0c35da8a8fbd">#/$defs/SemanticValidationProfile</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-fde04495463cd889e0f13e72">outputs</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-4ebe2c544b63d19a498abb45">#/$defs/OutputArtifactContract</a>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>result_kind</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;collection&quot;,&quot;external-effect&quot;]</code>; default: <code>collection</code>
+</td>
+<td>
+<code>collection</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_collection_retirement_permitted</code>
+</td>
+<td>no</td>
+<td>
+<code>boolean</code>; default: <code>false</code>
+</td>
+<td>
+<code>false</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-bd29d8e8f0f9c091d7140b92">
+<h3>Definition: OperationProjection</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;source&quot;,&quot;source_pointer&quot;,&quot;destination&quot;,&quot;destination_pointer&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>destination</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;intent&quot;,&quot;target-options&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>destination_pointer</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;work-effective-intent&quot;,&quot;work-evaluation&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_pointer</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-4ebe2c544b63d19a498abb45">
+<h3>Definition: OutputArtifactContract</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;role&quot;,&quot;derived_from_roles&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-20259edb5c1dfecf66d2198d">derived_from_roles</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-f6400a52fed698589bc0be39">maximum</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>integer</code>; minimum: <code>1</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>minimum</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>; default: <code>1</code>
+</td>
+<td>
+<code>1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>role</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-0e7e1d36890d3f354398e24f">
+<h3>Definition: RecipeCoordinationRoute</h3>
+<p class="shape">
+<code>object</code>; 9 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;recipe&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-b279e9b936e26cc3271127d6">artifact_rules</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-321bcd01813c063f94108622">#/$defs/ArtifactRule</a>; default: <code>[{&quot;glob&quot;:&quot;*&quot;,&quot;media_type&quot;:null,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code>
+</td>
+<td>
+<code>[{&quot;glob&quot;:&quot;*&quot;,&quot;media_type&quot;:null,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-d36cc8ed497cdc958502fcbd">associated_roles</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-99fd8ad45eb8735990227205">intent</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>kind</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>coordination</code>; default: <code>coordination</code>
+</td>
+<td>
+<code>coordination</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-ba1aa0ba3d528faa0cf1effc">primary_role</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-60b49858f4042ddffc93ce69">projections</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-bd29d8e8f0f9c091d7140b92">#/$defs/OperationProjection</a>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>recipe</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-23f53680f35cffe3cd5d4353.html#v-01617b07dfe4d3a7633ecc51">#/$defs/RecipeIdentityRef</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-88a0355e0efa4e85f9e22ab3">when</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-faa5d4d6cc4b82cca8135f54">#/$defs/FactPredicate</a>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-d7a456910cb562f5c9ce1113">
+<h3>Definition: RecipeDefinition</h3>
+<p class="shape">
+<code>object</code>; 11 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;revision&quot;,&quot;routes&quot;,&quot;unmatched_artifact_disposition&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>allow_derived_inputs</code>
+</td>
+<td>no</td>
+<td>
+<code>boolean</code>; default: <code>false</code>
+</td>
+<td>
+<code>false</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-65623ccf0770f47595f0db3a">artifact_associations</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-4ea94d6958ced02d5b86317b">#/$defs/ArtifactAssociation</a>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>event_input_closure</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>single-finalized-collection</code>; default: <code>single-finalized-collection</code>
+</td>
+<td>
+<code>single-finalized-collection</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-89f735570e799b0ee4d9fba3">join</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-23f53680f35cffe3cd5d4353.html#v-ffedb1726b00f71066a33840">#/$defs/RecipeJoin</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-dc666d1ddd1f25910925bcfe">observers</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-ead92c6441a2dff0233b2c4b">#/$defs/ObserverUse</a>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>revision</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-23f53680f35cffe3cd5d4353.html#v-10c577a5e3109830bff120af">#/$defs/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-3e17379ac432bd1e4811f215">routes</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="#s-8e67f6e22534d2d8ed9277a2">exactly one of 2 alternatives</a>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_collection_retirement_grace_seconds</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>; default: <code>0</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_collection_retirement_policy</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>; default: <code>retain</code>
+</td>
+<td>
+<code>retain</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>unmatched_artifact_disposition</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;retain-in-source&quot;,&quot;reject-work&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-01617b07dfe4d3a7633ecc51">
+<h3>Definition: RecipeIdentityRef</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;revision&quot;,&quot;sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>revision</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-23f53680f35cffe3cd5d4353.html#v-10c577a5e3109830bff120af">#/$defs/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-ffedb1726b00f71066a33840">
+<h3>Definition: RecipeJoin</h3>
+<p class="shape">
+<code>object</code>; 8 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;members&quot;,&quot;operation_id&quot;,&quot;target_registration_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>input_retrieval_policy</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;available-only&quot;,&quot;allow&quot;]</code>; default: <code>available-only</code>
+</td>
+<td>
+<code>available-only</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-08b03466f3b4817230a5b9d6">intent</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-4fd77e151a3e7d99a6e5a40e">members</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-33c0aa00c7af9d9b723805f4">#/$defs/RecipeJoinMember</a>; minItems: <code>2</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>operation_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-010de498d86304b345ec68d7">projections</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-bd29d8e8f0f9c091d7140b92">#/$defs/OperationProjection</a>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-3d7fc994fad6c5dc035fc90f">target_options</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>target_registration_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-33c0aa00c7af9d9b723805f4">
+<h3>Definition: RecipeJoinMember</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;branch_id&quot;,&quot;output_roles&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>branch_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-f68f27a2a4bd0a5ee0db25a6">output_roles</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-e0a28488455f13f0de3fbd3e">
+<h3>Definition: RecipeRoute</h3>
+<p class="shape">
+<code>object</code>; 12 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;operation_id&quot;,&quot;target_registration_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-0c43da5ed456c49d5ff35c28">artifact_rules</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-321bcd01813c063f94108622">#/$defs/ArtifactRule</a>; default: <code>[{&quot;glob&quot;:&quot;*&quot;,&quot;media_type&quot;:null,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code>
+</td>
+<td>
+<code>[{&quot;glob&quot;:&quot;*&quot;,&quot;media_type&quot;:null,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-504400fb315fce3d4f7a6fe7">associated_roles</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>input_retrieval_policy</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;available-only&quot;,&quot;allow&quot;]</code>; default: <code>available-only</code>
+</td>
+<td>
+<code>available-only</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-cdd0082ecb39ecffd7fba6e3">intent</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>kind</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>operation</code>; default: <code>operation</code>
+</td>
+<td>
+<code>operation</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>operation_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-fbc54fb1910bc90513cff422">primary_role</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-984029fbc35e944482cccfb1">projections</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-bd29d8e8f0f9c091d7140b92">#/$defs/OperationProjection</a>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-f3684b5aa65859af2c54b736">target_options</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>target_registration_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-e4e093f3bcc916c795dc53bb">when</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-faa5d4d6cc4b82cca8135f54">#/$defs/FactPredicate</a>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-467a54d0560a0c35da8a8fbd">
+<h3>Definition: SemanticValidationProfile</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;rules&quot;,&quot;profile_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-3874a76fdb72e66511e87468">conformance_vectors_sha256</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>profile_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-54b05c56e9e1ccd286a4506a">rules</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-2a54a855b3860754d496fb3f">
+<h3>Field: associated_roles</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-5976115f870e9d56496d66f6">
+<h3>Field: media_type</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-38c4e17d27ba12940fb415b0">
+<h3>Field: artifact_facts</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-23f53680f35cffe3cd5d4353.html#v-f35ed8e977a1256f2964ae33">#/$defs/ArtifactFactBinding</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-23f53680f35cffe3cd5d4353.html#v-f35ed8e977a1256f2964ae33">#/$defs/ArtifactFactBinding</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-dc2e7337db5d06300f6de5d1">
+<h3>Field: artifact_roles</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-feac620b6f105c67c283f936">
+<h3>Field: allowed_dispositions</h3>
+<p class="shape">default: <code>null</code>; any of: <code>array</code>; items: <code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-c1eb5cbea8b2b73ab0291085">1</a>
+</td>
+<td>
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-57da8275577076fc13761103">
+<h3>Field: maximum</h3>
+<p class="shape">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>1</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-4673823f157d41f37674961e">
+<h3>Field: schema</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-2912a35e6540ba472c7aef97">
+<h3>Field: artifact_rules</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-321bcd01813c063f94108622">#/$defs/ArtifactRule</a>; default: <code>[{&quot;glob&quot;:&quot;*&quot;,&quot;media_type&quot;:null,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-5f6bc3b49357d25869f95e0c">
+<h3>Field: options</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-a75ce4856f3be81ed2bd9e61">
+<h3>Field: effect_receipt_schema</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-23f53680f35cffe3cd5d4353.html#v-aabf2229991b76740ffb4c91">#/$defs/JsonSchemaValidationProfile</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-23f53680f35cffe3cd5d4353.html#v-aabf2229991b76740ffb4c91">#/$defs/JsonSchemaValidationProfile</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-fe1578028d1608b362fba1e2">
+<h3>Field: inputs</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-893e7a1885869f14029e7aab">#/$defs/InputArtifactContract</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-fde04495463cd889e0f13e72">
+<h3>Field: outputs</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-4ebe2c544b63d19a498abb45">#/$defs/OutputArtifactContract</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-20259edb5c1dfecf66d2198d">
+<h3>Field: derived_from_roles</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-f6400a52fed698589bc0be39">
+<h3>Field: maximum</h3>
+<p class="shape">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>1</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-b279e9b936e26cc3271127d6">
+<h3>Field: artifact_rules</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-321bcd01813c063f94108622">#/$defs/ArtifactRule</a>; default: <code>[{&quot;glob&quot;:&quot;*&quot;,&quot;media_type&quot;:null,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-d36cc8ed497cdc958502fcbd">
+<h3>Field: associated_roles</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-99fd8ad45eb8735990227205">
+<h3>Field: intent</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-ba1aa0ba3d528faa0cf1effc">
+<h3>Field: primary_role</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-60b49858f4042ddffc93ce69">
+<h3>Field: projections</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-bd29d8e8f0f9c091d7140b92">#/$defs/OperationProjection</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-88a0355e0efa4e85f9e22ab3">
+<h3>Field: when</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-faa5d4d6cc4b82cca8135f54">#/$defs/FactPredicate</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-65623ccf0770f47595f0db3a">
+<h3>Field: artifact_associations</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-4ea94d6958ced02d5b86317b">#/$defs/ArtifactAssociation</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-89f735570e799b0ee4d9fba3">
+<h3>Field: join</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-23f53680f35cffe3cd5d4353.html#v-ffedb1726b00f71066a33840">#/$defs/RecipeJoin</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-23f53680f35cffe3cd5d4353.html#v-ffedb1726b00f71066a33840">#/$defs/RecipeJoin</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-dc666d1ddd1f25910925bcfe">
+<h3>Field: observers</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-ead92c6441a2dff0233b2c4b">#/$defs/ObserverUse</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-3e17379ac432bd1e4811f215">
+<h3>Field: routes</h3>
+<p class="shape">
+<code>array</code>; items: <a href="#s-8e67f6e22534d2d8ed9277a2">exactly one of 2 alternatives</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+<p>
+<a href="#s-8e67f6e22534d2d8ed9277a2">items schema</a>
+</p>
+</section>
+<section class="schema-section" id="s-08b03466f3b4817230a5b9d6">
+<h3>Field: intent</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-4fd77e151a3e7d99a6e5a40e">
+<h3>Field: members</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-33c0aa00c7af9d9b723805f4">#/$defs/RecipeJoinMember</a>; minItems: <code>2</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>2</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-010de498d86304b345ec68d7">
+<h3>Field: projections</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-bd29d8e8f0f9c091d7140b92">#/$defs/OperationProjection</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-3d7fc994fad6c5dc035fc90f">
+<h3>Field: target_options</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-f68f27a2a4bd0a5ee0db25a6">
+<h3>Field: output_roles</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-0c43da5ed456c49d5ff35c28">
+<h3>Field: artifact_rules</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-321bcd01813c063f94108622">#/$defs/ArtifactRule</a>; default: <code>[{&quot;glob&quot;:&quot;*&quot;,&quot;media_type&quot;:null,&quot;role&quot;:&quot;stove0.source/v1&quot;}]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-504400fb315fce3d4f7a6fe7">
+<h3>Field: associated_roles</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-cdd0082ecb39ecffd7fba6e3">
+<h3>Field: intent</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-fbc54fb1910bc90513cff422">
+<h3>Field: primary_role</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-984029fbc35e944482cccfb1">
+<h3>Field: projections</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-bd29d8e8f0f9c091d7140b92">#/$defs/OperationProjection</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-f3684b5aa65859af2c54b736">
+<h3>Field: target_options</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-e4e093f3bcc916c795dc53bb">
+<h3>Field: when</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-23f53680f35cffe3cd5d4353.html#v-faa5d4d6cc4b82cca8135f54">#/$defs/FactPredicate</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-3874a76fdb72e66511e87468">
+<h3>Field: conformance_vectors_sha256</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-54b05c56e9e1ccd286a4506a">
+<h3>Field: rules</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-c1eb5cbea8b2b73ab0291085">
+<h3>At least one must match: 1</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; enum: <code>[&quot;transformed&quot;,&quot;preserved&quot;,&quot;omitted&quot;,&quot;rejected&quot;]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-8e67f6e22534d2d8ed9277a2">
+<h3>items schema</h3>
+<p class="shape">exactly one of: <a href="e-23f53680f35cffe3cd5d4353.html#v-e0a28488455f13f0de3fbd3e">#/$defs/RecipeRoute</a>; <a href="e-23f53680f35cffe3cd5d4353.html#v-0e7e1d36890d3f354398e24f">#/$defs/RecipeCoordinationRoute</a>
+</p>
+<dl class="facts">
+<dt>discriminator</dt>
+<dd>
+<code>{&quot;mapping&quot;:{&quot;coordination&quot;:&quot;#/$defs/RecipeCoordinationRoute&quot;,&quot;operation&quot;:&quot;#/$defs/RecipeRoute&quot;},&quot;propertyName&quot;:&quot;kind&quot;}</code>
+</dd>
+</dl>
+<h4>Exactly one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-23f53680f35cffe3cd5d4353.html#v-e0a28488455f13f0de3fbd3e">#/$defs/RecipeRoute</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<a href="e-23f53680f35cffe3cd5d4353.html#v-0e7e1d36890d3f354398e24f">#/$defs/RecipeCoordinationRoute</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/python/stove0_core.RecipeCatalog</code>
-</h3>
+</h4>
 <table id="v-ac1bf7f77237145c57fd4fc1">
 <tbody>
 <tr>
@@ -6789,25 +9605,55 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-14439eda7d6760d7830efd9e.html">stove0_core.RecipeCatalog.load</a>
+</li>
+<li>
+<a href="e-f7930102343dab61e076eb87.html">stove0_core.RecipeCatalog.operation</a>
+</li>
+<li>
+<a href="e-29fc9e9d987efeb92d297be6.html">stove0_core.RecipeCatalog.recipe</a>
+</li>
+<li>
+<a href="e-d755fc52e4ed65208a79f2b7.html">stove0_core.RecipeCatalog.sha256</a>
+</li>
+<li>
+<a href="e-7e5762b5797e5382d28c8799.html">stove0_core.RecipeCatalog.valid_catalog</a>
+</li>
+<li>
+<a href="e-b10c26f7d1d3438802db38c2.html">stove0_core.RecipeCatalog.validation_document</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/stove0/application/server/src/stove0_core/__init__.py">some-implementations/stove0/application/server/src/stove0_core/__init__.py</code>
+<a href="source-authorities.html#source-7558b08e7fed034d624d9aed">python:stove0-server:stove0_core</a> — <code data-source-path="some-implementations/stove0/application/server/src/stove0_core/__init__.py">some-implementations/stove0/application/server/src/stove0_core/__init__.py</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

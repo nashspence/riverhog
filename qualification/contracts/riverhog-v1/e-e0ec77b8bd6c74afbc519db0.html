@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,261 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-ebb825f7ec999f00a9d2c150.html">stove0 · HTTP Operations</a>
+<a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-ebb825f7ec999f00a9d2c150.html">HTTP Operations</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>GET /v1/admissions</h1>
+<p class="context">Content-opaque transformation application for Riverhog. Callable HTTP operations.</p>
 <section id="contract" data-contract="http-operations:stove0:get-v1-admissions:44fe559e55">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Operation</h3>
+<p class="lead">List Admissions</p>
+<dl class="facts">
+<dt>operationId</dt>
+<dd>
+<code>list_admissions</code>
+</dd>
+<dt>tags</dt>
+<dd>
+<code>[&quot;admissions&quot;]</code>
+</dd>
+<dt>x-riverhog-read-collection</dt>
+<dd>
+<code>{&quot;default_page_size&quot;:25,&quot;kind&quot;:&quot;mutable-browse&quot;,&quot;maximum_page_size&quot;:100,&quot;next_page_token_field&quot;:&quot;next_page_token&quot;,&quot;page_size_parameter&quot;:&quot;page_size&quot;,&quot;page_token_parameter&quot;:&quot;page_token&quot;}</code>
+</dd>
+</dl>
+<h3>Parameters</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Name</th>
+<th scope="col">In</th>
+<th scope="col">Required</th>
+<th scope="col">Default</th>
+<th scope="col">Schema</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>page_size</code>
+</td>
+<td>
+<code>query</code>
+</td>
+<td>no</td>
+<td>
+<code>25</code>
+</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>100</code>; default: <code>25</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>page_token</code>
+</td>
+<td>
+<code>query</code>
+</td>
+<td>no</td>
+<td>not declared</td>
+<td>any of: <a href="e-67dc5b2185f26b6be5f9886e.html#v-13bc5943eb6357e8a5d60a41">#/components/schemas/BrowsePageToken</a>; <code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>policy_id</code>
+</td>
+<td>
+<code>query</code>
+</td>
+<td>no</td>
+<td>not declared</td>
+<td>any of: <code>string</code>; <code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>state</code>
+</td>
+<td>
+<code>query</code>
+</td>
+<td>no</td>
+<td>not declared</td>
+<td>any of: <code>string</code>; enum: <code>[&quot;intent&quot;,&quot;previewed&quot;,&quot;work_bound&quot;]</code>; <code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>q</code>
+</td>
+<td>
+<code>query</code>
+</td>
+<td>no</td>
+<td>not declared</td>
+<td>any of: <a href="e-d0455036bb1a6bb0889dcfbe.html#v-23b87a3a3f940c509a1373b0">#/components/schemas/BrowseQuery</a>; <code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>sort</code>
+</td>
+<td>
+<code>query</code>
+</td>
+<td>no</td>
+<td>
+<code>created_at</code>
+</td>
+<td>
+<code>string</code>; enum: <code>[&quot;created_at&quot;,&quot;updated_at&quot;,&quot;state&quot;,&quot;admission_id&quot;]</code>; default: <code>created_at</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>order</code>
+</td>
+<td>
+<code>query</code>
+</td>
+<td>no</td>
+<td>
+<code>desc</code>
+</td>
+<td>
+<code>string</code>; enum: <code>[&quot;asc&quot;,&quot;desc&quot;]</code>; default: <code>desc</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Responses</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Status</th>
+<th scope="col">Description</th>
+<th scope="col">Media type</th>
+<th scope="col">Schema</th>
+<th scope="col">Error codes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>200</code>
+</td>
+<td>Successful Response</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-cd37759c53e294e16e11f23e.html#v-d8099e381e9a5ccd812809a1">#/components/schemas/AdmissionPage</a>
+</td>
+<td>not declared</td>
+</tr>
+<tr>
+<td>
+<code>400</code>
+</td>
+<td>Bad Request</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>bad_request</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>401</code>
+</td>
+<td>Unauthorized</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>unauthorized</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>403</code>
+</td>
+<td>Forbidden</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>forbidden</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>500</code>
+</td>
+<td>Internal Server Error</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>internal_error</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/stove0/paths/~1v1~1admissions/get</code>
-</h3>
+</h4>
 <table id="v-ab9c462f911829ab9e8f324c">
 <tbody>
 <tr>
@@ -1498,95 +1735,411 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-1dcfdfacaac61cdf677719f5.html">stove0 admission list</a>
+</li>
+<li>
+<a href="e-7662ccf103fe16594d1b156e.html">stove0_api_client.Stove0ApiClient.list_admissions</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Open extent qualification</h3>
+<p>This subject is within the recorded scope of the following extent evidence gap. The linked group explains the limitation before candidate tests and identifies every affected subject. A group association is not an observed failure of this element.</p>
+<ul>
+<li>
+<a href="q-34931f753be1ce7059b8a01b.html">stove0-read-collection-progression/v1</a>
+</li>
+</ul>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 <li>
-<code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
+<a href="source-authorities.html#source-b032bdc56b3fbe541165d1d2">operations:operation-matrix</a> — <code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>http:stove0:operation:list_admissions:logical-result</code>
-<table id="v-7122f85be954dcca7f82ca6f">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1admissions/get</code>
+</td>
+<td>
+<a href="policies.html#definition-c35859ad2c6c8a34ef05c100">extent-rule/route-progression/v1</a>
+</td>
+<td>logical-result-cardinality · items · segmented_no_total_max</td>
+<td>
+<code>{&quot;progression&quot;:{&quot;default_page_size&quot;:25,&quot;kind&quot;:&quot;mutable-browse&quot;,&quot;maximum_page_size&quot;:100,&quot;next_page_token_field&quot;:&quot;next_page_token&quot;,&quot;page_size_parameter&quot;:&quot;page_size&quot;,&quot;page_token_parameter&quot;:&quot;page_token&quot;},&quot;reason&quot;:&quot;bounded-route-progression&quot;}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1admissions/get/parameters/0/schema</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>value · schema-value · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:100,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<details>
+<summary>Structural operation bindings</summary>
+<p>These bind maintained client, CLI, response authority, and provider routes. They are not executed qualification results.</p>
+<table id="v-972f0afe3d9c272a08c0ce2c">
 <tbody>
 <tr>
 <th scope="row">
-<code>dimension</code>
+<code>application</code>
 </th>
 <td>
-<span id="v-87fae656e5ca075015ef036c">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:logical-result/dimension">logical-result-cardinality</code>
+<span id="v-f38bbd15b847b23f2d0e6154">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/application">stove0</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>id</code>
+<code>classification</code>
 </th>
 <td>
-<span id="v-2701dff50ae3c4250c493541">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:logical-result/id">http:stove0:operation:list_admissions:logical-result</code>
+<span id="v-70f9c9017a50e545e1354deb">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/classification">human-cli+json</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>owner</code>
+<code>cli_bindings</code>
 </th>
 <td>
-<span id="v-8cebc53ef60212ec2003ef23">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:logical-result/owner">stove0</code>
+<table id="v-3e597448ac5163e79bb40b95">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-f7e8fe793a3ebbf02c3ba563">
+<tbody>
+<tr>
+<th scope="row">
+<code>command</code>
+</th>
+<td>
+<span id="v-9174c5ee2d548db8cdd17176">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/cli_bindings/0/command">admission list</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>policy</code>
+<code>executable</code>
 </th>
 <td>
-<span id="v-0a05f4bd73da6583c923735a">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:logical-result/policy">segmented_no_total_max</code>
+<span id="v-11437dd938f8dcb8f5afb262">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/cli_bindings/0/executable">stove0</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>progression</code>
+<code>result_identity</code>
 </th>
 <td>
-<table id="v-8c0da25c05e8ee8132804aaa">
+<span id="v-a9bf53fc01f24e2c125a76b3">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/cli_bindings/0/result_identity">stove0-cli-result/admission/list/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source</code>
+</th>
+<td>
+<table id="v-892aecf8f71b8546e327cb0d">
+<tbody>
+<tr>
+<th scope="row">
+<code>line</code>
+</th>
+<td>
+<span id="v-aa78ba422c6d46b744fd0cf5">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/cli_bindings/0/source/line">211</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-d708d37bd75a6934cb43df63">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/cli_bindings/0/source/module">a_stove0_cli.main</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<span id="v-a165743a6725cd22330937eb">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/cli_bindings/0/source/path">some-implementations/stove0/application/client/src/a_stove0_cli/main.py</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>symbol</code>
+</th>
+<td>
+<span id="v-7e64613ead4e7134cdf42485">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/cli_bindings/0/source/symbol">list_admissions</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>cli_commands</code>
+</th>
+<td>
+<table id="v-94ff97b71fe649e5a0e625f4">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-68539d9d0311c2903974644a">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/cli_commands/0">admission list</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>client</code>
+</th>
+<td>
+<span id="v-def5058955f635b47c816fc2">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/client">Stove0ApiClient</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>client_bindings</code>
+</th>
+<td>
+<table id="v-6a791e265c5705523aef1584">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-54b3e02ee4c92c19ded0ac8b">
+<tbody>
+<tr>
+<th scope="row">
+<code>public_identity</code>
+</th>
+<td>
+<span id="v-b1fa929959ecc3ae45c62878">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/client_bindings/0/public_identity">stove0_api_client.Stove0ApiClient.list_admissions</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source</code>
+</th>
+<td>
+<table id="v-577f296d9497e953067d4862">
+<tbody>
+<tr>
+<th scope="row">
+<code>line</code>
+</th>
+<td>
+<span id="v-24efa24f85f554a656f6c30d">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/client_bindings/0/source/line">186</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-726b28c919a96ed53d96a1da">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/client_bindings/0/source/module">stove0_api_client.client</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<span id="v-439ee7e5aad2cb540fdc4bc9">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/client_bindings/0/source/path">some-implementations/stove0/packages/api-client/src/stove0_api_client/client.py</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>symbol</code>
+</th>
+<td>
+<span id="v-90caace926bd1be9cd1a9dda">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/client_bindings/0/source/symbol">Stove0ApiClient.list_admissions</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>method</code>
+</th>
+<td>
+<span id="v-06d1e2f9bbcba474fafa2edc">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/method">GET</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>operation_id</code>
+</th>
+<td>
+<span id="v-971b6172cd7ec3730b42e49d">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/operation_id">list_admissions</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<span id="v-2d18972b41195ad0a707765e">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/path">/v1/admissions</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>provider_evidence</code>
+</th>
+<td>
+<span id="v-a6dcfe1c1c93204bb3762711">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/provider_evidence">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>read_collection</code>
+</th>
+<td>
+<table id="v-43b0ce3fc3a1b7924c4053fa">
 <tbody>
 <tr>
 <th scope="row">
 <code>default_page_size</code>
 </th>
 <td>
-<span id="v-d60623addd137560e3532544">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:logical-result/progression/default_page_size">25</code>
+<span id="v-960dac2c76f606dae8aff1a6">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/read_collection/default_page_size">25</code>
 <span class="kind">number</span>
 </span>
 </td>
@@ -1596,8 +2149,8 @@
 <code>kind</code>
 </th>
 <td>
-<span id="v-652a3dad2526ec14d06bfab1">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:logical-result/progression/kind">mutable-browse</code>
+<span id="v-b7bf892249f204f8ec8b4b75">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/read_collection/kind">mutable-browse</code>
 <span class="kind">string</span>
 </span>
 </td>
@@ -1607,8 +2160,8 @@
 <code>maximum_page_size</code>
 </th>
 <td>
-<span id="v-affe725467f265edd4ec29d4">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:logical-result/progression/maximum_page_size">100</code>
+<span id="v-8f829e676457ee234f43db3a">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/read_collection/maximum_page_size">100</code>
 <span class="kind">number</span>
 </span>
 </td>
@@ -1618,8 +2171,8 @@
 <code>next_page_token_field</code>
 </th>
 <td>
-<span id="v-fe99d4a7b674436c3901f210">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:logical-result/progression/next_page_token_field">next_page_token</code>
+<span id="v-019e2047e23965b6cbcad06d">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/read_collection/next_page_token_field">next_page_token</code>
 <span class="kind">string</span>
 </span>
 </td>
@@ -1629,8 +2182,8 @@
 <code>page_size_parameter</code>
 </th>
 <td>
-<span id="v-afec676a45ef7a1890121913">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:logical-result/progression/page_size_parameter">page_size</code>
+<span id="v-9488d8a8d8c1d045df878035">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/read_collection/page_size_parameter">page_size</code>
 <span class="kind">string</span>
 </span>
 </td>
@@ -1640,8 +2193,8 @@
 <code>page_token_parameter</code>
 </th>
 <td>
-<span id="v-3a8ff98aed0ef8f55919a9cd">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:logical-result/progression/page_token_parameter">page_token</code>
+<span id="v-c99edebc29c9e18430271cc0">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/read_collection/page_token_parameter">page_token</code>
 <span class="kind">string</span>
 </span>
 </td>
@@ -1652,169 +2205,18 @@
 </tr>
 <tr>
 <th scope="row">
-<code>reason</code>
+<code>response_authority</code>
 </th>
 <td>
-<span id="v-55bb4be509c1c134e10d71b1">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:logical-result/reason">bounded-route-progression</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-71c15ce61f62b7217572b160">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:logical-result/rule">route-progression/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-672959c34bd23013df92f5aa">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:logical-result/source_pointer">/external_contract/http_openapi/stove0/paths/~1v1~1admissions/get</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-7a492ac2c86ea6c45783d96f">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:logical-result/unit">items</code>
+<span id="v-5c7e3bc43aa962c6166e9f56">
+<code data-value-pointer="/audit/operation-qualification/list_admissions/response_authority">operator-projection</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-<li>
-<code>http:stove0:operation:list_admissions:parameter:query:page_size:/:value</code>
-<table id="v-0c81db4b5c0170ac0a44b6e5">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-c827a1344c7c70b531be9a9c">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:parameter:query:page_size:~1:value/dimension">value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-1e3daeff210e2a0884ce37c4">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:parameter:query:page_size:~1:value/id">http:stove0:operation:list_admissions:parameter:query:page_size:/:value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-0b5cb90e049a5f9450ff942c">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:parameter:query:page_size:~1:value/maximum">100</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-5c9b4d6f22e51d2572a8cb23">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:parameter:query:page_size:~1:value/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-69e11bce3a76e08130fb1821">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:parameter:query:page_size:~1:value/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-bae83d0ff5f17ea0c1e38201">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:parameter:query:page_size:~1:value/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-08ff6042882228cf1518edd3">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:parameter:query:page_size:~1:value/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-431841e1eae90a6f817b125b">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:parameter:query:page_size:~1:value/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-aae2b453b40f2f0fe2310459">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:parameter:query:page_size:~1:value/source_pointer">/external_contract/http_openapi/stove0/paths/~1v1~1admissions/get/parameters/0/schema</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-fc98393da0922ef1e57787de">
-<code data-value-pointer="/audit/decisions/http:stove0:operation:list_admissions:parameter:query:page_size:~1:value/unit">schema-value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</details>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

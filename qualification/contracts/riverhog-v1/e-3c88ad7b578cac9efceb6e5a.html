@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,190 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>schemas: TargetProgress</h1>
+<p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
 <section id="contract" data-contract="http-schemas:stove0:schemas-targetprogress:e91820db66">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-8286fd24371c74303da0908d">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>TargetProgress</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;phase&quot;,&quot;completed&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>completed</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>phase</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>120</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-edfb3f4d441565fb73f28d60">total</a>
+</td>
+<td>no</td>
+<td>any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-5abc9e6e1c287bbeb4e5b3ef">unit</a>
+</td>
+<td>no</td>
+<td>any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>40</code>; <code>null</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-edfb3f4d441565fb73f28d60">
+<h3>Field: total</h3>
+<p class="shape">any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Total</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-5abc9e6e1c287bbeb4e5b3ef">
+<h3>Field: unit</h3>
+<p class="shape">any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>40</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Unit</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>40</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/stove0/components/schemas/TargetProgress</code>
-</h3>
+</h4>
 <table id="v-8286fd24371c74303da0908d">
 <tbody>
 <tr>
@@ -398,265 +564,74 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>http:stove0:components:/schemas/TargetProgress/properties/phase:length</code>
-<table id="v-529becd1fc10f74ce7aa4ca2">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-0bd5d1656f002b912e51de4c">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetProgress~1properties~1phase:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetProgress/properties/phase</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:120,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-ab94f6ef21aeba92479ea14e">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetProgress~1properties~1phase:length/id">http:stove0:components:/schemas/TargetProgress/properties/phase:length</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetProgress/properties/unit/anyOf/0</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-e08dc1a2cb16aecd37daf0a4">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetProgress~1properties~1phase:length/maximum">120</code>
-<span class="kind">number</span>
-</span>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
+<td>length · characters · contract_max</td>
 <td>
-<span id="v-99219040937c96f5138c307e">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetProgress~1properties~1phase:length/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-6fb44af5dbf27da943ad706b">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetProgress~1properties~1phase:length/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-72fd056f85a4a1a3809dc229">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetProgress~1properties~1phase:length/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-2c9d7e5af865b886b4b801d3">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetProgress~1properties~1phase:length/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-0a8da2b64e37a9f8c1bec113">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetProgress~1properties~1phase:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-b8449d99694a0e709b528af0">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetProgress~1properties~1phase:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/TargetProgress/properties/phase</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-9772124aa4d572ccb88fbe26">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetProgress~1properties~1phase:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:40,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/TargetProgress/properties/unit/anyOf/0:length</code>
-<table id="v-91750454e94132ceb3cdcc31">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-f90537aa95bcf3fafb6a22cf">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetProgress~1properties~1unit~1anyOf~10:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-ccebda91157cc91febfea66c">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetProgress~1properties~1unit~1anyOf~10:length/id">http:stove0:components:/schemas/TargetProgress/properties/unit/anyOf/0:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-4442f0d8d98f613dd09bd55c">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetProgress~1properties~1unit~1anyOf~10:length/maximum">40</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-216dd66506d592fa4cc435e2">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetProgress~1properties~1unit~1anyOf~10:length/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-082d17addbc6abc5138da125">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetProgress~1properties~1unit~1anyOf~10:length/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-a3cf29e3cd01bdf118a1d9e7">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetProgress~1properties~1unit~1anyOf~10:length/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-6295447a53be875b1fe4cc56">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetProgress~1properties~1unit~1anyOf~10:length/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-ad8f593cf324d22c21f4d16d">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetProgress~1properties~1unit~1anyOf~10:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-b309bf7eb8311f6b5ae3d23b">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetProgress~1properties~1unit~1anyOf~10:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/TargetProgress/properties/unit/anyOf/0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-3d3eea68f2e122537f5d4a62">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetProgress~1properties~1unit~1anyOf~10:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

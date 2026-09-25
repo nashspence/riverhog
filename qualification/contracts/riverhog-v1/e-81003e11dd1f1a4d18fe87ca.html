@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,61 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-e73a9d1d62e636fbf2996599.html">review0-sampler-client · Python</a>
+<a href="index.html">All authorities</a> / <a href="a-46c3d1e0f244e69f1ac6b9ad.html">review0-sampler-client</a> / <a href="i-e73a9d1d62e636fbf2996599.html">Python</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>review0_sampler_client.ReviewSamplerClient</h1>
+<p class="context">HTTP client for Review0 samplers. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:review0-sampler-client:review0-sampler-client-reviewsamplerclient:9c051cea32">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>review0-sampler-client</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>review0_sampler_client</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>ReviewSamplerClient</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(base_url: &#x27;str&#x27;, token: &#x27;str&#x27;, *, allow_insecure_http: &#x27;bool&#x27; = False, timeout_seconds: &#x27;float&#x27; = 86400, transport: &#x27;httpx.BaseTransport | None&#x27; = None) -&gt; &#x27;None&#x27;&quot;</code>
+</dd>
+</dl>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/python/review0_sampler_client.ReviewSamplerClient</code>
-</h3>
+</h4>
 <table id="v-bd338b6a69153da7434c7990">
 <tbody>
 <tr>
@@ -112,25 +149,52 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-599bcc7131a86400943c0779.html">review0_sampler_client.ReviewSamplerClient.descriptor</a>
+</li>
+<li>
+<a href="e-408dceaac11a70a0413195d4.html">review0_sampler_client.ReviewSamplerClient.close</a>
+</li>
+<li>
+<a href="e-b72aaf9d9e6286b06d7bea53.html">review0_sampler_client.ReviewSamplerClient.__enter__</a>
+</li>
+<li>
+<a href="e-03fe5c3bef957efc7878cd74.html">review0_sampler_client.ReviewSamplerClient.__exit__</a>
+</li>
+<li>
+<a href="e-9faf6c84134c5f112116cbdb.html">review0_sampler_client.ReviewSamplerClient.sample</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/stove0/review0/sampler/client/src/review0_sampler_client/__init__.py">some-implementations/stove0/review0/sampler/client/src/review0_sampler_client/__init__.py</code>
+<a href="source-authorities.html#source-eb22a957aa3e64424fc26690">python:review0-sampler-client:review0_sampler_client</a> — <code data-source-path="some-implementations/stove0/review0/sampler/client/src/review0_sampler_client/__init__.py">some-implementations/stove0/review0/sampler/client/src/review0_sampler_client/__init__.py</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

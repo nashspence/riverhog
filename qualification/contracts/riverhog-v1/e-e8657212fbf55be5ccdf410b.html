@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,523 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>schemas: BranchSetEvaluation</h1>
+<p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
 <section id="contract" data-contract="http-schemas:stove0:schemas-branchsetevaluation:6fcbb2e4b9">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-dfc1e70c60d6c0b7f1968281">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 18 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>BranchSetEvaluation</code>
+</dd>
+<dt>description</dt>
+<dd>
+<code>Entirely derived view over a plan and ordinary child/join results.</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;branch_set_sha256&quot;,&quot;succeeded_branches&quot;,&quot;succeeded_effects&quot;,&quot;succeeded_coordinations&quot;,&quot;unsettled_branch_ids&quot;,&quot;failed_branch_ids&quot;,&quot;inapplicable_branch_ids&quot;,&quot;interrupted_branch_ids&quot;,&quot;canceled_branch_ids&quot;,&quot;join_ready&quot;,&quot;resolved_join_plan&quot;,&quot;join_state&quot;,&quot;join_settlement&quot;,&quot;unsettled_work_ids&quot;,&quot;branch_set_succeeded&quot;,&quot;coordination_settlement&quot;,&quot;source_collection_retirement_requested&quot;,&quot;coordination_complete_for_retirement&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>branch_set_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>branch_set_succeeded</code>
+</td>
+<td>yes</td>
+<td>
+<code>boolean</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-28bd0e47e6fdcd585c3d88f9">canceled_branch_ids</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>coordination_complete_for_retirement</code>
+</td>
+<td>yes</td>
+<td>
+<code>boolean</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-f616c02dd4c092143c60886b">coordination_settlement</a>
+</td>
+<td>yes</td>
+<td>any of: <a href="e-62dfab236553a68accf2bfdd.html#v-d0ceeae9784f3f1290c2d9fa">#/components/schemas/CoordinationSettlement</a>; <code>null</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-7a8d5bbcfea6da6659bde155">failed_branch_ids</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-5784e98faa2c3641989cab40">inapplicable_branch_ids</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-5e39f032913b018895efd50b">interrupted_branch_ids</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>join_ready</code>
+</td>
+<td>yes</td>
+<td>
+<code>boolean</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-451ecf2f608e49851abd8641">join_settlement</a>
+</td>
+<td>yes</td>
+<td>any of: <a href="e-80227f2d21d2aa542b180a0e.html#v-90043d6d0e79450ac45920a9">#/components/schemas/JoinSettlement</a>; <code>null</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>join_state</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;not-declared&quot;,&quot;waiting&quot;,&quot;ready&quot;,&quot;succeeded&quot;,&quot;failed&quot;,&quot;inapplicable&quot;,&quot;interrupted&quot;,&quot;canceled&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-580c35fecd21b4d387beb30f">resolved_join_plan</a>
+</td>
+<td>yes</td>
+<td>any of: <a href="e-6c6ed2bb2f6c13766c78b118.html#v-e8e5828f9d085c65808bdfe9">#/components/schemas/JoinPlan</a>; <code>null</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_collection_retirement_requested</code>
+</td>
+<td>yes</td>
+<td>
+<code>boolean</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-532021a47d874bb4ef1f0c9f">succeeded_branches</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-091167f7febc9680d47fc978.html#v-408a56022c8d33cad48d3148">#/components/schemas/BranchSettlement</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-454b7a1beedbb7c26aecfdae">succeeded_coordinations</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-62dfab236553a68accf2bfdd.html#v-d0ceeae9784f3f1290c2d9fa">#/components/schemas/CoordinationSettlement</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-e849acf14624c27aa83e44f5">succeeded_effects</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-5db6c1033cd2b89302610980.html#v-8c1e5f0939632a7ed9ab5569">#/components/schemas/BranchEffectSettlement</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-4cf1935a3b85b609506476b8">unsettled_branch_ids</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-c9d8f273f54748836c360092">unsettled_work_ids</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-28bd0e47e6fdcd585c3d88f9">
+<h3>Field: canceled_branch_ids</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Canceled Branch Ids</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-f616c02dd4c092143c60886b">
+<h3>Field: coordination_settlement</h3>
+<p class="shape">any of: <a href="e-62dfab236553a68accf2bfdd.html#v-d0ceeae9784f3f1290c2d9fa">#/components/schemas/CoordinationSettlement</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-62dfab236553a68accf2bfdd.html#v-d0ceeae9784f3f1290c2d9fa">#/components/schemas/CoordinationSettlement</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-7a8d5bbcfea6da6659bde155">
+<h3>Field: failed_branch_ids</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Failed Branch Ids</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-5784e98faa2c3641989cab40">
+<h3>Field: inapplicable_branch_ids</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Inapplicable Branch Ids</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-5e39f032913b018895efd50b">
+<h3>Field: interrupted_branch_ids</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Interrupted Branch Ids</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-451ecf2f608e49851abd8641">
+<h3>Field: join_settlement</h3>
+<p class="shape">any of: <a href="e-80227f2d21d2aa542b180a0e.html#v-90043d6d0e79450ac45920a9">#/components/schemas/JoinSettlement</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-80227f2d21d2aa542b180a0e.html#v-90043d6d0e79450ac45920a9">#/components/schemas/JoinSettlement</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-580c35fecd21b4d387beb30f">
+<h3>Field: resolved_join_plan</h3>
+<p class="shape">any of: <a href="e-6c6ed2bb2f6c13766c78b118.html#v-e8e5828f9d085c65808bdfe9">#/components/schemas/JoinPlan</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-6c6ed2bb2f6c13766c78b118.html#v-e8e5828f9d085c65808bdfe9">#/components/schemas/JoinPlan</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-532021a47d874bb4ef1f0c9f">
+<h3>Field: succeeded_branches</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-091167f7febc9680d47fc978.html#v-408a56022c8d33cad48d3148">#/components/schemas/BranchSettlement</a>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Succeeded Branches</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-454b7a1beedbb7c26aecfdae">
+<h3>Field: succeeded_coordinations</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-62dfab236553a68accf2bfdd.html#v-d0ceeae9784f3f1290c2d9fa">#/components/schemas/CoordinationSettlement</a>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Succeeded Coordinations</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-e849acf14624c27aa83e44f5">
+<h3>Field: succeeded_effects</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-5db6c1033cd2b89302610980.html#v-8c1e5f0939632a7ed9ab5569">#/components/schemas/BranchEffectSettlement</a>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Succeeded Effects</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-4cf1935a3b85b609506476b8">
+<h3>Field: unsettled_branch_ids</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Unsettled Branch Ids</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-c9d8f273f54748836c360092">
+<h3>Field: unsettled_work_ids</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Unsettled Work Ids</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation</code>
-</h3>
+</h4>
 <table id="v-dfc1e70c60d6c0b7f1968281">
 <tbody>
 <tr>
@@ -1366,1659 +1865,182 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>http:stove0:components:/schemas/BranchSetEvaluation/properties/branch_set_sha256:length</code>
-<table id="v-5a8d83998e9006ea1e684c9a">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-e8c5773115ede64071fc8ce0">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1branch_set_sha256:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/branch_set_sha256</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-f3b562a6503c927d252f2d9b">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1branch_set_sha256:length/id">http:stove0:components:/schemas/BranchSetEvaluation/properties/branch_set_sha256:length</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/canceled_branch_ids</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-365f1da2cc8b671c7825d735">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1branch_set_sha256:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/failed_branch_ids</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>minimum</code>
-</th>
 <td>
-<span id="v-e51347204a39072e7f4b733b">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1branch_set_sha256:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/inapplicable_branch_ids</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-7d75f26a563fb342ca454b44">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1branch_set_sha256:length/owner">stove0</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/interrupted_branch_ids</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>policy</code>
-</th>
 <td>
-<span id="v-912610f30a689d4151100682">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1branch_set_sha256:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/succeeded_branches</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>reason</code>
-</th>
 <td>
-<span id="v-7094a06e427c7b8510ccaf1d">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1branch_set_sha256:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/succeeded_coordinations</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>rule</code>
-</th>
 <td>
-<span id="v-6294f2f5ad24c3f163b44129">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1branch_set_sha256:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/succeeded_effects</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
 <td>
-<table id="v-9066c0e7c4965aad73583f5b">
-<tbody>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/unsettled_branch_ids</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
+</td>
+</tr>
 <tr>
-<th scope="row">
-<code>pattern</code>
-</th>
 <td>
-<span id="v-1034a73f7d1da99e5c59a5e4">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1branch_set_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/unsettled_work_ids/items</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/unsettled_work_ids</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-7efd4cef7cef33cfa36149c9">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1branch_set_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/branch_set_sha256</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-afe761ca110714a923e3a6a8">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1branch_set_sha256:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/BranchSetEvaluation/properties/canceled_branch_ids:cardinality</code>
-<table id="v-3b57b39b367ec7b21b204e77">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-e8d471f8afe65448b42ba405">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-de013b45d4d46f78a347299d">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1canceled_branch_ids:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-9c47c688bca78dd108f1514e">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1canceled_branch_ids:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-f0563921ec9977de8aa66e3a">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1canceled_branch_ids:cardinality/capacity_authority/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-d3197bc3742887ab507aacf6">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1canceled_branch_ids:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-169bfa8805d749d2bc4bc869">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1canceled_branch_ids:cardinality/id">http:stove0:components:/schemas/BranchSetEvaluation/properties/canceled_branch_ids:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-e8316ec53891f31809ef2297">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1canceled_branch_ids:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-9eceac79bacb225d6e96b03c">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1canceled_branch_ids:cardinality/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-3c294c4fe689db7998bfe131">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1canceled_branch_ids:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-aabe61268efcb5879dfbeb38">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1canceled_branch_ids:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-3cc3a7cfa1c855b205362fdf">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1canceled_branch_ids:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-9ea316b6b5948213976402c6">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1canceled_branch_ids:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/canceled_branch_ids</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-ca726bf85b06209b55abf20d">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1canceled_branch_ids:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/BranchSetEvaluation/properties/failed_branch_ids:cardinality</code>
-<table id="v-ee338a7e527360b5f6406a79">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-84f429c50cf96ae98f3db584">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-d6e4d06d6af37887bae4090e">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1failed_branch_ids:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-fb0e81f63fb40703d8254af2">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1failed_branch_ids:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-87601c6ed7e92ff3a730ab08">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1failed_branch_ids:cardinality/capacity_authority/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-229eefc5af1b0ae5ae25a758">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1failed_branch_ids:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-9a95e1b8a21b21ab02e5d6b4">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1failed_branch_ids:cardinality/id">http:stove0:components:/schemas/BranchSetEvaluation/properties/failed_branch_ids:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-7a99859a9dec2e7fa12c6778">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1failed_branch_ids:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-88e890d8b2d96f7fb790e0f4">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1failed_branch_ids:cardinality/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-eb0a4321066c78a2dc7fc8f2">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1failed_branch_ids:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-da958ef419ee3b7d0b0e61ab">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1failed_branch_ids:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-6f96ccb39d12cd61beeb9b2f">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1failed_branch_ids:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-0bae4c0c0c11a1c9657143cc">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1failed_branch_ids:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/failed_branch_ids</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-8b21454060642628817e3c2b">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1failed_branch_ids:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/BranchSetEvaluation/properties/inapplicable_branch_ids:cardinality</code>
-<table id="v-8547087933b7c4f09f80a879">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-033f169dbba23fd73aa870ac">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-33fc8d8be6cd08b6f0bd9f6c">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1inapplicable_branch_ids:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-202e19286d2c9db2b1573702">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1inapplicable_branch_ids:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-e948723d27737ce04c27f1b1">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1inapplicable_branch_ids:cardinality/capacity_authority/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-ca94311baada9af0304d38c5">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1inapplicable_branch_ids:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-eb090c0f826db8de004ff8a0">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1inapplicable_branch_ids:cardinality/id">http:stove0:components:/schemas/BranchSetEvaluation/properties/inapplicable_branch_ids:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-aa061e28f4a85e55df1f0220">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1inapplicable_branch_ids:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-c5d42608d0b458b66c6b41b9">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1inapplicable_branch_ids:cardinality/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-565d852f85e0dd904109809f">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1inapplicable_branch_ids:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-5c09c73f6b101b2e27a4a296">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1inapplicable_branch_ids:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-888f2563e584c8d45f7e0ce9">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1inapplicable_branch_ids:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-d1da8b684af11e6592851e95">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1inapplicable_branch_ids:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/inapplicable_branch_ids</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-264dd256609c6f96c4de289d">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1inapplicable_branch_ids:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/BranchSetEvaluation/properties/interrupted_branch_ids:cardinality</code>
-<table id="v-2dec0cffebece0140c15a78e">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-f1ea927540cdf9c5a6696749">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-5e7a3b63f9d04f5098409842">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1interrupted_branch_ids:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-126601b9a8ef385482a3bcfd">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1interrupted_branch_ids:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-caa64357f08fe9373600d682">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1interrupted_branch_ids:cardinality/capacity_authority/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-9299d33ba2642bd3450f8aa1">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1interrupted_branch_ids:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-669c907f617ce526db4535ed">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1interrupted_branch_ids:cardinality/id">http:stove0:components:/schemas/BranchSetEvaluation/properties/interrupted_branch_ids:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-4d5cdf74d03d3ab7afa9063c">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1interrupted_branch_ids:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-9d900b9fba036e3917535e76">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1interrupted_branch_ids:cardinality/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-2febc793000d8cab96e2ae32">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1interrupted_branch_ids:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-58331a033489e9b0c1aa820f">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1interrupted_branch_ids:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-da214b3fbc89f42838c09a8d">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1interrupted_branch_ids:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-a27b5c67f528a801b555dab3">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1interrupted_branch_ids:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/interrupted_branch_ids</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-b8261d1ca708572358db8b46">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1interrupted_branch_ids:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/BranchSetEvaluation/properties/succeeded_branches:cardinality</code>
-<table id="v-014c834e0f49d2533246b7f4">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-c6897632bf13feb19f4cce0e">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-f9d73eb7a849bc4c00e753e5">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_branches:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-46641387e6004d1b86c65b9d">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_branches:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-a193d6fe2e697f038069a83f">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_branches:cardinality/capacity_authority/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-b208fdcb50cdf2613c60e91e">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_branches:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-230b76d3adec3484cbc3e210">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_branches:cardinality/id">http:stove0:components:/schemas/BranchSetEvaluation/properties/succeeded_branches:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-1983a7db8b7ffdc4e6f544f7">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_branches:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-1c6d952e89fe01772e9e7c7f">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_branches:cardinality/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-62380595959dcc54766255ef">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_branches:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-435154b0f156ae7f6bdca762">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_branches:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-4c7c02b9abe2357c0bc7f8d2">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_branches:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-27ec09a678840bb34401d6b8">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_branches:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/succeeded_branches</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-d5354d1bee2f3e2bf8a83805">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_branches:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/BranchSetEvaluation/properties/succeeded_coordinations:cardinality</code>
-<table id="v-3358f38b0569ea81fcdb6268">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-5ae99efbbed8f53c6e7ae6f0">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-d60b94bd052b4c01a57c794a">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_coordinations:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-6ecd3fd53c3bbe33155b6534">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_coordinations:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-94a84fb6c940c17966fcdf9f">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_coordinations:cardinality/capacity_authority/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-b68ddeae1b3d8393c80508b0">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_coordinations:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-2edc85edb7669d5bc34f78f7">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_coordinations:cardinality/id">http:stove0:components:/schemas/BranchSetEvaluation/properties/succeeded_coordinations:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-1e2fab7a2b62bca91a5e88ed">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_coordinations:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-93e98ea6e63ab98b3cde7413">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_coordinations:cardinality/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-706022e4653215aa0fbe4ec6">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_coordinations:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-4b1aed5c232e81d37306cff6">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_coordinations:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-7c09ed9c8176ba43430a123e">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_coordinations:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-825b2071b38ed248b5dc1fd1">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_coordinations:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/succeeded_coordinations</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-94b9e83a123fae733c4caa06">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_coordinations:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/BranchSetEvaluation/properties/succeeded_effects:cardinality</code>
-<table id="v-73a14140ce638315a1a6fb25">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-5b6431a52bbe3fc6e75f106b">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-c005159a40af2563e0e34dc6">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_effects:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-92ea80f6d55a438bf0c8a046">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_effects:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-10bd704f81d6bdd2c99dbad2">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_effects:cardinality/capacity_authority/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-55b92b9978ea039148023e01">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_effects:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-e94c3b4a20dd73886bd7bbef">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_effects:cardinality/id">http:stove0:components:/schemas/BranchSetEvaluation/properties/succeeded_effects:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-36e0848013e53ed5a3581655">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_effects:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-e2ef7f97e2cc7345d64240a0">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_effects:cardinality/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-c5e6d371781d86acd908ce7a">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_effects:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-a85169933d6a556e9bb571b7">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_effects:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-156639737cab48686cefec14">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_effects:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-ce2ab3d4a0c7dfb21c27b705">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_effects:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/succeeded_effects</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-195f803d074b77082adaa800">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1succeeded_effects:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/BranchSetEvaluation/properties/unsettled_branch_ids:cardinality</code>
-<table id="v-4403aaf6bebf688532145b12">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-47d3029dc6aefd35c0d548e0">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-cae9e03647bddaa65714e4b2">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_branch_ids:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-3e95b97bd1562fed2883a9fd">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_branch_ids:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-f98b1e443146f9fb6851e962">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_branch_ids:cardinality/capacity_authority/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-9c8d9a0aee7dbceae1a6b8ed">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_branch_ids:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-a3f88ed66cd9887066aa984c">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_branch_ids:cardinality/id">http:stove0:components:/schemas/BranchSetEvaluation/properties/unsettled_branch_ids:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-28e4130554ef877da9b9c2cb">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_branch_ids:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-d7bf2f7a7c4b7ac7995c3328">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_branch_ids:cardinality/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-79ceba3a75d397097beac609">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_branch_ids:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-5f1f1957e9a45d8946a69154">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_branch_ids:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-c3e461cd821d1204516fb5f7">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_branch_ids:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-aaafb225770403100d6a9532">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_branch_ids:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/unsettled_branch_ids</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-31738392bc2c4c82c9e773f1">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_branch_ids:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/BranchSetEvaluation/properties/unsettled_work_ids/items:length</code>
-<table id="v-e5a2a0821685a02f4a90222a">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-e78dc4338ed9c7ba5611fbb2">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids~1items:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-dc57cfce1040cebca77fdbbf">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids~1items:length/id">http:stove0:components:/schemas/BranchSetEvaluation/properties/unsettled_work_ids/items:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-2d3b114bb9b2b5b9677904b4">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids~1items:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-8c3312de849d20473a10a3db">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids~1items:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-3d3b8b0cab457f14c3c8c35b">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids~1items:length/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-6fcfead3b9512023d2f0bc92">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids~1items:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-38da76ca86c06ca0ad8c2032">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids~1items:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-739a5f7262d9267cfec5e2b0">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids~1items:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-30c4045d5aea70f65360eaa3">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-3ea1e27fc2825ea0518cce91">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids~1items:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-59b4a8581811943f397a2db9">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids~1items:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/unsettled_work_ids/items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-b1783ecf31c01871d10c2d93">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids~1items:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/BranchSetEvaluation/properties/unsettled_work_ids:cardinality</code>
-<table id="v-c907eb6d15b29a2e735acd73">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-27c33fde7272e1c28a2de1ff">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-65c344f7ce27f711284ff48d">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-e3b8ac251cfafa47f1a51aa7">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-24d1c4d16fd608cf9b411950">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids:cardinality/capacity_authority/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-350703c4c7b7d787ad199ba7">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-9a6b7f61727ebd73f3b61561">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids:cardinality/id">http:stove0:components:/schemas/BranchSetEvaluation/properties/unsettled_work_ids:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-9ab9b2ab547e84eeb1f331cf">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-48eceb8a77dc3a9646206287">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids:cardinality/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-26e4ca8777c9fc8040ea1a75">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-d9c8d5cf27327ad663b4a518">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-2ac612e43e6801f54a8d58c0">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-04c8b35e60a4e9a78ec7f8c2">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation/properties/unsettled_work_ids</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-43dc2350dbca7ae7239768fe">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetEvaluation~1properties~1unsettled_work_ids:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,51 +12,197 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-b556572a724194c6c4da1e6b.html">a-riverhog-minisign-witness · CLI</a>
+<a href="index.html">All authorities</a> / <a href="a-fe0ff454f196cf330d53a3ad.html">a-riverhog-minisign-witness</a> / <a href="i-b556572a724194c6c4da1e6b.html">CLI</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>a-riverhog-minisign-witness state upgrade</h1>
+<p class="context">Independent Minisign collection witness for Riverhog. CLI contract owned by a-riverhog-minisign-witness.</p>
 <section id="contract" data-contract="cli:a-riverhog-minisign-witness:a-riverhog-minisign-witness-state-upgrade:00e4e2cc7f">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Command</h3>
+<dl class="facts">
+<dt>name</dt>
+<dd>
+<code>upgrade</code>
+</dd>
+<dt>allow abbrev</dt>
+<dd>
+<code>true</code>
+</dd>
+</dl>
+<p>Parser flags and defaults are recorded inputs. A missing default does not assert an explicit null value or rule out other configured fallbacks.</p>
+<h3>Result contract</h3>
+<dl class="facts">
+<dt>identity</dt>
+<dd>
+<code>a-riverhog-minisign-witness-cli-result/state/upgrade/v1</code>
+</dd>
+<dt>profile id</dt>
+<dd>
+<code>a-riverhog-minisign-witness-cli-json/v1</code>
+</dd>
+<dt>structured output</dt>
+<dd>
+<code>always-json</code>
+</dd>
+<dt>human json relationship</dt>
+<dd>
+<code>not-applicable</code>
+</dd>
+</dl>
+<h4>Success outcomes</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Outcome</th>
+<th scope="col">Exit</th>
+<th scope="col">Selection</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>completed</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>kind: <code>command-completed</code>
+</td>
+<td>json: identity: <code>a-riverhog-minisign-witness-cli-state-upgrade/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;status&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;condition&quot;:{&quot;enum&quot;:[&quot;empty&quot;,&quot;current&quot;,&quot;upgrade_required&quot;,&quot;unversioned&quot;,&quot;incompatible&quot;]},&quot;current_revision&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;head_revision&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;name&quot;:{&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;name&quot;,&quot;condition&quot;,&quot;current_revision&quot;,&quot;head_revision&quot;],&quot;type&quot;:&quot;object&quot;}},&quot;required&quot;:[&quot;status&quot;],&quot;type&quot;:&quot;object&quot;}</code>
+</td>
+<td>all: <code>empty</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Failure outcomes</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Outcome</th>
+<th scope="col">Exit</th>
+<th scope="col">Selection</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>usage</code>
+</td>
+<td>
+<code>2</code>
+</td>
+<td>kind: <code>parser-rejected-invocation</code>
+</td>
+<td>all: <code>empty</code>
+</td>
+<td>all: <code>noncontractual-usage-diagnostic</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>application-error</code>
+</td>
+<td>
+<code>1</code>
+</td>
+<td>kind: <code>application-error</code>
+</td>
+<td>all: <code>empty</code>
+</td>
+<td>all: <code>noncontractual-diagnostic</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Terminating controls</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Control</th>
+<th scope="col">Trigger</th>
+<th scope="col">Exit</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>help</code>
+</td>
+<td>
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;-h&quot;,&quot;--help&quot;]}</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>
+<code>noncontractual-framework-help</code>
+</td>
+<td>
+<code>empty</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/upgrade/allow_abbrev</code>
-</h3>
+</h4>
 <span id="v-773f38b6fcf5f0534dcc23d5">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/upgrade/allow_abbrev">true</code>
 <span class="kind">boolean</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/upgrade/name</code>
-</h3>
+</h4>
 <span id="v-7d5ade557b808f415f99dcb5">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/upgrade/name">upgrade</code>
 <span class="kind">string</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/upgrade/parameters</code>
-</h3>
+</h4>
 <span id="v-e88f93f74b387af54276c7a9">
 <code data-value-pointer="/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/upgrade/parameters">[]</code>
 <span class="kind">array</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/upgrade/result_contract</code>
-</h3>
+</h4>
 <table id="v-4f7aec136a6a2c5cc90a4cb9">
 <tbody>
 <tr>
@@ -778,9 +924,9 @@
 </table>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-riverhog-minisign-witness/commands/state/commands/upgrade/terminating_controls</code>
-</h3>
+</h4>
 <table id="v-ccee452e7a80224557c4a15f">
 <tbody>
 <tr>
@@ -896,25 +1042,32 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-48a89776de7f91b173b46d03">compatibility/cli/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="some-implementations/riverhog/applications/a-riverhog-minisign-witness/src/a_riverhog_minisign_witness/cli.py">some-implementations/riverhog/applications/a-riverhog-minisign-witness/src/a_riverhog_minisign_witness/cli.py::&lt;module&gt;</code>
+<a href="source-authorities.html#source-ab8103c6de66ee06f4bf1775">cli:a-riverhog-minisign-witness</a> — <code data-source-path="some-implementations/riverhog/applications/a-riverhog-minisign-witness/src/a_riverhog_minisign_witness/cli.py">some-implementations/riverhog/applications/a-riverhog-minisign-witness/src/a_riverhog_minisign_witness/cli.py::&lt;module&gt;</code>
 </li>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 </ul>
 </aside>

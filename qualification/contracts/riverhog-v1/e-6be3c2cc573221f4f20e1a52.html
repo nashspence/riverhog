@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,556 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-143b5a66a4c26fead10d8de7.html">a-riverhog-ftp-spool-client · Python</a>
+<a href="index.html">All authorities</a> / <a href="a-26f9a24cc37e6719930cfee3.html">a-riverhog-ftp-spool-client</a> / <a href="i-143b5a66a4c26fead10d8de7.html">Python</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>a_riverhog_ftp_spool_client.FtpSpoolStatus</h1>
+<p class="context">Client for the Riverhog FTP upload spool. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:a-riverhog-ftp-spool-client:a-riverhog-ftp-spool-client-ftpspoolstatus:3fd2e6a6e8">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>a-riverhog-ftp-spool-client</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>a_riverhog_ftp_spool_client</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>FtpSpoolStatus</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(*, format: Literal[&#x27;a-riverhog-ftp-spool-status/v1&#x27;], provenance_observer: str | None, sources: Annotated[list[a_riverhog_ftp_spool_client.status.SourceStatus], MaxLen(max_length=100)], page_size: Annotated[int, Ge(ge=1), Le(le=100)], next_page_token: BrowsePageToken | None, snapshot: Literal[False]) -&gt; None&quot;</code>
+</dd>
+</dl>
+<section class="schema-section" id="s-901cfeb0903d4a75ad1fc8bd">
+<h3>Validated model schema</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;format&quot;,&quot;provenance_observer&quot;,&quot;sources&quot;,&quot;page_size&quot;,&quot;next_page_token&quot;,&quot;snapshot&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; const: <code>a-riverhog-ftp-spool-status/v1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-f9ee9b6fa4f0bc5052425b81">next_page_token</a>
+</td>
+<td>yes</td>
+<td>any of: <a href="e-6be3c2cc573221f4f20e1a52.html#v-d8d84900f6f16771afa994de">#/$defs/BrowsePageToken</a>; <code>null</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>page_size</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>100</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-89f4c323ca819d413b3ef546">provenance_observer</a>
+</td>
+<td>yes</td>
+<td>any of: <code>string</code>; <code>null</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>snapshot</code>
+</td>
+<td>yes</td>
+<td>
+<code>boolean</code>; const: <code>false</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-55c27486c0bd0660994e20b5">sources</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-6be3c2cc573221f4f20e1a52.html#v-965f6ea821d1dcf29ac0f209">#/$defs/SourceStatus</a>; maxItems: <code>100</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-d8d84900f6f16771afa994de">BrowsePageToken</a>
+</li>
+<li>
+<a href="#s-f0f64877e389575aba05e69d">CompletionFailureStatus</a>
+</li>
+<li>
+<a href="#s-965f6ea821d1dcf29ac0f209">SourceStatus</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-f9ee9b6fa4f0bc5052425b81">
+<h3>Field: next_page_token</h3>
+<p class="shape">any of: <a href="e-6be3c2cc573221f4f20e1a52.html#v-d8d84900f6f16771afa994de">#/$defs/BrowsePageToken</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-6be3c2cc573221f4f20e1a52.html#v-d8d84900f6f16771afa994de">#/$defs/BrowsePageToken</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-89f4c323ca819d413b3ef546">
+<h3>Field: provenance_observer</h3>
+<p class="shape">any of: <code>string</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-55c27486c0bd0660994e20b5">
+<h3>Field: sources</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-6be3c2cc573221f4f20e1a52.html#v-965f6ea821d1dcf29ac0f209">#/$defs/SourceStatus</a>; maxItems: <code>100</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>maxItems</dt>
+<dd>
+<code>100</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-d8d84900f6f16771afa994de">
+<h3>Definition: BrowsePageToken</h3>
+<p class="shape">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>8192</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>minLength</dt>
+<dd>
+<code>1</code>
+</dd>
+<dt>maxLength</dt>
+<dd>
+<code>8192</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-f0f64877e389575aba05e69d">
+<h3>Definition: CompletionFailureStatus</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;reason&quot;,&quot;retryable&quot;,&quot;attempts&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>attempts</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>reason</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>retryable</code>
+</td>
+<td>yes</td>
+<td>
+<code>boolean</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-965f6ea821d1dcf29ac0f209">
+<h3>Definition: SourceStatus</h3>
+<p class="shape">
+<code>object</code>; 12 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;ingest_source&quot;,&quot;claims&quot;,&quot;claim_bytes&quot;,&quot;close_mode&quot;,&quot;max_files&quot;,&quot;max_bytes&quot;,&quot;provenance&quot;,&quot;pending_claim_capacity&quot;,&quot;completion_failures&quot;,&quot;completion_failure_capacity&quot;,&quot;oldest_completion_failure&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>claim_bytes</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>claims</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>close_mode</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;stable&quot;,&quot;explicit-flush&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>completion_failure_capacity</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>completion_failures</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._-]{0,118}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>ingest_source</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>max_bytes</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>max_files</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-a820a10074660b8b7d38d64a">oldest_completion_failure</a>
+</td>
+<td>yes</td>
+<td>any of: <a href="e-6be3c2cc573221f4f20e1a52.html#v-f0f64877e389575aba05e69d">#/$defs/CompletionFailureStatus</a>; <code>null</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>pending_claim_capacity</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>provenance</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;capture&quot;,&quot;omit&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-a820a10074660b8b7d38d64a">
+<h3>Field: oldest_completion_failure</h3>
+<p class="shape">any of: <a href="e-6be3c2cc573221f4f20e1a52.html#v-f0f64877e389575aba05e69d">#/$defs/CompletionFailureStatus</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-6be3c2cc573221f4f20e1a52.html#v-f0f64877e389575aba05e69d">#/$defs/CompletionFailureStatus</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/python/a_riverhog_ftp_spool_client.FtpSpoolStatus</code>
-</h3>
+</h4>
 <table id="v-6f9c2c14de25f20f42b88dd2">
 <tbody>
 <tr>
@@ -1399,25 +1931,32 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/riverhog/ingress/ftp-api-client/src/a_riverhog_ftp_spool_client/__init__.py">some-implementations/riverhog/ingress/ftp-api-client/src/a_riverhog_ftp_spool_client/__init__.py</code>
+<a href="source-authorities.html#source-3caa0330b63cf01f6b887a9b">python:a-riverhog-ftp-spool-client:a_riverhog_ftp_spool_client</a> — <code data-source-path="some-implementations/riverhog/ingress/ftp-api-client/src/a_riverhog_ftp_spool_client/__init__.py">some-implementations/riverhog/ingress/ftp-api-client/src/a_riverhog_ftp_spool_client/__init__.py</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

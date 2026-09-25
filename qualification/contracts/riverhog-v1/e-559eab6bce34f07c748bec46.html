@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,60 +12,134 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-d761c9ab2b0b2a08662ba379.html">stove0-server · CLI</a>
+<a href="index.html">All authorities</a> / <a href="a-38913a60d95bc167e38ef46d.html">stove0-server</a> / <a href="i-d761c9ab2b0b2a08662ba379.html">CLI</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>stove0-server</h1>
+<p class="context">Content-opaque transformation application for Riverhog. CLI contract owned by stove0-server.</p>
 <section id="contract" data-contract="cli:stove0-server:stove0-server:a568d7d141">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Command</h3>
+<dl class="facts">
+<dt>name</dt>
+<dd>
+<code>stove0-server</code>
+</dd>
+<dt>subcommand required</dt>
+<dd>
+<code>true</code>
+</dd>
+<dt>allow abbrev</dt>
+<dd>
+<code>true</code>
+</dd>
+</dl>
+<p>Parser flags and defaults are recorded inputs. A missing default does not assert an explicit null value or rule out other configured fallbacks.</p>
+<h3>Terminating controls</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Control</th>
+<th scope="col">Trigger</th>
+<th scope="col">Exit</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>help</code>
+</td>
+<td>
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;-h&quot;,&quot;--help&quot;]}</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>
+<code>noncontractual-framework-help</code>
+</td>
+<td>
+<code>empty</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>version</code>
+</td>
+<td>
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;--version&quot;]}</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>
+<code>{&quot;distribution&quot;:&quot;stove0-server&quot;,&quot;kind&quot;:&quot;installed-coordinated-release-version&quot;,&quot;serialization&quot;:&quot;noncontractual&quot;}</code>
+</td>
+<td>
+<code>empty</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/stove0-server/allow_abbrev</code>
-</h3>
+</h4>
 <span id="v-76b2303574ac5cfe3318628a">
 <code data-value-pointer="/external_contract/cli/stove0-server/allow_abbrev">true</code>
 <span class="kind">boolean</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/stove0-server/name</code>
-</h3>
+</h4>
 <span id="v-031448ef76f8a1fe5e985d5b">
 <code data-value-pointer="/external_contract/cli/stove0-server/name">stove0-server</code>
 <span class="kind">string</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/stove0-server/parameters</code>
-</h3>
+</h4>
 <span id="v-ebf3a6dffb1185e85eb59a4c">
 <code data-value-pointer="/external_contract/cli/stove0-server/parameters">[]</code>
 <span class="kind">array</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/stove0-server/subcommand_required</code>
-</h3>
+</h4>
 <span id="v-5d6b18e27a5e0bd75aa216fb">
 <code data-value-pointer="/external_contract/cli/stove0-server/subcommand_required">true</code>
 <span class="kind">boolean</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/stove0-server/terminating_controls</code>
-</h3>
+</h4>
 <table id="v-cc125dbd3e2b5de79d0a294b">
 <tbody>
 <tr>
@@ -313,25 +387,32 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-48a89776de7f91b173b46d03">compatibility/cli/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="some-implementations/stove0/application/server/src/stove0_api/app.py">some-implementations/stove0/application/server/src/stove0_api/app.py::&lt;module&gt;</code>
+<a href="source-authorities.html#source-6f5bc9f6db5b48b3529d9eaa">cli:stove0-server</a> — <code data-source-path="some-implementations/stove0/application/server/src/stove0_api/app.py">some-implementations/stove0/application/server/src/stove0_api/app.py::&lt;module&gt;</code>
 </li>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 </ul>
 </aside>

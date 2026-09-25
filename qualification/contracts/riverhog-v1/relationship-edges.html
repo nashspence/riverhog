@@ -1,0 +1,3776 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="on">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Relationship edges · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="relationships.html">Audit references</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>Relationship edges</h1>
+<aside class="audit">
+<p>Each edge is a declared dependency, packaging, extension, protocol, or installation relationship. Its endpoints link to exact nodes.</p>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">From</th>
+<th scope="col">Relationship</th>
+<th scope="col">To</th>
+<th scope="col">Scope or binding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<span id="edge-b98378de6965e5dd95beccab">
+</span>
+<a href="relationship-nodes.html#node-882ba0b60edb763c5934b913">a-gogurt-linux-listener</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-df1cdfd17cbc5fecb9c1d89d">gogurt-listener-runtime</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-5a98358428ad853e9b8f4b9c">
+</span>
+<a href="relationship-nodes.html#node-882ba0b60edb763c5934b913">a-gogurt-linux-listener</a>
+</td>
+<td>implements extension point</td>
+<td>
+<a href="relationship-nodes.html#node-bbe759bbb1a0036d4bf04bec">gogurt.listener-host-providers</a>
+</td>
+<td>a-gogurt-linux-listener</td>
+</tr>
+<tr>
+<td>
+<span id="edge-947abfee34ac8426eb65c01a">
+</span>
+<a href="relationship-nodes.html#node-6669aa00a890e25e75532033">a-gogurt-linux-volume</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-a80bf131fca6772f2bb0d93d">a-gogurt-path-volume-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-e07677717e84ffa2c79bd96b">
+</span>
+<a href="relationship-nodes.html#node-6669aa00a890e25e75532033">a-gogurt-linux-volume</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-e1d2ac7df3e38ab07d092af2">gogurt-core</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-3ebf3d506efabfa9616b6c7c">
+</span>
+<a href="relationship-nodes.html#node-6669aa00a890e25e75532033">a-gogurt-linux-volume</a>
+</td>
+<td>implements extension point</td>
+<td>
+<a href="relationship-nodes.html#node-6f779eb64ba6342834181439">gogurt.mounted-volume-providers</a>
+</td>
+<td>a-gogurt-linux-volume</td>
+</tr>
+<tr>
+<td>
+<span id="edge-ab14c441f1b8b1cf7f0220a9">
+</span>
+<a href="relationship-nodes.html#node-935d3d4b6c71ff9482cde77d">a-gogurt-macos-listener</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-df1cdfd17cbc5fecb9c1d89d">gogurt-listener-runtime</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-77d29750d97da8097166a9b8">
+</span>
+<a href="relationship-nodes.html#node-935d3d4b6c71ff9482cde77d">a-gogurt-macos-listener</a>
+</td>
+<td>implements extension point</td>
+<td>
+<a href="relationship-nodes.html#node-bbe759bbb1a0036d4bf04bec">gogurt.listener-host-providers</a>
+</td>
+<td>a-gogurt-macos-listener</td>
+</tr>
+<tr>
+<td>
+<span id="edge-1cbda1792ef97b2ada21d73f">
+</span>
+<a href="relationship-nodes.html#node-8d835e7788633c58f8a642cb">a-gogurt-macos-volume</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-a80bf131fca6772f2bb0d93d">a-gogurt-path-volume-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-eddd69ac198039dced58c27a">
+</span>
+<a href="relationship-nodes.html#node-8d835e7788633c58f8a642cb">a-gogurt-macos-volume</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-e1d2ac7df3e38ab07d092af2">gogurt-core</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f8771441d48c5b4392433c10">
+</span>
+<a href="relationship-nodes.html#node-8d835e7788633c58f8a642cb">a-gogurt-macos-volume</a>
+</td>
+<td>implements extension point</td>
+<td>
+<a href="relationship-nodes.html#node-6f779eb64ba6342834181439">gogurt.mounted-volume-providers</a>
+</td>
+<td>a-gogurt-macos-volume</td>
+</tr>
+<tr>
+<td>
+<span id="edge-751bcfab5590da1ebf9900c8">
+</span>
+<a href="relationship-nodes.html#node-a80bf131fca6772f2bb0d93d">a-gogurt-path-volume-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b37402f43fd23882e4361e61">config-validation</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-8dc1c39d75d405865e971ac5">
+</span>
+<a href="relationship-nodes.html#node-a80bf131fca6772f2bb0d93d">a-gogurt-path-volume-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-e1d2ac7df3e38ab07d092af2">gogurt-core</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-d14e77b9b912e3c23b4caaad">
+</span>
+<a href="relationship-nodes.html#node-c28b071ce2b347fac6b10328">a-gogurt-windows-listener</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-df1cdfd17cbc5fecb9c1d89d">gogurt-listener-runtime</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f700c4fab080386a6c4ecd1b">
+</span>
+<a href="relationship-nodes.html#node-c28b071ce2b347fac6b10328">a-gogurt-windows-listener</a>
+</td>
+<td>implements extension point</td>
+<td>
+<a href="relationship-nodes.html#node-bbe759bbb1a0036d4bf04bec">gogurt.listener-host-providers</a>
+</td>
+<td>a-gogurt-windows-listener</td>
+</tr>
+<tr>
+<td>
+<span id="edge-24a22248ae3c1b52922e2215">
+</span>
+<a href="relationship-nodes.html#node-3d2f712dcfc2461f659890ab">a-gogurt-windows-volume</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-a80bf131fca6772f2bb0d93d">a-gogurt-path-volume-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-47b8213ef3f7a72a9a028c98">
+</span>
+<a href="relationship-nodes.html#node-3d2f712dcfc2461f659890ab">a-gogurt-windows-volume</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-e1d2ac7df3e38ab07d092af2">gogurt-core</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-bbdf6cb2d30866b596498871">
+</span>
+<a href="relationship-nodes.html#node-3d2f712dcfc2461f659890ab">a-gogurt-windows-volume</a>
+</td>
+<td>implements extension point</td>
+<td>
+<a href="relationship-nodes.html#node-6f779eb64ba6342834181439">gogurt.mounted-volume-providers</a>
+</td>
+<td>a-gogurt-windows-volume</td>
+</tr>
+<tr>
+<td>
+<span id="edge-ed53574be10c829cb1a8422d">
+</span>
+<a href="relationship-nodes.html#node-df33691267af0a59a3dce414">a-review0-materializer</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b37402f43fd23882e4361e61">config-validation</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-33852dbafea4a84508acf312">
+</span>
+<a href="relationship-nodes.html#node-df33691267af0a59a3dce414">a-review0-materializer</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-73dc17d10cbcb710d9df10db">review0-target-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f5376c763bece23168f3aa40">
+</span>
+<a href="relationship-nodes.html#node-df33691267af0a59a3dce414">a-review0-materializer</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-88583fbcf20e3e935d7ed675">review0-target-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f1b0570a9c47002cc1dbbe79">
+</span>
+<a href="relationship-nodes.html#node-df33691267af0a59a3dce414">a-review0-materializer</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-8e5274344f37f28f8f2b0d27">riverhog-client</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-ab0da4bb1167a1ca7135da4e">
+</span>
+<a href="relationship-nodes.html#node-df33691267af0a59a3dce414">a-review0-materializer</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f8df68acc88c5cfa47c8854c">stove0-target-support</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-fa9cabf350ad8c2a37dba420">
+</span>
+<a href="relationship-nodes.html#node-df33691267af0a59a3dce414">a-review0-materializer</a>
+</td>
+<td>implements protocol</td>
+<td>
+<a href="relationship-nodes.html#node-9d6e708ff324fb11314c7299">stove0-target</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-9bc8ed6fe4b75beda54b707a">
+</span>
+<a href="relationship-nodes.html#node-df33691267af0a59a3dce414">a-review0-materializer</a>
+</td>
+<td>packaged in</td>
+<td>
+<a href="relationship-nodes.html#node-e744036079c4d869374ea97f">a-review0-materializer</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-3ee2080867a2a18a99af84ff">
+</span>
+<a href="relationship-nodes.html#node-8138f74fd5200cedaad65b52">a-review0-nvenc-av1-opus-sampler</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-d67a828eabc8bdea10a4cabc">a-stove0-media-archive-contract-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-e27969f34b1a62a04d5b2549">
+</span>
+<a href="relationship-nodes.html#node-8138f74fd5200cedaad65b52">a-review0-nvenc-av1-opus-sampler</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-cb6fe9c2a430288860f86c2d">
+</span>
+<a href="relationship-nodes.html#node-8138f74fd5200cedaad65b52">a-review0-nvenc-av1-opus-sampler</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-1f471835617598d1859d781c">review0-sampler-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-b921ec3cd052996158404930">
+</span>
+<a href="relationship-nodes.html#node-8138f74fd5200cedaad65b52">a-review0-nvenc-av1-opus-sampler</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-e32e317bb5ca413df214aa40">review0-sampler-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-40c479d1ee348d9272238fdb">
+</span>
+<a href="relationship-nodes.html#node-8138f74fd5200cedaad65b52">a-review0-nvenc-av1-opus-sampler</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-73dc17d10cbcb710d9df10db">review0-target-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f7267dd2e890e9a11ece6cbf">
+</span>
+<a href="relationship-nodes.html#node-8138f74fd5200cedaad65b52">a-review0-nvenc-av1-opus-sampler</a>
+</td>
+<td>implements protocol</td>
+<td>
+<a href="relationship-nodes.html#node-cebbbf6832cd2dc9081a3be4">review0-sampler</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-0541fd736de4b7941c572a52">
+</span>
+<a href="relationship-nodes.html#node-8138f74fd5200cedaad65b52">a-review0-nvenc-av1-opus-sampler</a>
+</td>
+<td>packaged in</td>
+<td>
+<a href="relationship-nodes.html#node-80f718744428cb18c77a0b87">a-stove0-nvenc-av1-opus-target</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-1a0f5d5fdf63b59580267301">
+</span>
+<a href="relationship-nodes.html#node-0d138eb0037a4a4d466d8abb">a-review0-opus-sampler</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-d67a828eabc8bdea10a4cabc">a-stove0-media-archive-contract-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-8453fcab0b217d129d635165">
+</span>
+<a href="relationship-nodes.html#node-0d138eb0037a4a4d466d8abb">a-review0-opus-sampler</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-fd673db3ebf494586760ee95">
+</span>
+<a href="relationship-nodes.html#node-0d138eb0037a4a4d466d8abb">a-review0-opus-sampler</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-1f471835617598d1859d781c">review0-sampler-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-2cc273efca5a2ff581be00d3">
+</span>
+<a href="relationship-nodes.html#node-0d138eb0037a4a4d466d8abb">a-review0-opus-sampler</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-e32e317bb5ca413df214aa40">review0-sampler-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-085c4b1c408ebbdbd8b74225">
+</span>
+<a href="relationship-nodes.html#node-0d138eb0037a4a4d466d8abb">a-review0-opus-sampler</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-73dc17d10cbcb710d9df10db">review0-target-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-c6e4e47646863c656d2c5939">
+</span>
+<a href="relationship-nodes.html#node-0d138eb0037a4a4d466d8abb">a-review0-opus-sampler</a>
+</td>
+<td>implements protocol</td>
+<td>
+<a href="relationship-nodes.html#node-cebbbf6832cd2dc9081a3be4">review0-sampler</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-e68f12d3f11f9e4acc348522">
+</span>
+<a href="relationship-nodes.html#node-0d138eb0037a4a4d466d8abb">a-review0-opus-sampler</a>
+</td>
+<td>packaged in</td>
+<td>
+<a href="relationship-nodes.html#node-ad763529676b48441139bd38">a-stove0-opus-target</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-d95b98effc024dcaf15dedf1">
+</span>
+<a href="relationship-nodes.html#node-b5b7de6707c37160afd729ab">a-review0-rclone-target</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b37402f43fd23882e4361e61">config-validation</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-e52b3392d87e763ff94dd49d">
+</span>
+<a href="relationship-nodes.html#node-b5b7de6707c37160afd729ab">a-review0-rclone-target</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-73dc17d10cbcb710d9df10db">review0-target-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-928f683395df3ad3aa7760f3">
+</span>
+<a href="relationship-nodes.html#node-b5b7de6707c37160afd729ab">a-review0-rclone-target</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-88583fbcf20e3e935d7ed675">review0-target-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-3009ea8e0c37713a90239c33">
+</span>
+<a href="relationship-nodes.html#node-b5b7de6707c37160afd729ab">a-review0-rclone-target</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-8e5274344f37f28f8f2b0d27">riverhog-client</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f012ae4f0ca3223a2fda5c67">
+</span>
+<a href="relationship-nodes.html#node-b5b7de6707c37160afd729ab">a-review0-rclone-target</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-08a9ad7364e79241e358fb98">
+</span>
+<a href="relationship-nodes.html#node-b5b7de6707c37160afd729ab">a-review0-rclone-target</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f8df68acc88c5cfa47c8854c">stove0-target-support</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-96420a38a614b56a1ade6b71">
+</span>
+<a href="relationship-nodes.html#node-b5b7de6707c37160afd729ab">a-review0-rclone-target</a>
+</td>
+<td>implements protocol</td>
+<td>
+<a href="relationship-nodes.html#node-9d6e708ff324fb11314c7299">stove0-target</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-9c3185d6338fcb364fe691e9">
+</span>
+<a href="relationship-nodes.html#node-b5b7de6707c37160afd729ab">a-review0-rclone-target</a>
+</td>
+<td>packaged in</td>
+<td>
+<a href="relationship-nodes.html#node-e59ce62406f100be39a18196">a-review0-rclone-target</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-6026d164dcd204deb5639d63">
+</span>
+<a href="relationship-nodes.html#node-b19c22f180d89c06c30bbb43">a-riverhog-aws-store</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-312432d46999104477e1af29">a-riverhog-s3-store-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-a6683802adcb38b9fe53903d">
+</span>
+<a href="relationship-nodes.html#node-b19c22f180d89c06c30bbb43">a-riverhog-aws-store</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b37402f43fd23882e4361e61">config-validation</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-e40222701768ccebc8cc002b">
+</span>
+<a href="relationship-nodes.html#node-b19c22f180d89c06c30bbb43">a-riverhog-aws-store</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-922b8ba508f907371b84bdad">riverhog-storage-adapter-asgi-support</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-a7268bc421226e711028e107">
+</span>
+<a href="relationship-nodes.html#node-b19c22f180d89c06c30bbb43">a-riverhog-aws-store</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-e65e47e3320aac9e5dd7a98e">riverhog-storage-adapter-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-fc175224c6d48c5350af9069">
+</span>
+<a href="relationship-nodes.html#node-b19c22f180d89c06c30bbb43">a-riverhog-aws-store</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-71d11531981da77ac82e143e">time-formats</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-ee9de6c77aadec6d3f479ef3">
+</span>
+<a href="relationship-nodes.html#node-b19c22f180d89c06c30bbb43">a-riverhog-aws-store</a>
+</td>
+<td>implements protocol</td>
+<td>
+<a href="relationship-nodes.html#node-994e13bf1e4011e984fcfd67">riverhog-storage-adapter</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-2b36737d99c8f45780928d14">
+</span>
+<a href="relationship-nodes.html#node-b19c22f180d89c06c30bbb43">a-riverhog-aws-store</a>
+</td>
+<td>packaged in</td>
+<td>
+<a href="relationship-nodes.html#node-7821f7d5f24f68781d8a3f81">a-riverhog-aws-store</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-8185b94898e92cf1bdf8402f">
+</span>
+<a href="relationship-nodes.html#node-6727835d852624dce26af1b1">a-riverhog-b2-store</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-312432d46999104477e1af29">a-riverhog-s3-store-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-9668a750913296af0ac922df">
+</span>
+<a href="relationship-nodes.html#node-6727835d852624dce26af1b1">a-riverhog-b2-store</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b37402f43fd23882e4361e61">config-validation</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-7d3a6e14a9e1e9fb75edbd60">
+</span>
+<a href="relationship-nodes.html#node-6727835d852624dce26af1b1">a-riverhog-b2-store</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-922b8ba508f907371b84bdad">riverhog-storage-adapter-asgi-support</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-2d4c2a2ad07a354e4d3f7f81">
+</span>
+<a href="relationship-nodes.html#node-6727835d852624dce26af1b1">a-riverhog-b2-store</a>
+</td>
+<td>implements protocol</td>
+<td>
+<a href="relationship-nodes.html#node-994e13bf1e4011e984fcfd67">riverhog-storage-adapter</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-6bdaddf96d1a60ff0c065bba">
+</span>
+<a href="relationship-nodes.html#node-6727835d852624dce26af1b1">a-riverhog-b2-store</a>
+</td>
+<td>packaged in</td>
+<td>
+<a href="relationship-nodes.html#node-24711370d4113fb7e0e82e20">a-riverhog-b2-store</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-5a0adb879b0bd06cd0d8d5d0">
+</span>
+<a href="relationship-nodes.html#node-96e1191c9231fac745f8e5d2">a-riverhog-cli</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-1520cc2b3805056590a36e23">
+</span>
+<a href="relationship-nodes.html#node-96e1191c9231fac745f8e5d2">a-riverhog-cli</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-06ef7f89cab183707360e93b">riverhog-application-access</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-a106572590ef8776677e3594">
+</span>
+<a href="relationship-nodes.html#node-96e1191c9231fac745f8e5d2">a-riverhog-cli</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-8e5274344f37f28f8f2b0d27">riverhog-client</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-5d41eae9d00ebbf6587b57f1">
+</span>
+<a href="relationship-nodes.html#node-96e1191c9231fac745f8e5d2">a-riverhog-cli</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-495e80640f67ce9fac4848df">
+</span>
+<a href="relationship-nodes.html#node-96e1191c9231fac745f8e5d2">a-riverhog-cli</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-728e08e7c45497ec44502f69">riverhog-provenance</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-33d022bd199fa5457497c9fc">
+</span>
+<a href="relationship-nodes.html#node-96e1191c9231fac745f8e5d2">a-riverhog-cli</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b37a103e5fc08f77afe12f12">state-schema</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-6c0b8ed4eac514605f7aca7b">
+</span>
+<a href="relationship-nodes.html#node-96e1191c9231fac745f8e5d2">a-riverhog-cli</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-71d11531981da77ac82e143e">time-formats</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-07dbc50c80e120f2c599201c">
+</span>
+<a href="relationship-nodes.html#node-96e1191c9231fac745f8e5d2">a-riverhog-cli</a>
+</td>
+<td>installed as</td>
+<td>
+<a href="relationship-nodes.html#node-672a39762bbb02f638518ed1">uv-tool</a>
+</td>
+<td>a-riverhog-cli</td>
+</tr>
+<tr>
+<td>
+<span id="edge-9b1745f8837d4c020cc289c5">
+</span>
+<a href="relationship-nodes.html#node-ad16b219fd3b44264036ff0b">a-riverhog-event-relay</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b37402f43fd23882e4361e61">config-validation</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-0c646fadcc2bf991ceb90cdd">
+</span>
+<a href="relationship-nodes.html#node-ad16b219fd3b44264036ff0b">a-riverhog-event-relay</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-30af2d15930547fc5a1c18af">lifecycle-events</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-c54dc7eb7d18f8f73845414d">
+</span>
+<a href="relationship-nodes.html#node-ad16b219fd3b44264036ff0b">a-riverhog-event-relay</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b37a103e5fc08f77afe12f12">state-schema</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-347a73f88c1a5187a1dd8f49">
+</span>
+<a href="relationship-nodes.html#node-ad16b219fd3b44264036ff0b">a-riverhog-event-relay</a>
+</td>
+<td>packaged in</td>
+<td>
+<a href="relationship-nodes.html#node-adb24cb0ad687cb4d56f6083">a-riverhog-event-relay</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-bdbce266648068e5623ade7f">
+</span>
+<a href="relationship-nodes.html#node-b69efa5ec4ab87c9d5003738">a-riverhog-filesystem-store</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-922b8ba508f907371b84bdad">riverhog-storage-adapter-asgi-support</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-7a2225fc1b60bf26f9dfae8b">
+</span>
+<a href="relationship-nodes.html#node-b69efa5ec4ab87c9d5003738">a-riverhog-filesystem-store</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-e65e47e3320aac9e5dd7a98e">riverhog-storage-adapter-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-af1a62727c99651658138cd8">
+</span>
+<a href="relationship-nodes.html#node-b69efa5ec4ab87c9d5003738">a-riverhog-filesystem-store</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-71d11531981da77ac82e143e">time-formats</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-c8c4106deed5ee643ca1dbf7">
+</span>
+<a href="relationship-nodes.html#node-b69efa5ec4ab87c9d5003738">a-riverhog-filesystem-store</a>
+</td>
+<td>implements protocol</td>
+<td>
+<a href="relationship-nodes.html#node-994e13bf1e4011e984fcfd67">riverhog-storage-adapter</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-e7037e66b5839bdfaf3e374e">
+</span>
+<a href="relationship-nodes.html#node-b69efa5ec4ab87c9d5003738">a-riverhog-filesystem-store</a>
+</td>
+<td>packaged in</td>
+<td>
+<a href="relationship-nodes.html#node-4e5b4fa34fad2cddbd0b7235">a-riverhog-filesystem-store</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-5f810beabc956eef551c98b1">
+</span>
+<a href="relationship-nodes.html#node-507e6fb957d1ef8a5a2f7d9f">a-riverhog-ftp-spool</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b9a37d9110efe44f5a2b4b84">a-riverhog-ftp-spool-client</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-9683bc3b80963638e8c53471">
+</span>
+<a href="relationship-nodes.html#node-507e6fb957d1ef8a5a2f7d9f">a-riverhog-ftp-spool</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b37402f43fd23882e4361e61">config-validation</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-8d3e948be63503ea06232e79">
+</span>
+<a href="relationship-nodes.html#node-507e6fb957d1ef8a5a2f7d9f">a-riverhog-ftp-spool</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-548b0465b5f59a501ca519e7">
+</span>
+<a href="relationship-nodes.html#node-507e6fb957d1ef8a5a2f7d9f">a-riverhog-ftp-spool</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-30af2d15930547fc5a1c18af">lifecycle-events</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f201ffecb2c698a3c017171c">
+</span>
+<a href="relationship-nodes.html#node-507e6fb957d1ef8a5a2f7d9f">a-riverhog-ftp-spool</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f55ab6c77b17931b8e350da2">riverhog-canonical-json</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-e3fe62f4a12e4b3d721ce07d">
+</span>
+<a href="relationship-nodes.html#node-507e6fb957d1ef8a5a2f7d9f">a-riverhog-ftp-spool</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-8e5274344f37f28f8f2b0d27">riverhog-client</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-2301a898d7d6c340e16eb4a3">
+</span>
+<a href="relationship-nodes.html#node-507e6fb957d1ef8a5a2f7d9f">a-riverhog-ftp-spool</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-89de4c117cf3c0fcd2f22cb7">
+</span>
+<a href="relationship-nodes.html#node-507e6fb957d1ef8a5a2f7d9f">a-riverhog-ftp-spool</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-728e08e7c45497ec44502f69">riverhog-provenance</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-81a5d7138717844c13169559">
+</span>
+<a href="relationship-nodes.html#node-507e6fb957d1ef8a5a2f7d9f">a-riverhog-ftp-spool</a>
+</td>
+<td>packaged in</td>
+<td>
+<a href="relationship-nodes.html#node-03825e31a248b61ffcadef9b">a-riverhog-ftp-spool</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-d812620eb86e00ccc8cc8113">
+</span>
+<a href="relationship-nodes.html#node-b9a37d9110efe44f5a2b4b84">a-riverhog-ftp-spool-client</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-d7ddc2bf9ba1b7d267c85871">
+</span>
+<a href="relationship-nodes.html#node-b9a37d9110efe44f5a2b4b84">a-riverhog-ftp-spool-client</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-30af2d15930547fc5a1c18af">lifecycle-events</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-21d9acd2dfb8f2dbf0146a2b">
+</span>
+<a href="relationship-nodes.html#node-803b482d12add80987baecb8">a-riverhog-linux-provenance-contract-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-606682003821b0b42b46530f">riverhog-provenance-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-2d2d97ecfea1bbde0e5df8c1">
+</span>
+<a href="relationship-nodes.html#node-803b482d12add80987baecb8">a-riverhog-linux-provenance-contract-lib</a>
+</td>
+<td>implements extension point</td>
+<td>
+<a href="relationship-nodes.html#node-08557331674e7779682169fd">riverhog.provenance-contracts</a>
+</td>
+<td>a-riverhog-linux-provenance-contract-lib</td>
+</tr>
+<tr>
+<td>
+<span id="edge-23ae2bbea10fd53e1634c815">
+</span>
+<a href="relationship-nodes.html#node-84baf121e99e4abc241ff3ac">a-riverhog-linux-provenance-observer</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-803b482d12add80987baecb8">a-riverhog-linux-provenance-contract-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f66e8ca75b274a3b64a9f264">
+</span>
+<a href="relationship-nodes.html#node-84baf121e99e4abc241ff3ac">a-riverhog-linux-provenance-observer</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-728e08e7c45497ec44502f69">riverhog-provenance</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-6d78aeafa47b84ad86d843ed">
+</span>
+<a href="relationship-nodes.html#node-84baf121e99e4abc241ff3ac">a-riverhog-linux-provenance-observer</a>
+</td>
+<td>implements extension point</td>
+<td>
+<a href="relationship-nodes.html#node-ed2bbc0e316bd07fa11ed4f9">riverhog.provenance-observers</a>
+</td>
+<td>a-riverhog-linux-provenance-observer</td>
+</tr>
+<tr>
+<td>
+<span id="edge-34519bbd00576a146c2fdadb">
+</span>
+<a href="relationship-nodes.html#node-84baf121e99e4abc241ff3ac">a-riverhog-linux-provenance-observer</a>
+</td>
+<td>packaged in</td>
+<td>
+<a href="relationship-nodes.html#node-03825e31a248b61ffcadef9b">a-riverhog-ftp-spool</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-13c94288273f140cc1c436de">
+</span>
+<a href="relationship-nodes.html#node-42f1a175c2c616ffef32b248">a-riverhog-macos-provenance-contract-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-606682003821b0b42b46530f">riverhog-provenance-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-dc73fca420382a9e38be87e9">
+</span>
+<a href="relationship-nodes.html#node-42f1a175c2c616ffef32b248">a-riverhog-macos-provenance-contract-lib</a>
+</td>
+<td>implements extension point</td>
+<td>
+<a href="relationship-nodes.html#node-08557331674e7779682169fd">riverhog.provenance-contracts</a>
+</td>
+<td>a-riverhog-macos-provenance-contract-lib</td>
+</tr>
+<tr>
+<td>
+<span id="edge-7b58e898051014a8a0ba5e92">
+</span>
+<a href="relationship-nodes.html#node-eef8dc0e2887ec52933caccc">a-riverhog-macos-provenance-observer</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-42f1a175c2c616ffef32b248">a-riverhog-macos-provenance-contract-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-4739ed27159d63887315d94b">
+</span>
+<a href="relationship-nodes.html#node-eef8dc0e2887ec52933caccc">a-riverhog-macos-provenance-observer</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-728e08e7c45497ec44502f69">riverhog-provenance</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-974f2b98a90919975a3e5740">
+</span>
+<a href="relationship-nodes.html#node-eef8dc0e2887ec52933caccc">a-riverhog-macos-provenance-observer</a>
+</td>
+<td>implements extension point</td>
+<td>
+<a href="relationship-nodes.html#node-ed2bbc0e316bd07fa11ed4f9">riverhog.provenance-observers</a>
+</td>
+<td>a-riverhog-macos-provenance-observer</td>
+</tr>
+<tr>
+<td>
+<span id="edge-66569febad5ee893ff5c6331">
+</span>
+<a href="relationship-nodes.html#node-169780f44a2750e36ba096e7">a-riverhog-minisign-witness</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-2af264f778feec44ce6ba3fd">a-riverhog-witness-contract-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-6baa268e8f9681cf34c2b1b2">
+</span>
+<a href="relationship-nodes.html#node-169780f44a2750e36ba096e7">a-riverhog-minisign-witness</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-8e5274344f37f28f8f2b0d27">riverhog-client</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-1fc02ad19ab7c72f7134bc9c">
+</span>
+<a href="relationship-nodes.html#node-169780f44a2750e36ba096e7">a-riverhog-minisign-witness</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-eec625baaf7fb120cfeeaf26">
+</span>
+<a href="relationship-nodes.html#node-169780f44a2750e36ba096e7">a-riverhog-minisign-witness</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b37a103e5fc08f77afe12f12">state-schema</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-44c51e43c18c1e210ffe64b2">
+</span>
+<a href="relationship-nodes.html#node-169780f44a2750e36ba096e7">a-riverhog-minisign-witness</a>
+</td>
+<td>packaged in</td>
+<td>
+<a href="relationship-nodes.html#node-ac14e99c5c23a863bc07c825">a-riverhog-minisign-witness</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-a4fec5c47ae8b4a983b864f8">
+</span>
+<a href="relationship-nodes.html#node-44dc2bd3f28eb6232ec4ab10">a-riverhog-opentimestamps-witness</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-2af264f778feec44ce6ba3fd">a-riverhog-witness-contract-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-9e37467fac0bf99ca3ba2625">
+</span>
+<a href="relationship-nodes.html#node-44dc2bd3f28eb6232ec4ab10">a-riverhog-opentimestamps-witness</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-8e5274344f37f28f8f2b0d27">riverhog-client</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-ea98cb96a2847f4395bb3acb">
+</span>
+<a href="relationship-nodes.html#node-44dc2bd3f28eb6232ec4ab10">a-riverhog-opentimestamps-witness</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-1cb1f77e1287736bbe72589d">
+</span>
+<a href="relationship-nodes.html#node-44dc2bd3f28eb6232ec4ab10">a-riverhog-opentimestamps-witness</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b37a103e5fc08f77afe12f12">state-schema</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-e441998b264bc5937759d298">
+</span>
+<a href="relationship-nodes.html#node-44dc2bd3f28eb6232ec4ab10">a-riverhog-opentimestamps-witness</a>
+</td>
+<td>packaged in</td>
+<td>
+<a href="relationship-nodes.html#node-5dd375824e56088a86b1a9ec">a-riverhog-opentimestamps-witness</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-bc0a0b8b69a8dae49ce89fd1">
+</span>
+<a href="relationship-nodes.html#node-418e26fcedfe5a9eafa5bd73">a-riverhog-recovery-tool</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-3f00f69253750a6501580cc8">riverhog-archive-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-ac31acad5c8409bd73ee222e">
+</span>
+<a href="relationship-nodes.html#node-418e26fcedfe5a9eafa5bd73">a-riverhog-recovery-tool</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f86a845453c81f7ce453e2da">
+</span>
+<a href="relationship-nodes.html#node-418e26fcedfe5a9eafa5bd73">a-riverhog-recovery-tool</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-728e08e7c45497ec44502f69">riverhog-provenance</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-56b24a49cfdc699aaf977c4e">
+</span>
+<a href="relationship-nodes.html#node-418e26fcedfe5a9eafa5bd73">a-riverhog-recovery-tool</a>
+</td>
+<td>installed as</td>
+<td>
+<a href="relationship-nodes.html#node-672a39762bbb02f638518ed1">uv-tool</a>
+</td>
+<td>a-riverhog-recovery-tool</td>
+</tr>
+<tr>
+<td>
+<span id="edge-7cba24ed75f06e775f9cb7be">
+</span>
+<a href="relationship-nodes.html#node-312432d46999104477e1af29">a-riverhog-s3-store-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b37402f43fd23882e4361e61">config-validation</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-a20e9087e4628fb6776fc014">
+</span>
+<a href="relationship-nodes.html#node-312432d46999104477e1af29">a-riverhog-s3-store-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-e65e47e3320aac9e5dd7a98e">riverhog-storage-adapter-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-197278d7bf1afa378c220ca7">
+</span>
+<a href="relationship-nodes.html#node-312432d46999104477e1af29">a-riverhog-s3-store-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-71d11531981da77ac82e143e">time-formats</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-dbb77e75eb2172328863e83a">
+</span>
+<a href="relationship-nodes.html#node-19250524addd6194ff9f6c6f">a-riverhog-windows-provenance-contract-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-606682003821b0b42b46530f">riverhog-provenance-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-acf9c059adf11d28399d0280">
+</span>
+<a href="relationship-nodes.html#node-19250524addd6194ff9f6c6f">a-riverhog-windows-provenance-contract-lib</a>
+</td>
+<td>implements extension point</td>
+<td>
+<a href="relationship-nodes.html#node-08557331674e7779682169fd">riverhog.provenance-contracts</a>
+</td>
+<td>a-riverhog-windows-provenance-contract-lib</td>
+</tr>
+<tr>
+<td>
+<span id="edge-ebf3cb089ff4f2539a1a267d">
+</span>
+<a href="relationship-nodes.html#node-a6eefbe109173b964bf96db9">a-riverhog-windows-provenance-observer</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-19250524addd6194ff9f6c6f">a-riverhog-windows-provenance-contract-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-9314acaec47384f945867882">
+</span>
+<a href="relationship-nodes.html#node-a6eefbe109173b964bf96db9">a-riverhog-windows-provenance-observer</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-728e08e7c45497ec44502f69">riverhog-provenance</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-980ede6108fce352278eee5c">
+</span>
+<a href="relationship-nodes.html#node-a6eefbe109173b964bf96db9">a-riverhog-windows-provenance-observer</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-71d11531981da77ac82e143e">time-formats</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-577a626d290e8f75018f4f67">
+</span>
+<a href="relationship-nodes.html#node-a6eefbe109173b964bf96db9">a-riverhog-windows-provenance-observer</a>
+</td>
+<td>implements extension point</td>
+<td>
+<a href="relationship-nodes.html#node-ed2bbc0e316bd07fa11ed4f9">riverhog.provenance-observers</a>
+</td>
+<td>a-riverhog-windows-provenance-observer</td>
+</tr>
+<tr>
+<td>
+<span id="edge-bc792d6a62444d9dfbb3b5cd">
+</span>
+<a href="relationship-nodes.html#node-2af264f778feec44ce6ba3fd">a-riverhog-witness-contract-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f55ab6c77b17931b8e350da2">riverhog-canonical-json</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-eba2306f296227ab792a9f1f">
+</span>
+<a href="relationship-nodes.html#node-2af264f778feec44ce6ba3fd">a-riverhog-witness-contract-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-5947d56bc14040ec2afc06c4">
+</span>
+<a href="relationship-nodes.html#node-acec7cb547f645a7b79ba4b4">a-stove0-cli</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-0b595a9ebcbafe373840b0d3">stove0-api-client</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-587b2f2b3809ee18770022ed">
+</span>
+<a href="relationship-nodes.html#node-acec7cb547f645a7b79ba4b4">a-stove0-cli</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-72232b7fcefa4d133fb9bdcd">stove0-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-3966eb1f588e242593532819">
+</span>
+<a href="relationship-nodes.html#node-acec7cb547f645a7b79ba4b4">a-stove0-cli</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-1f5664e176e6d54e15a23e02">stove0-recipe-config</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-9c033bc377169ee595c29527">
+</span>
+<a href="relationship-nodes.html#node-acec7cb547f645a7b79ba4b4">a-stove0-cli</a>
+</td>
+<td>installed as</td>
+<td>
+<a href="relationship-nodes.html#node-672a39762bbb02f638518ed1">uv-tool</a>
+</td>
+<td>a-stove0-cli</td>
+</tr>
+<tr>
+<td>
+<span id="edge-9a18f2b0c8f6c2e205f1cb58">
+</span>
+<a href="relationship-nodes.html#node-5dd092712cc9d0c0a4c1767f">a-stove0-exiftool-observer</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-aac630ef4d55df07c32ba638">a-stove0-media-metadata-contract-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-d727abb19976d35b7c019562">
+</span>
+<a href="relationship-nodes.html#node-5dd092712cc9d0c0a4c1767f">a-stove0-exiftool-observer</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-a81b257f72cee508b937ede0">
+</span>
+<a href="relationship-nodes.html#node-5dd092712cc9d0c0a4c1767f">a-stove0-exiftool-observer</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-bac58a079cc2e50ee9524294">stove0-observer-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-543a17890c489b16cb05005a">
+</span>
+<a href="relationship-nodes.html#node-5dd092712cc9d0c0a4c1767f">a-stove0-exiftool-observer</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-50ccd8c774618fbe6e2f2e2c">stove0-observer-support</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-55a45964d20fb0d0e543f846">
+</span>
+<a href="relationship-nodes.html#node-5dd092712cc9d0c0a4c1767f">a-stove0-exiftool-observer</a>
+</td>
+<td>implements protocol</td>
+<td>
+<a href="relationship-nodes.html#node-2eb3b800f870ee6a3d5670c3">stove0-observer</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-94d10780806c6e6cce5bd4e0">
+</span>
+<a href="relationship-nodes.html#node-5dd092712cc9d0c0a4c1767f">a-stove0-exiftool-observer</a>
+</td>
+<td>packaged in</td>
+<td>
+<a href="relationship-nodes.html#node-bb144191bef3a95ec7e41997">a-stove0-exiftool-observer</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-e7dfde24ec8b258013e712ed">
+</span>
+<a href="relationship-nodes.html#node-cacf6cd019f6d0ff731349c4">a-stove0-ffprobe-sampling-observer</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-3262abd36ffae7222c1e40f4">a-stove0-media-sampling-contract-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-9dea4ecacfd56ff4ad8184e7">
+</span>
+<a href="relationship-nodes.html#node-cacf6cd019f6d0ff731349c4">a-stove0-ffprobe-sampling-observer</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-ed16f15956d9f0240252684c">
+</span>
+<a href="relationship-nodes.html#node-cacf6cd019f6d0ff731349c4">a-stove0-ffprobe-sampling-observer</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-bac58a079cc2e50ee9524294">stove0-observer-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-3209f1c0df0fd9a59cf858f5">
+</span>
+<a href="relationship-nodes.html#node-cacf6cd019f6d0ff731349c4">a-stove0-ffprobe-sampling-observer</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-50ccd8c774618fbe6e2f2e2c">stove0-observer-support</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-1130f19565eed58f574831fe">
+</span>
+<a href="relationship-nodes.html#node-cacf6cd019f6d0ff731349c4">a-stove0-ffprobe-sampling-observer</a>
+</td>
+<td>implements protocol</td>
+<td>
+<a href="relationship-nodes.html#node-2eb3b800f870ee6a3d5670c3">stove0-observer</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-0298e59be35459ebe2f2f6d2">
+</span>
+<a href="relationship-nodes.html#node-cacf6cd019f6d0ff731349c4">a-stove0-ffprobe-sampling-observer</a>
+</td>
+<td>packaged in</td>
+<td>
+<a href="relationship-nodes.html#node-a1ebbf28d8497662b8ee4bd0">a-stove0-ffprobe-sampling-observer</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-47741fd6b7c77001ea2eb4c5">
+</span>
+<a href="relationship-nodes.html#node-d67a828eabc8bdea10a4cabc">a-stove0-media-archive-contract-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-72232b7fcefa4d133fb9bdcd">stove0-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-7de0508326298e2550765ce5">
+</span>
+<a href="relationship-nodes.html#node-d67a828eabc8bdea10a4cabc">a-stove0-media-archive-contract-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-2bfbd86b0036104ec731f701">stove0-target-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-c7be0538184ab7243675883a">
+</span>
+<a href="relationship-nodes.html#node-1ff54362d85d9abb389e58eb">a-stove0-media-archive-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-d67a828eabc8bdea10a4cabc">a-stove0-media-archive-contract-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-c4197a5ab63a1d238e755008">
+</span>
+<a href="relationship-nodes.html#node-1ff54362d85d9abb389e58eb">a-stove0-media-archive-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-aac630ef4d55df07c32ba638">a-stove0-media-metadata-contract-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-3a61fbf868d9c792a3f16e99">
+</span>
+<a href="relationship-nodes.html#node-1ff54362d85d9abb389e58eb">a-stove0-media-archive-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-679fb0cb67cc42595cd02251">
+</span>
+<a href="relationship-nodes.html#node-1ff54362d85d9abb389e58eb">a-stove0-media-archive-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-bac58a079cc2e50ee9524294">stove0-observer-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-2b95c8f260c6c5f36275509a">
+</span>
+<a href="relationship-nodes.html#node-1ff54362d85d9abb389e58eb">a-stove0-media-archive-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-72232b7fcefa4d133fb9bdcd">stove0-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-434c7ae3ad0c53fdc9855249">
+</span>
+<a href="relationship-nodes.html#node-1ff54362d85d9abb389e58eb">a-stove0-media-archive-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-2bfbd86b0036104ec731f701">stove0-target-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-830f97d3f4745092b234a477">
+</span>
+<a href="relationship-nodes.html#node-aac630ef4d55df07c32ba638">a-stove0-media-metadata-contract-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-bac58a079cc2e50ee9524294">stove0-observer-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-e3b6c8ce2f92ee0f40fb1026">
+</span>
+<a href="relationship-nodes.html#node-aac630ef4d55df07c32ba638">a-stove0-media-metadata-contract-lib</a>
+</td>
+<td>implements extension point</td>
+<td>
+<a href="relationship-nodes.html#node-dab30e400e9ff2b22a1d7f7a">stove0.observer-semantic-validators</a>
+</td>
+<td>media-metadata</td>
+</tr>
+<tr>
+<td>
+<span id="edge-208ba2d08ba0a13b62f5e506">
+</span>
+<a href="relationship-nodes.html#node-3262abd36ffae7222c1e40f4">a-stove0-media-sampling-contract-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-bac58a079cc2e50ee9524294">stove0-observer-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-dd2a241df6fc2111594710a0">
+</span>
+<a href="relationship-nodes.html#node-3262abd36ffae7222c1e40f4">a-stove0-media-sampling-contract-lib</a>
+</td>
+<td>implements extension point</td>
+<td>
+<a href="relationship-nodes.html#node-dab30e400e9ff2b22a1d7f7a">stove0.observer-semantic-validators</a>
+</td>
+<td>media-sampling</td>
+</tr>
+<tr>
+<td>
+<span id="edge-dac71281d4bba86c4d304acd">
+</span>
+<a href="relationship-nodes.html#node-7fd150cf2195d5d5006c800b">a-stove0-nvenc-av1-opus-target</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-d67a828eabc8bdea10a4cabc">a-stove0-media-archive-contract-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f592757bb82776c75f040b55">
+</span>
+<a href="relationship-nodes.html#node-7fd150cf2195d5d5006c800b">a-stove0-nvenc-av1-opus-target</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-1ff54362d85d9abb389e58eb">a-stove0-media-archive-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-16ddb8eba68faa272fb8ac3e">
+</span>
+<a href="relationship-nodes.html#node-7fd150cf2195d5d5006c800b">a-stove0-nvenc-av1-opus-target</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-d59e5fbb4cf6d9642852df71">
+</span>
+<a href="relationship-nodes.html#node-7fd150cf2195d5d5006c800b">a-stove0-nvenc-av1-opus-target</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-8e5274344f37f28f8f2b0d27">riverhog-client</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-9216e26fa9ecb37d91768908">
+</span>
+<a href="relationship-nodes.html#node-7fd150cf2195d5d5006c800b">a-stove0-nvenc-av1-opus-target</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-b5d94ae410ae32ef19689660">
+</span>
+<a href="relationship-nodes.html#node-7fd150cf2195d5d5006c800b">a-stove0-nvenc-av1-opus-target</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-72232b7fcefa4d133fb9bdcd">stove0-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-d59c93b6b6db27239af52d58">
+</span>
+<a href="relationship-nodes.html#node-7fd150cf2195d5d5006c800b">a-stove0-nvenc-av1-opus-target</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f8df68acc88c5cfa47c8854c">stove0-target-support</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-3ea62ae165f9d754dc2d0109">
+</span>
+<a href="relationship-nodes.html#node-7fd150cf2195d5d5006c800b">a-stove0-nvenc-av1-opus-target</a>
+</td>
+<td>implements protocol</td>
+<td>
+<a href="relationship-nodes.html#node-9d6e708ff324fb11314c7299">stove0-target</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-9bfeac10185d18b9a68fcaf1">
+</span>
+<a href="relationship-nodes.html#node-7fd150cf2195d5d5006c800b">a-stove0-nvenc-av1-opus-target</a>
+</td>
+<td>packaged in</td>
+<td>
+<a href="relationship-nodes.html#node-80f718744428cb18c77a0b87">a-stove0-nvenc-av1-opus-target</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-a14d6c87f44eb6113621f324">
+</span>
+<a href="relationship-nodes.html#node-9ac2ba7d1642618c6d9a73a9">a-stove0-opus-target</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-d67a828eabc8bdea10a4cabc">a-stove0-media-archive-contract-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-226d0db75e7e07269a14fb58">
+</span>
+<a href="relationship-nodes.html#node-9ac2ba7d1642618c6d9a73a9">a-stove0-opus-target</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-1ff54362d85d9abb389e58eb">a-stove0-media-archive-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-4f1550d68201c1abb14abf25">
+</span>
+<a href="relationship-nodes.html#node-9ac2ba7d1642618c6d9a73a9">a-stove0-opus-target</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-0c5391d5a32902149a480a0d">
+</span>
+<a href="relationship-nodes.html#node-9ac2ba7d1642618c6d9a73a9">a-stove0-opus-target</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-8e5274344f37f28f8f2b0d27">riverhog-client</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-123f63589c76b7ac60988858">
+</span>
+<a href="relationship-nodes.html#node-9ac2ba7d1642618c6d9a73a9">a-stove0-opus-target</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-9898df18e3497a07627d28a9">
+</span>
+<a href="relationship-nodes.html#node-9ac2ba7d1642618c6d9a73a9">a-stove0-opus-target</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-72232b7fcefa4d133fb9bdcd">stove0-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f3db4beb5e1a822c17f40d7f">
+</span>
+<a href="relationship-nodes.html#node-9ac2ba7d1642618c6d9a73a9">a-stove0-opus-target</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f8df68acc88c5cfa47c8854c">stove0-target-support</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-ee59202d9910d1c8d65b444b">
+</span>
+<a href="relationship-nodes.html#node-9ac2ba7d1642618c6d9a73a9">a-stove0-opus-target</a>
+</td>
+<td>implements protocol</td>
+<td>
+<a href="relationship-nodes.html#node-9d6e708ff324fb11314c7299">stove0-target</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-d7f218a00601bac8ef7d25cf">
+</span>
+<a href="relationship-nodes.html#node-9ac2ba7d1642618c6d9a73a9">a-stove0-opus-target</a>
+</td>
+<td>packaged in</td>
+<td>
+<a href="relationship-nodes.html#node-ad763529676b48441139bd38">a-stove0-opus-target</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-b5b6089b37eb6a6baba5c02f">
+</span>
+<a href="relationship-nodes.html#node-eeb2be4a71281c844b0269eb">gogurt</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b37402f43fd23882e4361e61">config-validation</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-a1f7fa0b16f7ed830d95e757">
+</span>
+<a href="relationship-nodes.html#node-eeb2be4a71281c844b0269eb">gogurt</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-e1d2ac7df3e38ab07d092af2">gogurt-core</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-39cf0240b2339c4ee07a61c9">
+</span>
+<a href="relationship-nodes.html#node-eeb2be4a71281c844b0269eb">gogurt</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-df1cdfd17cbc5fecb9c1d89d">gogurt-listener-runtime</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-ac1f2aeb264f1ce4dd949cf4">
+</span>
+<a href="relationship-nodes.html#node-eeb2be4a71281c844b0269eb">gogurt</a>
+</td>
+<td>installed as</td>
+<td>
+<a href="relationship-nodes.html#node-672a39762bbb02f638518ed1">uv-tool</a>
+</td>
+<td>gogurt</td>
+</tr>
+<tr>
+<td>
+<span id="edge-8a2c8eab150baaa1174b8044">
+</span>
+<a href="relationship-nodes.html#node-e1d2ac7df3e38ab07d092af2">gogurt-core</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b37402f43fd23882e4361e61">config-validation</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-b47c65cf7b77cea752fc858f">
+</span>
+<a href="relationship-nodes.html#node-e1d2ac7df3e38ab07d092af2">gogurt-core</a>
+</td>
+<td>owns extension point</td>
+<td>
+<a href="relationship-nodes.html#node-6f779eb64ba6342834181439">gogurt.mounted-volume-providers</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-67d12257f401d57f472ebf93">
+</span>
+<a href="relationship-nodes.html#node-df1cdfd17cbc5fecb9c1d89d">gogurt-listener-runtime</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b37402f43fd23882e4361e61">config-validation</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-7489be64f95c1cd0af1aa987">
+</span>
+<a href="relationship-nodes.html#node-df1cdfd17cbc5fecb9c1d89d">gogurt-listener-runtime</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-e1d2ac7df3e38ab07d092af2">gogurt-core</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-761064ab5a0253229ab531fa">
+</span>
+<a href="relationship-nodes.html#node-df1cdfd17cbc5fecb9c1d89d">gogurt-listener-runtime</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-71d11531981da77ac82e143e">time-formats</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-00b21fdf99092be28d18867a">
+</span>
+<a href="relationship-nodes.html#node-df1cdfd17cbc5fecb9c1d89d">gogurt-listener-runtime</a>
+</td>
+<td>owns extension point</td>
+<td>
+<a href="relationship-nodes.html#node-bbe759bbb1a0036d4bf04bec">gogurt.listener-host-providers</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-090ea9d16ce4901a5656ff36">
+</span>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f55ab6c77b17931b8e350da2">riverhog-canonical-json</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-5ea2908c484bc782171a1b52">
+</span>
+<a href="relationship-nodes.html#node-30af2d15930547fc5a1c18af">lifecycle-events</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-71d11531981da77ac82e143e">time-formats</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-db39e7f022858b48c04fcff6">
+</span>
+<a href="relationship-nodes.html#node-5324da9af226ff5e24cbbfcd">review0-planner</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-3262abd36ffae7222c1e40f4">a-stove0-media-sampling-contract-lib</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-49cbd3edd1bff81f0d859ac2">
+</span>
+<a href="relationship-nodes.html#node-5324da9af226ff5e24cbbfcd">review0-planner</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-73dc17d10cbcb710d9df10db">review0-target-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-9d4fa214e81a5e1b4384dc98">
+</span>
+<a href="relationship-nodes.html#node-5324da9af226ff5e24cbbfcd">review0-planner</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-72232b7fcefa4d133fb9bdcd">stove0-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-c65dffb96e409e6c1415da77">
+</span>
+<a href="relationship-nodes.html#node-1082eec67235a2d4885d5076">review0-sampler-client</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-fab6b8e82faf18f64837831d">
+</span>
+<a href="relationship-nodes.html#node-1082eec67235a2d4885d5076">review0-sampler-client</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-e32e317bb5ca413df214aa40">review0-sampler-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-bf732de1335c95e7986965c0">
+</span>
+<a href="relationship-nodes.html#node-1f471835617598d1859d781c">review0-sampler-lib</a>
+</td>
+<td>binds protocol</td>
+<td>
+<a href="relationship-nodes.html#node-cebbbf6832cd2dc9081a3be4">review0-sampler</a>
+</td>
+<td>http</td>
+</tr>
+<tr>
+<td>
+<span id="edge-5999ad7ec7057de1ac60af50">
+</span>
+<a href="relationship-nodes.html#node-1f471835617598d1859d781c">review0-sampler-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-a0d738fe3ab5323974112f22">
+</span>
+<a href="relationship-nodes.html#node-1f471835617598d1859d781c">review0-sampler-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-1082eec67235a2d4885d5076">review0-sampler-client</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f2f12009e1a8f7900289ab8d">
+</span>
+<a href="relationship-nodes.html#node-1f471835617598d1859d781c">review0-sampler-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-e32e317bb5ca413df214aa40">review0-sampler-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-1749f1f588d0b3dea5ff5d24">
+</span>
+<a href="relationship-nodes.html#node-e32e317bb5ca413df214aa40">review0-sampler-protocol</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-509785750ac982b1885ce67a">
+</span>
+<a href="relationship-nodes.html#node-e32e317bb5ca413df214aa40">review0-sampler-protocol</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-97c1a158f13d1ef8f90d22ae">
+</span>
+<a href="relationship-nodes.html#node-e32e317bb5ca413df214aa40">review0-sampler-protocol</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-72232b7fcefa4d133fb9bdcd">stove0-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-231e24b1044aa7b854e2ac27">
+</span>
+<a href="relationship-nodes.html#node-e32e317bb5ca413df214aa40">review0-sampler-protocol</a>
+</td>
+<td>owns protocol</td>
+<td>
+<a href="relationship-nodes.html#node-cebbbf6832cd2dc9081a3be4">review0-sampler</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-8838351052be7aae98e34816">
+</span>
+<a href="relationship-nodes.html#node-73dc17d10cbcb710d9df10db">review0-target-contracts</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-72232b7fcefa4d133fb9bdcd">stove0-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-2c5a42f2ec0dc22ebcc91b98">
+</span>
+<a href="relationship-nodes.html#node-73dc17d10cbcb710d9df10db">review0-target-contracts</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-2bfbd86b0036104ec731f701">stove0-target-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f37895bdc92a13c307273736">
+</span>
+<a href="relationship-nodes.html#node-88583fbcf20e3e935d7ed675">review0-target-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b37402f43fd23882e4361e61">config-validation</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-1bc118f896c0b3a37bb6f3ca">
+</span>
+<a href="relationship-nodes.html#node-88583fbcf20e3e935d7ed675">review0-target-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-ba1e738a8161c5e7b35cb364">
+</span>
+<a href="relationship-nodes.html#node-88583fbcf20e3e935d7ed675">review0-target-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-1082eec67235a2d4885d5076">review0-sampler-client</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-0eb313a954ff5769af7ed468">
+</span>
+<a href="relationship-nodes.html#node-88583fbcf20e3e935d7ed675">review0-target-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-e32e317bb5ca413df214aa40">review0-sampler-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-b44a56a8672d60a7ffd0f04c">
+</span>
+<a href="relationship-nodes.html#node-88583fbcf20e3e935d7ed675">review0-target-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-73dc17d10cbcb710d9df10db">review0-target-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-b019870e48f3d0b0c688a7cb">
+</span>
+<a href="relationship-nodes.html#node-88583fbcf20e3e935d7ed675">review0-target-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-8e5274344f37f28f8f2b0d27">riverhog-client</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-ead5ee0e39271267efb97acb">
+</span>
+<a href="relationship-nodes.html#node-88583fbcf20e3e935d7ed675">review0-target-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-8595aa8826c6d61e0b644779">
+</span>
+<a href="relationship-nodes.html#node-88583fbcf20e3e935d7ed675">review0-target-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-72232b7fcefa4d133fb9bdcd">stove0-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-a691eee44bb3cc4cd8d9986d">
+</span>
+<a href="relationship-nodes.html#node-88583fbcf20e3e935d7ed675">review0-target-lib</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f8df68acc88c5cfa47c8854c">stove0-target-support</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-c1fc154aa9bc67417eece8f2">
+</span>
+<a href="relationship-nodes.html#node-24025966b4809328a3a681b5">riverhog-age</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f55ab6c77b17931b8e350da2">riverhog-canonical-json</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-c5819dc9c6a22ed6b5ea1f71">
+</span>
+<a href="relationship-nodes.html#node-06ef7f89cab183707360e93b">riverhog-application-access</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-4fd980f4ca3c51241f8e08cf">
+</span>
+<a href="relationship-nodes.html#node-3f00f69253750a6501580cc8">riverhog-archive-contracts</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f55ab6c77b17931b8e350da2">riverhog-canonical-json</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f3f80b97bbb153bdd46f103c">
+</span>
+<a href="relationship-nodes.html#node-8e5274344f37f28f8f2b0d27">riverhog-client</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-282e0eb28f4b378e1d340fde">
+</span>
+<a href="relationship-nodes.html#node-8e5274344f37f28f8f2b0d27">riverhog-client</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-06ef7f89cab183707360e93b">riverhog-application-access</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-aee72a2274e6d9eef2f28907">
+</span>
+<a href="relationship-nodes.html#node-8e5274344f37f28f8f2b0d27">riverhog-client</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f55ab6c77b17931b8e350da2">riverhog-canonical-json</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-0b794e78c38671a9e93880c6">
+</span>
+<a href="relationship-nodes.html#node-8e5274344f37f28f8f2b0d27">riverhog-client</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-390aa93fbfac1a8a5b77ee0b">
+</span>
+<a href="relationship-nodes.html#node-8e5274344f37f28f8f2b0d27">riverhog-client</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-606682003821b0b42b46530f">riverhog-provenance-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f02b6c08ee6d0761bdc86ab1">
+</span>
+<a href="relationship-nodes.html#node-8e5274344f37f28f8f2b0d27">riverhog-client</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-71d11531981da77ac82e143e">time-formats</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-d7fddfafbaf63019d2e512bb">
+</span>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-245b25bbd0ac77cdddcdddf8">
+</span>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-30af2d15930547fc5a1c18af">lifecycle-events</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-e6e00513f61ed7e740cd5449">
+</span>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f55ab6c77b17931b8e350da2">riverhog-canonical-json</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-faa35bc3a6c6e8428d041757">
+</span>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-606682003821b0b42b46530f">riverhog-provenance-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-904a91e3a298e491bfae2e0d">
+</span>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-71d11531981da77ac82e143e">time-formats</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-46f38d994e25743a83985627">
+</span>
+<a href="relationship-nodes.html#node-728e08e7c45497ec44502f69">riverhog-provenance</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f55ab6c77b17931b8e350da2">riverhog-canonical-json</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-a83ab46b53a9fb906b69f1e4">
+</span>
+<a href="relationship-nodes.html#node-728e08e7c45497ec44502f69">riverhog-provenance</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-606682003821b0b42b46530f">riverhog-provenance-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-4bce37934477a18c0b715717">
+</span>
+<a href="relationship-nodes.html#node-728e08e7c45497ec44502f69">riverhog-provenance</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-71d11531981da77ac82e143e">time-formats</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-eaa1c8d12eebc1eb93fc4891">
+</span>
+<a href="relationship-nodes.html#node-728e08e7c45497ec44502f69">riverhog-provenance</a>
+</td>
+<td>owns extension point</td>
+<td>
+<a href="relationship-nodes.html#node-ed2bbc0e316bd07fa11ed4f9">riverhog.provenance-observers</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-fa0d516cf8aa5064d97cffff">
+</span>
+<a href="relationship-nodes.html#node-606682003821b0b42b46530f">riverhog-provenance-contracts</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f55ab6c77b17931b8e350da2">riverhog-canonical-json</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-2b03156cae17ae44e24c3b19">
+</span>
+<a href="relationship-nodes.html#node-606682003821b0b42b46530f">riverhog-provenance-contracts</a>
+</td>
+<td>owns extension point</td>
+<td>
+<a href="relationship-nodes.html#node-08557331674e7779682169fd">riverhog.provenance-contracts</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-ffcfcf0cbcbecb405fb32821">
+</span>
+<a href="relationship-nodes.html#node-807c63322e0517e5f3b37612">riverhog-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b37402f43fd23882e4361e61">config-validation</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-20b3d4cfe7c8a743928d4fdd">
+</span>
+<a href="relationship-nodes.html#node-807c63322e0517e5f3b37612">riverhog-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-1940360bf11556ee147cb165">
+</span>
+<a href="relationship-nodes.html#node-807c63322e0517e5f3b37612">riverhog-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-30af2d15930547fc5a1c18af">lifecycle-events</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-92c6a36f4a3e33adf08d519b">
+</span>
+<a href="relationship-nodes.html#node-807c63322e0517e5f3b37612">riverhog-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-24025966b4809328a3a681b5">riverhog-age</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-48a343219ae016dd75019090">
+</span>
+<a href="relationship-nodes.html#node-807c63322e0517e5f3b37612">riverhog-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-06ef7f89cab183707360e93b">riverhog-application-access</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-0bb71632aac99adf38c880de">
+</span>
+<a href="relationship-nodes.html#node-807c63322e0517e5f3b37612">riverhog-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-3f00f69253750a6501580cc8">riverhog-archive-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-6d1d179201589717915ff400">
+</span>
+<a href="relationship-nodes.html#node-807c63322e0517e5f3b37612">riverhog-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f55ab6c77b17931b8e350da2">riverhog-canonical-json</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-a24ee0dc9f104ce790252e93">
+</span>
+<a href="relationship-nodes.html#node-807c63322e0517e5f3b37612">riverhog-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-3fa99345148e52cdc6af7ba5">
+</span>
+<a href="relationship-nodes.html#node-807c63322e0517e5f3b37612">riverhog-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-728e08e7c45497ec44502f69">riverhog-provenance</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-ad39798e9359b11b45d6ff36">
+</span>
+<a href="relationship-nodes.html#node-807c63322e0517e5f3b37612">riverhog-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-606682003821b0b42b46530f">riverhog-provenance-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-d183430bc61e73208794bd49">
+</span>
+<a href="relationship-nodes.html#node-807c63322e0517e5f3b37612">riverhog-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-e65e47e3320aac9e5dd7a98e">riverhog-storage-adapter-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-037829b8896209aa36a979db">
+</span>
+<a href="relationship-nodes.html#node-807c63322e0517e5f3b37612">riverhog-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f0c3b34058c52252904bf087">riverhog-storage-adapter-support</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-7070a45ca01ee39ee99f15e2">
+</span>
+<a href="relationship-nodes.html#node-807c63322e0517e5f3b37612">riverhog-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b37a103e5fc08f77afe12f12">state-schema</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-803aca9997e9c38cea34780d">
+</span>
+<a href="relationship-nodes.html#node-807c63322e0517e5f3b37612">riverhog-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-71d11531981da77ac82e143e">time-formats</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-ca6486ee349260794aedf3f2">
+</span>
+<a href="relationship-nodes.html#node-807c63322e0517e5f3b37612">riverhog-server</a>
+</td>
+<td>packaged in</td>
+<td>
+<a href="relationship-nodes.html#node-566e3c6fe0f673fe2141089a">riverhog</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-caeedfbbd8f89de92e582d7a">
+</span>
+<a href="relationship-nodes.html#node-922b8ba508f907371b84bdad">riverhog-storage-adapter-asgi-support</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-678c3c0beb8b9611eaa211b3">
+</span>
+<a href="relationship-nodes.html#node-922b8ba508f907371b84bdad">riverhog-storage-adapter-asgi-support</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-e65e47e3320aac9e5dd7a98e">riverhog-storage-adapter-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-b0e5fee9c37abcca60d964a4">
+</span>
+<a href="relationship-nodes.html#node-922b8ba508f907371b84bdad">riverhog-storage-adapter-asgi-support</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f0c3b34058c52252904bf087">riverhog-storage-adapter-support</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-9ffebb0fceb231adc30f9af4">
+</span>
+<a href="relationship-nodes.html#node-e65e47e3320aac9e5dd7a98e">riverhog-storage-adapter-protocol</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f55ab6c77b17931b8e350da2">riverhog-canonical-json</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-e88b490dd5a7d0f333e41ce8">
+</span>
+<a href="relationship-nodes.html#node-e65e47e3320aac9e5dd7a98e">riverhog-storage-adapter-protocol</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-71d11531981da77ac82e143e">time-formats</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-35f0e1637bf71b98d26d06cd">
+</span>
+<a href="relationship-nodes.html#node-e65e47e3320aac9e5dd7a98e">riverhog-storage-adapter-protocol</a>
+</td>
+<td>owns protocol</td>
+<td>
+<a href="relationship-nodes.html#node-994e13bf1e4011e984fcfd67">riverhog-storage-adapter</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-a1fe5da8ef02fd0e651aae24">
+</span>
+<a href="relationship-nodes.html#node-f0c3b34058c52252904bf087">riverhog-storage-adapter-support</a>
+</td>
+<td>binds protocol</td>
+<td>
+<a href="relationship-nodes.html#node-994e13bf1e4011e984fcfd67">riverhog-storage-adapter</a>
+</td>
+<td>http</td>
+</tr>
+<tr>
+<td>
+<span id="edge-50d9e9d0526eac34ae8733ef">
+</span>
+<a href="relationship-nodes.html#node-f0c3b34058c52252904bf087">riverhog-storage-adapter-support</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-b71ecb9bde2feba265728b28">
+</span>
+<a href="relationship-nodes.html#node-f0c3b34058c52252904bf087">riverhog-storage-adapter-support</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f55ab6c77b17931b8e350da2">riverhog-canonical-json</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-dcb1759c631fa33ab9383f44">
+</span>
+<a href="relationship-nodes.html#node-f0c3b34058c52252904bf087">riverhog-storage-adapter-support</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-e65e47e3320aac9e5dd7a98e">riverhog-storage-adapter-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-a1677e86a05f358d7394251b">
+</span>
+<a href="relationship-nodes.html#node-0b595a9ebcbafe373840b0d3">stove0-api-client</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-7282f8683a42c8e397a9abd7">
+</span>
+<a href="relationship-nodes.html#node-0b595a9ebcbafe373840b0d3">stove0-api-client</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-7c400ebb8398ebdb98debec9">stove0-operator-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-863d0981305fc5056aa993ae">
+</span>
+<a href="relationship-nodes.html#node-0b595a9ebcbafe373840b0d3">stove0-api-client</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-72232b7fcefa4d133fb9bdcd">stove0-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-144843843b7277902fecfce2">
+</span>
+<a href="relationship-nodes.html#node-21b6164c9f86931e3c3b8420">stove0-observer-client</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-cfdfc1a76eb5e1e11f3868ec">
+</span>
+<a href="relationship-nodes.html#node-21b6164c9f86931e3c3b8420">stove0-observer-client</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-bac58a079cc2e50ee9524294">stove0-observer-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-e535ff02284b19f842ac999a">
+</span>
+<a href="relationship-nodes.html#node-21b6164c9f86931e3c3b8420">stove0-observer-client</a>
+</td>
+<td>owns extension point</td>
+<td>
+<a href="relationship-nodes.html#node-dab30e400e9ff2b22a1d7f7a">stove0.observer-semantic-validators</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-66ba13ca359328b02e780ff9">
+</span>
+<a href="relationship-nodes.html#node-bac58a079cc2e50ee9524294">stove0-observer-protocol</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-612da258c74e523291f48551">
+</span>
+<a href="relationship-nodes.html#node-bac58a079cc2e50ee9524294">stove0-observer-protocol</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-72232b7fcefa4d133fb9bdcd">stove0-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-14090bcde668ae3e372f30ac">
+</span>
+<a href="relationship-nodes.html#node-bac58a079cc2e50ee9524294">stove0-observer-protocol</a>
+</td>
+<td>owns protocol</td>
+<td>
+<a href="relationship-nodes.html#node-2eb3b800f870ee6a3d5670c3">stove0-observer</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f47bb7404d441395ba8c486d">
+</span>
+<a href="relationship-nodes.html#node-50ccd8c774618fbe6e2f2e2c">stove0-observer-support</a>
+</td>
+<td>binds protocol</td>
+<td>
+<a href="relationship-nodes.html#node-2eb3b800f870ee6a3d5670c3">stove0-observer</a>
+</td>
+<td>http</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f5266e9329d5a9ef9a089f3d">
+</span>
+<a href="relationship-nodes.html#node-50ccd8c774618fbe6e2f2e2c">stove0-observer-support</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-84fc23024d6b80dd9c80d2d4">
+</span>
+<a href="relationship-nodes.html#node-50ccd8c774618fbe6e2f2e2c">stove0-observer-support</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f55ab6c77b17931b8e350da2">riverhog-canonical-json</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-5db080dc93379837c14b9e2e">
+</span>
+<a href="relationship-nodes.html#node-50ccd8c774618fbe6e2f2e2c">stove0-observer-support</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-8e5274344f37f28f8f2b0d27">riverhog-client</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-a1b61d44559267810e9ff61d">
+</span>
+<a href="relationship-nodes.html#node-50ccd8c774618fbe6e2f2e2c">stove0-observer-support</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-6db5bc5f5ec47051a849cb68">
+</span>
+<a href="relationship-nodes.html#node-50ccd8c774618fbe6e2f2e2c">stove0-observer-support</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-21b6164c9f86931e3c3b8420">stove0-observer-client</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-b7edcf23ec2156f8fd35a0b4">
+</span>
+<a href="relationship-nodes.html#node-50ccd8c774618fbe6e2f2e2c">stove0-observer-support</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-bac58a079cc2e50ee9524294">stove0-observer-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f88ed28a127420ee4b64eed4">
+</span>
+<a href="relationship-nodes.html#node-7c400ebb8398ebdb98debec9">stove0-operator-contracts</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-868f93da7ef8237fe017a11d">
+</span>
+<a href="relationship-nodes.html#node-7c400ebb8398ebdb98debec9">stove0-operator-contracts</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-30af2d15930547fc5a1c18af">lifecycle-events</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f62cd3946b1649565f484273">
+</span>
+<a href="relationship-nodes.html#node-7c400ebb8398ebdb98debec9">stove0-operator-contracts</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-a82e3783cd2befb0e5c585ac">
+</span>
+<a href="relationship-nodes.html#node-7c400ebb8398ebdb98debec9">stove0-operator-contracts</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-bac58a079cc2e50ee9524294">stove0-observer-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-877bda354d4b14669a5b66d7">
+</span>
+<a href="relationship-nodes.html#node-7c400ebb8398ebdb98debec9">stove0-operator-contracts</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-72232b7fcefa4d133fb9bdcd">stove0-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f391ab94ae0ba2d33b02849e">
+</span>
+<a href="relationship-nodes.html#node-7c400ebb8398ebdb98debec9">stove0-operator-contracts</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-1f5664e176e6d54e15a23e02">stove0-recipe-config</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-6dfcd6e413ece80fa3524436">
+</span>
+<a href="relationship-nodes.html#node-7c400ebb8398ebdb98debec9">stove0-operator-contracts</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-2bfbd86b0036104ec731f701">stove0-target-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-9232c92bf5a122aa12144262">
+</span>
+<a href="relationship-nodes.html#node-7c400ebb8398ebdb98debec9">stove0-operator-contracts</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-71d11531981da77ac82e143e">time-formats</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-96617e138495671a3742518d">
+</span>
+<a href="relationship-nodes.html#node-72232b7fcefa4d133fb9bdcd">stove0-protocol</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f55ab6c77b17931b8e350da2">riverhog-canonical-json</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-1234eedc038cf6b2c04b1fb5">
+</span>
+<a href="relationship-nodes.html#node-72232b7fcefa4d133fb9bdcd">stove0-protocol</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-c447ad7049d1ec6db20c7741">
+</span>
+<a href="relationship-nodes.html#node-1f5664e176e6d54e15a23e02">stove0-recipe-config</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b37402f43fd23882e4361e61">config-validation</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-ebeae2326a53de93b43526e3">
+</span>
+<a href="relationship-nodes.html#node-1f5664e176e6d54e15a23e02">stove0-recipe-config</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-0be3b57dc641568acf1cd372">
+</span>
+<a href="relationship-nodes.html#node-1f5664e176e6d54e15a23e02">stove0-recipe-config</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-72232b7fcefa4d133fb9bdcd">stove0-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-33cb04f35d4b350d398d190a">
+</span>
+<a href="relationship-nodes.html#node-1f5664e176e6d54e15a23e02">stove0-recipe-config</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-2bfbd86b0036104ec731f701">stove0-target-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-c25f66aa2071393f9dd261fe">
+</span>
+<a href="relationship-nodes.html#node-3540de4d4a6103a4518d97a7">stove0-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b37402f43fd23882e4361e61">config-validation</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-d1902a5577874f2c7a133915">
+</span>
+<a href="relationship-nodes.html#node-3540de4d4a6103a4518d97a7">stove0-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-9f4b624594e4eab4f92f5dd3">
+</span>
+<a href="relationship-nodes.html#node-3540de4d4a6103a4518d97a7">stove0-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f55ab6c77b17931b8e350da2">riverhog-canonical-json</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-bff05795df544370ad883270">
+</span>
+<a href="relationship-nodes.html#node-3540de4d4a6103a4518d97a7">stove0-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-8e5274344f37f28f8f2b0d27">riverhog-client</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-0725f24666f10474e52540e5">
+</span>
+<a href="relationship-nodes.html#node-3540de4d4a6103a4518d97a7">stove0-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-64714054ef34831859109bc3">
+</span>
+<a href="relationship-nodes.html#node-3540de4d4a6103a4518d97a7">stove0-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-b37a103e5fc08f77afe12f12">state-schema</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f802a0ad43e91e8262be805a">
+</span>
+<a href="relationship-nodes.html#node-3540de4d4a6103a4518d97a7">stove0-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-21b6164c9f86931e3c3b8420">stove0-observer-client</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-df2e56156208361c8c118462">
+</span>
+<a href="relationship-nodes.html#node-3540de4d4a6103a4518d97a7">stove0-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-bac58a079cc2e50ee9524294">stove0-observer-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-a9f430825ee936fb1a4f0b80">
+</span>
+<a href="relationship-nodes.html#node-3540de4d4a6103a4518d97a7">stove0-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-7c400ebb8398ebdb98debec9">stove0-operator-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-184493fa6fbbdfd9aefeeaf2">
+</span>
+<a href="relationship-nodes.html#node-3540de4d4a6103a4518d97a7">stove0-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-72232b7fcefa4d133fb9bdcd">stove0-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-02c2684cf483cf20beb866af">
+</span>
+<a href="relationship-nodes.html#node-3540de4d4a6103a4518d97a7">stove0-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-1f5664e176e6d54e15a23e02">stove0-recipe-config</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-7230bfd0c3bf4a5db002de70">
+</span>
+<a href="relationship-nodes.html#node-3540de4d4a6103a4518d97a7">stove0-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-2c02e8800488c16ad75fcee1">stove0-target-client</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-a768fcce8cae16b287b76481">
+</span>
+<a href="relationship-nodes.html#node-3540de4d4a6103a4518d97a7">stove0-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-2bfbd86b0036104ec731f701">stove0-target-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-84272856c093030d68c87514">
+</span>
+<a href="relationship-nodes.html#node-3540de4d4a6103a4518d97a7">stove0-server</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-71d11531981da77ac82e143e">time-formats</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-70cca960dc9ccfac2c25dff4">
+</span>
+<a href="relationship-nodes.html#node-3540de4d4a6103a4518d97a7">stove0-server</a>
+</td>
+<td>packaged in</td>
+<td>
+<a href="relationship-nodes.html#node-c1dbb5bdf8b15eead6a4db2f">stove0</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-fb44d0132254d8ed3d58b4b5">
+</span>
+<a href="relationship-nodes.html#node-2c02e8800488c16ad75fcee1">stove0-target-client</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-0e4db1c0723b2c26f0c230f8">
+</span>
+<a href="relationship-nodes.html#node-2c02e8800488c16ad75fcee1">stove0-target-client</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-2bfbd86b0036104ec731f701">stove0-target-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-18da7111775140652f57b8c0">
+</span>
+<a href="relationship-nodes.html#node-2bfbd86b0036104ec731f701">stove0-target-protocol</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-f626c89e430dbe5fbe6a5cc2">
+</span>
+<a href="relationship-nodes.html#node-2bfbd86b0036104ec731f701">stove0-target-protocol</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-0431082f0b1a94b3986be296">
+</span>
+<a href="relationship-nodes.html#node-2bfbd86b0036104ec731f701">stove0-target-protocol</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-72232b7fcefa4d133fb9bdcd">stove0-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-2b2b7d5b84cfcd2cc5ad588d">
+</span>
+<a href="relationship-nodes.html#node-2bfbd86b0036104ec731f701">stove0-target-protocol</a>
+</td>
+<td>owns protocol</td>
+<td>
+<a href="relationship-nodes.html#node-9d6e708ff324fb11314c7299">stove0-target</a>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<span id="edge-7f29823b9dc4cf66d2e1a21c">
+</span>
+<a href="relationship-nodes.html#node-f8df68acc88c5cfa47c8854c">stove0-target-support</a>
+</td>
+<td>binds protocol</td>
+<td>
+<a href="relationship-nodes.html#node-9d6e708ff324fb11314c7299">stove0-target</a>
+</td>
+<td>http</td>
+</tr>
+<tr>
+<td>
+<span id="edge-8eab961b7d5159034d43d8bb">
+</span>
+<a href="relationship-nodes.html#node-f8df68acc88c5cfa47c8854c">stove0-target-support</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f59c7f41027a2e9b85d7b42a">http-api-contracts</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-17ea98dab5a89416dc92ef21">
+</span>
+<a href="relationship-nodes.html#node-f8df68acc88c5cfa47c8854c">stove0-target-support</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-f55ab6c77b17931b8e350da2">riverhog-canonical-json</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-581ed7c3c07cc52ea644d296">
+</span>
+<a href="relationship-nodes.html#node-f8df68acc88c5cfa47c8854c">stove0-target-support</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-8e5274344f37f28f8f2b0d27">riverhog-client</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-6cc76e3674f7c28fdc7c870a">
+</span>
+<a href="relationship-nodes.html#node-f8df68acc88c5cfa47c8854c">stove0-target-support</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-20dbb0d5c0f27b7378ce95f0">riverhog-protocol</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-d76a4cb47d8fcb40beaa9f63">
+</span>
+<a href="relationship-nodes.html#node-f8df68acc88c5cfa47c8854c">stove0-target-support</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-2c02e8800488c16ad75fcee1">stove0-target-client</a>
+</td>
+<td>required</td>
+</tr>
+<tr>
+<td>
+<span id="edge-999795c8981142ea7e3a1d08">
+</span>
+<a href="relationship-nodes.html#node-f8df68acc88c5cfa47c8854c">stove0-target-support</a>
+</td>
+<td>depends on</td>
+<td>
+<a href="relationship-nodes.html#node-2bfbd86b0036104ec731f701">stove0-target-protocol</a>
+</td>
+<td>required</td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,8302 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-4014113053127b8b1eb889a0.html">stove0-operator-contracts · Python</a>
+<a href="index.html">All authorities</a> / <a href="a-b7ceedf95d4165ea64fd9fc7.html">stove0-operator-contracts</a> / <a href="i-4014113053127b8b1eb889a0.html">Python</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>stove0_operator_contracts.WorkView</h1>
+<p class="context">Canonical public state contracts for the Stove0 v1 operator surface. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:stove0-operator-contracts:stove0-operator-contracts-workview:fa1e81cc66">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>stove0-operator-contracts</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>stove0_operator_contracts</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>WorkView</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(*, format: Literal[&#x27;stove0-work-view/v1&#x27;] = &#x27;stove0-work-view/v1&#x27;, work_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], work: stove0_protocol.models.WorkIdentity, phase: Literal[&#x27;eligible&#x27;, &#x27;claimed&#x27;, &#x27;observing&#x27;, &#x27;planning&#x27;, &#x27;target_preflight&#x27;, &#x27;queued&#x27;, &#x27;executing&#x27;, &#x27;output_finalizing&#x27;, &#x27;verifying&#x27;, &#x27;settled&#x27;, &#x27;source_collection_retirement_pending&#x27;, &#x27;coordinating&#x27;, &#x27;abandon_pending&#x27;, &#x27;complete&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;], revision: Annotated[int, Ge(ge=1)], claim: stove0_operator_contracts.WorkClaimView | None = None, preview_acceptance: stove0_operator_contracts.PreviewAcceptanceView | None = None, expected_target_plan_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, observation_requests: tuple[stove0_protocol.models.ContentObservationRequest, ...] = (), observation_results: tuple[stove0_protocol.models.ContentObservationResult, ...] = (), branch_set_plan: stove0_protocol.fork_join.BranchSetPlan | None = None, coordination_settlement: stove0_protocol.fork_join.CoordinationSettlement | None = None, join_plan: stove0_protocol.fork_join.JoinPlan | None = None, coordination_cancel_requested: bool = False, workflow_plan: stove0_protocol.models.WorkflowPlan | None = None, target_plan: Optional[Annotated[stove0_target_protocol.protocol.TransformPlan | stove0_target_protocol.protocol.EffectPlan, FieldInfo(annotation=NoneType, required=True, discriminator=&#x27;protocol&#x27;)]] = None, controller_evidence: stove0_protocol.models.ControllerEvidence | None = None, target_request: stove0_target_protocol.protocol.AcceptedTargetJob | None = None, target_status: stove0_target_protocol.protocol.TargetJobStatus | None = None, output: stove0_target_protocol.protocol.OutputCollectionRef | None = None, target_settlement: stove0_target_protocol.protocol.TargetSettlementAuthority | None = None, source_collection_retirement_remaining: tuple[int, ...] = (), failure: stove0_operator_contracts.WorkFailureView | None = None, inapplicable: stove0_operator_contracts.WorkInapplicableView | None = None, abandon_outcome: Optional[Literal[&#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;]] = None) -&gt; None&quot;</code>
+</dd>
+</dl>
+<section class="schema-section" id="s-a40389dd8c0e33cf06444bde">
+<h3>Validated model schema</h3>
+<p class="shape">
+<code>object</code>; 25 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;work_id&quot;,&quot;work&quot;,&quot;phase&quot;,&quot;revision&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-ab960e0d3db8424de3888b3c">abandon_outcome</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; enum: <code>[&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-f958ec485a4e27a0ab6c8c9a">branch_set_plan</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-dd5e33c6812bd5bd00ef9d0a">#/$defs/BranchSetPlan</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-bd573492a71c2114da6e9ef8">claim</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-427778f2b95f38e085363fa4">#/$defs/WorkClaimView</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-b1e2a94d1fa0bfa3e6d0f19f">controller_evidence</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-8b01483f06b27193bc5035e1">#/$defs/ControllerEvidence</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>coordination_cancel_requested</code>
+</td>
+<td>no</td>
+<td>
+<code>boolean</code>; default: <code>false</code>
+</td>
+<td>
+<code>false</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-24e82d8b4856368d776fb557">coordination_settlement</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-1d102c88d49711fa0fbeee87">#/$defs/CoordinationSettlement</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-0a25ef733a89f5e23e31b4bf">expected_target_plan_sha256</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-755a0aa9759f654eccee9857">failure</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-3d393d60f5c8707b04d94807">#/$defs/WorkFailureView</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-work-view/v1</code>; default: <code>stove0-work-view/v1</code>
+</td>
+<td>
+<code>stove0-work-view/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-1c1aa9aed36c5f555e2e9dc5">inapplicable</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-b96615054fbc4a9e9a68493f">#/$defs/WorkInapplicableView</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-9ecde628f874663361758ead">join_plan</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-580727b15b43af82437b5bcb">#/$defs/JoinPlan</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-2eac372f784bfbad3682b3a6">observation_requests</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-29ce1a60154aac2f4fd01bc0">#/$defs/ContentObservationRequest</a>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-d1adc32ca5954f5047622e18">observation_results</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-227c883339fc6ad4542edb23">#/$defs/ContentObservationResult</a>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-496eb2f34b85cb8fa2855fd1">output</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-875ef95b02d5affa22ec72be">#/$defs/OutputCollectionRef</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>phase</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;eligible&quot;,&quot;claimed&quot;,&quot;observing&quot;,&quot;planning&quot;,&quot;target_preflight&quot;,&quot;queued&quot;,&quot;executing&quot;,&quot;output_finalizing&quot;,&quot;verifying&quot;,&quot;settled&quot;,&quot;source_collection_retirement_pending&quot;,&quot;coordinating&quot;,&quot;abandon_pending&quot;,&quot;complete&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-c6e7d1e9dae53b8725e095d3">preview_acceptance</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-3f37573c134b4f2131f1e870">#/$defs/PreviewAcceptanceView</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>revision</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-673b8efa57f4e6afbfd1a9a8">source_collection_retirement_remaining</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <code>integer</code>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-dc1b03eaf2fb1770132aa37c">target_plan</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="#s-1a0d13b28d2b95601e861941">exactly one of 2 alternatives</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-21ea49ddbdfa46862be4983c">target_request</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-c2ad8615d4ca0f8a47c7503c">#/$defs/AcceptedTargetJob</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-06b370748a87dc2b7d17571e">target_settlement</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-0123d3e011ae124f00132ba9">#/$defs/TargetSettlementAuthority</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-862849fdb3fffa93677456b9">target_status</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-a1c5d06fa93d25e6cd6f3d00">#/$defs/TargetJobStatus</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>work</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-9c239c9b4740019bb7bc6c91">#/$defs/WorkIdentity</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>work_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-3d3a1fc44047cf8509524265">workflow_plan</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-eb01ec776ff415c45ee69b56">#/$defs/WorkflowPlan</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-c2ad8615d4ca0f8a47c7503c">AcceptedTargetJob</a>
+</li>
+<li>
+<a href="#s-ce60455507d827ba45f30da5">ArtifactDispositionSetIdentity</a>
+</li>
+<li>
+<a href="#s-02ae186c7f479f54da869265">ArtifactSelectionRef</a>
+</li>
+<li>
+<a href="#s-1e5a1e87dc768f2541a016d5">BranchPlan</a>
+</li>
+<li>
+<a href="#s-dd5e33c6812bd5bd00ef9d0a">BranchSetPlan</a>
+</li>
+<li>
+<a href="#s-b2406b87c98a6222986a94bf">BranchWorkBinding</a>
+</li>
+<li>
+<a href="#s-4dbecc0dae861f5e10aff889">CollectionId</a>
+</li>
+<li>
+<a href="#s-580d415889ddd990593dde21">CollectionRootIdentityRef</a>
+</li>
+<li>
+<a href="#s-4f3cc3755e264a36faac0089">ContentObservationEvidence</a>
+</li>
+<li>
+<a href="#s-43ac14522d18373ab46a8b92">ContentObservationFailure</a>
+</li>
+<li>
+<a href="#s-55c1595fafca007f0406d245">ContentObservationInapplicable</a>
+</li>
+<li>
+<a href="#s-29ce1a60154aac2f4fd01bc0">ContentObservationRequest</a>
+</li>
+<li>
+<a href="#s-227c883339fc6ad4542edb23">ContentObservationResult</a>
+</li>
+<li>
+<a href="#s-8b01483f06b27193bc5035e1">ControllerEvidence</a>
+</li>
+<li>
+<a href="#s-1519e82c693281196ef56a23">CoordinationBranchPlan</a>
+</li>
+<li>
+<a href="#s-a2dcd47a50a96d3a0dbe67a0">CoordinationChildSettlementRef</a>
+</li>
+<li>
+<a href="#s-d545cb9313f368b993a3f61c">CoordinationCollectionResult</a>
+</li>
+<li>
+<a href="#s-1d102c88d49711fa0fbeee87">CoordinationSettlement</a>
+</li>
+<li>
+<a href="#s-2cfe70e1d217440ebd044af5">DeclaredWorkspaceProtection</a>
+</li>
+<li>
+<a href="#s-014776d0e1d56ee2fc08b045">EffectPlan</a>
+</li>
+<li>
+<a href="#s-80d3264a22f80d32a3e36dd5">EvaluationBinding</a>
+</li>
+<li>
+<a href="#s-fce11dc92fb2612baaea410d">ExecutionEnvelope</a>
+</li>
+<li>
+<a href="#s-233c85f6dd875a1c6a5db099">ExternalEffectReceipt</a>
+</li>
+<li>
+<a href="#s-c1baf21d386599373a2b1b7a">JoinDeclaration</a>
+</li>
+<li>
+<a href="#s-91107c71f9bbe2697864734c">JoinInputPlan</a>
+</li>
+<li>
+<a href="#s-ffbd632b88dd59acc9c616ed">JoinMemberDeclaration</a>
+</li>
+<li>
+<a href="#s-580727b15b43af82437b5bcb">JoinPlan</a>
+</li>
+<li>
+<a href="#s-1382221b54a491e659610d7e">JoinWorkBinding</a>
+</li>
+<li>
+<a href="#s-4a00613a76277960dad91d7b">JoinWorkMemberBinding</a>
+</li>
+<li>
+<a href="#s-c226f5a8a072b5c0ef6b571b">JsonSchemaValidationProfile</a>
+</li>
+<li>
+<a href="#s-51b717ae8204527d047400c7">JsonValue</a>
+</li>
+<li>
+<a href="#s-d3736abf2d2aec8024e783cc">NonnegativeDecimal</a>
+</li>
+<li>
+<a href="#s-4f624728c8ab9e3440be6697">ObserverImplementation</a>
+</li>
+<li>
+<a href="#s-a55916c7f808c6373be1bd4f">OperationIdentityRef</a>
+</li>
+<li>
+<a href="#s-279412653475ebe99b909f5d">OutputArtifactRoleCount</a>
+</li>
+<li>
+<a href="#s-27cd42b0930e27935bd32b49">OutputArtifactSetIdentity</a>
+</li>
+<li>
+<a href="#s-875ef95b02d5affa22ec72be">OutputCollectionRef</a>
+</li>
+<li>
+<a href="#s-3f37573c134b4f2131f1e870">PreviewAcceptanceView</a>
+</li>
+<li>
+<a href="#s-436a7cc3a8596aa59614bb62">PreviewTargetExpectationView</a>
+</li>
+<li>
+<a href="#s-8b84428d84aee331d23a876c">RecipeIdentityRef</a>
+</li>
+<li>
+<a href="#s-280bb22c73e90422adbee75a">TargetExecutionEvidence</a>
+</li>
+<li>
+<a href="#s-43f40e974cb714d71e611ffe">TargetFailure</a>
+</li>
+<li>
+<a href="#s-a6ab979dc22b392c6989758f">TargetInapplicable</a>
+</li>
+<li>
+<a href="#s-afa6c620cf0e62c9f3e1108d">TargetInputAuthority</a>
+</li>
+<li>
+<a href="#s-c94d2a1e38b9bec657262631">TargetInputRoleCount</a>
+</li>
+<li>
+<a href="#s-f46f29e737950c22130f91bb">TargetJobDeclaration</a>
+</li>
+<li>
+<a href="#s-a1c5d06fa93d25e6cd6f3d00">TargetJobStatus</a>
+</li>
+<li>
+<a href="#s-44ba4eaf6eabbad143da82da">TargetOutputBindingSetIdentity</a>
+</li>
+<li>
+<a href="#s-ca9c274c5141c42741c9dcee">TargetPlanBinding</a>
+</li>
+<li>
+<a href="#s-0793231fae9aa0770f7d244d">TargetProductionAuthority</a>
+</li>
+<li>
+<a href="#s-509bfc0c8278af0fdcefe0e9">TargetProgress</a>
+</li>
+<li>
+<a href="#s-0123d3e011ae124f00132ba9">TargetSettlementAuthority</a>
+</li>
+<li>
+<a href="#s-e6d9103d685610f715e2a03f">TransformPlan</a>
+</li>
+<li>
+<a href="#s-c6274c9652aac593d7708899">WorkArtifactSubject</a>
+</li>
+<li>
+<a href="#s-427778f2b95f38e085363fa4">WorkClaimView</a>
+</li>
+<li>
+<a href="#s-3d393d60f5c8707b04d94807">WorkFailureView</a>
+</li>
+<li>
+<a href="#s-9c239c9b4740019bb7bc6c91">WorkIdentity</a>
+</li>
+<li>
+<a href="#s-b96615054fbc4a9e9a68493f">WorkInapplicableView</a>
+</li>
+<li>
+<a href="#s-eb01ec776ff415c45ee69b56">WorkflowPlan</a>
+</li>
+<li>
+<a href="#s-ef75a8f0d24af52bb141389e">WorkflowPlanIntent</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-ab960e0d3db8424de3888b3c">
+<h3>Field: abandon_outcome</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; enum: <code>[&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; enum: <code>[&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-f958ec485a4e27a0ab6c8c9a">
+<h3>Field: branch_set_plan</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-dd5e33c6812bd5bd00ef9d0a">#/$defs/BranchSetPlan</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-dd5e33c6812bd5bd00ef9d0a">#/$defs/BranchSetPlan</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-bd573492a71c2114da6e9ef8">
+<h3>Field: claim</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-427778f2b95f38e085363fa4">#/$defs/WorkClaimView</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-427778f2b95f38e085363fa4">#/$defs/WorkClaimView</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-b1e2a94d1fa0bfa3e6d0f19f">
+<h3>Field: controller_evidence</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-8b01483f06b27193bc5035e1">#/$defs/ControllerEvidence</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-8b01483f06b27193bc5035e1">#/$defs/ControllerEvidence</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-24e82d8b4856368d776fb557">
+<h3>Field: coordination_settlement</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-1d102c88d49711fa0fbeee87">#/$defs/CoordinationSettlement</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-1d102c88d49711fa0fbeee87">#/$defs/CoordinationSettlement</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-0a25ef733a89f5e23e31b4bf">
+<h3>Field: expected_target_plan_sha256</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-755a0aa9759f654eccee9857">
+<h3>Field: failure</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-3d393d60f5c8707b04d94807">#/$defs/WorkFailureView</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-3d393d60f5c8707b04d94807">#/$defs/WorkFailureView</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-1c1aa9aed36c5f555e2e9dc5">
+<h3>Field: inapplicable</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-b96615054fbc4a9e9a68493f">#/$defs/WorkInapplicableView</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-b96615054fbc4a9e9a68493f">#/$defs/WorkInapplicableView</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-9ecde628f874663361758ead">
+<h3>Field: join_plan</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-580727b15b43af82437b5bcb">#/$defs/JoinPlan</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-580727b15b43af82437b5bcb">#/$defs/JoinPlan</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-2eac372f784bfbad3682b3a6">
+<h3>Field: observation_requests</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-29ce1a60154aac2f4fd01bc0">#/$defs/ContentObservationRequest</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-d1adc32ca5954f5047622e18">
+<h3>Field: observation_results</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-227c883339fc6ad4542edb23">#/$defs/ContentObservationResult</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-496eb2f34b85cb8fa2855fd1">
+<h3>Field: output</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-875ef95b02d5affa22ec72be">#/$defs/OutputCollectionRef</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-875ef95b02d5affa22ec72be">#/$defs/OutputCollectionRef</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-c6e7d1e9dae53b8725e095d3">
+<h3>Field: preview_acceptance</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-3f37573c134b4f2131f1e870">#/$defs/PreviewAcceptanceView</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-3f37573c134b4f2131f1e870">#/$defs/PreviewAcceptanceView</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-673b8efa57f4e6afbfd1a9a8">
+<h3>Field: source_collection_retirement_remaining</h3>
+<p class="shape">
+<code>array</code>; items: <code>integer</code>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-dc1b03eaf2fb1770132aa37c">
+<h3>Field: target_plan</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="#s-1a0d13b28d2b95601e861941">exactly one of 2 alternatives</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-1a0d13b28d2b95601e861941">1</a>
+</td>
+<td>exactly one of: <a href="e-9ed2de92cc3683d97507f328.html#v-e6d9103d685610f715e2a03f">#/$defs/TransformPlan</a>; <a href="e-9ed2de92cc3683d97507f328.html#v-014776d0e1d56ee2fc08b045">#/$defs/EffectPlan</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-21ea49ddbdfa46862be4983c">
+<h3>Field: target_request</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-c2ad8615d4ca0f8a47c7503c">#/$defs/AcceptedTargetJob</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-c2ad8615d4ca0f8a47c7503c">#/$defs/AcceptedTargetJob</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-06b370748a87dc2b7d17571e">
+<h3>Field: target_settlement</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-0123d3e011ae124f00132ba9">#/$defs/TargetSettlementAuthority</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-0123d3e011ae124f00132ba9">#/$defs/TargetSettlementAuthority</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-862849fdb3fffa93677456b9">
+<h3>Field: target_status</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-a1c5d06fa93d25e6cd6f3d00">#/$defs/TargetJobStatus</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-a1c5d06fa93d25e6cd6f3d00">#/$defs/TargetJobStatus</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-3d3a1fc44047cf8509524265">
+<h3>Field: workflow_plan</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-eb01ec776ff415c45ee69b56">#/$defs/WorkflowPlan</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-eb01ec776ff415c45ee69b56">#/$defs/WorkflowPlan</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-c2ad8615d4ca0f8a47c7503c">
+<h3>Definition: AcceptedTargetJob</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;declaration&quot;,&quot;request_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>declaration</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-f46f29e737950c22130f91bb">#/$defs/TargetJobDeclaration</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>request_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-ce60455507d827ba45f30da5">
+<h3>Definition: ArtifactDispositionSetIdentity</h3>
+<p class="shape">
+<code>object</code>; 4 fields</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;disposition_count&quot;,&quot;output_edge_count&quot;,&quot;output_artifact_count&quot;,&quot;sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>disposition_count</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>output_artifact_count</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>output_edge_count</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-02ae186c7f479f54da869265">
+<h3>Definition: ArtifactSelectionRef</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;selection_sha256&quot;,&quot;artifact_count&quot;,&quot;total_bytes&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>artifact_count</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>selection_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>total_bytes</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-d3736abf2d2aec8024e783cc">#/$defs/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-1e5a1e87dc768f2541a016d5">
+<h3>Definition: BranchPlan</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;branch_id&quot;,&quot;artifact_selection&quot;,&quot;workflow_plan&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>artifact_selection</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-02ae186c7f479f54da869265">#/$defs/ArtifactSelectionRef</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>branch_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>kind</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>leaf</code>; default: <code>leaf</code>
+</td>
+<td>
+<code>leaf</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>workflow_plan</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-eb01ec776ff415c45ee69b56">#/$defs/WorkflowPlan</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-dd5e33c6812bd5bd00ef9d0a">
+<h3>Definition: BranchSetPlan</h3>
+<p class="shape">
+<code>object</code>; 9 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;parent_work&quot;,&quot;decision_sha256&quot;,&quot;branches&quot;,&quot;branch_set_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>branch_set_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-3fcbb525695b3190886f58b5">branches</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="#s-f23496b3c2c2f36bf7adad2e">exactly one of 2 alternatives</a>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>decision_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-6e23d0088e4c3d2cddf1e957">evidence_sha256s</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-branch-set/v1</code>; default: <code>stove0-branch-set/v1</code>
+</td>
+<td>
+<code>stove0-branch-set/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-4309f161436bf51c7ea6795f">join</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-c1baf21d386599373a2b1b7a">#/$defs/JoinDeclaration</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>parent_work</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-9c239c9b4740019bb7bc6c91">#/$defs/WorkIdentity</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_collection_retirement_grace_seconds</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>; default: <code>0</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_collection_retirement_policy</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>; default: <code>retain</code>
+</td>
+<td>
+<code>retain</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-b2406b87c98a6222986a94bf">
+<h3>Definition: BranchWorkBinding</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;parent_work_id&quot;,&quot;branch_id&quot;,&quot;decision_sha256&quot;,&quot;artifact_selection_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>artifact_selection_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>branch_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>decision_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>kind</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>branch</code>; default: <code>branch</code>
+</td>
+<td>
+<code>branch</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>parent_work_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-4dbecc0dae861f5e10aff889">
+<h3>Definition: CollectionId</h3>
+<p class="shape">all of: <code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>; structured schema</p>
+<h4>All must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>structured schema</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-580d415889ddd990593dde21">
+<h3>Definition: CollectionRootIdentityRef</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;content_identity&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>archive_root_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>collection_id</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-4dbecc0dae861f5e10aff889">#/$defs/CollectionId</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>content_identity</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-4f3cc3755e264a36faac0089">
+<h3>Definition: ContentObservationEvidence</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;request&quot;,&quot;result&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>request</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-29ce1a60154aac2f4fd01bc0">#/$defs/ContentObservationRequest</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>result</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-227c883339fc6ad4542edb23">#/$defs/ContentObservationResult</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-43ac14522d18373ab46a8b92">
+<h3>Definition: ContentObservationFailure</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;code&quot;,&quot;message&quot;,&quot;retryable&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>code</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>message</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>retryable</code>
+</td>
+<td>yes</td>
+<td>
+<code>boolean</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-55c1595fafca007f0406d245">
+<h3>Definition: ContentObservationInapplicable</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;code&quot;,&quot;message&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>code</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>message</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-29ce1a60154aac2f4fd01bc0">
+<h3>Definition: ContentObservationRequest</h3>
+<p class="shape">
+<code>object</code>; 12 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;work_id&quot;,&quot;observer_registration_id&quot;,&quot;observer_descriptor_sha256&quot;,&quot;observer_contract_id&quot;,&quot;observer_contract_sha256&quot;,&quot;subjects&quot;,&quot;request_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-observation-request/v1</code>; default: <code>stove0-observation-request/v1</code>
+</td>
+<td>
+<code>stove0-observation-request/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>maximum_result_bytes</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>67108864</code>; default: <code>1048576</code>
+</td>
+<td>
+<code>1048576</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>observer_contract_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>observer_contract_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>observer_descriptor_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>observer_registration_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9.-]{0,118}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-5c7df1e342e27faa71381560">options</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>request_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>retrieval_policy</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;available-only&quot;,&quot;allow&quot;]</code>; default: <code>available-only</code>
+</td>
+<td>
+<code>available-only</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-5e59a4c70c41fc728a40acd7">subjects</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-c6274c9652aac593d7708899">#/$defs/WorkArtifactSubject</a>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>timeout_seconds</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>86400</code>; default: <code>300</code>
+</td>
+<td>
+<code>300</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>work_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-227c883339fc6ad4542edb23">
+<h3>Definition: ContentObservationResult</h3>
+<p class="shape">
+<code>object</code>; 14 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;request_id&quot;,&quot;state&quot;,&quot;observer&quot;,&quot;observer_contract_id&quot;,&quot;observer_contract_sha256&quot;,&quot;subjects&quot;,&quot;result_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-701f7f49a4b6a3cae75a20ed">execution_evidence</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-e1d59428dbf548dabcfea2c2">facts</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-72f1b5fdf2c624fed13b3bd0">facts_schema</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-c226f5a8a072b5c0ef6b571b">#/$defs/JsonSchemaValidationProfile</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-e31fa84b7290bcb5a71f0404">facts_sha256</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-22cacf446c4bb4a4871fd332">failure</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-43ac14522d18373ab46a8b92">#/$defs/ContentObservationFailure</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-observation-result/v1</code>; default: <code>stove0-observation-result/v1</code>
+</td>
+<td>
+<code>stove0-observation-result/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-5a3beabb7b486b28fe7ea7b3">inapplicable</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-55c1595fafca007f0406d245">#/$defs/ContentObservationInapplicable</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>observer</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-4f624728c8ab9e3440be6697">#/$defs/ObserverImplementation</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>observer_contract_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>observer_contract_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>request_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>result_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>state</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;observed&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-e202aab34c4330386f3e3b46">subjects</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-c6274c9652aac593d7708899">#/$defs/WorkArtifactSubject</a>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-8b01483f06b27193bc5035e1">
+<h3>Definition: ControllerEvidence</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;execution_envelope&quot;,&quot;controller_evidence_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>controller_evidence_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>execution_envelope</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-fce11dc92fb2612baaea410d">#/$defs/ExecutionEnvelope</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-controller-evidence/v1</code>; default: <code>stove0-controller-evidence/v1</code>
+</td>
+<td>
+<code>stove0-controller-evidence/v1</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-1519e82c693281196ef56a23">
+<h3>Definition: CoordinationBranchPlan</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;branch_id&quot;,&quot;artifact_selection&quot;,&quot;work&quot;,&quot;branch_set_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>artifact_selection</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-02ae186c7f479f54da869265">#/$defs/ArtifactSelectionRef</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>branch_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>branch_set_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>kind</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>coordination</code>; default: <code>coordination</code>
+</td>
+<td>
+<code>coordination</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>work</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-9c239c9b4740019bb7bc6c91">#/$defs/WorkIdentity</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-a2dcd47a50a96d3a0dbe67a0">
+<h3>Definition: CoordinationChildSettlementRef</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;branch_id&quot;,&quot;kind&quot;,&quot;settlement_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>branch_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>kind</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;collection&quot;,&quot;external-effect&quot;,&quot;coordination&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>settlement_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-d545cb9313f368b993a3f61c">
+<h3>Definition: CoordinationCollectionResult</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;producer_work_id&quot;,&quot;join_settlement_sha256&quot;,&quot;derivation_sha256&quot;,&quot;output_collection&quot;,&quot;output_selection&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>derivation_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>join_settlement_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>output_collection</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-580d415889ddd990593dde21">#/$defs/CollectionRootIdentityRef</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>output_selection</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-02ae186c7f479f54da869265">#/$defs/ArtifactSelectionRef</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>producer_work_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-1d102c88d49711fa0fbeee87">
+<h3>Definition: CoordinationSettlement</h3>
+<p class="shape">
+<code>object</code>; 8 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;work&quot;,&quot;branch_set_sha256&quot;,&quot;children&quot;,&quot;contains_external_effects&quot;,&quot;settlement_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>branch_set_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-2799e7c723471fc08bf42a1f">children</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-a2dcd47a50a96d3a0dbe67a0">#/$defs/CoordinationChildSettlementRef</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-f71f6e03a5ea90e8e88aa53e">collection_result</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-d545cb9313f368b993a3f61c">#/$defs/CoordinationCollectionResult</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>contains_external_effects</code>
+</td>
+<td>yes</td>
+<td>
+<code>boolean</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-3db394c721725919617a940f">final_join_settlement_sha256</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-coordination-settlement/v1</code>; default: <code>stove0-coordination-settlement/v1</code>
+</td>
+<td>
+<code>stove0-coordination-settlement/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>settlement_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>work</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-9c239c9b4740019bb7bc6c91">#/$defs/WorkIdentity</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-2cfe70e1d217440ebd044af5">
+<h3>Definition: DeclaredWorkspaceProtection</h3>
+<p class="shape">
+<code>string</code>; enum: <code>[&quot;encrypted-at-rest&quot;,&quot;memory-backed&quot;]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>enum</dt>
+<dd>
+<code>[&quot;encrypted-at-rest&quot;,&quot;memory-backed&quot;]</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-014776d0e1d56ee2fc08b045">
+<h3>Definition: EffectPlan</h3>
+<p class="shape">
+<code>object</code>; 10 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;operation_id&quot;,&quot;operation_contract_sha256&quot;,&quot;inputs&quot;,&quot;intent&quot;,&quot;target_implementation_id&quot;,&quot;target_descriptor_sha256&quot;,&quot;plan_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>inputs</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-afa6c620cf0e62c9f3e1108d">#/$defs/TargetInputAuthority</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-63638e6d1cd100916c4a502b">intent</a>
+</td>
+<td>yes</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-103dbdb19c3401b0e60da854">observation_result_sha256s</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>operation_contract_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>operation_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>plan_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>protocol</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-effect-target/v1</code>; default: <code>stove0-effect-target/v1</code>
+</td>
+<td>
+<code>stove0-effect-target/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>target_descriptor_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>target_implementation_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-3dee8c7567fc5216768d1043">target_options</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-80d3264a22f80d32a3e36dd5">
+<h3>Definition: EvaluationBinding</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;evaluation_id&quot;,&quot;matrix_sha256&quot;,&quot;variant_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>evaluation_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>matrix_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-b94e5bce12465578c65f5188">parameters</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>variant_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-fce11dc92fb2612baaea410d">
+<h3>Definition: ExecutionEnvelope</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;claim_id&quot;,&quot;fence&quot;,&quot;workflow_plan&quot;,&quot;target_plan&quot;,&quot;execution_envelope_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>claim_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>execution_envelope_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>fence</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-execution-envelope/v1</code>; default: <code>stove0-execution-envelope/v1</code>
+</td>
+<td>
+<code>stove0-execution-envelope/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>target_plan</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-ca9c274c5141c42741c9dcee">#/$defs/TargetPlanBinding</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>workflow_plan</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-eb01ec776ff415c45ee69b56">#/$defs/WorkflowPlan</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-233c85f6dd875a1c6a5db099">
+<h3>Definition: ExternalEffectReceipt</h3>
+<p class="shape">
+<code>object</code>; 9 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;job_id&quot;,&quot;request_sha256&quot;,&quot;target_descriptor_sha256&quot;,&quot;operation_contract_sha256&quot;,&quot;plan_sha256&quot;,&quot;execution_sha256&quot;,&quot;result&quot;,&quot;receipt_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>execution_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-external-effect-receipt/v1</code>; default: <code>stove0-external-effect-receipt/v1</code>
+</td>
+<td>
+<code>stove0-external-effect-receipt/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>job_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>operation_contract_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>plan_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>receipt_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>request_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-dcfc6ecab9fc507f2f737496">result</a>
+</td>
+<td>yes</td>
+<td>
+<code>object</code>; x-riverhog-encoded-bytes-max: <code>65536</code>; x-riverhog-extent: structured schema; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>target_descriptor_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-c1baf21d386599373a2b1b7a">
+<h3>Definition: JoinDeclaration</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;members&quot;,&quot;recipe&quot;,&quot;workflow_intent&quot;,&quot;join_declaration_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-8e8f0fba7038a241868b32dc">effective_intent</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-join-declaration/v1</code>; default: <code>stove0-join-declaration/v1</code>
+</td>
+<td>
+<code>stove0-join-declaration/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>join_declaration_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-663d3da9931f7a5ee7a9bf52">members</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-ffbd632b88dd59acc9c616ed">#/$defs/JoinMemberDeclaration</a>; minItems: <code>2</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>recipe</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-8b84428d84aee331d23a876c">#/$defs/RecipeIdentityRef</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>workflow_intent</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-ef75a8f0d24af52bb141389e">#/$defs/WorkflowPlanIntent</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-91107c71f9bbe2697864734c">
+<h3>Definition: JoinInputPlan</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;branch_id&quot;,&quot;settlement_sha256&quot;,&quot;derivation_sha256&quot;,&quot;output_collection&quot;,&quot;artifact_selection&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>artifact_selection</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-02ae186c7f479f54da869265">#/$defs/ArtifactSelectionRef</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>branch_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>derivation_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>output_collection</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-580d415889ddd990593dde21">#/$defs/CollectionRootIdentityRef</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-1d25973c649c6bd18886f657">producer_settlement_sha256</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>settlement_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-ffbd632b88dd59acc9c616ed">
+<h3>Definition: JoinMemberDeclaration</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;branch_id&quot;,&quot;output_roles&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>branch_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-b77a0710ac022bf1665694eb">output_roles</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-580727b15b43af82437b5bcb">
+<h3>Definition: JoinPlan</h3>
+<p class="shape">
+<code>object</code>; 8 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;parent_work_id&quot;,&quot;branch_set_sha256&quot;,&quot;declaration&quot;,&quot;inputs&quot;,&quot;work&quot;,&quot;workflow_plan&quot;,&quot;join_plan_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>branch_set_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>declaration</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-c1baf21d386599373a2b1b7a">#/$defs/JoinDeclaration</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-join-plan/v1</code>; default: <code>stove0-join-plan/v1</code>
+</td>
+<td>
+<code>stove0-join-plan/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-ae792d5980011cf33c717f18">inputs</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-91107c71f9bbe2697864734c">#/$defs/JoinInputPlan</a>; minItems: <code>2</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>join_plan_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>parent_work_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>work</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-9c239c9b4740019bb7bc6c91">#/$defs/WorkIdentity</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>workflow_plan</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-eb01ec776ff415c45ee69b56">#/$defs/WorkflowPlan</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-1382221b54a491e659610d7e">
+<h3>Definition: JoinWorkBinding</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;parent_work_id&quot;,&quot;branch_set_sha256&quot;,&quot;members&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>branch_set_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>kind</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>join</code>; default: <code>join</code>
+</td>
+<td>
+<code>join</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-4745f4fbb940fe026418c2bf">members</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-4a00613a76277960dad91d7b">#/$defs/JoinWorkMemberBinding</a>; minItems: <code>2</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>parent_work_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-4a00613a76277960dad91d7b">
+<h3>Definition: JoinWorkMemberBinding</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;branch_id&quot;,&quot;settlement_sha256&quot;,&quot;artifact_selection_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>artifact_selection_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>branch_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-d6555874d088e39a4bfa9e21">producer_settlement_sha256</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>settlement_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-c226f5a8a072b5c0ef6b571b">
+<h3>Definition: JsonSchemaValidationProfile</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;profile_sha256&quot;,&quot;schema&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>dialect</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>https://json-schema.org/draft/2020-12/schema</code>; default: <code>https://json-schema.org/draft/2020-12/schema</code>
+</td>
+<td>
+<code>https://json-schema.org/draft/2020-12/schema</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>format_policy</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>annotation-only</code>; default: <code>annotation-only</code>
+</td>
+<td>
+<code>annotation-only</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>profile_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-df72cee0b5d4e3ba1580f441">schema</a>
+</td>
+<td>yes</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-51b717ae8204527d047400c7">
+<h3>Definition: JsonValue</h3>
+<p class="shape">any JSON value</p>
+</section>
+<section class="schema-section" id="s-d3736abf2d2aec8024e783cc">
+<h3>Definition: NonnegativeDecimal</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-4f624728c8ab9e3440be6697">
+<h3>Definition: ObserverImplementation</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;version&quot;,&quot;source_revision&quot;,&quot;descriptor_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>descriptor_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>protocol</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-content-observer/v1</code>; default: <code>stove0-content-observer/v1</code>
+</td>
+<td>
+<code>stove0-content-observer/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_revision</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>200</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>version</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>120</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-a55916c7f808c6373be1bd4f">
+<h3>Definition: OperationIdentityRef</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-279412653475ebe99b909f5d">
+<h3>Definition: OutputArtifactRoleCount</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;role&quot;,&quot;count&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>count</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>role</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-27cd42b0930e27935bd32b49">
+<h3>Definition: OutputArtifactSetIdentity</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;artifact_count&quot;,&quot;total_bytes&quot;,&quot;roles&quot;,&quot;sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>artifact_count</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-7593c18d8d0fb6486261fbe1">roles</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-279412653475ebe99b909f5d">#/$defs/OutputArtifactRoleCount</a>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>total_bytes</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-d3736abf2d2aec8024e783cc">#/$defs/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-875ef95b02d5affa22ec72be">
+<h3>Definition: OutputCollectionRef</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;collection_id&quot;,&quot;archive_root_sha256&quot;,&quot;content_identity&quot;,&quot;derivation_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>archive_root_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>collection_id</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-4dbecc0dae861f5e10aff889">#/$defs/CollectionId</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>content_identity</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>derivation_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-3f37573c134b4f2131f1e870">
+<h3>Definition: PreviewAcceptanceView</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;preview_sha256&quot;,&quot;branch_set_sha256&quot;,&quot;target_plans&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>branch_set_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>preview_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-59563296f9300313a1f71b9a">target_plans</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-436a7cc3a8596aa59614bb62">#/$defs/PreviewTargetExpectationView</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-436a7cc3a8596aa59614bb62">
+<h3>Definition: PreviewTargetExpectationView</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;branch_id&quot;,&quot;work_id&quot;,&quot;plan_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>branch_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>plan_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>work_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-8b84428d84aee331d23a876c">
+<h3>Definition: RecipeIdentityRef</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;revision&quot;,&quot;sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>revision</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-d3736abf2d2aec8024e783cc">#/$defs/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-280bb22c73e90422adbee75a">
+<h3>Definition: TargetExecutionEvidence</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;target_descriptor_sha256&quot;,&quot;operation_contract_sha256&quot;,&quot;plan_sha256&quot;,&quot;execution_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>execution_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>operation_contract_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>plan_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-7f0e4212ba575dc6995601ab">runtime</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>target_descriptor_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-43f40e974cb714d71e611ffe">
+<h3>Definition: TargetFailure</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;code&quot;,&quot;message&quot;,&quot;retryable&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>code</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>message</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>retryable</code>
+</td>
+<td>yes</td>
+<td>
+<code>boolean</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-a6ab979dc22b392c6989758f">
+<h3>Definition: TargetInapplicable</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;code&quot;,&quot;message&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>code</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>message</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-afa6c620cf0e62c9f3e1108d">
+<h3>Definition: TargetInputAuthority</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;selection&quot;,&quot;roles&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-cb11aedaee01d3002e54064b">roles</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-c94d2a1e38b9bec657262631">#/$defs/TargetInputRoleCount</a>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>selection</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-02ae186c7f479f54da869265">#/$defs/ArtifactSelectionRef</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-c94d2a1e38b9bec657262631">
+<h3>Definition: TargetInputRoleCount</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;role&quot;,&quot;count&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>count</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>role</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-f46f29e737950c22130f91bb">
+<h3>Definition: TargetJobDeclaration</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;job_id&quot;,&quot;claim_id&quot;,&quot;fence&quot;,&quot;controller_evidence&quot;,&quot;plan&quot;,&quot;declared_workspace_protection&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>claim_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>controller_evidence</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-8b01483f06b27193bc5035e1">#/$defs/ControllerEvidence</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>declared_workspace_protection</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-2cfe70e1d217440ebd044af5">#/$defs/DeclaredWorkspaceProtection</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>fence</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>job_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-431fa94f0bff915cc6831325">plan</a>
+</td>
+<td>yes</td>
+<td>exactly one of: <a href="e-9ed2de92cc3683d97507f328.html#v-e6d9103d685610f715e2a03f">#/$defs/TransformPlan</a>; <a href="e-9ed2de92cc3683d97507f328.html#v-014776d0e1d56ee2fc08b045">#/$defs/EffectPlan</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-a1c5d06fa93d25e6cd6f3d00">
+<h3>Definition: TargetJobStatus</h3>
+<p class="shape">
+<code>object</code>; 14 fields; additionalProperties: <code>false</code>; all of: structured schema</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;job_id&quot;,&quot;state&quot;,&quot;attempt&quot;,&quot;request_sha256&quot;,&quot;plan_sha256&quot;,&quot;progress&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>attempt</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-d39641762611fbafe959e850">derivation</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>object</code>; additionalProperties: <code>true</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-60d89d4aa22ba322bc2c526f">effect_receipt</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-233c85f6dd875a1c6a5db099">#/$defs/ExternalEffectReceipt</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-1ea93e8c0ca3a9c60ca4ac80">execution_evidence</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-280bb22c73e90422adbee75a">#/$defs/TargetExecutionEvidence</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-2dea9d31371e9b1bed9e9ec7">failure</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-43f40e974cb714d71e611ffe">#/$defs/TargetFailure</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-586946552e34e0d46f49abba">inapplicable</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-a6ab979dc22b392c6989758f">#/$defs/TargetInapplicable</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>job_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-ae50c8248b28a82650fac81a">output_collection</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-875ef95b02d5affa22ec72be">#/$defs/OutputCollectionRef</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>plan_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-c839cc27ca3775931458a202">production</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-0793231fae9aa0770f7d244d">#/$defs/TargetProductionAuthority</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>progress</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-509bfc0c8278af0fdcefe0e9">#/$defs/TargetProgress</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>protocol</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;stove0-transform-target/v1&quot;,&quot;stove0-effect-target/v1&quot;]</code>; default: <code>stove0-transform-target/v1</code>
+</td>
+<td>
+<code>stove0-transform-target/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>request_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>state</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;queued&quot;,&quot;running&quot;,&quot;canceling&quot;,&quot;interrupted&quot;,&quot;inapplicable&quot;,&quot;succeeded&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>All must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-0d70aff63221ea431c1b8bfc">1</a>
+</td>
+<td>structured schema</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-44ba4eaf6eabbad143da82da">
+<h3>Definition: TargetOutputBindingSetIdentity</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;artifact_count&quot;,&quot;total_bytes&quot;,&quot;sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>artifact_count</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>total_bytes</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-d3736abf2d2aec8024e783cc">#/$defs/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-ca9c274c5141c42741c9dcee">
+<h3>Definition: TargetPlanBinding</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;protocol&quot;,&quot;target_implementation_id&quot;,&quot;target_descriptor_sha256&quot;,&quot;operation_contract_sha256&quot;,&quot;plan&quot;,&quot;plan_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>operation_contract_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-44bebf4a913ae4223e6647e3">plan</a>
+</td>
+<td>yes</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>plan_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>protocol</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>target_descriptor_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>target_implementation_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-0793231fae9aa0770f7d244d">
+<h3>Definition: TargetProductionAuthority</h3>
+<p class="shape">
+<code>object</code>; 10 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;job_id&quot;,&quot;plan_sha256&quot;,&quot;outputs&quot;,&quot;disposition_count&quot;,&quot;disposition_sha256&quot;,&quot;source_edge_count&quot;,&quot;source_edge_sha256&quot;,&quot;riverhog_disposition_set&quot;,&quot;production_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>disposition_count</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>disposition_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-target-production/v1</code>; default: <code>stove0-target-production/v1</code>
+</td>
+<td>
+<code>stove0-target-production/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>job_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>outputs</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-27cd42b0930e27935bd32b49">#/$defs/OutputArtifactSetIdentity</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>plan_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>production_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>riverhog_disposition_set</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-ce60455507d827ba45f30da5">#/$defs/ArtifactDispositionSetIdentity</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_edge_count</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_edge_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-509bfc0c8278af0fdcefe0e9">
+<h3>Definition: TargetProgress</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;phase&quot;,&quot;completed&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>completed</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>phase</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>120</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-4f6051479440828401e5da69">total</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-d09b9ee9569c596836456fbb">unit</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>40</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-0123d3e011ae124f00132ba9">
+<h3>Definition: TargetSettlementAuthority</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;job_id&quot;,&quot;production_sha256&quot;,&quot;output_collection&quot;,&quot;output_bindings&quot;,&quot;settlement_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-target-settlement/v1</code>; default: <code>stove0-target-settlement/v1</code>
+</td>
+<td>
+<code>stove0-target-settlement/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>job_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>output_bindings</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-44ba4eaf6eabbad143da82da">#/$defs/TargetOutputBindingSetIdentity</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>output_collection</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-875ef95b02d5affa22ec72be">#/$defs/OutputCollectionRef</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>production_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>settlement_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-e6d9103d685610f715e2a03f">
+<h3>Definition: TransformPlan</h3>
+<p class="shape">
+<code>object</code>; 10 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;operation_id&quot;,&quot;operation_contract_sha256&quot;,&quot;inputs&quot;,&quot;intent&quot;,&quot;target_implementation_id&quot;,&quot;target_descriptor_sha256&quot;,&quot;plan_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>inputs</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-afa6c620cf0e62c9f3e1108d">#/$defs/TargetInputAuthority</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-d20c22398e848e89abc55aad">intent</a>
+</td>
+<td>yes</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-ea5ac40576544a8e25501cfd">observation_result_sha256s</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>operation_contract_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>operation_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>plan_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>protocol</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-transform-target/v1</code>; default: <code>stove0-transform-target/v1</code>
+</td>
+<td>
+<code>stove0-transform-target/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>target_descriptor_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>target_implementation_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-383f2dd9f86388f4abb4fccc">target_options</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-c6274c9652aac593d7708899">
+<h3>Definition: WorkArtifactSubject</h3>
+<p class="shape">
+<code>object</code>; 7 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;role&quot;,&quot;collection&quot;,&quot;path&quot;,&quot;bytes&quot;,&quot;sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>bytes</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-d3736abf2d2aec8024e783cc">#/$defs/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>collection</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-580d415889ddd990593dde21">#/$defs/CollectionRootIdentityRef</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-56203a227724374db6ff27b6">media_type</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>path</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>role</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-427778f2b95f38e085363fa4">
+<h3>Definition: WorkClaimView</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;claim_id&quot;,&quot;fence&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>claim_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>fence</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-3d393d60f5c8707b04d94807">
+<h3>Definition: WorkFailureView</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;code&quot;,&quot;message&quot;,&quot;retryable&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>code</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>message</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>retryable</code>
+</td>
+<td>yes</td>
+<td>
+<code>boolean</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-9c239c9b4740019bb7bc6c91">
+<h3>Definition: WorkIdentity</h3>
+<p class="shape">
+<code>object</code>; 7 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;recipe&quot;,&quot;inputs&quot;,&quot;work_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-b3c8ff41cd09242920e6dc8a">effective_intent</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-32c462d0f50f696fe4f3d8f4">evaluation</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-80d3264a22f80d32a3e36dd5">#/$defs/EvaluationBinding</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-071846b040d657f1a186fc69">fork_join</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="#s-e749bf05e98b6b7a36cc2d76">exactly one of 2 alternatives</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-work/v1</code>; default: <code>stove0-work/v1</code>
+</td>
+<td>
+<code>stove0-work/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-7def94aa7cb3ba1d0417b557">inputs</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-580d415889ddd990593dde21">#/$defs/CollectionRootIdentityRef</a>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>recipe</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-8b84428d84aee331d23a876c">#/$defs/RecipeIdentityRef</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>work_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-b96615054fbc4a9e9a68493f">
+<h3>Definition: WorkInapplicableView</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;code&quot;,&quot;message&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>code</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>message</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-eb01ec776ff415c45ee69b56">
+<h3>Definition: WorkflowPlan</h3>
+<p class="shape">
+<code>object</code>; 13 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;work&quot;,&quot;operation&quot;,&quot;target_registration_id&quot;,&quot;target_descriptor_sha256&quot;,&quot;workflow_plan_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-workflow-plan/v1</code>; default: <code>stove0-workflow-plan/v1</code>
+</td>
+<td>
+<code>stove0-workflow-plan/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>input_retrieval_policy</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;available-only&quot;,&quot;allow&quot;]</code>; default: <code>available-only</code>
+</td>
+<td>
+<code>available-only</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-f627f64c49b4ad2cfba828da">observations</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-4f3cc3755e264a36faac0089">#/$defs/ContentObservationEvidence</a>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>operation</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-a55916c7f808c6373be1bd4f">#/$defs/OperationIdentityRef</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-4ba3d3fe78768ebe0accd293">output_policy</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-debc92cb046692ff13ba32a5">requested_target_options</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>result_kind</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;collection&quot;,&quot;external-effect&quot;]</code>; default: <code>collection</code>
+</td>
+<td>
+<code>collection</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_collection_retirement_grace_seconds</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>; default: <code>0</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_collection_retirement_policy</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>; default: <code>retain</code>
+</td>
+<td>
+<code>retain</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>target_descriptor_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>target_registration_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9.-]{0,118}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>work</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-9c239c9b4740019bb7bc6c91">#/$defs/WorkIdentity</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>workflow_plan_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-ef75a8f0d24af52bb141389e">
+<h3>Definition: WorkflowPlanIntent</h3>
+<p class="shape">
+<code>object</code>; 9 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;operation&quot;,&quot;target_registration_id&quot;,&quot;target_descriptor_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>input_retrieval_policy</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;available-only&quot;,&quot;allow&quot;]</code>; default: <code>available-only</code>
+</td>
+<td>
+<code>available-only</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>operation</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-a55916c7f808c6373be1bd4f">#/$defs/OperationIdentityRef</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-413d840dc710497e878afcfb">output_policy</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-87246782bf7a522ab2bd35ae">requested_target_options</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>result_kind</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;collection&quot;,&quot;external-effect&quot;]</code>; default: <code>collection</code>
+</td>
+<td>
+<code>collection</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_collection_retirement_grace_seconds</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>; default: <code>0</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_collection_retirement_policy</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>; default: <code>retain</code>
+</td>
+<td>
+<code>retain</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>target_descriptor_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>target_registration_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9.-]{0,118}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-1a0d13b28d2b95601e861941">
+<h3>At least one must match: 1</h3>
+<p class="shape">exactly one of: <a href="e-9ed2de92cc3683d97507f328.html#v-e6d9103d685610f715e2a03f">#/$defs/TransformPlan</a>; <a href="e-9ed2de92cc3683d97507f328.html#v-014776d0e1d56ee2fc08b045">#/$defs/EffectPlan</a>
+</p>
+<dl class="facts">
+<dt>discriminator</dt>
+<dd>
+<code>{&quot;mapping&quot;:{&quot;stove0-effect-target/v1&quot;:&quot;#/$defs/EffectPlan&quot;,&quot;stove0-transform-target/v1&quot;:&quot;#/$defs/TransformPlan&quot;},&quot;propertyName&quot;:&quot;protocol&quot;}</code>
+</dd>
+</dl>
+<h4>Exactly one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-e6d9103d685610f715e2a03f">#/$defs/TransformPlan</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-014776d0e1d56ee2fc08b045">#/$defs/EffectPlan</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-3fcbb525695b3190886f58b5">
+<h3>Field: branches</h3>
+<p class="shape">
+<code>array</code>; items: <a href="#s-f23496b3c2c2f36bf7adad2e">exactly one of 2 alternatives</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+<p>
+<a href="#s-f23496b3c2c2f36bf7adad2e">items schema</a>
+</p>
+</section>
+<section class="schema-section" id="s-6e23d0088e4c3d2cddf1e957">
+<h3>Field: evidence_sha256s</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-4309f161436bf51c7ea6795f">
+<h3>Field: join</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-c1baf21d386599373a2b1b7a">#/$defs/JoinDeclaration</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-c1baf21d386599373a2b1b7a">#/$defs/JoinDeclaration</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-5c7df1e342e27faa71381560">
+<h3>Field: options</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-5e59a4c70c41fc728a40acd7">
+<h3>Field: subjects</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-c6274c9652aac593d7708899">#/$defs/WorkArtifactSubject</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-701f7f49a4b6a3cae75a20ed">
+<h3>Field: execution_evidence</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-e1d59428dbf548dabcfea2c2">
+<h3>Field: facts</h3>
+<p class="shape">default: <code>null</code>; any of: <code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-f45ea0405c92ec912c96a5e5">1</a>
+</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-72f1b5fdf2c624fed13b3bd0">
+<h3>Field: facts_schema</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-c226f5a8a072b5c0ef6b571b">#/$defs/JsonSchemaValidationProfile</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-c226f5a8a072b5c0ef6b571b">#/$defs/JsonSchemaValidationProfile</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-e31fa84b7290bcb5a71f0404">
+<h3>Field: facts_sha256</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-22cacf446c4bb4a4871fd332">
+<h3>Field: failure</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-43ac14522d18373ab46a8b92">#/$defs/ContentObservationFailure</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-43ac14522d18373ab46a8b92">#/$defs/ContentObservationFailure</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-5a3beabb7b486b28fe7ea7b3">
+<h3>Field: inapplicable</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-55c1595fafca007f0406d245">#/$defs/ContentObservationInapplicable</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-55c1595fafca007f0406d245">#/$defs/ContentObservationInapplicable</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-e202aab34c4330386f3e3b46">
+<h3>Field: subjects</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-c6274c9652aac593d7708899">#/$defs/WorkArtifactSubject</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-2799e7c723471fc08bf42a1f">
+<h3>Field: children</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-a2dcd47a50a96d3a0dbe67a0">#/$defs/CoordinationChildSettlementRef</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-f71f6e03a5ea90e8e88aa53e">
+<h3>Field: collection_result</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-d545cb9313f368b993a3f61c">#/$defs/CoordinationCollectionResult</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-d545cb9313f368b993a3f61c">#/$defs/CoordinationCollectionResult</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-3db394c721725919617a940f">
+<h3>Field: final_join_settlement_sha256</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-63638e6d1cd100916c4a502b">
+<h3>Field: intent</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-103dbdb19c3401b0e60da854">
+<h3>Field: observation_result_sha256s</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-3dee8c7567fc5216768d1043">
+<h3>Field: target_options</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-b94e5bce12465578c65f5188">
+<h3>Field: parameters</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-dcfc6ecab9fc507f2f737496">
+<h3>Field: result</h3>
+<p class="shape">
+<code>object</code>; x-riverhog-encoded-bytes-max: <code>65536</code>; x-riverhog-extent: structured schema; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+<dt>x-riverhog-encoded-bytes-max</dt>
+<dd>
+<code>65536</code>
+</dd>
+<dt>x-riverhog-extent</dt>
+<dd>
+<code>{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-external-effect-receipt&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-8e8f0fba7038a241868b32dc">
+<h3>Field: effective_intent</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-663d3da9931f7a5ee7a9bf52">
+<h3>Field: members</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-ffbd632b88dd59acc9c616ed">#/$defs/JoinMemberDeclaration</a>; minItems: <code>2</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>2</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-1d25973c649c6bd18886f657">
+<h3>Field: producer_settlement_sha256</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-b77a0710ac022bf1665694eb">
+<h3>Field: output_roles</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-ae792d5980011cf33c717f18">
+<h3>Field: inputs</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-91107c71f9bbe2697864734c">#/$defs/JoinInputPlan</a>; minItems: <code>2</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>2</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-4745f4fbb940fe026418c2bf">
+<h3>Field: members</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-4a00613a76277960dad91d7b">#/$defs/JoinWorkMemberBinding</a>; minItems: <code>2</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>2</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-d6555874d088e39a4bfa9e21">
+<h3>Field: producer_settlement_sha256</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-df72cee0b5d4e3ba1580f441">
+<h3>Field: schema</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-7593c18d8d0fb6486261fbe1">
+<h3>Field: roles</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-279412653475ebe99b909f5d">#/$defs/OutputArtifactRoleCount</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-59563296f9300313a1f71b9a">
+<h3>Field: target_plans</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-436a7cc3a8596aa59614bb62">#/$defs/PreviewTargetExpectationView</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-7f0e4212ba575dc6995601ab">
+<h3>Field: runtime</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-cb11aedaee01d3002e54064b">
+<h3>Field: roles</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-c94d2a1e38b9bec657262631">#/$defs/TargetInputRoleCount</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-431fa94f0bff915cc6831325">
+<h3>Field: plan</h3>
+<p class="shape">exactly one of: <a href="e-9ed2de92cc3683d97507f328.html#v-e6d9103d685610f715e2a03f">#/$defs/TransformPlan</a>; <a href="e-9ed2de92cc3683d97507f328.html#v-014776d0e1d56ee2fc08b045">#/$defs/EffectPlan</a>
+</p>
+<dl class="facts">
+<dt>discriminator</dt>
+<dd>
+<code>{&quot;mapping&quot;:{&quot;stove0-effect-target/v1&quot;:&quot;#/$defs/EffectPlan&quot;,&quot;stove0-transform-target/v1&quot;:&quot;#/$defs/TransformPlan&quot;},&quot;propertyName&quot;:&quot;protocol&quot;}</code>
+</dd>
+</dl>
+<h4>Exactly one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-e6d9103d685610f715e2a03f">#/$defs/TransformPlan</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-014776d0e1d56ee2fc08b045">#/$defs/EffectPlan</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-d39641762611fbafe959e850">
+<h3>Field: derivation</h3>
+<p class="shape">default: <code>null</code>; any of: <code>object</code>; additionalProperties: <code>true</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-77d0a1d7655379b63bf2d35f">1</a>
+</td>
+<td>
+<code>object</code>; additionalProperties: <code>true</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-60d89d4aa22ba322bc2c526f">
+<h3>Field: effect_receipt</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-233c85f6dd875a1c6a5db099">#/$defs/ExternalEffectReceipt</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-233c85f6dd875a1c6a5db099">#/$defs/ExternalEffectReceipt</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-1ea93e8c0ca3a9c60ca4ac80">
+<h3>Field: execution_evidence</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-280bb22c73e90422adbee75a">#/$defs/TargetExecutionEvidence</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-280bb22c73e90422adbee75a">#/$defs/TargetExecutionEvidence</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-2dea9d31371e9b1bed9e9ec7">
+<h3>Field: failure</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-43f40e974cb714d71e611ffe">#/$defs/TargetFailure</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-43f40e974cb714d71e611ffe">#/$defs/TargetFailure</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-586946552e34e0d46f49abba">
+<h3>Field: inapplicable</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-a6ab979dc22b392c6989758f">#/$defs/TargetInapplicable</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-a6ab979dc22b392c6989758f">#/$defs/TargetInapplicable</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-ae50c8248b28a82650fac81a">
+<h3>Field: output_collection</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-875ef95b02d5affa22ec72be">#/$defs/OutputCollectionRef</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-875ef95b02d5affa22ec72be">#/$defs/OutputCollectionRef</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-c839cc27ca3775931458a202">
+<h3>Field: production</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-0793231fae9aa0770f7d244d">#/$defs/TargetProductionAuthority</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-0793231fae9aa0770f7d244d">#/$defs/TargetProductionAuthority</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-0d70aff63221ea431c1b8bfc">
+<h3>All must match: 1</h3>
+<p class="shape">structured schema</p>
+<p>
+<a href="#s-ea6c894f22eeb8cab615507a">if schema</a>
+</p>
+<p>
+<a href="#s-c59149474dc7c94cf1a5da52">then schema</a>
+</p>
+<p>
+<a href="#s-b8c208450dd80a74206483b3">else schema</a>
+</p>
+</section>
+<section class="schema-section" id="s-44bebf4a913ae4223e6647e3">
+<h3>Field: plan</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-4f6051479440828401e5da69">
+<h3>Field: total</h3>
+<p class="shape">default: <code>null</code>; any of: <code>integer</code>; minimum: <code>0</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-d09b9ee9569c596836456fbb">
+<h3>Field: unit</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>40</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>40</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-d20c22398e848e89abc55aad">
+<h3>Field: intent</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-ea5ac40576544a8e25501cfd">
+<h3>Field: observation_result_sha256s</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-383f2dd9f86388f4abb4fccc">
+<h3>Field: target_options</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-56203a227724374db6ff27b6">
+<h3>Field: media_type</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-b3c8ff41cd09242920e6dc8a">
+<h3>Field: effective_intent</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-32c462d0f50f696fe4f3d8f4">
+<h3>Field: evaluation</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-9ed2de92cc3683d97507f328.html#v-80d3264a22f80d32a3e36dd5">#/$defs/EvaluationBinding</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-80d3264a22f80d32a3e36dd5">#/$defs/EvaluationBinding</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-071846b040d657f1a186fc69">
+<h3>Field: fork_join</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="#s-e749bf05e98b6b7a36cc2d76">exactly one of 2 alternatives</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-e749bf05e98b6b7a36cc2d76">1</a>
+</td>
+<td>exactly one of: <a href="e-9ed2de92cc3683d97507f328.html#v-b2406b87c98a6222986a94bf">#/$defs/BranchWorkBinding</a>; <a href="e-9ed2de92cc3683d97507f328.html#v-1382221b54a491e659610d7e">#/$defs/JoinWorkBinding</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-7def94aa7cb3ba1d0417b557">
+<h3>Field: inputs</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-580d415889ddd990593dde21">#/$defs/CollectionRootIdentityRef</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-f627f64c49b4ad2cfba828da">
+<h3>Field: observations</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-9ed2de92cc3683d97507f328.html#v-4f3cc3755e264a36faac0089">#/$defs/ContentObservationEvidence</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-4ba3d3fe78768ebe0accd293">
+<h3>Field: output_policy</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-debc92cb046692ff13ba32a5">
+<h3>Field: requested_target_options</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-413d840dc710497e878afcfb">
+<h3>Field: output_policy</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-87246782bf7a522ab2bd35ae">
+<h3>Field: requested_target_options</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-f23496b3c2c2f36bf7adad2e">
+<h3>items schema</h3>
+<p class="shape">exactly one of: <a href="e-9ed2de92cc3683d97507f328.html#v-1e5a1e87dc768f2541a016d5">#/$defs/BranchPlan</a>; <a href="e-9ed2de92cc3683d97507f328.html#v-1519e82c693281196ef56a23">#/$defs/CoordinationBranchPlan</a>
+</p>
+<dl class="facts">
+<dt>discriminator</dt>
+<dd>
+<code>{&quot;mapping&quot;:{&quot;coordination&quot;:&quot;#/$defs/CoordinationBranchPlan&quot;,&quot;leaf&quot;:&quot;#/$defs/BranchPlan&quot;},&quot;propertyName&quot;:&quot;kind&quot;}</code>
+</dd>
+</dl>
+<h4>Exactly one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-1e5a1e87dc768f2541a016d5">#/$defs/BranchPlan</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-1519e82c693281196ef56a23">#/$defs/CoordinationBranchPlan</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-f45ea0405c92ec912c96a5e5">
+<h3>At least one must match: 1</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-9ed2de92cc3683d97507f328.html#v-51b717ae8204527d047400c7">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-77d0a1d7655379b63bf2d35f">
+<h3>At least one must match: 1</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <code>true</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>true</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-ea6c894f22eeb8cab615507a">
+<h3>if schema</h3>
+<p class="shape">1 fields</p>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>state</code>
+</td>
+<td>no</td>
+<td>const: <code>failed</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-c59149474dc7c94cf1a5da52">
+<h3>then schema</h3>
+<p class="shape">1 fields</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;failure&quot;]</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>failure</code>
+</td>
+<td>yes</td>
+<td>
+<code>object</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-b8c208450dd80a74206483b3">
+<h3>else schema</h3>
+<p class="shape">1 fields</p>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>failure</code>
+</td>
+<td>no</td>
+<td>
+<code>null</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-e749bf05e98b6b7a36cc2d76">
+<h3>At least one must match: 1</h3>
+<p class="shape">exactly one of: <a href="e-9ed2de92cc3683d97507f328.html#v-b2406b87c98a6222986a94bf">#/$defs/BranchWorkBinding</a>; <a href="e-9ed2de92cc3683d97507f328.html#v-1382221b54a491e659610d7e">#/$defs/JoinWorkBinding</a>
+</p>
+<dl class="facts">
+<dt>discriminator</dt>
+<dd>
+<code>{&quot;mapping&quot;:{&quot;branch&quot;:&quot;#/$defs/BranchWorkBinding&quot;,&quot;join&quot;:&quot;#/$defs/JoinWorkBinding&quot;},&quot;propertyName&quot;:&quot;kind&quot;}</code>
+</dd>
+</dl>
+<h4>Exactly one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-b2406b87c98a6222986a94bf">#/$defs/BranchWorkBinding</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<a href="e-9ed2de92cc3683d97507f328.html#v-1382221b54a491e659610d7e">#/$defs/JoinWorkBinding</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/python/stove0_operator_contracts.WorkView</code>
-</h3>
+</h4>
 <table id="v-5543e41a2d0431c6ecab3cfb">
 <tbody>
 <tr>
@@ -20099,25 +28377,43 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-20a35e39ae49e1c518c14d33.html">stove0_operator_contracts.WorkView.exact_identity</a>
+</li>
+<li>
+<a href="e-8927ef228d8a00d8f2db39b2.html">stove0_operator_contracts.WorkView.from_record</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py">some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py</code>
+<a href="source-authorities.html#source-51ad84528ddb70e2dc05c229">python:stove0-operator-contracts:stove0_operator_contracts</a> — <code data-source-path="some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py">some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

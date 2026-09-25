@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,61 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-71a8236bde90785fb1328cdc.html">http-api-contracts · Python</a>
+<a href="index.html">All authorities</a> / <a href="a-75ef6a5312f729d5f00dd1e3.html">http-api-contracts</a> / <a href="i-71a8236bde90785fb1328cdc.html">Python</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>http_api_contracts.PUBLIC_ERROR_CODES</h1>
+<p class="context">Public typed HTTP error, health, client, and operation contracts. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:http-api-contracts:http-api-contracts-public-error-codes:d620ff0805">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>http-api-contracts</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>http_api_contracts</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>PUBLIC_ERROR_CODES</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>constant</code>
+</dd>
+<dt>value</dt>
+<dd>
+<code>[&quot;bad_request&quot;,&quot;catalog_sync_cursor_expired&quot;,&quot;catalog_sync_history_expired&quot;,&quot;catalog_sync_source_changed&quot;,&quot;catalog_sync_view_changed&quot;,&quot;conflict&quot;,&quot;download_allowance_exceeded&quot;,&quot;forbidden&quot;,&quot;hash_mismatch&quot;,&quot;ingress_failed&quot;,&quot;input_upload_storage_hint_invalid&quot;,&quot;insufficient_storage&quot;,&quot;internal_error&quot;,&quot;invalid_path&quot;,&quot;invalid_range&quot;,&quot;invalid_state&quot;,&quot;invalid_target&quot;,&quot;job_template_revision_conflict&quot;,&quot;length_required&quot;,&quot;method_not_allowed&quot;,&quot;not_found&quot;,&quot;precondition_failed&quot;,&quot;precondition_required&quot;,&quot;service_unavailable&quot;,&quot;storage_hint_mismatch&quot;,&quot;submission_conflict&quot;,&quot;too_many_active_input_uploads&quot;,&quot;unauthorized&quot;]</code>
+</dd>
+</dl>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/python/http_api_contracts.PUBLIC_ERROR_CODES</code>
-</h3>
+</h4>
 <table id="v-acfaf814ab0c2babc568a24c">
 <tbody>
 <tr>
@@ -420,25 +457,32 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="packages/http-api-contracts/src/http_api_contracts/__init__.py">packages/http-api-contracts/src/http_api_contracts/__init__.py</code>
+<a href="source-authorities.html#source-a522df4cfd0a00b90fa3d5b5">python:http-api-contracts:http_api_contracts</a> — <code data-source-path="packages/http-api-contracts/src/http_api_contracts/__init__.py">packages/http-api-contracts/src/http_api_contracts/__init__.py</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

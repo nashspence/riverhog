@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,61 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-9d2adc0ff18de2fbdc31e260.html">a-review0-opus-sampler · Python</a>
+<a href="index.html">All authorities</a> / <a href="a-2927dc06cfac55396516e49e.html">a-review0-opus-sampler</a> / <a href="i-9d2adc0ff18de2fbdc31e260.html">Python</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>a_review0_opus_sampler.OpusReviewSampler</h1>
+<p class="context">Opus sampler for Review0. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:a-review0-opus-sampler:a-review0-opus-sampler-opusreviewsampler:b5dcf1d9d7">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>a-review0-opus-sampler</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>a_review0_opus_sampler</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>OpusReviewSampler</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(*, workspace_root: &#x27;Path&#x27;, ffmpeg: &#x27;str&#x27; = &#x27;ffmpeg&#x27;, source_revision: &#x27;str&#x27; = &#x27;unknown&#x27;, image_id: &#x27;str&#x27;) -&gt; &#x27;None&#x27;&quot;</code>
+</dd>
+</dl>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/python/a_review0_opus_sampler.OpusReviewSampler</code>
-</h3>
+</h4>
 <table id="v-079aa7d188e4c6a1217f6f58">
 <tbody>
 <tr>
@@ -112,25 +149,43 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-5c83ea9086201b0281473cb3.html">a_review0_opus_sampler.OpusReviewSampler.descriptor</a>
+</li>
+<li>
+<a href="e-1e123d851c77e27d875b1224.html">a_review0_opus_sampler.OpusReviewSampler.sample</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/stove0/review0/samplers/opus/src/a_review0_opus_sampler/__init__.py">some-implementations/stove0/review0/samplers/opus/src/a_review0_opus_sampler/__init__.py</code>
+<a href="source-authorities.html#source-7628caf8f56a663bc236eb89">python:a-review0-opus-sampler:a_review0_opus_sampler</a> — <code data-source-path="some-implementations/stove0/review0/samplers/opus/src/a_review0_opus_sampler/__init__.py">some-implementations/stove0/review0/samplers/opus/src/a_review0_opus_sampler/__init__.py</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

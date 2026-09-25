@@ -1,0 +1,7079 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="on">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Configuration reconciliation · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="configuration.html">Audit references</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>Configuration reconciliation</h1>
+<aside class="audit">
+<p>Discovery and ownership accounting for this candidate.</p>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Check</th>
+<th scope="col">Recorded result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>duplicate conflicts</td>
+<td>
+<code>0</code>
+</td>
+</tr>
+<tr>
+<td>redundant exceptions</td>
+<td>
+<code>0</code>
+</td>
+</tr>
+<tr>
+<td>stale exceptions</td>
+<td>
+<code>0</code>
+</td>
+</tr>
+<tr>
+<td>unconsumed</td>
+<td>
+<code>0</code>
+</td>
+</tr>
+<tr>
+<td>undispositioned</td>
+<td>
+<code>0</code>
+</td>
+</tr>
+<tr>
+<td>unowned</td>
+<td>
+<code>0</code>
+</td>
+</tr>
+<tr>
+<td>unresolved</td>
+<td>
+<code>0</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<details>
+<summary>Exact registry counts and dispositions</summary>
+<table id="v-33cb3c20d43119964ffadaa0">
+<tbody>
+<tr>
+<th scope="row">
+<code>by_owner</code>
+</th>
+<td>
+<table id="v-0f7ca0a1d52ec50301c23d5a">
+<tbody>
+<tr>
+<th scope="row">
+<code>a-gogurt-linux-listener</code>
+</th>
+<td>
+<span id="v-c93c653aff876f9488abd81b">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/a-gogurt-linux-listener">2</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>a-gogurt-windows-listener</code>
+</th>
+<td>
+<span id="v-aa083fa01f6d6d7bf6ce97f7">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/a-gogurt-windows-listener">3</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>a-review0-materializer</code>
+</th>
+<td>
+<span id="v-097179fe252f17d0d28ba07f">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/a-review0-materializer">7</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>a-review0-nvenc-av1-opus-sampler</code>
+</th>
+<td>
+<span id="v-65aef6e10f9bcfa936447611">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/a-review0-nvenc-av1-opus-sampler">8</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>a-review0-opus-sampler</code>
+</th>
+<td>
+<span id="v-dbdd4f9c5d975353fe85547a">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/a-review0-opus-sampler">8</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>a-review0-rclone-target</code>
+</th>
+<td>
+<span id="v-4106954731e2ec9f946e77bc">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/a-review0-rclone-target">8</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>a-riverhog-aws-store</code>
+</th>
+<td>
+<span id="v-b1a11ad53d7e25b2fcc54d96">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/a-riverhog-aws-store">3</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>a-riverhog-b2-store</code>
+</th>
+<td>
+<span id="v-16138ce275e4a096bef5184c">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/a-riverhog-b2-store">3</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>a-riverhog-cli</code>
+</th>
+<td>
+<span id="v-9be6e6cd95b58b3bc85dabd4">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/a-riverhog-cli">7</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>a-riverhog-filesystem-store</code>
+</th>
+<td>
+<span id="v-47feb8706aad39aa04bbec70">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/a-riverhog-filesystem-store">8</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>a-riverhog-ftp-spool</code>
+</th>
+<td>
+<span id="v-de016512fbe4f505b6ec9a8b">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/a-riverhog-ftp-spool">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>a-riverhog-ftp-spool-client</code>
+</th>
+<td>
+<span id="v-8e3b18e39f103ba5d87f752f">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/a-riverhog-ftp-spool-client">5</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>a-stove0-exiftool-observer</code>
+</th>
+<td>
+<span id="v-d4590aab98756c1efa7e14df">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/a-stove0-exiftool-observer">8</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>a-stove0-ffprobe-sampling-observer</code>
+</th>
+<td>
+<span id="v-9964b08663dd787774afd09c">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/a-stove0-ffprobe-sampling-observer">8</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>a-stove0-nvenc-av1-opus-target</code>
+</th>
+<td>
+<span id="v-f28ee400deba391b8b3efe5c">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/a-stove0-nvenc-av1-opus-target">10</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>a-stove0-opus-target</code>
+</th>
+<td>
+<span id="v-d6c1d70d85a82dc65e681a96">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/a-stove0-opus-target">9</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>riverhog-client</code>
+</th>
+<td>
+<span id="v-5cf5e4ed81b5d532436189cf">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/riverhog-client">12</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>riverhog-provenance</code>
+</th>
+<td>
+<span id="v-deb07b1cef486edaaf15c53b">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/riverhog-provenance">3</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>riverhog-server</code>
+</th>
+<td>
+<span id="v-35b1997662644918cb568fc8">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/riverhog-server">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>stove0-api-client</code>
+</th>
+<td>
+<span id="v-8a5807bbe57ff7cbdef56931">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/stove0-api-client">5</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>stove0-server</code>
+</th>
+<td>
+<span id="v-595363d60f346c58dec74e6a">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/stove0-server">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>stove0-target-support</code>
+</th>
+<td>
+<span id="v-d12b1c4f846bdd15a09dd3a4">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/stove0-target-support">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>contracts</code>
+</th>
+<td>
+<span id="v-c0c3f56c31a0cc31553ad307">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/contracts">121</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>detections</code>
+</th>
+<td>
+<span id="v-c2a1382481d6856f3ffadf82">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/detections">125</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>patterns</code>
+</th>
+<td>
+<span id="v-fcf81f7c974e6431a66d2d34">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/patterns">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>resolution_exceptions</code>
+</th>
+<td>
+<span id="v-daf1a8edfcf827912c2c3dd7">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/resolution_exceptions">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>resolved_detections</code>
+</th>
+<td>
+<span id="v-02bdce3afcc06abbf1df9b43">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/resolved_detections">125</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unique_environment_names</code>
+</th>
+<td>
+<span id="v-133211fb5fa69e8d8078a5d5">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/unique_environment_names">116</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+<table id="v-9b065d143ceffbb45bc5e9b1">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-b2b40250b2127c88a5eda0e0">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-48cd705bb86f4aabd6e56820">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/0/candidate_id">a-gogurt-linux-listener:environment:XDG_CONFIG_HOME</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-a7a012390533abcf39b90b0d">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/0/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-7c04584110dfc8c2e17a1f3a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/0/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-4f3516d32c3c7c6219ee0a12">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/0/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-c841d6cf4c1a296831d17fcb">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-6dc881625dc1d410bfaacaac">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/1/candidate_id">a-gogurt-linux-listener:environment:XDG_STATE_HOME</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-e303dbb89cf653a719db0d51">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/1/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-ebc8a2560e051637c59728d7">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/1/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-d818ea9613fcf35a8683de4a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/1/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-fc953f3cb4b9015913df36ef">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-9004b31aef4cc38319658f9a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/2/candidate_id">a-gogurt-windows-listener:environment:LOCALAPPDATA</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-d7235c063c684ee22c3c3ca8">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/2/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-239b026615bced8e99107c4b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/2/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-321be84b96cec82f0cbe2a83">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/2/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<table id="v-34db158eb5dc73271adfc3e0">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-edef7cae1ef2e37ff295e716">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/3/candidate_id">a-gogurt-windows-listener:environment:PATHEXT</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-e0be001af6d30cfc58574514">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/3/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-90adc5061cfb15138525b265">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/3/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-0f40f205027f7490a4bd19f6">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/3/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<table id="v-8c89e03c8cfa3630a8b2ef90">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-93660210c9f232397ae6d7a8">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/4/candidate_id">a-gogurt-windows-listener:environment:SystemRoot</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-473ed6263b5b61567316eb9a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/4/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-bb3a100dc77d0b62a27d076b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/4/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-31a834cce7e338155eb2f33f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/4/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<table id="v-7e688c4dd425ec8e00696bbe">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-dd138c1f42c0ad2a075a7ce9">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/5/candidate_id">a-review0-materializer:environment:A_REVIEW0_MATERIALIZER_CONFIG</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-566b42b5eacdec08ce668937">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/5/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-4c0ff06260fb27c8bb265c2b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/5/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-9e63afa311e0cae64e933f54">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/5/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<table id="v-20738393309e5e49a3ea5e5a">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-0bfc22a18a4db560203e4611">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/6/candidate_id">a-review0-materializer:environment:A_REVIEW0_MATERIALIZER_HOST</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-038aad4bf33f5f7941fe2e3d">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/6/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-6c323f091297a6bcfac3d3ac">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/6/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-21ea1bf412ac0fd1774029c8">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/6/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<table id="v-a842775bb88e72437d34c4d1">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-e5ace226f9366c130a86f860">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/7/candidate_id">a-review0-materializer:environment:A_REVIEW0_MATERIALIZER_IMAGE_ID</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-a9940e4a8725881d93c43a72">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/7/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-3a1434f2adba0422fe13e86b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/7/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-c8b128f7405ec0b494b8e8d2">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/7/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>8</code>
+</th>
+<td>
+<table id="v-e79f8796457f9e464c076ea4">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-5e13b6c38e98afe81f6af377">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/8/candidate_id">a-review0-materializer:environment:A_REVIEW0_MATERIALIZER_PORT</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-dbcca06d40686a7f2058d71b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/8/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-82e19222c12e68acc99b5a2f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/8/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-affced48902220b310d50169">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/8/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>9</code>
+</th>
+<td>
+<table id="v-955a236f62582da23798d531">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-69e4986d28b06c7c2fe49604">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/9/candidate_id">a-review0-materializer:environment:A_REVIEW0_MATERIALIZER_SOURCE_REVISION</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-1295b37dd77158e5b020774b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/9/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-75cde028476ef4784e0f1aa2">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/9/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-4853579a812252a7fd11a96f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/9/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>10</code>
+</th>
+<td>
+<table id="v-07af35a4815905d26be5cbc4">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-aebf2ea9ec617373cf53929c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/10/candidate_id">a-review0-materializer:environment:A_REVIEW0_MATERIALIZER_STATE_ROOT</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-dc3807c3ff53b74d01ca1142">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/10/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-c7e0d8e283197fc369da2e95">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/10/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-907738a2cc0b3f564adcdb74">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/10/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>11</code>
+</th>
+<td>
+<table id="v-cee3b5e033f07f7c8e2b8043">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-3d9625b732874dd252ff35bb">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/11/candidate_id">a-review0-materializer:environment:A_REVIEW0_MATERIALIZER_WORKSPACE</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-80e6908e42067f064956ed3f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/11/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-eddbaa5fc3a43986cd6645e4">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/11/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-ded320b79175adbbad97b6ab">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/11/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>12</code>
+</th>
+<td>
+<table id="v-4b74942c58e9a3854ea81ac7">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-aa903c5cce535688b754d679">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/12/candidate_id">a-review0-nvenc-av1-opus-sampler:environment:A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_HOST</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-f8f8eb57c9187ee1e62b7a45">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/12/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-d326feef2ab4ac6013ea60f4">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/12/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-83824cd557178d60465d469d">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/12/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>13</code>
+</th>
+<td>
+<table id="v-6af527573b76e1780bf591a6">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-b9558d65ed7bd1636be16a22">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/13/candidate_id">a-review0-nvenc-av1-opus-sampler:environment:A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_IMAGE_ID</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-44eb7e579320101bd58c1144">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/13/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-a5b71c13e6c5fe3c53d9e5ec">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/13/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-1131d9dcd2fccd52f9c6c279">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/13/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>14</code>
+</th>
+<td>
+<table id="v-085ca29fc55b8406e0eb33ca">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-8cee42112d0606d9355dca0e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/14/candidate_id">a-review0-nvenc-av1-opus-sampler:environment:A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_PORT</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-de7f158109fbd4a09a40198b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/14/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-eec350878affaf2542bf92d7">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/14/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-e55b5948949934a5dd772cb4">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/14/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>15</code>
+</th>
+<td>
+<table id="v-75c43291898d2871b77cec35">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-dd971c4771310c15458bd07c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/15/candidate_id">a-review0-nvenc-av1-opus-sampler:environment:A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_SOURCE_REVISION</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-1c00148ab44d9285087b223b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/15/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-9b688ca95b0fc619eac09b2d">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/15/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-0129301c27f6594b64f4076c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/15/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>16</code>
+</th>
+<td>
+<table id="v-2e14f405864dd09d9d5b3c0a">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-83691c1a22ff08fe285d4e5b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/16/candidate_id">a-review0-nvenc-av1-opus-sampler:environment:A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_TOKEN</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-ddb5f206b94dd6df7481c6ab">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/16/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-a17a8a723e582f708d9f153f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/16/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-7b59229114969b788792318a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/16/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>17</code>
+</th>
+<td>
+<table id="v-6c15e64a959b491f1484dc82">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-f168de520ee18e1b156b42ca">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/17/candidate_id">a-review0-nvenc-av1-opus-sampler:environment:A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_TOKEN_FILE</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-ed76ab57f31ded6407320c70">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/17/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-5090daabc17ab9286879913e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/17/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-4cf1364e8eec3e5427078ac5">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/17/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>18</code>
+</th>
+<td>
+<table id="v-7a12cdd2b2ae0f73b35a6c77">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-293d747b65a87744e2a8246c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/18/candidate_id">a-review0-nvenc-av1-opus-sampler:environment:A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_WORKSPACE</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-72f1814ad0b0f81fac2b94ba">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/18/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-6c00506bfe1062ac8043a0e2">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/18/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-1ec3a08a6b573f6d48fa3617">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/18/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>19</code>
+</th>
+<td>
+<table id="v-201489f9649639fae6341960">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-cf8027348a8966faac083393">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/19/candidate_id">a-review0-nvenc-av1-opus-sampler:environment:STOVE0_FFMPEG_BIN</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-68b1b8a39b5f4ad5ac3d9791">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/19/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-9eea09e376706a0502bf967e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/19/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-91de99ae91661a5dc5aeaaf5">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/19/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>20</code>
+</th>
+<td>
+<table id="v-dae780a87ca0fe20ea654f20">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-a2c80585d2c3182a0c686245">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/20/candidate_id">a-review0-opus-sampler:environment:A_REVIEW0_OPUS_SAMPLER_HOST</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-29bb93304eba398043c3e44f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/20/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-f0627ec08c75bfa29d765007">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/20/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-ac8c97cf35e704294d509576">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/20/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>21</code>
+</th>
+<td>
+<table id="v-468241b99adb1e7a318c30a9">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-4241d8a21d54d951a404324c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/21/candidate_id">a-review0-opus-sampler:environment:A_REVIEW0_OPUS_SAMPLER_IMAGE_ID</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-aa90176a424f554bcb53a78a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/21/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-afd34b1a86efc096827ddb7e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/21/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-b5e561f5e193e498deddb769">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/21/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>22</code>
+</th>
+<td>
+<table id="v-b98b26390ce8bccd53486057">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-d71d6fb9352bb2d4518bb965">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/22/candidate_id">a-review0-opus-sampler:environment:A_REVIEW0_OPUS_SAMPLER_PORT</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-2562af0af876135153818dee">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/22/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-1cf3ebee32c91c8ef1edfa63">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/22/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-cd7a477802b68ae31e36122e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/22/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>23</code>
+</th>
+<td>
+<table id="v-a89ded78af31cc3a0a54f216">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-c52b5ce5196071b2f02f8f72">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/23/candidate_id">a-review0-opus-sampler:environment:A_REVIEW0_OPUS_SAMPLER_SOURCE_REVISION</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-e70a92f92e7467ddb4fb6968">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/23/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-cd31bdb764887df7dce2720b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/23/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-53782dc304c14763349a79e9">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/23/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>24</code>
+</th>
+<td>
+<table id="v-e085b9d260a0db6e13378b77">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-0c8fd54637f5dd8635d301ff">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/24/candidate_id">a-review0-opus-sampler:environment:A_REVIEW0_OPUS_SAMPLER_TOKEN</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-baa46365f6791820fde1240c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/24/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-017f7db14bdff36f3de0ed49">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/24/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-15d0be073510abd98b0e2e7d">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/24/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>25</code>
+</th>
+<td>
+<table id="v-fe262f7192e4e1553a81df26">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-84b1346a1c62ad50e9bf2851">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/25/candidate_id">a-review0-opus-sampler:environment:A_REVIEW0_OPUS_SAMPLER_TOKEN_FILE</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-72f23f1c18a9d74618508820">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/25/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-443c216aada9f70e4e6a69b3">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/25/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-4770260d4c6c69ca5a79551b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/25/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>26</code>
+</th>
+<td>
+<table id="v-802c94764fea4c4a17c14825">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-b489f561089d4fcf615b8102">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/26/candidate_id">a-review0-opus-sampler:environment:A_REVIEW0_OPUS_SAMPLER_WORKSPACE</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-07bd6ffb8853172a49565545">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/26/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-2b5a1de74a133d1e3837131f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/26/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-6364ed92fda9b1345a77abac">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/26/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>27</code>
+</th>
+<td>
+<table id="v-910bf4f1dfe525a07cf482d2">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-32ca3933a77b2b985eaf747b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/27/candidate_id">a-review0-opus-sampler:environment:STOVE0_FFMPEG_BIN</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-4d2fd8639ac297e30d90d945">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/27/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-0309d3102e82ec2279d8da37">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/27/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-34a5575293291f7e80a9a4e3">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/27/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>28</code>
+</th>
+<td>
+<table id="v-61911b038397d67c28e48d49">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-2a9d76e860b4fd0c1abdb1cf">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/28/candidate_id">a-review0-rclone-target:environment:A_REVIEW0_RCLONE_TARGET_CONFIG</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-96c58249a5ae441077662687">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/28/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-c677a5eef590123439e5f83c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/28/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-bc77bc70c141f3c985fdb644">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/28/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>29</code>
+</th>
+<td>
+<table id="v-3e80aa1c7fe0abfb33a3cf39">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-8f88a4edcfcd4aab26e1a550">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/29/candidate_id">a-review0-rclone-target:environment:A_REVIEW0_RCLONE_TARGET_HOST</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-a17b693ff247db1f8365252c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/29/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-736b499ffca96ff35ad9e17e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/29/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-bea866d23c7248329fb5a9a8">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/29/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>30</code>
+</th>
+<td>
+<table id="v-e2512afe8c7461c795cee140">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-e6d7aaa775b6b72761f32bfb">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/30/candidate_id">a-review0-rclone-target:environment:A_REVIEW0_RCLONE_TARGET_IMAGE_ID</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-4fd65dc79efd396a50154cd3">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/30/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-b713837ddd8ca55fbe37e4b6">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/30/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-1dbb625fc58f08f6139a9f34">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/30/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>31</code>
+</th>
+<td>
+<table id="v-874366f8bdcf110f9fa6dd3f">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-59997cc50b57196c6ebe2462">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/31/candidate_id">a-review0-rclone-target:environment:A_REVIEW0_RCLONE_TARGET_PORT</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-a1046b7d2ea5ef5a63174ac9">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/31/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-44ab186821ed2c6a1ee9deb9">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/31/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-44f6987665cd19cd105f3a95">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/31/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>32</code>
+</th>
+<td>
+<table id="v-6004ccd41a1f411e671fba8a">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-6280a2db830803b4a890755c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/32/candidate_id">a-review0-rclone-target:environment:A_REVIEW0_RCLONE_TARGET_RCLONE_BIN</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-f9b05997ff3146e6a88e3146">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/32/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-7af44a459bff05bd3836201b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/32/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-cc5d8c6e2cf750b0757b390a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/32/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>33</code>
+</th>
+<td>
+<table id="v-bdf4043b59f2300b6a7abfba">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-3132a5b20ce0550e7a684b1a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/33/candidate_id">a-review0-rclone-target:environment:A_REVIEW0_RCLONE_TARGET_SOURCE_REVISION</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-1425ec95fdadabf96d3d2622">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/33/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-dde11954fecc3dcbde25b34a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/33/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-b55e3d4b15526e619040461b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/33/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>34</code>
+</th>
+<td>
+<table id="v-6a05baca0ee4b1460b6be031">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-5cc016127cf052f6827f690c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/34/candidate_id">a-review0-rclone-target:environment:A_REVIEW0_RCLONE_TARGET_STATE_ROOT</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-6ec21c8386577a9fbb072917">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/34/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-a9f7e1effa8c42d32cd45262">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/34/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-a1c7d2c00ff33645ef665082">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/34/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>35</code>
+</th>
+<td>
+<table id="v-3e58e4fc0e344f144a67dfe9">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-2b011e017dae7b9689b5b037">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/35/candidate_id">a-review0-rclone-target:environment:A_REVIEW0_RCLONE_TARGET_WORKSPACE</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-ce9afa650d782cab85dd16ce">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/35/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-3ad1a5d2e854650487720443">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/35/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-a8f414757e739d6a5ccb225f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/35/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>36</code>
+</th>
+<td>
+<table id="v-a4f24dc019472427c4126daa">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-7af938779cea019e8fe28b57">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/36/candidate_id">a-riverhog-aws-store:environment:A_RIVERHOG_AWS_STORE_CONFIG</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-62f4ec33c914835a8f0f5a46">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/36/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-a88a8c63ae54490a713e1087">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/36/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-4b67671e84a1c09042759298">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/36/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>37</code>
+</th>
+<td>
+<table id="v-c292d7bfe8f860b8888b7cf9">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-ac82b6311030815137a69cd2">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/37/candidate_id">a-riverhog-aws-store:environment:A_RIVERHOG_AWS_STORE_HOST</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-760f722edbc6aea990eea1f9">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/37/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-64302fa5e7de43cafa8ba6c7">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/37/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-d2859679ed8d9c1640528f38">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/37/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>38</code>
+</th>
+<td>
+<table id="v-048d9af5edc7f1f26fa41357">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-ea64daff4b03acdcacb1c524">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/38/candidate_id">a-riverhog-aws-store:environment:A_RIVERHOG_AWS_STORE_PORT</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-ecbcf359eba292955a918041">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/38/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-8152e280412bd2e923566fe6">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/38/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-7b580596be32eb175bf53c1c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/38/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>39</code>
+</th>
+<td>
+<table id="v-f9b9b8c175ddd4c624d86d12">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-f32ad5d9797d818e0dfb0160">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/39/candidate_id">a-riverhog-b2-store:environment:A_RIVERHOG_B2_STORE_CONFIG</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-3969c75842f300eb361f8e95">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/39/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-1970a19fdc34d5ed9930d565">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/39/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-676329e85bf68f9c1996e640">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/39/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>40</code>
+</th>
+<td>
+<table id="v-5af813e94c9fbf91591e02a8">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-525577a68491357914744706">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/40/candidate_id">a-riverhog-b2-store:environment:A_RIVERHOG_B2_STORE_HOST</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-5e67f50dc21360b7ff3f66ca">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/40/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-da51f2e0d8e09fa465f44243">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/40/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-ad708999195115030ea59bd0">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/40/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>41</code>
+</th>
+<td>
+<table id="v-cb8fbd2b22a5553d025426d0">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-930282a2af42cf2cc3b937d7">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/41/candidate_id">a-riverhog-b2-store:environment:A_RIVERHOG_B2_STORE_PORT</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-fbb913216fd3a603aa51a10b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/41/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-b5bb951fba2f0584e242d0e4">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/41/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-638a20fd56f6ca29bd5d8740">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/41/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>42</code>
+</th>
+<td>
+<table id="v-c97c9e32acd9ccca421231d1">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-9a0a10df2c1e548b80312741">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/42/candidate_id">a-riverhog-cli:environment:A_RIVERHOG_CLI_LOCAL_DATABASE</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-b5fb5c3e6e5d2d11224b06f8">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/42/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-1a461f11a9a7328774eeb573">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/42/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-9fc59c91576dd3febd3b203f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/42/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>43</code>
+</th>
+<td>
+<table id="v-71756786874a34c273b8612a">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-168535f7c89e5a992ca7dcf1">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/43/candidate_id">a-riverhog-cli:environment:A_RIVERHOG_CLI_LOCAL_ROOT</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-8af0ae8ef1256ba2b2389dc5">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/43/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-4687003bb3acd17fdf674c0e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/43/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-e53b4ab1dfd931f444192d75">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/43/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>44</code>
+</th>
+<td>
+<table id="v-9d0949c0227b48cde0c3b10d">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-c1dd746bb3362dee35e889ac">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/44/candidate_id">a-riverhog-cli:environment:A_RIVERHOG_CLI_PLAIN</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-879a21bdee51c515e5174d8b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/44/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-38c305d09d0a23b08400d78c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/44/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-f2cd91e634f3c3d7c98648d1">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/44/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>45</code>
+</th>
+<td>
+<table id="v-f8e93e4531bcdd6c89d93d56">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-de64042c7e0e6778535262ab">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/45/candidate_id">a-riverhog-cli:environment:A_RIVERHOG_CLI_UPLOAD_FILE_LOG_BYTES</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-a0652d6f026af5a96dcf8184">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/45/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-c4f2444a07d22bb33cdd5360">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/45/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-1dd4ed96b8881bf91a8ca40f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/45/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>46</code>
+</th>
+<td>
+<table id="v-8cb85db88447e72a26d2747e">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-977800ca0fdfd29aecda2180">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/46/candidate_id">a-riverhog-cli:environment:A_RIVERHOG_CLI_UPLOAD_FINALIZE_POLL_SECONDS</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-4947774f38fb19adfc4b0baa">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/46/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-d106986f8e7d5c211707b6ca">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/46/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-acfdcb86f3dd8f9f940d1d6d">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/46/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>47</code>
+</th>
+<td>
+<table id="v-4ac9415c5f1372765dd566c3">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-84dcd67879340e4eedbd528c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/47/candidate_id">a-riverhog-cli:environment:A_RIVERHOG_CLI_UPLOAD_FINALIZE_TIMEOUT_SECONDS</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-139b21aba1553be36bf62e8c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/47/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-1acf9c776aa85094335d365e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/47/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-c5d0f5a2c3b0889733a240c7">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/47/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>48</code>
+</th>
+<td>
+<table id="v-f13695390e49d6b17aff7253">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-73a0aad7aced5d26b25b5ece">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/48/candidate_id">a-riverhog-cli:environment:TERM</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-25cbee1d15f5d082b642ee32">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/48/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-92bc7fbce44d0ee02dd9660c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/48/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-28b3ca356b5313b3c54f3383">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/48/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>49</code>
+</th>
+<td>
+<table id="v-0ce0350efe1d625aa9f68e54">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-88cf669018efcbd887187fd7">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/49/candidate_id">a-riverhog-filesystem-store:environment:A_RIVERHOG_FILESYSTEM_STORE_HOST</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-0dd23732de2f5fd82744f99f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/49/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-3ffc17b6c6f30f02f3f6c384">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/49/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-ac40702b2816997936dd215e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/49/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>50</code>
+</th>
+<td>
+<table id="v-5e914f05a8cae8fe9bceb9a8">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-cfd27db1fc8f489a33faa7ee">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/50/candidate_id">a-riverhog-filesystem-store:environment:A_RIVERHOG_FILESYSTEM_STORE_MINIMUM_FREE_BYTES</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-8910cabe2496eb149727836c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/50/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-5339d767587f9e1a750aaa41">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/50/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-b7c25821004f50c0a7f7dd8f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/50/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>51</code>
+</th>
+<td>
+<table id="v-df554eca48723017ada6434e">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-4ef3abc3fc604038843183b1">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/51/candidate_id">a-riverhog-filesystem-store:environment:A_RIVERHOG_FILESYSTEM_STORE_PORT</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-9e599fffd930ed21ecc0ba5b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/51/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-c0073cdbe44f9c2acb55fc0b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/51/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-ecd87f67cd2f691920d410c2">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/51/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>52</code>
+</th>
+<td>
+<table id="v-35680b651e8ee20b0e3abefa">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-d1c4059bd0aba07982c5715e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/52/candidate_id">a-riverhog-filesystem-store:environment:A_RIVERHOG_FILESYSTEM_STORE_READ_CHUNK_BYTES</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-69e8c00052252c165d37aa0f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/52/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-73b7850a32a6d464b8c571b9">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/52/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-3a48f867cb05b658dca7ad6c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/52/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>53</code>
+</th>
+<td>
+<table id="v-98e144c99d7ef6aade0f3737">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-77149bb90218333a7e6b1f65">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/53/candidate_id">a-riverhog-filesystem-store:environment:A_RIVERHOG_FILESYSTEM_STORE_ROOT</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-e7967a59d0af263094a3d3ab">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/53/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-f1c1869548b3f0b16b87dde5">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/53/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-e6adfb00c2c5f8babb7c290f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/53/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>54</code>
+</th>
+<td>
+<table id="v-51be61f11136b4b120f3ef96">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-ffafb1acfcb24d871aa10102">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/54/candidate_id">a-riverhog-filesystem-store:environment:A_RIVERHOG_FILESYSTEM_STORE_SEGMENT_BYTES</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-72293495d12578b9244f5617">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/54/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-aedb656eec98d5f6371b0116">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/54/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-3ded0328f998aa07a9bee807">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/54/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>55</code>
+</th>
+<td>
+<table id="v-d7a9921c4b3d23fcb004b363">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-28c296a7ea4db6151eed1112">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/55/candidate_id">a-riverhog-filesystem-store:environment:A_RIVERHOG_FILESYSTEM_STORE_TOKEN</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-e884d83885b4622b02f744b6">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/55/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-da440a50483858eab4ead63b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/55/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-2496aa6b7803c1ad820f5acb">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/55/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>56</code>
+</th>
+<td>
+<table id="v-52cc0da61bf7dfaf63bff72a">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-27a574a1dcbbdbfde5c12017">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/56/candidate_id">a-riverhog-filesystem-store:environment:A_RIVERHOG_FILESYSTEM_STORE_TOKEN_FILE</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-a85ff5e47704e40cd0f32c3a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/56/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-82431194439e07fb7f221c43">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/56/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-3828629cd902490e0551fc06">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/56/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>57</code>
+</th>
+<td>
+<table id="v-ae43d2af2b2f3d5cc7548642">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-61a24a274ebabbde84ab4f86">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/57/candidate_id">a-riverhog-ftp-spool:environment:A_RIVERHOG_FTP_SPOOL_CONFIG</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-215c833ce5e5f3f7559c8675">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/57/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-6c2f99b23a8e2f4138676c49">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/57/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-a5ce1c51820066beb51bebb1">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/57/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>58</code>
+</th>
+<td>
+<table id="v-36a9c548f95e20c39b0bae6d">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-de377fbf49c8adc9468ac73e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/58/candidate_id">a-riverhog-ftp-spool-client:environment:A_RIVERHOG_FTP_SPOOL_ALLOW_INSECURE_HTTP</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-bcab8f04beb3eb35e1a8ac59">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/58/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-fa63c60ab89d42cb1346e8ea">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/58/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-08882addd785131dd030913a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/58/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>59</code>
+</th>
+<td>
+<table id="v-e79321973de9995a2ed24e28">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-1ee83691533a31463caf25d8">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/59/candidate_id">a-riverhog-ftp-spool-client:environment:A_RIVERHOG_FTP_SPOOL_BASE_URL</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-92a8118ccb09e6ac3f1b39ef">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/59/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-d628acef1130fed3f019b168">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/59/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-7548e64ad98a029c2b284a3f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/59/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>60</code>
+</th>
+<td>
+<table id="v-b75aac8f925a630f5d98fa10">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-60e7c0c6c789fdfe680f2243">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/60/candidate_id">a-riverhog-ftp-spool-client:environment:A_RIVERHOG_FTP_SPOOL_HTTP2</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-5f71f0dd1df8e4d11b3c647e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/60/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-9ef2d19f512695f8ee0344a7">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/60/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-984b2a832aa5c7a7fa661921">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/60/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>61</code>
+</th>
+<td>
+<table id="v-1ba7aacba0c9e372002a3c09">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-39bdf7c2b28eeec200c11d16">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/61/candidate_id">a-riverhog-ftp-spool-client:environment:A_RIVERHOG_FTP_SPOOL_HTTP_TIMEOUT_SECONDS</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-40e3fc9ac4ff638a0d860bb1">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/61/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-0df4b3ec592b3788e6a459b1">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/61/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-2cd2c74f0eb547128127334d">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/61/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>62</code>
+</th>
+<td>
+<table id="v-fb1b58cfb8acfac2b90594a9">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-0b4530684ecae28d1ce2238e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/62/candidate_id">a-riverhog-ftp-spool-client:environment:A_RIVERHOG_FTP_SPOOL_TOKEN</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-19001e673b459e7d363d71dd">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/62/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-fbb93c67ecca3dfe556feb6c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/62/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-e6a4f541737151fd9c96a140">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/62/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>63</code>
+</th>
+<td>
+<table id="v-e4f8f4d653729535981280a9">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-9d6b2e16a97000d8b3831deb">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/63/candidate_id">a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_HOST</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-381887eb3a67ec9dd33f9290">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/63/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-eac0706de455fffcea6a0bd9">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/63/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-25033ef7cff7bac6c85429d6">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/63/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>64</code>
+</th>
+<td>
+<table id="v-63f95b16fa1010cb0c93a613">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-de7aff50aebd5b1bd44fd1e9">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/64/candidate_id">a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_ID</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-bf3012d64d665105c683000b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/64/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-53a6e35da4102869624fac91">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/64/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-1cf026f86c15b41aa5ef9584">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/64/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>65</code>
+</th>
+<td>
+<table id="v-2eae0f14602bdfe3a6f9f442">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-548959246b006506f181ba75">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/65/candidate_id">a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_PORT</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-02073b34797368b25aee3fb2">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/65/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-476999da4824de5dc28b1216">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/65/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-b0e1bbd718fb496102f7ff1d">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/65/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>66</code>
+</th>
+<td>
+<table id="v-3a46f66874b74bc31ac11727">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-5eedd9ea675ce705094b02a6">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/66/candidate_id">a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_SOURCE_REVISION</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-a68e0dc255bda684e78c17bb">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/66/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-15114af9a4e996ea87ef37e3">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/66/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-d5feb42296e0edc3d17d9498">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/66/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>67</code>
+</th>
+<td>
+<table id="v-b8adcb5376b06a2e166fefab">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-68833d72d9ae0566d81c493e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/67/candidate_id">a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_TOKEN</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-c673ad5dfef473d8178adf6e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/67/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-19532ed1dcdf00a403c2f2bd">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/67/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-99af43b44090aafc9ad6a1ad">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/67/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>68</code>
+</th>
+<td>
+<table id="v-b85acd5be92cea5301768b80">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-19853a71b1d2a35ebe6338b9">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/68/candidate_id">a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_TOKEN_FILE</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-9cdb2045d9396a1e44c2d5ad">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/68/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-375e1f1ca1283d00b540ddb3">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/68/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-e23e83f44f680f4f13ff496e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/68/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>69</code>
+</th>
+<td>
+<table id="v-38a2ff138c666245a7a2051c">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-30e3b1751d09bd0dca15c725">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/69/candidate_id">a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_WORKSPACE</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-248c5498842b9c13c7aa92aa">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/69/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-12d75e0e4136b8239676b43b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/69/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-c8e21db2bdfa57c979893752">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/69/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>70</code>
+</th>
+<td>
+<table id="v-58a67fac8d42db705da1dc04">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-179ced1807f13907d3a02189">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/70/candidate_id">a-stove0-exiftool-observer:environment:STOVE0_EXIFTOOL_BIN</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-6aee382eadc3ed132f7ecb43">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/70/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-8da5ab1e3786785308629eea">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/70/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-a4340fb3531c9558912352d9">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/70/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>71</code>
+</th>
+<td>
+<table id="v-721b1cf184d706068a79ce7f">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-31fbf4e56da7212cb4ebfe70">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/71/candidate_id">a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_HOST</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-eb8702f41dc0fe7ea7678a1b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/71/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-3f32f107b2d3b16be6b79be9">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/71/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-b335148c962b609f33da9792">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/71/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>72</code>
+</th>
+<td>
+<table id="v-fe92001080320bedd9cb963a">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-092531c4006715f3e857a6b1">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/72/candidate_id">a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_ID</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-d1ee042422e785c2ca20aba2">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/72/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-70fb321b8387b3a1a55d4e65">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/72/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-85226cf1809fc3fb5d4145c5">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/72/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>73</code>
+</th>
+<td>
+<table id="v-636b906b46a3857b91f1bce1">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-4f616e1d1d9e6b55fe6efd45">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/73/candidate_id">a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_PORT</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-0fe5ce5f5749b2b98582375c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/73/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-7376e427f200c612f5146680">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/73/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-c0d207627885ab9f0bff0f53">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/73/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>74</code>
+</th>
+<td>
+<table id="v-85d85fb5ba6bbed70687d49d">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-0185a9df6a2c7ac3206b5ef2">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/74/candidate_id">a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_SOURCE_REVISION</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-33d42050f54bc8a021ae7166">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/74/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-76eb40ffcf6890b02cbc9c8a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/74/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-696400db1569ca331a574f7e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/74/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>75</code>
+</th>
+<td>
+<table id="v-f2d70879d0ab679808d826d9">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-64957e126e9e04200a1d29c8">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/75/candidate_id">a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-8f2321670d92e81ffc8000fc">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/75/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-7e4a44fb3cb747f373a7bb5a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/75/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-b2eb1c7d15b75b74da854937">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/75/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>76</code>
+</th>
+<td>
+<table id="v-370a52d9fa8e99726f30c0b9">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-52a0ac94ad3f0dcdc2449fda">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/76/candidate_id">a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN_FILE</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-6d9ba77b60d94a7b3a9741f9">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/76/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-68bf767e7f160eb10fc27f74">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/76/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-d7f37d4492af580748c0bc10">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/76/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>77</code>
+</th>
+<td>
+<table id="v-d4c47e4df1523eecfbf0591c">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-6466d4e33fb87e02d06c27b1">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/77/candidate_id">a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_WORKSPACE</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-20328ccd7c50d980d09ad9d8">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/77/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-5e9707d0b7d2cfdaf66d9c2b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/77/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-f591c4bfaff008b7abc8f289">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/77/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>78</code>
+</th>
+<td>
+<table id="v-7dc5390c159671aa60e0e4db">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-b063a24fb518d20bcae47284">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/78/candidate_id">a-stove0-ffprobe-sampling-observer:environment:STOVE0_FFPROBE_BIN</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-9fa3f2cc51198459eeb7ba82">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/78/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-2d031e0f9574dd3e9194d558">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/78/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-a643819a4a954fdbe96a4b52">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/78/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>79</code>
+</th>
+<td>
+<table id="v-5c6646f7efccbdd3afb6c38f">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-d326006cc387fccfc9637a75">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/79/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_HOST</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-481d4b92529c8d726e9132f7">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/79/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-2e408e244337b2cbfda79e9b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/79/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-86c8d98108b2456aa263fbd0">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/79/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>80</code>
+</th>
+<td>
+<table id="v-fcec08c8455f1198fffb50d7">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-0e537a3e19ae6a26864a12fe">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/80/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_ID</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-0b0c541be4d4e63331b44026">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/80/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-e97c7aeafeff9195f045ecac">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/80/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-b253959a938600a2fd83eb40">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/80/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>81</code>
+</th>
+<td>
+<table id="v-b76506b7ea5c1c02fc964149">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-603f93fbbd038e7a3c24295a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/81/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_PORT</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-0c59f1dddb9bd63d013be204">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/81/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-044bf9ba2e17b85fb50726e8">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/81/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-65ffac1b4dc22a7dbce12704">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/81/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>82</code>
+</th>
+<td>
+<table id="v-18583a3151a28a71a68f5944">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-a3b16dbcea0e32e049fe90a3">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/82/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_SOURCE_REVISION</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-327886a0e62d3046fa20064b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/82/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-9ef3de777d0a16c22edc7a08">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/82/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-88a46c172cfb9f0eb0218e48">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/82/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>83</code>
+</th>
+<td>
+<table id="v-d49cf01846d2d8885eba10a2">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-9b893c159446a1cd45a945aa">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/83/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_STATE_ROOT</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-026c7bcb785db0ce87bcc449">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/83/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-3eef988cf7329eed64969afd">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/83/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-d2be6da05ace2cfd89cbb0c1">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/83/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>84</code>
+</th>
+<td>
+<table id="v-db78d3cf7346bbe15d955a57">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-543aab5daa44bc61aa076069">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/84/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_TOKEN</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-4597c13ddad83d0b343d7cf6">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/84/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-c0b2d2381e246959a709035a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/84/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-6dacfa31d191c4ae34a26567">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/84/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>85</code>
+</th>
+<td>
+<table id="v-61b5f94ad05f28baa3d6aa2a">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-2c8ef79e84cf8066f3228b53">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/85/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_TOKEN_FILE</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-7f98844b2c6a6857c051212f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/85/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-bcdfb2ddc7ccb346e89cade0">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/85/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-463be745137cbb3ade766ed7">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/85/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>86</code>
+</th>
+<td>
+<table id="v-45171254017f85ab6185f2ca">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-c8bc5bd05634039b865937bf">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/86/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_WORKSPACE</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-a1a1e51d6badfadd1eabdae2">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/86/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-ff2e22d3fd37db5f385378bb">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/86/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-1d3c44fe877b8ed3f497c160">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/86/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>87</code>
+</th>
+<td>
+<table id="v-f1b407ccd03ef8f0ea64e27e">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-b5a46727f09c44c4964d843a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/87/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_ZSTD</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-df2c0d07659c19f801fe916a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/87/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-319d994f6bb72a8162dffb4a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/87/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-fdea23badf0a589e79a28714">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/87/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>88</code>
+</th>
+<td>
+<table id="v-1970bff4b84b2a101fcfddd0">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-e934b8fef2abef7c349a31a3">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/88/candidate_id">a-stove0-nvenc-av1-opus-target:environment:STOVE0_FFMPEG_BIN</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-a17fa51eb5682e88a8eba964">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/88/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-dd3b8ae1fb161e8b6329719b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/88/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-af005a65cbd874cc06f9e86b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/88/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>89</code>
+</th>
+<td>
+<table id="v-d92c67720a2e03819581d84c">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-d648c968987cb35e5db4f373">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/89/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_HOST</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-4c1f1a60c85e083a03154e0b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/89/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-41753d1d48b0a5d6b871ab2c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/89/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-5e0a426e176491094c0ac37e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/89/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>90</code>
+</th>
+<td>
+<table id="v-e243dad9addc78853a198292">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-0cc8915ccb45b54545737a98">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/90/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_IMAGE_ID</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-06780d01825496483782715c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/90/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-ac3105ced3c04ff8a0a9b38f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/90/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-2e63105e55cd0eb56f29696b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/90/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>91</code>
+</th>
+<td>
+<table id="v-8a20481bb50adb94589e3f02">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-860c984fa9d17ee7cf990227">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/91/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_PORT</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-6998a88e4de400d1960de24e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/91/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-64077a933069fbc74dfe1c04">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/91/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-83031f8524343e4f8567089f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/91/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>92</code>
+</th>
+<td>
+<table id="v-d2fcc1c38f80b66f25b77143">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-0f6038a5e593094ec97b9900">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/92/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_SOURCE_REVISION</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-693762d01f5feb971f4c5d2e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/92/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-945693d3a6ee26b93f4c3f26">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/92/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-90a02b1681cac294f748bb52">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/92/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>93</code>
+</th>
+<td>
+<table id="v-b905f045ad285ad8ced07e9e">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-7aefa716850eee7ce7477f6f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/93/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_STATE_ROOT</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-f1585a8501483746765a4ea8">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/93/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-2cdf1c3beaddbf82efc3da49">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/93/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-cc4202e36e74a666b045d4b7">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/93/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>94</code>
+</th>
+<td>
+<table id="v-b1a0c25c2ae9e5144ee0d12c">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-922747e0c77b12a07cff7813">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/94/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_TOKEN</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-5c47ca4ef0aba2c768d3ff35">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/94/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-f44c47c0e835b6cc97d2b6cd">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/94/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-0e3411c31173618a9581da9f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/94/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>95</code>
+</th>
+<td>
+<table id="v-5781ebbf2c30ecc277e59cc3">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-eaeb3166ca9c4dc384eca308">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/95/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_TOKEN_FILE</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-ed08d9afe2db26032a333b41">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/95/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-8aafa484d051128eac32c0b4">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/95/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-505233c4a4016c33d78bd689">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/95/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>96</code>
+</th>
+<td>
+<table id="v-e0e798e1b1d9baaa41c85cbf">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-3e6b9d198b099daf23351c51">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/96/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_WORKSPACE</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-c113aee340bdeabc68a4e818">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/96/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-30e987ef3c5755f08db392ea">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/96/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-93467460317ddc2317ed8677">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/96/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>97</code>
+</th>
+<td>
+<table id="v-ae73bd47942972ba6d4d81d2">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-b7a2f707a4b8728f1b8a7a75">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/97/candidate_id">a-stove0-opus-target:environment:STOVE0_FFMPEG_BIN</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-6785f6d3ce9c825a7cc59974">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/97/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-43e83036b84cd0df7c80144b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/97/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-ae68adc9dd63961094958361">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/97/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>98</code>
+</th>
+<td>
+<table id="v-0203b085d64675ccc30f764b">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-c2afb02a03bb68350c0e81a0">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/98/candidate_id">riverhog-client:environment:RIVERHOG_ALLOW_INSECURE_HTTP</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-3144faddac6f0c5955473189">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/98/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-b87289bff4a73c0910fc998e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/98/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-e94c1e16383fb428edd088e2">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/98/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>99</code>
+</th>
+<td>
+<table id="v-33b947993fef47cd07c3d388">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-ce59b134d2d1358f09448d51">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/99/candidate_id">riverhog-client:environment:RIVERHOG_BASE_URL</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-92b894bd3033541bf10e4215">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/99/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-7f0d847ba96008f4ca341866">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/99/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-2fd6ca42963336de31bbba41">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/99/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>100</code>
+</th>
+<td>
+<table id="v-ac44b48460730fe4c8c403d9">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-0b784119df3c0356e9cb929a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/100/candidate_id">riverhog-client:environment:RIVERHOG_DOWNLOAD_FILE_CONCURRENCY</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-8cfa0ca2ab6c57e944690f69">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/100/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-addbf64e4c172ebdce4c92e0">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/100/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-a6deb4e041d7fb6777af7047">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/100/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>101</code>
+</th>
+<td>
+<table id="v-923bbecb4633be793dc83072">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-0de15af6036b4d63a7a48e89">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/101/candidate_id">riverhog-client:environment:RIVERHOG_DOWNLOAD_FILE_WINDOW</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-47fe79f80a3d897db2718241">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/101/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-345843c4c386c9e3f94c0b43">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/101/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-df1b8928913cf6ebfafe14b2">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/101/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>102</code>
+</th>
+<td>
+<table id="v-dd4a74a640b88328cfa2a49b">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-75072f7a06a6a3569acce39e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/102/candidate_id">riverhog-client:environment:RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-400377387d2f793180f96c68">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/102/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-ad2ff67405bc1765576d0404">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/102/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-63327e82030a8d8f4185cf15">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/102/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>103</code>
+</th>
+<td>
+<table id="v-f5d345eea74e7166917dfbbe">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-49bafd1a690cbd1b6d0334b9">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/103/candidate_id">riverhog-client:environment:RIVERHOG_HOST_HEADER</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-817f6ee1c4c854fc7cca1434">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/103/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-b283cb0ec37d37fd02efe43f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/103/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-90eb2038af8b13ed6a351d9f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/103/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>104</code>
+</th>
+<td>
+<table id="v-d9c8a788d8fe0d788a910c04">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-5b511bc423c759ec7936864e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/104/candidate_id">riverhog-client:environment:RIVERHOG_HTTP2</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-ef857e8c67a89e50783daf20">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/104/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-2215c3baa1a3999ccbfceb2b">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/104/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-8ad15d8dbc319e58c14c872f">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/104/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>105</code>
+</th>
+<td>
+<table id="v-abb5dfd990e99e6c92fe02c0">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-ad85471ed1fdee92bd3eae45">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/105/candidate_id">riverhog-client:environment:RIVERHOG_HTTP_TIMEOUT_SECONDS</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-848f40b5fa86b2028f5a5653">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/105/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-41f75322d145dde84e314b75">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/105/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-213de418b35b12c2ecd2ce90">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/105/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>106</code>
+</th>
+<td>
+<table id="v-2bea865460afafb8c0b0bee7">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-e4f18587b92debd67ec1bf91">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/106/candidate_id">riverhog-client:environment:RIVERHOG_TOKEN</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-4b6932078183c4153527d6d5">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/106/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-3f2b05830a32bb91a8f6f442">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/106/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-5cc8897b1d2d8b64d2d47484">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/106/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>107</code>
+</th>
+<td>
+<table id="v-4ad84de35926bc3fd2f49c19">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-a054c95f5b6a098dd9438252">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/107/candidate_id">riverhog-client:environment:RIVERHOG_UPLOAD_FILE_CONCURRENCY</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-fc1ac2edf70b1262fbba045c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/107/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-862f5c2a15340bcc5597d642">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/107/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-021e04b75d41c3cf429bc2e9">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/107/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>108</code>
+</th>
+<td>
+<table id="v-024180cd0b5b1f5330db5bdf">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-05c85fc278806a6b334984d6">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/108/candidate_id">riverhog-client:environment:RIVERHOG_UPLOAD_FILE_WINDOW</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-680b091d10db0e78b5dc1362">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/108/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-878de7ffb39e8e177233efe7">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/108/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-12cc8b0aa6361a109d06f0c7">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/108/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>109</code>
+</th>
+<td>
+<table id="v-8d44ff5a7ea5d67fab53da6c">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-a9a47a18437ef450d2c2cce0">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/109/candidate_id">riverhog-client:environment:RIVERHOG_UPLOAD_TIMEOUT_SECONDS</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-84bdd406e5dba82c1ea77759">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/109/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-a0eece809110074f50523177">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/109/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-f7617d9c06f80f0b0d143cc3">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/109/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>110</code>
+</th>
+<td>
+<table id="v-8f5def6b2d8831bb480382d0">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-ce7931f167daec9df63bd472">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/110/candidate_id">riverhog-provenance:environment:LOCALAPPDATA</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-8df83753708b646732f855ec">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/110/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-94ddcc90cf6401ee63220523">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/110/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-05e42672cf4a2dec983b89c4">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/110/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>111</code>
+</th>
+<td>
+<table id="v-6919d9af9574b8ae05a48e29">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-b0dbf43f721b5df2184aaee3">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/111/candidate_id">riverhog-provenance:environment:RIVERHOG_PROVENANCE_STATE_HOME</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-d70240404cd0b2b1824e17ad">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/111/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-feb5aec22b54f5d7757fc91e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/111/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-c08dbb769d9600e5f3cb929d">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/111/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>112</code>
+</th>
+<td>
+<table id="v-02ae10a4f5d2eb3692ec44da">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-88683525b80a68e21fff76d3">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/112/candidate_id">riverhog-provenance:environment:XDG_STATE_HOME</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-07a85ec86fa0ce555e799554">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/112/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-eb1dc55818a1fb0a3fa10847">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/112/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-06fdffe644d7dfb9492037fc">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/112/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>113</code>
+</th>
+<td>
+<table id="v-78a7f06b8aa17c1173ae01b0">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-4066c5cbdd53478a0a1a079e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/113/candidate_id">riverhog-server:environment:RIVERHOG_CONFIG</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-a19fc367469d79b330ec4145">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/113/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-b4ecdd3ca345f45a37c330b4">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/113/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-f5e2c2f210a134d241fb6f51">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/113/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>114</code>
+</th>
+<td>
+<table id="v-b80390896a72bac4349626c0">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-58ca56162bafbe8d695d56d3">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/114/candidate_id">stove0-api-client:environment:STOVE0_ALLOW_INSECURE_HTTP</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-e2acc4a78ef3ababba6f6db4">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/114/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-9103923d646de459f9d77bc0">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/114/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-e873c74881e0b117d5d7d13c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/114/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>115</code>
+</th>
+<td>
+<table id="v-9ce0e82d40a6d1f176574599">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-a3cc44a8785525f8e2bd7ea1">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/115/candidate_id">stove0-api-client:environment:STOVE0_BASE_URL</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-0a64b1279728cf848b3e0df1">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/115/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-4a7eee863e3cab235c58e951">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/115/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-9f24fd132e43d318f0d252c8">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/115/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>116</code>
+</th>
+<td>
+<table id="v-b542534911f245ed2a67e761">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-d56b8885a7206c949c161fe5">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/116/candidate_id">stove0-api-client:environment:STOVE0_HTTP2</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-48fd938b7d147c8be6203cc4">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/116/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-02f443591fb1c35ae233cfbe">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/116/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-a7f06754cd2fd43861de9807">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/116/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>117</code>
+</th>
+<td>
+<table id="v-e8383262caaf8350fb465063">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-a51a45f4d7b7e3ba1bef63f2">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/117/candidate_id">stove0-api-client:environment:STOVE0_HTTP_TIMEOUT_SECONDS</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-7f92ba31f13a7dde82277836">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/117/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-fd4420213d5ce33c8f1b291a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/117/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-60b3944c77d12c396283791c">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/117/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>118</code>
+</th>
+<td>
+<table id="v-75cf5fa8b8798b71530d626b">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-d854c38752d217a256c3c396">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/118/candidate_id">stove0-api-client:environment:STOVE0_TOKEN</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-fb563601f8528415ef233d7e">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/118/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-739adbc0c32a6b59aa3067ea">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/118/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-ea5bb8e7b8bc29ad0c2fcac6">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/118/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>119</code>
+</th>
+<td>
+<table id="v-895fee9eea9b632400ef8bd8">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-c00b2dbb272c4639216874c0">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/119/candidate_id">stove0-server:environment:STOVE0_CONFIG</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-84cc526cb93649c654b4e5fb">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/119/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-c655db5ef1f2123a3ab0c542">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/119/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-36f7123d945f406b1ec0fd99">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/119/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>120</code>
+</th>
+<td>
+<table id="v-655ee5e292723f40973991dc">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-9036f65eeae35a181ae1b101">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/120/candidate_id">stove0-target-support:environment:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-2a186674c1bec3ba916bf1fe">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/120/disposition">protected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-49d32a8154e37b41b01cfa65">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/120/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-cf3d4cb480324632014640e5">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/120/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</details>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

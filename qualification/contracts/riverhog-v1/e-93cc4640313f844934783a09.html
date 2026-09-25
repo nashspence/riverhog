@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,61 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-124d0da1c977a95ad8eec74c.html">riverhog-age · Python</a>
+<a href="index.html">All authorities</a> / <a href="a-93f473c5765d8814df08e4f9.html">riverhog-age</a> / <a href="i-124d0da1c977a95ad8eec74c.html">Python</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>riverhog_age.encrypt_age_scrypt</h1>
+<p class="context">Resumable age encryption used by the Riverhog protocol. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:riverhog-age:riverhog-age-encrypt-age-scrypt:5533059246">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>riverhog-age</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>riverhog_age</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>encrypt_age_scrypt</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>function</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(plaintext: &#x27;bytes&#x27;, passphrase: &#x27;str | bytes&#x27;, *, log_n: &#x27;int&#x27; = 18, scrypt_maxmem: &#x27;int | None&#x27; = None) -&gt; &#x27;bytes&#x27;&quot;</code>
+</dd>
+</dl>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/python/riverhog_age.encrypt_age_scrypt</code>
-</h3>
+</h4>
 <table id="v-4b99baa14ed7c146cfd88def">
 <tbody>
 <tr>
@@ -112,25 +149,32 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="packages/riverhog-age/src/riverhog_age/__init__.py">packages/riverhog-age/src/riverhog_age/__init__.py</code>
+<a href="source-authorities.html#source-a842e50b8b79dc3bf9edf5df">python:riverhog-age:riverhog_age</a> — <code data-source-path="packages/riverhog-age/src/riverhog_age/__init__.py">packages/riverhog-age/src/riverhog_age/__init__.py</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

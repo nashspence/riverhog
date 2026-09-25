@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,61 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-c34c678cf5e76cc498177652.html">stove0-api-client · Python</a>
+<a href="index.html">All authorities</a> / <a href="a-d81d0dac73e8a21e3eac2e2b.html">stove0-api-client</a> / <a href="i-c34c678cf5e76cc498177652.html">Python</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>stove0_api_client.Stove0ApiClient</h1>
+<p class="context">Python client for the Stove0 v1 workflow API. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:stove0-api-client:stove0-api-client-stove0apiclient:436c93e928">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>stove0-api-client</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>stove0_api_client</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>Stove0ApiClient</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(base_url: &#x27;str | None&#x27; = None, token: &#x27;str | None&#x27; = None, *, allow_insecure_http: &#x27;bool | None&#x27; = None, timeout_seconds: &#x27;float | None&#x27; = None, http2: &#x27;bool | None&#x27; = None) -&gt; &#x27;None&#x27;&quot;</code>
+</dd>
+</dl>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/python/stove0_api_client.Stove0ApiClient</code>
-</h3>
+</h4>
 <table id="v-c609e504a3c4f0fb06650461">
 <tbody>
 <tr>
@@ -112,25 +149,142 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-7b34ce09f5d2b0fe6c90da0d.html">stove0_api_client.Stove0ApiClient.backfill_admission_policy</a>
+</li>
+<li>
+<a href="e-ab6f9814eb94e30b60266d47.html">stove0_api_client.Stove0ApiClient.cancel_evaluation</a>
+</li>
+<li>
+<a href="e-85d99a642cfdcd375d012b84.html">stove0_api_client.Stove0ApiClient.cancel_work</a>
+</li>
+<li>
+<a href="e-00a0a9ad815431ece2cc2d08.html">stove0_api_client.Stove0ApiClient.close</a>
+</li>
+<li>
+<a href="e-8efd10a445c2dca270fb8f68.html">stove0_api_client.Stove0ApiClient.create_evaluation</a>
+</li>
+<li>
+<a href="e-c39647ef6435c26c5b00f823.html">stove0_api_client.Stove0ApiClient.create_work</a>
+</li>
+<li>
+<a href="e-b1bc5420b691a853d82ac6d3.html">stove0_api_client.Stove0ApiClient.__enter__</a>
+</li>
+<li>
+<a href="e-f42a1f189c77021b8060f0b4.html">stove0_api_client.Stove0ApiClient.__exit__</a>
+</li>
+<li>
+<a href="e-031a69f24fbfa575509be936.html">stove0_api_client.Stove0ApiClient.get_admission</a>
+</li>
+<li>
+<a href="e-234b6d9ec7cc97c7596a8924.html">stove0_api_client.Stove0ApiClient.get_artifact_selection</a>
+</li>
+<li>
+<a href="e-481507af620053c179ab4586.html">stove0_api_client.Stove0ApiClient.get_departure_effect</a>
+</li>
+<li>
+<a href="e-d1da1d642d08b11f881210fe.html">stove0_api_client.Stove0ApiClient.get_evaluation</a>
+</li>
+<li>
+<a href="e-7aa1607b096d4725261b4037.html">stove0_api_client.Stove0ApiClient.get_recipe</a>
+</li>
+<li>
+<a href="e-11049c22b389da3a022b5057.html">stove0_api_client.Stove0ApiClient.get_work</a>
+</li>
+<li>
+<a href="e-ad34ecd8e5aebf65be8257d3.html">stove0_api_client.Stove0ApiClient.health_live</a>
+</li>
+<li>
+<a href="e-f35147f57e569b27b778e1b5.html">stove0_api_client.Stove0ApiClient.health_ready</a>
+</li>
+<li>
+<a href="e-083e7e02a3318f8f2a64f83f.html">stove0_api_client.Stove0ApiClient.inspect_work_coordination</a>
+</li>
+<li>
+<a href="e-2ec410b8789900b9f24ae5e2.html">stove0_api_client.Stove0ApiClient.list_admission_policies</a>
+</li>
+<li>
+<a href="e-7662ccf103fe16594d1b156e.html">stove0_api_client.Stove0ApiClient.list_admissions</a>
+</li>
+<li>
+<a href="e-2720c44332cb1597fc5d995d.html">stove0_api_client.Stove0ApiClient.list_departure_policies</a>
+</li>
+<li>
+<a href="e-d0e3dcb00e7e416326cf4a0c.html">stove0_api_client.Stove0ApiClient.list_departure_effects</a>
+</li>
+<li>
+<a href="e-4f5c1eb4e7fb91e9871b9a60.html">stove0_api_client.Stove0ApiClient.list_evaluations</a>
+</li>
+<li>
+<a href="e-327e1fb33fb0a5e7cc1c5cc9.html">stove0_api_client.Stove0ApiClient.list_events</a>
+</li>
+<li>
+<a href="e-97b557e75acc214f73125a6e.html">stove0_api_client.Stove0ApiClient.list_recipes</a>
+</li>
+<li>
+<a href="e-443292b8ede8c7d0efb2e0da.html">stove0_api_client.Stove0ApiClient.list_work</a>
+</li>
+<li>
+<a href="e-9b4c96b046af4e02e21da147.html">stove0_api_client.Stove0ApiClient.preview_workflow</a>
+</li>
+<li>
+<a href="e-5f1590717762882529faefe5.html">stove0_api_client.Stove0ApiClient.rebaseline_departure_policy</a>
+</li>
+<li>
+<a href="e-3cdaf6a87aa72c9d20444dad.html">stove0_api_client.Stove0ApiClient.rebaseline_admission_policy</a>
+</li>
+<li>
+<a href="e-73c243d3b94075e3daddbd08.html">stove0_api_client.Stove0ApiClient.retry_evaluation_variant</a>
+</li>
+<li>
+<a href="e-ae10fbeb31d7e97c98691bff.html">stove0_api_client.Stove0ApiClient.retry_work</a>
+</li>
+<li>
+<a href="e-9d21507b66ec106c29187d63.html">stove0_api_client.Stove0ApiClient.review_evaluation_variant</a>
+</li>
+<li>
+<a href="e-56089f5054fd95486fc09f71.html">stove0_api_client.Stove0ApiClient.run_scheduler</a>
+</li>
+<li>
+<a href="e-ab662166812927db4360a60d.html">stove0_api_client.Stove0ApiClient.scheduler_status</a>
+</li>
+<li>
+<a href="e-fa16ab094b341c1d908cf232.html">stove0_api_client.Stove0ApiClient.step_evaluation</a>
+</li>
+<li>
+<a href="e-d6601387cd5c79c343ecd7ae.html">stove0_api_client.Stove0ApiClient.step_work</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/stove0/packages/api-client/src/stove0_api_client/__init__.py">some-implementations/stove0/packages/api-client/src/stove0_api_client/__init__.py</code>
+<a href="source-authorities.html#source-5d52ac59983e1aa35392c83b">python:stove0-api-client:stove0_api_client</a> — <code data-source-path="some-implementations/stove0/packages/api-client/src/stove0_api_client/__init__.py">some-implementations/stove0/packages/api-client/src/stove0_api_client/__init__.py</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

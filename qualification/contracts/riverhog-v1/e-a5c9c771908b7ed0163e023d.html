@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,2280 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-99b3d079e6c87a1dff566c19.html">riverhog-protocol · Python</a>
+<a href="index.html">All authorities</a> / <a href="a-f4b9669918b4143cbf7f7cd6.html">riverhog-protocol</a> / <a href="i-99b3d079e6c87a1dff566c19.html">Python</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>riverhog_protocol.ProcessingClaimPageDocument</h1>
+<p class="context">Canonical Riverhog wire and identity contracts. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:riverhog-protocol:riverhog-protocol-processingclaimpagedocument:0157b994c2">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>riverhog-protocol</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>riverhog_protocol</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>ProcessingClaimPageDocument</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&#x27;(*, page_size: Annotated[int, Ge(ge=1), Le(le=100)], next_page_token: BrowsePageToken | None, sort: ProcessingClaimSort, order: SortOrder, filters: riverhog_protocol.collection_workflow_transport.ProcessingClaimFiltersDocument, claims: list[riverhog_protocol.collection_workflow_transport.ProcessingClaimDocument]) -&gt; None&#x27;</code>
+</dd>
+</dl>
+<section class="schema-section" id="s-25572c69a77f0903c765981f">
+<h3>Validated model schema</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;page_size&quot;,&quot;next_page_token&quot;,&quot;sort&quot;,&quot;order&quot;,&quot;filters&quot;,&quot;claims&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-9e01642313bf928043b5bae6">claims</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-a5c9c771908b7ed0163e023d.html#v-0729737436862e23ead47674">#/$defs/ProcessingClaimDocument</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>filters</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-65f1deb5e5da96076db99b5f">#/$defs/ProcessingClaimFiltersDocument</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-3cde4d68f99f982af1aff7dd">next_page_token</a>
+</td>
+<td>yes</td>
+<td>any of: <a href="e-a5c9c771908b7ed0163e023d.html#v-45f0983f595ac4cf4885e022">#/$defs/BrowsePageToken</a>; <code>null</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>order</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-8b46b0fee4fdef6a2145485d">#/$defs/SortOrder</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>page_size</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>100</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>sort</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-3db543803a42c349430dfa9e">#/$defs/ProcessingClaimSort</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-85f26d76e775fc2d94ab0e89">ApplicationName</a>
+</li>
+<li>
+<a href="#s-9eb1cbd8835f846f9a4e3d9f">ArtifactSetIdentityDocument</a>
+</li>
+<li>
+<a href="#s-45f0983f595ac4cf4885e022">BrowsePageToken</a>
+</li>
+<li>
+<a href="#s-40fd4aa997f05f0ffff3af90">CollectionId</a>
+</li>
+<li>
+<a href="#s-f7787ce7d5c25e72d6ff0b4e">ExactSetIdentityDocument</a>
+</li>
+<li>
+<a href="#s-e156ec829d61c543395747fb">NonnegativeDecimal</a>
+</li>
+<li>
+<a href="#s-e05dec927802754ff0bc7748">OperationIdentityDocument</a>
+</li>
+<li>
+<a href="#s-5b13a97ed1f9b398f1555556">OutcomeSetDocument</a>
+</li>
+<li>
+<a href="#s-4bf8bbae5148c9b25515445b">ProcessingClaimConsumerDocument</a>
+</li>
+<li>
+<a href="#s-0729737436862e23ead47674">ProcessingClaimDocument</a>
+</li>
+<li>
+<a href="#s-65f1deb5e5da96076db99b5f">ProcessingClaimFiltersDocument</a>
+</li>
+<li>
+<a href="#s-e159af631a07888ad8214be4">ProcessingClaimOutcomeSettlementDocument</a>
+</li>
+<li>
+<a href="#s-3bbf0a4010787e07dfc6fd1c">ProcessingClaimPlanDocument</a>
+</li>
+<li>
+<a href="#s-3db543803a42c349430dfa9e">ProcessingClaimSort</a>
+</li>
+<li>
+<a href="#s-4631ed20b1a46af9348cc684">ReceivingSetDocument</a>
+</li>
+<li>
+<a href="#s-8b46b0fee4fdef6a2145485d">SortOrder</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-9e01642313bf928043b5bae6">
+<h3>Field: claims</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-a5c9c771908b7ed0163e023d.html#v-0729737436862e23ead47674">#/$defs/ProcessingClaimDocument</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-3cde4d68f99f982af1aff7dd">
+<h3>Field: next_page_token</h3>
+<p class="shape">any of: <a href="e-a5c9c771908b7ed0163e023d.html#v-45f0983f595ac4cf4885e022">#/$defs/BrowsePageToken</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-45f0983f595ac4cf4885e022">#/$defs/BrowsePageToken</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-85f26d76e775fc2d94ab0e89">
+<h3>Definition: ApplicationName</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^[a-z0-9]+(?:-[a-z0-9]+)*$</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^[a-z0-9]+(?:-[a-z0-9]+)*$</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-9eb1cbd8835f846f9a4e3d9f">
+<h3>Definition: ArtifactSetIdentityDocument</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;count&quot;,&quot;sha256&quot;,&quot;total_bytes&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>count</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-e156ec829d61c543395747fb">#/$defs/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>total_bytes</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-e156ec829d61c543395747fb">#/$defs/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-45f0983f595ac4cf4885e022">
+<h3>Definition: BrowsePageToken</h3>
+<p class="shape">
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>8192</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>minLength</dt>
+<dd>
+<code>1</code>
+</dd>
+<dt>maxLength</dt>
+<dd>
+<code>8192</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-40fd4aa997f05f0ffff3af90">
+<h3>Definition: CollectionId</h3>
+<p class="shape">all of: <code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>; structured schema</p>
+<h4>All must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>structured schema</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-f7787ce7d5c25e72d6ff0b4e">
+<h3>Definition: ExactSetIdentityDocument</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;count&quot;,&quot;sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>count</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-e156ec829d61c543395747fb">#/$defs/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-e156ec829d61c543395747fb">
+<h3>Definition: NonnegativeDecimal</h3>
+<p class="shape">
+<code>string</code>; pattern: <code>^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>pattern</dt>
+<dd>
+<code>^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-e05dec927802754ff0bc7748">
+<h3>Definition: OperationIdentityDocument</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-5b13a97ed1f9b398f1555556">
+<h3>Definition: OutcomeSetDocument</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;state&quot;,&quot;count&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>count</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-e156ec829d61c543395747fb">#/$defs/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-37fca3d541af8a31528a1a43">failure</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-dca3f000ef84fd940a2d25ad">identity</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-a5c9c771908b7ed0163e023d.html#v-f7787ce7d5c25e72d6ff0b4e">#/$defs/ExactSetIdentityDocument</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>state</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;receiving&quot;,&quot;sealing&quot;,&quot;sealed&quot;,&quot;failed&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-4bf8bbae5148c9b25515445b">
+<h3>Definition: ProcessingClaimConsumerDocument</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;app&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>app</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-85f26d76e775fc2d94ab0e89">#/$defs/ApplicationName</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-381d1fb74883939f5911fc84">key_id</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>300</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-0729737436862e23ead47674">
+<h3>Definition: ProcessingClaimDocument</h3>
+<p class="shape">
+<code>object</code>; 21 fields; additionalProperties: <code>false</code>; all of: structured schema; structured schema; structured schema</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;format&quot;,&quot;id&quot;,&quot;work_id&quot;,&quot;consumer&quot;,&quot;purpose&quot;,&quot;state&quot;,&quot;fence&quot;,&quot;expires_at&quot;,&quot;created_at&quot;,&quot;updated_at&quot;,&quot;work_document&quot;,&quot;work_document_sha256&quot;,&quot;inputs&quot;,&quot;outcomes&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-24c2850fae4a57f94ac351e0">abandoned_at</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-8f75c8d14a90bc80e8db2591">abandonment_reason</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>consumer</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-4bf8bbae5148c9b25515445b">#/$defs/ProcessingClaimConsumerDocument</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>created_at</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>expires_at</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>fence</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-e156ec829d61c543395747fb">#/$defs/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; const: <code>riverhog-processing-claim/v1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>inputs</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-4631ed20b1a46af9348cc684">#/$defs/ReceivingSetDocument</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-37d85f055188594faf2089f7">outcome_settlement</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-a5c9c771908b7ed0163e023d.html#v-e159af631a07888ad8214be4">#/$defs/ProcessingClaimOutcomeSettlementDocument</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>outcomes</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-5b13a97ed1f9b398f1555556">#/$defs/OutcomeSetDocument</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-9c887ff265c98c7631e7eb44">output_collection_id</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-a5c9c771908b7ed0163e023d.html#v-40fd4aa997f05f0ffff3af90">#/$defs/CollectionId</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-22e6d3db1d0adb601a239e2d">plan</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-a5c9c771908b7ed0163e023d.html#v-3bbf0a4010787e07dfc6fd1c">#/$defs/ProcessingClaimPlanDocument</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>purpose</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-15149cdf4e9e7ebdd5fd0f35">released_at</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-3bfd7138b415af0a76046010">settled_at</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>state</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;active&quot;,&quot;settled&quot;,&quot;retiring&quot;,&quot;abandoned&quot;,&quot;released&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>updated_at</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-9e31fb61f1e4ed3873270af5">work_document</a>
+</td>
+<td>yes</td>
+<td>
+<code>object</code>; x-riverhog-encoded-bytes-max: <code>4194304</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>work_document_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>work_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>All must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-35a36bd01d3fdb279fd13748">1</a>
+</td>
+<td>structured schema</td>
+</tr>
+<tr>
+<td>
+<a href="#s-be5fdbeb731ea5f333f1fba5">2</a>
+</td>
+<td>structured schema</td>
+</tr>
+<tr>
+<td>
+<a href="#s-6cc34a2b377386d0ed77047d">3</a>
+</td>
+<td>structured schema</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-65f1deb5e5da96076db99b5f">
+<h3>Definition: ProcessingClaimFiltersDocument</h3>
+<p class="shape">
+<code>object</code>; 1 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-e4a7c8710f45ba9de0b25f08">state</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; enum: <code>[&quot;active&quot;,&quot;settled&quot;,&quot;retiring&quot;,&quot;abandoned&quot;,&quot;released&quot;]</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-e159af631a07888ad8214be4">
+<h3>Definition: ProcessingClaimOutcomeSettlementDocument</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;outcomes&quot;,&quot;source_collection_retirement_policy&quot;,&quot;source_collection_retirement_grace_seconds&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>outcomes</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-f7787ce7d5c25e72d6ff0b4e">#/$defs/ExactSetIdentityDocument</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_collection_retirement_grace_seconds</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-e156ec829d61c543395747fb">#/$defs/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_collection_retirement_policy</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>
+<a href="#s-ee9c5b53004629e3c31d411d">if schema</a>
+</p>
+<p>
+<a href="#s-9414ea95393e75ad59184ceb">then schema</a>
+</p>
+</section>
+<section class="schema-section" id="s-3bbf0a4010787e07dfc6fd1c">
+<h3>Definition: ProcessingClaimPlanDocument</h3>
+<p class="shape">
+<code>object</code>; 9 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;execution_id&quot;,&quot;controller_evidence&quot;,&quot;controller_evidence_sha256&quot;,&quot;operation&quot;,&quot;inputs&quot;,&quot;artifacts&quot;,&quot;source_collection_retirement_policy&quot;,&quot;source_collection_retirement_grace_seconds&quot;,&quot;sealed_at&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>artifacts</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-9eb1cbd8835f846f9a4e3d9f">#/$defs/ArtifactSetIdentityDocument</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-fa4051fad3cfb0c338ac22f4">controller_evidence</a>
+</td>
+<td>yes</td>
+<td>
+<code>object</code>; x-riverhog-encoded-bytes-max: <code>16777216</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>controller_evidence_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>execution_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>inputs</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-f7787ce7d5c25e72d6ff0b4e">#/$defs/ExactSetIdentityDocument</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>operation</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-e05dec927802754ff0bc7748">#/$defs/OperationIdentityDocument</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>sealed_at</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_collection_retirement_grace_seconds</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-e156ec829d61c543395747fb">#/$defs/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_collection_retirement_policy</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>
+<a href="#s-57c5c267862a8a48d55437e7">if schema</a>
+</p>
+<p>
+<a href="#s-9d16068bcf0b3bc1b7ecc034">then schema</a>
+</p>
+</section>
+<section class="schema-section" id="s-3db543803a42c349430dfa9e">
+<h3>Definition: ProcessingClaimSort</h3>
+<p class="shape">
+<code>string</code>; enum: <code>[&quot;created_at&quot;,&quot;updated_at&quot;,&quot;expires_at&quot;,&quot;state&quot;,&quot;work_id&quot;,&quot;execution_id&quot;]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>enum</dt>
+<dd>
+<code>[&quot;created_at&quot;,&quot;updated_at&quot;,&quot;expires_at&quot;,&quot;state&quot;,&quot;work_id&quot;,&quot;execution_id&quot;]</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-4631ed20b1a46af9348cc684">
+<h3>Definition: ReceivingSetDocument</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;state&quot;,&quot;count&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>count</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-e156ec829d61c543395747fb">#/$defs/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-47346444fd662713ff19c42d">identity</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-a5c9c771908b7ed0163e023d.html#v-f7787ce7d5c25e72d6ff0b4e">#/$defs/ExactSetIdentityDocument</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>state</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;receiving&quot;,&quot;sealed&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-8b46b0fee4fdef6a2145485d">
+<h3>Definition: SortOrder</h3>
+<p class="shape">
+<code>string</code>; enum: <code>[&quot;asc&quot;,&quot;desc&quot;]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>string</code>
+</dd>
+<dt>enum</dt>
+<dd>
+<code>[&quot;asc&quot;,&quot;desc&quot;]</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-37fca3d541af8a31528a1a43">
+<h3>Field: failure</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-dca3f000ef84fd940a2d25ad">
+<h3>Field: identity</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-a5c9c771908b7ed0163e023d.html#v-f7787ce7d5c25e72d6ff0b4e">#/$defs/ExactSetIdentityDocument</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-f7787ce7d5c25e72d6ff0b4e">#/$defs/ExactSetIdentityDocument</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-381d1fb74883939f5911fc84">
+<h3>Field: key_id</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>300</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>300</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-24c2850fae4a57f94ac351e0">
+<h3>Field: abandoned_at</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-8f75c8d14a90bc80e8db2591">
+<h3>Field: abandonment_reason</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-37d85f055188594faf2089f7">
+<h3>Field: outcome_settlement</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-a5c9c771908b7ed0163e023d.html#v-e159af631a07888ad8214be4">#/$defs/ProcessingClaimOutcomeSettlementDocument</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-e159af631a07888ad8214be4">#/$defs/ProcessingClaimOutcomeSettlementDocument</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-9c887ff265c98c7631e7eb44">
+<h3>Field: output_collection_id</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-a5c9c771908b7ed0163e023d.html#v-40fd4aa997f05f0ffff3af90">#/$defs/CollectionId</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-40fd4aa997f05f0ffff3af90">#/$defs/CollectionId</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-22e6d3db1d0adb601a239e2d">
+<h3>Field: plan</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-a5c9c771908b7ed0163e023d.html#v-3bbf0a4010787e07dfc6fd1c">#/$defs/ProcessingClaimPlanDocument</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-3bbf0a4010787e07dfc6fd1c">#/$defs/ProcessingClaimPlanDocument</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-15149cdf4e9e7ebdd5fd0f35">
+<h3>Field: released_at</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-3bfd7138b415af0a76046010">
+<h3>Field: settled_at</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-9e31fb61f1e4ed3873270af5">
+<h3>Field: work_document</h3>
+<p class="shape">
+<code>object</code>; x-riverhog-encoded-bytes-max: <code>4194304</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>true</code>
+</dd>
+<dt>x-riverhog-encoded-bytes-max</dt>
+<dd>
+<code>4194304</code>
+</dd>
+<dt>x-riverhog-extent</dt>
+<dd>
+<code>{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-work-document-envelope&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-35a36bd01d3fdb279fd13748">
+<h3>All must match: 1</h3>
+<p class="shape">structured schema</p>
+<p>
+<a href="#s-22a1b820ef79ee254361e5d6">if schema</a>
+</p>
+<p>
+<a href="#s-c76700cc63e4704d8cc18f5f">then schema</a>
+</p>
+<p>
+<a href="#s-c1990c0aa01866feaee42198">else schema</a>
+</p>
+</section>
+<section class="schema-section" id="s-be5fdbeb731ea5f333f1fba5">
+<h3>All must match: 2</h3>
+<p class="shape">structured schema</p>
+<p>
+<a href="#s-8602e1656548ba3a6dff20db">if schema</a>
+</p>
+<p>
+<a href="#s-a00bd01fd031b88af055d10b">then schema</a>
+</p>
+<p>
+<a href="#s-2abf6fb778f708a2f11ba157">else schema</a>
+</p>
+</section>
+<section class="schema-section" id="s-6cc34a2b377386d0ed77047d">
+<h3>All must match: 3</h3>
+<p class="shape">structured schema</p>
+<p>
+<a href="#s-386612316e3dad3ef459f3fc">if schema</a>
+</p>
+<p>
+<a href="#s-3f4dcf766543abeee0403fc2">then schema</a>
+</p>
+<p>
+<a href="#s-8aeeab52459a342126864144">else schema</a>
+</p>
+</section>
+<section class="schema-section" id="s-e4a7c8710f45ba9de0b25f08">
+<h3>Field: state</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; enum: <code>[&quot;active&quot;,&quot;settled&quot;,&quot;retiring&quot;,&quot;abandoned&quot;,&quot;released&quot;]</code>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; enum: <code>[&quot;active&quot;,&quot;settled&quot;,&quot;retiring&quot;,&quot;abandoned&quot;,&quot;released&quot;]</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-ee9c5b53004629e3c31d411d">
+<h3>if schema</h3>
+<p class="shape">1 fields</p>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>source_collection_retirement_policy</code>
+</td>
+<td>no</td>
+<td>const: <code>retain</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-9414ea95393e75ad59184ceb">
+<h3>then schema</h3>
+<p class="shape">1 fields</p>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>source_collection_retirement_grace_seconds</code>
+</td>
+<td>no</td>
+<td>const: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-fa4051fad3cfb0c338ac22f4">
+<h3>Field: controller_evidence</h3>
+<p class="shape">
+<code>object</code>; x-riverhog-encoded-bytes-max: <code>16777216</code>; x-riverhog-extent: structured schema; additionalProperties: <code>true</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>true</code>
+</dd>
+<dt>x-riverhog-encoded-bytes-max</dt>
+<dd>
+<code>16777216</code>
+</dd>
+<dt>x-riverhog-extent</dt>
+<dd>
+<code>{&quot;policy&quot;:&quot;contract_max&quot;,&quot;reason&quot;:&quot;bounded-controller-evidence-envelope&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-57c5c267862a8a48d55437e7">
+<h3>if schema</h3>
+<p class="shape">1 fields</p>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>source_collection_retirement_policy</code>
+</td>
+<td>no</td>
+<td>const: <code>retain</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-9d16068bcf0b3bc1b7ecc034">
+<h3>then schema</h3>
+<p class="shape">1 fields</p>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>source_collection_retirement_grace_seconds</code>
+</td>
+<td>no</td>
+<td>const: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-47346444fd662713ff19c42d">
+<h3>Field: identity</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-a5c9c771908b7ed0163e023d.html#v-f7787ce7d5c25e72d6ff0b4e">#/$defs/ExactSetIdentityDocument</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-a5c9c771908b7ed0163e023d.html#v-f7787ce7d5c25e72d6ff0b4e">#/$defs/ExactSetIdentityDocument</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-22a1b820ef79ee254361e5d6">
+<h3>if schema</h3>
+<p class="shape">1 fields</p>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>state</code>
+</td>
+<td>no</td>
+<td>enum: <code>[&quot;settled&quot;,&quot;retiring&quot;,&quot;released&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-c76700cc63e4704d8cc18f5f">
+<h3>then schema</h3>
+<p class="shape">1 fields</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;settled_at&quot;]</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>settled_at</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-c1990c0aa01866feaee42198">
+<h3>else schema</h3>
+<p class="shape">1 fields</p>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>settled_at</code>
+</td>
+<td>no</td>
+<td>
+<code>null</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-8602e1656548ba3a6dff20db">
+<h3>if schema</h3>
+<p class="shape">1 fields</p>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>state</code>
+</td>
+<td>no</td>
+<td>const: <code>abandoned</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-a00bd01fd031b88af055d10b">
+<h3>then schema</h3>
+<p class="shape">2 fields</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;abandoned_at&quot;,&quot;abandonment_reason&quot;]</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>abandoned_at</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>abandonment_reason</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-2abf6fb778f708a2f11ba157">
+<h3>else schema</h3>
+<p class="shape">2 fields</p>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>abandoned_at</code>
+</td>
+<td>no</td>
+<td>
+<code>null</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>abandonment_reason</code>
+</td>
+<td>no</td>
+<td>
+<code>null</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-386612316e3dad3ef459f3fc">
+<h3>if schema</h3>
+<p class="shape">1 fields</p>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>state</code>
+</td>
+<td>no</td>
+<td>const: <code>released</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-3f4dcf766543abeee0403fc2">
+<h3>then schema</h3>
+<p class="shape">1 fields</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;released_at&quot;]</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>released_at</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-8aeeab52459a342126864144">
+<h3>else schema</h3>
+<p class="shape">1 fields</p>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>released_at</code>
+</td>
+<td>no</td>
+<td>
+<code>null</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/python/riverhog_protocol.ProcessingClaimPageDocument</code>
-</h3>
+</h4>
 <table id="v-885d7fc9beb9b4aadc026e4d">
 <tbody>
 <tr>
@@ -5216,25 +7472,43 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-a74b6e9158853241601417db.html">riverhog_protocol.ProcessingClaimPageDocument.__getitem__</a>
+</li>
+<li>
+<a href="e-11960c42f8efeb37895d90db.html">riverhog_protocol.ProcessingClaimPageDocument.get</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="packages/riverhog-protocol/src/riverhog_protocol/__init__.py">packages/riverhog-protocol/src/riverhog_protocol/__init__.py</code>
+<a href="source-authorities.html#source-19e35f15d9105cd44f8b6fae">python:riverhog-protocol:riverhog_protocol</a> — <code data-source-path="packages/riverhog-protocol/src/riverhog_protocol/__init__.py">packages/riverhog-protocol/src/riverhog_protocol/__init__.py</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,61 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-6528dc1bfac16ac316fc8277.html">state-schema · Python</a>
+<a href="index.html">All authorities</a> / <a href="a-dc7e110390277417d04a795d.html">state-schema</a> / <a href="i-6528dc1bfac16ac316fc8277.html">Python</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>state_schema.StateConnection</h1>
+<p class="context">Forward-only relational state schema and migration contracts. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:state-schema:state-schema-stateconnection:fb5d7345c5">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>state-schema</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>state_schema</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>StateConnection</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(engine: &#x27;Engine&#x27;, connection: &#x27;Optional[PoolProxiedConnection]&#x27; = None, _has_events: &#x27;Optional[bool]&#x27; = None, _allow_revalidate: &#x27;bool&#x27; = True, _allow_autobegin: &#x27;bool&#x27; = True)&quot;</code>
+</dd>
+</dl>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/python/state_schema.StateConnection</code>
-</h3>
+</h4>
 <table id="v-194353803b2a879ecc3dc119">
 <tbody>
 <tr>
@@ -112,25 +149,127 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-3a3c3b6754b7e232c11490a3.html">state_schema.StateConnection.begin_nested</a>
+</li>
+<li>
+<a href="e-01ce8a3c53ec23911c27916c.html">state_schema.StateConnection.begin_twophase</a>
+</li>
+<li>
+<a href="e-dbf2ee3cd9103d978c7b4bfa.html">state_schema.StateConnection.begin</a>
+</li>
+<li>
+<a href="e-cf5c0eba0b41439986125bf1.html">state_schema.StateConnection.close</a>
+</li>
+<li>
+<a href="e-21258ab86ecaa3ffa19dccc3.html">state_schema.StateConnection.closed</a>
+</li>
+<li>
+<a href="e-6548ad250be2d534313488f8.html">state_schema.StateConnection.commit_prepared</a>
+</li>
+<li>
+<a href="e-31afe4a27fd175366151231a.html">state_schema.StateConnection.commit</a>
+</li>
+<li>
+<a href="e-4f2869a002d16a3f96822743.html">state_schema.StateConnection.connection</a>
+</li>
+<li>
+<a href="e-04aac6b5fb959cbd982b8a6d.html">state_schema.StateConnection.default_isolation_level</a>
+</li>
+<li>
+<a href="e-b966da2a4b6cfd411c13d442.html">state_schema.StateConnection.detach</a>
+</li>
+<li>
+<a href="e-fd80b51e61e322235450e0ee.html">state_schema.StateConnection.__enter__</a>
+</li>
+<li>
+<a href="e-b57eb0f759fbdb9096eb0ad6.html">state_schema.StateConnection.exec_driver_sql</a>
+</li>
+<li>
+<a href="e-aaa9d3d9c2a7b143bad993df.html">state_schema.StateConnection.execute</a>
+</li>
+<li>
+<a href="e-3833ffd3bb0fa46b0e52bfff.html">state_schema.StateConnection.execution_options</a>
+</li>
+<li>
+<a href="e-59a79a44eb5d5ebd4fa09b57.html">state_schema.StateConnection.__exit__</a>
+</li>
+<li>
+<a href="e-bdf6d8fc02259600bf4a6dab.html">state_schema.StateConnection.get_execution_options</a>
+</li>
+<li>
+<a href="e-622c5a58e2c4d3b4a4b713a0.html">state_schema.StateConnection.get_isolation_level</a>
+</li>
+<li>
+<a href="e-daf6bded994e2f29be75b7ad.html">state_schema.StateConnection.get_nested_transaction</a>
+</li>
+<li>
+<a href="e-f5de0814532594184241d4ce.html">state_schema.StateConnection.get_transaction</a>
+</li>
+<li>
+<a href="e-751bbd6d7f7d7ff084e7851c.html">state_schema.StateConnection.in_nested_transaction</a>
+</li>
+<li>
+<a href="e-ce915832199ff450d47e9bfe.html">state_schema.StateConnection.in_transaction</a>
+</li>
+<li>
+<a href="e-0cca5a156a615e612a7ff415.html">state_schema.StateConnection.info</a>
+</li>
+<li>
+<a href="e-779db9b862dd69821f42571e.html">state_schema.StateConnection.invalidate</a>
+</li>
+<li>
+<a href="e-d0749e36848d8f2dca66b66c.html">state_schema.StateConnection.invalidated</a>
+</li>
+<li>
+<a href="e-66537a0acc037aeb05f2d34d.html">state_schema.StateConnection.recover_twophase</a>
+</li>
+<li>
+<a href="e-36928c7f40de89258642484b.html">state_schema.StateConnection.rollback_prepared</a>
+</li>
+<li>
+<a href="e-0f0d41a6315dfb8135cc551d.html">state_schema.StateConnection.rollback</a>
+</li>
+<li>
+<a href="e-4372b2f1609202df62e1d0b9.html">state_schema.StateConnection.scalar</a>
+</li>
+<li>
+<a href="e-a8e8cffa830c423ac9056918.html">state_schema.StateConnection.scalars</a>
+</li>
+<li>
+<a href="e-d2364d3ffe832e8db10d49b2.html">state_schema.StateConnection.schema_for_object</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="packages/state-schema/src/state_schema/__init__.py">packages/state-schema/src/state_schema/__init__.py</code>
+<a href="source-authorities.html#source-57d87d192cfc08fbd16c849d">python:state-schema:state_schema</a> — <code data-source-path="packages/state-schema/src/state_schema/__init__.py">packages/state-schema/src/state_schema/__init__.py</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

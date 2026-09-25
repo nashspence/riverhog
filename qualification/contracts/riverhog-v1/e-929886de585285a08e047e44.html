@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,61 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-6c0c68dab977066c2d607683.html">stove0-server · Python</a>
+<a href="index.html">All authorities</a> / <a href="a-38913a60d95bc167e38ef46d.html">stove0-server</a> / <a href="i-6c0c68dab977066c2d607683.html">Python</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>stove0_core.Stove0RiverhogClient</h1>
+<p class="context">Content-opaque transformation application for Riverhog. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:stove0-server:stove0-core-stove0riverhogclient:bbe326cd05">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>stove0-server</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>stove0_core</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>Stove0RiverhogClient</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(api: &#x27;RiverhogApi&#x27;, *, claim_lease_seconds: &#x27;int&#x27; = 1800, capability_ttl_seconds: &#x27;int&#x27; = 900, declared_workspace_protection: &#x27;DeclaredWorkspaceProtection&#x27;, claim_purpose: &#x27;str&#x27; = &#x27;stove0-collection-work/v1&#x27;, state: &#x27;WorkStore | None&#x27; = None, authority_batch_size: &#x27;int&#x27; = 100) -&gt; &#x27;None&#x27;&quot;</code>
+</dd>
+</dl>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/python/stove0_core.Stove0RiverhogClient</code>
-</h3>
+</h4>
 <table id="v-7e52965530bf654d34bbea12">
 <tbody>
 <tr>
@@ -112,25 +149,88 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-ab7293ec3bc861739614a3a4.html">stove0_core.Stove0RiverhogClient.abandon_claim</a>
+</li>
+<li>
+<a href="e-8785007b5d2073ddde5cfd9a.html">stove0_core.Stove0RiverhogClient.abandon_preview_claim</a>
+</li>
+<li>
+<a href="e-55990c987874903f36b4c592.html">stove0_core.Stove0RiverhogClient.acquire_preview_claim</a>
+</li>
+<li>
+<a href="e-b94d64d8cd94aa5792abc15f.html">stove0_core.Stove0RiverhogClient.acquire_claim</a>
+</li>
+<li>
+<a href="e-c6fb9f8af611f4d55fdfb009.html">stove0_core.Stove0RiverhogClient.begin_source_collection_retirement</a>
+</li>
+<li>
+<a href="e-5d869765ec0b01e389b9cd5f.html">stove0_core.Stove0RiverhogClient.observation_authority</a>
+</li>
+<li>
+<a href="e-de04a42c6872e94984d92a3a.html">stove0_core.Stove0RiverhogClient.project_target_source_edges</a>
+</li>
+<li>
+<a href="e-38881e3857082d7a7ebe56a0.html">stove0_core.Stove0RiverhogClient.project_target_dispositions</a>
+</li>
+<li>
+<a href="e-8fcc1aaed78adb9291286bba.html">stove0_core.Stove0RiverhogClient.release_claim</a>
+</li>
+<li>
+<a href="e-6b6bcc335d743be4427a7d4f.html">stove0_core.Stove0RiverhogClient.renew_claim</a>
+</li>
+<li>
+<a href="e-50a14ec433311b2a830fe0a0.html">stove0_core.Stove0RiverhogClient.restart_claim</a>
+</li>
+<li>
+<a href="e-75c9e87e1cfcfe7837aacf2e.html">stove0_core.Stove0RiverhogClient.retire_source_collection</a>
+</li>
+<li>
+<a href="e-b6bd1a7910b07d214e518d3b.html">stove0_core.Stove0RiverhogClient.seal_execution</a>
+</li>
+<li>
+<a href="e-9687b33da5ab36e12b547cbb.html">stove0_core.Stove0RiverhogClient.seal_target_projection</a>
+</li>
+<li>
+<a href="e-e7244a2707e7e1bdceadf942.html">stove0_core.Stove0RiverhogClient.settle_outcomes</a>
+</li>
+<li>
+<a href="e-bfeaf33e34e245b9118e99a8.html">stove0_core.Stove0RiverhogClient.target_authority</a>
+</li>
+<li>
+<a href="e-6c1795f953f22ff1c74e9f32.html">stove0_core.Stove0RiverhogClient.verify_and_settle</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/stove0/application/server/src/stove0_core/__init__.py">some-implementations/stove0/application/server/src/stove0_core/__init__.py</code>
+<a href="source-authorities.html#source-7558b08e7fed034d624d9aed">python:stove0-server:stove0_core</a> — <code data-source-path="some-implementations/stove0/application/server/src/stove0_core/__init__.py">some-implementations/stove0/application/server/src/stove0_core/__init__.py</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

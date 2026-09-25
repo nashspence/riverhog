@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,335 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>schemas: RecipeDefinition</h1>
+<p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
 <section id="contract" data-contract="http-schemas:stove0:schemas-recipedefinition:035d3387eb">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-5d4f1f1b92366a9938e26ccf">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 11 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>RecipeDefinition</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;revision&quot;,&quot;routes&quot;,&quot;unmatched_artifact_disposition&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>allow_derived_inputs</code>
+</td>
+<td>no</td>
+<td>
+<code>boolean</code>; default: <code>false</code>
+</td>
+<td>
+<code>false</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-d591b26ad6510d94afa9679a">artifact_associations</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-b76bf63405bacd8771bbfa5b.html#v-52c5a88ad02389cc290ad314">#/components/schemas/ArtifactAssociation</a>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>event_input_closure</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>single-finalized-collection</code>; default: <code>single-finalized-collection</code>
+</td>
+<td>
+<code>single-finalized-collection</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-2211dbf2b8a3a28df2de8a63">join</a>
+</td>
+<td>no</td>
+<td>any of: <a href="e-7fe2641a77541b9e35b3290d.html#v-62829ebffc7e08ed21110d4e">#/components/schemas/RecipeJoin</a>; <code>null</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-095b4c1e00f74fed36924d56">observers</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-15c804d3e83e2b150f0ddc30.html#v-20174c02187da4779cc279d1">#/components/schemas/ObserverUse</a>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>revision</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-33b4d877a91123444c1e51d6.html#v-d3b3166d063534403f12c3ea">#/components/schemas/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-823b3b9b9f516beb52f8171a">routes</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="#s-c57456c35af437623b108d85">exactly one of 2 alternatives</a>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_collection_retirement_grace_seconds</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>; default: <code>0</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_collection_retirement_policy</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;retain&quot;,&quot;retire-after-verified-output&quot;]</code>; default: <code>retain</code>
+</td>
+<td>
+<code>retain</code>
+</td>
+<td>Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks.</td>
+</tr>
+<tr>
+<td>
+<code>unmatched_artifact_disposition</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;retain-in-source&quot;,&quot;reject-work&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-d591b26ad6510d94afa9679a">
+<h3>Field: artifact_associations</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-b76bf63405bacd8771bbfa5b.html#v-52c5a88ad02389cc290ad314">#/components/schemas/ArtifactAssociation</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Artifact Associations</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-2211dbf2b8a3a28df2de8a63">
+<h3>Field: join</h3>
+<p class="shape">any of: <a href="e-7fe2641a77541b9e35b3290d.html#v-62829ebffc7e08ed21110d4e">#/components/schemas/RecipeJoin</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-7fe2641a77541b9e35b3290d.html#v-62829ebffc7e08ed21110d4e">#/components/schemas/RecipeJoin</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-095b4c1e00f74fed36924d56">
+<h3>Field: observers</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-15c804d3e83e2b150f0ddc30.html#v-20174c02187da4779cc279d1">#/components/schemas/ObserverUse</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Observers</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-823b3b9b9f516beb52f8171a">
+<h3>Field: routes</h3>
+<p class="shape">
+<code>array</code>; items: <a href="#s-c57456c35af437623b108d85">exactly one of 2 alternatives</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Routes</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+<p>
+<a href="#s-c57456c35af437623b108d85">items schema</a>
+</p>
+</section>
+<section class="schema-section" id="s-c57456c35af437623b108d85">
+<h3>items schema</h3>
+<p class="shape">exactly one of: <a href="e-926c14bdc278ff9928725efa.html#v-ff8515a74ce833e52a8decbd">#/components/schemas/RecipeRoute</a>; <a href="e-a3458961f6acdbe188f1c69c.html#v-49c4834612a5223184780a17">#/components/schemas/RecipeCoordinationRoute</a>
+</p>
+<dl class="facts">
+<dt>discriminator</dt>
+<dd>
+<code>{&quot;mapping&quot;:{&quot;coordination&quot;:&quot;#/components/schemas/RecipeCoordinationRoute&quot;,&quot;operation&quot;:&quot;#/components/schemas/RecipeRoute&quot;},&quot;propertyName&quot;:&quot;kind&quot;}</code>
+</dd>
+</dl>
+<h4>Exactly one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-926c14bdc278ff9928725efa.html#v-ff8515a74ce833e52a8decbd">#/components/schemas/RecipeRoute</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<a href="e-a3458961f6acdbe188f1c69c.html#v-49c4834612a5223184780a17">#/components/schemas/RecipeCoordinationRoute</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/stove0/components/schemas/RecipeDefinition</code>
-</h3>
+</h4>
 <table id="v-5d4f1f1b92366a9938e26ccf">
 <tbody>
 <tr>
@@ -882,481 +1193,86 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>http:stove0:components:/schemas/RecipeDefinition/properties/artifact_associations:cardinality</code>
-<table id="v-a6f05c16a777fbfcb2957dce">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
 <td>
-<table id="v-486889539a8ba05d887376a9">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
+<code>/external_contract/http_openapi/stove0/components/schemas/RecipeDefinition/properties/artifact_associations</code>
+</td>
 <td>
-<span id="v-d91d155f83f51d2a39c91c0e">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1artifact_associations:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
 <td>
-<span id="v-d314c7982488766ff7564342">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1artifact_associations:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/RecipeDefinition/properties/observers</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-821bb47e17876d2d00da82fb">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1artifact_associations:cardinality/capacity_authority/owner">stove0</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/RecipeDefinition/properties/routes</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-9130182ba1effd57517ccef6">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1artifact_associations:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-6bef4f41600450bd8bbece57">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1artifact_associations:cardinality/id">http:stove0:components:/schemas/RecipeDefinition/properties/artifact_associations:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-4163486aa739e36a1cbfa477">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1artifact_associations:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-f434c7b1ad6d6fb12a1e8d81">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1artifact_associations:cardinality/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-1d0dc3246ec45575fcf592a8">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1artifact_associations:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-1711bb667f907b067d2bfee1">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1artifact_associations:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-79b24c88b88e355e6d1a76f8">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1artifact_associations:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-96dea2bab0c2a9e439a81355">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1artifact_associations:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/RecipeDefinition/properties/artifact_associations</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-90120624b71b769a48cd2204">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1artifact_associations:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/RecipeDefinition/properties/observers:cardinality</code>
-<table id="v-a0017122b3c7c225a7296a14">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-06920c4bc0243016636dcb0a">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-baf621d2ef276bdaad88be4b">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1observers:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-29b4ecb2bf32d0f701bf03a3">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1observers:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-5e40bfab3ab4309afac16217">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1observers:cardinality/capacity_authority/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-a51ce91d5ad73bb5f054ee20">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1observers:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-dc1b5dc1a082cae33ea5111f">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1observers:cardinality/id">http:stove0:components:/schemas/RecipeDefinition/properties/observers:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-23bd3ffdff800b596cd561e2">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1observers:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-bd59e6aef59486377cac8f55">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1observers:cardinality/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-ac869a301c7c93a0e4d1d805">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1observers:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-809c81db48be40ea9bff0d91">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1observers:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-bb39284311eb5242ea51f9b3">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1observers:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-e77a838b64d71f0391eb4f7f">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1observers:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/RecipeDefinition/properties/observers</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-bf07a25979b2c51ba22079e5">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1observers:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/RecipeDefinition/properties/routes:cardinality</code>
-<table id="v-d40f026a373155138d3ac8d6">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-6bebfd7661fed92a0122f047">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-202c07fd257d5a2bba64404c">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1routes:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-527bb88344c49635161c2c4a">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1routes:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-84146e0188c1b81d3b2a4431">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1routes:cardinality/capacity_authority/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-408f29fe6b3a17bf7fe0124d">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1routes:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-3f8f4dcdcb1ab598b736c757">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1routes:cardinality/id">http:stove0:components:/schemas/RecipeDefinition/properties/routes:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-2b3b31c3250325bc05198d1b">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1routes:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-d7ef945c6adb7ce16f5b1664">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1routes:cardinality/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-27030b50ad86c693b2892df6">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1routes:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-33c58f923d2d1efde0c7cc0f">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1routes:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-edaa2a6f625bd01177e46d69">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1routes:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-561eb61bbc0ab7e83b5a06e4">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1routes:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/RecipeDefinition/properties/routes</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-16f1a9d1b72e9d2f87985af3">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeDefinition~1properties~1routes:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

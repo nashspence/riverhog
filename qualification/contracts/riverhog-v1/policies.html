@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Governing policies · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>Governing policies</h1>
+<p>These definitions belong to the current Contract Closure. Audit Mode adds recorded application scopes without changing the definitions.</p>
+<h2>Compatibility</h2>
+<ul>
+<li id="policy-915b8756ae46d0538c68cdd6">
+<span id="definition-484612c67b15ad2fadb2b828">
+</span>
+<strong>
+<a href="e-325dd4e466bf9e808fbff6cc.html">archive</a>
+</strong>
+<span class="audit-cue"> · <a href="p-915b8756ae46d0538c68cdd6.html">Indexed applications</a>
+</span>
+<p>A valid v1 archive remains independently recoverable throughout the supported v1 lifetime. Pack construction, ingress checkpointing, and resumable-write strategies are not archive-format compatibility promises.</p>
+</li>
+<li id="policy-48a89776de7f91b173b46d03">
+<span id="definition-11a2acfae8928808a0f9e3b7">
+</span>
+<strong>
+<a href="e-b352af10b5fe5469cff2b5d3.html">cli</a>
+</strong>
+<span class="audit-cue"> · <a href="p-48a89776de7f91b173b46d03.html">Indexed applications</a>
+</span>
+<p>Command names, options, exit status, and structured output remain backward compatible throughout v1; prose output is for people.</p>
+</li>
+<li id="policy-95e9a1225947118a084b8f29">
+<span id="definition-20ed0aa4fc1801c826ad848a">
+</span>
+<strong>
+<a href="e-e11e8aa8a7cf10211214e0fe.html">components</a>
+</strong>
+<span class="audit-cue"> · <a href="p-95e9a1225947118a084b8f29.html">Indexed applications</a>
+</span>
+<p>A supported deployment runs components from one coordinated product version.</p>
+</li>
+<li id="policy-8dc08bb46173175ad6e39a86">
+<span id="definition-43f1f247d96b7b042a98a919">
+</span>
+<strong>
+<a href="e-15e2e266f753cb544237d6f8.html">configuration</a>
+</strong>
+<span class="audit-cue"> · <a href="p-8dc08bb46173175ad6e39a86.html">Indexed applications</a>
+</span>
+<p>Accepted v1 configuration remains valid throughout v1 unless an unsafe value must be rejected.</p>
+</li>
+<li id="policy-214a49c2deda0753d71abbc9">
+<span id="definition-ac3d88d871010392771d87e2">
+</span>
+<strong>
+<a href="e-acb5adfdf32642afdb0b8381.html">durable state</a>
+</strong>
+<span class="audit-cue"> · <a href="p-214a49c2deda0753d71abbc9.html">Indexed applications</a>
+</span>
+<p>Every later v1 release applies each durable-state authority&#x27;s declared transition rule to state created by every earlier v1 release; this does not promise downgrade support or earlier software reading later state.</p>
+</li>
+<li id="policy-5bc717c2c0bac943b7a7d35f">
+<span id="definition-9e2eb4b18cddd83e76e7e791">
+</span>
+<strong>
+<a href="e-7bb6c2762f189727c686307e.html">http api</a>
+</strong>
+<span class="audit-cue"> · <a href="p-5bc717c2c0bac943b7a7d35f.html">Indexed applications</a>
+</span>
+<p>Published v1 HTTP and native lifecycle-event contracts remain backward compatible throughout v1.</p>
+</li>
+<li id="policy-c6988e244a00eb0951ff6452">
+<span id="definition-db30c07708be10d66f7d4643">
+</span>
+<strong>
+<a href="e-d9106dddb102bbc2baf8e363.html">licensing</a>
+</strong>
+<span class="audit-cue"> · <a href="p-c6988e244a00eb0951ff6452.html">Indexed applications</a>
+</span>
+<p>Each continuing first-party Python distribution and OCI repository published in v1 retains every SPDX license alternative granted when that coordinate first shipped in v1; withdrawing a baseline grant requires a new major version.</p>
+</li>
+<li id="policy-e574772ba506efb4e49b648a">
+<span id="definition-7d6f9abc7960129ddde6a0c6">
+</span>
+<strong>
+<a href="e-595ebd1d7f6b4d0912135ade.html">python api</a>
+</strong>
+<span class="audit-cue"> · <a href="p-e574772ba506efb4e49b648a.html">Indexed applications</a>
+</span>
+<p>Freeze-protected declared public-module exports, callable signatures, selected constants, enum members and values, and selected public model and dataclass structures remain backward compatible throughout v1.</p>
+</li>
+<li id="policy-04aa4508f13936f3d7a798b8">
+<span id="definition-0680f26670e36a0be945bcea">
+</span>
+<strong>
+<a href="e-b7977b58be57080241e598b7.html">recovery</a>
+</strong>
+<span class="audit-cue"> · <a href="p-04aa4508f13936f3d7a798b8.html">Indexed applications</a>
+</span>
+<p>Every later v1 recovery release reads every valid earlier v1 archive and provenance set.</p>
+</li>
+</ul>
+<h2>Publication</h2>
+<ul>
+<li id="policy-8fb44d24369aa3f2654e7e43">
+<span id="definition-21db8888913b2abad506cbbf">
+</span>
+<strong>image identity scope</strong>
+<span class="audit-cue"> · <a href="p-8fb44d24369aa3f2654e7e43.html">Indexed applications</a>
+</span>
+<p>Runtime descriptors use OCI ImageID (the image configuration SHA-256 digest). A platform-specific image-manifest digest pins a deployed image; an image-index digest identifies the publication set, including attestations. Nonpublishing qualification records local ImageIDs; publication evidence records platform manifest digests. Per-release identities are not permanent v1 contract constants.</p>
+</li>
+<li id="policy-7dacd6d393eee7a8df0fe477">
+<span id="definition-d941896c379da1def61b0f36">
+</span>
+<strong>platform scope</strong>
+<span class="audit-cue"> · <a href="p-7dacd6d393eee7a8df0fe477.html">Indexed applications</a>
+</span>
+<p>A platform or architecture claim applies only to the exact published image, distribution, or installation form that carries it. Qualification platforms remain evidence unless an external contract independently protects them.</p>
+</li>
+<li id="policy-3e4dc2e851573b5230d231cb">
+<span id="definition-64c9b780540901d0789296e3">
+</span>
+<strong>role retention</strong>
+<span class="audit-cue"> · <a href="p-3e4dc2e851573b5230d231cb.html">Indexed applications</a>
+</span>
+<p>Publication creates no new product, API, protocol, provider, or direct-consumption promise. Each publication unit retains its exact release role and links to its existing semantic owners.</p>
+</li>
+</ul>
+<h2>Extent principles</h2>
+<ul>
+<li id="policy-a16724dfa09124d33f8b6942">
+<span id="definition-c57d03c1ac0003f78eb71eb7">
+</span>
+<strong>
+<a href="e-01cf6a5a30eb948dbfe56b59.html">bounded work</a>
+</strong>
+<span class="audit-cue"> · <a href="p-a16724dfa09124d33f8b6942.html">Indexed applications</a>
+</span>
+<p>Large logical totals cross bounded pages, segments, or restartable work steps; a carrier bound does not redefine the logical total.</p>
+</li>
+<li id="policy-aa533611e9544e66c46a3eb5">
+<span id="definition-f75ba69202f582cefb0f6c35">
+</span>
+<strong>
+<a href="e-f750850b6420b2420a02a73d.html">configuration</a>
+</strong>
+<span class="audit-cue"> · <a href="p-aa533611e9544e66c46a3eb5.html">Indexed applications</a>
+</span>
+<p>Hardware- or environment-dependent limits that observably affect accepted work are operator-configurable and source-linked.</p>
+</li>
+<li id="policy-5f9f32ebd9e12ff6278c1b72">
+<span id="definition-ce83c4f0c17fbf5f82d958c6">
+</span>
+<strong>
+<a href="e-ca4bda017ed2f1cd7c22984b.html">implementation privacy</a>
+</strong>
+<span class="audit-cue"> · <a href="p-5f9f32ebd9e12ff6278c1b72.html">Indexed applications</a>
+</span>
+<p>Buffers, provider mechanics, database layout, and other non-observable implementation extents are not frozen here.</p>
+</li>
+<li id="policy-cfe2e12ee67729ced94eb3fc">
+<span id="definition-a7b7a6a3310bd6c92f3ad0f1">
+</span>
+<strong>
+<a href="e-ad1ebf74fe82e37f2e9a6d3a.html">logical totals</a>
+</strong>
+<span class="audit-cue"> · <a href="p-cfe2e12ee67729ced94eb3fc.html">Indexed applications</a>
+</span>
+<p>A finite logical total has no product-level semantic maximum unless its owning contract declares one.</p>
+</li>
+<li id="policy-fac1e46f10c9d67b1225e66b">
+<span id="definition-ab1da786749de40deb36727e">
+</span>
+<strong>
+<a href="e-b4fbae8016caa151490a4296.html">operational capacity</a>
+</strong>
+<span class="audit-cue"> · <a href="p-fac1e46f10c9d67b1225e66b.html">Indexed applications</a>
+</span>
+<p>Capacity policy may explicitly reject, defer, or throttle work, but must not silently truncate it or become an undocumented semantic ceiling.</p>
+</li>
+</ul>
+<h2>Extent rules</h2>
+<ul>
+<li id="policy-2b3f3f1594af6859668bb47a">
+<span id="definition-cc8243a831931f483953f0ab">
+</span>
+<strong>
+<a href="e-22e15595381765f036e92f1c.html">bounded-segment/v1</a>
+</strong>
+<span class="audit-cue"> · <a href="p-2b3f3f1594af6859668bb47a.html">Indexed applications</a>
+</span>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Declared rule fact</th>
+<th scope="col">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>authority</td>
+<td>
+<code data-value-pointer="/external_contract/extents/rules/bounded-segment~1v1/authority">the owning schema&#x27;s x-riverhog-extent declaration</code>
+<span class="kind">string</span>
+</td>
+</tr>
+<tr>
+<td>completion</td>
+<td>
+<code data-value-pointer="/external_contract/extents/rules/bounded-segment~1v1/completion">the owner-declared progression or repeated-work contract</code>
+<span class="kind">string</span>
+</td>
+</tr>
+<tr>
+<td>exceeded</td>
+<td>
+<code data-value-pointer="/external_contract/extents/rules/bounded-segment~1v1/exceeded">bounded-carrier-validation-error</code>
+<span class="kind">string</span>
+</td>
+</tr>
+<tr>
+<td>policy</td>
+<td>
+<code data-value-pointer="/external_contract/extents/rules/bounded-segment~1v1/policy">segmented_no_total_max</code>
+<span class="kind">string</span>
+</td>
+</tr>
+<tr>
+<td>semantic maximum</td>
+<td>
+<code data-value-pointer="/external_contract/extents/rules/bounded-segment~1v1/semantic_maximum">null</code>
+<span class="kind">null</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+<li id="policy-75a89f9d1c36a116e229af66">
+<span id="definition-880614cb87cca076bd22dc5e">
+</span>
+<strong>
+<a href="e-deac65178b87fc43fb5c3251.html">extension-contract/v1</a>
+</strong>
+<span class="audit-cue"> · <a href="p-75a89f9d1c36a116e229af66.html">Indexed applications</a>
+</span>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Declared rule fact</th>
+<th scope="col">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>authority</td>
+<td>
+<code data-value-pointer="/external_contract/extents/rules/extension-contract~1v1/authority">the independently versioned extension contract</code>
+<span class="kind">string</span>
+</td>
+</tr>
+<tr>
+<td>core semantic maximum</td>
+<td>
+<code data-value-pointer="/external_contract/extents/rules/extension-contract~1v1/core_semantic_maximum">null</code>
+<span class="kind">null</span>
+</td>
+</tr>
+<tr>
+<td>policy</td>
+<td>
+<code data-value-pointer="/external_contract/extents/rules/extension-contract~1v1/policy">extension_owned</code>
+<span class="kind">string</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+<li id="policy-6b76b527cb21614128974797">
+<span id="definition-c35859ad2c6c8a34ef05c100">
+</span>
+<strong>
+<a href="e-29139ab5c6c876200636b44a.html">route-progression/v1</a>
+</strong>
+<span class="audit-cue"> · <a href="p-6b76b527cb21614128974797.html">Indexed applications</a>
+</span>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Declared rule fact</th>
+<th scope="col">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>authority</td>
+<td>
+<code data-value-pointer="/external_contract/extents/rules/route-progression~1v1/authority">the route-owned x-riverhog-read-collection declaration</code>
+<span class="kind">string</span>
+</td>
+</tr>
+<tr>
+<td>completion</td>
+<td>
+<code data-value-pointer="/external_contract/extents/rules/route-progression~1v1/completion">the owning progression contract</code>
+<span class="kind">string</span>
+</td>
+</tr>
+<tr>
+<td>policy</td>
+<td>
+<code data-value-pointer="/external_contract/extents/rules/route-progression~1v1/policy">segmented_no_total_max</code>
+<span class="kind">string</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+<li id="policy-c0db822fc03486df7f845fba">
+<span id="definition-6b20b7da6a50de6d4b7f5291">
+</span>
+<strong>
+<a href="e-b14ce2e70d066095452c67d1.html">schema-bound/v1</a>
+</strong>
+<span class="audit-cue"> · <a href="p-c0db822fc03486df7f845fba.html">Indexed applications</a>
+</span>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Declared rule fact</th>
+<th scope="col">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>authority</td>
+<td>
+<code data-value-pointer="/external_contract/extents/rules/schema-bound~1v1/authority">the projected JSON Schema constraint</code>
+<span class="kind">string</span>
+</td>
+</tr>
+<tr>
+<td>exceeded</td>
+<td>
+<code data-value-pointer="/external_contract/extents/rules/schema-bound~1v1/exceeded">schema-validation-error</code>
+<span class="kind">string</span>
+</td>
+</tr>
+<tr>
+<td>policy</td>
+<td>
+<code data-value-pointer="/external_contract/extents/rules/schema-bound~1v1/policy">fixed-or-contract-max</code>
+<span class="kind">string</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+</ul>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,144 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>schemas: JoinAdmittedEventData</h1>
+<p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
 <section id="contract" data-contract="http-schemas:stove0:schemas-joinadmittedeventdata:57e8f9e27d">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-43623f3a7b29af940d71a76e">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>JoinAdmittedEventData</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;work_id&quot;,&quot;phase&quot;,&quot;revision&quot;,&quot;branch_set_sha256&quot;,&quot;join_plan_sha256&quot;,&quot;join_work_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>branch_set_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>join_plan_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>join_work_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>phase</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; const: <code>coordinating</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>revision</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>2</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>work_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEventData</code>
-</h3>
+</h4>
 <table id="v-43623f3a7b29af940d71a76e">
 <tbody>
 <tr>
@@ -420,587 +540,98 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>http:stove0:components:/schemas/JoinAdmittedEventData/properties/branch_set_sha256:length</code>
-<table id="v-99166ccf5b2df206e62a9429">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-44462a3af3232335f1c0195f">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1branch_set_sha256:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEventData/properties/branch_set_sha256</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-52aba44ae4d88378d8806bb8">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1branch_set_sha256:length/id">http:stove0:components:/schemas/JoinAdmittedEventData/properties/branch_set_sha256:length</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEventData/properties/join_plan_sha256</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-13351c1cd9cc8fb0ebd59978">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1branch_set_sha256:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEventData/properties/join_work_id</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>minimum</code>
-</th>
 <td>
-<span id="v-6b8002dfa778056e3a8c9f5f">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1branch_set_sha256:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEventData/properties/work_id</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-d780b72d53c6cbb49bc18f56">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1branch_set_sha256:length/owner">stove0</code>
-<span class="kind">string</span>
-</span>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
+<td>length · characters · fixed</td>
 <td>
-<span id="v-19102ebecf369f8f15e98675">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1branch_set_sha256:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-b9fb2a40da87a2e872d0b4d4">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1branch_set_sha256:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-4711dcf5061aa8dca1846525">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1branch_set_sha256:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-94a98b0ae81301f14c16d9d1">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-ac99ebd8681917c204dff7e9">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1branch_set_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-958b57135e0c05288b364489">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1branch_set_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEventData/properties/branch_set_sha256</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-250b990f9df02af3fbbdead9">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1branch_set_sha256:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/JoinAdmittedEventData/properties/join_plan_sha256:length</code>
-<table id="v-1ef26dd4c038e6809147d93d">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-46beda4e1cf8fdc576bd887f">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_plan_sha256:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-45788b261f20658548526847">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_plan_sha256:length/id">http:stove0:components:/schemas/JoinAdmittedEventData/properties/join_plan_sha256:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-e9fbc662f26136820fd8ad5a">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_plan_sha256:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-02bc780ec873368a4b8b3477">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_plan_sha256:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-3ae28be24b71de5c13f9d341">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_plan_sha256:length/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-b305ce5ee652b68a63fc5459">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_plan_sha256:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-1e49e742e895b0da48cb5595">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_plan_sha256:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-821e481c34bf97f7f2779785">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_plan_sha256:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-947b09502a9e69ad0afe6f5b">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-8723317bf572dea97b084222">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_plan_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-c99ea0f38112409718075da1">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_plan_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEventData/properties/join_plan_sha256</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-0d60df01ac16b8c1f5aba9b6">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_plan_sha256:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/JoinAdmittedEventData/properties/join_work_id:length</code>
-<table id="v-27c04cb1512875ae6260dd6d">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-b68a75ed62db6d9d746958a6">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_work_id:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-fe9cb0c68a79cb43abf7bdbf">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_work_id:length/id">http:stove0:components:/schemas/JoinAdmittedEventData/properties/join_work_id:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-8c579fca1a7a51688e89c17c">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_work_id:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-523d497b07972e7d842511fb">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_work_id:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-604295bb6b5be5de7543d0e1">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_work_id:length/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-7970ad804db99119e6d89f30">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_work_id:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-a99fd5f94b35f48f0fc191dc">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_work_id:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-6dc3907112a91fb5f4756a85">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_work_id:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-83cfe4f588c18bff387c9bf1">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-f645d01a94833beb89ec2979">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_work_id:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-7232a89ff8ad2479aa0c4890">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_work_id:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEventData/properties/join_work_id</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-5507c3f8a4d7e6837063ea66">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1join_work_id:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/JoinAdmittedEventData/properties/work_id:length</code>
-<table id="v-c261a1f8a257760feb9df9c4">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-2edd8326076a2d50c49019e4">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1work_id:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-763a0f5859e9a1c2f36f5962">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1work_id:length/id">http:stove0:components:/schemas/JoinAdmittedEventData/properties/work_id:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-f54a49f0a8cfee671d9b3394">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1work_id:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-c47c6a590ecc23feeca122cb">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1work_id:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-d0c0b28d6c2b6648264fd9da">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1work_id:length/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-d0651f3d7c157f0ec469267c">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1work_id:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-228222b76a9bb8e69c607db0">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1work_id:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-e5d475cc5617d1024db9ddec">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1work_id:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-8bb3721c0ce8a0e629ea8e17">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-19f2e4e322e1bd701e5a16c7">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1work_id:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-c312d5ffeee0642d3a9a129f">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1work_id:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEventData/properties/work_id</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-c26d386c43ecb39d4b933006">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinAdmittedEventData~1properties~1work_id:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

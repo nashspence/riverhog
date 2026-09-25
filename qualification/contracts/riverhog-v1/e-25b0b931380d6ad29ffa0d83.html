@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,156 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-14fed9d3129b23e19476ca3d.html">a-riverhog-linux-provenance-contract-lib · Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-ff8afa89a33b95fa541f982a.html">a-riverhog-linux-provenance-contract-lib</a> / <a href="i-14fed9d3129b23e19476ca3d.html">Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json</h1>
+<p class="context">Linux filesystem observation contracts for Riverhog provenance. Standalone structured-value contracts; these do not define an interaction.</p>
 <section id="contract" data-contract="schema:a-riverhog-linux-provenance-contract-lib:https-nashspence-github-io-riverhog-v1-pr-8be8c78b69:86a7abd170">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-f7d1eefa0bc5d89d65ad3334">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>$id</dt>
+<dd>
+<code>https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json</code>
+</dd>
+<dt>$schema</dt>
+<dd>
+<code>https://json-schema.org/draft/2020-12/schema</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;attributes&quot;,&quot;attributes_mask&quot;,&quot;set_names&quot;,&quot;supported_names&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>attributes</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>attributes_mask</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-d309266269195e4b75554c85">set_names</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <code>string</code>; uniqueItems: <code>true</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-d7a5a019181ebbe26ecb1bd0">supported_names</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <code>string</code>; uniqueItems: <code>true</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-d309266269195e4b75554c85">
+<h3>Field: set_names</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; uniqueItems: <code>true</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>uniqueItems</dt>
+<dd>
+<code>true</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-d7a5a019181ebbe26ecb1bd0">
+<h3>Field: supported_names</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; uniqueItems: <code>true</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>uniqueItems</dt>
+<dd>
+<code>true</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json</code>
-</h3>
+</h4>
 <table id="v-f7d1eefa0bc5d89d65ad3334">
 <tbody>
 <tr>
@@ -321,243 +453,74 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/riverhog/provenance/contracts/linux/src/a_riverhog_linux_provenance_contract_lib/schemas/linux-statx-attributes.schema.json">some-implementations/riverhog/provenance/contracts/linux/src/a_riverhog_linux_provenance_contract_lib/schemas/linux-statx-attributes.schema.json</code>
+<a href="source-authorities.html#source-ea93e415ba1dcda6399fb141">protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json</a> — <code data-source-path="some-implementations/riverhog/provenance/contracts/linux/src/a_riverhog_linux_provenance_contract_lib/schemas/linux-statx-attributes.schema.json">some-implementations/riverhog/provenance/contracts/linux/src/a_riverhog_linux_provenance_contract_lib/schemas/linux-statx-attributes.schema.json</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json:/properties/set_names:cardinality</code>
-<table id="v-41412c81c347be4a48b8c641">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-2c6c5cc98527610ecf951569">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json:~1properties~1set_names:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json/properties/set_names</code>
+</td>
+<td>
+<a href="policies.html#definition-880614cb87cca076bd22dc5e">extent-rule/extension-contract/v1</a>
+</td>
+<td>cardinality · items · extension_owned</td>
+<td>
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-8a85f431f0a4e609dd9d79f4">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json:~1properties~1set_names:cardinality/id">protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json:/properties/set_names:cardinality</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json/properties/supported_names</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-5e3327f5f50afecc2c7b130e">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json:~1properties~1set_names:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
+<a href="policies.html#definition-880614cb87cca076bd22dc5e">extent-rule/extension-contract/v1</a>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
+<td>cardinality · items · extension_owned</td>
 <td>
-<span id="v-f977856b3fa3345c032e5c14">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json:~1properties~1set_names:cardinality/owner">https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-519e16b028ca0cb186af5e0c">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json:~1properties~1set_names:cardinality/policy">extension_owned</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-43f41c08cfd5e5b36d9df19b">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json:~1properties~1set_names:cardinality/reason">independently-versioned-extension-authority</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-712deaf74b040b541909bdc5">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json:~1properties~1set_names:cardinality/rule">extension-contract/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-7123d62de4abd0bed0fd23c8">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json:~1properties~1set_names:cardinality/source_pointer">/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json/properties/set_names</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-c5ee3b2ddaf6e3df28d06b79">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json:~1properties~1set_names:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-<li>
-<code>protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json:/properties/supported_names:cardinality</code>
-<table id="v-856222ea7cb71cbee0bf7e3d">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-8b4b09df77ba747e7a42e369">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json:~1properties~1supported_names:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-4fe9adfbf62d5ee69d649fec">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json:~1properties~1supported_names:cardinality/id">protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json:/properties/supported_names:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-80d2085c568d4447bd1aff9b">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json:~1properties~1supported_names:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-00cf23756234509fb995f5e9">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json:~1properties~1supported_names:cardinality/owner">https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-statx-attributes.json</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-a324ca54c05cc2a7137ed075">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json:~1properties~1supported_names:cardinality/policy">extension_owned</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-8558f728d0915d46aa11b9d7">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json:~1properties~1supported_names:cardinality/reason">independently-versioned-extension-authority</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-262584b778198be02f0cf50d">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json:~1properties~1supported_names:cardinality/rule">extension-contract/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-a473be970292c84113a93e25">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json:~1properties~1supported_names:cardinality/source_pointer">/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json/properties/supported_names</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-2135fa6d6aea81f6c8a62773">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-statx-attributes.json:~1properties~1supported_names:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

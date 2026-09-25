@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,92 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-1e214ab4bb25a95a95c29945.html">release · Runtime Images</a>
+<a href="index.html">All authorities</a> / <a href="a-a4d451ec23463726f72c43d6.html">release</a> / <a href="i-1e214ab4bb25a95a95c29945.html">Runtime Images</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>Runtime image: a-review0-rclone-target</h1>
+<p class="context">Coordinated v1 compatibility and publication promises. Published OCI runtime-image identities.</p>
 <section id="contract" data-contract="runtime-images:release:runtime-image-a-review0-rclone-target:65f7926d85">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Publication and compatibility facts</h3>
+<p class="lead">Review0 rclone delivery target for Stove0.</p>
+<dl class="facts">
+<dt>build target</dt>
+<dd>
+<code>a-review0-rclone-target</code>
+</dd>
+<dt>format</dt>
+<dd>
+<code>oci-image</code>
+</dd>
+<dt>license baseline</dt>
+<dd>
+<code>first-v1-publication</code>
+</dd>
+<dt>license expression</dt>
+<dd>
+<code>CAL-1.0</code>
+</dd>
+<dt>repository</dt>
+<dd>
+<code>ghcr.io/nashspence/a-review0-rclone-target</code>
+</dd>
+<dt>role</dt>
+<dd>
+<code>component</code>
+</dd>
+</dl>
+<h4>distribution roots</h4>
+<ul>
+<li>
+<code>a-review0-rclone-target</code>
+</li>
+</ul>
+<h4>platforms</h4>
+<ul>
+<li>
+<code>linux/amd64</code>
+</li>
+</ul>
+<h4>publication identity</h4>
+<dl class="facts">
+<dt>coordinate</dt>
+<dd>
+<code>ghcr.io/nashspence/a-review0-rclone-target</code>
+</dd>
+<dt>kind</dt>
+<dd>
+<code>oci-repository</code>
+</dd>
+</dl>
+<h4>tag templates</h4>
+<ul>
+<li>
+<code>ghcr.io/nashspence/a-review0-rclone-target:{version}</code>
+</li>
+<li>
+<code>ghcr.io/nashspence/a-review0-rclone-target:sha-{source_sha}</code>
+</li>
+</ul>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/release/publication/runtime_images/a-review0-rclone-target</code>
-</h3>
+</h4>
 <table id="v-46c8aaae92777a2941160ff3">
 <tbody>
 <tr>
@@ -222,34 +290,50 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+</li>
+<li>
+<a href="policies.html#policy-8fb44d24369aa3f2654e7e43">publication/image-identity-scope/v1</a>
+</li>
+<li>
+<a href="policies.html#policy-7dacd6d393eee7a8df0fe477">publication/platform-scope/v1</a>
+</li>
+<li>
+<a href="policies.html#policy-3e4dc2e851573b5230d231cb">publication/role-retention/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="docker-bake.hcl">docker-bake.hcl</code>
+<a href="source-authorities.html#source-8d3f4df21c6910e597cfff7d">release-images:docker-bake</a> — <code data-source-path="docker-bake.hcl">docker-bake.hcl</code>
 </li>
 <li>
-<code data-source-path="scripts/release.py">scripts/release.py::publication_contract</code>
+<a href="source-authorities.html#source-03a2f48338f5e4266c3c60dd">release-publication:planner</a> — <code data-source-path="scripts/release.py">scripts/release.py::publication_contract</code>
 </li>
 <li>
-<code data-source-path="release.toml">release.toml</code>
+<a href="source-authorities.html#source-c5380dbe5fe03e44a5c0d8d6">release:release.toml</a> — <code data-source-path="release.toml">release.toml</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make release-check</code>
+<a href="source-commands.html#route-8d8d22d6a6b17edc6babcfab">make release-check</a>
 </li>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,331 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-a6af98fc937d33bf0c436ac2.html">a-review0-rclone-target · Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-834f85115e93f11480bc68c6.html">a-review0-rclone-target</a> / <a href="i-a6af98fc937d33bf0c436ac2.html">Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>RcloneTargetConfig</h1>
+<p class="context">Review0 rclone delivery target for Stove0. Standalone structured-value contracts; these do not define an interaction.</p>
 <section id="contract" data-contract="schema:a-review0-rclone-target:rclonetargetconfig:302e47e9c0">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-5365839dcda43f1c6ad512da">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>$id</dt>
+<dd>
+<code>https://nashspence.github.io/riverhog/v1/config/a-review0-rclone-target.schema.json</code>
+</dd>
+<dt>$schema</dt>
+<dd>
+<code>https://json-schema.org/draft/2020-12/schema</code>
+</dd>
+<dt>title</dt>
+<dd>
+<code>RcloneTargetConfig</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;token_file&quot;,&quot;samplers&quot;,&quot;destination_identity&quot;,&quot;rclone_remote&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>destination_identity</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-e3f01a6c8d00c797e3a965aa">rclone_config_file</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; format: <code>path</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>rclone_remote</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>rclone_timeout_seconds</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; default: <code>86400</code>
+</td>
+<td>
+<code>86400</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-cbe06057e4bd39c60a3f8813">samplers</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-b7663ac450c50021d9780086.html#v-1295ad18fff4aa6f04ed63b7">#/$defs/SamplerConfig</a>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>token_file</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; format: <code>path</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-1295ad18fff4aa6f04ed63b7">SamplerConfig</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-e3f01a6c8d00c797e3a965aa">
+<h3>Field: rclone_config_file</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; format: <code>path</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Rclone Config File</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; format: <code>path</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-cbe06057e4bd39c60a3f8813">
+<h3>Field: samplers</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-b7663ac450c50021d9780086.html#v-1295ad18fff4aa6f04ed63b7">#/$defs/SamplerConfig</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Samplers</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-1295ad18fff4aa6f04ed63b7">
+<h3>Definition: SamplerConfig</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>SamplerConfig</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;base_url&quot;,&quot;token_file&quot;,&quot;descriptor_sha256&quot;,&quot;image_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>allow_insecure_http</code>
+</td>
+<td>no</td>
+<td>
+<code>boolean</code>; default: <code>false</code>
+</td>
+<td>
+<code>false</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>base_url</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>2048</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>descriptor_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._-]{0,118}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>image_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^sha256:[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>token_file</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; format: <code>path</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json</code>
-</h3>
+</h4>
 <table id="v-5365839dcda43f1c6ad512da">
 <tbody>
 <tr>
@@ -915,576 +1222,98 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/stove0/review0/rclone-effect-target/src/a_review0_rclone_target/config.schema.json">some-implementations/stove0/review0/rclone-effect-target/src/a_review0_rclone_target/config.schema.json</code>
+<a href="source-authorities.html#source-e6338ec203459e6b3c5d6605">protocol:https://nashspence.github.io/riverhog/v1/config/a-review0-rclone-target.schema.json</a> — <code data-source-path="some-implementations/stove0/review0/rclone-effect-target/src/a_review0_rclone_target/config.schema.json">some-implementations/stove0/review0/rclone-effect-target/src/a_review0_rclone_target/config.schema.json</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>protocol:https://nashspence.github.io/riverhog/v1/config/a-review0-rclone-target.schema.json:/$defs/SamplerConfig/properties/base_url:length</code>
-<table id="v-ccfa0d4c7c4106f845341bd5">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-3b71daf772bd51bbb32d1471">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1$defs~1SamplerConfig~1properties~1base_url:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json/$defs/SamplerConfig/properties/base_url</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:2048,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-cb4e7015e4f76f2824e53792">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1$defs~1SamplerConfig~1properties~1base_url:length/id">protocol:https://nashspence.github.io/riverhog/v1/config/a-review0-rclone-target.schema.json:/$defs/SamplerConfig/properties/base_url:length</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json/$defs/SamplerConfig/properties/descriptor_sha256</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-11dd523a77477fa139f877b2">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1$defs~1SamplerConfig~1properties~1base_url:length/maximum">2048</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json/properties/destination_identity</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>minimum</code>
-</th>
 <td>
-<span id="v-f2808aefe2c68a6c9403689a">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1$defs~1SamplerConfig~1properties~1base_url:length/minimum">1</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json/properties/samplers</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-1b06ac9c3c44af289c4603b2">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1$defs~1SamplerConfig~1properties~1base_url:length/owner">https://nashspence.github.io/riverhog/v1/config/a-review0-rclone-target.schema.json</code>
-<span class="kind">string</span>
-</span>
+<code>no-semantic-maximum/v1</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
+<td>cardinality · items · operational_policy</td>
 <td>
-<span id="v-ac0b4ec61016958aca2e3c4b">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1$defs~1SamplerConfig~1properties~1base_url:length/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-5ad32f9ef1ff53dbb4fd2b0b">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1$defs~1SamplerConfig~1properties~1base_url:length/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-fb44f8373746f45b197ed4c3">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1$defs~1SamplerConfig~1properties~1base_url:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-bacb7946a3711bab295beaee">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1$defs~1SamplerConfig~1properties~1base_url:length/source_pointer">/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json/$defs/SamplerConfig/properties/base_url</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-b90ea343c6164684e1c4b70d">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1$defs~1SamplerConfig~1properties~1base_url:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;https://nashspence.github.io/riverhog/v1/config/a-review0-rclone-target.schema.json&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-<li>
-<code>protocol:https://nashspence.github.io/riverhog/v1/config/a-review0-rclone-target.schema.json:/$defs/SamplerConfig/properties/descriptor_sha256:length</code>
-<table id="v-a9b6aad7f7044998ce6aae95">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-781a25951bc1b38a49cb3cc0">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-b0eaf5912ed980259c08e429">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/id">protocol:https://nashspence.github.io/riverhog/v1/config/a-review0-rclone-target.schema.json:/$defs/SamplerConfig/properties/descriptor_sha256:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-364c88e6f3aae07ce2d0280b">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-9fb791830420361e31ca7472">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-59e871cb5247e4cbacdd67c4">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/owner">https://nashspence.github.io/riverhog/v1/config/a-review0-rclone-target.schema.json</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-034e42b22e85b780d9dd2b29">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-e0eb48dc7d711e8b38212282">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-0ee91a85e8d27be9935f2258">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-86059fa98b8ae8c379a6a493">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-49b475c688705fa3641009ce">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-93281a053b4579bdb65f54ad">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/source_pointer">/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json/$defs/SamplerConfig/properties/descriptor_sha256</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-fdf13e0c68250c99cdc97524">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:https://nashspence.github.io/riverhog/v1/config/a-review0-rclone-target.schema.json:/properties/destination_identity:length</code>
-<table id="v-6bff1a45853a23b627f3c54f">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-aa2d1d566188d899dda2a6a3">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1destination_identity:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-6bd0b5d7d7a17c6075cf98be">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1destination_identity:length/id">protocol:https://nashspence.github.io/riverhog/v1/config/a-review0-rclone-target.schema.json:/properties/destination_identity:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-6ee09c6a1d930309f29fa086">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1destination_identity:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-00e4d49edbe36150619aba3e">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1destination_identity:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-9cd8e448f799bee80cc24bf6">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1destination_identity:length/owner">https://nashspence.github.io/riverhog/v1/config/a-review0-rclone-target.schema.json</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-0188617f4822538640fa448f">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1destination_identity:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-00479cccf7c047130c129fd0">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1destination_identity:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-ed971d7a99c90d4d66730f90">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1destination_identity:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-abe1ab0a3d3a8b245dfeaa75">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-3316fc8d8da2756b274308c5">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1destination_identity:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-3c976cb9f6acbfeb86eb074b">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1destination_identity:length/source_pointer">/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json/properties/destination_identity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-044f024283ee41b2ca87e81d">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1destination_identity:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:https://nashspence.github.io/riverhog/v1/config/a-review0-rclone-target.schema.json:/properties/samplers:cardinality</code>
-<table id="v-c2139476f91ed4aefe56b3da">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-4109905d1aa20446571173e0">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-0f8451670b0690b2bc9dc6ec">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1samplers:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-f59cc44b25e908599f882d30">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1samplers:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-7eb96c009223d13de6545e80">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1samplers:cardinality/capacity_authority/owner">https://nashspence.github.io/riverhog/v1/config/a-review0-rclone-target.schema.json</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-c41f29d71ae0ae19a30ed0de">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1samplers:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-37ec3700bf39995ec66d7c90">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1samplers:cardinality/id">protocol:https://nashspence.github.io/riverhog/v1/config/a-review0-rclone-target.schema.json:/properties/samplers:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-a1252b3535c1093cb0ad90c2">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1samplers:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-5e8d26e8630f518eea3914ba">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1samplers:cardinality/owner">https://nashspence.github.io/riverhog/v1/config/a-review0-rclone-target.schema.json</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-0ea8f97544742bf342a658fc">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1samplers:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-327def572d18768d6bac6741">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1samplers:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-f21bd1cdf3f3750fd2e5d6e9">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1samplers:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-5da27150a4b739aa73ec16c0">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1samplers:cardinality/source_pointer">/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json/properties/samplers</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-41a47ad399792434dee1fa85">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-review0-rclone-target.schema.json:~1properties~1samplers:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

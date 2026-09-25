@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,61 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-45097380d84d25f30164bb3b.html">stove0-target-client · Python</a>
+<a href="index.html">All authorities</a> / <a href="a-c4df57cb2aae082005a35482.html">stove0-target-client</a> / <a href="i-45097380d84d25f30164bb3b.html">Python</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>stove0_target_client.TargetClient</h1>
+<p class="context">Narrow HTTP client for Stove0 transform targets. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:stove0-target-client:stove0-target-client-targetclient:6e1d8983a4">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>stove0-target-client</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>stove0_target_client</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>TargetClient</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(base_url: &#x27;str&#x27;, *, token: &#x27;str | None&#x27; = None, timeout: &#x27;float | None&#x27; = 300.0, allow_insecure_http: &#x27;bool&#x27; = False) -&gt; &#x27;None&#x27;&quot;</code>
+</dd>
+</dl>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/python/stove0_target_client.TargetClient</code>
-</h3>
+</h4>
 <table id="v-42327b6f6fa4c3c16e7b2623">
 <tbody>
 <tr>
@@ -112,25 +149,52 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-34707eca83018cdc09280e31.html">stove0_target_client.TargetClient.cancel</a>
+</li>
+<li>
+<a href="e-69f9dc718d85051e64a7f4e7.html">stove0_target_client.TargetClient.descriptor</a>
+</li>
+<li>
+<a href="e-c29e0c67bcee275ae54d9df9.html">stove0_target_client.TargetClient.preflight</a>
+</li>
+<li>
+<a href="e-c38a2489f24dee0addf304b2.html">stove0_target_client.TargetClient.put_job</a>
+</li>
+<li>
+<a href="e-02c61bbd46e385c4f09b0349.html">stove0_target_client.TargetClient.status</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/stove0/packages/target-client/src/stove0_target_client/__init__.py">some-implementations/stove0/packages/target-client/src/stove0_target_client/__init__.py</code>
+<a href="source-authorities.html#source-be4c80156ff336b606db210b">python:stove0-target-client:stove0_target_client</a> — <code data-source-path="some-implementations/stove0/packages/target-client/src/stove0_target_client/__init__.py">some-implementations/stove0/packages/target-client/src/stove0_target_client/__init__.py</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

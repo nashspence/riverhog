@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,23 +12,29 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a>
+<a href="index.html">All authorities</a> / <a href="a-a4d451ec23463726f72c43d6.html">release</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>release · Artifact Verification</h1>
+<p class="context">Coordinated v1 compatibility and publication promises.</p>
+<p>External verification mechanisms for published artifacts.</p>
+<div class="table-scroll">
 <table>
 <thead>
 <tr>
 <th>Element</th>
-<th>Contract pointer</th>
+<th>Recorded comparison facts</th>
 </tr>
 </thead>
 <tbody>
@@ -36,28 +42,23 @@
 <td>
 <a href="e-b0085d2d08b48e2048898357.html">Trust: checksums</a>
 </td>
-<td>
-<code>/external_contract/release/publication/trust/checksums</code>
-</td>
+<td>SHA256SUMS</td>
 </tr>
 <tr data-element="artifact-verification:release:trust-maintainer-signature:b67877bbd1">
 <td>
 <a href="e-c7362ef2e25a3f0d3c7b1be2.html">Trust: maintainer_signature</a>
 </td>
-<td>
-<code>/external_contract/release/publication/trust/maintainer_signature</code>
-</td>
+<td>SHA256SUMS.minisig</td>
 </tr>
 <tr data-element="artifact-verification:release:trust-workflow-attestation:9c54619fbe">
 <td>
 <a href="e-68ee32bf892c33742c23f2a9.html">Trust: workflow_attestation</a>
 </td>
-<td>
-<code>/external_contract/release/publication/trust/workflow_attestation</code>
-</td>
+<td>workflow_attestation</td>
 </tr>
 </tbody>
 </table>
+</div>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>

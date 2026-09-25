@@ -4,17 +4,29 @@ const audit=document.getElementById('audit-mode');
 const docs=document.getElementById('docs-mode');
 root.dataset.js='yes';
 function apply(){const url=new URL(location.href);
-  root.dataset.audit=url.searchParams.get('audit')==='1'&&audit&&!audit.disabled?'on':'off';
+  const requestedAudit=url.searchParams.get('audit');
+  root.dataset.audit=(requestedAudit==='1'||
+    (requestedAudit===null&&root.dataset.auditDefault==='on'))&&audit&&!audit.disabled?'on':'off';
   root.dataset.docs=url.searchParams.get('docs')==='1'&&docs&&!docs.disabled?'on':'off';
   if(audit)audit.checked=root.dataset.audit==='on';
   if(docs)docs.checked=root.dataset.docs==='on';}
 function changed(){const url=new URL(location.href);
-  for(const [key,control] of [['audit',audit],['docs',docs]])
-    if(control&&control.checked)url.searchParams.set(key,'1');else url.searchParams.delete(key);
+  for(const [key,control] of [['audit',audit],['docs',docs]]){
+    if(control&&control.checked)url.searchParams.set(key,'1');
+    else if(key==='audit'&&root.dataset.auditDefault==='on')url.searchParams.set(key,'0');
+    else url.searchParams.delete(key);
+  }
   history.pushState(null,'',url);apply();}
 if(audit)audit.addEventListener('change',changed);
 if(docs)docs.addEventListener('change',changed);
 addEventListener('popstate',apply);
+function revealFragment(){
+  if(!location.hash)return;
+  const target=document.getElementById(decodeURIComponent(location.hash.slice(1)));
+  for(let parent=target?.parentElement;parent;parent=parent.parentElement)
+    if(parent.tagName==='DETAILS')parent.open=true;
+}
+addEventListener('hashchange',revealFragment);
 document.addEventListener('click',event=>{
   const link=event.target.closest('a[href]');if(!link)return;
   const url=new URL(link.href,location.href);
@@ -23,6 +35,7 @@ document.addEventListener('click',event=>{
   else url.searchParams.delete(key);
   link.href=url.href;});
 apply();
+revealFragment();
 const sources=[...document.querySelectorAll('code[data-source-path]')];
 if(sources.length)fetch(new URL('../build-manifest.json',location.href))
   .then(response=>response.ok?response.json():null)

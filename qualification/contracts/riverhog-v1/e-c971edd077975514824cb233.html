@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,42 +12,241 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-e6ba739e0b692aa9b862b85d.html">stove0-observer-support · CLI</a>
+<a href="index.html">All authorities</a> / <a href="a-8c9e8f101342203a4fa0b60f.html">stove0-observer-support</a> / <a href="i-e6ba739e0b692aa9b862b85d.html">CLI</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>stove0-observer-conformance</h1>
+<p class="context">External-author protocol, runtime, and conformance support for Stove0 content observers. CLI contract owned by stove0-observer-support.</p>
 <section id="contract" data-contract="cli:stove0-observer-support:stove0-observer-conformance:b986442d80">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Command</h3>
+<dl class="facts">
+<dt>name</dt>
+<dd>
+<code>stove0-observer-conformance</code>
+</dd>
+<dt>allow abbrev</dt>
+<dd>
+<code>true</code>
+</dd>
+</dl>
+<p>Parser flags and defaults are recorded inputs. A missing default does not assert an explicit null value or rule out other configured fallbacks.</p>
+<h3>Arguments and options</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Parameter and spelling</th>
+<th scope="col">Invocation</th>
+<th scope="col">Type and constraints</th>
+<th scope="col">Default and environment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>base_url</code>
+</td>
+<td>required; argument; None value(s) per use</td>
+<td>
+<code>not recorded</code>
+</td>
+<td>not recorded</td>
+</tr>
+<tr>
+<td>
+<code>invocation</code>
+<br>
+<code>--invocation</code>
+</td>
+<td>optional; option; None value(s) per use</td>
+<td>
+<code>Path</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>semantic_vectors</code>
+<br>
+<code>--semantic-vectors</code>
+</td>
+<td>optional; option; None value(s) per use</td>
+<td>
+<code>Path</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>semantic_validator_provider</code>
+<br>
+<code>--semantic-validator-provider</code>
+</td>
+<td>optional; option; None value(s) per use</td>
+<td>
+<code>not recorded</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Result contract</h3>
+<dl class="facts">
+<dt>identity</dt>
+<dd>
+<code>stove0-observer-conformance-cli-result/root/v1</code>
+</dd>
+<dt>profile id</dt>
+<dd>
+<code>stove0-observer-conformance-cli/v1</code>
+</dd>
+<dt>structured output</dt>
+<dd>
+<code>always-json</code>
+</dd>
+<dt>human json relationship</dt>
+<dd>
+<code>not-applicable</code>
+</dd>
+</dl>
+<h4>Success outcomes</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Outcome</th>
+<th scope="col">Exit</th>
+<th scope="col">Selection</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>conformant</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>kind: <code>conformance-completed</code>
+</td>
+<td>json: authority: <code>generated:stove0-observer</code>; definition: <code>ObserverConformanceResult</code>; kind: <code>schema-authority</code>
+</td>
+<td>all: <code>empty</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Failure outcomes</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Outcome</th>
+<th scope="col">Exit</th>
+<th scope="col">Selection</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>usage</code>
+</td>
+<td>
+<code>2</code>
+</td>
+<td>kind: <code>parser-rejected-invocation</code>
+</td>
+<td>all: <code>empty</code>
+</td>
+<td>all: <code>noncontractual-usage-diagnostic</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Terminating controls</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Control</th>
+<th scope="col">Trigger</th>
+<th scope="col">Exit</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>help</code>
+</td>
+<td>
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;-h&quot;,&quot;--help&quot;]}</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>
+<code>noncontractual-framework-help</code>
+</td>
+<td>
+<code>empty</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/stove0-observer-conformance/allow_abbrev</code>
-</h3>
+</h4>
 <span id="v-0b86bb01fd336b4a3e7a38fc">
 <code data-value-pointer="/external_contract/cli/stove0-observer-conformance/allow_abbrev">true</code>
 <span class="kind">boolean</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/stove0-observer-conformance/name</code>
-</h3>
+</h4>
 <span id="v-72fdebec4037fba508793e33">
 <code data-value-pointer="/external_contract/cli/stove0-observer-conformance/name">stove0-observer-conformance</code>
 <span class="kind">string</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/stove0-observer-conformance/parameters</code>
-</h3>
+</h4>
 <table id="v-ec1a194093fe0298bf8950bf">
 <tbody>
 <tr>
@@ -406,9 +605,9 @@
 </table>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/stove0-observer-conformance/result_contract</code>
-</h3>
+</h4>
 <table id="v-7dbd1eee6d6da33fadd550ad">
 <tbody>
 <tr>
@@ -712,9 +911,9 @@
 </table>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/stove0-observer-conformance/terminating_controls</code>
-</h3>
+</h4>
 <table id="v-99731742e687451131ffc520">
 <tbody>
 <tr>
@@ -830,1103 +1029,134 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-48a89776de7f91b173b46d03">compatibility/cli/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="some-implementations/stove0/packages/observer-support/src/stove0_observer_support/conformance.py">some-implementations/stove0/packages/observer-support/src/stove0_observer_support/conformance.py::&lt;module&gt;</code>
+<a href="source-authorities.html#source-5719d140a8e05f7592e58235">cli:stove0-observer-conformance</a> — <code data-source-path="some-implementations/stove0/packages/observer-support/src/stove0_observer_support/conformance.py">some-implementations/stove0/packages/observer-support/src/stove0_observer_support/conformance.py::&lt;module&gt;</code>
 </li>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>cli:stove0-observer-conformance:stove0-observer-conformance:parameter:0:values-per-occurrence</code>
-<table id="v-cb9161b29e7ec263e38505f5">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-a40396155b46cb6adda92a06">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:0:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/stove0-observer-conformance/parameters/0</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-c890f8e76896fbf2601fe113">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:0:values-per-occurrence/id">cli:stove0-observer-conformance:stove0-observer-conformance:parameter:0:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/stove0-observer-conformance/parameters/1</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · occurrences · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0-observer-conformance&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;kind&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-606ea6f4291c6fa7aef5cedd">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:0:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/cli/stove0-observer-conformance/parameters/1</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>minimum</code>
-</th>
 <td>
-<span id="v-47d116db02dabe23a1237ef6">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:0:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/cli/stove0-observer-conformance/parameters/2</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · occurrences · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0-observer-conformance&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;kind&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-8da044d5c19fdea0af09548c">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:0:values-per-occurrence/owner">stove0-observer-conformance</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/stove0-observer-conformance/parameters/2</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>policy</code>
-</th>
 <td>
-<span id="v-a4ea5828610cc49d01e7082d">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:0:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/stove0-observer-conformance/parameters/3</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · occurrences · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0-observer-conformance&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;kind&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>reason</code>
-</th>
 <td>
-<span id="v-9d7a83cf0705502f8d728cc8">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:0:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/stove0-observer-conformance/parameters/3</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
 <td>
-<span id="v-34815e962c6219e6340c49d4">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:0:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
+<td>cardinality · values-per-occurrence · fixed</td>
 <td>
-<table id="v-37def8f39dc63dee04d2148f">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-55a11e71b022e2d68447dccf">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:0:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-86bc8eb980ade3c06731bf52">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:0:values-per-occurrence/source_pointer">/external_contract/cli/stove0-observer-conformance/parameters/0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-64f12d4f9abc5f90769e78a9">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:0:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:occurrences</code>
-<table id="v-12e01bac95199544fc1c52cd">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-87ee5f1dd045d0c46b609f3f">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-3bfda3441e5cdd4bc790d8ba">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:occurrences/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-92182a5b7775af95cbb806a1">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:occurrences/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-b9b6b4ff2692bea6c05463da">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:occurrences/capacity_authority/owner">stove0-observer-conformance</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-b908ad1969faa9e0bba19e60">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:occurrences/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-9c6d18350bd981fea28ed5ba">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:occurrences/id">cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:occurrences</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-d319a3e8b6150396db336108">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:occurrences/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-1092349cc116adbd8af8143c">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:occurrences/owner">stove0-observer-conformance</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-c083caf980ed3dabf2e39e06">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:occurrences/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-1c016429fde5405ea2e9ad84">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:occurrences/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-553a335ba71a101871823440">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:occurrences/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-3611f26c0ee8d4ede6c6adaf">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-7cea87c06153fd03d3adcf98">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:occurrences/source_constraint/field">kind</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-5091045500538b5fd00c4a9b">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:occurrences/source_pointer">/external_contract/cli/stove0-observer-conformance/parameters/1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-ab9682452fafa7c2c937990c">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:occurrences/unit">occurrences</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:values-per-occurrence</code>
-<table id="v-01467d5b01bd25303ddee5a4">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-910cdfa5658ba83f58bdd939">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-ba36d6ffa751635ac7f1185b">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:values-per-occurrence/id">cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-108a96508f54ad9ea4762595">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-2a50d0b77f9d87f02a05afb9">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-bf98046df75e7a905ad24e1e">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:values-per-occurrence/owner">stove0-observer-conformance</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-65c451aeed2fc54bbe4bc2f7">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-ce7fd8c64cd3a0524b365395">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-f0856a26a94b65ebc607dfa9">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-c10af136e75e5dbe05648aa1">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-d23d021f5caa3914077693d5">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-8b5d1d977d0bdd1f34518a87">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:values-per-occurrence/source_pointer">/external_contract/cli/stove0-observer-conformance/parameters/1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-a26aa0bc28d8f07a555ede4a">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:1:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:occurrences</code>
-<table id="v-341bdb69d8a08f97f4839f92">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-4f52fc99c95b9e3098cd85ac">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-979932fafa3cad9ce97efd8e">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:occurrences/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-bb205490f5a50626653d210f">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:occurrences/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-fafccfa574f2081c9e7c533f">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:occurrences/capacity_authority/owner">stove0-observer-conformance</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-739a901ea16358aedab24a49">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:occurrences/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-adf3418726db53222ad08a51">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:occurrences/id">cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:occurrences</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-6d899a187004aca6f1bceb2d">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:occurrences/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-bce6addee246adced11fa030">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:occurrences/owner">stove0-observer-conformance</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-f6e8e502268b2b1b28661531">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:occurrences/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-83ff99e0f8668005e23f5e27">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:occurrences/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-b1e2cc82b7397e66cc3f761f">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:occurrences/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-c7f1e01aa992ccbf76f5baa7">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-3609e75ee54ca64e10b93fdb">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:occurrences/source_constraint/field">kind</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-ddd0b1a22af4841ee7d67f05">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:occurrences/source_pointer">/external_contract/cli/stove0-observer-conformance/parameters/2</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-685daf8e4da1cfee17f20fcf">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:occurrences/unit">occurrences</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:values-per-occurrence</code>
-<table id="v-c802f1ca7a265c467bea9ab9">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-dd193513204c653e23a5ee4a">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-d1cd6e8d67ebd845b617143b">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:values-per-occurrence/id">cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-b55264f296ab6cc89cbfc9b7">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-28b100bdcaee9cbd4d8b209f">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-232f727c196b91034e51dbfe">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:values-per-occurrence/owner">stove0-observer-conformance</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-cd0b56fdb76f47ad5deedc82">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-e0609f18fe4f4da870fa4799">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-74ce02426e0b7a39e76428f7">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-26cedbdd581ab6416407460c">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-6f116db0563f38907074b0df">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-5d126465fd3e9a1aab99721d">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:values-per-occurrence/source_pointer">/external_contract/cli/stove0-observer-conformance/parameters/2</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-7aadb67382834fdf2b846ef7">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:2:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:occurrences</code>
-<table id="v-320f3ba01e94a0157b1bbb3e">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-bf83864767c5c453a588b93a">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-d30f76637bf18a29405bd696">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:occurrences/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-ef398ecff8783f43a152a18f">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:occurrences/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-dcd3bdc9f503a940b1c247e6">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:occurrences/capacity_authority/owner">stove0-observer-conformance</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-f89f729e7409f75cdbb43479">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:occurrences/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-961c502466d486746afee9ce">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:occurrences/id">cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:occurrences</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-1b4302743b3788adebfe1e3a">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:occurrences/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-dc2680aced4197fadc20835e">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:occurrences/owner">stove0-observer-conformance</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-a7128191e5ea37fbe42320ed">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:occurrences/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-2f5d29af909dd149c7ab2694">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:occurrences/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-b3253e4c44f70f0e5c254e97">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:occurrences/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-130f34c052f8dd4494540663">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-f2db1bfed7b49f154d145f16">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:occurrences/source_constraint/field">kind</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-809f3bf2e0fea03ae42fcd90">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:occurrences/source_pointer">/external_contract/cli/stove0-observer-conformance/parameters/3</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-b61a5cdfdaf0d9227ba2a60a">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:occurrences/unit">occurrences</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:values-per-occurrence</code>
-<table id="v-40e740db1e1a7d0dbca4f269">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-1c82cc044816cd0bbfb213bf">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-ace92244a6dbda3e887cf17b">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:values-per-occurrence/id">cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-317102d924f7afa9fc46e089">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-6fe4f5b89318a8ebf6dfc42a">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-494f000a59c7e05ef536ba83">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:values-per-occurrence/owner">stove0-observer-conformance</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-e824ce4aea6da059b7675ee1">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-c393e651b4995b8f4410cf3e">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-dd2cc322e418234fd2d175eb">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-be593a055e1a6fe24490ed01">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-9244bb208a7d0de9ea8c6dd5">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-a38320f5f5226422f012c0d6">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:values-per-occurrence/source_pointer">/external_contract/cli/stove0-observer-conformance/parameters/3</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-b162bf6d13e29c8183c612ca">
-<code data-value-pointer="/audit/decisions/cli:stove0-observer-conformance:stove0-observer-conformance:parameter:3:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

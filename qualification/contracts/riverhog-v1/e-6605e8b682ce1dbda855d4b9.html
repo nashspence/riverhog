@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,42 +12,254 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-060b2708e47e30250da33b34.html">review0-sampler-lib · CLI</a>
+<a href="index.html">All authorities</a> / <a href="a-0cdbc0f9e2f65221fb159f7c.html">review0-sampler-lib</a> / <a href="i-060b2708e47e30250da33b34.html">CLI</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>review0-sampler-conformance</h1>
+<p class="context">Runtime and conformance support for Review0 samplers. CLI contract owned by review0-sampler-lib.</p>
 <section id="contract" data-contract="cli:review0-sampler-lib:review0-sampler-conformance:87a8777b04">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Command</h3>
+<dl class="facts">
+<dt>name</dt>
+<dd>
+<code>review0-sampler-conformance</code>
+</dd>
+<dt>allow abbrev</dt>
+<dd>
+<code>true</code>
+</dd>
+</dl>
+<p>Parser flags and defaults are recorded inputs. A missing default does not assert an explicit null value or rule out other configured fallbacks.</p>
+<h3>Arguments and options</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Parameter and spelling</th>
+<th scope="col">Invocation</th>
+<th scope="col">Type and constraints</th>
+<th scope="col">Default and environment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>base_url</code>
+</td>
+<td>required; argument; None value(s) per use</td>
+<td>
+<code>not recorded</code>
+</td>
+<td>not recorded</td>
+</tr>
+<tr>
+<td>
+<code>token_file</code>
+<br>
+<code>--token-file</code>
+</td>
+<td>required; option; None value(s) per use</td>
+<td>
+<code>Path</code>
+</td>
+<td>not recorded</td>
+</tr>
+<tr>
+<td>
+<code>request</code>
+<br>
+<code>--request</code>
+</td>
+<td>optional; option; None value(s) per use</td>
+<td>
+<code>Path</code>
+</td>
+<td>not recorded</td>
+</tr>
+<tr>
+<td>
+<code>allow_insecure_http</code>
+<br>
+<code>--allow-insecure-http</code>
+</td>
+<td>optional; option; 0 value(s) per use</td>
+<td>
+<code>not recorded</code>
+</td>
+<td>
+<code>false</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Result contract</h3>
+<dl class="facts">
+<dt>identity</dt>
+<dd>
+<code>review0-sampler-conformance-cli-result/root/v1</code>
+</dd>
+<dt>profile id</dt>
+<dd>
+<code>review0-sampler-conformance-cli/v1</code>
+</dd>
+<dt>structured output</dt>
+<dd>
+<code>always-json</code>
+</dd>
+<dt>human json relationship</dt>
+<dd>
+<code>not-applicable</code>
+</dd>
+</dl>
+<h4>Success outcomes</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Outcome</th>
+<th scope="col">Exit</th>
+<th scope="col">Selection</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>conformant</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>kind: <code>conformance-completed</code>
+</td>
+<td>json: authority: <code>generated:review0-sampler</code>; definition: <code>SamplerConformanceResult</code>; kind: <code>schema-authority</code>
+</td>
+<td>all: <code>empty</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Failure outcomes</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Outcome</th>
+<th scope="col">Exit</th>
+<th scope="col">Selection</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>usage</code>
+</td>
+<td>
+<code>2</code>
+</td>
+<td>kind: <code>parser-rejected-invocation</code>
+</td>
+<td>all: <code>empty</code>
+</td>
+<td>all: <code>noncontractual-usage-diagnostic</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Terminating controls</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Control</th>
+<th scope="col">Trigger</th>
+<th scope="col">Exit</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>help</code>
+</td>
+<td>
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;-h&quot;,&quot;--help&quot;]}</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>
+<code>noncontractual-framework-help</code>
+</td>
+<td>
+<code>empty</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>version</code>
+</td>
+<td>
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;--version&quot;]}</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>
+<code>{&quot;distribution&quot;:&quot;review0-sampler-lib&quot;,&quot;kind&quot;:&quot;installed-coordinated-release-version&quot;,&quot;serialization&quot;:&quot;noncontractual&quot;}</code>
+</td>
+<td>
+<code>empty</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/review0-sampler-conformance/allow_abbrev</code>
-</h3>
+</h4>
 <span id="v-50342a135c56e1c9df09cd17">
 <code data-value-pointer="/external_contract/cli/review0-sampler-conformance/allow_abbrev">true</code>
 <span class="kind">boolean</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/review0-sampler-conformance/name</code>
-</h3>
+</h4>
 <span id="v-b920ceebedae8f79f2c0f752">
 <code data-value-pointer="/external_contract/cli/review0-sampler-conformance/name">review0-sampler-conformance</code>
 <span class="kind">string</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/review0-sampler-conformance/parameters</code>
-</h3>
+</h4>
 <table id="v-c86800c4b255f08630a9220a">
 <tbody>
 <tr>
@@ -384,9 +596,9 @@
 </table>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/review0-sampler-conformance/result_contract</code>
-</h3>
+</h4>
 <table id="v-2e015d0241a4132f03f70148">
 <tbody>
 <tr>
@@ -690,9 +902,9 @@
 </table>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/review0-sampler-conformance/terminating_controls</code>
-</h3>
+</h4>
 <table id="v-521a61302297ea5575ba92e0">
 <tbody>
 <tr>
@@ -940,587 +1152,98 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-48a89776de7f91b173b46d03">compatibility/cli/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="some-implementations/stove0/review0/sampler/support/src/review0_sampler_lib/conformance.py">some-implementations/stove0/review0/sampler/support/src/review0_sampler_lib/conformance.py::&lt;module&gt;</code>
+<a href="source-authorities.html#source-8d0413fce69045f7335fb691">cli:review0-sampler-conformance</a> — <code data-source-path="some-implementations/stove0/review0/sampler/support/src/review0_sampler_lib/conformance.py">some-implementations/stove0/review0/sampler/support/src/review0_sampler_lib/conformance.py::&lt;module&gt;</code>
 </li>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>cli:review0-sampler-conformance:review0-sampler-conformance:parameter:0:values-per-occurrence</code>
-<table id="v-1ad44e379cac578b6ed1eb78">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-3349db7cdf3b9f40573c47ed">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:0:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/review0-sampler-conformance/parameters/0</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-7d06f75e074264e1d6e1f996">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:0:values-per-occurrence/id">cli:review0-sampler-conformance:review0-sampler-conformance:parameter:0:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/review0-sampler-conformance/parameters/1</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-091401aca6e4058a1f8029b9">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:0:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/cli/review0-sampler-conformance/parameters/2</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>minimum</code>
-</th>
 <td>
-<span id="v-f987a05a566303770f386f5d">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:0:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/cli/review0-sampler-conformance/parameters/3</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-9b4dbc7dc45550dad0db3e3c">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:0:values-per-occurrence/owner">review0-sampler-conformance</code>
-<span class="kind">string</span>
-</span>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
+<td>cardinality · values-per-occurrence · fixed</td>
 <td>
-<span id="v-4a0ea134ae58b33aa362f81c">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:0:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-b8944bbc99af0bbb5156dde9">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:0:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-8edd30b94d64cd4c2062825b">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:0:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-e61e4e4752ee1517a52f9c5a">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-082c146ac3d9cc1f7aa3ae68">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:0:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:0,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-6edd5afa46832802992d4545">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:0:values-per-occurrence/source_pointer">/external_contract/cli/review0-sampler-conformance/parameters/0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-386d9f44a9e70fa1ee88d99c">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:0:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:review0-sampler-conformance:review0-sampler-conformance:parameter:1:values-per-occurrence</code>
-<table id="v-5e07a2a1d1e5b1ed014eebdd">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-3cf4d1366f82afb45c61e3d9">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:1:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-97ca853ff0456e97e0d7ec50">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:1:values-per-occurrence/id">cli:review0-sampler-conformance:review0-sampler-conformance:parameter:1:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-f5ac0dbb487c7fe198fea772">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:1:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-c7579dc7ac997b888c998aa7">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:1:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-d46f0463b73eb633e6844dae">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:1:values-per-occurrence/owner">review0-sampler-conformance</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-3e3e0ba45df2980dfa1dfb15">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:1:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-f6a5da44000f0cdd5820164b">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:1:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-1ddc142b90e6201b41389407">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:1:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-7ac60fd704f0e1871b543eca">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-7b5829208f7e64943c76890e">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:1:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-17011470f22ceec4c4327fae">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:1:values-per-occurrence/source_pointer">/external_contract/cli/review0-sampler-conformance/parameters/1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-c313ce12b25e87d49ecc6e6f">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:1:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:review0-sampler-conformance:review0-sampler-conformance:parameter:2:values-per-occurrence</code>
-<table id="v-e9d5c2e0dec8ef6aa2b1b242">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-5a085d3d90b97e2ac7056c55">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:2:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-680a85c89f79a4efca2055f1">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:2:values-per-occurrence/id">cli:review0-sampler-conformance:review0-sampler-conformance:parameter:2:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-1baae727dd85b4df065ecc53">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:2:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-d1046ab471ca065629355721">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:2:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-acc703338cc552088ca3eb58">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:2:values-per-occurrence/owner">review0-sampler-conformance</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-fccf9734c35dfa3af123e0d9">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:2:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-4d5563966da23464a42668a4">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:2:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-f07a2c000c2d12bbb8400316">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:2:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-b40d4f9df19c8df270391845">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-a4a0406874b9923ac5682560">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:2:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-b27490ab54b869e323c1833e">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:2:values-per-occurrence/source_pointer">/external_contract/cli/review0-sampler-conformance/parameters/2</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-76eccf9319dd102e7abc0c60">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:2:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:review0-sampler-conformance:review0-sampler-conformance:parameter:3:values-per-occurrence</code>
-<table id="v-5724331a37b78ee5fd6ba1d2">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-794fb6114a44972a7a6a65ea">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:3:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-0bff28bb89dbd00a5de1fbd7">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:3:values-per-occurrence/id">cli:review0-sampler-conformance:review0-sampler-conformance:parameter:3:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-560e2e3be32b123a30850fb2">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:3:values-per-occurrence/maximum">0</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-263c1c543151c58d5b5b8856">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:3:values-per-occurrence/minimum">0</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-7c4a42cf11a667ff46af4303">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:3:values-per-occurrence/owner">review0-sampler-conformance</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-03b39356f17dc3a7479e4d60">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:3:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-c0198819dd15e602d8df8649">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:3:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-f6ff3d5b8c2ea49e6819cf43">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:3:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-661c19886ab93673450b2347">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-982dec93b8bd001f16b3fd7e">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:3:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-081eea2c9be8b811c4df812a">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:3:values-per-occurrence/source_pointer">/external_contract/cli/review0-sampler-conformance/parameters/3</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-d6efc091c77191244ee02bb7">
-<code data-value-pointer="/audit/decisions/cli:review0-sampler-conformance:review0-sampler-conformance:parameter:3:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

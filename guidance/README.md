@@ -173,3 +173,24 @@ Related tests (context only):
 - [`tests/unit/test_collection_tags.py::test_provider_nodes_for_retained_exact_revisions_remain_recoverable`](../tests/unit/test_collection_tags.py) — Existing witness association for nodes of retained revisions; does not create a retention
 promise.
 - [`tests/integration/test_catalog_schema_postgres.py::test_postgres_reused_tag_node_gc_and_publication_workers_converge`](../tests/integration/test_catalog_schema_postgres.py) — Existing PostgreSQL association for reclamation/publication races.
+
+## use-jcs-for-json (non-binding)
+
+Prefer RFC 8785 JSON Canonicalization Scheme (JCS) for JSON throughout the repository.
+Use the shared riverhog-canonical-json package rather than local serializer options when
+emitting or checking JSON bytes. Treat a required different spelling as an explicit
+interface choice, never as an interchangeable canonical form.
+
+Scope: New and revised JSON producers and consumers, especially contract records, protocol
+messages, persisted evidence, and values used in identity or digest calculations.
+
+Rationale: One canonical spelling prevents equivalent JSON values from drifting across packages,
+renderers, and hash boundaries. This guidance does not change independently specified
+wire contracts or make a human-readable diagnostic an identity record.
+
+Related tests (context only):
+
+- [`packages/riverhog-canonical-json/tests/test_canonical_json.py::test_jcs_orders_utf16_keys_and_preserves_unicode_code_points`](../packages/riverhog-canonical-json/tests/test_canonical_json.py) — Checks the shared encoder's key order, Unicode output, and digest for one representative
+value; does not cover every JSON producer in the repository.
+- [`tests/unit/test_contract_html_rendering.py::test_every_declared_leaf_value_is_visible_without_omission_or_mutation`](../tests/unit/test_contract_html_rendering.py) — Checks the contract HTML's exact displayed leaf values against JCS spelling for values
+that are shown as JSON; does not make the HTML an independent contract authority.

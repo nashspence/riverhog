@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,666 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-35208bc62ec4f17cd327b037.html">a-stove0-media-archive-lib · Python</a>
+<a href="index.html">All authorities</a> / <a href="a-ff0e298f4e542280e02e651e.html">a-stove0-media-archive-lib</a> / <a href="i-35208bc62ec4f17cd327b037.html">Python</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>a_stove0_media_archive_lib.MediaArchiveProjection</h1>
+<p class="context">Media archive projection library for Stove0. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:a-stove0-media-archive-lib:a-stove0-media-archive-lib-mediaarchiveprojection:3eb28cafa2">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>a-stove0-media-archive-lib</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>a_stove0_media_archive_lib</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>MediaArchiveProjection</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(*, format: Literal[&#x27;stove0-media-archive-projection/v1&#x27;] = &#x27;stove0-media-archive-projection/v1&#x27;, observation_result_sha256s: tuple[str, ...], items: Annotated[tuple[a_stove0_media_archive_lib.projection.MediaProjectionItem, ...], MinLen(min_length=1)], retained_xmp_sidecars: tuple[a_stove0_media_archive_lib.projection.RetainedXmpSidecar, ...] = (), projection_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)]) -&gt; None&quot;</code>
+</dd>
+</dl>
+<section class="schema-section" id="s-e1841f0a45ad9627e695832f">
+<h3>Validated model schema</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;observation_result_sha256s&quot;,&quot;items&quot;,&quot;projection_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-media-archive-projection/v1</code>; default: <code>stove0-media-archive-projection/v1</code>
+</td>
+<td>
+<code>stove0-media-archive-projection/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-7e676f92ff5be830f4b368d1">items</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-d116c0036baea8f9cd1e227a.html#v-dde392a2fd74b06ca9bda87c">#/$defs/MediaProjectionItem</a>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-7e53526b303555e50df1e77d">observation_result_sha256s</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <code>string</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>projection_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-2ac1b968b87fe6a84833d0f7">retained_xmp_sidecars</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-d116c0036baea8f9cd1e227a.html#v-ecdb45e70f4be97602d97f9c">#/$defs/RetainedXmpSidecar</a>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-efc971a9ef6f7584ce208061">JsonValue</a>
+</li>
+<li>
+<a href="#s-24ceaeb1e758b12cb5a1fbb8">MediaFactEvidence</a>
+</li>
+<li>
+<a href="#s-6f7867078f93b29161ef1f6f">MediaMetadataFact</a>
+</li>
+<li>
+<a href="#s-fa5e04cf8b3f095084ea1d30">MediaProjectedValue</a>
+</li>
+<li>
+<a href="#s-dde392a2fd74b06ca9bda87c">MediaProjectionItem</a>
+</li>
+<li>
+<a href="#s-ecdb45e70f4be97602d97f9c">RetainedXmpSidecar</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-7e676f92ff5be830f4b368d1">
+<h3>Field: items</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-d116c0036baea8f9cd1e227a.html#v-dde392a2fd74b06ca9bda87c">#/$defs/MediaProjectionItem</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-7e53526b303555e50df1e77d">
+<h3>Field: observation_result_sha256s</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-2ac1b968b87fe6a84833d0f7">
+<h3>Field: retained_xmp_sidecars</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-d116c0036baea8f9cd1e227a.html#v-ecdb45e70f4be97602d97f9c">#/$defs/RetainedXmpSidecar</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-efc971a9ef6f7584ce208061">
+<h3>Definition: JsonValue</h3>
+<p class="shape">any JSON value</p>
+</section>
+<section class="schema-section" id="s-24ceaeb1e758b12cb5a1fbb8">
+<h3>Definition: MediaFactEvidence</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;artifact_id&quot;,&quot;field&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>artifact_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>field</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>240</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-6f7867078f93b29161ef1f6f">
+<h3>Definition: MediaMetadataFact</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;name&quot;,&quot;value&quot;,&quot;evidence&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>evidence</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-d116c0036baea8f9cd1e227a.html#v-24ceaeb1e758b12cb5a1fbb8">#/$defs/MediaFactEvidence</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>name</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;capture-time&quot;,&quot;container-format&quot;,&quot;creator&quot;,&quot;device-make&quot;,&quot;device-model&quot;,&quot;gps-latitude&quot;,&quot;gps-longitude&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>value</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-d116c0036baea8f9cd1e227a.html#v-efc971a9ef6f7584ce208061">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-fa5e04cf8b3f095084ea1d30">
+<h3>Definition: MediaProjectedValue</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;name&quot;,&quot;value&quot;,&quot;source&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-dbb2a27ab9fe63a044d47ae8">evidence</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-d116c0036baea8f9cd1e227a.html#v-24ceaeb1e758b12cb5a1fbb8">#/$defs/MediaFactEvidence</a>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>name</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;capture-time&quot;,&quot;creator&quot;,&quot;device-make&quot;,&quot;device-model&quot;,&quot;gps-latitude&quot;,&quot;gps-longitude&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;observation&quot;,&quot;recipe&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>value</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-d116c0036baea8f9cd1e227a.html#v-efc971a9ef6f7584ce208061">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-dde392a2fd74b06ca9bda87c">
+<h3>Definition: MediaProjectionItem</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;input_artifact_id&quot;,&quot;archive_path&quot;,&quot;xmp_path&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>archive_path</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-49c60782827e3d065fffae8d">assertions</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-d116c0036baea8f9cd1e227a.html#v-6f7867078f93b29161ef1f6f">#/$defs/MediaMetadataFact</a>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-cc3d12aa060ddb9afae225de">associated_sidecar_artifact_ids</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <code>string</code>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>input_artifact_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-b1f9017d6528462afb99d911">selected</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-d116c0036baea8f9cd1e227a.html#v-fa5e04cf8b3f095084ea1d30">#/$defs/MediaProjectedValue</a>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>xmp_path</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-ecdb45e70f4be97602d97f9c">
+<h3>Definition: RetainedXmpSidecar</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;input_artifact_id&quot;,&quot;output_path&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>input_artifact_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>output_path</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-dbb2a27ab9fe63a044d47ae8">
+<h3>Field: evidence</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-d116c0036baea8f9cd1e227a.html#v-24ceaeb1e758b12cb5a1fbb8">#/$defs/MediaFactEvidence</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-49c60782827e3d065fffae8d">
+<h3>Field: assertions</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-d116c0036baea8f9cd1e227a.html#v-6f7867078f93b29161ef1f6f">#/$defs/MediaMetadataFact</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-cc3d12aa060ddb9afae225de">
+<h3>Field: associated_sidecar_artifact_ids</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-b1f9017d6528462afb99d911">
+<h3>Field: selected</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-d116c0036baea8f9cd1e227a.html#v-fa5e04cf8b3f095084ea1d30">#/$defs/MediaProjectedValue</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/python/a_stove0_media_archive_lib.MediaArchiveProjection</code>
-</h3>
+</h4>
 <table id="v-e0be7a5be98b5477ad9512da">
 <tbody>
 <tr>
@@ -1619,25 +2261,52 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-82b98d2db18baee83e33a748.html">a_stove0_media_archive_lib.MediaArchiveProjection.canonical_members</a>
+</li>
+<li>
+<a href="e-2a7b4c2ee4d08f6d86c92881.html">a_stove0_media_archive_lib.MediaArchiveProjection.validate_plan_evidence</a>
+</li>
+<li>
+<a href="e-ca9f188195581e79f6a304dd.html">a_stove0_media_archive_lib.MediaArchiveProjection.seal</a>
+</li>
+<li>
+<a href="e-d1942cd442b8b1a2c7fa7d6c.html">a_stove0_media_archive_lib.MediaArchiveProjection.verify_digest</a>
+</li>
+<li>
+<a href="e-1244025e05ec42a1b8ad2fb8.html">a_stove0_media_archive_lib.MediaArchiveProjection.item_for</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/stove0/targets/media-archive/support/src/a_stove0_media_archive_lib/__init__.py">some-implementations/stove0/targets/media-archive/support/src/a_stove0_media_archive_lib/__init__.py</code>
+<a href="source-authorities.html#source-6929294187049d93109e082d">python:a-stove0-media-archive-lib:a_stove0_media_archive_lib</a> — <code data-source-path="some-implementations/stove0/targets/media-archive/support/src/a_stove0_media_archive_lib/__init__.py">some-implementations/stove0/targets/media-archive/support/src/a_stove0_media_archive_lib/__init__.py</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

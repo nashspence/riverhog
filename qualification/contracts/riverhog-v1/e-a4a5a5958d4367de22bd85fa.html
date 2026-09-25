@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,59 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-9bc34cd0dd041e5950736a20.html">a-riverhog-filesystem-store · Configuration Environment</a>
+<a href="index.html">All authorities</a> / <a href="a-989e9eba616081d95a567a0b.html">a-riverhog-filesystem-store</a> / <a href="i-9bc34cd0dd041e5950736a20.html">Configuration Environment</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>A_RIVERHOG_FILESYSTEM_STORE_SEGMENT_BYTES</h1>
+<p class="context">Filesystem-backed Riverhog archive and retrieval store. Configuration Environment contract owned by a-riverhog-filesystem-store.</p>
 <section id="contract" data-contract="configuration-environment:a-riverhog-filesystem-store:a-riverhog-filesystem-store-segment-bytes:41e0b0a165">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Environment setting</h3>
+<dl class="facts">
+<dt>name</dt>
+<dd>
+<code>A_RIVERHOG_FILESYSTEM_STORE_SEGMENT_BYTES</code>
+</dd>
+<dt>owner</dt>
+<dd>
+<code>a-riverhog-filesystem-store</code>
+</dd>
+<dt>input shape</dt>
+<dd>
+<code>environment-string</code>
+</dd>
+</dl>
+<h4>Default expressions</h4>
+<ul>
+<li>
+<code>&#x27;&#x27;</code>
+</li>
+</ul>
+<h4>Consumers</h4>
+<ul>
+<li>
+<code>a-riverhog-filesystem-store</code>
+</li>
+</ul>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/configuration_environment/54</code>
-</h3>
+</h4>
 <table id="v-add94be4914f91b6bed3a0d6">
 <tbody>
 <tr>
@@ -123,170 +158,90 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-8dc08bb46173175ad6e39a86">compatibility/configuration/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code>configuration-environment:a-riverhog-filesystem-store:A_RIVERHOG_FILESYSTEM_STORE_SEGMENT_BYTES</code>
+<a href="source-authorities.html#source-8068b649d42e440e807fdcac">configuration-environment:a-riverhog-filesystem-store:A_RIVERHOG_FILESYSTEM_STORE_SEGMENT_BYTES</a> — <code data-source-path="some-implementations/riverhog/storage/filesystem/src/a_riverhog_filesystem_store/app.py">some-implementations/riverhog/storage/filesystem/src/a_riverhog_filesystem_store/app.py</code>
 </li>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make unit</code>
+<a href="source-commands.html#route-ce47068f504c25a93bdddb64">make unit</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>configuration-environment:a-riverhog-filesystem-store:A_RIVERHOG_FILESYSTEM_STORE_SEGMENT_BYTES:value</code>
-<table id="v-03f3ea3848be4189b8d17d75">
-<tbody>
+<div class="table-scroll">
+<table>
+<thead>
 <tr>
-<th scope="row">
-<code>configuration</code>
-</th>
-<td>
-<span id="v-71b8bc56f29643f3dcfdf269">
-<code data-value-pointer="/audit/decisions/configuration-environment:a-riverhog-filesystem-store:A_RIVERHOG_FILESYSTEM_STORE_SEGMENT_BYTES:value/configuration">A_RIVERHOG_FILESYSTEM_STORE_SEGMENT_BYTES</code>
-<span class="kind">string</span>
-</span>
-</td>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
 </tr>
-<tr>
-<th scope="row">
-<code>consumers</code>
-</th>
-<td>
-<table id="v-3571ae1477e4f454ad8a6f12">
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>0</code>
-</th>
 <td>
-<span id="v-dd2eb8215ebddc70dcb6ccd7">
-<code data-value-pointer="/audit/decisions/configuration-environment:a-riverhog-filesystem-store:A_RIVERHOG_FILESYSTEM_STORE_SEGMENT_BYTES:value/consumers/0">a-riverhog-filesystem-store</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/configuration_environment/54</code>
+</td>
+<td>
+<code>configured-capacity/v1</code>
+</td>
+<td>value · configured-value · operational_policy</td>
+<td>
+<code>{&quot;configuration&quot;:&quot;A_RIVERHOG_FILESYSTEM_STORE_SEGMENT_BYTES&quot;,&quot;consumers&quot;:[&quot;a-riverhog-filesystem-store&quot;],&quot;maximum&quot;:null,&quot;reason&quot;:&quot;operator-configured-capacity&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
+</div>
+<h3>Configuration authority and bindings</h3>
+<p>These are discovered declaration and consumer facts, not observed effective configuration.</p>
+<div class="table-scroll">
+<table>
+<thead>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-a3e2792c2158ecece526a0e9">
-<code data-value-pointer="/audit/decisions/configuration-environment:a-riverhog-filesystem-store:A_RIVERHOG_FILESYSTEM_STORE_SEGMENT_BYTES:value/dimension">value</code>
-<span class="kind">string</span>
-</span>
-</td>
+<th scope="col">Kind</th>
+<th scope="col">Consumer</th>
+<th scope="col">Source</th>
+<th scope="col">Authority or expression</th>
 </tr>
+</thead>
+<tbody>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
+<td>consumer</td>
 <td>
-<span id="v-72567720045832f25b35f238">
-<code data-value-pointer="/audit/decisions/configuration-environment:a-riverhog-filesystem-store:A_RIVERHOG_FILESYSTEM_STORE_SEGMENT_BYTES:value/id">configuration-environment:a-riverhog-filesystem-store:A_RIVERHOG_FILESYSTEM_STORE_SEGMENT_BYTES:value</code>
-<span class="kind">string</span>
-</span>
+<code>a-riverhog-filesystem-store</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-11d05983107e190342652bde">
-<code data-value-pointer="/audit/decisions/configuration-environment:a-riverhog-filesystem-store:A_RIVERHOG_FILESYSTEM_STORE_SEGMENT_BYTES:value/maximum">null</code>
-<span class="kind">null</span>
-</span>
+<code data-source-path="some-implementations/riverhog/storage/filesystem/src/a_riverhog_filesystem_store/app.py">some-implementations/riverhog/storage/filesystem/src/a_riverhog_filesystem_store/app.py</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-9d77d9f2c3d030ef84b97bba">
-<code data-value-pointer="/audit/decisions/configuration-environment:a-riverhog-filesystem-store:A_RIVERHOG_FILESYSTEM_STORE_SEGMENT_BYTES:value/owner">a-riverhog-filesystem-store</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-8e004d5470e08457254db0cd">
-<code data-value-pointer="/audit/decisions/configuration-environment:a-riverhog-filesystem-store:A_RIVERHOG_FILESYSTEM_STORE_SEGMENT_BYTES:value/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-a520da13af8cddaf4fdae93b">
-<code data-value-pointer="/audit/decisions/configuration-environment:a-riverhog-filesystem-store:A_RIVERHOG_FILESYSTEM_STORE_SEGMENT_BYTES:value/reason">operator-configured-capacity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-0afbb27eb8acc6873fdb71ae">
-<code data-value-pointer="/audit/decisions/configuration-environment:a-riverhog-filesystem-store:A_RIVERHOG_FILESYSTEM_STORE_SEGMENT_BYTES:value/rule">configured-capacity/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-6da8b360855765f465749fcf">
-<code data-value-pointer="/audit/decisions/configuration-environment:a-riverhog-filesystem-store:A_RIVERHOG_FILESYSTEM_STORE_SEGMENT_BYTES:value/source_pointer">/external_contract/configuration_environment/54</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-5676d86d28efe2da0eea977a">
-<code data-value-pointer="/audit/decisions/configuration-environment:a-riverhog-filesystem-store:A_RIVERHOG_FILESYSTEM_STORE_SEGMENT_BYTES:value/unit">configured-value</code>
-<span class="kind">string</span>
-</span>
+<code>os.getenv(f&#x27;{_PREFIX}{name}&#x27;, &#x27;&#x27;)</code>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

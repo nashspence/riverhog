@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import copy
-import json
 import sys
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -17,8 +16,13 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
-from contract_atlas.html_rendering import _element_file, render_contract  # noqa: E402
-from contract_atlas.model import canonical_sha256  # noqa: E402
+from contract_atlas.html_rendering import (  # noqa: E402
+    _authority_file,
+    _element_file,
+    _inventory_file,
+    render_contract,
+)
+from contract_atlas.model import canonical_bytes, canonical_sha256  # noqa: E402
 from contract_atlas.records import load_bundle  # noqa: E402
 from contract_pages import build_pages  # noqa: E402
 
@@ -60,7 +64,7 @@ def candidate_site(tmp_path_factory: pytest.TempPathFactory) -> tuple[str, str, 
         path = root / "fixture" / relative
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(payload)
-    (root / "fixture/riverhog-v1.json").write_text(json.dumps(selected), encoding="utf-8")
+    (root / "fixture/riverhog-v1.json").write_bytes(canonical_bytes(selected))
     server = ThreadingHTTPServer(("127.0.0.1", 0), partial(_QuietHandler, directory=str(root)))
     thread = Thread(target=server.serve_forever, daemon=True)
     thread.start()
@@ -100,6 +104,8 @@ def test_candidate_modes_history_direct_links_zoom_and_no_js(
     page = context.new_page()
     page.goto(base + path)
     assert page.locator("#contract").is_visible()
+    assert literal in page.locator(".human-contract").inner_text()
+    page.locator("details.exact summary").click()
     assert page.locator('[data-value-pointer$="/contract/value"]').inner_text() == literal
     contract_html = page.locator("#contract").inner_html()
     assert not page.locator("#audit").is_visible()
@@ -114,7 +120,7 @@ def test_candidate_modes_history_direct_links_zoom_and_no_js(
         'a[data-source-link="exact-commit"]'
     ).first.get_attribute("href")
 
-    page.locator("header a").nth(1).click()
+    page.locator("header p").first.locator("a").nth(2).click()
     assert "/contract-candidate/riverhog-v1/i-" in page.url
     assert "audit=1" in page.url
     page.go_back()
@@ -135,11 +141,65 @@ def test_candidate_modes_history_direct_links_zoom_and_no_js(
     page = no_js.new_page()
     page.goto(base + path)
     assert page.locator("#contract").is_visible()
+    assert literal in page.locator(".human-contract").inner_text()
+    page.locator("details.exact summary").click()
     assert page.locator('[data-value-pointer$="/contract/value"]').inner_text() == literal
-    page.locator("header a").first.click()
+    page.locator("header p").first.locator("a").first.click()
     assert page.url.endswith("/contract-candidate/riverhog-v1/index.html")
     assert page.get_by_role("heading", name="Riverhog v1 Contract Render").is_visible()
     no_js.close()
+
+
+def test_authority_to_extent_marker_navigation_and_zoom(
+    candidate_site: tuple[str, str, str], browser: Browser
+) -> None:
+    base, _unused_element_file, _literal = candidate_site
+    bundle = load_bundle(REPO_ROOT / "qualification/contracts/riverhog-v1.json")
+    owners = {
+        pointer: element
+        for element in bundle.closure["elements"]
+        for pointer in element["pointers"]
+    }
+    witness = next(
+        item
+        for item in bundle.audit["trace"]["segmented_extent_witnesses"]
+        if item["association_status"] == "candidate" and item["result_reference"] is None
+    )
+    subject = witness["subject_pointers"][0]
+    owner_pointer = max(
+        (pointer for pointer in owners if subject == pointer or subject.startswith(pointer + "/")),
+        key=len,
+    )
+    element = owners[owner_pointer]
+    authority = str(element["authority"])
+    interface = str(element["interface"])
+    context = browser.new_context(viewport={"width": 640, "height": 800})
+    page = context.new_page()
+    page.goto(f"{base}/contract-candidate/riverhog-v1/index.html?audit=1")
+    root_marker = page.locator(f'a.audit-marker[href="{_authority_file(authority)}#audit-scope"]')
+    assert root_marker.is_visible()
+    page.locator(f'a[href="{_authority_file(authority)}"]').first.click()
+    assert page.get_by_role("heading", name="Interfaces").is_visible()
+    assert page.locator(
+        f'a.audit-marker[href="{_inventory_file(authority, interface)}#audit-scope"]'
+    ).is_visible()
+    page.locator(f'a[href="{_inventory_file(authority, interface)}"]').first.click()
+    assert page.locator(
+        f'a.audit-marker[href="{_element_file(str(element["id"]))}#audit"]'
+    ).is_visible()
+    page.locator(f'a[href="{_element_file(str(element["id"]))}"]').first.click()
+    assert page.locator("#audit").is_visible()
+    assert page.get_by_role("heading", name="Open extent qualification").is_visible()
+    page.locator("#audit a[href^='q-']").first.click()
+    assert page.get_by_text("Association: candidate; executed result: none.").is_visible()
+    direct_audit_url = page.url.split("?", 1)[0]
+    page.goto(direct_audit_url)
+    assert page.get_by_role("heading", name="Open extent qualification").is_visible()
+    page.evaluate("document.documentElement.style.zoom = '2'")
+    assert page.evaluate(
+        "document.documentElement.scrollWidth <= document.documentElement.clientWidth + 2"
+    )
+    context.close()
 
 
 def test_documentation_fixture_mode_keeps_the_contract_visible(

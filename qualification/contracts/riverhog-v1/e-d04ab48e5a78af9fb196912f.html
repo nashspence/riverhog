@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,42 +12,260 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-02eb340bc052a55d5c561cbf.html">a-riverhog-b2-store · CLI</a>
+<a href="index.html">All authorities</a> / <a href="a-776a28f6b1ae7c5a0eb40940.html">a-riverhog-b2-store</a> / <a href="i-02eb340bc052a55d5c561cbf.html">CLI</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>a-riverhog-b2-store</h1>
+<p class="context">Backblaze B2-backed Riverhog archive and retrieval store. CLI contract owned by a-riverhog-b2-store.</p>
 <section id="contract" data-contract="cli:a-riverhog-b2-store:a-riverhog-b2-store:8c43bdea50">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Command</h3>
+<dl class="facts">
+<dt>name</dt>
+<dd>
+<code>a-riverhog-b2-store</code>
+</dd>
+<dt>allow abbrev</dt>
+<dd>
+<code>true</code>
+</dd>
+</dl>
+<p>Parser flags and defaults are recorded inputs. A missing default does not assert an explicit null value or rule out other configured fallbacks.</p>
+<h3>Arguments and options</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Parameter and spelling</th>
+<th scope="col">Invocation</th>
+<th scope="col">Type and constraints</th>
+<th scope="col">Default and environment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>host</code>
+<br>
+<code>--host</code>
+</td>
+<td>optional; option; None value(s) per use</td>
+<td>
+<code>not recorded</code>
+</td>
+<td>
+<code>127.0.0.1</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>port</code>
+<br>
+<code>--port</code>
+</td>
+<td>optional; option; None value(s) per use</td>
+<td>
+<code>int</code>
+</td>
+<td>
+<code>8080</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>config</code>
+<br>
+<code>--config</code>
+</td>
+<td>optional; option; None value(s) per use</td>
+<td>
+<code>Path</code>
+</td>
+<td>not recorded</td>
+</tr>
+<tr>
+<td>
+<code>provision_root</code>
+<br>
+<code>--provision-root</code>
+</td>
+<td>optional; option; 0 value(s) per use</td>
+<td>
+<code>not recorded</code>
+</td>
+<td>
+<code>false</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Result contract</h3>
+<dl class="facts">
+<dt>identity</dt>
+<dd>
+<code>a-riverhog-b2-store-cli-result/root/v1</code>
+</dd>
+<dt>profile id</dt>
+<dd>
+<code>a-riverhog-b2-store-cli-runtime/v1</code>
+</dd>
+<dt>structured output</dt>
+<dd>
+<code>none</code>
+</dd>
+<dt>human json relationship</dt>
+<dd>
+<code>not-applicable</code>
+</dd>
+</dl>
+<h4>Success outcomes</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Outcome</th>
+<th scope="col">Exit</th>
+<th scope="col">Selection</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>stopped</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>kind: <code>service-runtime-returned</code>
+</td>
+<td>all: <code>no-command-result</code>
+</td>
+<td>all: <code>noncontractual-runtime-log</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Failure outcomes</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Outcome</th>
+<th scope="col">Exit</th>
+<th scope="col">Selection</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>usage</code>
+</td>
+<td>
+<code>2</code>
+</td>
+<td>kind: <code>parser-rejected-invocation</code>
+</td>
+<td>all: <code>empty</code>
+</td>
+<td>all: <code>noncontractual-usage-diagnostic</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Terminating controls</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Control</th>
+<th scope="col">Trigger</th>
+<th scope="col">Exit</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>help</code>
+</td>
+<td>
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;-h&quot;,&quot;--help&quot;]}</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>
+<code>noncontractual-framework-help</code>
+</td>
+<td>
+<code>empty</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>version</code>
+</td>
+<td>
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;--version&quot;]}</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>
+<code>{&quot;distribution&quot;:&quot;a-riverhog-b2-store&quot;,&quot;kind&quot;:&quot;installed-coordinated-release-version&quot;,&quot;serialization&quot;:&quot;noncontractual&quot;}</code>
+</td>
+<td>
+<code>empty</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-riverhog-b2-store/allow_abbrev</code>
-</h3>
+</h4>
 <span id="v-7403ff3fe47c3e14fac7b217">
 <code data-value-pointer="/external_contract/cli/a-riverhog-b2-store/allow_abbrev">true</code>
 <span class="kind">boolean</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-riverhog-b2-store/name</code>
-</h3>
+</h4>
 <span id="v-6c72675b83b19e01108f2f03">
 <code data-value-pointer="/external_contract/cli/a-riverhog-b2-store/name">a-riverhog-b2-store</code>
 <span class="kind">string</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-riverhog-b2-store/parameters</code>
-</h3>
+</h4>
 <table id="v-3dc89a8aae5f3174c0657107">
 <tbody>
 <tr>
@@ -417,9 +635,9 @@
 </table>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-riverhog-b2-store/result_contract</code>
-</h3>
+</h4>
 <table id="v-0614b7155f487383f85edcae">
 <tbody>
 <tr>
@@ -690,9 +908,9 @@
 </table>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-riverhog-b2-store/terminating_controls</code>
-</h3>
+</h4>
 <table id="v-b63a5e81085ae7446019021a">
 <tbody>
 <tr>
@@ -940,587 +1158,98 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-48a89776de7f91b173b46d03">compatibility/cli/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="some-implementations/riverhog/storage/backblaze/src/a_riverhog_b2_store/app.py">some-implementations/riverhog/storage/backblaze/src/a_riverhog_b2_store/app.py::&lt;module&gt;</code>
+<a href="source-authorities.html#source-f977d89a7ddc864ccd3dccda">cli:a-riverhog-b2-store</a> — <code data-source-path="some-implementations/riverhog/storage/backblaze/src/a_riverhog_b2_store/app.py">some-implementations/riverhog/storage/backblaze/src/a_riverhog_b2_store/app.py::&lt;module&gt;</code>
 </li>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:0:values-per-occurrence</code>
-<table id="v-3a8b405c1885cdedb27159f6">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-cbfd30989a22ff5bfa7f6b13">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:0:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/a-riverhog-b2-store/parameters/0</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-d8ab036c6ecbbcb6688a92b6">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:0:values-per-occurrence/id">cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:0:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/a-riverhog-b2-store/parameters/1</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-68cbc80d0f87a2a06c45f35b">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:0:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/cli/a-riverhog-b2-store/parameters/2</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>minimum</code>
-</th>
 <td>
-<span id="v-76817ffe249bb5bf63678309">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:0:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/cli/a-riverhog-b2-store/parameters/3</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-ff90ee6320a16e7a581a2910">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:0:values-per-occurrence/owner">a-riverhog-b2-store</code>
-<span class="kind">string</span>
-</span>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
+<td>cardinality · values-per-occurrence · fixed</td>
 <td>
-<span id="v-d76047100a399280024c9c2f">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:0:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-e015c747b9f84b3bc6128b48">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:0:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-725fb046d0d2602b88c15168">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:0:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-e523c6d905d305a89ebe4f7d">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-15306599726a49c47497e30c">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:0:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:0,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-1c9fb503c0f34d9984df5fa4">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:0:values-per-occurrence/source_pointer">/external_contract/cli/a-riverhog-b2-store/parameters/0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-b5fedcd1d9a9fde7fe68cf5a">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:0:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:1:values-per-occurrence</code>
-<table id="v-0c95f4720813f1e6d5bfffc4">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-a0a9f030bf1f19548802cf4b">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:1:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-b86424d2fab019ec2d90fe60">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:1:values-per-occurrence/id">cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:1:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-a9838a676f0b1ccc83e2c7ca">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:1:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-fc823ca75fe8700a1b018723">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:1:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-e417a4137ad65bea0ca09874">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:1:values-per-occurrence/owner">a-riverhog-b2-store</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-b13e88ad7ad6694a96f7a669">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:1:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-b41bf3382d7f6cecd4314604">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:1:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-1de209e3faf819136585824c">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:1:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-d669395d1c1053ba039b15e7">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-eaab5df4a95b202fd947234f">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:1:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-af6c5f98885b7c88ed0cb929">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:1:values-per-occurrence/source_pointer">/external_contract/cli/a-riverhog-b2-store/parameters/1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-f3975e46e2d7d2827fab636e">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:1:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:2:values-per-occurrence</code>
-<table id="v-4543c73d9045f25f4bab1e68">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-8c2f57a6e7760958927c4dcb">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:2:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-8ae52b3c1e5e569d597bd8f2">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:2:values-per-occurrence/id">cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:2:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-ba49dac0add8088027ec8eab">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:2:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-fb6e7848a0339f90e343157e">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:2:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-ee5902de098873350c12a3fd">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:2:values-per-occurrence/owner">a-riverhog-b2-store</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-7743c218b47f14cdf605a853">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:2:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-4920d254e10e1397c7a6f8a2">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:2:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-4095e5034f671843605cc8c1">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:2:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-b67b8a655b10a09aec51ad43">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-2a2049dc668144f760c568d9">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:2:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-63e595278a34c52816edbc66">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:2:values-per-occurrence/source_pointer">/external_contract/cli/a-riverhog-b2-store/parameters/2</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-756f0b3f588dc376fe276e25">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:2:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:3:values-per-occurrence</code>
-<table id="v-7040c56a25a9c73b7ab40337">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-0ef5a2354501bb35e32d5f16">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:3:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-3fed28a51b488994b26939f4">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:3:values-per-occurrence/id">cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:3:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-5bb6b4a3cd34169bfdcc2793">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:3:values-per-occurrence/maximum">0</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-2a9abf89aa583d068414afa3">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:3:values-per-occurrence/minimum">0</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-3fdb3c0cbf0a07f5bf79698c">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:3:values-per-occurrence/owner">a-riverhog-b2-store</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-736cc3625a4f5a1a77abbc26">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:3:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-bb7227a4640e41403f6a154f">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:3:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-0590eca39cb9f99c1bc632ed">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:3:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-142ded446302381da1784d78">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-6ece5f514c691b46408a4bf7">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:3:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-940bac73a69651a2b8eb3887">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:3:values-per-occurrence/source_pointer">/external_contract/cli/a-riverhog-b2-store/parameters/3</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-bcfda927e40e72947cf168f4">
-<code data-value-pointer="/audit/decisions/cli:a-riverhog-b2-store:a-riverhog-b2-store:parameter:3:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

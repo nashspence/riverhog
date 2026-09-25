@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,174 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>schemas: TargetPlanBinding</h1>
+<p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
 <section id="contract" data-contract="http-schemas:stove0:schemas-targetplanbinding:f2bc88686b">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-b6eb0a29554841dfd91716c6">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>TargetPlanBinding</code>
+</dd>
+<dt>description</dt>
+<dd>
+<code>Opaque binding to a target-owned preflight plan.
+
+The target protocol owns the plan schema and canonicalization algorithm. stove0
+retains the complete validated plan document and its target-issued digest, but
+deliberately does not reinterpret or re-hash the plan with stove0&#x27;s canonical
+JSON rules. This prevents two authorities from disagreeing about target plan
+identity while preserving the full document in the execution envelope.</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;protocol&quot;,&quot;target_implementation_id&quot;,&quot;target_descriptor_sha256&quot;,&quot;operation_contract_sha256&quot;,&quot;plan&quot;,&quot;plan_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>operation_contract_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-993b6f21cdc71afea0810fd2">plan</a>
+</td>
+<td>yes</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">#/components/schemas/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>plan_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>protocol</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>target_descriptor_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>target_implementation_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-993b6f21cdc71afea0810fd2">
+<h3>Field: plan</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-1c369d2d93e31b9a129c42cd.html#v-8c4fea34e53ac2a654c4a634">#/components/schemas/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Plan</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/components/schemas/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding</code>
-</h3>
+</h4>
 <table id="v-b6eb0a29554841dfd91716c6">
 <tbody>
 <tr>
@@ -442,598 +592,98 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>http:stove0:components:/schemas/TargetPlanBinding/properties/operation_contract_sha256:length</code>
-<table id="v-c89ff7f075e0f18f35860759">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-b88a8e3982806cdf9525f020">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1operation_contract_sha256:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/operation_contract_sha256</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-8f546a65337ad06a9e7ef334">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1operation_contract_sha256:length/id">http:stove0:components:/schemas/TargetPlanBinding/properties/operation_contract_sha256:length</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/plan</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · entries · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-ff3fe48a6640b7c631ab2ebc">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1operation_contract_sha256:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/plan_sha256</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>minimum</code>
-</th>
 <td>
-<span id="v-9f34bf3b7ed6a787af3f2dd0">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1operation_contract_sha256:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/target_descriptor_sha256</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-c8eb92c32a4e8288e9b133f7">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1operation_contract_sha256:length/owner">stove0</code>
-<span class="kind">string</span>
-</span>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
+<td>length · characters · fixed</td>
 <td>
-<span id="v-55b27546b7f848c716dc80b5">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1operation_contract_sha256:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-15a8ab26fcb90adbc1929022">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1operation_contract_sha256:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-61acaaf3a2a8fe2eed335d06">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1operation_contract_sha256:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-fdd39a5f42d78854abb7257d">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-7090a5c3fcb8f4b6b4833dd5">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1operation_contract_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-4ec1b4587492fe0ad9b348c5">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1operation_contract_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/operation_contract_sha256</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-08c5870d12f66a246fb4948e">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1operation_contract_sha256:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/TargetPlanBinding/properties/plan:map-cardinality</code>
-<table id="v-abfa225853441412d5c13c50">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-2189532ab9f7d16a29051bf7">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-406a3c5de4c2c4818e0c789b">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan:map-cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-6dd5d1b2116d90751359b0ca">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan:map-cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-0baea5ea806c74cddb5ee69a">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan:map-cardinality/capacity_authority/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-b2df9404b72542cd5147e497">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan:map-cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-65cdab4fb8244e7ae189d766">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan:map-cardinality/id">http:stove0:components:/schemas/TargetPlanBinding/properties/plan:map-cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-e1bf7479db120331c40bba81">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan:map-cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-d9d701ccc26f713c4a1f4b3a">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan:map-cardinality/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-87ebbcf9478096fb7094caa4">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan:map-cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-fc876e86abe4099cbb012012">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan:map-cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-d883a512571e394a304f6e2a">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan:map-cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-4d9e86dc97aa123a442ba124">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan:map-cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/plan</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-39aa7b1dbbe6b39528fecf04">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan:map-cardinality/unit">entries</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/TargetPlanBinding/properties/plan_sha256:length</code>
-<table id="v-2bee1c15307be99b3df16481">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-f0e8b852468946fd948ce55b">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan_sha256:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-79ba6ac7e1e65480613f7364">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan_sha256:length/id">http:stove0:components:/schemas/TargetPlanBinding/properties/plan_sha256:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-f2f4d713daf3854bd1b500e5">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan_sha256:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-7dede70f9559f3f7a044c7fb">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan_sha256:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-dd46fbd6c75f50622f40d1fe">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan_sha256:length/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-668fb3ff910a3d83abb299b9">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan_sha256:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-cdeaba81c79432b09678b70b">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan_sha256:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-45207deeea1cd633180e7fde">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan_sha256:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-97d5d4998f4628b8298e526a">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-697f596a294787b612aad798">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-91b620d7e5f66499f3217b34">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/plan_sha256</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-2347ce734ab787ceca97d2d1">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1plan_sha256:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/TargetPlanBinding/properties/target_descriptor_sha256:length</code>
-<table id="v-3493a4bf78487b07c0361db7">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-41dae61a84e07b829dd21bed">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1target_descriptor_sha256:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-8fc1e0ae3b4a8a732fc23351">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1target_descriptor_sha256:length/id">http:stove0:components:/schemas/TargetPlanBinding/properties/target_descriptor_sha256:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-21d8459e0b41c2ab683598af">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1target_descriptor_sha256:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-87880d2f743e58a4927c11a2">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1target_descriptor_sha256:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-3fc6351ab7a9acebadf3ffb6">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1target_descriptor_sha256:length/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-a362ff245043b4fcbef57bba">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1target_descriptor_sha256:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-9074c8442761cf5480d1dcba">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1target_descriptor_sha256:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-0305129344ebcf0ecca35b9e">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1target_descriptor_sha256:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-7485a0c6a9250aa5a878203a">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-4834641d0dda5ef9c77433e2">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1target_descriptor_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-98e71aae29322ccca940b400">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1target_descriptor_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding/properties/target_descriptor_sha256</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-42fb1abd7a1b5f4543ce6a95">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1TargetPlanBinding~1properties~1target_descriptor_sha256:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

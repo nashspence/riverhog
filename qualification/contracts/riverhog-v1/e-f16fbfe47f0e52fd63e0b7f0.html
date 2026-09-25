@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,592 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-471c8ef8edae99fa4062a817.html">stove0-observer-support · Process Protocol Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-8c9e8f101342203a4fa0b60f.html">stove0-observer-support</a> / <a href="i-471c8ef8edae99fa4062a817.html">Process Protocol Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>generated:stove0-observer: ObserverDescriptor</h1>
+<p class="context">External-author protocol, runtime, and conformance support for Stove0 content observers. Structured values exchanged by a process protocol.</p>
 <section id="contract" data-contract="process-protocol-schemas:stove0-observer-support:generated-stove0-observer-observerdescriptor:6f2cb696df">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-f1f7699e24f75fb2e40e8c6c">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 7 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>ObserverDescriptor</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;implementation_id&quot;,&quot;implementation_version&quot;,&quot;source_revision&quot;,&quot;image_id&quot;,&quot;contracts&quot;,&quot;descriptor_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-388af3128186f856b1cdf10a">contracts</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-f16fbfe47f0e52fd63e0b7f0.html#v-b516dd75645f3a41957acb66">#/$defs/ObserverContractSupport</a>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>descriptor_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>image_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^sha256:[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>implementation_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>implementation_version</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>120</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>protocol</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>stove0-content-observer/v1</code>; default: <code>stove0-content-observer/v1</code>
+</td>
+<td>
+<code>stove0-content-observer/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_revision</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>200</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-3bfc104e13feab6c19ed1bf0">JsonSchemaValidationProfile</a>
+</li>
+<li>
+<a href="#s-ebc19bb1862ca31507a7b2cf">JsonValue</a>
+</li>
+<li>
+<a href="#s-b516dd75645f3a41957acb66">ObserverContractSupport</a>
+</li>
+<li>
+<a href="#s-39c220e1951c22bdea53540c">SemanticValidationProfile</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-388af3128186f856b1cdf10a">
+<h3>Field: contracts</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-f16fbfe47f0e52fd63e0b7f0.html#v-b516dd75645f3a41957acb66">#/$defs/ObserverContractSupport</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Contracts</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-3bfc104e13feab6c19ed1bf0">
+<h3>Definition: JsonSchemaValidationProfile</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>JsonSchemaValidationProfile</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;profile_sha256&quot;,&quot;schema&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>dialect</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>https://json-schema.org/draft/2020-12/schema</code>; default: <code>https://json-schema.org/draft/2020-12/schema</code>
+</td>
+<td>
+<code>https://json-schema.org/draft/2020-12/schema</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>format_policy</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>annotation-only</code>; default: <code>annotation-only</code>
+</td>
+<td>
+<code>annotation-only</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>profile_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-1d07e973438e2f41db0b2d31">schema</a>
+</td>
+<td>yes</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-f16fbfe47f0e52fd63e0b7f0.html#v-ebc19bb1862ca31507a7b2cf">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-ebc19bb1862ca31507a7b2cf">
+<h3>Definition: JsonValue</h3>
+<p class="shape">any JSON value</p>
+</section>
+<section class="schema-section" id="s-b516dd75645f3a41957acb66">
+<h3>Definition: ObserverContractSupport</h3>
+<p class="shape">
+<code>object</code>; 7 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>ObserverContractSupport</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;contract_id&quot;,&quot;contract_sha256&quot;,&quot;options_schema&quot;,&quot;facts_schema&quot;,&quot;facts_semantics&quot;,&quot;maximum_result_bytes&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>contract_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>contract_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>facts_schema</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-f16fbfe47f0e52fd63e0b7f0.html#v-3bfc104e13feab6c19ed1bf0">#/$defs/JsonSchemaValidationProfile</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>facts_semantics</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-f16fbfe47f0e52fd63e0b7f0.html#v-39c220e1951c22bdea53540c">#/$defs/SemanticValidationProfile</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>maximum_result_bytes</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>67108864</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>options_schema</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-f16fbfe47f0e52fd63e0b7f0.html#v-3bfc104e13feab6c19ed1bf0">#/$defs/JsonSchemaValidationProfile</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>preferred_subject_batch_size</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; default: <code>128</code>
+</td>
+<td>
+<code>128</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-39c220e1951c22bdea53540c">
+<h3>Definition: SemanticValidationProfile</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>SemanticValidationProfile</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;rules&quot;,&quot;profile_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-9c9e56304a0c2567ae429e94">conformance_vectors_sha256</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>profile_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-d46081cc2ad3b47ce8c316ee">rules</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-1d07e973438e2f41db0b2d31">
+<h3>Field: schema</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-f16fbfe47f0e52fd63e0b7f0.html#v-ebc19bb1862ca31507a7b2cf">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Schema</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-9c9e56304a0c2567ae429e94">
+<h3>Field: conformance_vectors_sha256</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Conformance Vectors Sha256</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-d46081cc2ad3b47ce8c316ee">
+<h3>Field: rules</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Rules</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverDescriptor</code>
-</h3>
+</h4>
 <table id="v-f1f7699e24f75fb2e40e8c6c">
 <tbody>
 <tr>
@@ -1652,554 +2220,106 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-99b6615d53f1a7155fef6be6.html">generated:stove0-observer protocol</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/stove0/packages/observer-support/src/stove0_observer_support/schemas.py">some-implementations/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle</code>
+<a href="source-authorities.html#source-dcc0b5485b731056af1211e4">protocol:generated:stove0-observer</a> — <code data-source-path="some-implementations/stove0/packages/observer-support/src/stove0_observer_support/schemas.py">some-implementations/stove0/packages/observer-support/src/stove0_observer_support/schemas.py::observer_schema_bundle</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>protocol:generated:stove0-observer:/schemas/ObserverDescriptor/properties/contracts:cardinality</code>
-<table id="v-59dbe9c3bf9ed0e5243a065a">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
 <td>
-<table id="v-ff449fcbc0ddd5e1cbd821d5">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
+<code>/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverDescriptor/properties/contracts</code>
+</td>
 <td>
-<span id="v-63149447ff39281b84ad5143">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1contracts:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;stove0-observer-protocol&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
 <td>
-<span id="v-4983da92c874e0052555b9df">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1contracts:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverDescriptor/properties/descriptor_sha256</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-bb4a565647da3c039da62ce7">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1contracts:cardinality/capacity_authority/owner">stove0-observer-protocol</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverDescriptor/properties/implementation_version</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:120,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverDescriptor/properties/source_revision</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:200,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-fbf21ca0f74ee2594b8ba92f">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1contracts:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-d62788f084d6edc161e827cb">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1contracts:cardinality/id">protocol:generated:stove0-observer:/schemas/ObserverDescriptor/properties/contracts:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-51029d86c2c48fa0bc8ee4f4">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1contracts:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-ecc7fb4af424ff0945f85d53">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1contracts:cardinality/owner">stove0-observer-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-525284d4e97bf3128a60a6fc">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1contracts:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-82af64151d8d35a5f1c5ba19">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1contracts:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-2e302cb7f45753efaa727c4c">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1contracts:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-0d51328dc529d8189e5df52d">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1contracts:cardinality/source_pointer">/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverDescriptor/properties/contracts</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-053a7675a9074b4eaa39e1fd">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1contracts:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:stove0-observer:/schemas/ObserverDescriptor/properties/descriptor_sha256:length</code>
-<table id="v-839892fe1f588570d04660cd">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-ec1aec87431df9092f655112">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1descriptor_sha256:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-9bad1c3cfad95d5ec7ff16ee">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1descriptor_sha256:length/id">protocol:generated:stove0-observer:/schemas/ObserverDescriptor/properties/descriptor_sha256:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-123516805ae6f4b2da5edc7e">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1descriptor_sha256:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-0cd7e58b5f7996970950c591">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1descriptor_sha256:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-4c3538c3247c59bdc7c6d2aa">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1descriptor_sha256:length/owner">stove0-observer-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-9bfeb8ba35bd7c21e2fc4827">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1descriptor_sha256:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-6692c08e23cd4c8142ce3959">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1descriptor_sha256:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-b6479ab1e979e07c05cd464d">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1descriptor_sha256:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-faa5d957cd469fa76ba362cc">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-42de06aa15e353fb2717af6d">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1descriptor_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-a5e14480bee39c23499c5cf4">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1descriptor_sha256:length/source_pointer">/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverDescriptor/properties/descriptor_sha256</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-b2722271c8bb4b3500bd4d93">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1descriptor_sha256:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:stove0-observer:/schemas/ObserverDescriptor/properties/implementation_version:length</code>
-<table id="v-d2aaf77d373ff4f441dd28e5">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-892e3d9dbaa61497a3f73e45">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1implementation_version:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-7cc560283835f6e9302bed89">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1implementation_version:length/id">protocol:generated:stove0-observer:/schemas/ObserverDescriptor/properties/implementation_version:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-f0c615e3fc68411b719a6773">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1implementation_version:length/maximum">120</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-4e4a4849657a9627188ea485">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1implementation_version:length/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-e18ba61cf4a19fa8e045b59e">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1implementation_version:length/owner">stove0-observer-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-2ddd1566d96f2142e1115d16">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1implementation_version:length/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-123e2c2828fa5b41dc883cf1">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1implementation_version:length/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-6abad76c2a156d643d09d805">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1implementation_version:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-0c42328de3ad276fcec350fb">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1implementation_version:length/source_pointer">/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverDescriptor/properties/implementation_version</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-f0ec87888f91b9492cd55e4e">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1implementation_version:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:stove0-observer:/schemas/ObserverDescriptor/properties/source_revision:length</code>
-<table id="v-7c52e78feac114c426114b3b">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-ddb38ca4b1ab6bbc8d3d4d7d">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1source_revision:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-6e0c5962437e35277ede910f">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1source_revision:length/id">protocol:generated:stove0-observer:/schemas/ObserverDescriptor/properties/source_revision:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-4befa2fc3656a8ba80aa760d">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1source_revision:length/maximum">200</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-44817adbd00007dfab0aa7de">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1source_revision:length/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-e6b811be4ff6b9fac1695112">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1source_revision:length/owner">stove0-observer-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-bd1e17e9f32f2ea2de939cd4">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1source_revision:length/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-e55b520897281a734b23409e">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1source_revision:length/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-09ef4616e7053fa41a9c40ae">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1source_revision:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-46fdcc7e62420b66cc731b47">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1source_revision:length/source_pointer">/external_contract/protocol_schemas/generated:stove0-observer/schemas/ObserverDescriptor/properties/source_revision</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-d963b724f09379f9ef6d25c8">
-<code data-value-pointer="/audit/decisions/protocol:generated:stove0-observer:~1schemas~1ObserverDescriptor~1properties~1source_revision:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,61 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-6c0c68dab977066c2d607683.html">stove0-server · Python</a>
+<a href="index.html">All authorities</a> / <a href="a-38913a60d95bc167e38ef46d.html">stove0-server</a> / <a href="i-6c0c68dab977066c2d607683.html">Python</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>stove0_core.InMemoryWorkStore</h1>
+<p class="context">Content-opaque transformation application for Riverhog. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:stove0-server:stove0-core-inmemoryworkstore:1aba45acb8">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>stove0-server</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>stove0_core</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>InMemoryWorkStore</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;() -&gt; &#x27;None&#x27;&quot;</code>
+</dd>
+</dl>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/python/stove0_core.InMemoryWorkStore</code>
-</h3>
+</h4>
 <table id="v-c33e4db663435c59f6c21134">
 <tbody>
 <tr>
@@ -112,25 +149,133 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-1e34374f69ace3f66191076e.html">stove0_core.InMemoryWorkStore.admit_branch_set</a>
+</li>
+<li>
+<a href="e-9b16ba471854a201b5e8ee2a.html">stove0_core.InMemoryWorkStore.admit_join</a>
+</li>
+<li>
+<a href="e-8227287c5dbf373db210abb9.html">stove0_core.InMemoryWorkStore.compare_and_swap_target_production_seal</a>
+</li>
+<li>
+<a href="e-8df331a26428a825bd68a611.html">stove0_core.InMemoryWorkStore.compare_and_swap_target_settlement_seal</a>
+</li>
+<li>
+<a href="e-621597a5e9399bdc50f07340.html">stove0_core.InMemoryWorkStore.compare_and_swap</a>
+</li>
+<li>
+<a href="e-562c6b4a48d004a971af692f.html">stove0_core.InMemoryWorkStore.create</a>
+</li>
+<li>
+<a href="e-119c0886055d8c8e6be51e6e.html">stove0_core.InMemoryWorkStore.ensure_target_production_receiving</a>
+</li>
+<li>
+<a href="e-69029cbcec29867b1af2910a.html">stove0_core.InMemoryWorkStore.ensure_target_settlement_binding</a>
+</li>
+<li>
+<a href="e-6b1f5ed3bb87805433093366.html">stove0_core.InMemoryWorkStore.iter_selection_artifacts</a>
+</li>
+<li>
+<a href="e-3d6d901c5b67aced40c55d42.html">stove0_core.InMemoryWorkStore.iter_target_dispositions</a>
+</li>
+<li>
+<a href="e-fad2d435a1d19891746e1a1b.html">stove0_core.InMemoryWorkStore.iter_target_source_edges_by_input</a>
+</li>
+<li>
+<a href="e-d88b81878f2266deb577f624.html">stove0_core.InMemoryWorkStore.iter_target_outputs_by_path</a>
+</li>
+<li>
+<a href="e-49b45296f634179eec8957a6.html">stove0_core.InMemoryWorkStore.iter_target_source_edges</a>
+</li>
+<li>
+<a href="e-e7398c2056d169e9b9ff4a0b.html">stove0_core.InMemoryWorkStore.iter_target_outputs</a>
+</li>
+<li>
+<a href="e-8ea422ecd8d52cb331f1347e.html">stove0_core.InMemoryWorkStore.load_selection_artifact</a>
+</li>
+<li>
+<a href="e-74dc54b2419540a949d2c3d0.html">stove0_core.InMemoryWorkStore.load_selection_ref</a>
+</li>
+<li>
+<a href="e-a08d4cee5bfb7ccb103f6174.html">stove0_core.InMemoryWorkStore.load_selection</a>
+</li>
+<li>
+<a href="e-22a388d4e9562407e587c1f4.html">stove0_core.InMemoryWorkStore.load_target_settlement_seal</a>
+</li>
+<li>
+<a href="e-c33875cc041c8d282c4122f2.html">stove0_core.InMemoryWorkStore.load_target_disposition</a>
+</li>
+<li>
+<a href="e-a002bf4557257b9ecb3c43c7.html">stove0_core.InMemoryWorkStore.load_target_production_seal</a>
+</li>
+<li>
+<a href="e-064b242e4004b5e16cd5104f.html">stove0_core.InMemoryWorkStore.load_target_output</a>
+</li>
+<li>
+<a href="e-1db8ff9449d05606e112ca19.html">stove0_core.InMemoryWorkStore.load</a>
+</li>
+<li>
+<a href="e-b38cc6bc0bbd2a8e08453a57.html">stove0_core.InMemoryWorkStore.record_target_disposition</a>
+</li>
+<li>
+<a href="e-fa0a201b8550366926ec9e89.html">stove0_core.InMemoryWorkStore.record_target_source_edge</a>
+</li>
+<li>
+<a href="e-a374390f02755cc234f2b395.html">stove0_core.InMemoryWorkStore.record_target_output</a>
+</li>
+<li>
+<a href="e-e214b55b100f017bc82360be.html">stove0_core.InMemoryWorkStore.retain_selection</a>
+</li>
+<li>
+<a href="e-300ed56111de42ca50e6a874.html">stove0_core.InMemoryWorkStore.scan_target_production_seals</a>
+</li>
+<li>
+<a href="e-64a964243fbfc25b7076abd5.html">stove0_core.InMemoryWorkStore.selection_artifact_page</a>
+</li>
+<li>
+<a href="e-c36a7825e15cd68954be7c3d.html">stove0_core.InMemoryWorkStore.target_disposition_page</a>
+</li>
+<li>
+<a href="e-e7fc37e0da5d1e361cc7ae2a.html">stove0_core.InMemoryWorkStore.target_output_path_page</a>
+</li>
+<li>
+<a href="e-7a1ac55c07cbe076d724740a.html">stove0_core.InMemoryWorkStore.target_output_page</a>
+</li>
+<li>
+<a href="e-c02f8eff80469543778b326b.html">stove0_core.InMemoryWorkStore.target_source_edge_page</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/stove0/application/server/src/stove0_core/__init__.py">some-implementations/stove0/application/server/src/stove0_core/__init__.py</code>
+<a href="source-authorities.html#source-7558b08e7fed034d624d9aed">python:stove0-server:stove0_core</a> — <code data-source-path="some-implementations/stove0/application/server/src/stove0_core/__init__.py">some-implementations/stove0/application/server/src/stove0_core/__init__.py</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

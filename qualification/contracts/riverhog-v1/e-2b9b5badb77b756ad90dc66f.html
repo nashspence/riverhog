@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,331 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-63d72d1336e9711b4f03a971.html">a-review0-rclone-target · Configuration Documents</a>
+<a href="index.html">All authorities</a> / <a href="a-834f85115e93f11480bc68c6.html">a-review0-rclone-target</a> / <a href="i-63d72d1336e9711b4f03a971.html">Configuration Documents</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>a-review0-rclone-target:configuration:rclone-target-config configuration</h1>
+<p class="context">Review0 rclone delivery target for Stove0. Configuration Documents contract owned by a-review0-rclone-target.</p>
 <section id="contract" data-contract="configuration:a-review0-rclone-target:a-review0-rclone-target-configuration-rcl-fa9ce3d16d:2f1179e641">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-4db9bac1a65c7720b565ff62">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>$id</dt>
+<dd>
+<code>https://nashspence.github.io/riverhog/v1/config/a-review0-rclone-target.schema.json</code>
+</dd>
+<dt>$schema</dt>
+<dd>
+<code>https://json-schema.org/draft/2020-12/schema</code>
+</dd>
+<dt>title</dt>
+<dd>
+<code>RcloneTargetConfig</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;token_file&quot;,&quot;samplers&quot;,&quot;destination_identity&quot;,&quot;rclone_remote&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>destination_identity</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-c00fe8f8ac049101d15187d5">rclone_config_file</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; format: <code>path</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>rclone_remote</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>rclone_timeout_seconds</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; default: <code>86400</code>
+</td>
+<td>
+<code>86400</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-74b82d3d4cd3c949923277b2">samplers</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-2b9b5badb77b756ad90dc66f.html#v-47876ef4546ffc72101b74fc">#/$defs/SamplerConfig</a>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>token_file</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; format: <code>path</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-47876ef4546ffc72101b74fc">SamplerConfig</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-c00fe8f8ac049101d15187d5">
+<h3>Field: rclone_config_file</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; format: <code>path</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Rclone Config File</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; format: <code>path</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-74b82d3d4cd3c949923277b2">
+<h3>Field: samplers</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-2b9b5badb77b756ad90dc66f.html#v-47876ef4546ffc72101b74fc">#/$defs/SamplerConfig</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Samplers</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-47876ef4546ffc72101b74fc">
+<h3>Definition: SamplerConfig</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>SamplerConfig</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;base_url&quot;,&quot;token_file&quot;,&quot;descriptor_sha256&quot;,&quot;image_id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>allow_insecure_http</code>
+</td>
+<td>no</td>
+<td>
+<code>boolean</code>; default: <code>false</code>
+</td>
+<td>
+<code>false</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>base_url</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>2048</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>descriptor_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._-]{0,118}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>image_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^sha256:[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>token_file</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; format: <code>path</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/configuration_documents/a-review0-rclone-target:configuration:rclone-target-config</code>
-</h3>
+</h4>
 <table id="v-4db9bac1a65c7720b565ff62">
 <tbody>
 <tr>
@@ -915,576 +1222,98 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-8dc08bb46173175ad6e39a86">compatibility/configuration/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="some-implementations/stove0/review0/rclone-effect-target/src/a_review0_rclone_target/app.py">some-implementations/stove0/review0/rclone-effect-target/src/a_review0_rclone_target/app.py::RcloneTargetConfig</code>
+<a href="source-authorities.html#source-c5f915af22cd397868db40ed">configuration:a-review0-rclone-target:configuration:rclone-target-config</a> — <code data-source-path="some-implementations/stove0/review0/rclone-effect-target/src/a_review0_rclone_target/app.py">some-implementations/stove0/review0/rclone-effect-target/src/a_review0_rclone_target/app.py::RcloneTargetConfig</code>
 </li>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make unit</code>
+<a href="source-commands.html#route-ce47068f504c25a93bdddb64">make unit</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>configuration:a-review0-rclone-target:configuration:rclone-target-config:/$defs/SamplerConfig/properties/base_url:length</code>
-<table id="v-cb4e9b135896071b9213b7aa">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-7b6405d76171e632c7754f2a">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1$defs~1SamplerConfig~1properties~1base_url:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/configuration_documents/a-review0-rclone-target:configuration:rclone-target-config/$defs/SamplerConfig/properties/base_url</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:2048,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-1693400c7f9de4c7f7dc8cb2">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1$defs~1SamplerConfig~1properties~1base_url:length/id">configuration:a-review0-rclone-target:configuration:rclone-target-config:/$defs/SamplerConfig/properties/base_url:length</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/configuration_documents/a-review0-rclone-target:configuration:rclone-target-config/$defs/SamplerConfig/properties/descriptor_sha256</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-0284b14be2e77deafa279a3c">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1$defs~1SamplerConfig~1properties~1base_url:length/maximum">2048</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/configuration_documents/a-review0-rclone-target:configuration:rclone-target-config/properties/destination_identity</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>minimum</code>
-</th>
 <td>
-<span id="v-edb0747fe3c06aa172dfe666">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1$defs~1SamplerConfig~1properties~1base_url:length/minimum">1</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/configuration_documents/a-review0-rclone-target:configuration:rclone-target-config/properties/samplers</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-43b6995e7f1b2490831f8f0c">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1$defs~1SamplerConfig~1properties~1base_url:length/owner">a-review0-rclone-target:configuration:rclone-target-config</code>
-<span class="kind">string</span>
-</span>
+<code>configuration-composition/v1</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
+<td>cardinality · items · operational_policy</td>
 <td>
-<span id="v-941fa7a53b119a69f0c3eec1">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1$defs~1SamplerConfig~1properties~1base_url:length/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-fd2bf1f18e4582ecaa528c73">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1$defs~1SamplerConfig~1properties~1base_url:length/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-9bbe2366465986ae798f1b96">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1$defs~1SamplerConfig~1properties~1base_url:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-0d9857fd3c6d2f4e068181b3">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1$defs~1SamplerConfig~1properties~1base_url:length/source_pointer">/external_contract/configuration_documents/a-review0-rclone-target:configuration:rclone-target-config/$defs/SamplerConfig/properties/base_url</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-a7848b926923440552e68cd4">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1$defs~1SamplerConfig~1properties~1base_url:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;a-review0-rclone-target:configuration:rclone-target-config&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;validated-deployment-composition&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-<li>
-<code>configuration:a-review0-rclone-target:configuration:rclone-target-config:/$defs/SamplerConfig/properties/descriptor_sha256:length</code>
-<table id="v-de33a37c3a37f930525f37b1">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-6589a6f8dd766acebee15e03">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-11910092a4bceba682628dc0">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/id">configuration:a-review0-rclone-target:configuration:rclone-target-config:/$defs/SamplerConfig/properties/descriptor_sha256:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-f47b14e7fb9e1e90c693062f">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-2525e88cded212c682b70d41">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-78fa16296dfba27da5745d49">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/owner">a-review0-rclone-target:configuration:rclone-target-config</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-d5386bcaa3e2623dde99f49d">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-68dcd85daaa91679d1243720">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-86ec560c4ec731377ba78deb">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-d01092b4693cad8a2aef1f4e">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-d6173e79588910cee89ef647">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-e3c0db5c735abda6c2b519fc">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/source_pointer">/external_contract/configuration_documents/a-review0-rclone-target:configuration:rclone-target-config/$defs/SamplerConfig/properties/descriptor_sha256</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-0bc9382f2433247659ea08c3">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1$defs~1SamplerConfig~1properties~1descriptor_sha256:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>configuration:a-review0-rclone-target:configuration:rclone-target-config:/properties/destination_identity:length</code>
-<table id="v-0f5d05a75e8004d73a86b2f9">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-34f27371366673e11190a7fb">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1destination_identity:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-38cf6c81953695a91c8f1272">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1destination_identity:length/id">configuration:a-review0-rclone-target:configuration:rclone-target-config:/properties/destination_identity:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-9ac0076ce4255cd3419c15fc">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1destination_identity:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-0f6c2b172be4d3acb8cd47ae">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1destination_identity:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-53324a3c2261c79e7b2d2a12">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1destination_identity:length/owner">a-review0-rclone-target:configuration:rclone-target-config</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-bbd7e762a154b755d4c99754">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1destination_identity:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-c84b2acfff8f0a9fc3849b95">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1destination_identity:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-04bf4d24bbc070daaaf84b55">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1destination_identity:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-aa41a0cfb995aaf2d8f44fd1">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-3aa0782bf15d41fc25973182">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1destination_identity:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-0fa0328b62a724b11e3a49f2">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1destination_identity:length/source_pointer">/external_contract/configuration_documents/a-review0-rclone-target:configuration:rclone-target-config/properties/destination_identity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-6eed7e68ecea42783a7b5c81">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1destination_identity:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>configuration:a-review0-rclone-target:configuration:rclone-target-config:/properties/samplers:cardinality</code>
-<table id="v-fb93e5201ce9998c7855772d">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-ca0dc035f6a6e857fd775308">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-e1d4c6d0ec4b80688274ba46">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1samplers:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-947e63615bc97e655e06d43f">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1samplers:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-a977ddf5b10727d64bbf8334">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1samplers:cardinality/capacity_authority/owner">a-review0-rclone-target:configuration:rclone-target-config</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-98a98733e5028960182aca51">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1samplers:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-05e123145d39dd9bd28e99cd">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1samplers:cardinality/id">configuration:a-review0-rclone-target:configuration:rclone-target-config:/properties/samplers:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-e4859c63c176944d820630b0">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1samplers:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-4864a3cf47a16f28bb3bf8ed">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1samplers:cardinality/owner">a-review0-rclone-target:configuration:rclone-target-config</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-f8ebc086f2db954ffe544dae">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1samplers:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-8823366bbdb6bc53fbb10ce4">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1samplers:cardinality/reason">validated-deployment-composition</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-6f90281c8a0ffaad79c30fbc">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1samplers:cardinality/rule">configuration-composition/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-1d29b9be8f9b0b9d417fdcac">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1samplers:cardinality/source_pointer">/external_contract/configuration_documents/a-review0-rclone-target:configuration:rclone-target-config/properties/samplers</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-39734c76defc7c49026c28b4">
-<code data-value-pointer="/audit/decisions/configuration:a-review0-rclone-target:configuration:rclone-target-config:~1properties~1samplers:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

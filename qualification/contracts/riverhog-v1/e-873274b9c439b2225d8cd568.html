@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,59 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-095783d21b3ccffbfebc1728.html">riverhog-client · Configuration Environment</a>
+<a href="index.html">All authorities</a> / <a href="a-813668008c58c34f22497fe7.html">riverhog-client</a> / <a href="i-095783d21b3ccffbfebc1728.html">Configuration Environment</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>RIVERHOG_UPLOAD_TIMEOUT_SECONDS</h1>
+<p class="context">Typed generic Riverhog client and capability-scoped collection-processing runtime. Configuration Environment contract owned by riverhog-client.</p>
 <section id="contract" data-contract="configuration-environment:riverhog-client:riverhog-upload-timeout-seconds:ab33aad799">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Environment setting</h3>
+<dl class="facts">
+<dt>name</dt>
+<dd>
+<code>RIVERHOG_UPLOAD_TIMEOUT_SECONDS</code>
+</dd>
+<dt>owner</dt>
+<dd>
+<code>riverhog-client</code>
+</dd>
+<dt>input shape</dt>
+<dd>
+<code>environment-string</code>
+</dd>
+</dl>
+<h4>Default expressions</h4>
+<ul>
+<li>
+<code>unset</code>
+</li>
+</ul>
+<h4>Consumers</h4>
+<ul>
+<li>
+<code>riverhog-client</code>
+</li>
+</ul>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/configuration_environment/109</code>
-</h3>
+</h4>
 <table id="v-63f2a8f8ec447cd974be4b03">
 <tbody>
 <tr>
@@ -123,170 +158,90 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-8dc08bb46173175ad6e39a86">compatibility/configuration/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code>configuration-environment:riverhog-client:RIVERHOG_UPLOAD_TIMEOUT_SECONDS</code>
+<a href="source-authorities.html#source-6e31cc159db9b667cfeea2ee">configuration-environment:riverhog-client:RIVERHOG_UPLOAD_TIMEOUT_SECONDS</a> — <code data-source-path="packages/riverhog-client/src/riverhog_client/client.py">packages/riverhog-client/src/riverhog_client/client.py</code>
 </li>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make unit</code>
+<a href="source-commands.html#route-ce47068f504c25a93bdddb64">make unit</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>configuration-environment:riverhog-client:RIVERHOG_UPLOAD_TIMEOUT_SECONDS:value</code>
-<table id="v-a16f24ef3c08a8ab514d1d36">
-<tbody>
+<div class="table-scroll">
+<table>
+<thead>
 <tr>
-<th scope="row">
-<code>configuration</code>
-</th>
-<td>
-<span id="v-eab3078c2f3e8f058303bf1a">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_UPLOAD_TIMEOUT_SECONDS:value/configuration">RIVERHOG_UPLOAD_TIMEOUT_SECONDS</code>
-<span class="kind">string</span>
-</span>
-</td>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
 </tr>
-<tr>
-<th scope="row">
-<code>consumers</code>
-</th>
-<td>
-<table id="v-befe92190c677487cca70f28">
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>0</code>
-</th>
 <td>
-<span id="v-76d1f818339539f9cbf4a901">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_UPLOAD_TIMEOUT_SECONDS:value/consumers/0">riverhog-client</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/configuration_environment/109</code>
+</td>
+<td>
+<code>configured-capacity/v1</code>
+</td>
+<td>value · configured-value · operational_policy</td>
+<td>
+<code>{&quot;configuration&quot;:&quot;RIVERHOG_UPLOAD_TIMEOUT_SECONDS&quot;,&quot;consumers&quot;:[&quot;riverhog-client&quot;],&quot;maximum&quot;:null,&quot;reason&quot;:&quot;operator-configured-capacity&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
+</div>
+<h3>Configuration authority and bindings</h3>
+<p>These are discovered declaration and consumer facts, not observed effective configuration.</p>
+<div class="table-scroll">
+<table>
+<thead>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-bd831836d6b620b12512feb6">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_UPLOAD_TIMEOUT_SECONDS:value/dimension">value</code>
-<span class="kind">string</span>
-</span>
-</td>
+<th scope="col">Kind</th>
+<th scope="col">Consumer</th>
+<th scope="col">Source</th>
+<th scope="col">Authority or expression</th>
 </tr>
+</thead>
+<tbody>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
+<td>consumer</td>
 <td>
-<span id="v-b803b58c55b67f39fcea1d5a">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_UPLOAD_TIMEOUT_SECONDS:value/id">configuration-environment:riverhog-client:RIVERHOG_UPLOAD_TIMEOUT_SECONDS:value</code>
-<span class="kind">string</span>
-</span>
+<code>riverhog-client</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-8373e152718470e0877c4572">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_UPLOAD_TIMEOUT_SECONDS:value/maximum">null</code>
-<span class="kind">null</span>
-</span>
+<code data-source-path="packages/riverhog-client/src/riverhog_client/client.py">packages/riverhog-client/src/riverhog_client/client.py</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-30ff9a0153db684256427bb5">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_UPLOAD_TIMEOUT_SECONDS:value/owner">riverhog-client</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-f90813971938c4813de89892">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_UPLOAD_TIMEOUT_SECONDS:value/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-a7adb891bbf977d7a95c03d1">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_UPLOAD_TIMEOUT_SECONDS:value/reason">operator-configured-capacity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-f141c430845c0dd973027359">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_UPLOAD_TIMEOUT_SECONDS:value/rule">configured-capacity/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-5bacec48a798a5c7f9eb2519">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_UPLOAD_TIMEOUT_SECONDS:value/source_pointer">/external_contract/configuration_environment/109</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-2fdfa2a0a15f6211dee8a590">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_UPLOAD_TIMEOUT_SECONDS:value/unit">configured-value</code>
-<span class="kind">string</span>
-</span>
+<code>os.getenv(env_name)</code>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

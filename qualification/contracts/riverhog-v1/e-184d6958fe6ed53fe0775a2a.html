@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,175 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-d8fe56601959d1a9f554080c.html">review0-planner · Python</a>
+<a href="index.html">All authorities</a> / <a href="a-f3e5ed0bad8dff78fdb42d2f.html">review0-planner</a> / <a href="i-d8fe56601959d1a9f554080c.html">Python</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>review0_planner.ReviewVariant</h1>
+<p class="context">Review0 plan construction for Stove0 workflows. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:review0-planner:review0-planner-reviewvariant:5b3b6329b6">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>review0-planner</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>review0_planner</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>ReviewVariant</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(*, id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$&#x27;)], portable_intent: dict[str, JsonValue] = &lt;factory&gt;, target_options: dict[str, JsonValue] = &lt;factory&gt;) -&gt; None&quot;</code>
+</dd>
+</dl>
+<section class="schema-section" id="s-26823fbb3f329e5a604879a2">
+<h3>Validated model schema</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-b4bc6bdff3b4f194a56d61ea">portable_intent</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-184d6958fe6ed53fe0775a2a.html#v-72e7ae31e7243469b2296eb9">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-4b9ea6607cf0af3a9a2ff474">target_options</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-184d6958fe6ed53fe0775a2a.html#v-72e7ae31e7243469b2296eb9">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-72e7ae31e7243469b2296eb9">JsonValue</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-b4bc6bdff3b4f194a56d61ea">
+<h3>Field: portable_intent</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-184d6958fe6ed53fe0775a2a.html#v-72e7ae31e7243469b2296eb9">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-4b9ea6607cf0af3a9a2ff474">
+<h3>Field: target_options</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-184d6958fe6ed53fe0775a2a.html#v-72e7ae31e7243469b2296eb9">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-72e7ae31e7243469b2296eb9">
+<h3>Definition: JsonValue</h3>
+<p class="shape">any JSON value</p>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/python/review0_planner.ReviewVariant</code>
-</h3>
+</h4>
 <table id="v-8c84a4979b78064bcdde9c8d">
 <tbody>
 <tr>
@@ -321,25 +472,32 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/stove0/review0/planning/src/review0_planner/__init__.py">some-implementations/stove0/review0/planning/src/review0_planner/__init__.py</code>
+<a href="source-authorities.html#source-a8a843c072d3f78ed21a38bb">python:review0-planner:review0_planner</a> — <code data-source-path="some-implementations/stove0/review0/planning/src/review0_planner/__init__.py">some-implementations/stove0/review0/planning/src/review0_planner/__init__.py</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

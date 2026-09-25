@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,274 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-64a53c93f5fbfec5bcaf1e02.html">a-riverhog-event-relay · Configuration Documents</a>
+<a href="index.html">All authorities</a> / <a href="a-c14e10380b0d0be81639efcb.html">a-riverhog-event-relay</a> / <a href="i-64a53c93f5fbfec5bcaf1e02.html">Configuration Documents</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>a-riverhog-event-relay:configuration:event-relay-config configuration</h1>
+<p class="context">Native lifecycle-event to CloudEvents webhook relay. Configuration Documents contract owned by a-riverhog-event-relay.</p>
 <section id="contract" data-contract="configuration:a-riverhog-event-relay:a-riverhog-event-relay-configuration-even-348a3e86fe:7c53b077c7">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-f40c23f549e44962e24d3d5e">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>$id</dt>
+<dd>
+<code>https://nashspence.github.io/riverhog/v1/config/a-riverhog-event-relay.schema.json</code>
+</dd>
+<dt>$schema</dt>
+<dd>
+<code>https://json-schema.org/draft/2020-12/schema</code>
+</dd>
+<dt>title</dt>
+<dd>
+<code>EventRelayConfig</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;state_path&quot;,&quot;sources&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>batch_size</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>100</code>; default: <code>100</code>
+</td>
+<td>
+<code>100</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>poll_interval_seconds</code>
+</td>
+<td>no</td>
+<td>
+<code>number</code>; exclusiveMinimum: <code>0</code>; default: <code>5</code>
+</td>
+<td>
+<code>5</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>request_timeout_seconds</code>
+</td>
+<td>no</td>
+<td>
+<code>number</code>; exclusiveMinimum: <code>0</code>; default: <code>10</code>
+</td>
+<td>
+<code>10</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-f81c005b3d528a717a25e140">sources</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-796f157ba963429d629b9314.html#v-163e667adaf6efaf900d431f">#/$defs/SourceConfig</a>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>state_path</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; format: <code>path</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>version</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; default: <code>1</code>
+</td>
+<td>
+<code>1</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-163e667adaf6efaf900d431f">SourceConfig</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-f81c005b3d528a717a25e140">
+<h3>Field: sources</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-796f157ba963429d629b9314.html#v-163e667adaf6efaf900d431f">#/$defs/SourceConfig</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Sources</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-163e667adaf6efaf900d431f">
+<h3>Definition: SourceConfig</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>SourceConfig</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;name&quot;,&quot;events_url&quot;,&quot;token_file&quot;,&quot;webhook_url_file&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>events_url</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>name</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[A-Za-z0-9._-]+$</code>; minLength: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>token_file</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; format: <code>path</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>webhook_url_file</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; format: <code>path</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config</code>
-</h3>
+</h4>
 <table id="v-f40c23f549e44962e24d3d5e">
 <tbody>
 <tr>
@@ -772,298 +1022,74 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-8dc08bb46173175ad6e39a86">compatibility/configuration/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="some-implementations/riverhog/applications/a-riverhog-event-relay/src/a_riverhog_event_relay/relay.py">some-implementations/riverhog/applications/a-riverhog-event-relay/src/a_riverhog_event_relay/relay.py::EventRelayConfig</code>
+<a href="source-authorities.html#source-7bdba96f2be4fb32af14da10">configuration:a-riverhog-event-relay:configuration:event-relay-config</a> — <code data-source-path="some-implementations/riverhog/applications/a-riverhog-event-relay/src/a_riverhog_event_relay/relay.py">some-implementations/riverhog/applications/a-riverhog-event-relay/src/a_riverhog_event_relay/relay.py::EventRelayConfig</code>
 </li>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make unit</code>
+<a href="source-commands.html#route-ce47068f504c25a93bdddb64">make unit</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>configuration:a-riverhog-event-relay:configuration:event-relay-config:/properties/batch_size:value</code>
-<table id="v-4b48ec90652e1296394ae84e">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-ac7a254b931f8fe228c899e7">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1batch_size:value/dimension">value</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/batch_size</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>value · schema-value · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:100,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-025d0c3b1f8e5e66af526a31">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1batch_size:value/id">configuration:a-riverhog-event-relay:configuration:event-relay-config:/properties/batch_size:value</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/sources</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-e5b8fd01fac44c28cda84f93">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1batch_size:value/maximum">100</code>
-<span class="kind">number</span>
-</span>
+<code>configuration-composition/v1</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
+<td>cardinality · items · operational_policy</td>
 <td>
-<span id="v-98ff8d44611bb1fce918fffb">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1batch_size:value/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-cc9fbc9d54a90b56d511774e">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1batch_size:value/owner">a-riverhog-event-relay:configuration:event-relay-config</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-eda0bd725d93ea6c62293ede">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1batch_size:value/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-4f4a963a8395aaa82b27d764">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1batch_size:value/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-39f5f846b3b2df411ec02d7d">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1batch_size:value/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-728f4e9d2ae4b7be69f42cf3">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1batch_size:value/source_pointer">/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/batch_size</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-56e5eca24adf66fb49af4842">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1batch_size:value/unit">schema-value</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;a-riverhog-event-relay:configuration:event-relay-config&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;validated-deployment-composition&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-<li>
-<code>configuration:a-riverhog-event-relay:configuration:event-relay-config:/properties/sources:cardinality</code>
-<table id="v-8afb1691250144912209b395">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-1a4da84a14cf2786519aea59">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-082ea67442549039372ebaed">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1sources:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-024e7e60e8b3f6edf291c3b7">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1sources:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-301f5f2c45043cb7ac2956c7">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1sources:cardinality/capacity_authority/owner">a-riverhog-event-relay:configuration:event-relay-config</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-1fd3bbd4089ceb4b7cfe0dda">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1sources:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-29b0df14a2c526957c80f526">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1sources:cardinality/id">configuration:a-riverhog-event-relay:configuration:event-relay-config:/properties/sources:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-3ac82ec43eb491016e557f33">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1sources:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-24aef628e1ead646cb26ef75">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1sources:cardinality/owner">a-riverhog-event-relay:configuration:event-relay-config</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-baaf359c7439d3e625ea9b72">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1sources:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-b21d6cb158a2feaf33298387">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1sources:cardinality/reason">validated-deployment-composition</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-1d17a02424f0d10399075ca2">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1sources:cardinality/rule">configuration-composition/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-aafa3bb5d0dfc9b1ee380bf8">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1sources:cardinality/source_pointer">/external_contract/configuration_documents/a-riverhog-event-relay:configuration:event-relay-config/properties/sources</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-7c071901c50a86f83a1c143b">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-event-relay:configuration:event-relay-config:~1properties~1sources:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

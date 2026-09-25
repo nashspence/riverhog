@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,234 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-97662ede32d19804481410b5.html">riverhog · HTTP Operations</a>
+<a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-97662ede32d19804481410b5.html">HTTP Operations</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>POST /v1/collection-processing-claims/{claim_id}/outcomes/settle</h1>
+<p class="context">Riverhog archive service. Callable HTTP operations.</p>
 <section id="contract" data-contract="http-operations:riverhog:post-v1-collection-processing-claims-clai-dfb1b33e15:775bc25337">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Operation</h3>
+<p class="lead">Settle Processing Claim Outcomes</p>
+<dl class="facts">
+<dt>operationId</dt>
+<dd>
+<code>settle_processing_claim_outcomes</code>
+</dd>
+<dt>tags</dt>
+<dd>
+<code>[&quot;collection-workflows&quot;]</code>
+</dd>
+<dt>security</dt>
+<dd>
+<code>[{&quot;HTTPBearer&quot;:[]}]</code>
+</dd>
+<dt>x-riverhog-permission-requirements</dt>
+<dd>
+<code>[{&quot;any_of&quot;:[&quot;collection-processing:control&quot;]}]</code>
+</dd>
+<dt>x-riverhog-interface</dt>
+<dd>
+<code>client-only-primitive</code>
+</dd>
+</dl>
+<h3>Parameters</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Name</th>
+<th scope="col">In</th>
+<th scope="col">Required</th>
+<th scope="col">Default</th>
+<th scope="col">Schema</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>claim_id</code>
+</td>
+<td>
+<code>path</code>
+</td>
+<td>yes</td>
+<td>not declared</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Request body</h3>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>true</code>
+</dd>
+</dl>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Media type</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-6a26ed382d2d5fa14c6327c0.html#v-7ba16e93012882c21df1e851">#/components/schemas/ProcessingClaimOutcomesSettleDocument</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Responses</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Status</th>
+<th scope="col">Description</th>
+<th scope="col">Media type</th>
+<th scope="col">Schema</th>
+<th scope="col">Error codes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>200</code>
+</td>
+<td>Successful Response</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-b2440249571e9d95da0aec97.html#v-fb2afd54ce5a04ed0ce7d6a3">#/components/schemas/ProcessingClaimDocument</a>
+</td>
+<td>not declared</td>
+</tr>
+<tr>
+<td>
+<code>400</code>
+</td>
+<td>Bad Request</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>bad_request</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>401</code>
+</td>
+<td>Unauthorized</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>unauthorized</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>403</code>
+</td>
+<td>Forbidden</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>forbidden</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>404</code>
+</td>
+<td>Not Found</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>not_found</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>409</code>
+</td>
+<td>Conflict</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>conflict</code>, <code>invalid_state</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>500</code>
+</td>
+<td>Internal Server Error</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>internal_error</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1outcomes~1settle/post</code>
-</h3>
+</h4>
 <table id="v-f6478edea1e5040ccb9f3cb8">
 <tbody>
 <tr>
@@ -948,139 +1158,205 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-36976bc2cdf357d62af7a795.html">riverhog_client.ApiClient.settle_processing_claim_outcomes</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 <li>
-<code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
+<a href="source-authorities.html#source-b032bdc56b3fbe541165d1d2">operations:operation-matrix</a> — <code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>http:riverhog:operation:settle_processing_claim_outcomes:parameter:path:claim_id:/:length</code>
-<table id="v-9e3382f8ec9ac6a9a626fec7">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1outcomes~1settle/post/parameters/0/schema</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<details>
+<summary>Structural operation bindings</summary>
+<p>These bind maintained client, CLI, response authority, and provider routes. They are not executed qualification results.</p>
+<table id="v-fe3bb0f672dbd323a4057d10">
 <tbody>
 <tr>
 <th scope="row">
-<code>dimension</code>
+<code>application</code>
 </th>
 <td>
-<span id="v-5acf15572313da7a22ae5dd8">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:settle_processing_claim_outcomes:parameter:path:claim_id:~1:length/dimension">length</code>
+<span id="v-190538f085d973efe659ad2e">
+<code data-value-pointer="/audit/operation-qualification/settle_processing_claim_outcomes/application">riverhog</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>id</code>
+<code>classification</code>
 </th>
 <td>
-<span id="v-89df9cb58f881d59f3bf60e4">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:settle_processing_claim_outcomes:parameter:path:claim_id:~1:length/id">http:riverhog:operation:settle_processing_claim_outcomes:parameter:path:claim_id:/:length</code>
+<span id="v-46e93dea1dc0e3ca36f5ec22">
+<code data-value-pointer="/audit/operation-qualification/settle_processing_claim_outcomes/classification">client-only-primitive</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>maximum</code>
+<code>cli_bindings</code>
 </th>
 <td>
-<span id="v-ad4dc437ec9de183bedf1123">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:settle_processing_claim_outcomes:parameter:path:claim_id:~1:length/maximum">64</code>
+<span id="v-cd49fba556d6721273fb110a">
+<code data-value-pointer="/audit/operation-qualification/settle_processing_claim_outcomes/cli_bindings">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>cli_commands</code>
+</th>
+<td>
+<span id="v-bef56ec46fc6a80494570618">
+<code data-value-pointer="/audit/operation-qualification/settle_processing_claim_outcomes/cli_commands">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>client</code>
+</th>
+<td>
+<span id="v-4162c84319d6f751a8139282">
+<code data-value-pointer="/audit/operation-qualification/settle_processing_claim_outcomes/client">ApiClient</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>client_bindings</code>
+</th>
+<td>
+<table id="v-13f91aab5fc0dd1f41f10426">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-ae276e3feb289239563356e4">
+<tbody>
+<tr>
+<th scope="row">
+<code>public_identity</code>
+</th>
+<td>
+<span id="v-853c4aab735418d7e03753c9">
+<code data-value-pointer="/audit/operation-qualification/settle_processing_claim_outcomes/client_bindings/0/public_identity">riverhog_client.ApiClient.settle_processing_claim_outcomes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source</code>
+</th>
+<td>
+<table id="v-0d1607ea91dc3536bc07e639">
+<tbody>
+<tr>
+<th scope="row">
+<code>line</code>
+</th>
+<td>
+<span id="v-9d113ef64a114f96851504de">
+<code data-value-pointer="/audit/operation-qualification/settle_processing_claim_outcomes/client_bindings/0/source/line">632</code>
 <span class="kind">number</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>minimum</code>
+<code>module</code>
 </th>
 <td>
-<span id="v-55eb2fcd5f02dfab8fcd7841">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:settle_processing_claim_outcomes:parameter:path:claim_id:~1:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-0e65577acc87ed1a77d7e7b1">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:settle_processing_claim_outcomes:parameter:path:claim_id:~1:length/owner">riverhog</code>
+<span id="v-a7a826407443a0741baa8b40">
+<code data-value-pointer="/audit/operation-qualification/settle_processing_claim_outcomes/client_bindings/0/source/module">riverhog_client.workflows</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>policy</code>
+<code>path</code>
 </th>
 <td>
-<span id="v-248d0e40ee45fc6d6deac7c9">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:settle_processing_claim_outcomes:parameter:path:claim_id:~1:length/policy">fixed</code>
+<span id="v-e6d8052a4857b5d2f45484e6">
+<code data-value-pointer="/audit/operation-qualification/settle_processing_claim_outcomes/client_bindings/0/source/path">packages/riverhog-client/src/riverhog_client/workflows.py</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>reason</code>
+<code>symbol</code>
 </th>
 <td>
-<span id="v-57518ec4a6d06c3d3ff51e0a">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:settle_processing_claim_outcomes:parameter:path:claim_id:~1:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-bbcfdb3f8afa0e27dc8b780f">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:settle_processing_claim_outcomes:parameter:path:claim_id:~1:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-a6e361810134edf785fbe737">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-733b556ed4b710cc55668343">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:settle_processing_claim_outcomes:parameter:path:claim_id:~1:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span id="v-f94fa01b364d2dac5575d10b">
+<code data-value-pointer="/audit/operation-qualification/settle_processing_claim_outcomes/client_bindings/0/source/symbol">CollectionWorkflowMethods.settle_processing_claim_outcomes</code>
 <span class="kind">string</span>
 </span>
 </td>
@@ -1089,32 +1365,83 @@
 </table>
 </td>
 </tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
 <tr>
 <th scope="row">
-<code>source_pointer</code>
+<code>method</code>
 </th>
 <td>
-<span id="v-1b7acb6c0f80f154b95d9a4d">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:settle_processing_claim_outcomes:parameter:path:claim_id:~1:length/source_pointer">/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1outcomes~1settle/post/parameters/0/schema</code>
+<span id="v-5276b4f61ae58763b56892f6">
+<code data-value-pointer="/audit/operation-qualification/settle_processing_claim_outcomes/method">POST</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>unit</code>
+<code>operation_id</code>
 </th>
 <td>
-<span id="v-64df3d6bb8fe08335a36709f">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:settle_processing_claim_outcomes:parameter:path:claim_id:~1:length/unit">characters</code>
+<span id="v-f0660902c3dc379f3b2d8491">
+<code data-value-pointer="/audit/operation-qualification/settle_processing_claim_outcomes/operation_id">settle_processing_claim_outcomes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<span id="v-d19a1d370e15e68c28f87e19">
+<code data-value-pointer="/audit/operation-qualification/settle_processing_claim_outcomes/path">/v1/collection-processing-claims/{claim_id}/outcomes/settle</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>provider_evidence</code>
+</th>
+<td>
+<span id="v-1f01d8680d8a08d330362baa">
+<code data-value-pointer="/audit/operation-qualification/settle_processing_claim_outcomes/provider_evidence">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>read_collection</code>
+</th>
+<td>
+<span id="v-4b40c16f3f105155634b524f">
+<code data-value-pointer="/audit/operation-qualification/settle_processing_claim_outcomes/read_collection">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>response_authority</code>
+</th>
+<td>
+<span id="v-6dcfd2db69e69d55e4a76cf6">
+<code data-value-pointer="/audit/operation-qualification/settle_processing_claim_outcomes/response_authority">canonical-document</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-</ul>
+</details>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,164 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-14fed9d3129b23e19476ca3d.html">a-riverhog-linux-provenance-contract-lib · Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-ff8afa89a33b95fa541f982a.html">a-riverhog-linux-provenance-contract-lib</a> / <a href="i-14fed9d3129b23e19476ca3d.html">Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json</h1>
+<p class="context">Linux filesystem observation contracts for Riverhog provenance. Standalone structured-value contracts; these do not define an interaction.</p>
 <section id="contract" data-contract="schema:a-riverhog-linux-provenance-contract-lib:https-nashspence-github-io-riverhog-v1-pr-ce7cee8b8b:2a393c1923">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-f19000daa2993a965ec01f9c">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>$id</dt>
+<dd>
+<code>https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json</code>
+</dd>
+<dt>$schema</dt>
+<dd>
+<code>https://json-schema.org/draft/2020-12/schema</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;xflags&quot;,&quot;xflag_names&quot;,&quot;extent_size&quot;,&quot;nextents&quot;,&quot;project_id&quot;,&quot;cow_extent_size&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>cow_extent_size</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>extent_size</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>nextents</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>project_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-5aa7e4b9c01d5b35dc2b2646">xflag_names</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <code>string</code>; uniqueItems: <code>true</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>xflags</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-5aa7e4b9c01d5b35dc2b2646">
+<h3>Field: xflag_names</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; uniqueItems: <code>true</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>uniqueItems</dt>
+<dd>
+<code>true</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json</code>
-</h3>
+</h4>
 <table id="v-f19000daa2993a965ec01f9c">
 <tbody>
 <tr>
@@ -387,349 +527,86 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/riverhog/provenance/contracts/linux/src/a_riverhog_linux_provenance_contract_lib/schemas/linux-fsxattr.schema.json">some-implementations/riverhog/provenance/contracts/linux/src/a_riverhog_linux_provenance_contract_lib/schemas/linux-fsxattr.schema.json</code>
+<a href="source-authorities.html#source-8ed956c86aee24ec73422122">protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json</a> — <code data-source-path="some-implementations/riverhog/provenance/contracts/linux/src/a_riverhog_linux_provenance_contract_lib/schemas/linux-fsxattr.schema.json">some-implementations/riverhog/provenance/contracts/linux/src/a_riverhog_linux_provenance_contract_lib/schemas/linux-fsxattr.schema.json</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json:/properties/cow_extent_size:open-value</code>
-<table id="v-a607a85d1889bf4b64e5d782">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-72ff4fd77c66d8619b4f07a2">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1cow_extent_size:open-value/dimension">value</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json/properties/cow_extent_size</code>
+</td>
+<td>
+<a href="policies.html#definition-880614cb87cca076bd22dc5e">extent-rule/extension-contract/v1</a>
+</td>
+<td>value · schema-value · extension_owned</td>
+<td>
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-a9c5ac5b5a6d4262096c39bf">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1cow_extent_size:open-value/id">protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json:/properties/cow_extent_size:open-value</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json/properties/extent_size</code>
+</td>
+<td>
+<a href="policies.html#definition-880614cb87cca076bd22dc5e">extent-rule/extension-contract/v1</a>
+</td>
+<td>value · schema-value · extension_owned</td>
+<td>
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-5f3f1279b8c7052a0b81fb2c">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1cow_extent_size:open-value/maximum">null</code>
-<span class="kind">null</span>
-</span>
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json/properties/xflag_names</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-91bdec4c2b3dc6a25f766162">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1cow_extent_size:open-value/owner">https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json</code>
-<span class="kind">string</span>
-</span>
+<a href="policies.html#definition-880614cb87cca076bd22dc5e">extent-rule/extension-contract/v1</a>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
+<td>cardinality · items · extension_owned</td>
 <td>
-<span id="v-78325a8fd4bff60882f17eb1">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1cow_extent_size:open-value/policy">extension_owned</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-7d37b08e5113586c2cbf6594">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1cow_extent_size:open-value/reason">independently-versioned-extension-authority</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-78f30119aac5866befab3025">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1cow_extent_size:open-value/rule">extension-contract/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-a0d4e46c41fecf3c54d0dd6b">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1cow_extent_size:open-value/source_pointer">/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json/properties/cow_extent_size</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-f58bf83c5e73d534fb1c45f3">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1cow_extent_size:open-value/unit">schema-value</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-<li>
-<code>protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json:/properties/extent_size:open-value</code>
-<table id="v-df4f10b0226d7a70df41062d">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-a781b5c0bdd5eedde6d9c468">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1extent_size:open-value/dimension">value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-2beb932bbe4f61d0b3a42dee">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1extent_size:open-value/id">protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json:/properties/extent_size:open-value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-255f83d3b697d205b09dc4c4">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1extent_size:open-value/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-d532b318f9ce616af1d13108">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1extent_size:open-value/owner">https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-ba36bc50c6b69e1a50f4d014">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1extent_size:open-value/policy">extension_owned</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-37c44bc41c91d50121089f09">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1extent_size:open-value/reason">independently-versioned-extension-authority</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-b2afee72d6d4f378580b50ac">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1extent_size:open-value/rule">extension-contract/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-dd7dc7fcb18ba30ddf531268">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1extent_size:open-value/source_pointer">/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json/properties/extent_size</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-0938b2cad8708424c8fb58c7">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1extent_size:open-value/unit">schema-value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json:/properties/xflag_names:cardinality</code>
-<table id="v-7f9ba4e76c785b4b374cfa72">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-ff82985b6f52067e9defc6d4">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1xflag_names:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-4df56bd18cece83d9b2eebfa">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1xflag_names:cardinality/id">protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json:/properties/xflag_names:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-36af0676d6a4b10e6f385e79">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1xflag_names:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-6dc7a9297ef1e13cc67ce848">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1xflag_names:cardinality/owner">https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-93685e6f9ee8564b7d5fdd66">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1xflag_names:cardinality/policy">extension_owned</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-24e65009aba9d020e64f0c4c">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1xflag_names:cardinality/reason">independently-versioned-extension-authority</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-d44095c95d56980c5bbf6fd0">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1xflag_names:cardinality/rule">extension-contract/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-b3e43f1d5606237e690a7775">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1xflag_names:cardinality/source_pointer">/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json/properties/xflag_names</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-a9d8e7e416c29967bfd01d32">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1linux-fsxattr.json:~1properties~1xflag_names:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

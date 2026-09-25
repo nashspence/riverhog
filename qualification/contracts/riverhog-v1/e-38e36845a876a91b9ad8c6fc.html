@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,162 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-c1cb56ed421b50c80e39fe6f.html">riverhog-storage-adapter-support · Process Protocol Operations</a>
+<a href="index.html">All authorities</a> / <a href="a-20f64efed79fb2e94ef137f4.html">riverhog-storage-adapter-support</a> / <a href="i-c1cb56ed421b50c80e39fe6f.html">Process Protocol Operations</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>POST /v1/writes/complete</h1>
+<p class="context">HTTP binding and conformance support for Riverhog storage adapters. Callable operations in an independently deployed process protocol; method and path describe that protocol binding, not a product/service HTTP API.</p>
 <section id="contract" data-contract="process-protocol-operations:riverhog-storage-adapter-support:post-v1-writes-complete:47b52f4419">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Process protocol operation</h3>
+<dl class="facts">
+<dt>method</dt>
+<dd>
+<code>POST</code>
+</dd>
+<dt>path</dt>
+<dd>
+<code>/v1/writes/complete</code>
+</dd>
+<dt>error schema</dt>
+<dd>
+<code>StorageAdapterError</code>
+</dd>
+</dl>
+<h4>Request</h4>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>json</code>
+</dd>
+<dt>schema</dt>
+<dd>
+<code>WriteCompleteRequest</code>
+</dd>
+</dl>
+<h4>Response</h4>
+<dl class="facts">
+<dt>headers</dt>
+<dd>
+<code>[]</code>
+</dd>
+<dt>kind</dt>
+<dd>
+<code>json</code>
+</dd>
+<dt>schema</dt>
+<dd>
+<code>CompletedObjectReceipt</code>
+</dd>
+<dt>statuses</dt>
+<dd>
+<code>[200]</code>
+</dd>
+</dl>
+<h4>Errors</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Status</th>
+<th scope="col">Code</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>401</code>
+</td>
+<td>
+<code>unauthorized</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>400</code>
+</td>
+<td>
+<code>invalid_request</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>503</code>
+</td>
+<td>
+<code>provider_unavailable</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>500</code>
+</td>
+<td>
+<code>internal_failure</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>413</code>
+</td>
+<td>
+<code>request_too_large</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>400</code>
+</td>
+<td>
+<code>invalid_path</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>404</code>
+</td>
+<td>
+<code>not_found</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>409</code>
+</td>
+<td>
+<code>identity_conflict</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>409</code>
+</td>
+<td>
+<code>integrity_failure</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/4</code>
-</h3>
+</h4>
 <table id="v-00c79bf1ed250a546be6c65d">
 <tbody>
 <tr>
@@ -486,25 +624,40 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-653149bb33087ee097954552.html">generated:riverhog-storage-adapter protocol</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py">packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle</code>
+<a href="source-authorities.html#source-ef281f2471a91ed8e39ea04c">protocol:generated:riverhog-storage-adapter</a> — <code data-source-path="packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py">packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

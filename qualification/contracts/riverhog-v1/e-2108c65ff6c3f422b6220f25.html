@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,267 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a> / <a href="i-4b5441a2eda171b97ddce431.html">HTTP Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>schemas: DepartureEffectView</h1>
+<p class="context">Content-opaque transformation application for Riverhog. Supporting HTTP data definitions; these are not callable operations.</p>
 <section id="contract" data-contract="http-schemas:stove0:schemas-departureeffectview:1ac9725290">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-70df5f54bfb861cfcf6bff85">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 8 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>DepartureEffectView</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;intent&quot;,&quot;state&quot;,&quot;attempt_count&quot;,&quot;created_at&quot;,&quot;updated_at&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>attempt_count</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>created_at</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-dcceff3c419c76249f78d30d">failure</a>
+</td>
+<td>no</td>
+<td>any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>; <code>null</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>intent</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-8a4194e745f7cb733a9f20d0.html#v-7549e868283c3b5bc0f39df6">#/components/schemas/DepartureEffectIntent</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-90b74d5d857c45fd25318df2">next_attempt_at</a>
+</td>
+<td>no</td>
+<td>any of: <code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>; <code>null</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-e4df5667407fc9a65585ff4a">receipt</a>
+</td>
+<td>no</td>
+<td>any of: <a href="e-f7f44cc9def2376eddcb7aba.html#v-64870ae2d8edc8533baa0b84">#/components/schemas/DepartureEffectReceipt</a>; <code>null</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>state</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;pending&quot;,&quot;complete&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>updated_at</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-dcceff3c419c76249f78d30d">
+<h3>Field: failure</h3>
+<p class="shape">any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Failure</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-90b74d5d857c45fd25318df2">
+<h3>Field: next_attempt_at</h3>
+<p class="shape">any of: <code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Next Attempt At</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>; minLength: <code>30</code>; maxLength: <code>30</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-e4df5667407fc9a65585ff4a">
+<h3>Field: receipt</h3>
+<p class="shape">any of: <a href="e-f7f44cc9def2376eddcb7aba.html#v-64870ae2d8edc8533baa0b84">#/components/schemas/DepartureEffectReceipt</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-f7f44cc9def2376eddcb7aba.html#v-64870ae2d8edc8533baa0b84">#/components/schemas/DepartureEffectReceipt</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectView</code>
-</h3>
+</h4>
 <table id="v-70df5f54bfb861cfcf6bff85">
 <tbody>
 <tr>
@@ -684,499 +927,98 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-52e6e3212451330ad7592a25">openapi:stove0</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>http:stove0:components:/schemas/DepartureEffectView/properties/created_at:length</code>
-<table id="v-781b3ff8a28fb793e9b68653">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-ff0db404c3942b5de7b910eb">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1created_at:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectView/properties/created_at</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:30,&quot;minimum&quot;:30,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-fe9ed0c7a0fc23d6a4d9fb90">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1created_at:length/id">http:stove0:components:/schemas/DepartureEffectView/properties/created_at:length</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectView/properties/failure/anyOf/0</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:1000,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-b13a40289a871be714dc080a">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1created_at:length/maximum">30</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectView/properties/next_attempt_at/anyOf/0</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:30,&quot;minimum&quot;:30,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>minimum</code>
-</th>
 <td>
-<span id="v-c047a20cf671f0a701d73d32">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1created_at:length/minimum">30</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectView/properties/updated_at</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-245da8fbf585242e87a0f1a7">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1created_at:length/owner">stove0</code>
-<span class="kind">string</span>
-</span>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
+<td>length · characters · fixed</td>
 <td>
-<span id="v-17b1f0dcb63309a9a2d1e6bb">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1created_at:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-483994c11528fdc22803387a">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1created_at:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-dc63546c3d0daa9d9bd50b3e">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1created_at:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-00c97f85c515437222b1138b">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1created_at:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/DepartureEffectView/properties/created_at</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-59f45c51e171d288bc8e5be7">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1created_at:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:30,&quot;minimum&quot;:30,&quot;reason&quot;:&quot;fixed-public-representation&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/DepartureEffectView/properties/failure/anyOf/0:length</code>
-<table id="v-51be38e7cc2b2b946821afcd">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-21edab8310ad63cf6b721374">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1failure~1anyOf~10:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-68a03393e0026b7ff5590407">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1failure~1anyOf~10:length/id">http:stove0:components:/schemas/DepartureEffectView/properties/failure/anyOf/0:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-cb18cbe0618617919c96f890">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1failure~1anyOf~10:length/maximum">1000</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-7a58e610b90d8918b92059ae">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1failure~1anyOf~10:length/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-4549c4722a1e7982a4e721d0">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1failure~1anyOf~10:length/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-a1c3ba0449f6246a8fa348d0">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1failure~1anyOf~10:length/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-2965d3737a33b7c8f7c6789f">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1failure~1anyOf~10:length/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-426f8a732784e99ac694da3f">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1failure~1anyOf~10:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-20fc3ea24679aa7b70825a6a">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1failure~1anyOf~10:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/DepartureEffectView/properties/failure/anyOf/0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-86dd16a591af0eeb1b05d07d">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1failure~1anyOf~10:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/DepartureEffectView/properties/next_attempt_at/anyOf/0:length</code>
-<table id="v-1c8dd49fa98f18c3ec005f73">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-a53f8284259446a455dc5a0a">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1next_attempt_at~1anyOf~10:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-4961f1a32e8c04b76a1cba99">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1next_attempt_at~1anyOf~10:length/id">http:stove0:components:/schemas/DepartureEffectView/properties/next_attempt_at/anyOf/0:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-27755351f9a48c36d8ba0845">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1next_attempt_at~1anyOf~10:length/maximum">30</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-d2a42262354748ad4449bf1f">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1next_attempt_at~1anyOf~10:length/minimum">30</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-f9e337391a9f58cbf7a9b6c3">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1next_attempt_at~1anyOf~10:length/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-45d0f1b0bda2cdd26117c9b1">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1next_attempt_at~1anyOf~10:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-7f78d686fcc3ac0101aa1059">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1next_attempt_at~1anyOf~10:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-32c9cf2009855119500c7097">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1next_attempt_at~1anyOf~10:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-05b171127070a8691ca6d00e">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1next_attempt_at~1anyOf~10:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/DepartureEffectView/properties/next_attempt_at/anyOf/0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-4f5d9e7940baf49de9542c97">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1next_attempt_at~1anyOf~10:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:stove0:components:/schemas/DepartureEffectView/properties/updated_at:length</code>
-<table id="v-ade272f559aa260b2d2ee4b0">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-74a56c92b293c611f71ef779">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1updated_at:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-b63d1d44da41bd295a97b22e">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1updated_at:length/id">http:stove0:components:/schemas/DepartureEffectView/properties/updated_at:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-d993d74c57901d34af42dbfd">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1updated_at:length/maximum">30</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-a1b43ae8375fc923d590bef0">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1updated_at:length/minimum">30</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-d14fd3eaed65d0c8944be2a4">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1updated_at:length/owner">stove0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-2b5fd973f67cece5a86c43b3">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1updated_at:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-5c6fad29c26dd6762a23c7c6">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1updated_at:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-96e63d6956f75f9d68bcf5d3">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1updated_at:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-e31897389ab308e16e7c5397">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1updated_at:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/DepartureEffectView/properties/updated_at</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-c6b96c9010ccb5d2b0d1e451">
-<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectView~1properties~1updated_at:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,164 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-09dc1e38a978cb3e071a9885.html">riverhog · HTTP Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>schemas: UploadCopyIntentsOut</h1>
+<p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
 <section id="contract" data-contract="http-schemas:riverhog:schemas-uploadcopyintentsout:3085ccdfda">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-1114f230cc2389fc1413cbf6">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>UploadCopyIntentsOut</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;collection_id&quot;,&quot;archive_store&quot;,&quot;use_cache&quot;,&quot;copy_to&quot;,&quot;intents&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>archive_store</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-0869c94e5935fd0902f129ff.html#v-f791d51b96a49928a2f442ad">#/components/schemas/ArchiveStoreName</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>collection_id</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">#/components/schemas/CollectionId</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-eb37aab38bbe021f2751c8de">copy_to</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-0869c94e5935fd0902f129ff.html#v-f791d51b96a49928a2f442ad">#/components/schemas/ArchiveStoreName</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-a33416b9c73536b31356464f">intents</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-a5f1fa6d7751540b2311e0cb.html#v-098efc50e91bd35f96fa54df">#/components/schemas/UploadCopyIntentOut</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>use_cache</code>
+</td>
+<td>yes</td>
+<td>
+<code>boolean</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-eb37aab38bbe021f2751c8de">
+<h3>Field: copy_to</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-0869c94e5935fd0902f129ff.html#v-f791d51b96a49928a2f442ad">#/components/schemas/ArchiveStoreName</a>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Copy To</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-a33416b9c73536b31356464f">
+<h3>Field: intents</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-a5f1fa6d7751540b2311e0cb.html#v-098efc50e91bd35f96fa54df">#/components/schemas/UploadCopyIntentOut</a>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Intents</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/riverhog/components/schemas/UploadCopyIntentsOut</code>
-</h3>
+</h4>
 <table id="v-1114f230cc2389fc1413cbf6">
 <tbody>
 <tr>
@@ -332,331 +472,74 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>http:riverhog:components:/schemas/UploadCopyIntentsOut/properties/copy_to:cardinality</code>
-<table id="v-e98949b11f5bbb829ff31b0a">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
 <td>
-<table id="v-82b7c751b880da4104eeb725">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
+<code>/external_contract/http_openapi/riverhog/components/schemas/UploadCopyIntentsOut/properties/copy_to</code>
+</td>
 <td>
-<span id="v-e8db218bcceada9197c21d15">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1copy_to:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;riverhog&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
 <td>
-<span id="v-5d0abd416c024153153b2986">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1copy_to:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/riverhog/components/schemas/UploadCopyIntentsOut/properties/intents</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-3b8e962a2ce98310ee2f6a7a">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1copy_to:cardinality/capacity_authority/owner">riverhog</code>
-<span class="kind">string</span>
-</span>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;riverhog&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-d1eff1ebc9840a6b77b3f57e">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1copy_to:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-2736ca543e3412dbffad1575">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1copy_to:cardinality/id">http:riverhog:components:/schemas/UploadCopyIntentsOut/properties/copy_to:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-fa1ec5f5f89642a8af4cebc9">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1copy_to:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-b0bd0d66a9de5eb9368881aa">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1copy_to:cardinality/owner">riverhog</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-fc52fec59ef6916297030a90">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1copy_to:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-a12fb3e53e9371d8784dbb6a">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1copy_to:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-372417beff1bba395450d9cb">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1copy_to:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-d6adba8760b44ed2998b320a">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1copy_to:cardinality/source_pointer">/external_contract/http_openapi/riverhog/components/schemas/UploadCopyIntentsOut/properties/copy_to</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-050bc3051746d7a4915e5bd6">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1copy_to:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:riverhog:components:/schemas/UploadCopyIntentsOut/properties/intents:cardinality</code>
-<table id="v-8fa4d5739fc28517835cd5e4">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-a10c857ae769bafd29631cb8">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-2b7529d94eb1e72462a60e5f">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1intents:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-8680f382baa4fd838b32a68b">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1intents:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-957a3510bc537de44c7c118c">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1intents:cardinality/capacity_authority/owner">riverhog</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-cdc434fc6d2f4f7113cf36ac">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1intents:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-fcd8e9cb18fe1067a4256f92">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1intents:cardinality/id">http:riverhog:components:/schemas/UploadCopyIntentsOut/properties/intents:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-02b57c471ef525dc8628e43f">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1intents:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-4e7b8700dd0851c016843c92">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1intents:cardinality/owner">riverhog</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-3023a816cdbb8a128c277ce6">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1intents:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-899548c7ae98010934b0aaec">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1intents:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-5d9a2bbdca88630f58798979">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1intents:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-eb0d4d8e47e18a59d1b78c08">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1intents:cardinality/source_pointer">/external_contract/http_openapi/riverhog/components/schemas/UploadCopyIntentsOut/properties/intents</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-3099667c188adb10e33b89ee">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1UploadCopyIntentsOut~1properties~1intents:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

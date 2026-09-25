@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,327 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-6e9d3f0dba70f891e532a205.html">a-riverhog-b2-store · Configuration Documents</a>
+<a href="index.html">All authorities</a> / <a href="a-776a28f6b1ae7c5a0eb40940.html">a-riverhog-b2-store</a> / <a href="i-6e9d3f0dba70f891e532a205.html">Configuration Documents</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>a-riverhog-b2-store:configuration:b2-store-document configuration</h1>
+<p class="context">Backblaze B2-backed Riverhog archive and retrieval store. Configuration Documents contract owned by a-riverhog-b2-store.</p>
 <section id="contract" data-contract="configuration:a-riverhog-b2-store:a-riverhog-b2-store-configuration-b2-stor-9d2b784c74:fa4386a7ac">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-7bd03a5b28619e65636d3b4e">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 16 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>$id</dt>
+<dd>
+<code>https://nashspence.github.io/riverhog/v1/config/a-riverhog-b2-store.schema.json</code>
+</dd>
+<dt>$schema</dt>
+<dd>
+<code>https://json-schema.org/draft/2020-12/schema</code>
+</dd>
+<dt>title</dt>
+<dd>
+<code>B2StoreDocument</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;bucket&quot;,&quot;region&quot;,&quot;endpoint_url&quot;,&quot;token_file&quot;,&quot;access_key_id_file&quot;,&quot;secret_access_key_file&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>access_key_id_file</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; format: <code>path</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>bucket</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>connect_timeout_seconds</code>
+</td>
+<td>no</td>
+<td>
+<code>number</code>; exclusiveMinimum: <code>0</code>; default: <code>10</code>
+</td>
+<td>
+<code>10</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>endpoint_url</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>force_path_style</code>
+</td>
+<td>no</td>
+<td>
+<code>boolean</code>; default: <code>false</code>
+</td>
+<td>
+<code>false</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>max_attempts</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>100</code>; default: <code>8</code>
+</td>
+<td>
+<code>8</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>max_pool_connections</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>4096</code>; default: <code>32</code>
+</td>
+<td>
+<code>32</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>read_chunk_bytes</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>65536</code>; default: <code>8388608</code>
+</td>
+<td>
+<code>8388608</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>read_timeout_seconds</code>
+</td>
+<td>no</td>
+<td>
+<code>number</code>; exclusiveMinimum: <code>0</code>; default: <code>300</code>
+</td>
+<td>
+<code>300</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>region</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>retry_mode</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;standard&quot;,&quot;adaptive&quot;]</code>; default: <code>standard</code>
+</td>
+<td>
+<code>standard</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>root_prefix</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; default: <code></code>
+</td>
+<td>
+<code></code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>secret_access_key_file</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; format: <code>path</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-86898d92c6a6ebfa00933e6c">session_token_file</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; format: <code>path</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>tcp_keepalive</code>
+</td>
+<td>no</td>
+<td>
+<code>boolean</code>; default: <code>true</code>
+</td>
+<td>
+<code>true</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>token_file</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; format: <code>path</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-86898d92c6a6ebfa00933e6c">
+<h3>Field: session_token_file</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; format: <code>path</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Session Token File</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; format: <code>path</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/configuration_documents/a-riverhog-b2-store:configuration:b2-store-document</code>
-</h3>
+</h4>
 <table id="v-7bd03a5b28619e65636d3b4e">
 <tbody>
 <tr>
@@ -1047,265 +1350,74 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-8dc08bb46173175ad6e39a86">compatibility/configuration/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="some-implementations/riverhog/storage/backblaze/src/a_riverhog_b2_store/app.py">some-implementations/riverhog/storage/backblaze/src/a_riverhog_b2_store/app.py::B2StoreDocument</code>
+<a href="source-authorities.html#source-2e569d1ae6de20ade0327ada">configuration:a-riverhog-b2-store:configuration:b2-store-document</a> — <code data-source-path="some-implementations/riverhog/storage/backblaze/src/a_riverhog_b2_store/app.py">some-implementations/riverhog/storage/backblaze/src/a_riverhog_b2_store/app.py::B2StoreDocument</code>
 </li>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make unit</code>
+<a href="source-commands.html#route-ce47068f504c25a93bdddb64">make unit</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>configuration:a-riverhog-b2-store:configuration:b2-store-document:/properties/max_attempts:value</code>
-<table id="v-43e9208f685202503b6d7367">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-61baf614c49894cd76264adf">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-b2-store:configuration:b2-store-document:~1properties~1max_attempts:value/dimension">value</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/configuration_documents/a-riverhog-b2-store:configuration:b2-store-document/properties/max_attempts</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>value · schema-value · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:100,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-106ed92dc3bb4de69b6e1591">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-b2-store:configuration:b2-store-document:~1properties~1max_attempts:value/id">configuration:a-riverhog-b2-store:configuration:b2-store-document:/properties/max_attempts:value</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/configuration_documents/a-riverhog-b2-store:configuration:b2-store-document/properties/max_pool_connections</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-7a2f23da36456cc0e90ceea7">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-b2-store:configuration:b2-store-document:~1properties~1max_attempts:value/maximum">100</code>
-<span class="kind">number</span>
-</span>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
+<td>value · schema-value · contract_max</td>
 <td>
-<span id="v-1c727d83bba2861259949f71">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-b2-store:configuration:b2-store-document:~1properties~1max_attempts:value/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-dde507435a80522c6cafc2c6">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-b2-store:configuration:b2-store-document:~1properties~1max_attempts:value/owner">a-riverhog-b2-store:configuration:b2-store-document</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-38b1bfda8afe54d2bdb247be">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-b2-store:configuration:b2-store-document:~1properties~1max_attempts:value/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-7cda75c24205a3b397831fe7">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-b2-store:configuration:b2-store-document:~1properties~1max_attempts:value/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-199f97d654c734bfb79112d1">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-b2-store:configuration:b2-store-document:~1properties~1max_attempts:value/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-b21c76016dcbb45ceab919e5">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-b2-store:configuration:b2-store-document:~1properties~1max_attempts:value/source_pointer">/external_contract/configuration_documents/a-riverhog-b2-store:configuration:b2-store-document/properties/max_attempts</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-e19e73a22ab6c895c8160f21">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-b2-store:configuration:b2-store-document:~1properties~1max_attempts:value/unit">schema-value</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:4096,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-<li>
-<code>configuration:a-riverhog-b2-store:configuration:b2-store-document:/properties/max_pool_connections:value</code>
-<table id="v-77a9842bdc25f8c7f8f05e30">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-9afe77bd7c5ae4d8862f3375">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-b2-store:configuration:b2-store-document:~1properties~1max_pool_connections:value/dimension">value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-f99325540365ad20955f462c">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-b2-store:configuration:b2-store-document:~1properties~1max_pool_connections:value/id">configuration:a-riverhog-b2-store:configuration:b2-store-document:/properties/max_pool_connections:value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-9879e80a0ec9d88a3cb2f580">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-b2-store:configuration:b2-store-document:~1properties~1max_pool_connections:value/maximum">4096</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-49fa1acafe14bed8941e6124">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-b2-store:configuration:b2-store-document:~1properties~1max_pool_connections:value/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-19e02694dcf98f365a1f989e">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-b2-store:configuration:b2-store-document:~1properties~1max_pool_connections:value/owner">a-riverhog-b2-store:configuration:b2-store-document</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-7c67f0d0465675d018125a65">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-b2-store:configuration:b2-store-document:~1properties~1max_pool_connections:value/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-2b57e745b8a68616cfabb614">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-b2-store:configuration:b2-store-document:~1properties~1max_pool_connections:value/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-230125b86c1ba2ede888133a">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-b2-store:configuration:b2-store-document:~1properties~1max_pool_connections:value/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-2849852ff73b73b780b0bf43">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-b2-store:configuration:b2-store-document:~1properties~1max_pool_connections:value/source_pointer">/external_contract/configuration_documents/a-riverhog-b2-store:configuration:b2-store-document/properties/max_pool_connections</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-97a71f847d7dfa15f8c391c6">
-<code data-value-pointer="/audit/decisions/configuration:a-riverhog-b2-store:configuration:b2-store-document:~1properties~1max_pool_connections:value/unit">schema-value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

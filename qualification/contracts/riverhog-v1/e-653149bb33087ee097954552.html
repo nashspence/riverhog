@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,59 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-c8ee0961689824ffda01c116.html">riverhog-storage-adapter-support · Process Protocol</a>
+<a href="index.html">All authorities</a> / <a href="a-20f64efed79fb2e94ef137f4.html">riverhog-storage-adapter-support</a> / <a href="i-c8ee0961689824ffda01c116.html">Process Protocol</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>generated:riverhog-storage-adapter protocol</h1>
+<p class="context">HTTP binding and conformance support for Riverhog storage adapters. Cross-participant protocol identity, compatibility, and common acceptance rules. Exact operations and schemas are separately owned below.</p>
 <section id="contract" data-contract="process-protocol:riverhog-storage-adapter-support:generated-riverhog-storage-adapter-protocol:59727f5df8">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Process protocol</h3>
+<dl class="facts">
+<dt>authorities</dt>
+<dd>
+<code>{&quot;http_operations&quot;:&quot;http_binding.operations&quot;,&quot;semantic_acceptance&quot;:&quot;semantic_acceptance&quot;,&quot;structural_models&quot;:&quot;schemas&quot;}</code>
+</dd>
+<dt>bundle sha256</dt>
+<dd>
+<code>f425232e01a2e30118d4d2588f4828113f190ca0725df1a9859a3a4e5d9aae97</code>
+</dd>
+<dt>compatibility</dt>
+<dd>
+<code>{&quot;provider_ontology&quot;:&quot;private&quot;,&quot;unknown_fields&quot;:&quot;reject&quot;}</code>
+</dd>
+<dt>format</dt>
+<dd>
+<code>riverhog-storage-adapter-schema-bundle/v1</code>
+</dd>
+<dt>protocol</dt>
+<dd>
+<code>riverhog-storage-adapter/v1</code>
+</dd>
+<dt>semantic acceptance</dt>
+<dd>
+<code>{&quot;conformance&quot;:&quot;riverhog-storage-adapter-conformance-result/v1&quot;,&quot;kind&quot;:&quot;session-and-object-relations&quot;}</code>
+</dd>
+</dl>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/authorities</code>
-</h3>
+</h4>
 <table id="v-4c3e2d176972a4fb7456d0f1">
 <tbody>
 <tr>
@@ -69,18 +104,18 @@
 </table>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/bundle_sha256</code>
-</h3>
+</h4>
 <span id="v-73519fff7706770824e2c316">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/bundle_sha256">f425232e01a2e30118d4d2588f4828113f190ca0725df1a9859a3a4e5d9aae97</code>
 <span class="kind">string</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/compatibility</code>
-</h3>
+</h4>
 <table id="v-85201da1d0df79b74bdac4b8">
 <tbody>
 <tr>
@@ -109,27 +144,27 @@
 </table>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/format</code>
-</h3>
+</h4>
 <span id="v-de29ee0e6e986d3d8348b040">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/format">riverhog-storage-adapter-schema-bundle/v1</code>
 <span class="kind">string</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/protocol</code>
-</h3>
+</h4>
 <span id="v-8343e7f06b3646110c5b8135">
 <code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/protocol">riverhog-storage-adapter/v1</code>
 <span class="kind">string</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/semantic_acceptance</code>
-</h3>
+</h4>
 <table id="v-da65a692e55b346efa8029dc">
 <tbody>
 <tr>
@@ -157,25 +192,151 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-cfadfd9cf0f4fd22e782b334.html">GET /v1/adapter</a>
+</li>
+<li>
+<a href="e-9cc1684e732841b399b40a12.html">POST /v1/objects/delete-prefix</a>
+</li>
+<li>
+<a href="e-70d1ac11a9ab89bade16f1ad.html">POST /v1/objects/delete</a>
+</li>
+<li>
+<a href="e-21bb2af1a220287197dd5e99.html">POST /v1/objects/head</a>
+</li>
+<li>
+<a href="e-4230d51f020cafdb8cd388c8.html">POST /v1/objects/put</a>
+</li>
+<li>
+<a href="e-be22eadfbc13cb7e68d22f54.html">POST /v1/objects/read</a>
+</li>
+<li>
+<a href="e-4ff4edbf7bfa852629debe40.html">POST /v1/reads/cleanup</a>
+</li>
+<li>
+<a href="e-2e76824599df80a7761fd73f.html">POST /v1/reads/prepare</a>
+</li>
+<li>
+<a href="e-a053392ad476501fc1a3092f.html">POST /v1/reads/status</a>
+</li>
+<li>
+<a href="e-052ee3237257fc31ebf90a69.html">POST /v1/writes/abort</a>
+</li>
+<li>
+<a href="e-28389f941f5854a61ebac545.html">POST /v1/writes/begin</a>
+</li>
+<li>
+<a href="e-38e36845a876a91b9ad8c6fc.html">POST /v1/writes/complete</a>
+</li>
+<li>
+<a href="e-0433926fc0948ac23333f5b3.html">POST /v1/writes/completed</a>
+</li>
+<li>
+<a href="e-fa146ff1e58d34b46e1fc2ae.html">POST /v1/writes/segment</a>
+</li>
+<li>
+<a href="e-3d5fada06e170a932b58d1a0.html">POST /v1/writes/segments</a>
+</li>
+<li>
+<a href="e-9bc3be4fba16e4708b20511b.html">generated:riverhog-storage-adapter: AdapterDescriptor</a>
+</li>
+<li>
+<a href="e-cdeabc6c33fb5a6a6f249163.html">generated:riverhog-storage-adapter: CompletedWriteLookupRequest</a>
+</li>
+<li>
+<a href="e-4474da4decbd3be285a92493.html">generated:riverhog-storage-adapter: CompletedObjectReceipt</a>
+</li>
+<li>
+<a href="e-f5a56c0660cc914f15399c71.html">generated:riverhog-storage-adapter: DeleteObjectRequest</a>
+</li>
+<li>
+<a href="e-317a157cb3c825431e5aeea0.html">generated:riverhog-storage-adapter: DeletePrefixRequest</a>
+</li>
+<li>
+<a href="e-e2164147fda0c1e9d35b4036.html">generated:riverhog-storage-adapter: ImmutableObjectReceipt</a>
+</li>
+<li>
+<a href="e-e83a6da2ca2e01a220b351a7.html">generated:riverhog-storage-adapter: MaintenanceResult</a>
+</li>
+<li>
+<a href="e-ab2818d19e402d099f64d474.html">generated:riverhog-storage-adapter: ObjectMetadataReceipt</a>
+</li>
+<li>
+<a href="e-2c33e88dbb344e4b6e938441.html">generated:riverhog-storage-adapter: ObjectHeadRequest</a>
+</li>
+<li>
+<a href="e-804912b5f8dc79a2c10a1d6e.html">generated:riverhog-storage-adapter: ObjectReadReceipt</a>
+</li>
+<li>
+<a href="e-0d6180b201a1b8eb9304a739.html">generated:riverhog-storage-adapter: ObjectReadRequest</a>
+</li>
+<li>
+<a href="e-2538e795f7a26c070d9c58f4.html">generated:riverhog-storage-adapter: ReadPreparationRequest</a>
+</li>
+<li>
+<a href="e-1381942ee6444a65bfdf9a8a.html">generated:riverhog-storage-adapter: ReadStatus</a>
+</li>
+<li>
+<a href="e-e87cb6755a609a780347544d.html">generated:riverhog-storage-adapter: SmallObjectWriteRequest</a>
+</li>
+<li>
+<a href="e-29a146fd01a82cc077dbef68.html">generated:riverhog-storage-adapter: StorageAdapterError</a>
+</li>
+<li>
+<a href="e-7825871308c2a55581596997.html">generated:riverhog-storage-adapter: StorageAdapterConformanceResult</a>
+</li>
+<li>
+<a href="e-e6a8528ca768fd6eca209583.html">generated:riverhog-storage-adapter: WriteCompleteRequest</a>
+</li>
+<li>
+<a href="e-b374baea4326a43a75bdc031.html">generated:riverhog-storage-adapter: WriteSegmentRequest</a>
+</li>
+<li>
+<a href="e-f37515f76028d110b34b3e92.html">generated:riverhog-storage-adapter: WriteSegmentListRequest</a>
+</li>
+<li>
+<a href="e-871a73118ef5585b11206bda.html">generated:riverhog-storage-adapter: WriteSegmentReceipt</a>
+</li>
+<li>
+<a href="e-f1736b1f269858204d183f77.html">generated:riverhog-storage-adapter: WriteSegmentPage</a>
+</li>
+<li>
+<a href="e-52fdeb07bf74a97d96d57577.html">generated:riverhog-storage-adapter: WriteSession</a>
+</li>
+<li>
+<a href="e-67a4605098ba1582e6347432.html">generated:riverhog-storage-adapter: WriteStartRequest</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py">packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle</code>
+<a href="source-authorities.html#source-ef281f2471a91ed8e39ea04c">protocol:generated:riverhog-storage-adapter</a> — <code data-source-path="packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py">packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,1605 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-492ccb6e7c74420d22dbb0ec.html">review0-sampler-lib · Process Protocol Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-0cdbc0f9e2f65221fb159f7c.html">review0-sampler-lib</a> / <a href="i-492ccb6e7c74420d22dbb0ec.html">Process Protocol Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>generated:review0-sampler: SamplerConformanceResult</h1>
+<p class="context">Runtime and conformance support for Review0 samplers. Structured values exchanged by a process protocol.</p>
 <section id="contract" data-contract="process-protocol-schemas:review0-sampler-lib:generated-review0-sampler-samplerconformanceresult:914893d122">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-002e19f79588b4f112c4c216">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 7 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>SamplerConformanceResult</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;status&quot;,&quot;sampler&quot;,&quot;coverage&quot;,&quot;sampling&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>coverage</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-52f21da3332746fc0334b932.html#v-e527608c594b21f61329b1b2">#/$defs/SamplerConformanceCoverage</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>review0-sampler-conformance-result/v1</code>; default: <code>review0-sampler-conformance-result/v1</code>
+</td>
+<td>
+<code>review0-sampler-conformance-result/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-215a859ad1b19d9fc9d798a5">request</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-52f21da3332746fc0334b932.html#v-55189b34adb9e76e721623e8">#/$defs/SamplerRequest</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-0b6c8bcc1a87fef3f8f95f52">sample</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-52f21da3332746fc0334b932.html#v-92916a533d99a07286bc76dc">#/$defs/SamplerResult</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>sampler</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-52f21da3332746fc0334b932.html#v-b65d05a8f938b6e1600082d6">#/$defs/SamplerDescriptor</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>sampling</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;exercised&quot;,&quot;not-exercised&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>status</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;conformant&quot;,&quot;inspected&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-18fb039d318de46b58dd8d24">JsonSchemaValidationProfile</a>
+</li>
+<li>
+<a href="#s-812832d2c0561c060a77bdc2">JsonValue</a>
+</li>
+<li>
+<a href="#s-e527608c594b21f61329b1b2">SamplerConformanceCoverage</a>
+</li>
+<li>
+<a href="#s-b65d05a8f938b6e1600082d6">SamplerDescriptor</a>
+</li>
+<li>
+<a href="#s-74f3a8271f4c7a3b1287b044">SamplerFailure</a>
+</li>
+<li>
+<a href="#s-20ccc839415476eeba63e0d2">SamplerInapplicable</a>
+</li>
+<li>
+<a href="#s-304df220584ed02893f8dd94">SamplerInput</a>
+</li>
+<li>
+<a href="#s-a52322f394efb3397e973ff8">SamplerOutput</a>
+</li>
+<li>
+<a href="#s-55189b34adb9e76e721623e8">SamplerRequest</a>
+</li>
+<li>
+<a href="#s-92916a533d99a07286bc76dc">SamplerResult</a>
+</li>
+<li>
+<a href="#s-96a52547a619e941f13ce5f2">SamplerWindow</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-215a859ad1b19d9fc9d798a5">
+<h3>Field: request</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-52f21da3332746fc0334b932.html#v-55189b34adb9e76e721623e8">#/$defs/SamplerRequest</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-52f21da3332746fc0334b932.html#v-55189b34adb9e76e721623e8">#/$defs/SamplerRequest</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-0b6c8bcc1a87fef3f8f95f52">
+<h3>Field: sample</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-52f21da3332746fc0334b932.html#v-92916a533d99a07286bc76dc">#/$defs/SamplerResult</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-52f21da3332746fc0334b932.html#v-92916a533d99a07286bc76dc">#/$defs/SamplerResult</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-18fb039d318de46b58dd8d24">
+<h3>Definition: JsonSchemaValidationProfile</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>JsonSchemaValidationProfile</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;profile_sha256&quot;,&quot;schema&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>dialect</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>https://json-schema.org/draft/2020-12/schema</code>; default: <code>https://json-schema.org/draft/2020-12/schema</code>
+</td>
+<td>
+<code>https://json-schema.org/draft/2020-12/schema</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>format_policy</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>annotation-only</code>; default: <code>annotation-only</code>
+</td>
+<td>
+<code>annotation-only</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>profile_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-e8e4d90bb2ab98f216c8daab">schema</a>
+</td>
+<td>yes</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-52f21da3332746fc0334b932.html#v-812832d2c0561c060a77bdc2">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-812832d2c0561c060a77bdc2">
+<h3>Definition: JsonValue</h3>
+<p class="shape">any JSON value</p>
+</section>
+<section class="schema-section" id="s-e527608c594b21f61329b1b2">
+<h3>Definition: SamplerConformanceCoverage</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>SamplerConformanceCoverage</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;exercised&quot;,&quot;complete&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>advertised</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; const: <code>1</code>; default: <code>1</code>
+</td>
+<td>
+<code>1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>complete</code>
+</td>
+<td>yes</td>
+<td>
+<code>boolean</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>exercised</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>; maximum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-b65d05a8f938b6e1600082d6">
+<h3>Definition: SamplerDescriptor</h3>
+<p class="shape">
+<code>object</code>; 10 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>SamplerDescriptor</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;implementation_id&quot;,&quot;implementation_version&quot;,&quot;source_revision&quot;,&quot;image_id&quot;,&quot;primary_operation_id&quot;,&quot;primary_operation_contract_sha256&quot;,&quot;portable_intent_schema&quot;,&quot;output_role&quot;,&quot;descriptor_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>descriptor_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>image_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^sha256:[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>implementation_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>implementation_version</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>120</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>output_role</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>portable_intent_schema</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-52f21da3332746fc0334b932.html#v-18fb039d318de46b58dd8d24">#/$defs/JsonSchemaValidationProfile</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>primary_operation_contract_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>primary_operation_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>protocol</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>review0-sampler/v1</code>; default: <code>review0-sampler/v1</code>
+</td>
+<td>
+<code>review0-sampler/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>source_revision</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>200</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-74f3a8271f4c7a3b1287b044">
+<h3>Definition: SamplerFailure</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>SamplerFailure</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;code&quot;,&quot;message&quot;,&quot;retryable&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>code</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>message</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>retryable</code>
+</td>
+<td>yes</td>
+<td>
+<code>boolean</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-20ccc839415476eeba63e0d2">
+<h3>Definition: SamplerInapplicable</h3>
+<p class="shape">
+<code>object</code>; 2 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>SamplerInapplicable</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;code&quot;,&quot;message&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>code</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>message</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>1000</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-304df220584ed02893f8dd94">
+<h3>Definition: SamplerInput</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>SamplerInput</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;path&quot;,&quot;bytes&quot;,&quot;sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>bytes</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-56bbb4b8da371f6df166a247">media_type</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>path</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-a52322f394efb3397e973ff8">
+<h3>Definition: SamplerOutput</h3>
+<p class="shape">
+<code>object</code>; 6 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>SamplerOutput</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;path&quot;,&quot;bytes&quot;,&quot;sha256&quot;,&quot;media_type&quot;,&quot;derived_from&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>bytes</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-7963722ea17a90cc686d3633">derived_from</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <code>string</code>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>media_type</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>path</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-55189b34adb9e76e721623e8">
+<h3>Definition: SamplerRequest</h3>
+<p class="shape">
+<code>object</code>; 10 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>SamplerRequest</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;sampler_descriptor_sha256&quot;,&quot;workspace_id&quot;,&quot;inputs&quot;,&quot;windows&quot;,&quot;portable_intent&quot;,&quot;maximum_output_bytes&quot;,&quot;timeout_seconds&quot;,&quot;cancellation_path&quot;,&quot;request_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>cancellation_path</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>review0-sampler-request/v1</code>; default: <code>review0-sampler-request/v1</code>
+</td>
+<td>
+<code>review0-sampler-request/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-9d6a44914089086622008be1">inputs</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-52f21da3332746fc0334b932.html#v-304df220584ed02893f8dd94">#/$defs/SamplerInput</a>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>maximum_output_bytes</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>1099511627776</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-d9308f02466a84f7f3faebf4">portable_intent</a>
+</td>
+<td>yes</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-52f21da3332746fc0334b932.html#v-812832d2c0561c060a77bdc2">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>request_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>sampler_descriptor_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>timeout_seconds</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>86400</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-d854581f1b8b90100ffe94b2">windows</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-52f21da3332746fc0334b932.html#v-96a52547a619e941f13ce5f2">#/$defs/SamplerWindow</a>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>workspace_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-92916a533d99a07286bc76dc">
+<h3>Definition: SamplerResult</h3>
+<p class="shape">
+<code>object</code>; 9 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>SamplerResult</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;request_sha256&quot;,&quot;sampler_descriptor_sha256&quot;,&quot;state&quot;,&quot;result_sha256&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-0bfd5625c51c37133bf1516f">execution_evidence</a>
+</td>
+<td>no</td>
+<td>
+<code>object</code>; additionalProperties: <a href="e-52f21da3332746fc0334b932.html#v-812832d2c0561c060a77bdc2">#/$defs/JsonValue</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-c1c6a5502dea9c2be8784b79">failure</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-52f21da3332746fc0334b932.html#v-74f3a8271f4c7a3b1287b044">#/$defs/SamplerFailure</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>review0-sampler-result/v1</code>; default: <code>review0-sampler-result/v1</code>
+</td>
+<td>
+<code>review0-sampler-result/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-f5b695983447d2a111d636ec">inapplicable</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-52f21da3332746fc0334b932.html#v-20ccc839415476eeba63e0d2">#/$defs/SamplerInapplicable</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-08d90f835698bbf3129a2e17">outputs</a>
+</td>
+<td>no</td>
+<td>
+<code>array</code>; items: <a href="e-52f21da3332746fc0334b932.html#v-a52322f394efb3397e973ff8">#/$defs/SamplerOutput</a>; default: <code>[]</code>
+</td>
+<td>
+<code>[]</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>request_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>result_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>sampler_descriptor_sha256</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>state</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; enum: <code>[&quot;succeeded&quot;,&quot;inapplicable&quot;,&quot;failed&quot;,&quot;canceled&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-96a52547a619e941f13ce5f2">
+<h3>Definition: SamplerWindow</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>SamplerWindow</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;id&quot;,&quot;input_id&quot;,&quot;start_ms&quot;,&quot;duration_ms&quot;,&quot;output_path&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>duration_ms</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>input_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,158}[A-Za-z0-9])?$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>output_path</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>4096</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>start_ms</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-e8e4d90bb2ab98f216c8daab">
+<h3>Field: schema</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-52f21da3332746fc0334b932.html#v-812832d2c0561c060a77bdc2">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Schema</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-56bbb4b8da371f6df166a247">
+<h3>Field: media_type</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Media Type</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>255</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-7963722ea17a90cc686d3633">
+<h3>Field: derived_from</h3>
+<p class="shape">
+<code>array</code>; items: <code>string</code>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Derived From</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-9d6a44914089086622008be1">
+<h3>Field: inputs</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-52f21da3332746fc0334b932.html#v-304df220584ed02893f8dd94">#/$defs/SamplerInput</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Inputs</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-d9308f02466a84f7f3faebf4">
+<h3>Field: portable_intent</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-52f21da3332746fc0334b932.html#v-812832d2c0561c060a77bdc2">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Portable Intent</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-d854581f1b8b90100ffe94b2">
+<h3>Field: windows</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-52f21da3332746fc0334b932.html#v-96a52547a619e941f13ce5f2">#/$defs/SamplerWindow</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Windows</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-0bfd5625c51c37133bf1516f">
+<h3>Field: execution_evidence</h3>
+<p class="shape">
+<code>object</code>; additionalProperties: <a href="e-52f21da3332746fc0334b932.html#v-812832d2c0561c060a77bdc2">#/$defs/JsonValue</a>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Execution Evidence</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>{&quot;$ref&quot;:&quot;#/$defs/JsonValue&quot;}</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-c1c6a5502dea9c2be8784b79">
+<h3>Field: failure</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-52f21da3332746fc0334b932.html#v-74f3a8271f4c7a3b1287b044">#/$defs/SamplerFailure</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-52f21da3332746fc0334b932.html#v-74f3a8271f4c7a3b1287b044">#/$defs/SamplerFailure</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-f5b695983447d2a111d636ec">
+<h3>Field: inapplicable</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-52f21da3332746fc0334b932.html#v-20ccc839415476eeba63e0d2">#/$defs/SamplerInapplicable</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-52f21da3332746fc0334b932.html#v-20ccc839415476eeba63e0d2">#/$defs/SamplerInapplicable</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-08d90f835698bbf3129a2e17">
+<h3>Field: outputs</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-52f21da3332746fc0334b932.html#v-a52322f394efb3397e973ff8">#/$defs/SamplerOutput</a>; default: <code>[]</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Outputs</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult</code>
-</h3>
+</h4>
 <table id="v-002e19f79588b4f112c4c216">
 <tbody>
 <tr>
@@ -4721,4431 +6302,454 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-4f24a22af3692a95062c9529.html">generated:review0-sampler protocol</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/stove0/review0/sampler/support/src/review0_sampler_lib/schemas.py">some-implementations/stove0/review0/sampler/support/src/review0_sampler_lib/schemas.py::sampler_schema_bundle</code>
+<a href="source-authorities.html#source-8a54180841caa5af2642707d">protocol:generated:review0-sampler</a> — <code data-source-path="some-implementations/stove0/review0/sampler/support/src/review0_sampler_lib/schemas.py">some-implementations/stove0/review0/sampler/support/src/review0_sampler_lib/schemas.py::sampler_schema_bundle</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:/properties/profile_sha256:length</code>
-<table id="v-275e4c4c844f4bbc9b7c7aa3">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-7ba564e3ee279772f8f387d6">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1profile_sha256:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/JsonSchemaValidationProfile/properties/profile_sha256</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-9c3b30444cac02b99d934008">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1profile_sha256:length/id">protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:/properties/profile_sha256:length</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/JsonSchemaValidationProfile/properties/schema</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · entries · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;review0-sampler-protocol&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-28c6f506dd3c2424cc25d285">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1profile_sha256:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerConformanceCoverage/properties/exercised</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>value · schema-value · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>minimum</code>
-</th>
 <td>
-<span id="v-984553677a9b2a43e3f21a27">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1profile_sha256:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerDescriptor/properties/descriptor_sha256</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-32283355093ebc3fe88c5218">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1profile_sha256:length/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerDescriptor/properties/implementation_version</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:120,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>policy</code>
-</th>
 <td>
-<span id="v-8ec92535d87bad3c515d01ba">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1profile_sha256:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerDescriptor/properties/primary_operation_contract_sha256</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>reason</code>
-</th>
 <td>
-<span id="v-a791d1e18fb799754712ed85">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1profile_sha256:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerDescriptor/properties/source_revision</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:200,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>rule</code>
-</th>
 <td>
-<span id="v-3bb4ab512b7cd940ed8697fe">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1profile_sha256:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerFailure/properties/message</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:1000,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
 <td>
-<table id="v-1d3ce00c392390d99362b51d">
-<tbody>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerInapplicable/properties/message</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:1000,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
+</td>
+</tr>
 <tr>
-<th scope="row">
-<code>pattern</code>
-</th>
 <td>
-<span id="v-6b98450ef337c7914701cb9e">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1profile_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerInput/properties/bytes</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>value · schema-value · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;review0-sampler-protocol&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerInput/properties/media_type/anyOf/0</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:255,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerInput/properties/path</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:4096,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerInput/properties/sha256</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerOutput/properties/bytes</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>value · schema-value · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;review0-sampler-protocol&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerOutput/properties/derived_from</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;review0-sampler-protocol&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerOutput/properties/media_type</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:255,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerOutput/properties/path</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:4096,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerOutput/properties/sha256</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerRequest/properties/cancellation_path</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:4096,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerRequest/properties/inputs</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;review0-sampler-protocol&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerRequest/properties/maximum_output_bytes</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>value · schema-value · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:1099511627776,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerRequest/properties/portable_intent</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · entries · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;review0-sampler-protocol&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerRequest/properties/request_sha256</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerRequest/properties/sampler_descriptor_sha256</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerRequest/properties/timeout_seconds</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>value · schema-value · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:86400,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerRequest/properties/windows</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;review0-sampler-protocol&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerRequest/properties/workspace_id</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerResult/properties/execution_evidence</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · entries · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;review0-sampler-protocol&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerResult/properties/outputs</code>
+</td>
+<td>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · items · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;review0-sampler-protocol&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerResult/properties/request_sha256</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerResult/properties/result_sha256</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerResult/properties/sampler_descriptor_sha256</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerWindow/properties/output_path</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:4096,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-d0679d7e97a65e0eae020dfc">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1profile_sha256:length/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/JsonSchemaValidationProfile/properties/profile_sha256</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-72987474f21a8fda888e1b65">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1profile_sha256:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:/properties/schema:map-cardinality</code>
-<table id="v-f358225a7210f77bc011c734">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-09e0dd66147b3b17a2985ce3">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-e16e674b62dcb54bb7c26a25">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1schema:map-cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-580d14a9707942a7be1384b1">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1schema:map-cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-cd18bb97c0c1c450c092bedf">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1schema:map-cardinality/capacity_authority/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-3b0ba23552927dc01327d5d1">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1schema:map-cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-48710c88eb72d8aae65c1468">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1schema:map-cardinality/id">protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:/properties/schema:map-cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-4cb90ac056ad9e7de1cbbd56">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1schema:map-cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-f142bff23a647f7d5fd497ff">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1schema:map-cardinality/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-bf3b4e46b3220454354eabdd">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1schema:map-cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-2e9585c0cfa91800071c8560">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1schema:map-cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-6503d498f63af9eccf4a7e0f">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1schema:map-cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-704924196244b210a71f3267">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1schema:map-cardinality/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/JsonSchemaValidationProfile/properties/schema</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-254a3a2cddcbd34f97b90668">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:JsonSchemaValidationProfile:~1properties~1schema:map-cardinality/unit">entries</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerConformanceCoverage:/properties/exercised:value</code>
-<table id="v-3781b97a79f978df996688ac">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-93d4979c8a5ac63f0d360318">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerConformanceCoverage:~1properties~1exercised:value/dimension">value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-5965f628c3728d3780527d42">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerConformanceCoverage:~1properties~1exercised:value/id">protocol:generated:review0-sampler:definition:SamplerConformanceCoverage:/properties/exercised:value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-a99d67c6ac5c765da6a6c85f">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerConformanceCoverage:~1properties~1exercised:value/maximum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-9a6bdce01f4e8c72ccd0529c">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerConformanceCoverage:~1properties~1exercised:value/minimum">0</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-63dac76292a52617c4d6821b">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerConformanceCoverage:~1properties~1exercised:value/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-95fd37a3bb916a730c37e957">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerConformanceCoverage:~1properties~1exercised:value/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-5def467e07cae7c6a0e4bffd">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerConformanceCoverage:~1properties~1exercised:value/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-8926d99c9808906bcf462687">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerConformanceCoverage:~1properties~1exercised:value/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-4948812cdb511dd9973611ba">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerConformanceCoverage:~1properties~1exercised:value/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerConformanceCoverage/properties/exercised</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-6286b103fad88708ff37ab8f">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerConformanceCoverage:~1properties~1exercised:value/unit">schema-value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerDescriptor:/properties/descriptor_sha256:length</code>
-<table id="v-db9fa5538ef4830e4598f146">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-265582d1d9457c59e67fe06d">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1descriptor_sha256:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-3ddf17fe6f850ed43af5724f">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1descriptor_sha256:length/id">protocol:generated:review0-sampler:definition:SamplerDescriptor:/properties/descriptor_sha256:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-a1a8e83f7131ea1a640e5564">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1descriptor_sha256:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-9177ed7e499f9bae372cd4c4">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1descriptor_sha256:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-3546811b55f8ba1eb7334707">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1descriptor_sha256:length/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-df08c4482357d084ac9d54b4">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1descriptor_sha256:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-89e30eb838443aa42bb4e2b4">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1descriptor_sha256:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-fe0caa1911eae5086aca2253">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1descriptor_sha256:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-750c2d560ceb6b046b9283df">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-c0ddc4bf90757a428ddf2ad8">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1descriptor_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-a823839679d4580f3657b361">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1descriptor_sha256:length/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerDescriptor/properties/descriptor_sha256</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-0f84c7ba61f289d97f388f31">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1descriptor_sha256:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerDescriptor:/properties/implementation_version:length</code>
-<table id="v-158b29ee9ad9a275e6dacb07">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-1440ea33c6c3756bbabd4453">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1implementation_version:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-ea5350124b4ad1cc57e0143b">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1implementation_version:length/id">protocol:generated:review0-sampler:definition:SamplerDescriptor:/properties/implementation_version:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-879aa6e7307c1bf4c589fce0">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1implementation_version:length/maximum">120</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-9656dff3888efcad0ecaa9a6">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1implementation_version:length/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-82fa38e5c794787068002b41">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1implementation_version:length/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-9b477a1f0e7f18c755635ece">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1implementation_version:length/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-349b6fbe06e4c2b9e5fbbee6">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1implementation_version:length/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-a14e3a15d37685ea6db0f182">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1implementation_version:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-6a5ef6113f8b583ccd0f931d">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1implementation_version:length/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerDescriptor/properties/implementation_version</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-1211ae3ae8a1eb90f21cbd11">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1implementation_version:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerDescriptor:/properties/primary_operation_contract_sha256:length</code>
-<table id="v-34cbb417dc01edf9eca8519b">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-5390a5d5a4c068a909907c3f">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1primary_operation_contract_sha256:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-ab8421a8a3670f7749d1470b">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1primary_operation_contract_sha256:length/id">protocol:generated:review0-sampler:definition:SamplerDescriptor:/properties/primary_operation_contract_sha256:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-1d976feba63edea3dc470f5b">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1primary_operation_contract_sha256:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-a27a13e0df9f440a9190dae5">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1primary_operation_contract_sha256:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-19376e0be0c213d910ee1de1">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1primary_operation_contract_sha256:length/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-dca527254e641137d7700738">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1primary_operation_contract_sha256:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-0b4ba1fcc68a53cd38241592">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1primary_operation_contract_sha256:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-959937739330662625a7170a">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1primary_operation_contract_sha256:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-65c40e53d60748491e257ab6">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-eae8b602edab2c85d0a5b712">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1primary_operation_contract_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-d5fd55f53ab8e4f0a6a3de8b">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1primary_operation_contract_sha256:length/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerDescriptor/properties/primary_operation_contract_sha256</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-9f955d6427234ab9d4f526d3">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1primary_operation_contract_sha256:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerDescriptor:/properties/source_revision:length</code>
-<table id="v-d5fb30c813f4ad9033a3898c">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-8ef83d78ad3ce69c272af8ac">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1source_revision:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-1eebbe674ddecd609ba9233e">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1source_revision:length/id">protocol:generated:review0-sampler:definition:SamplerDescriptor:/properties/source_revision:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-d6f0aa3676a166e99ae1b78a">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1source_revision:length/maximum">200</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-97e9c7461b1494badf283276">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1source_revision:length/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-fae1127f8b5cd850ef311e75">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1source_revision:length/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-7e6db7ea79528cb88807c4a9">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1source_revision:length/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-a783c9410c489566388e9986">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1source_revision:length/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-34160e40f769b008bb952b24">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1source_revision:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-cf49cb630b12febf8c977eaa">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1source_revision:length/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerDescriptor/properties/source_revision</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-b0f1f3ed9c20e2558a56492d">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerDescriptor:~1properties~1source_revision:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerFailure:/properties/message:length</code>
-<table id="v-b0d8c4705a99debbab327399">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-4fe8759c873ef97aa1eb2ba0">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerFailure:~1properties~1message:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-43b68781d81460dea351a59e">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerFailure:~1properties~1message:length/id">protocol:generated:review0-sampler:definition:SamplerFailure:/properties/message:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-16673cc4ea6fdca141a15d19">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerFailure:~1properties~1message:length/maximum">1000</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-01c92e1d54f262287a75c514">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerFailure:~1properties~1message:length/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-ede5c37ed7e849c1c0c6dc5b">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerFailure:~1properties~1message:length/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-0c73aea4078d5163a666b3ef">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerFailure:~1properties~1message:length/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-418ea018e1abe9eef694918d">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerFailure:~1properties~1message:length/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-e8520989136bd13e25ea90e4">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerFailure:~1properties~1message:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-20d9274542bb62f018e4bfcb">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerFailure:~1properties~1message:length/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerFailure/properties/message</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-0ebb0c0c1de9d91f7f430693">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerFailure:~1properties~1message:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerInapplicable:/properties/message:length</code>
-<table id="v-19ad06e644ff0558fb6442fd">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-3404c285133c00e057ba4b8f">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInapplicable:~1properties~1message:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-c9cdf2ba4563a773ff434f47">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInapplicable:~1properties~1message:length/id">protocol:generated:review0-sampler:definition:SamplerInapplicable:/properties/message:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-7205a4edcadafcb06f9c4a27">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInapplicable:~1properties~1message:length/maximum">1000</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-a7b60314e6a5390d131873b0">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInapplicable:~1properties~1message:length/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-f9395c0c9d4780d01fe19be3">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInapplicable:~1properties~1message:length/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-0eb75eacf8e8d22c59ba39ca">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInapplicable:~1properties~1message:length/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-7dd585fdd667f17e2e8d882e">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInapplicable:~1properties~1message:length/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-dcfd32410062c87cdad7a1ef">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInapplicable:~1properties~1message:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-2062cf0e4005d84113a5ed7f">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInapplicable:~1properties~1message:length/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerInapplicable/properties/message</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-36d35484e56263f73e35c42d">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInapplicable:~1properties~1message:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerInput:/properties/bytes:open-value</code>
-<table id="v-10512440c5d82bb6a4be5271">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-926c7d0e0d40e079ac1c2746">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-98dece8ea5f861af5f7c1c59">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1bytes:open-value/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-76b6f008ecac41c8c9f7bf7b">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1bytes:open-value/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-8c0bee0f58e5cd19bd4be66e">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1bytes:open-value/capacity_authority/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-62e7cfe35b5081377089e081">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1bytes:open-value/dimension">value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-bcfe34e519ae161017452202">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1bytes:open-value/id">protocol:generated:review0-sampler:definition:SamplerInput:/properties/bytes:open-value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-d85e631a6a98f5c05aebdbfc">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1bytes:open-value/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-a48de8ce0902fa9a7fafbb53">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1bytes:open-value/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-bc14c910bebb5a73bd111b31">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1bytes:open-value/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-acb898aa71cc2d887e673e22">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1bytes:open-value/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-8b35bfafcde1b54fe9bc4139">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1bytes:open-value/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-60b27936245d2fd4f222e139">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1bytes:open-value/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerInput/properties/bytes</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-31c3857689b175ef5147f229">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1bytes:open-value/unit">schema-value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerInput:/properties/media_type/anyOf/0:length</code>
-<table id="v-19b0b0f5a636a54d881cabe9">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-f1f303ce9773d78d185e7b0b">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1media_type~1anyOf~10:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-5761e4d34a83c767b427381e">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1media_type~1anyOf~10:length/id">protocol:generated:review0-sampler:definition:SamplerInput:/properties/media_type/anyOf/0:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-9d299889afdd0d7170de7603">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1media_type~1anyOf~10:length/maximum">255</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-1e4afc377bf3c7903f4ed219">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1media_type~1anyOf~10:length/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-a1a591d91babb57eab0cbdda">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1media_type~1anyOf~10:length/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-ae676346539585eb6521c89e">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1media_type~1anyOf~10:length/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-1241b9113ce791973246314f">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1media_type~1anyOf~10:length/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-647b0d28f8867ac01a375bbb">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1media_type~1anyOf~10:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-5668852c4770f8d12dacfac9">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1media_type~1anyOf~10:length/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerInput/properties/media_type/anyOf/0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-75d8e2d847d303dded329f59">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1media_type~1anyOf~10:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerInput:/properties/path:length</code>
-<table id="v-8bb2cdcbf36157730de505e2">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-c30503f32b9ea47be192c392">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1path:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-6ba2aaae4a94dbb462004bfd">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1path:length/id">protocol:generated:review0-sampler:definition:SamplerInput:/properties/path:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-c1f473bebbeab066f0183f35">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1path:length/maximum">4096</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-213843b73239744ee4e37431">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1path:length/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-fa1d86e162ecb4d624869601">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1path:length/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-e8e02099ffeae5a97fd8335a">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1path:length/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-6f6ac7540688ebf071fff3fe">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1path:length/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-dd9a42d94becc8e2762bc3d9">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1path:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-dcf626c985b66069a5901ba3">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1path:length/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerInput/properties/path</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-0933b5e18279a14c2e4c5f49">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1path:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerInput:/properties/sha256:length</code>
-<table id="v-f1b8496e0352a4582b206da1">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-46fc10c971a9fe41c63642d2">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1sha256:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-6291ade4eba63b87ffcd4fee">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1sha256:length/id">protocol:generated:review0-sampler:definition:SamplerInput:/properties/sha256:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-11191bf4aaae4500e4af587a">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1sha256:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-546338c3df818d0527d5e0c3">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1sha256:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-2c49a773b4d78868b91166e9">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1sha256:length/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-7a3f297d1d1e3cf2f736b4ab">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1sha256:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-51d48457ed4e44938d89d3be">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1sha256:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-7aa7d9d5ac8fecde0fa9e350">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1sha256:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-97fe22aeed432064e65aebe6">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-82eddb3c0826924eb87dc338">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-0c555bea0040a8b70ae2a40d">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1sha256:length/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerInput/properties/sha256</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-68a9413b1d03f38d0bd1c947">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerInput:~1properties~1sha256:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerOutput:/properties/bytes:open-value</code>
-<table id="v-fd87235b0a52b3a0b78cea3f">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-03fb9017718734d8599a3e77">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-a441ed9a8f400eb8dd7ecd36">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1bytes:open-value/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-c6a8086290abedd8908c1d57">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1bytes:open-value/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-7e73acccc4ac2db744d2f2dd">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1bytes:open-value/capacity_authority/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-a503f4b3f22bfa6dfb818643">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1bytes:open-value/dimension">value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-653f4caa754160104313ac0f">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1bytes:open-value/id">protocol:generated:review0-sampler:definition:SamplerOutput:/properties/bytes:open-value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-d8490cb4f5182564f0d03adc">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1bytes:open-value/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-ccff569a7751d54590b1f1fe">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1bytes:open-value/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-1cc8e51f6fad994f039bc059">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1bytes:open-value/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-5dabf344250211a2af41c31d">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1bytes:open-value/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-df7d22b5b781426743e999f8">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1bytes:open-value/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-a471ae74519c1aee65847899">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1bytes:open-value/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerOutput/properties/bytes</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-b2005a7668a6d881c3b64b36">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1bytes:open-value/unit">schema-value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerOutput:/properties/derived_from:cardinality</code>
-<table id="v-183606ea40b6ea00b044e02d">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-d5d0afe2f20fd6f1728a2b3e">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-04d726505f17a70e2e0b5f9c">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1derived_from:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-a83073135db4dfcdc05ebece">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1derived_from:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-48452d64c772266ea6571589">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1derived_from:cardinality/capacity_authority/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-5c9da48b5d31580f7be4cd86">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1derived_from:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-9ef77ab9efd58ea1f696868d">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1derived_from:cardinality/id">protocol:generated:review0-sampler:definition:SamplerOutput:/properties/derived_from:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-26e2e49f5c74ddda7ed29516">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1derived_from:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-96b82daa16c7a2bdfad3a430">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1derived_from:cardinality/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-ef6456f59c5418813b338716">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1derived_from:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-1baa2ea5093234ea9fdf21ec">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1derived_from:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-9223d0f6cc78b4ad47681883">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1derived_from:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-f823c0a374d5b0123374fa08">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1derived_from:cardinality/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerOutput/properties/derived_from</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-9628e16876d90d7a30fefbdd">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1derived_from:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerOutput:/properties/media_type:length</code>
-<table id="v-e0753e516de8aeb8f927fa92">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-1fd6de39ec5cd361aee98d6e">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1media_type:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-a3c747c4c2c40ba816d5da65">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1media_type:length/id">protocol:generated:review0-sampler:definition:SamplerOutput:/properties/media_type:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-86f43689bea9f22b6053a8a1">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1media_type:length/maximum">255</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-2df9253842c1a22648a44627">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1media_type:length/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-920bb3f2dc32ebb07ac912df">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1media_type:length/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-54b364d3bf9c0803dde991b4">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1media_type:length/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-925091f1aaa82bc68c375dc5">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1media_type:length/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-0565ca614b346f8d6b938c2a">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1media_type:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-980803597b159a548c7fcea8">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1media_type:length/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerOutput/properties/media_type</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-e3443fa4c00a0adc897df78e">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1media_type:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerOutput:/properties/path:length</code>
-<table id="v-5c4ee703ce5051c2208bb8e9">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-074198fe9a5df4f44b117a17">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1path:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-71911e86223e0c26bf7fb6b5">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1path:length/id">protocol:generated:review0-sampler:definition:SamplerOutput:/properties/path:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-664c87e2c24c0fdc27acce43">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1path:length/maximum">4096</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-ce10ca067f4621d81f7caef4">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1path:length/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-841169a9386d1648a6a27731">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1path:length/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-f229c4f2a933d929552d5c52">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1path:length/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-684096d84796d7da9971d92e">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1path:length/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-cf12d7a3a3fed499c293084e">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1path:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-bbbd746a020152d159dba620">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1path:length/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerOutput/properties/path</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-96b5ceb9aacd53561c54c4fc">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1path:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerOutput:/properties/sha256:length</code>
-<table id="v-f64df435ea0d5555a1391465">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-922091bf6de5ad33ba98639b">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1sha256:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-27f9af609315db25a1aa1ddc">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1sha256:length/id">protocol:generated:review0-sampler:definition:SamplerOutput:/properties/sha256:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-d55311482b0f3ba916125d51">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1sha256:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-1d324b0f80aee317e6530301">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1sha256:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-7669394e22dbde09993b0db1">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1sha256:length/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-b8cb1b47470a367758f9f38d">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1sha256:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-7ed415411a7ca7fbf2acdb63">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1sha256:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-7bbe9a18c3d06dcb051197b4">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1sha256:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-4ccbafe70e7198cfe7a64ace">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-de6eb53fb2ddea6db968d2db">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-66806566c308e0f8053a2a23">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1sha256:length/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerOutput/properties/sha256</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-436a3fe4433fdb146d2c8e17">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerOutput:~1properties~1sha256:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerRequest:/properties/cancellation_path:length</code>
-<table id="v-6374354fd41c0822d6ffe577">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-c72642dbfc90035614aa9aaf">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1cancellation_path:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-12511db2591bfaf50a0793e8">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1cancellation_path:length/id">protocol:generated:review0-sampler:definition:SamplerRequest:/properties/cancellation_path:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-c04d2f196f7d0a4585af443e">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1cancellation_path:length/maximum">4096</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-595e2c489718b41bbd629044">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1cancellation_path:length/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-d76e77f918c78c1bee16dd80">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1cancellation_path:length/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-e831bf3794e0ef29839b99e3">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1cancellation_path:length/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-985ef67710acaf4bfbd80b34">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1cancellation_path:length/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-16ccb759043605a114694dff">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1cancellation_path:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-d8712b2b3f2a39e474c4ec14">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1cancellation_path:length/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerRequest/properties/cancellation_path</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-457dcf4483a3edaea7f02a5f">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1cancellation_path:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerRequest:/properties/inputs:cardinality</code>
-<table id="v-a4085910ba0838332359c6d2">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-1c5a7bcb1b93bb676cc82208">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-17ee7e5e854ff116113fed14">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1inputs:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-870778720d8b66c52195c253">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1inputs:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-584369368b5d9e4f3e57c5bc">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1inputs:cardinality/capacity_authority/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-2bc27c0d56e2fe09d62095c0">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1inputs:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-7c3d8d68aacfae13b3c9a8a5">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1inputs:cardinality/id">protocol:generated:review0-sampler:definition:SamplerRequest:/properties/inputs:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-bc92f324e1e52ad4556fca19">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1inputs:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-a44b5a6868716222d71caedf">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1inputs:cardinality/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-fd0fa9e1116249c65a75f4b3">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1inputs:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-6b9a73d25c20c30463e7b95c">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1inputs:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-f60a09974c37050c647dc547">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1inputs:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-bdbccc0df70ca701e3842b40">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1inputs:cardinality/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerRequest/properties/inputs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-e176654a89198f4759f9613e">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1inputs:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerRequest:/properties/maximum_output_bytes:value</code>
-<table id="v-99813cd50146e31753ade2e2">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-698f5d1679f222e127fb2125">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1maximum_output_bytes:value/dimension">value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-66c6192920174f42ca4d0b0b">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1maximum_output_bytes:value/id">protocol:generated:review0-sampler:definition:SamplerRequest:/properties/maximum_output_bytes:value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-bd5c4575e51243aa8cf3be34">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1maximum_output_bytes:value/maximum">1099511627776</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-c24e3aff367cdd9fe3fc9f05">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1maximum_output_bytes:value/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-10f12687ccf5c8a2140505d2">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1maximum_output_bytes:value/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-cc028a5bd9033d7e2ca0ae8d">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1maximum_output_bytes:value/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-5984e5c44f6e3a335d144ea1">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1maximum_output_bytes:value/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-89abcf7d5b8c1fdd80159a3d">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1maximum_output_bytes:value/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-03eb232389fc6b8eaa134ad7">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1maximum_output_bytes:value/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerRequest/properties/maximum_output_bytes</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-bcde80f9d8de2a733ac5a544">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1maximum_output_bytes:value/unit">schema-value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerRequest:/properties/portable_intent:map-cardinality</code>
-<table id="v-a0af9a88254abaad67dcadeb">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-991fb4b913c80900ce930972">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-d3fc185d4bd27fa1203fefc4">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1portable_intent:map-cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-ad6c244ef85e9cd65edb1662">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1portable_intent:map-cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-6a59d9a07ebbee9d0d06e53f">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1portable_intent:map-cardinality/capacity_authority/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-7f818cb5eb7dc1f528d07b77">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1portable_intent:map-cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-273f0e6715a5a85024e71809">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1portable_intent:map-cardinality/id">protocol:generated:review0-sampler:definition:SamplerRequest:/properties/portable_intent:map-cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-8e4af83d2c658fe2c4b774f4">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1portable_intent:map-cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-aa5d1109fb80c7539cd75e51">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1portable_intent:map-cardinality/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-557ceccea8cd9c4ae96c74a7">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1portable_intent:map-cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-55a424e53dc0979d6ca13b98">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1portable_intent:map-cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-896f54656959b9bbda22955d">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1portable_intent:map-cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-a69caccb3a5bdca456ff23b2">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1portable_intent:map-cardinality/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerRequest/properties/portable_intent</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-ca804b0ffec605ee8bd9c388">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1portable_intent:map-cardinality/unit">entries</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerRequest:/properties/request_sha256:length</code>
-<table id="v-5738b3230c272fdb4d65c110">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-0b3d8f56913fdcf0878225e1">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1request_sha256:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-1af0e7141e7581efc4e5d31a">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1request_sha256:length/id">protocol:generated:review0-sampler:definition:SamplerRequest:/properties/request_sha256:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-2e155ac326c182a1a6df10b5">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1request_sha256:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-821e2e72ef7241785277119a">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1request_sha256:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-0bc5cb3f9e811e686c0088dc">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1request_sha256:length/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-70fe67d9c6758b03efb934b4">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1request_sha256:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-bd8ed9e42de02af7d3cc5a2c">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1request_sha256:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-1f235e9e1639780bcd5f5183">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1request_sha256:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-d9fe6be3b34e880db606bfc4">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-0c12ab542806d6f625adc7c8">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1request_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-7424aff474c46cf096c2fb6b">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1request_sha256:length/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerRequest/properties/request_sha256</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-c47eb09042e8451afa7c1a22">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1request_sha256:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerRequest:/properties/sampler_descriptor_sha256:length</code>
-<table id="v-35b5c1d63ad32acf9450cd1a">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-0a2f13dc1ea8ad175229a345">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1sampler_descriptor_sha256:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-d3d509b2df86ee6a03323e57">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1sampler_descriptor_sha256:length/id">protocol:generated:review0-sampler:definition:SamplerRequest:/properties/sampler_descriptor_sha256:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-6fa4a604ad83d951dde5087e">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1sampler_descriptor_sha256:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-9c56751fd1e7ea7cec0b5e71">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1sampler_descriptor_sha256:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-fe40d94f6411131828200371">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1sampler_descriptor_sha256:length/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-e6570138b4d5347bf13e9684">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1sampler_descriptor_sha256:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-b7c6f97eddf33b786ae388a6">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1sampler_descriptor_sha256:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-762033239a128c25a41f1bf4">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1sampler_descriptor_sha256:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-44d60429e7b6e8958069309d">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-1f892b8addf2d64a13e4a859">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1sampler_descriptor_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-343985f6f5dab7a29c31d0c0">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1sampler_descriptor_sha256:length/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerRequest/properties/sampler_descriptor_sha256</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-2e3ea9fed0ab0295942a05e9">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1sampler_descriptor_sha256:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerRequest:/properties/timeout_seconds:value</code>
-<table id="v-58c2e97cde439dd806a59e51">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-0d05e84acd5bad86876315f7">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1timeout_seconds:value/dimension">value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-f0c1fdd18cb126acd0ba8ea6">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1timeout_seconds:value/id">protocol:generated:review0-sampler:definition:SamplerRequest:/properties/timeout_seconds:value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-24c26a5edb065ff08ae24c38">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1timeout_seconds:value/maximum">86400</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-f3a81919e0b225da7afc28c5">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1timeout_seconds:value/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-42bb9449f1ddd12c1d2f16f6">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1timeout_seconds:value/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-5cb5f862de436d6f7ff5c299">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1timeout_seconds:value/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-2643b252bc198e4c2abbacb1">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1timeout_seconds:value/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-f73633bbfb9c965b00502157">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1timeout_seconds:value/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-2bb050717378bd2b8f5810b7">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1timeout_seconds:value/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerRequest/properties/timeout_seconds</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-4c7c67b68d7d7d0c1c52e778">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1timeout_seconds:value/unit">schema-value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerRequest:/properties/windows:cardinality</code>
-<table id="v-777014719ab3e7c8ed1e5d47">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-aaa484987b634d1f9106223a">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-72c0883ed1b9dddc3ccf186a">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1windows:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-0fd4e95b24e1008c8d6c7fde">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1windows:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-05ecb181c9e59289d7bf9968">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1windows:cardinality/capacity_authority/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-eb50b0c025a72335affa4459">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1windows:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-ccbbf289e86ee382643c12a2">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1windows:cardinality/id">protocol:generated:review0-sampler:definition:SamplerRequest:/properties/windows:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-a466676fd8461c2c2c4918a5">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1windows:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-6a048f6c5554829304c06231">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1windows:cardinality/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-9e932611db005c07d6746346">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1windows:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-01a490f5c67ec583271d8287">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1windows:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-b062037c03be5e47616f6dbe">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1windows:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-17cd92cfbc61d03ac4b9b4ad">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1windows:cardinality/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerRequest/properties/windows</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-2ff9647cb66e316d7b84003c">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1windows:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerRequest:/properties/workspace_id:length</code>
-<table id="v-b80c4ff0ce4a50edfe48689a">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-070d556c2b684a909ce09c82">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1workspace_id:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-aeaabd3dcd9be4bcc1b4ab32">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1workspace_id:length/id">protocol:generated:review0-sampler:definition:SamplerRequest:/properties/workspace_id:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-448257f3667e07d0e6068813">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1workspace_id:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-998b92ec916759b71c78e7ef">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1workspace_id:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-6bf05a54f7314c829cd739f0">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1workspace_id:length/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-6de10e0a8af04081d6684cfc">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1workspace_id:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-d2ac68072badcae4080dc472">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1workspace_id:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-d7a30415c367b0de65e1dfcd">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1workspace_id:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-dba2813054792bc709ef9915">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-0685bb41f469225d12d87ec7">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1workspace_id:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-2cfa1a41e275ff268650930b">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1workspace_id:length/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerRequest/properties/workspace_id</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-8d14a573e2d0c07dd98292bd">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerRequest:~1properties~1workspace_id:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerResult:/properties/execution_evidence:map-cardinality</code>
-<table id="v-f0afef7f4721c7f654aa12f7">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-6d2c1eef07f3f4747cecf590">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-46668b574a1f36cbc1f65ab7">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1execution_evidence:map-cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-8cef57b3eda25afcee5e7274">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1execution_evidence:map-cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-711360b33dd3b7979c3a2410">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1execution_evidence:map-cardinality/capacity_authority/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-e074bc5f238d450586f6e225">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1execution_evidence:map-cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-16326601e3263e13918e55a6">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1execution_evidence:map-cardinality/id">protocol:generated:review0-sampler:definition:SamplerResult:/properties/execution_evidence:map-cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-c55dcf51fad4afe3f9ade8f5">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1execution_evidence:map-cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-1e32a8da2c0d942f283d48d5">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1execution_evidence:map-cardinality/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-d656cb0fe141156ad735a780">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1execution_evidence:map-cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-13c3cfc9f1780a0be6e5becc">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1execution_evidence:map-cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-2f179eb68096f4c1732542e2">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1execution_evidence:map-cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-4d8f4547f6d20366a4869d54">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1execution_evidence:map-cardinality/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerResult/properties/execution_evidence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-042615bfe301352211ab32ec">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1execution_evidence:map-cardinality/unit">entries</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerResult:/properties/outputs:cardinality</code>
-<table id="v-cc4c1cbd578dab5dbc459fb5">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-0d9dc5a7ff6f809109b232f5">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-0e0e48687a4c35b82c905f39">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1outputs:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-06decc0fe9b00c220ea4c537">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1outputs:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-952dacf7204dc27d9be1c879">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1outputs:cardinality/capacity_authority/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-f0eee7a0188bdb0f5fcf3041">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1outputs:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-0df791672a45091835743f5a">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1outputs:cardinality/id">protocol:generated:review0-sampler:definition:SamplerResult:/properties/outputs:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-350d8463079f389c997a26b4">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1outputs:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-9983f3c2fe479282134ec7c4">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1outputs:cardinality/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-80177faa8452a742c2daf2e8">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1outputs:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-57ec34d032b7672d6f95bc63">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1outputs:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-b57f2eeba8fa51685d496c59">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1outputs:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-ae4d0b89ef0bb0030e604bd9">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1outputs:cardinality/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerResult/properties/outputs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-eda50e27cc4369a8512db999">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1outputs:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerResult:/properties/request_sha256:length</code>
-<table id="v-3b31e4992317411d1a92df36">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-9e3bc64bb95826a3230951c3">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1request_sha256:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-f41d62b251a23fd3e5662848">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1request_sha256:length/id">protocol:generated:review0-sampler:definition:SamplerResult:/properties/request_sha256:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-bfb9a50bd30db85408a57c1e">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1request_sha256:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-55fe433395a4368c5a2f1c0b">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1request_sha256:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-5c7c2732da037e8ec78f7c2d">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1request_sha256:length/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-597593e1f4507d11c234d945">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1request_sha256:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-0752269f0f5d8e4777acfef9">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1request_sha256:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-17544d9dd51d7c68e7f67828">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1request_sha256:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-c12f08ace8b396eaad61b584">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-eb97734cd8cda8b0a4fdc53c">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1request_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-8a01f8a37f539e719433ec5d">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1request_sha256:length/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerResult/properties/request_sha256</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-465b0db622524a1e651fc424">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1request_sha256:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerResult:/properties/result_sha256:length</code>
-<table id="v-b9b861e40f300f4c6eefe9db">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-9377034e718e9d9b0456802f">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1result_sha256:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-26480b473840beb565473baf">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1result_sha256:length/id">protocol:generated:review0-sampler:definition:SamplerResult:/properties/result_sha256:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-e4d7d263c8e42073372ef04e">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1result_sha256:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-1be909059d4fd5c8d1144168">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1result_sha256:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-47c2f645d06223c42c708385">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1result_sha256:length/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-771644ce4599af76c6566cbd">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1result_sha256:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-eee9c420f6a9b0411b916da3">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1result_sha256:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-6e0dfee6d1a4b7874b147d91">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1result_sha256:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-065eda1432478567e60900ed">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-75cca44008a0fdb65888d109">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1result_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-20eef11a530060224c95918b">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1result_sha256:length/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerResult/properties/result_sha256</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-5fdc9ea455302b7b499508b2">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1result_sha256:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerResult:/properties/sampler_descriptor_sha256:length</code>
-<table id="v-2b9ee843839a942e2bfcc48d">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-4fe62f6683d0bf8abd4e4200">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1sampler_descriptor_sha256:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-acb9bde8a03ab9378234e088">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1sampler_descriptor_sha256:length/id">protocol:generated:review0-sampler:definition:SamplerResult:/properties/sampler_descriptor_sha256:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-0ec52b732610ff678759bd37">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1sampler_descriptor_sha256:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-43128fbe0471a6d5f78658bd">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1sampler_descriptor_sha256:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-a3f98f7aaf14a11666e9f727">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1sampler_descriptor_sha256:length/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-ab259bb9503d4e08472920d8">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1sampler_descriptor_sha256:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-e09a2eff369a49da814d7e88">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1sampler_descriptor_sha256:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-6bad64f4cbe9e5719f34e76d">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1sampler_descriptor_sha256:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-e0f1b33dc9492eb234ae64e1">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-0e1a760a2228e2d319a1d28f">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1sampler_descriptor_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-0880271eda2cd746ddf1c018">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1sampler_descriptor_sha256:length/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerResult/properties/sampler_descriptor_sha256</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-78115e37734c0cdc2143c9f8">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerResult:~1properties~1sampler_descriptor_sha256:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>protocol:generated:review0-sampler:definition:SamplerWindow:/properties/output_path:length</code>
-<table id="v-bdaf613759ce7b0e87b1a836">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-104112941337d542828f4f7e">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerWindow:~1properties~1output_path:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-4f73d876457302d826c8af63">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerWindow:~1properties~1output_path:length/id">protocol:generated:review0-sampler:definition:SamplerWindow:/properties/output_path:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-b69d5dd7258f2fd415cd4929">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerWindow:~1properties~1output_path:length/maximum">4096</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-b9dde569ae3d47b689837ecd">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerWindow:~1properties~1output_path:length/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-d5151b776733790c40dd115f">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerWindow:~1properties~1output_path:length/owner">review0-sampler-protocol</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-8ec9e953e38cdb3b054a39b9">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerWindow:~1properties~1output_path:length/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-6cd634a180ea9ada619f2bdc">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerWindow:~1properties~1output_path:length/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-b5022d78cd32caff37e052ee">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerWindow:~1properties~1output_path:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-d72488008d18b6211cc78d23">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerWindow:~1properties~1output_path:length/source_pointer">/external_contract/protocol_schemas/generated:review0-sampler/schemas/SamplerConformanceResult/$defs/SamplerWindow/properties/output_path</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-ceedddd25d8613499264948c">
-<code data-value-pointer="/audit/decisions/protocol:generated:review0-sampler:definition:SamplerWindow:~1properties~1output_path:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

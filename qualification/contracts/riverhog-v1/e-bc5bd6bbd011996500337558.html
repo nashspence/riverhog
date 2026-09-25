@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,124 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-09dc1e38a978cb3e071a9885.html">riverhog · HTTP Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>schemas: RiverhogEventPage</h1>
+<p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
 <section id="contract" data-contract="http-schemas:riverhog:schemas-riverhogeventpage:51b0f49866">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-2637f8f359f870bc61738979">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>RiverhogEventPage</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;events&quot;,&quot;next_cursor&quot;,&quot;has_more&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-fcfd3592d122ee4f24383ed3">events</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-2148e7c43ad590a96db23120.html#v-05d5a984729f2412891e51f7">#/components/schemas/RiverhogLifecycleEvent</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>has_more</code>
+</td>
+<td>yes</td>
+<td>
+<code>boolean</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>next_cursor</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-38c1ac840ff6a97f9b50a0b9.html#v-83181c31b61c331b02e36a91">#/components/schemas/LifecycleEventCursor</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-fcfd3592d122ee4f24383ed3">
+<h3>Field: events</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-2148e7c43ad590a96db23120.html#v-05d5a984729f2412891e51f7">#/components/schemas/RiverhogLifecycleEvent</a>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Events</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/riverhog/components/schemas/RiverhogEventPage</code>
-</h3>
+</h4>
 <table id="v-2637f8f359f870bc61738979">
 <tbody>
 <tr>
@@ -233,170 +333,69 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Open extent qualification</h3>
+<p>This subject is within the recorded scope of the following extent evidence gap. The linked group explains the limitation before candidate tests and identifies every affected subject. A group association is not an observed failure of this element.</p>
+<ul>
+<li>
+<a href="q-1536c4a29a1210bf0c87c350.html">riverhog-read-collection-progression/v1</a>
+</li>
+</ul>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>http:riverhog:components:/schemas/RiverhogEventPage/properties/events:cardinality</code>
-<table id="v-65b3f3b273d8e921717cc792">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-ea8e24bcee7d654dccb4d5ed">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1RiverhogEventPage~1properties~1events:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RiverhogEventPage/properties/events</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-6780678562868f4c0630ea2c">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1RiverhogEventPage~1properties~1events:cardinality/id">http:riverhog:components:/schemas/RiverhogEventPage/properties/events:cardinality</code>
-<span class="kind">string</span>
-</span>
+<a href="policies.html#definition-c35859ad2c6c8a34ef05c100">extent-rule/route-progression/v1</a>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
+<td>cardinality · items · segmented_no_total_max</td>
 <td>
-<span id="v-bc0698d2e702fcc043a84170">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1RiverhogEventPage~1properties~1events:cardinality/owner">riverhog</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-c9500ebebfcf10e474b18143">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1RiverhogEventPage~1properties~1events:cardinality/policy">segmented_no_total_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>progression</code>
-</th>
-<td>
-<table id="v-afcad9f60a36289c830ab6c1">
-<tbody>
-<tr>
-<th scope="row">
-<code>cursor_parameter</code>
-</th>
-<td>
-<span id="v-b3fc59ef106ed290a2381714">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1RiverhogEventPage~1properties~1events:cardinality/progression/cursor_parameter">after</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>kind</code>
-</th>
-<td>
-<span id="v-6dd121859ca2581c184b5550">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1RiverhogEventPage~1properties~1events:cardinality/progression/kind">cursor-feed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>limit_parameter</code>
-</th>
-<td>
-<span id="v-6509ecbbdea50014fd2ebd74">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1RiverhogEventPage~1properties~1events:cardinality/progression/limit_parameter">limit</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;progression&quot;:{&quot;cursor_parameter&quot;:&quot;after&quot;,&quot;kind&quot;:&quot;cursor-feed&quot;,&quot;limit_parameter&quot;:&quot;limit&quot;},&quot;reason&quot;:&quot;bounded-route-page&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-d3099b7606ca5fab854af1f4">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1RiverhogEventPage~1properties~1events:cardinality/reason">bounded-route-page</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-01664d2364a6d5bbf7453c65">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1RiverhogEventPage~1properties~1events:cardinality/rule">route-progression/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-cd71e2f82015f30c1c6d0b74">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1RiverhogEventPage~1properties~1events:cardinality/source_pointer">/external_contract/http_openapi/riverhog/components/schemas/RiverhogEventPage/properties/events</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-99537b18ec985545cc4658c2">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1RiverhogEventPage~1properties~1events:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

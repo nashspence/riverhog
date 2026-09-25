@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,55 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-77adb2021b66cb6cdf6fccb2.html">extent-contract · Extent Contract</a>
+<a href="index.html">All authorities</a> / <a href="a-9466de1ef9acbeb8eac4cd39.html">extent-contract</a> / <a href="i-77adb2021b66cb6cdf6fccb2.html">Extent Contract</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>Extent rule: bounded segment</h1>
+<p class="context">Repository-wide v1 external extent principles and rules. Extent Contract contract owned by extent-contract.</p>
 <section id="contract" data-contract="extent:extent-contract:extent-rule-bounded-segment:6e947b7583">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Extent commitment</h3>
+<dl class="facts">
+<dt>authority</dt>
+<dd>
+<code>the owning schema&#x27;s x-riverhog-extent declaration</code>
+</dd>
+<dt>completion</dt>
+<dd>
+<code>the owner-declared progression or repeated-work contract</code>
+</dd>
+<dt>exceeded</dt>
+<dd>
+<code>bounded-carrier-validation-error</code>
+</dd>
+<dt>policy</dt>
+<dd>
+<code>segmented_no_total_max</code>
+</dd>
+<dt>semantic maximum</dt>
+<dd>
+<code>null</code>
+</dd>
+</dl>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/extents/rules/bounded-segment~1v1</code>
-</h3>
+</h4>
 <table id="v-cc8243a831931f483953f0ab">
 <tbody>
 <tr>
@@ -90,25 +121,26 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/extent_contract.py">scripts/extent_contract.py::extent_projection</code>
+<a href="source-authorities.html#source-5ac94d0a12e81cef879ba4c8">extent:extent-contract</a> — <code data-source-path="scripts/extent_contract.py">scripts/extent_contract.py::extent_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make contract-freeze</code>
+<a href="source-commands.html#route-8c74349e71e46a4ddc36ce6a">make contract-freeze</a>
 </li>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 </ul>
 </aside>

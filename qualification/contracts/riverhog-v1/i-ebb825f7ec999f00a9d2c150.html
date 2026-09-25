@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,23 +12,29 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a>
+<a href="index.html">All authorities</a> / <a href="a-be3cf0a42a9d2c43a6660b21.html">stove0</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>stove0 · HTTP Operations</h1>
+<p class="context">Content-opaque transformation application for Riverhog.</p>
+<p>Callable HTTP operations.</p>
+<div class="table-scroll">
 <table>
 <thead>
 <tr>
 <th>Element</th>
-<th>Contract pointer</th>
+<th>Recorded comparison facts</th>
 </tr>
 </thead>
 <tbody>
@@ -36,307 +42,251 @@
 <td>
 <a href="e-42c0a1ec275eda1a0c2fbdf1.html">GET /health/live</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1health~1live/get</code>
-</td>
+<td>Health Live · responses 200, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:get-health-ready:3a943dea39">
 <td>
 <a href="e-8a566e0f16fae12a558fe302.html">GET /health/ready</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1health~1ready/get</code>
-</td>
+<td>Health Ready · responses 200, 500, 503</td>
 </tr>
 <tr data-element="http-operations:stove0:get-v1-admin-scheduler:277013ce0b">
 <td>
 <a href="e-fe676b2f04bfac42267e2650.html">GET /v1/admin/scheduler</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1admin~1scheduler/get</code>
-</td>
+<td>Scheduler Status · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:get-v1-admission-policies:7ff4a4db72">
 <td>
 <a href="e-72bba6a6357bc81b0510ee9e.html">GET /v1/admission-policies</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1admission-policies/get</code>
-</td>
+<td>List Admission Policies · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:get-v1-admissions:44fe559e55">
 <td>
 <a href="e-e0ec77b8bd6c74afbc519db0.html">GET /v1/admissions</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-e0ec77b8bd6c74afbc519db0.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1admissions/get</code>
-</td>
+<td>List Admissions · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:get-v1-admissions-admission-id:a4dbc11662">
 <td>
 <a href="e-98832943a36c5b1c42150ed9.html">GET /v1/admissions/{admission_id}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1admissions~1{admission_id}/get</code>
-</td>
+<td>Get Admission · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:get-v1-artifact-selections-selection-sha256:699f9ded83">
 <td>
 <a href="e-54646cd30621c241ff4b0793.html">GET /v1/artifact-selections/{selection_sha256}</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-54646cd30621c241ff4b0793.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get</code>
-</td>
+<td>Get Artifact Selection · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:get-v1-departure-effects:1a59ea7952">
 <td>
 <a href="e-941e7e116477a467eb022a4b.html">GET /v1/departure-effects</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-941e7e116477a467eb022a4b.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects/get</code>
-</td>
+<td>List Departure Effects · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:get-v1-departure-effects-departure-id:aca20a87e4">
 <td>
 <a href="e-011e346102ff25b34d53a17a.html">GET /v1/departure-effects/{departure_id}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get</code>
-</td>
+<td>Get Departure Effect · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:get-v1-departure-policies:e238087814">
 <td>
 <a href="e-8c1d9ce8d0d9752294dae462.html">GET /v1/departure-policies</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies/get</code>
-</td>
+<td>List Departure Policies · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:get-v1-evaluations:c836a6fe67">
 <td>
 <a href="e-1d4e56272bb8819a6f2b55fc.html">GET /v1/evaluations</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-1d4e56272bb8819a6f2b55fc.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/get</code>
-</td>
+<td>List Evaluations · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:get-v1-evaluations-evaluation-id:20629f7c77">
 <td>
 <a href="e-979552fea60efb41c3c47663.html">GET /v1/evaluations/{evaluation_id}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1evaluations~1{evaluation_id}/get</code>
-</td>
+<td>Get Evaluation · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:get-v1-events:4cafae4d90">
 <td>
 <a href="e-80508a9e98a304dde9316daf.html">GET /v1/events</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-80508a9e98a304dde9316daf.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1events/get</code>
-</td>
+<td>List Events · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:get-v1-recipes:3db0b2d1d9">
 <td>
 <a href="e-b8568c324a69bfee73890f44.html">GET /v1/recipes</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1recipes/get</code>
-</td>
+<td>List Recipes · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:get-v1-recipes-recipe-id:f1c9d819af">
 <td>
 <a href="e-15ae9558d0e1a24a95f28f76.html">GET /v1/recipes/{recipe_id}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get</code>
-</td>
+<td>Get Recipe · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:get-v1-target-executions-job-id-inputs:6c7f3ca62d">
 <td>
 <a href="e-a545ac6116d02a49ccd27ab6.html">GET /v1/target-executions/{job_id}/inputs</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-a545ac6116d02a49ccd27ab6.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get</code>
-</td>
+<td>Get Target Execution Inputs · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:get-v1-work:8c40f32a87">
 <td>
 <a href="e-e580592d4a041e41e0ec175e.html">GET /v1/work</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-e580592d4a041e41e0ec175e.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1work/get</code>
-</td>
+<td>List Work · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:get-v1-work-work-id:c5ac1761dd">
 <td>
 <a href="e-0c96f2e6bf34147253f31dfa.html">GET /v1/work/{work_id}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1work~1{work_id}/get</code>
-</td>
+<td>Get Work · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:get-v1-work-work-id-coordination:671733367b">
 <td>
 <a href="e-2ba365414e4fb8304c377a2d.html">GET /v1/work/{work_id}/coordination</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1work~1{work_id}~1coordination/get</code>
-</td>
+<td>Inspect Work Coordination · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:post-v1-admin-scheduler-run:085d982028">
 <td>
 <a href="e-bb416d643743434f4aaa9fbc.html">POST /v1/admin/scheduler/run</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1admin~1scheduler~1run/post</code>
-</td>
+<td>Run Scheduler Once · responses 200, 400, 401, 403, 409, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:post-v1-admission-policies-policy-id-backfill:b2144d91fb">
 <td>
 <a href="e-f7ba559abb5d7b6b4a8f291c.html">POST /v1/admission-policies/{policy_id}:backfill</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1admission-policies~1{policy_id}:backfill/post</code>
-</td>
+<td>Backfill Admission Policy · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:post-v1-admission-policies-policy-id-rebaseline:7df07b33cc">
 <td>
 <a href="e-0ea4d7bf46a0f1a2dd894f2e.html">POST /v1/admission-policies/{policy_id}:rebaseline</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1admission-policies~1{policy_id}:rebaseline/post</code>
-</td>
+<td>Rebaseline Admission Policy · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:post-v1-departure-policies-policy-id-rebaseline:40b4897508">
 <td>
 <a href="e-58be89b5e92f4396d787e09d.html">POST /v1/departure-policies/{policy_id}:rebaseline</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post</code>
-</td>
+<td>Rebaseline Departure Policy · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:post-v1-evaluations:1a8ff20c1b">
 <td>
 <a href="e-2ec5655a44309ecad77198a6.html">POST /v1/evaluations</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post</code>
-</td>
+<td>Create Evaluation · responses 201, 400, 401, 403, 409, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:post-v1-evaluations-evaluation-id-cancel:67517d8d52">
 <td>
 <a href="e-449a341c41154c747971ae5e.html">POST /v1/evaluations/{evaluation_id}/cancel</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1evaluations~1{evaluation_id}~1cancel/post</code>
-</td>
+<td>Cancel Evaluation · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:post-v1-evaluations-evaluation-id-step:6522b39189">
 <td>
 <a href="e-075805a0bbe4a88e644705dd.html">POST /v1/evaluations/{evaluation_id}/step</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1evaluations~1{evaluation_id}~1step/post</code>
-</td>
+<td>Step Evaluation · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:post-v1-evaluations-evaluation-id-variant-ae6ffd6789:56a329dcf3">
 <td>
 <a href="e-74d0cadec8744788e06b3318.html">POST /v1/evaluations/{evaluation_id}/variants/{variant_id}/retry</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1evaluations~1{evaluation_id}~1variants~1{variant_id}~1retry/post</code>
-</td>
+<td>Retry Evaluation Variant · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:post-v1-target-executions-job-id-production-seal:9c9d181598">
 <td>
 <a href="e-890be08ea38bd72f1c50da0c.html">POST /v1/target-executions/{job_id}/production/seal</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1production~1seal/post</code>
-</td>
+<td>Seal Target Execution Production · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:post-v1-work:9f500d8faf">
 <td>
 <a href="e-9bdeb5c33b1c20dfb4182cd9.html">POST /v1/work</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1work/post</code>
-</td>
+<td>Create Work · responses 201, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:post-v1-work-work-id-cancel:19584813fe">
 <td>
 <a href="e-39687d49d521589845b952c1.html">POST /v1/work/{work_id}/cancel</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1work~1{work_id}~1cancel/post</code>
-</td>
+<td>Cancel Work · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:post-v1-work-work-id-retry:dfe50d1304">
 <td>
 <a href="e-52bc2b02f96b41c227975726.html">POST /v1/work/{work_id}/retry</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1work~1{work_id}~1retry/post</code>
-</td>
+<td>Retry Work · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:post-v1-work-work-id-step:7a179b3efe">
 <td>
 <a href="e-376a65e0668c0f956ad0f65a.html">POST /v1/work/{work_id}/step</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1work~1{work_id}~1step/post</code>
-</td>
+<td>Step Work · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:post-v1-workflow-previews:e5936c4d36">
 <td>
 <a href="e-d92abcad9af08e5cce788d08.html">POST /v1/workflow-previews</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1workflow-previews/post</code>
-</td>
+<td>Preview Workflow · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:put-v1-evaluations-evaluation-id-variants-a1782cc4d9:a6e0a14458">
 <td>
 <a href="e-8945ee180d46f5fd1f950afd.html">PUT /v1/evaluations/{evaluation_id}/variants/{variant_id}/review</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1evaluations~1{evaluation_id}~1variants~1{variant_id}~1review/put</code>
-</td>
+<td>Review Evaluation Variant · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:put-v1-target-executions-job-id-dispositi-608495d368:84e3f24844">
 <td>
 <a href="e-830c9e078cceb9952f9283cf.html">PUT /v1/target-executions/{job_id}/dispositions/{input_id}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1dispositions~1{input_id}/put</code>
-</td>
+<td>Declare Target Execution Disposition · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:put-v1-target-executions-job-id-outputs-artifact-id:e2aaff86b0">
 <td>
 <a href="e-ac509fa9e63c8f41486c5130.html">PUT /v1/target-executions/{job_id}/outputs/{artifact_id}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1outputs~1{artifact_id}/put</code>
-</td>
+<td>Declare Target Execution Output · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:stove0:put-v1-target-executions-job-id-source-ed-4cec468e6f:f0390888ef">
 <td>
 <a href="e-33061a789b5c6918eb0cbe18.html">PUT /v1/target-executions/{job_id}/source-edges/{output_id}/{input_id}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1source-edges~1{output_id}~1{input_id}/put</code>
-</td>
+<td>Declare Target Execution Source Edge · responses 200, 400, 401, 403, 500</td>
 </tr>
 </tbody>
 </table>
+</div>
+<aside class="audit" id="audit-scope">
+<h2>Open extent qualifications in this scope</h2>
+<p>7 declared contract subjects in stove0 · HTTP Operations are within the listed extent evidence gaps. A group can cover several subjects; these are not separate observed runtime failures. Follow the 📦 markers for the affected children.</p>
+<ul>
+<li>
+<a href="q-34931f753be1ce7059b8a01b.html">stove0-read-collection-progression/v1</a>
+</li>
+</ul>
+<p>An unmarked entry has no approval implied.</p>
+</aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>

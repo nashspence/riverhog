@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,138 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-09dc1e38a978cb3e071a9885.html">riverhog · HTTP Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>schemas: CollectionArtifactBatchDocument</h1>
+<p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
 <section id="contract" data-contract="http-schemas:riverhog:schemas-collectionartifactbatchdocument:4c05eb68b3">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-5d67106b766aa2b94a7907e1">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>CollectionArtifactBatchDocument</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;fence&quot;,&quot;start_ordinal&quot;,&quot;artifacts&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-1c0906aa0fb930ec92650160">artifacts</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-16ac0d233c35641be20c52b3.html#v-527d6f8a604870c565159b92">#/components/schemas/CollectionArtifactIdentityDocument</a>; minItems: <code>1</code>; maxItems: <code>128</code>; uniqueItems: <code>true</code>; x-riverhog-extent: structured schema</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>fence</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">#/components/schemas/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>start_ordinal</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">#/components/schemas/NonnegativeDecimal</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-1c0906aa0fb930ec92650160">
+<h3>Field: artifacts</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-16ac0d233c35641be20c52b3.html#v-527d6f8a604870c565159b92">#/components/schemas/CollectionArtifactIdentityDocument</a>; minItems: <code>1</code>; maxItems: <code>128</code>; uniqueItems: <code>true</code>; x-riverhog-extent: structured schema</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Artifacts</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+<dt>maxItems</dt>
+<dd>
+<code>128</code>
+</dd>
+<dt>uniqueItems</dt>
+<dd>
+<code>true</code>
+</dd>
+<dt>x-riverhog-extent</dt>
+<dd>
+<code>{&quot;policy&quot;:&quot;segmented_no_total_max&quot;,&quot;progression&quot;:&quot;start_ordinal&quot;,&quot;reason&quot;:&quot;bounded-set-append&quot;}</code>
+</dd>
+</dl>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/riverhog/components/schemas/CollectionArtifactBatchDocument</code>
-</h3>
+</h4>
 <table id="v-5d67106b766aa2b94a7907e1">
 <tbody>
 <tr>
@@ -321,170 +435,69 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Open extent qualification</h3>
+<p>This subject is within the recorded scope of the following extent evidence gap. The linked group explains the limitation before candidate tests and identifies every affected subject. A group association is not an observed failure of this element.</p>
+<ul>
+<li>
+<a href="q-1adf1cdd6837425e87d49de1.html">riverhog-work-set-append/v1</a>
+</li>
+</ul>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>http:riverhog:components:/schemas/CollectionArtifactBatchDocument/properties/artifacts:cardinality</code>
-<table id="v-0cbb6304399efb00511234c4">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-bd3082431b4cee041de27ec7">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionArtifactBatchDocument~1properties~1artifacts:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionArtifactBatchDocument/properties/artifacts</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-5827ae3ca619ea32940e9e88">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionArtifactBatchDocument~1properties~1artifacts:cardinality/id">http:riverhog:components:/schemas/CollectionArtifactBatchDocument/properties/artifacts:cardinality</code>
-<span class="kind">string</span>
-</span>
+<a href="policies.html#definition-cc8243a831931f483953f0ab">extent-rule/bounded-segment/v1</a>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
+<td>cardinality · items · segmented_no_total_max</td>
 <td>
-<span id="v-cae84658ddcf13fc8fc1f1e8">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionArtifactBatchDocument~1properties~1artifacts:cardinality/maximum">128</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-9e1481035dd7a4af4a0a0216">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionArtifactBatchDocument~1properties~1artifacts:cardinality/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-30662820a12266ad142f5cb4">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionArtifactBatchDocument~1properties~1artifacts:cardinality/owner">riverhog</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-f0343f91fe7e28a3a63d0422">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionArtifactBatchDocument~1properties~1artifacts:cardinality/policy">segmented_no_total_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>progression</code>
-</th>
-<td>
-<table id="v-762034ef2c52674e0a188b5c">
-<tbody>
-<tr>
-<th scope="row">
-<code>progression</code>
-</th>
-<td>
-<span id="v-1aac8e7578e58cacf31149cb">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionArtifactBatchDocument~1properties~1artifacts:cardinality/progression/progression">start_ordinal</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:128,&quot;minimum&quot;:1,&quot;progression&quot;:{&quot;progression&quot;:&quot;start_ordinal&quot;},&quot;reason&quot;:&quot;bounded-set-append&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-7b03936c384745048be2663c">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionArtifactBatchDocument~1properties~1artifacts:cardinality/reason">bounded-set-append</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-b2925e9494539cd4c5409192">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionArtifactBatchDocument~1properties~1artifacts:cardinality/rule">bounded-segment/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-c45b770481e5f67bd3e9ee20">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionArtifactBatchDocument~1properties~1artifacts:cardinality/source_pointer">/external_contract/http_openapi/riverhog/components/schemas/CollectionArtifactBatchDocument/properties/artifacts</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-84175785f6725930ad202687">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionArtifactBatchDocument~1properties~1artifacts:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

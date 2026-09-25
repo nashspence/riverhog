@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,218 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-8362573a31ae863c64fc148a.html">a-riverhog-windows-provenance-contract-lib · Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-8470c96ee489cd4f8b565936.html">a-riverhog-windows-provenance-contract-lib</a> / <a href="i-8362573a31ae863c64fc148a.html">Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-usn-record.json</h1>
+<p class="context">Windows filesystem observation contracts for Riverhog provenance. Standalone structured-value contracts; these do not define an interaction.</p>
 <section id="contract" data-contract="schema:a-riverhog-windows-provenance-contract-lib:https-nashspence-github-io-riverhog-v1-pr-8faff49cd7:457c014cb4">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-740b4aabb0adeaaaa3e2d11e">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 12 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>$id</dt>
+<dd>
+<code>https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-usn-record.json</code>
+</dd>
+<dt>$schema</dt>
+<dd>
+<code>https://json-schema.org/draft/2020-12/schema</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;record_length&quot;,&quot;major_version&quot;,&quot;minor_version&quot;,&quot;parse_status&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>file_attributes</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>file_name</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>file_name_role</code>
+</td>
+<td>no</td>
+<td>enum: <code>[&quot;exact&quot;,&quot;display&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>file_name_utf16le_base64</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>file_reference_number</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]+$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>major_version</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>minor_version</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>parent_file_reference_number</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]+$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>parse_status</code>
+</td>
+<td>yes</td>
+<td>enum: <code>[&quot;parsed&quot;,&quot;unresolved&quot;,&quot;unsupported_version&quot;]</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>record_length</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>security_id</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>usn</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; pattern: <code>^-?(?:0|[1-9][0-9]*)$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json</code>
-</h3>
+</h4>
 <table id="v-740b4aabb0adeaaaa3e2d11e">
 <tbody>
 <tr>
@@ -563,243 +757,74 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/riverhog/provenance/contracts/windows/src/a_riverhog_windows_provenance_contract_lib/schemas/windows-usn-record.schema.json">some-implementations/riverhog/provenance/contracts/windows/src/a_riverhog_windows_provenance_contract_lib/schemas/windows-usn-record.schema.json</code>
+<a href="source-authorities.html#source-72281b7ad5bfa8f2f4e2e777">protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-usn-record.json</a> — <code data-source-path="some-implementations/riverhog/provenance/contracts/windows/src/a_riverhog_windows_provenance_contract_lib/schemas/windows-usn-record.schema.json">some-implementations/riverhog/provenance/contracts/windows/src/a_riverhog_windows_provenance_contract_lib/schemas/windows-usn-record.schema.json</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-usn-record.json:/properties/file_attributes:open-value</code>
-<table id="v-556faec0401bf73cf0ca5dd7">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-3bdf133bae35ff9e17b6a3de">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json:~1properties~1file_attributes:open-value/dimension">value</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json/properties/file_attributes</code>
+</td>
+<td>
+<a href="policies.html#definition-880614cb87cca076bd22dc5e">extent-rule/extension-contract/v1</a>
+</td>
+<td>value · schema-value · extension_owned</td>
+<td>
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-378fc9da55b53fb9f7b32989">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json:~1properties~1file_attributes:open-value/id">protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-usn-record.json:/properties/file_attributes:open-value</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json/properties/record_length</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-76422b4825b19a87d3f9612b">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json:~1properties~1file_attributes:open-value/maximum">null</code>
-<span class="kind">null</span>
-</span>
+<a href="policies.html#definition-880614cb87cca076bd22dc5e">extent-rule/extension-contract/v1</a>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
+<td>value · schema-value · extension_owned</td>
 <td>
-<span id="v-ea814ce3fe4461ec5eb68d1a">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json:~1properties~1file_attributes:open-value/owner">https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-usn-record.json</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-437b7a42b7b42c8bb90fc9b0">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json:~1properties~1file_attributes:open-value/policy">extension_owned</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-50c3454cd903dd7d684490e3">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json:~1properties~1file_attributes:open-value/reason">independently-versioned-extension-authority</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-097caba1270fa83afa7285aa">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json:~1properties~1file_attributes:open-value/rule">extension-contract/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-c9c8d32759f7a5ed6eb3d908">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json:~1properties~1file_attributes:open-value/source_pointer">/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json/properties/file_attributes</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-a55ca7ca35d64573ccea3ed5">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json:~1properties~1file_attributes:open-value/unit">schema-value</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:null,&quot;reason&quot;:&quot;independently-versioned-extension-authority&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-<li>
-<code>protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-usn-record.json:/properties/record_length:open-value</code>
-<table id="v-5905079c2da003aeaf23cf9d">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-46307c92306920cf14fef704">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json:~1properties~1record_length:open-value/dimension">value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-b438bc58af022fb3a3ac2ab0">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json:~1properties~1record_length:open-value/id">protocol:https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-usn-record.json:/properties/record_length:open-value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-8e53a63beab0d25ca25a3b69">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json:~1properties~1record_length:open-value/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-5117c5d734097973a8c562f9">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json:~1properties~1record_length:open-value/owner">https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/windows-usn-record.json</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-28e1f03925ff2df83ff4eb26">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json:~1properties~1record_length:open-value/policy">extension_owned</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-234a3656321952affa38fbcb">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json:~1properties~1record_length:open-value/reason">independently-versioned-extension-authority</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-f8e97dae09e271537adb1f5e">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json:~1properties~1record_length:open-value/rule">extension-contract/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-9ba980492de4e347a9129bd8">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json:~1properties~1record_length:open-value/source_pointer">/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json/properties/record_length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-9e70cbb4110c8034171ae9ad">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1provenance~1observers~1schemas~1windows-usn-record.json:~1properties~1record_length:open-value/unit">schema-value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

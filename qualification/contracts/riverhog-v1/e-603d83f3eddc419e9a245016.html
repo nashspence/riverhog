@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,82 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-09dc1e38a978cb3e071a9885.html">riverhog · HTTP Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>schemas: ApplicationAccessGrantSet</h1>
+<p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
 <section id="contract" data-contract="http-schemas:riverhog:schemas-applicationaccessgrantset:bbef31b8b2">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-0f785b069adf2e61e6e0781f">
+<h3>Schema</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-5076d5a23e07db84772a51b2.html#v-ee1b3c97d7250737f591fc06">#/components/schemas/ApplicationAccessGrant</a>; minItems: <code>1</code>; uniqueItems: <code>true</code>; all of: structured schema</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>ApplicationAccessGrantSet</code>
+</dd>
+<dt>description</dt>
+<dd>
+<code>A nonempty, duplicate-free public grant set with canonical wildcard use.</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+<dt>uniqueItems</dt>
+<dd>
+<code>true</code>
+</dd>
+</dl>
+<h4>All must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="#s-24d6a66d36131a88a4fc8c88">1</a>
+</td>
+<td>structured schema</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-24d6a66d36131a88a4fc8c88">
+<h3>All must match: 1</h3>
+<p class="shape">structured schema</p>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet</code>
-</h3>
+</h4>
 <table id="v-0f785b069adf2e61e6e0781f">
 <tbody>
 <tr>
@@ -277,287 +335,74 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>http:riverhog:components:/schemas/ApplicationAccessGrantSet/allOf/0/then:cardinality</code>
-<table id="v-05a98168f2a6a7d3ef9c369a">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-216581b4435bbf4d3ad7898f">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ApplicationAccessGrantSet~1allOf~10~1then:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet/allOf/0/then</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · items · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;reason&quot;:&quot;wildcard-access-grant-is-exclusive&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-e2bf2a85703a9a01adb62030">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ApplicationAccessGrantSet~1allOf~10~1then:cardinality/id">http:riverhog:components:/schemas/ApplicationAccessGrantSet/allOf/0/then:cardinality</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-d310fc27b0072207393bf836">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ApplicationAccessGrantSet~1allOf~10~1then:cardinality/maximum">1</code>
-<span class="kind">number</span>
-</span>
+<code>no-semantic-maximum/v1</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
+<td>cardinality · items · operational_policy</td>
 <td>
-<span id="v-d1e02b295bb2b79b773fd9f3">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ApplicationAccessGrantSet~1allOf~10~1then:cardinality/owner">riverhog</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-bed0e7539055fccc4d03b776">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ApplicationAccessGrantSet~1allOf~10~1then:cardinality/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-b7d592b6ae2ad5620e416c4e">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ApplicationAccessGrantSet~1allOf~10~1then:cardinality/reason">wildcard-access-grant-is-exclusive</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-e31c9d764b59bb48a2961fb9">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ApplicationAccessGrantSet~1allOf~10~1then:cardinality/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-e3417f4025d259a835f90d1f">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ApplicationAccessGrantSet~1allOf~10~1then:cardinality/source_pointer">/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet/allOf/0/then</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-7946bbbacaa96b65aabb64b1">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ApplicationAccessGrantSet~1allOf~10~1then:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;riverhog&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-<li>
-<code>http:riverhog:components:/schemas/ApplicationAccessGrantSet:cardinality</code>
-<table id="v-adec8d472fd1e14c21a4f13b">
-<tbody>
-<tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
-<td>
-<table id="v-0ec52753f12f17fd742ad8f9">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
-<td>
-<span id="v-4551a0a4cd6f80ad1c069b05">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ApplicationAccessGrantSet:cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>hidden_maximum</code>
-</th>
-<td>
-<span id="v-a790a8694f22c63d61b71a32">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ApplicationAccessGrantSet:cardinality/capacity_authority/hidden_maximum">forbidden</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-dc0126aa8bfc5778482dac24">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ApplicationAccessGrantSet:cardinality/capacity_authority/owner">riverhog</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-2609e267a862e471230998f4">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ApplicationAccessGrantSet:cardinality/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-aa1b8d14a9dbabcee7a74cc0">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ApplicationAccessGrantSet:cardinality/id">http:riverhog:components:/schemas/ApplicationAccessGrantSet:cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-e7dd22c417a72de625559a43">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ApplicationAccessGrantSet:cardinality/maximum">null</code>
-<span class="kind">null</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-3013d00ff9085e0ef83df38a">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ApplicationAccessGrantSet:cardinality/owner">riverhog</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-221811dfd67bfdead23137f1">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ApplicationAccessGrantSet:cardinality/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-44daf020989d1e8e164262da">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ApplicationAccessGrantSet:cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-7feaaac936e773aba8006ff0">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ApplicationAccessGrantSet:cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-8d01dfde14388d4f1dcda745">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ApplicationAccessGrantSet:cardinality/source_pointer">/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-2cd62abd5a2c905503f028be">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ApplicationAccessGrantSet:cardinality/unit">items</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

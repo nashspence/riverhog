@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,59 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-095783d21b3ccffbfebc1728.html">riverhog-client · Configuration Environment</a>
+<a href="index.html">All authorities</a> / <a href="a-813668008c58c34f22497fe7.html">riverhog-client</a> / <a href="i-095783d21b3ccffbfebc1728.html">Configuration Environment</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>RIVERHOG_DOWNLOAD_FILE_WINDOW</h1>
+<p class="context">Typed generic Riverhog client and capability-scoped collection-processing runtime. Configuration Environment contract owned by riverhog-client.</p>
 <section id="contract" data-contract="configuration-environment:riverhog-client:riverhog-download-file-window:4b80d5f871">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Environment setting</h3>
+<dl class="facts">
+<dt>name</dt>
+<dd>
+<code>RIVERHOG_DOWNLOAD_FILE_WINDOW</code>
+</dd>
+<dt>owner</dt>
+<dd>
+<code>riverhog-client</code>
+</dd>
+<dt>input shape</dt>
+<dd>
+<code>environment-string</code>
+</dd>
+</dl>
+<h4>Default expressions</h4>
+<ul>
+<li>
+<code>&#x27;&#x27;</code>
+</li>
+</ul>
+<h4>Consumers</h4>
+<ul>
+<li>
+<code>riverhog-client</code>
+</li>
+</ul>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/configuration_environment/101</code>
-</h3>
+</h4>
 <table id="v-eb8f28adc2b3665e15015ab9">
 <tbody>
 <tr>
@@ -123,170 +158,90 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-8dc08bb46173175ad6e39a86">compatibility/configuration/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code>configuration-environment:riverhog-client:RIVERHOG_DOWNLOAD_FILE_WINDOW</code>
+<a href="source-authorities.html#source-462910813862cb468116a5c1">configuration-environment:riverhog-client:RIVERHOG_DOWNLOAD_FILE_WINDOW</a> — <code data-source-path="packages/riverhog-client/src/riverhog_client/downloads.py">packages/riverhog-client/src/riverhog_client/downloads.py</code>
 </li>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make unit</code>
+<a href="source-commands.html#route-ce47068f504c25a93bdddb64">make unit</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>configuration-environment:riverhog-client:RIVERHOG_DOWNLOAD_FILE_WINDOW:value</code>
-<table id="v-2eece2007e4a03479d454586">
-<tbody>
+<div class="table-scroll">
+<table>
+<thead>
 <tr>
-<th scope="row">
-<code>configuration</code>
-</th>
-<td>
-<span id="v-6dc3a897e75e11f47235d2e3">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_DOWNLOAD_FILE_WINDOW:value/configuration">RIVERHOG_DOWNLOAD_FILE_WINDOW</code>
-<span class="kind">string</span>
-</span>
-</td>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
 </tr>
-<tr>
-<th scope="row">
-<code>consumers</code>
-</th>
-<td>
-<table id="v-9869f36ef9740318a980a4ff">
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>0</code>
-</th>
 <td>
-<span id="v-3986718e24d610879c5a6415">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_DOWNLOAD_FILE_WINDOW:value/consumers/0">riverhog-client</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/configuration_environment/101</code>
+</td>
+<td>
+<code>configured-capacity/v1</code>
+</td>
+<td>value · configured-value · operational_policy</td>
+<td>
+<code>{&quot;configuration&quot;:&quot;RIVERHOG_DOWNLOAD_FILE_WINDOW&quot;,&quot;consumers&quot;:[&quot;riverhog-client&quot;],&quot;maximum&quot;:null,&quot;reason&quot;:&quot;operator-configured-capacity&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
+</div>
+<h3>Configuration authority and bindings</h3>
+<p>These are discovered declaration and consumer facts, not observed effective configuration.</p>
+<div class="table-scroll">
+<table>
+<thead>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-6f48a55523a08ad09746169a">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_DOWNLOAD_FILE_WINDOW:value/dimension">value</code>
-<span class="kind">string</span>
-</span>
-</td>
+<th scope="col">Kind</th>
+<th scope="col">Consumer</th>
+<th scope="col">Source</th>
+<th scope="col">Authority or expression</th>
 </tr>
+</thead>
+<tbody>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
+<td>consumer</td>
 <td>
-<span id="v-df46cfbb0dc8ca587d930d29">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_DOWNLOAD_FILE_WINDOW:value/id">configuration-environment:riverhog-client:RIVERHOG_DOWNLOAD_FILE_WINDOW:value</code>
-<span class="kind">string</span>
-</span>
+<code>riverhog-client</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-3f617195abce9a3e4b3dd304">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_DOWNLOAD_FILE_WINDOW:value/maximum">null</code>
-<span class="kind">null</span>
-</span>
+<code data-source-path="packages/riverhog-client/src/riverhog_client/downloads.py">packages/riverhog-client/src/riverhog_client/downloads.py</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-831b27a94089e240f53faea0">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_DOWNLOAD_FILE_WINDOW:value/owner">riverhog-client</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-7f55327043b2a94a41b4cc2f">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_DOWNLOAD_FILE_WINDOW:value/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-d4abd1d8e23ad0b7ca9dded3">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_DOWNLOAD_FILE_WINDOW:value/reason">operator-configured-capacity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-84d8b2d79736861088831dc1">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_DOWNLOAD_FILE_WINDOW:value/rule">configured-capacity/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-fc1dbc889eedb1d2deb5e847">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_DOWNLOAD_FILE_WINDOW:value/source_pointer">/external_contract/configuration_environment/101</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-7351d967c7f63ce56e9fa2bf">
-<code data-value-pointer="/audit/decisions/configuration-environment:riverhog-client:RIVERHOG_DOWNLOAD_FILE_WINDOW:value/unit">configured-value</code>
-<span class="kind">string</span>
-</span>
+<code>environment.get(&#x27;RIVERHOG_DOWNLOAD_FILE_WINDOW&#x27;, &#x27;&#x27;)</code>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

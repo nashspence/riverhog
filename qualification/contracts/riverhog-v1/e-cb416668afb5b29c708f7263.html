@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,42 +12,234 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-f4eb4c11e8a959fed9855e79.html">a-review0-opus-sampler · CLI</a>
+<a href="index.html">All authorities</a> / <a href="a-2927dc06cfac55396516e49e.html">a-review0-opus-sampler</a> / <a href="i-f4eb4c11e8a959fed9855e79.html">CLI</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>a-review0-opus-sampler</h1>
+<p class="context">Opus sampler for Review0. CLI contract owned by a-review0-opus-sampler.</p>
 <section id="contract" data-contract="cli:a-review0-opus-sampler:a-review0-opus-sampler:d64d974064">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Command</h3>
+<dl class="facts">
+<dt>name</dt>
+<dd>
+<code>a-review0-opus-sampler</code>
+</dd>
+<dt>allow abbrev</dt>
+<dd>
+<code>true</code>
+</dd>
+</dl>
+<p>Parser flags and defaults are recorded inputs. A missing default does not assert an explicit null value or rule out other configured fallbacks.</p>
+<h3>Arguments and options</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Parameter and spelling</th>
+<th scope="col">Invocation</th>
+<th scope="col">Type and constraints</th>
+<th scope="col">Default and environment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>host</code>
+<br>
+<code>--host</code>
+</td>
+<td>optional; option; None value(s) per use</td>
+<td>
+<code>not recorded</code>
+</td>
+<td>
+<code>127.0.0.1</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>port</code>
+<br>
+<code>--port</code>
+</td>
+<td>optional; option; None value(s) per use</td>
+<td>
+<code>int</code>
+</td>
+<td>
+<code>8080</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Result contract</h3>
+<dl class="facts">
+<dt>identity</dt>
+<dd>
+<code>a-review0-opus-sampler-cli-result/root/v1</code>
+</dd>
+<dt>profile id</dt>
+<dd>
+<code>a-review0-opus-sampler-cli-runtime/v1</code>
+</dd>
+<dt>structured output</dt>
+<dd>
+<code>none</code>
+</dd>
+<dt>human json relationship</dt>
+<dd>
+<code>not-applicable</code>
+</dd>
+</dl>
+<h4>Success outcomes</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Outcome</th>
+<th scope="col">Exit</th>
+<th scope="col">Selection</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>stopped</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>kind: <code>service-runtime-returned</code>
+</td>
+<td>all: <code>no-command-result</code>
+</td>
+<td>all: <code>noncontractual-runtime-log</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Failure outcomes</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Outcome</th>
+<th scope="col">Exit</th>
+<th scope="col">Selection</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>usage</code>
+</td>
+<td>
+<code>2</code>
+</td>
+<td>kind: <code>parser-rejected-invocation</code>
+</td>
+<td>all: <code>empty</code>
+</td>
+<td>all: <code>noncontractual-usage-diagnostic</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Terminating controls</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Control</th>
+<th scope="col">Trigger</th>
+<th scope="col">Exit</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>help</code>
+</td>
+<td>
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;-h&quot;,&quot;--help&quot;]}</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>
+<code>noncontractual-framework-help</code>
+</td>
+<td>
+<code>empty</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>version</code>
+</td>
+<td>
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;--version&quot;]}</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>
+<code>{&quot;distribution&quot;:&quot;a-review0-opus-sampler&quot;,&quot;kind&quot;:&quot;installed-coordinated-release-version&quot;,&quot;serialization&quot;:&quot;noncontractual&quot;}</code>
+</td>
+<td>
+<code>empty</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-review0-opus-sampler/allow_abbrev</code>
-</h3>
+</h4>
 <span id="v-079b983d9af8811b0f9562bf">
 <code data-value-pointer="/external_contract/cli/a-review0-opus-sampler/allow_abbrev">true</code>
 <span class="kind">boolean</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-review0-opus-sampler/name</code>
-</h3>
+</h4>
 <span id="v-2fedc7120c1f086a793404ef">
 <code data-value-pointer="/external_contract/cli/a-review0-opus-sampler/name">a-review0-opus-sampler</code>
 <span class="kind">string</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-review0-opus-sampler/parameters</code>
-</h3>
+</h4>
 <table id="v-85ef2bf885a877d2932e8962">
 <tbody>
 <tr>
@@ -241,9 +433,9 @@
 </table>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-review0-opus-sampler/result_contract</code>
-</h3>
+</h4>
 <table id="v-5bf1284ede054f2702737a06">
 <tbody>
 <tr>
@@ -514,9 +706,9 @@
 </table>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/a-review0-opus-sampler/terminating_controls</code>
-</h3>
+</h4>
 <table id="v-09e7b439d14ecc6126fd0fb7">
 <tbody>
 <tr>
@@ -764,309 +956,74 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-48a89776de7f91b173b46d03">compatibility/cli/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="some-implementations/stove0/review0/samplers/opus/src/a_review0_opus_sampler/app.py">some-implementations/stove0/review0/samplers/opus/src/a_review0_opus_sampler/app.py::&lt;module&gt;</code>
+<a href="source-authorities.html#source-967981bf1ed6d506354575c9">cli:a-review0-opus-sampler</a> — <code data-source-path="some-implementations/stove0/review0/samplers/opus/src/a_review0_opus_sampler/app.py">some-implementations/stove0/review0/samplers/opus/src/a_review0_opus_sampler/app.py::&lt;module&gt;</code>
 </li>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:0:values-per-occurrence</code>
-<table id="v-1f9333662c72d1fe1aebc4c0">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-69916d3e3ea181c8852dff86">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:0:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/a-review0-opus-sampler/parameters/0</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-0f0b39d2364eb5728b1f45ed">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:0:values-per-occurrence/id">cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:0:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/a-review0-opus-sampler/parameters/1</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-c61cbd226e582e9399c7917c">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:0:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
+<td>cardinality · values-per-occurrence · fixed</td>
 <td>
-<span id="v-0ab0f3fdbea757443805ed7c">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:0:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-c3d6c2e1de0beb8108733951">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:0:values-per-occurrence/owner">a-review0-opus-sampler</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-4ece22506df6c8d8ffdd9ff8">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:0:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-d08514384ca9cb61900b2b51">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:0:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-5d09ff3b74f26afe6c904d3d">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:0:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-649b560399d5b48aca2aa894">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-38ae431b2a4a7901243d5ae3">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:0:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-d8b5f4203864903339df07b4">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:0:values-per-occurrence/source_pointer">/external_contract/cli/a-review0-opus-sampler/parameters/0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-20c187cc0988db6117ac5e24">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:0:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:1:values-per-occurrence</code>
-<table id="v-ce31a278f09b256fe64a2fd4">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-6b8b37a13ebf0d1aa4986874">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:1:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-6eadc3fc9bcb5c4529f0441a">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:1:values-per-occurrence/id">cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:1:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-a821472b8cbd1ae91ec424ff">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:1:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-7d79694adc03a41f92cccae7">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:1:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-094001df31ccaccd667ab529">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:1:values-per-occurrence/owner">a-review0-opus-sampler</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-4807128649b2e201cdd1844e">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:1:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-35c0123facae45aa729a9946">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:1:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-09f9cab4d647ce1f0383acf0">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:1:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-9f5124b948c8d99cc9f09dcc">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-4e3a2b80dde2e22c4c8cadb6">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:1:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-0f50e7b90ea4d7bbe7a05c96">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:1:values-per-occurrence/source_pointer">/external_contract/cli/a-review0-opus-sampler/parameters/1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-70ffb84539e66ebd00841e37">
-<code data-value-pointer="/audit/decisions/cli:a-review0-opus-sampler:a-review0-opus-sampler:parameter:1:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

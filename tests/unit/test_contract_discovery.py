@@ -23,7 +23,8 @@ def test_contract_builder_has_only_current_record_and_html_dependencies() -> Non
         "model": set(),
         "discovery": {"model"},
         "records": {"model"},
-        "html_rendering": {"model", "records"},
+        "human_contract": {"model"},
+        "html_rendering": {"human_contract", "model", "records"},
         "__init__": {"discovery", "model"},
     }
     assert {path.stem for path in package.glob("*.py")} == set(allowed_imports)

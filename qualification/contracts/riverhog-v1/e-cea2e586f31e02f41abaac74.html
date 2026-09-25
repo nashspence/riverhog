@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,137 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-889610ac0e54b375dd33fe8a.html">a-riverhog-ftp-spool · HTTP Operations</a>
+<a href="index.html">All authorities</a> / <a href="a-ddde5b8757ae966f662aa0b7.html">a-riverhog-ftp-spool</a> / <a href="i-889610ac0e54b375dd33fe8a.html">HTTP Operations</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>POST /v1/run</h1>
+<p class="context">FTP upload spool and ingestion adapter for Riverhog. Callable HTTP operations.</p>
 <section id="contract" data-contract="http-operations:a-riverhog-ftp-spool:post-v1-run:2a05e697fd">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Operation</h3>
+<p class="lead">Run Pass</p>
+<dl class="facts">
+<dt>operationId</dt>
+<dd>
+<code>run_ftp_spool_pass</code>
+</dd>
+<dt>tags</dt>
+<dd>
+<code>[&quot;operations&quot;]</code>
+</dd>
+<dt>security</dt>
+<dd>
+<code>[{&quot;RiverhogFtpSpoolBearer&quot;:[]}]</code>
+</dd>
+</dl>
+<h3>Responses</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Status</th>
+<th scope="col">Description</th>
+<th scope="col">Media type</th>
+<th scope="col">Schema</th>
+<th scope="col">Error codes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>200</code>
+</td>
+<td>Successful Response</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<code>object</code>; additionalProperties: <code>true</code>
+</td>
+<td>not declared</td>
+</tr>
+<tr>
+<td>
+<code>400</code>
+</td>
+<td>Bad Request</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-ca3f7343cf52120595d7091e.html#v-8b1290ff06b9869a55030fca">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>bad_request</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>401</code>
+</td>
+<td>Unauthorized</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-ca3f7343cf52120595d7091e.html#v-8b1290ff06b9869a55030fca">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>unauthorized</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>403</code>
+</td>
+<td>Forbidden</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-ca3f7343cf52120595d7091e.html#v-8b1290ff06b9869a55030fca">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>forbidden</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>500</code>
+</td>
+<td>Internal Server Error</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-ca3f7343cf52120595d7091e.html#v-8b1290ff06b9869a55030fca">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>internal_error</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/a-riverhog-ftp-spool/paths/~1v1~1run/post</code>
-</h3>
+</h4>
 <table id="v-176b5a4c24b0e8f29fd680ad">
 <tbody>
 <tr>
@@ -563,73 +676,227 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-3133d577bcfa545211bc0457.html">a-riverhog-ftp-spool run</a>
+</li>
+<li>
+<a href="e-40d9ba8248ed93a41525f32b.html">a_riverhog_ftp_spool_client.RiverhogFtpSpoolClient.run_ftp_spool_pass</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-fdb5f95db76e4741f768b51b">openapi:a-riverhog-ftp-spool</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 <li>
-<code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
+<a href="source-authorities.html#source-b032bdc56b3fbe541165d1d2">operations:operation-matrix</a> — <code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>http:a-riverhog-ftp-spool:operation:run_ftp_spool_pass:response:200:application/json:/:map-cardinality</code>
-<table id="v-709f9a7e16a5bc2fb09a447f">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>capacity_authority</code>
-</th>
 <td>
-<table id="v-86116a5cb506b8fbdb287537">
-<tbody>
-<tr>
-<th scope="row">
-<code>declared_maximum</code>
-</th>
+<code>/external_contract/http_openapi/a-riverhog-ftp-spool/paths/~1v1~1run/post/responses/200/content/application~1json/schema</code>
+</td>
 <td>
-<span id="v-4a1766d9c010c1af5ba66fd7">
-<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:operation:run_ftp_spool_pass:response:200:application~1json:~1:map-cardinality/capacity_authority/declared_maximum">null</code>
-<span class="kind">null</span>
-</span>
+<code>no-semantic-maximum/v1</code>
+</td>
+<td>cardinality · entries · operational_policy</td>
+<td>
+<code>{&quot;capacity_authority&quot;:{&quot;declared_maximum&quot;:null,&quot;hidden_maximum&quot;:&quot;forbidden&quot;,&quot;owner&quot;:&quot;a-riverhog-ftp-spool&quot;},&quot;maximum&quot;:null,&quot;reason&quot;:&quot;no-declared-semantic-maximum&quot;}</code>
 </td>
 </tr>
+</tbody>
+</table>
+</div>
+<details>
+<summary>Structural operation bindings</summary>
+<p>These bind maintained client, CLI, response authority, and provider routes. They are not executed qualification results.</p>
+<table id="v-aab4d0808e8511d82a364123">
+<tbody>
 <tr>
 <th scope="row">
-<code>hidden_maximum</code>
+<code>application</code>
 </th>
 <td>
-<span id="v-8a19e0edeef4092bf32c2a56">
-<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:operation:run_ftp_spool_pass:response:200:application~1json:~1:map-cardinality/capacity_authority/hidden_maximum">forbidden</code>
+<span id="v-706450ef363e0dcdff24f575">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/application">a-riverhog-ftp-spool</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>owner</code>
+<code>classification</code>
 </th>
 <td>
-<span id="v-14744fcb60411c999f54cdf3">
-<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:operation:run_ftp_spool_pass:response:200:application~1json:~1:map-cardinality/capacity_authority/owner">a-riverhog-ftp-spool</code>
+<span id="v-753d240c012362678de4eda2">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/classification">human-cli+json</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>cli_bindings</code>
+</th>
+<td>
+<table id="v-6a6f8300118e6f74de16f1ff">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-3e56ad6833fa2dc6e36e8501">
+<tbody>
+<tr>
+<th scope="row">
+<code>command</code>
+</th>
+<td>
+<span id="v-398de6a4f899f9c477ecc4a8">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/cli_bindings/0/command">run</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>executable</code>
+</th>
+<td>
+<span id="v-70b623eb59fed394fcb02583">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/cli_bindings/0/executable">a-riverhog-ftp-spool</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>result_identity</code>
+</th>
+<td>
+<span id="v-01acc72501f255fe380705f9">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/cli_bindings/0/result_identity">a-riverhog-ftp-spool-cli-result/run/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source</code>
+</th>
+<td>
+<table id="v-6a2cb79b83698e09de0d8889">
+<tbody>
+<tr>
+<th scope="row">
+<code>line</code>
+</th>
+<td>
+<span id="v-a8b5ce3d28ebd3b1cfa320a4">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/cli_bindings/0/source/line">440</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-d77f16f77bbed40ca558dbb3">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/cli_bindings/0/source/module">a_riverhog_ftp_spool.app</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<span id="v-83d0e1fca3548f27603e53b2">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/cli_bindings/0/source/path">some-implementations/riverhog/ingress/ftp/src/a_riverhog_ftp_spool/app.py</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>symbol</code>
+</th>
+<td>
+<span id="v-7f18272a97b58cba9208c5b2">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/cli_bindings/0/source/symbol">_run_command</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>cli_commands</code>
+</th>
+<td>
+<table id="v-33e6c5e82e6dfc503249f1b6">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-668fc925c28e958e62200238">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/cli_commands/0">run</code>
 <span class="kind">string</span>
 </span>
 </td>
@@ -640,107 +907,172 @@
 </tr>
 <tr>
 <th scope="row">
-<code>dimension</code>
+<code>client</code>
 </th>
 <td>
-<span id="v-5c12d0e1ad9090b934a3340e">
-<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:operation:run_ftp_spool_pass:response:200:application~1json:~1:map-cardinality/dimension">cardinality</code>
+<span id="v-709e167f85f224c07c4e87bd">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/client">RiverhogFtpSpoolClient</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>id</code>
+<code>client_bindings</code>
 </th>
 <td>
-<span id="v-67e94f5c2826841e5604df51">
-<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:operation:run_ftp_spool_pass:response:200:application~1json:~1:map-cardinality/id">http:a-riverhog-ftp-spool:operation:run_ftp_spool_pass:response:200:application/json:/:map-cardinality</code>
+<table id="v-1086e9ff84b6ad1fae02c5bd">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-f331e67423ce5f6a6e17f8e9">
+<tbody>
+<tr>
+<th scope="row">
+<code>public_identity</code>
+</th>
+<td>
+<span id="v-6168628d9933c1e5d0d259e5">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/client_bindings/0/public_identity">a_riverhog_ftp_spool_client.RiverhogFtpSpoolClient.run_ftp_spool_pass</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>maximum</code>
+<code>source</code>
 </th>
 <td>
-<span id="v-226486fabdc2b53191674b84">
-<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:operation:run_ftp_spool_pass:response:200:application~1json:~1:map-cardinality/maximum">null</code>
-<span class="kind">null</span>
+<table id="v-b1ce8670768456b9d4d5af62">
+<tbody>
+<tr>
+<th scope="row">
+<code>line</code>
+</th>
+<td>
+<span id="v-49c92d821d644aef00cf887e">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/client_bindings/0/source/line">115</code>
+<span class="kind">number</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>owner</code>
+<code>module</code>
 </th>
 <td>
-<span id="v-cdff5e2cb71df03480762163">
-<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:operation:run_ftp_spool_pass:response:200:application~1json:~1:map-cardinality/owner">a-riverhog-ftp-spool</code>
+<span id="v-97f17add76717d89d0c621e2">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/client_bindings/0/source/module">a_riverhog_ftp_spool_client.client</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>policy</code>
+<code>path</code>
 </th>
 <td>
-<span id="v-3b92e1a58b8f62954b900932">
-<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:operation:run_ftp_spool_pass:response:200:application~1json:~1:map-cardinality/policy">operational_policy</code>
+<span id="v-5d5a6f72812a29eddc4560ed">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/client_bindings/0/source/path">some-implementations/riverhog/ingress/ftp-api-client/src/a_riverhog_ftp_spool_client/client.py</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>reason</code>
+<code>symbol</code>
 </th>
 <td>
-<span id="v-34b1a67050c7ec76fa93e535">
-<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:operation:run_ftp_spool_pass:response:200:application~1json:~1:map-cardinality/reason">no-declared-semantic-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-4a93f005697270519e4ee538">
-<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:operation:run_ftp_spool_pass:response:200:application~1json:~1:map-cardinality/rule">no-semantic-maximum/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-b921fed0c023a14ea05eea40">
-<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:operation:run_ftp_spool_pass:response:200:application~1json:~1:map-cardinality/source_pointer">/external_contract/http_openapi/a-riverhog-ftp-spool/paths/~1v1~1run/post/responses/200/content/application~1json/schema</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-0b3bf1f68a0116c3324268ba">
-<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:operation:run_ftp_spool_pass:response:200:application~1json:~1:map-cardinality/unit">entries</code>
+<span id="v-2f04014246bf3a11f174a40b">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/client_bindings/0/source/symbol">RiverhogFtpSpoolClient.run_ftp_spool_pass</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>method</code>
+</th>
+<td>
+<span id="v-2302785f1507ee1dd98f1509">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/method">POST</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>operation_id</code>
+</th>
+<td>
+<span id="v-b05a063f82cf170f639e6b19">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/operation_id">run_ftp_spool_pass</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<span id="v-7830b54807558f1514ecf50b">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/path">/v1/run</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>provider_evidence</code>
+</th>
+<td>
+<span id="v-d36b2ff5bb2b7ffdf216b9b2">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/provider_evidence">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>read_collection</code>
+</th>
+<td>
+<span id="v-bd018fefdd5425855a603068">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/read_collection">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>response_authority</code>
+</th>
+<td>
+<span id="v-2ae01d1158135b09bcef28d3">
+<code data-value-pointer="/audit/operation-qualification/run_ftp_spool_pass/response_authority">http-json</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</details>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,70 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-82f5c3bf19190fffd8fae72f.html">release · Installation Roots</a>
+<a href="index.html">All authorities</a> / <a href="a-a4d451ec23463726f72c43d6.html">release</a> / <a href="i-82f5c3bf19190fffd8fae72f.html">Installation Roots</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>Installation root: a-riverhog-cli</h1>
+<p class="context">Coordinated v1 compatibility and publication promises. Maintained installation roots and their exact installation forms.</p>
 <section id="contract" data-contract="installation-roots:release:installation-root-a-riverhog-cli:871764f80d">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Publication and compatibility facts</h3>
+<dl class="facts">
+<dt>artifact format</dt>
+<dd>
+<code>wheel</code>
+</dd>
+<dt>distribution</dt>
+<dd>
+<code>a-riverhog-cli</code>
+</dd>
+<dt>method</dt>
+<dd>
+<code>uv-tool</code>
+</dd>
+</dl>
+<h4>lock</h4>
+<dl class="facts">
+<dt>coordinate</dt>
+<dd>
+<code>pylock.a-riverhog-cli.toml</code>
+</dd>
+<dt>format</dt>
+<dd>
+<code>pylock.toml</code>
+</dd>
+</dl>
+<h4>platforms</h4>
+<ul>
+<li>
+<code>linux-x64</code>
+</li>
+<li>
+<code>macos-arm64</code>
+</li>
+<li>
+<code>windows-x64</code>
+</li>
+</ul>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/release/publication/installation_roots/a-riverhog-cli</code>
-</h3>
+</h4>
 <table id="v-e2d04d5d63b5c2c0fd288237">
 <tbody>
 <tr>
@@ -145,37 +191,50 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+</li>
+<li>
+<a href="policies.html#policy-7dacd6d393eee7a8df0fe477">publication/platform-scope/v1</a>
+</li>
+<li>
+<a href="policies.html#policy-3e4dc2e851573b5230d231cb">publication/role-retention/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/riverhog/applications/a-riverhog-cli/pyproject.toml">some-implementations/riverhog/applications/a-riverhog-cli/pyproject.toml</code>
+<a href="source-authorities.html#source-d2446655440a37e35f786dea">release-distribution:a-riverhog-cli</a> — <code data-source-path="some-implementations/riverhog/applications/a-riverhog-cli/pyproject.toml">some-implementations/riverhog/applications/a-riverhog-cli/pyproject.toml</code>
 </li>
 <li>
-<code data-source-path="scripts/release_installation.py">scripts/release_installation.py::INSTALLATION_POLICY</code>
+<a href="source-authorities.html#source-d1a927fc4b3637d595c68266">release-installation:planner</a> — <code data-source-path="scripts/release_installation.py">scripts/release_installation.py::INSTALLATION_POLICY</code>
 </li>
 <li>
-<code data-source-path="scripts/release.py">scripts/release.py::publication_contract</code>
+<a href="source-authorities.html#source-03a2f48338f5e4266c3c60dd">release-publication:planner</a> — <code data-source-path="scripts/release.py">scripts/release.py::publication_contract</code>
 </li>
 <li>
-<code data-source-path="release.toml">release.toml</code>
+<a href="source-authorities.html#source-c5380dbe5fe03e44a5c0d8d6">release:release.toml</a> — <code data-source-path="release.toml">release.toml</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make release-check</code>
+<a href="source-commands.html#route-8d8d22d6a6b17edc6babcfab">make release-check</a>
 </li>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

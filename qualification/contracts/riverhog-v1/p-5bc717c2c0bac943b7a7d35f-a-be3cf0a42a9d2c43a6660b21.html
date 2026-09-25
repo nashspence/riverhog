@@ -1,0 +1,1540 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="on">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>compatibility/http-api/v1: stove0 · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="policies.html">Governing policies</a> / <a href="p-5bc717c2c0bac943b7a7d35f.html">Indexed applications</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>compatibility/http-api/v1: stove0</h1>
+<aside class="audit">
+<p>Indexed contract elements under this authority; this index is not an executed result.</p>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Contract element</th>
+<th scope="col">Owned pointer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="e-42c0a1ec275eda1a0c2fbdf1.html">GET /health/live</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1health~1live/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-8a566e0f16fae12a558fe302.html">GET /health/ready</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1health~1ready/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-fe676b2f04bfac42267e2650.html">GET /v1/admin/scheduler</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1admin~1scheduler/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-72bba6a6357bc81b0510ee9e.html">GET /v1/admission-policies</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1admission-policies/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-e0ec77b8bd6c74afbc519db0.html">GET /v1/admissions</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1admissions/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-98832943a36c5b1c42150ed9.html">GET /v1/admissions/{admission_id}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1admissions~1{admission_id}/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-54646cd30621c241ff4b0793.html">GET /v1/artifact-selections/{selection_sha256}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1artifact-selections~1{selection_sha256}/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-941e7e116477a467eb022a4b.html">GET /v1/departure-effects</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-011e346102ff25b34d53a17a.html">GET /v1/departure-effects/{departure_id}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1departure-effects~1{departure_id}/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-8c1d9ce8d0d9752294dae462.html">GET /v1/departure-policies</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1d4e56272bb8819a6f2b55fc.html">GET /v1/evaluations</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-979552fea60efb41c3c47663.html">GET /v1/evaluations/{evaluation_id}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1evaluations~1{evaluation_id}/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-80508a9e98a304dde9316daf.html">GET /v1/events</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1events/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b8568c324a69bfee73890f44.html">GET /v1/recipes</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1recipes/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-15ae9558d0e1a24a95f28f76.html">GET /v1/recipes/{recipe_id}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-a545ac6116d02a49ccd27ab6.html">GET /v1/target-executions/{job_id}/inputs</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-e580592d4a041e41e0ec175e.html">GET /v1/work</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1work/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0c96f2e6bf34147253f31dfa.html">GET /v1/work/{work_id}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1work~1{work_id}/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-2ba365414e4fb8304c377a2d.html">GET /v1/work/{work_id}/coordination</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1work~1{work_id}~1coordination/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-bb416d643743434f4aaa9fbc.html">POST /v1/admin/scheduler/run</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1admin~1scheduler~1run/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-f7ba559abb5d7b6b4a8f291c.html">POST /v1/admission-policies/{policy_id}:backfill</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1admission-policies~1{policy_id}:backfill/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0ea4d7bf46a0f1a2dd894f2e.html">POST /v1/admission-policies/{policy_id}:rebaseline</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1admission-policies~1{policy_id}:rebaseline/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-58be89b5e92f4396d787e09d.html">POST /v1/departure-policies/{policy_id}:rebaseline</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-2ec5655a44309ecad77198a6.html">POST /v1/evaluations</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-449a341c41154c747971ae5e.html">POST /v1/evaluations/{evaluation_id}/cancel</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1evaluations~1{evaluation_id}~1cancel/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-075805a0bbe4a88e644705dd.html">POST /v1/evaluations/{evaluation_id}/step</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1evaluations~1{evaluation_id}~1step/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-74d0cadec8744788e06b3318.html">POST /v1/evaluations/{evaluation_id}/variants/{variant_id}/retry</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1evaluations~1{evaluation_id}~1variants~1{variant_id}~1retry/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-890be08ea38bd72f1c50da0c.html">POST /v1/target-executions/{job_id}/production/seal</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1production~1seal/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-9bdeb5c33b1c20dfb4182cd9.html">POST /v1/work</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1work/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-39687d49d521589845b952c1.html">POST /v1/work/{work_id}/cancel</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1work~1{work_id}~1cancel/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-52bc2b02f96b41c227975726.html">POST /v1/work/{work_id}/retry</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1work~1{work_id}~1retry/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-376a65e0668c0f956ad0f65a.html">POST /v1/work/{work_id}/step</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1work~1{work_id}~1step/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d92abcad9af08e5cce788d08.html">POST /v1/workflow-previews</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1workflow-previews/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-8945ee180d46f5fd1f950afd.html">PUT /v1/evaluations/{evaluation_id}/variants/{variant_id}/review</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1evaluations~1{evaluation_id}~1variants~1{variant_id}~1review/put</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-830c9e078cceb9952f9283cf.html">PUT /v1/target-executions/{job_id}/dispositions/{input_id}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1dispositions~1{input_id}/put</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-ac509fa9e63c8f41486c5130.html">PUT /v1/target-executions/{job_id}/outputs/{artifact_id}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1outputs~1{artifact_id}/put</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-33061a789b5c6918eb0cbe18.html">PUT /v1/target-executions/{job_id}/source-edges/{output_id}/{input_id}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1source-edges~1{output_id}~1{input_id}/put</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-183af6b736b4a3c77328b760.html">schemas: AcceptedTargetJob</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/AcceptedTargetJob</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-3599b70cec5b4eaf3dd62fca.html">schemas: AdmissionIntent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/AdmissionIntent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-cd37759c53e294e16e11f23e.html">schemas: AdmissionPage</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/AdmissionPage</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-73daed23d92b3faa3e513b52.html">schemas: AdmissionPolicy</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicy</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-46d34df9c73c1ee652abb75a.html">schemas: AdmissionPolicyCatalogView</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyCatalogView</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-924ad325f307d2be462bbdb9.html">schemas: AdmissionPolicyStatus</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-31802031f92b911e20152407.html">schemas: AdmissionRun</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/AdmissionRun</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-f96870e7043543fc9338dbb6.html">schemas: AdmissionView</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/AdmissionView</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-de4a20456f72754bb4f35df6.html">schemas: AllVisibleAdmissionSelector</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/AllVisibleAdmissionSelector</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b76bf63405bacd8771bbfa5b.html">schemas: ArtifactAssociation</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/ArtifactAssociation</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-fe23d8e8ae546bfb5100cf46.html">schemas: ArtifactDispositionSetIdentity</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/ArtifactDispositionSetIdentity</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b20ec7105cc064b916416073.html">schemas: ArtifactFactBinding</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/ArtifactFactBinding</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-74db26fc8663969a689cb5ec.html">schemas: ArtifactRule</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/ArtifactRule</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-e115e2ac572f4490f4d390c8.html">schemas: ArtifactSelection</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/ArtifactSelection</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0414c3bfbbf9ff980def5927.html">schemas: ArtifactSelectionPage</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/ArtifactSelectionPage</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d0ddf7c7a04ac3bd6c4ff651.html">schemas: ArtifactSelectionRef</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/ArtifactSelectionRef</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-5db6c1033cd2b89302610980.html">schemas: BranchEffectSettlement</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-3285e9630309e5bcc3fa0d45.html">schemas: BranchPlan</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchPlan</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-732aa8dcc22477998700cc5e.html">schemas: BranchSetAdmittedEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetAdmittedEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-acdd8d84c25fdc545bcbe365.html">schemas: BranchSetAdmittedEventData</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetAdmittedEventData</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-e8657212fbf55be5ccdf410b.html">schemas: BranchSetEvaluation</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetEvaluation</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-78b930518b66483f2e529fcd.html">schemas: BranchSetPlan</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-091167f7febc9680d47fc978.html">schemas: BranchSettlement</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSettlement</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d35891f76ddd427cb946e78a.html">schemas: BranchTargetPreview</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchTargetPreview</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-52d74d884359a69359959f15.html">schemas: BranchWorkBinding</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchWorkBinding</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-67dc5b2185f26b6be5f9886e.html">schemas: BrowsePageToken</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/BrowsePageToken</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d0455036bb1a6bb0889dcfbe.html">schemas: BrowseQuery</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/BrowseQuery</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-547139d2872135e77a4b6d1d.html">schemas: CatalogSyncDescriptor</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/CatalogSyncDescriptor</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0809c641d67a459846c0f90f.html">schemas: CollectionDescription</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/CollectionDescription</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-4abd83e4b54a09651a98427b.html">schemas: CollectionId</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/CollectionId</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-f59482ac758a3f12f61aa401.html">schemas: CollectionRootIdentityRef</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/CollectionRootIdentityRef</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-564ac960ac5577ff8fb1555a.html">schemas: CollectionTag</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/CollectionTag</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-a49da381d999f7407b7f295b.html">schemas: ContentObservationEvidence</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/ContentObservationEvidence</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-72243354f2252a8f8f280894.html">schemas: ContentObservationFailure</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/ContentObservationFailure</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-7d9efbc7ce8245e121177769.html">schemas: ContentObservationInapplicable</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/ContentObservationInapplicable</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-e6d7ca8c5cb0c0ee648e374e.html">schemas: ContentObservationRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/ContentObservationRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-a3c195d1dbe35710d74d5ff3.html">schemas: ContentObservationResult</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/ContentObservationResult</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-9e64c2c72dbe00b1cabfef22.html">schemas: ControllerEvidence</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/ControllerEvidence</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-aafbfe9f806d4c58cb979dad.html">schemas: CoordinationBranchPlan</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d9c08e023c0b6080901f0cff.html">schemas: CoordinationChildSettlementRef</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/CoordinationChildSettlementRef</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-2aecb526ba223e44ba5af364.html">schemas: CoordinationCollectionResult</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/CoordinationCollectionResult</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-62dfab236553a68accf2bfdd.html">schemas: CoordinationSettlement</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/CoordinationSettlement</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b27da35f92a59b50f05f6b2c.html">schemas: DeclaredWorkspaceProtection</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/DeclaredWorkspaceProtection</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-8a4194e745f7cb733a9f20d0.html">schemas: DepartureEffectIntent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-24c89feed556ca873eac209d.html">schemas: DepartureEffectPage</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectPage</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-f7f44cc9def2376eddcb7aba.html">schemas: DepartureEffectReceipt</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectReceipt</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-2108c65ff6c3f422b6220f25.html">schemas: DepartureEffectView</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectView</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-7b0b7585d8aa99b97b297a5a.html">schemas: DeparturePolicy</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/DeparturePolicy</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-c117a400934661d38d1305d2.html">schemas: DeparturePolicyCatalogView</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/DeparturePolicyCatalogView</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-2f77017a5caf8deca60c8bff.html">schemas: DeparturePolicyStatus</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/DeparturePolicyStatus</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0682269637b65e243d928285.html">schemas: DepartureRun</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/DepartureRun</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-ec0bb23284aefdb95f25dd15.html">schemas: EffectPlan</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/EffectPlan</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-16d460dcac96db260ff61b5c.html">schemas: ErrorBody</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/ErrorBody</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-3996d556f14dd1eee3bfeddd.html">schemas: ErrorOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/ErrorOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-26bda070d636a649e9704c0d.html">schemas: EvaluationBinding</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationBinding</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-8814caba29eb45eaf57a1f0b.html">schemas: EvaluationChildView</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationChildView</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-690cc0c77ed44ab1f0e3820c.html">schemas: EvaluationCreatedEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationCreatedEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-4edd198d7a1d99d5cde6a91b.html">schemas: EvaluationCreatedEventData</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationCreatedEventData</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-39ccbcda0050ac9b2b456e63.html">schemas: EvaluationDefinition</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationDefinition</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-cabe71109951a301d5c46ca7.html">schemas: EvaluationMatrix</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationMatrix</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0b3e007e58e04fea7275e96d.html">schemas: EvaluationPage</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationPage</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-3cd025f7d25cdda5d67cb071.html">schemas: EvaluationReviewRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-722a463fc1208322a1a0fa25.html">schemas: EvaluationReviewView</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationReviewView</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-40a2412f7a546198bf9f24c7.html">schemas: EvaluationUpdatedEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationUpdatedEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-544491027b36f61f937d183b.html">schemas: EvaluationUpdatedEventData</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationUpdatedEventData</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-23fbc83efcdbe108e922dc56.html">schemas: EvaluationVariant</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationVariant</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-3076dba6479c056c8b343061.html">schemas: EvaluationView</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/EvaluationView</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-a9505b9c438f9209cbfcc1cc.html">schemas: ExecutionEnvelope</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/ExecutionEnvelope</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d62c4b5b081d4000e31ebe4b.html">schemas: ExternalEffectReceipt</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/ExternalEffectReceipt</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-e9eb028c725728a8a096c5e0.html">schemas: FactPredicate</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/FactPredicate</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-4b83ee8b4fb6c8a6543a8a4f.html">schemas: HTTPValidationError</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/HTTPValidationError</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-afd7233873917556cfc26f06.html">schemas: HealthOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/HealthOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-cbe6ce5dbaf55b039b8407bb.html">schemas: InputArtifact</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/InputArtifact</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-5c9897abae093c79cdcfde0d.html">schemas: InputDispositionDeclaration</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/InputDispositionDeclaration</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-efd2ea0e41808722de512da6.html">schemas: JoinAdmittedEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-192e9559124c7cc38a19519c.html">schemas: JoinAdmittedEventData</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/JoinAdmittedEventData</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b93006aaa215b46e90f8bbda.html">schemas: JoinDeclaration</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/JoinDeclaration</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-40ed07c4c1d3dd532706cbbf.html">schemas: JoinInputPlan</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/JoinInputPlan</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-7a63de8d98f3693a5530d5dd.html">schemas: JoinMemberDeclaration</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/JoinMemberDeclaration</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-6c6ed2bb2f6c13766c78b118.html">schemas: JoinPlan</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/JoinPlan</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-80227f2d21d2aa542b180a0e.html">schemas: JoinSettlement</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/JoinSettlement</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-3a7162c84b89c26177ab0e3e.html">schemas: JoinWorkBinding</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/JoinWorkBinding</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b5de83bb24215f817a5c8bc2.html">schemas: JoinWorkMemberBinding</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/JoinWorkMemberBinding</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-20f5cec128b555c780342ce3.html">schemas: JsonSchemaValidationProfile</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/JsonSchemaValidationProfile</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1c369d2d93e31b9a129c42cd.html">schemas: JsonValue</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/JsonValue</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-33b4d877a91123444c1e51d6.html">schemas: NonnegativeDecimal</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/NonnegativeDecimal</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-07a8869b05055f9206c2527c.html">schemas: ObserverImplementation</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/ObserverImplementation</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-15c804d3e83e2b150f0ddc30.html">schemas: ObserverUse</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/ObserverUse</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-896428112159b1cfe98a3277.html">schemas: OperationIdentityRef</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/OperationIdentityRef</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-bec4ccbb0fb987f3b85e985a.html">schemas: OperationProjection</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/OperationProjection</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1ee35be949af50707056488c.html">schemas: OperatorWorkflowPreviewRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/OperatorWorkflowPreviewRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-8a669745c9f97b7bd9d32436.html">schemas: OutputArtifact</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/OutputArtifact</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b053d7dd264e6c47c56e7b21.html">schemas: OutputArtifactRoleCount</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/OutputArtifactRoleCount</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-75faef780b63ccb7b548e7b5.html">schemas: OutputArtifactSetIdentity</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/OutputArtifactSetIdentity</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-9549feba06191baae907a2b3.html">schemas: OutputCollectionRef</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/OutputCollectionRef</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-3c776cae69f721f3c5715d5c.html">schemas: OutputSourceEdge</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/OutputSourceEdge</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-f93b90d0bd878f8982669187.html">schemas: PreviewAcceptanceView</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/PreviewAcceptanceView</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-efbc6c3c30bada7ebc582a84.html">schemas: PreviewOutcome</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/PreviewOutcome</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b9071b7d9871300e6be1915e.html">schemas: PreviewTargetExpectationView</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/PreviewTargetExpectationView</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b0cef25071b6246869535b98.html">schemas: RecipeCatalogView</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/RecipeCatalogView</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-a3458961f6acdbe188f1c69c.html">schemas: RecipeCoordinationRoute</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/RecipeCoordinationRoute</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-5c5eee5c554bb973f81f5c38.html">schemas: RecipeDefinition</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/RecipeDefinition</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-add2b2281c4ab9d670cddf91.html">schemas: RecipeIdentityRef</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/RecipeIdentityRef</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-7fe2641a77541b9e35b3290d.html">schemas: RecipeJoin</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/RecipeJoin</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-113d0f7555defb3b924cb61c.html">schemas: RecipeJoinMember</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/RecipeJoinMember</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-926c14bdc278ff9928725efa.html">schemas: RecipeRoute</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/RecipeRoute</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-ddd49605a340c27a8f422367.html">schemas: RecipeView</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/RecipeView</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-5d29d6b6758ba600b41f9882.html">schemas: SchedulerFailure</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/SchedulerFailure</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-9d2c5e4e74f2fb040ce49f92.html">schemas: SchedulerPruning</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/SchedulerPruning</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-274ddb26f13231692a7f9e4e.html">schemas: SchedulerRun</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/SchedulerRun</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d49540d4d0a42c33258ee485.html">schemas: SchedulerRunRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/SchedulerRunRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-f7cc1292223318d95e869c84.html">schemas: SchedulerStatus</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/SchedulerStatus</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-ccb3d3aab4f503440810ad5f.html">schemas: SchedulerWorkBatch</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-c0a37edd18dd6dbffd579bf3.html">schemas: Stove0EventPage</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/Stove0EventPage</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-195d05d31931ed1c8704487b.html">schemas: Stove0LifecycleEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/Stove0LifecycleEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-783384c5a44e0faebda81962.html">schemas: TaggedAdmissionSelector</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/TaggedAdmissionSelector</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-c7d644db2659b9106c7454b3.html">schemas: TargetCallbackAcknowledgement</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetCallbackAcknowledgement</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-4c6a7e1854c2e7c736baba98.html">schemas: TargetExecutionEvidence</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetExecutionEvidence</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-5a0a563ea29063e7b1d0e4de.html">schemas: TargetFailure</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetFailure</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-a13892765d5dfbdecea6d4ac.html">schemas: TargetInapplicable</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetInapplicable</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1def20fed01ca53a945ee1ba.html">schemas: TargetInputAuthority</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetInputAuthority</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-a235658501cab590661f3c4f.html">schemas: TargetInputPage</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetInputPage</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-8e86f7a8a03781014e0976a4.html">schemas: TargetInputRoleCount</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetInputRoleCount</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-e84be6335f2f91b911c5d477.html">schemas: TargetJobDeclaration</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetJobDeclaration</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-e8c87e4159b5fdcf82d64ce5.html">schemas: TargetJobStatus</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetJobStatus</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-67ba6a9d3be491cfc9c1b3c3.html">schemas: TargetOutputBindingSetIdentity</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetOutputBindingSetIdentity</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0169e549a4b4b0efe9c4629f.html">schemas: TargetPlanBinding</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetPlanBinding</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-3d230b87fffd1e14ac23afa8.html">schemas: TargetProductionAuthority</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetProductionAuthority</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-16999a9e240e18789c534ce3.html">schemas: TargetProductionSealResponse</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetProductionSealResponse</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-3c88ad7b578cac9efceb6e5a.html">schemas: TargetProgress</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetProgress</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-24c6681de45c15a0ff8734ef.html">schemas: TargetSettlementAuthority</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/TargetSettlementAuthority</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-e0141d6b0dab4ffd4540dc75.html">schemas: TransformPlan</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/TransformPlan</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-5ef8b9ea5dcbb62d3c1dde0b.html">schemas: ValidationError</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/ValidationError</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-362f19c5bb493bf059527d4c.html">schemas: WorkArtifactSubject</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkArtifactSubject</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-11d5fc82cf602c2cb41a52b0.html">schemas: WorkClaimView</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkClaimView</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-2391c25ca80bd2f540590a22.html">schemas: WorkCreateRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkCreateRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1fe52ab854366a73997ff670.html">schemas: WorkCreatedEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-c9e32db2af4a0b240b4c5ebc.html">schemas: WorkCreatedEventData</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEventData</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-9522e8f79a56a0b9b42bf31b.html">schemas: WorkFailureView</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkFailureView</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1110829e373d996c619f19a2.html">schemas: WorkIdentity</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkIdentity</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-084e1404c6e9b274d256241e.html">schemas: WorkInapplicableView</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkInapplicableView</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-3b835cadf1e42d413f859c5e.html">schemas: WorkPage</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkPage</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-a7c9fe6343b91a45d598a755.html">schemas: WorkUpdatedEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkUpdatedEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-5b778e1da6fcd229dc87d935.html">schemas: WorkUpdatedEventData</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkUpdatedEventData</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d04f5f97df5be17928419a33.html">schemas: WorkView</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkView</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-388703e9571e262f2a281259.html">schemas: WorkflowPlan</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkflowPlan</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-97a2edd737fdce06a07e4e6b.html">schemas: WorkflowPlanIntent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkflowPlanIntent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d775a15d8e82ba93465b5e45.html">schemas: WorkflowPreview</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkflowPreview</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d5a3d93b8d12f709049c0276.html">stove0 HTTP service</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/stove0/info</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,51 +12,61 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-4287b32e1049bfc58bd14674.html">release · Compatibility Guarantees</a>
+<a href="index.html">All authorities</a> / <a href="a-a4d451ec23463726f72c43d6.html">release</a> / <a href="i-4287b32e1049bfc58bd14674.html">Compatibility Guarantees</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>Compatibility: cli</h1>
+<p class="context">Coordinated v1 compatibility and publication promises. Coordinated v1 compatibility promises.</p>
 <section id="contract" data-contract="compatibility-guarantees:release:compatibility-cli:4725926ddf">
 <h2>Contract</h2>
+<div class="human-contract">
+<p class="promise">Command names, options, exit status, and structured output remain backward compatible throughout v1; prose output is for people.</p>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/release/compatibility/cli</code>
-</h3>
+</h4>
 <span id="v-11a2acfae8928808a0f9e3b7">
 <code class="literal-prose" data-value-pointer="/external_contract/release/compatibility/cli">Command names, options, exit status, and structured output remain backward compatible throughout v1; prose output is for people.</code>
 <span class="kind">string</span>
 </span>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="release.toml">release.toml</code>
+<a href="source-authorities.html#source-c5380dbe5fe03e44a5c0d8d6">release:release.toml</a> — <code data-source-path="release.toml">release.toml</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make release-check</code>
+<a href="source-commands.html#route-8d8d22d6a6b17edc6babcfab">make release-check</a>
 </li>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

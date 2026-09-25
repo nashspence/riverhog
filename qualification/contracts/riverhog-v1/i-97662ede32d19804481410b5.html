@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,496 +12,415 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a>
+<a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>riverhog · HTTP Operations</h1>
+<p class="context">Riverhog archive service.</p>
+<p>Callable HTTP operations.</p>
+<div class="table-scroll">
 <table>
 <thead>
 <tr>
 <th>Element</th>
-<th>Contract pointer</th>
+<th>Recorded comparison facts</th>
 </tr>
 </thead>
 <tbody>
 <tr data-element="http-operations:riverhog:delete-v1-apps-app-keys-key-id-access:816c700e0b">
 <td>
 <a href="e-f3a3dc98c07c42d8a52a1f3f.html">DELETE /v1/apps/{app}/keys/{key_id}/access</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/delete</code>
-</td>
+<td>Remove App Key Access · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:delete-v1-archive-copy-jobs-collection-id-4487e5eb5a:54dd53d10c">
 <td>
 <a href="e-775429abed21e11f645878a2.html">DELETE /v1/archive/copy-jobs/{collection_id}/{destination_store}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete</code>
-</td>
+<td>Cancel Archive Copy Job · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:delete-v1-collections-collection-id-prove-2f3a23a886:98e4f1b88e">
 <td>
 <a href="e-597e0ed5d77067409aac4e28.html">DELETE /v1/collections/{collection_id}/provenance/verification</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1verification/delete</code>
-</td>
+<td>Cancel Collection Provenance Verification · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:delete-v1-retrieval-jobs-job-id:290ffdbd74">
 <td>
 <a href="e-abf1d6d22c4c8800b1baf941.html">DELETE /v1/retrieval-jobs/{job_id}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs~1{job_id}/delete</code>
-</td>
+<td>Cancel Retrieval Job · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-health-live:3d125d4acd">
 <td>
 <a href="e-b663d094ce7e3c75dca69c48.html">GET /health/live</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1health~1live/get</code>
-</td>
+<td>Health Live · responses 200, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-health-ready:6fc5356e37">
 <td>
 <a href="e-03f3f8d2b88f1776eea06cc9.html">GET /health/ready</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1health~1ready/get</code>
-</td>
+<td>Health Ready · responses 200, 500, 503</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-app-key-access:24254bf4b4">
 <td>
 <a href="e-0b6871f31c89aee1410bd4e7.html">GET /v1/app-key-access</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-0b6871f31c89aee1410bd4e7.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1app-key-access/get</code>
-</td>
+<td>List App Key Access · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-apps:e1dabf820a">
 <td>
 <a href="e-52b32b84f732c524366167c0.html">GET /v1/apps</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-52b32b84f732c524366167c0.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps/get</code>
-</td>
+<td>List Apps · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-apps-app-keys:7268ff70ea">
 <td>
 <a href="e-ef3788c683e29f947f25621a.html">GET /v1/apps/{app}/keys</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-ef3788c683e29f947f25621a.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys/get</code>
-</td>
+<td>List App Keys · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-archive-copy-jobs:e520dbcbdc">
 <td>
 <a href="e-88e5abaf8ae11fe67c4bf086.html">GET /v1/archive/copy-jobs</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-88e5abaf8ae11fe67c4bf086.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs/get</code>
-</td>
+<td>List Archive Copy Jobs · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-archive-copy-jobs-collection-id-de-e725390e73:4bea6d1790">
 <td>
 <a href="e-0f78a9d6f0af8ae15d9028b4.html">GET /v1/archive/copy-jobs/{collection_id}/{destination_store}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/get</code>
-</td>
+<td>Get Archive Copy Job · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-archive-stores:5676aa7e23">
 <td>
 <a href="e-d9c4d380a8c6746c91fdc85a.html">GET /v1/archive/stores</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-d9c4d380a8c6746c91fdc85a.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1stores/get</code>
-</td>
+<td>List Archive Stores · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-archive-stores-store:83ac927314">
 <td>
 <a href="e-9ea9dfc859f89c20ca01be32.html">GET /v1/archive/stores/{store}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1stores~1{store}/get</code>
-</td>
+<td>Get Archive Store · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-archive-upload-copy-intents-collection-id:d51d2b9e12">
 <td>
 <a href="e-d3433e695cb59bf9d4a63606.html">GET /v1/archive/upload-copy-intents/{collection_id}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1upload-copy-intents~1{collection_id}/get</code>
-</td>
+<td>Get Upload Copy Intents · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-catalog-sync-changes:3d19f95b19">
 <td>
 <a href="e-394155b2a942456cecec089c.html">GET /v1/catalog-sync/changes</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-394155b2a942456cecec089c.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1catalog-sync~1changes/get</code>
-</td>
+<td>List Catalog Sync Changes · responses 200, 400, 401, 403, 409, 410, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-catalog-sync-checkpoint:977ae4945f">
 <td>
 <a href="e-59fb0a058bf6b05a19713db8.html">GET /v1/catalog-sync/checkpoint</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1catalog-sync~1checkpoint/get</code>
-</td>
+<td>Create Catalog Sync Checkpoint · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-catalog-sync-collections:0c24d21854">
 <td>
 <a href="e-25fcad87a919a4188c12dcf2.html">GET /v1/catalog-sync/collections</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-25fcad87a919a4188c12dcf2.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1catalog-sync~1collections/get</code>
-</td>
+<td>List Catalog Sync Collections · responses 200, 400, 401, 403, 409, 410, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-catalog-collections-collection-id-inventory:34966b47df">
 <td>
 <a href="e-c09b5b66ce06689c6ab9c17b.html">GET /v1/catalog/collections/{collection_id}/inventory</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-c09b5b66ce06689c6ab9c17b.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1catalog~1collections~1{collection_id}~1inventory/get</code>
-</td>
+<td>Get Portable Collection Inventory · responses 200, 400, 401, 403, 404, 412, 428, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collection-processing-claims:95a0437610">
 <td>
 <a href="e-d7f1ccd18aff6051b0957684.html">GET /v1/collection-processing-claims</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-d7f1ccd18aff6051b0957684.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims/get</code>
-</td>
+<td>List Processing Claims · responses 200, 400, 401, 403, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collection-processing-claims-claim-id:517d0096bf">
 <td>
 <a href="e-266ae1a67f39c3cbb4ef790f.html">GET /v1/collection-processing-claims/{claim_id}</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}/get</code>
-</td>
+<td>Get Processing Claim · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collection-processing-claims-claim-629dcd1709:d633bad53a">
 <td>
 <a href="e-efaf6624b352b45f10235155.html">GET /v1/collection-processing-claims/{claim_id}/derivation</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1derivation/get</code>
-</td>
+<td>Get Processing Claim Dispositions · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collection-processing-claims-claim-77c51bb79f:407fb14d47">
 <td>
 <a href="e-96fe0d3e1f6675ff0c090e7f.html">GET /v1/collection-processing-claims/{claim_id}/derivation/dispositions</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-96fe0d3e1f6675ff0c090e7f.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1derivation~1dispositions/get</code>
-</td>
+<td>List Processing Claim Dispositions · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collection-processing-claims-claim-36428c3cf2:320f26c61c">
 <td>
 <a href="e-b32b73ad63b670b696a7195e.html">GET /v1/collection-processing-claims/{claim_id}/derivation/output-edges</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-b32b73ad63b670b696a7195e.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1derivation~1output-edges/get</code>
-</td>
+<td>List Processing Claim Disposition Outputs · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collection-processing-claims-claim-id-inputs:f883049607">
 <td>
 <a href="e-e18590fb199ad78e50c80b42.html">GET /v1/collection-processing-claims/{claim_id}/inputs</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-e18590fb199ad78e50c80b42.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1inputs/get</code>
-</td>
+<td>List Processing Claim Inputs · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collection-processing-claims-claim-8b38dffa94:565ea757d4">
 <td>
 <a href="e-1ea31348b4b15a7bccb01bd5.html">GET /v1/collection-processing-claims/{claim_id}/outcomes</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-1ea31348b4b15a7bccb01bd5.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1outcomes/get</code>
-</td>
+<td>List Processing Claim Outcomes · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collection-processing-claims-claim-b0a852bb3e:182adc4756">
 <td>
 <a href="e-5fbc49b6c3fe295aa99845ff.html">GET /v1/collection-processing-claims/{claim_id}/plan/artifacts</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-5fbc49b6c3fe295aa99845ff.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1plan~1artifacts/get</code>
-</td>
+<td>List Processing Claim Artifacts · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collection-upload-sessions:e5f6d0a6a4">
 <td>
 <a href="e-026e102f1553d8711b5858c0.html">GET /v1/collection-upload-sessions</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-026e102f1553d8711b5858c0.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions/get</code>
-</td>
+<td>List Collection Upload Sessions · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collection-upload-sessions-collection-id:9ed76306c3">
 <td>
 <a href="e-52fc4c93021c4652704af59a.html">GET /v1/collection-upload-sessions/{collection_id}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}/get</code>
-</td>
+<td>Get Collection Upload Session · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collection-upload-sessions-collect-e436de8e9e:da1c00c1a3">
 <td>
 <a href="e-48e509effebf13a89b23d061.html">GET /v1/collection-upload-sessions/{collection_id}/files</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-48e509effebf13a89b23d061.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1files/get</code>
-</td>
+<td>List Collection Upload Session Files · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collection-upload-sessions-collect-9b97d3dcb5:e28b2b6592">
 <td>
 <a href="e-8f7651210785d68ac8943efa.html">GET /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1provenance~1journals~1{journal_id}/get</code>
-</td>
+<td>Get Collection Upload Session Provenance Journal · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collection-upload-sessions-collect-5b1f74a3e2:a35a673033">
 <td>
 <a href="e-2d19d20e2054e0486be57b50.html">GET /v1/collection-upload-sessions/{collection_id}/volumes/{volume_id}/units/{unit}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1volumes~1{volume_id}~1units~1{unit}/get</code>
-</td>
+<td>Get Collection Upload Session Unit · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collection-upload-sessions-collection-id-work:7b0011a226">
 <td>
 <a href="e-5b9594a1363a56ffddb0a0ce.html">GET /v1/collection-upload-sessions/{collection_id}/work</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1work/get</code>
-</td>
+<td>Acquire Collection Upload Session Work · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collections-collection-id:3c0f6dd4a6">
 <td>
 <a href="e-1e63b99e5b12beb7909da8b6.html">GET /v1/collections/{collection_id}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}/get</code>
-</td>
+<td>Get Collection · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collections-collection-id-archive-copies:ecfa4362af">
 <td>
 <a href="e-2a4b8e5685636aa7e7b613c0.html">GET /v1/collections/{collection_id}/archive-copies</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-2a4b8e5685636aa7e7b613c0.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1archive-copies/get</code>
-</td>
+<td>List Collection Archive Copies · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collections-collection-id-derivation:d929639cb4">
 <td>
 <a href="e-2f3ebaa0ef6a10123fb22da5.html">GET /v1/collections/{collection_id}/derivation</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1derivation/get</code>
-</td>
+<td>Get Collection Derivation · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collections-collection-id-provenance-files:8be3a1ec39">
 <td>
 <a href="e-4c961fd2a55aeb9b7f286836.html">GET /v1/collections/{collection_id}/provenance/files</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-4c961fd2a55aeb9b7f286836.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1files/get</code>
-</td>
+<td>List Collection Provenance · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collections-collection-id-provenan-6ee3284e33:8106c6a185">
 <td>
 <a href="e-8b07eea321ddde683705da22.html">GET /v1/collections/{collection_id}/provenance/files/{path}</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1files~1{path}/get</code>
-</td>
+<td>Get Collection File Provenance · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collections-collection-id-provenan-3a9ce32406:3d397774e9">
 <td>
 <a href="e-de722d1ac9ded25c07d0d215.html">GET /v1/collections/{collection_id}/provenance/journals/{journal_id}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals~1{journal_id}/get</code>
-</td>
+<td>Stream Collection Provenance Journal · responses 200, 206, 400, 401, 403, 404, 412, 428, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collections-collection-id-provenan-a71efc95fc:24a148048f">
 <td>
 <a href="e-5ef501c9d1ca96322565c619.html">GET /v1/collections/{collection_id}/provenance/journals/{journal_id}/agents</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-5ef501c9d1ca96322565c619.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals~1{journal_id}~1agents/get</code>
-</td>
+<td>List Collection Provenance Journal Agents · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collections-collection-id-provenan-6d605f4732:71ffde5f05">
 <td>
 <a href="e-8957e2180d77b8fad1219a1d.html">GET /v1/collections/{collection_id}/provenance/trace/{path}</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-8957e2180d77b8fad1219a1d.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1trace~1{path}/get</code>
-</td>
+<td>Trace Collection File Provenance · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collections-collection-id-provenan-7bd7f79e98:bb9ad115b6">
 <td>
 <a href="e-c481d0cae1d5262758aaf113.html">GET /v1/collections/{collection_id}/provenance/verification</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1verification/get</code>
-</td>
+<td>Get Collection Provenance Verification · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-collections-collection-id-tags:dfa3c428a5">
 <td>
 <a href="e-2c6abfea3daad0ed0552270d.html">GET /v1/collections/{collection_id}/tags</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-2c6abfea3daad0ed0552270d.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1tags/get</code>
-</td>
+<td>List Collection Tags · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-download-quota:7355f11485">
 <td>
 <a href="e-7ffb16dea6ee99df5a5cb646.html">GET /v1/download-quota</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1download-quota/get</code>
-</td>
+<td>Get Download Quota · responses 200, 400, 401, 403, 404, 429, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-download-quotas:5857eaf1c5">
 <td>
 <a href="e-af5aac7080963ff66291387b.html">GET /v1/download-quotas</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-af5aac7080963ff66291387b.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get</code>
-</td>
+<td>List Download Quotas · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-events:13bb12a502">
 <td>
 <a href="e-9933e2a7f2ead7b4e77f1d57.html">GET /v1/events</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-9933e2a7f2ead7b4e77f1d57.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1events/get</code>
-</td>
+<td>List Lifecycle Events · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-retrieval-cache:da6d54a1cb">
 <td>
 <a href="e-7bffe64eb95f5759f81294f1.html">GET /v1/retrieval-cache</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-cache/get</code>
-</td>
+<td>Retrieval Cache Status · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-retrieval-cache-objects:341500ca2e">
 <td>
 <a href="e-f1787a8367602653966d6256.html">GET /v1/retrieval-cache/objects</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-f1787a8367602653966d6256.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-cache~1objects/get</code>
-</td>
+<td>List Retrieval Cache Objects · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-retrieval-cache-objects-collection-bf09699679:18e27dd629">
 <td>
 <a href="e-b42d44f4e8e101ec2deda0fe.html">GET /v1/retrieval-cache/objects/{collection_id}/{source_store}/{object_id}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-cache~1objects~1{collection_id}~1{source_store}~1{object_id}/get</code>
-</td>
+<td>Get Retrieval Cache Object · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-retrieval-jobs-job-id:8e6a677bcf">
 <td>
 <a href="e-cc73187ad6b5d6b7a7b11e3b.html">GET /v1/retrieval-jobs/{job_id}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs~1{job_id}/get</code>
-</td>
+<td>Get Retrieval Job · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-retrieval-jobs-job-id-content:f5f36a0875">
 <td>
 <a href="e-78bb516915f24b1034a91655.html">GET /v1/retrieval-jobs/{job_id}/content</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs~1{job_id}~1content/get</code>
-</td>
+<td>Download Retrieval File · responses 200, 400, 401, 403, 404, 409, 412, 416, 429, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-retrieval-plans-plan-id:bf02cc8be5">
 <td>
 <a href="e-f85e066af4a4dfcd2b5c98a1.html">GET /v1/retrieval-plans/{plan_id}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-plans~1{plan_id}/get</code>
-</td>
+<td>Get Retrieval Plan · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-retrieval-plans-plan-id-files:a38c19ca4d">
 <td>
 <a href="e-3dce3feba3e4421ea5b60424.html">GET /v1/retrieval-plans/{plan_id}/files</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-3dce3feba3e4421ea5b60424.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-plans~1{plan_id}~1files/get</code>
-</td>
+<td>List Retrieval Plan Files · responses 200, 400, 401, 403, 404, 409, 412, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-search:f9db9b9ee8">
 <td>
 <a href="e-c7bd1b17e44db8f1a0cf17d7.html">GET /v1/search</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-c7bd1b17e44db8f1a0cf17d7.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1search/get</code>
-</td>
+<td>Search · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:get-v1-tags:44be3c5cdd">
 <td>
 <a href="e-684fde5ad2191c09eea4cdf1.html">GET /v1/tags</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-684fde5ad2191c09eea4cdf1.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1tags/get</code>
-</td>
+<td>List Tags · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:head-v1-collections-collection-id-provena-240d79153d:2f6d1f48ae">
 <td>
 <a href="e-c3b1e6fb5211901e5143d9f9.html">HEAD /v1/collections/{collection_id}/provenance/journals/{journal_id}</a>
 </td>
 <td>
-<code>/external_contract/http_route_supplements/0</code>
 </td>
 </tr>
 <tr data-element="http-operations:riverhog:head-v1-retrieval-jobs-job-id-content:c99110dae4">
@@ -509,470 +428,347 @@
 <a href="e-26471d377cb1a3a1ca0f4d49.html">HEAD /v1/retrieval-jobs/{job_id}/content</a>
 </td>
 <td>
-<code>/external_contract/http_route_supplements/1</code>
 </td>
 </tr>
 <tr data-element="http-operations:riverhog:patch-v1-collection-upload-sessions-colle-7eff7dfe3e:45fcdad648">
 <td>
 <a href="e-bf5e33d51e31ffa20255fd83.html">PATCH /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1provenance~1journals~1{journal_id}/patch</code>
-</td>
+<td>Append Collection Upload Session Provenance Journal · responses 200, 400, 401, 403, 404, 409, 411, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-apps-app-keys:3255ff34be">
 <td>
 <a href="e-cb8916c6e791adb209bee3b0.html">POST /v1/apps/{app}/keys</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys/post</code>
-</td>
+<td>Create App Key · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-apps-app-keys-key-id-access:a4719ca7a0">
 <td>
 <a href="e-3884fc29ba985c72dde38141.html">POST /v1/apps/{app}/keys/{key_id}/access</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/post</code>
-</td>
+<td>Add App Key Access · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-apps-app-keys-key-id-revoke:de52e07c81">
 <td>
 <a href="e-6d5e828c250efee2a6a3efbb.html">POST /v1/apps/{app}/keys/{key_id}/revoke</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1revoke/post</code>
-</td>
+<td>Revoke App Key · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-apps-app-keys-key-id-rotate:c54abfcea8">
 <td>
 <a href="e-2fcc38a0b0002e7cf659e5ad.html">POST /v1/apps/{app}/keys/{key_id}/rotate</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1rotate/post</code>
-</td>
+<td>Rotate App Key · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-archive-copies-retire:7a22d82ea7">
 <td>
 <a href="e-a7ca3da6db99c3e48d59ce97.html">POST /v1/archive/copies/retire</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retire/post</code>
-</td>
+<td>Retire Archive Copy · responses 200, 400, 401, 403, 404, 409, 500, 503</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-archive-copies-retirement-plan:19bbb5bab4">
 <td>
 <a href="e-fcdfdbe29f6e127d2a4d090d.html">POST /v1/archive/copies/retirement-plan</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post</code>
-</td>
+<td>Plan Archive Copy Retirement · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-archive-copy-jobs:c41f7f4153">
 <td>
 <a href="e-6b94571a3ba5b726abb10573.html">POST /v1/archive/copy-jobs</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs/post</code>
-</td>
+<td>Create Or Resume Archive Copy Job · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-processing-claims:94feba3584">
 <td>
 <a href="e-428d8fb96c426ed854373978.html">POST /v1/collection-processing-claims</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims/post</code>
-</td>
+<td>Create Or Resume Processing Claim · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-processing-claims-clai-32cc066770:d13fb04abc">
 <td>
 <a href="e-458c9f7e7d02d8c2a6c104b1.html">POST /v1/collection-processing-claims/{claim_id}/abandon</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1abandon/post</code>
-</td>
+<td>Abandon Processing Claim · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-processing-claims-clai-dfec4c2ebf:fcf08c4438">
 <td>
 <a href="e-1c096c1d3ec22ebaefdea2b9.html">POST /v1/collection-processing-claims/{claim_id}/capabilities</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1capabilities/post</code>
-</td>
+<td>Create Processing Capability · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-processing-claims-clai-1adf6d61a9:1e7eebb7ed">
 <td>
 <a href="e-0528f344c911da982dd9ff56.html">POST /v1/collection-processing-claims/{claim_id}/capabilities/{capability_id}/artifacts/seal</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1capabilities~1{capability_id}~1artifacts~1seal/post</code>
-</td>
+<td>Seal Processing Capability Artifacts · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-processing-claims-clai-4acb81b30d:6950608713">
 <td>
 <a href="e-1da894eed96fc5422b7ed776.html">POST /v1/collection-processing-claims/{claim_id}/derivation/seal</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1derivation~1seal/post</code>
-</td>
+<td>Seal Processing Claim Dispositions · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-processing-claims-clai-f28ae97d90:aa58357f65">
 <td>
 <a href="e-84f2a2a48a62307afc800622.html">POST /v1/collection-processing-claims/{claim_id}/inputs/seal</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1inputs~1seal/post</code>
-</td>
+<td>Seal Processing Claim Inputs · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-processing-claims-clai-dfb1b33e15:775bc25337">
 <td>
 <a href="e-7b58ec05d1513b0cd02a58d7.html">POST /v1/collection-processing-claims/{claim_id}/outcomes/settle</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1outcomes~1settle/post</code>
-</td>
+<td>Settle Processing Claim Outcomes · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-processing-claims-claim-id-plan:fde8b8bf50">
 <td>
 <a href="e-040ee2c517683668d2b5c894.html">POST /v1/collection-processing-claims/{claim_id}/plan</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1plan/post</code>
-</td>
+<td>Seal Processing Claim Plan · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-processing-claims-clai-e8fef842c8:b40fe3b577">
 <td>
 <a href="e-16920e1f71f8d8e31ba2d600.html">POST /v1/collection-processing-claims/{claim_id}/plan/artifacts/seal</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1plan~1artifacts~1seal/post</code>
-</td>
+<td>Seal Processing Claim Artifacts · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-processing-claims-clai-8154f0a9c4:0c39fa13fc">
 <td>
 <a href="e-1b69df6da24313e99df522ad.html">POST /v1/collection-processing-claims/{claim_id}/release</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1release/post</code>
-</td>
+<td>Release Processing Claim · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-processing-claims-claim-id-renew:0794f0367f">
 <td>
 <a href="e-9f7571d0b53c0997475adcb2.html">POST /v1/collection-processing-claims/{claim_id}/renew</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1renew/post</code>
-</td>
+<td>Renew Processing Claim · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-processing-claims-clai-9f895a90e9:ca894e07ee">
 <td>
 <a href="e-ec99eadeb8b73803606fe898.html">POST /v1/collection-processing-claims/{claim_id}/restart</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1restart/post</code>
-</td>
+<td>Restart Processing Claim · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-processing-claims-claim-id-settle:bda24d1e33">
 <td>
 <a href="e-872fd32b91a51a9b9401514d.html">POST /v1/collection-processing-claims/{claim_id}/settle</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1settle/post</code>
-</td>
+<td>Settle Processing Claim · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-processing-claims-clai-4a6fa6825b:7e5cff31df">
 <td>
 <a href="e-d4b853ca1846f6274bfb8e7a.html">POST /v1/collection-processing-claims/{claim_id}/source-collection-retirement</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1source-collection-retirement/post</code>
-</td>
+<td>Begin Source Collection Retirement · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions:7ca5956980">
 <td>
 <a href="e-36242b194d11b3a9c5cdd0fe.html">POST /v1/collection-upload-sessions</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions/post</code>
-</td>
+<td>Create Or Resume Collection Upload Session · responses 200, 400, 401, 403, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions-collec-c6e9bc39c9:112fe5b575">
 <td>
 <a href="e-a17686daddda2f79969aff4d.html">POST /v1/collection-upload-sessions/{collection_id}/cancel</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1cancel/post</code>
-</td>
+<td>Cancel Collection Upload Session · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions-collec-b97afbbd33:b881ec2489">
 <td>
 <a href="e-5674adc4b8684936cbba2c90.html">POST /v1/collection-upload-sessions/{collection_id}/complete</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1complete/post</code>
-</td>
+<td>Complete Collection Upload Session · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions-collec-d4e0df816c:8ecebbec9d">
 <td>
 <a href="e-35052b9673b365d6c13296b0.html">POST /v1/collection-upload-sessions/{collection_id}/discard</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1discard/post</code>
-</td>
+<td>Discard Collection Upload · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions-collec-793cc2515d:91011b9184">
 <td>
 <a href="e-fbbf272f1a7ef7faf8375b1a.html">POST /v1/collection-upload-sessions/{collection_id}/discard-plan</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1discard-plan/post</code>
-</td>
+<td>Plan Collection Upload Discard · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions-collec-4a0f562819:91e49c31c6">
 <td>
 <a href="e-810b01a9db8256bb44e8b8be.html">POST /v1/collection-upload-sessions/{collection_id}/files</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1files/post</code>
-</td>
+<td>Register Collection Upload Session Files · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions-collec-882159f1ab:82d740575d">
 <td>
 <a href="e-814a9406992b69d24638d42b.html">POST /v1/collection-upload-sessions/{collection_id}/heartbeat</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1heartbeat/post</code>
-</td>
+<td>Heartbeat Collection Upload Session · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions-collec-eb0b1275c6:d01b28fd3c">
 <td>
 <a href="e-11205ba1a2fdcfb35803747e.html">POST /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}/seal</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1provenance~1journals~1{journal_id}~1seal/post</code>
-</td>
+<td>Seal Collection Upload Session Provenance Journal · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions-collec-fffabb89d2:bb2ca4c27b">
 <td>
 <a href="e-cf7a14116dfea1fdf7adb0da.html">POST /v1/collection-upload-sessions/{collection_id}/raw-part-digests</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1raw-part-digests/post</code>
-</td>
+<td>Register Collection Upload Session Raw Part Digests · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collection-upload-sessions-collec-ab6864a026:d696558c79">
 <td>
 <a href="e-3f4b7c808c6d53a02fad6685.html">POST /v1/collection-upload-sessions/{collection_id}/tags</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1tags/post</code>
-</td>
+<td>Add Collection Upload Session Tags · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collections-collection-id-delete:70f703b8aa">
 <td>
 <a href="e-56fd791529d06dbe57720f0d.html">POST /v1/collections/{collection_id}/delete</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1delete/post</code>
-</td>
+<td>Delete Collection · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collections-collection-id-deletion-plan:bf56f32882">
 <td>
 <a href="e-d3b1cb6b883f9da4f717a265.html">POST /v1/collections/{collection_id}/deletion-plan</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1deletion-plan/post</code>
-</td>
+<td>Plan Collection Deletion · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collections-collection-id-provena-8ee667a419:851a47e434">
 <td>
 <a href="e-5af0dfd654d469e6ec3ffb48.html">POST /v1/collections/{collection_id}/provenance/verification</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1verification/post</code>
-</td>
+<td>Request Collection Provenance Verification · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collections-collection-id-tags-add:2a80cc35b7">
 <td>
 <a href="e-d99a63dff00c086d7bfd5027.html">POST /v1/collections/{collection_id}/tags:add</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1tags:add/post</code>
-</td>
+<td>Add Collection Tag · responses 200, 400, 401, 403, 404, 409, 412, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collections-collection-id-tags-contains:e9e99e06e4">
 <td>
 <a href="e-2ee5835f965bb0dda0f345c8.html">POST /v1/collections/{collection_id}/tags:contains</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1tags:contains/post</code>
-</td>
+<td>Collection Contains Tag · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collections-collection-id-tags-remove:ef9502d670">
 <td>
 <a href="e-a5511db1836b0ad961b6ab5d.html">POST /v1/collections/{collection_id}/tags:remove</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1tags:remove/post</code>
-</td>
+<td>Remove Collection Tag · responses 200, 400, 401, 403, 404, 409, 412, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-collections-search:82716c1f16">
 <td>
 <a href="e-2580db69227092fd9848487c.html">POST /v1/collections:search</a>
-<span class="audit-cue"> · audit context available</span>
+<span class="audit-cue"> <a class="audit-marker" href="e-2580db69227092fd9848487c.html#audit" aria-label="Open extent qualification" title="Open extent qualification">📦</a>
+</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections:search/post</code>
-</td>
+<td>List Collections · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-retrieval-jobs:3fbd542396">
 <td>
 <a href="e-d2a3a7dd4cc5f1687006eb46.html">POST /v1/retrieval-jobs</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs/post</code>
-</td>
+<td>Create Retrieval Job · responses 200, 400, 401, 403, 404, 409, 429, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-retrieval-jobs-job-id-ack:9c4da33f35">
 <td>
 <a href="e-407c4fcf143bdf8b946dea7c.html">POST /v1/retrieval-jobs/{job_id}/ack</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs~1{job_id}~1ack/post</code>
-</td>
+<td>Acknowledge Retrieval Job · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-retrieval-jobs-job-id-renew:c2d21e8a24">
 <td>
 <a href="e-edb8a4641a7a9c65b2b81ce3.html">POST /v1/retrieval-jobs/{job_id}/renew</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs~1{job_id}~1renew/post</code>
-</td>
+<td>Renew Retrieval Job · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-retrieval-plans:137b1dc1a4">
 <td>
 <a href="e-0d0df2756bb749f59a827617.html">POST /v1/retrieval-plans</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-plans/post</code>
-</td>
+<td>Plan Retrieval · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:post-v1-retrieval-plans-plan-id-advance:89fe188d31">
 <td>
 <a href="e-9e345ca0db827d1cf03d6cf2.html">POST /v1/retrieval-plans/{plan_id}/advance</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-plans~1{plan_id}~1advance/post</code>
-</td>
+<td>Advance Retrieval Plan · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:put-v1-apps-app-keys-key-id-access:eb3e068ad0">
 <td>
 <a href="e-1b3b584515fc8349e453c6b2.html">PUT /v1/apps/{app}/keys/{key_id}/access</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put</code>
-</td>
+<td>Replace App Key Access · responses 200, 400, 401, 403, 404, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:put-v1-apps-app-keys-key-id-download-quota:16f752b15d">
 <td>
 <a href="e-f0a8a46a1c2ca4f85924ee11.html">PUT /v1/apps/{app}/keys/{key_id}/download-quota</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1download-quota/put</code>
-</td>
+<td>Set App Key Download Quota · responses 200, 400, 401, 403, 404, 429, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:put-v1-collection-processing-claims-claim-35a561aa3f:87092575bd">
 <td>
 <a href="e-f301c44c1612cbe849a8d160.html">PUT /v1/collection-processing-claims/{claim_id}/capabilities/{capability_id}/artifacts</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1capabilities~1{capability_id}~1artifacts/put</code>
-</td>
+<td>Append Processing Capability Artifacts · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:put-v1-collection-processing-claims-claim-25f48b2acb:c697062a51">
 <td>
 <a href="e-cf7f338704373ce746d4f819.html">PUT /v1/collection-processing-claims/{claim_id}/derivation/dispositions</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1derivation~1dispositions/put</code>
-</td>
+<td>Record Processing Claim Dispositions · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:put-v1-collection-processing-claims-claim-85e0000e46:477cc1b10a">
 <td>
 <a href="e-924f2ebad9ea4c691e250249.html">PUT /v1/collection-processing-claims/{claim_id}/derivation/output-edges</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1derivation~1output-edges/put</code>
-</td>
+<td>Record Processing Claim Disposition Outputs · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:put-v1-collection-processing-claims-claim-id-inputs:c418a271da">
 <td>
 <a href="e-56b8c81ecf79925370526ade.html">PUT /v1/collection-processing-claims/{claim_id}/inputs</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1inputs/put</code>
-</td>
+<td>Append Processing Claim Inputs · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:put-v1-collection-processing-claims-claim-48242f3ef1:c47c32499c">
 <td>
 <a href="e-e6cef65ec8a1e5cef9cbf220.html">PUT /v1/collection-processing-claims/{claim_id}/plan/artifacts</a>
-<span class="audit-cue"> · audit context available</span>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1plan~1artifacts/put</code>
-</td>
+<td>Append Processing Claim Artifacts · responses 200, 400, 401, 403, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:put-v1-collection-upload-sessions-collect-2ca65d4793:dd23d96608">
 <td>
 <a href="e-342ba22185e2333a3fc2effa.html">PUT /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1provenance~1journals~1{journal_id}/put</code>
-</td>
+<td>Create Collection Upload Session Provenance Journal · responses 200, 400, 401, 403, 404, 409, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:put-v1-collection-upload-sessions-collect-859266a156:2e5f66e1f0">
 <td>
 <a href="e-54bee1f151450e8c393dbfa1.html">PUT /v1/collection-upload-sessions/{collection_id}/volumes/{volume_id}/units/{unit}</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1volumes~1{volume_id}~1units~1{unit}/put</code>
-</td>
+<td>Put Collection Upload Session Unit · responses 200, 400, 401, 403, 404, 409, 411, 500</td>
 </tr>
 <tr data-element="http-operations:riverhog:put-v1-collections-collection-id-description:173918242b">
 <td>
 <a href="e-5f737677bed58a7fff0a5858.html">PUT /v1/collections/{collection_id}/description</a>
 </td>
-<td>
-<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1description/put</code>
-</td>
+<td>Replace Collection Description · responses 200, 400, 401, 403, 500</td>
 </tr>
 </tbody>
 </table>
+</div>
+<aside class="audit" id="audit-scope">
+<h2>Open extent qualifications in this scope</h2>
+<p>28 declared contract subjects in riverhog · HTTP Operations are within the listed extent evidence gaps. A group can cover several subjects; these are not separate observed runtime failures. Follow the 📦 markers for the affected children.</p>
+<ul>
+<li>
+<a href="q-1536c4a29a1210bf0c87c350.html">riverhog-read-collection-progression/v1</a>
+</li>
+</ul>
+<p>An unmarked entry has no approval implied.</p>
+</aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
 <p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,255 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-68b19e8d51d7c053fa76356f.html">review0-target-contracts · Python</a>
+<a href="index.html">All authorities</a> / <a href="a-9bec37329ab1cbbfd4a42b90.html">review0-target-contracts</a> / <a href="i-68b19e8d51d7c053fa76356f.html">Python</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>review0_target_contracts.ReviewSamplePlanPayload</h1>
+<p class="context">Review0 target execution and artifact contracts. Declared public imports and their selected exact structural contracts.</p>
 <section id="contract" data-contract="python:review0-target-contracts:review0-target-contracts-reviewsampleplanpayload:cc8a7aab28">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Python declaration</h3>
+<dl class="facts">
+<dt>distribution</dt>
+<dd>
+<code>review0-target-contracts</code>
+</dd>
+<dt>module</dt>
+<dd>
+<code>review0_target_contracts</code>
+</dd>
+<dt>name</dt>
+<dd>
+<code>ReviewSamplePlanPayload</code>
+</dd>
+<dt>unit</dt>
+<dd>
+<code>export</code>
+</dd>
+</dl>
+<dl class="facts">
+<dt>kind</dt>
+<dd>
+<code>class</code>
+</dd>
+<dt>signature</dt>
+<dd>
+<code>&quot;(*, format: Literal[&#x27;review0-sample-plan/v1&#x27;] = &#x27;review0-sample-plan/v1&#x27;, selection_method: Literal[&#x27;evenly-spaced/v1&#x27;] = &#x27;evenly-spaced/v1&#x27;, samples_per_artifact: Annotated[int, Ge(ge=1)], window_duration_ms: Annotated[int, Ge(ge=1)], windows: Annotated[tuple[review0_target_contracts.models.ReviewSampleWindow, ...], MinLen(min_length=1)]) -&gt; None&quot;</code>
+</dd>
+</dl>
+<section class="schema-section" id="s-85993ae354f59f0de74495f1">
+<h3>Validated model schema</h3>
+<p class="shape">
+<code>object</code>; 5 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;samples_per_artifact&quot;,&quot;window_duration_ms&quot;,&quot;windows&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>format</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>review0-sample-plan/v1</code>; default: <code>review0-sample-plan/v1</code>
+</td>
+<td>
+<code>review0-sample-plan/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>samples_per_artifact</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>selection_method</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; const: <code>evenly-spaced/v1</code>; default: <code>evenly-spaced/v1</code>
+</td>
+<td>
+<code>evenly-spaced/v1</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>window_duration_ms</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-51856257ee5655cb5e0e510a">windows</a>
+</td>
+<td>yes</td>
+<td>
+<code>array</code>; items: <a href="e-ef46a5dae23284765f475bd6.html#v-68b68a6557ed56581b1bddd0">#/$defs/ReviewSampleWindow</a>; minItems: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-68b68a6557ed56581b1bddd0">ReviewSampleWindow</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-51856257ee5655cb5e0e510a">
+<h3>Field: windows</h3>
+<p class="shape">
+<code>array</code>; items: <a href="e-ef46a5dae23284765f475bd6.html#v-68b68a6557ed56581b1bddd0">#/$defs/ReviewSampleWindow</a>; minItems: <code>1</code>
+</p>
+<dl class="facts">
+<dt>type</dt>
+<dd>
+<code>array</code>
+</dd>
+<dt>minItems</dt>
+<dd>
+<code>1</code>
+</dd>
+</dl>
+</section>
+<section class="schema-section" id="s-68b68a6557ed56581b1bddd0">
+<h3>Definition: ReviewSampleWindow</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>required</dt>
+<dd>
+<code>[&quot;artifact_id&quot;,&quot;start_ms&quot;,&quot;duration_ms&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>artifact_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; maxLength: <code>160</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>duration_ms</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>start_ms</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>0</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/python/review0_target_contracts.ReviewSamplePlanPayload</code>
-</h3>
+</h4>
 <table id="v-bbac0723185193ef67c57952">
 <tbody>
 <tr>
@@ -618,25 +849,43 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-3deb648efcbc1d1cac4aa38b.html">review0_target_contracts.ReviewSamplePlanPayload.canonical_windows</a>
+</li>
+<li>
+<a href="e-166d7a8d5295b361894bc99b.html">review0_target_contracts.ReviewSamplePlanPayload.exact_declared_shape</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-e574772ba506efb4e49b648a">compatibility/python-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/stove0/review0/contracts/src/review0_target_contracts/__init__.py">some-implementations/stove0/review0/contracts/src/review0_target_contracts/__init__.py</code>
+<a href="source-authorities.html#source-5615f251e553cadbfec817b1">python:review0-target-contracts:review0_target_contracts</a> — <code data-source-path="some-implementations/stove0/review0/contracts/src/review0_target_contracts/__init__.py">some-implementations/stove0/review0/contracts/src/review0_target_contracts/__init__.py</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 </aside>

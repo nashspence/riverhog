@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,60 +12,321 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-037a889b696b1e286bd220b1.html">gogurt · CLI</a>
+<a href="index.html">All authorities</a> / <a href="a-7d1604db9f02e3c3241e15c1.html">gogurt</a> / <a href="i-037a889b696b1e286bd220b1.html">CLI</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>gogurt listener install</h1>
+<p class="context">Mounted-volume ingestion application for Riverhog. CLI contract owned by gogurt.</p>
 <section id="contract" data-contract="cli:gogurt:gogurt-listener-install:35dbc46475">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Command</h3>
+<dl class="facts">
+<dt>name</dt>
+<dd>
+<code>install</code>
+</dd>
+<dt>allow extra args</dt>
+<dd>
+<code>false</code>
+</dd>
+<dt>allow interspersed args</dt>
+<dd>
+<code>true</code>
+</dd>
+<dt>ignore unknown options</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<p>Parser flags and defaults are recorded inputs. A missing default does not assert an explicit null value or rule out other configured fallbacks.</p>
+<h3>Arguments and options</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Parameter and spelling</th>
+<th scope="col">Invocation</th>
+<th scope="col">Type and constraints</th>
+<th scope="col">Default and environment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>config</code>
+<br>
+<code>--config</code>
+</td>
+<td>optional; option; 1 value(s) per use</td>
+<td>
+<code>path</code>; exists: <code>false</code>; file okay: <code>true</code>; dir okay: <code>true</code>
+</td>
+<td>not recorded</td>
+</tr>
+<tr>
+<td>
+<code>actions_dir</code>
+<br>
+<code>--actions-dir</code>
+</td>
+<td>optional; option; 1 value(s) per use</td>
+<td>
+<code>path</code>; exists: <code>false</code>; file okay: <code>true</code>; dir okay: <code>true</code>
+</td>
+<td>not recorded</td>
+</tr>
+<tr>
+<td>
+<code>interval_seconds</code>
+<br>
+<code>--interval</code>
+</td>
+<td>optional; option; 1 value(s) per use</td>
+<td>
+<code>float range</code>; minimum: <code>0.1</code>; maximum: <code>3600</code>; clamp: <code>false</code>
+</td>
+<td>
+<code>2</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>autorun</code>
+<br>
+<code>--autorun</code>
+</td>
+<td>optional; option; 1 value(s) per use; flag</td>
+<td>
+<code>boolean</code>
+</td>
+<td>
+<code>false</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>mounted_volume_provider</code>
+<br>
+<code>--mounted-volume-provider</code>
+</td>
+<td>optional; option; 1 value(s) per use</td>
+<td>
+<code>text</code>
+</td>
+<td>not recorded<br>Environment: <code>GOGURT_MOUNTED_VOLUME_PROVIDER</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>listener_host_provider</code>
+<br>
+<code>--listener-host-provider</code>
+</td>
+<td>optional; option; 1 value(s) per use</td>
+<td>
+<code>text</code>
+</td>
+<td>not recorded<br>Environment: <code>GOGURT_LISTENER_HOST_PROVIDER</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>json_mode</code>
+<br>
+<code>--json</code>
+</td>
+<td>optional; option; 1 value(s) per use; flag</td>
+<td>
+<code>boolean</code>
+</td>
+<td>
+<code>false</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Result contract</h3>
+<dl class="facts">
+<dt>identity</dt>
+<dd>
+<code>gogurt-cli-result/listener/install/v1</code>
+</dd>
+<dt>profile id</dt>
+<dd>
+<code>gogurt-cli-human-json/v1</code>
+</dd>
+<dt>structured output</dt>
+<dd>
+<code>optional-json</code>
+</dd>
+<dt>human json relationship</dt>
+<dd>
+<code>same-semantic-result</code>
+</dd>
+</dl>
+<h4>Success outcomes</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Outcome</th>
+<th scope="col">Exit</th>
+<th scope="col">Selection</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>completed</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>kind: <code>command-completed</code>
+</td>
+<td>human: <code>noncontractual-presentation-of-command-result</code>; json: identity: <code>gogurt-listener-status/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;config_file&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;diagnostic&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;dispatches&quot;:{&quot;type&quot;:&quot;object&quot;},&quot;enabled&quot;:{&quot;type&quot;:&quot;boolean&quot;},&quot;executable&quot;:{&quot;type&quot;:[&quot;string&quot;,&quot;null&quot;]},&quot;format&quot;:{&quot;const&quot;:&quot;gogurt-listener-status/v1&quot;},&quot;health&quot;:{&quot;enum&quot;:[&quot;absent&quot;,&quot;stopped&quot;,&quot;failed&quot;,&quot;starting&quot;,&quot;healthy&quot;,&quot;stale&quot;]},&quot;heartbeat&quot;:{&quot;type&quot;:[&quot;object&quot;,&quot;null&quot;]},&quot;heartbeat_age_seconds&quot;:{&quot;minimum&quot;:0,&quot;type&quot;:[&quot;number&quot;,&quot;null&quot;]},&quot;installed&quot;:{&quot;type&quot;:&quot;boolean&quot;},&quot;listener_host_provider&quot;:{&quot;anyOf&quot;:[{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;kind&quot;:{&quot;enum&quot;:[&quot;mounted-volume&quot;,&quot;listener-host&quot;]},&quot;name&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;provider_id&quot;:{&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;kind&quot;,&quot;name&quot;,&quot;provider_id&quot;],&quot;type&quot;:&quot;object&quot;},{&quot;type&quot;:&quot;null&quot;}]},&quot;manager_version&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;mount_attention&quot;:{&quot;type&quot;:&quot;array&quot;},&quot;mounted_volume_provider&quot;:{&quot;anyOf&quot;:[{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;kind&quot;:{&quot;enum&quot;:[&quot;mounted-volume&quot;,&quot;listener-host&quot;]},&quot;name&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;provider_id&quot;:{&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;kind&quot;,&quot;name&quot;,&quot;provider_id&quot;],&quot;type&quot;:&quot;object&quot;},{&quot;type&quot;:&quot;null&quot;}]},&quot;platform&quot;:{&quot;type&quot;:&quot;string&quot;},&quot;running&quot;:{&quot;type&quot;:&quot;boolean&quot;},&quot;state_dir&quot;:{&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;format&quot;,&quot;manager_version&quot;,&quot;platform&quot;,&quot;installed&quot;,&quot;enabled&quot;,&quot;running&quot;,&quot;health&quot;,&quot;config_file&quot;,&quot;state_dir&quot;,&quot;executable&quot;,&quot;mounted_volume_provider&quot;,&quot;listener_host_provider&quot;,&quot;heartbeat_age_seconds&quot;,&quot;heartbeat&quot;,&quot;dispatches&quot;,&quot;mount_attention&quot;,&quot;diagnostic&quot;],&quot;type&quot;:&quot;object&quot;}</code>
+</td>
+<td>all: <code>empty</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Failure outcomes</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Outcome</th>
+<th scope="col">Exit</th>
+<th scope="col">Selection</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>usage</code>
+</td>
+<td>
+<code>2</code>
+</td>
+<td>kind: <code>parser-rejected-invocation</code>
+</td>
+<td>all: <code>empty</code>
+</td>
+<td>all: <code>noncontractual-usage-diagnostic</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>operational</code>
+</td>
+<td>
+<code>1</code>
+</td>
+<td>kind: <code>application-error</code>
+</td>
+<td>human: <code>empty</code>; json: identity: <code>gogurt-cli-error/v1</code>; kind: <code>cli-local-json-schema</code>; schema: <code>{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;error&quot;:{&quot;additionalProperties&quot;:false,&quot;properties&quot;:{&quot;code&quot;:{&quot;enum&quot;:[&quot;config_error&quot;,&quot;listener_error&quot;]},&quot;message&quot;:{&quot;type&quot;:&quot;string&quot;}},&quot;required&quot;:[&quot;code&quot;,&quot;message&quot;],&quot;type&quot;:&quot;object&quot;}},&quot;required&quot;:[&quot;error&quot;],&quot;type&quot;:&quot;object&quot;}</code>
+</td>
+<td>human: <code>noncontractual-diagnostic</code>; json: <code>empty</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Terminating controls</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Control</th>
+<th scope="col">Trigger</th>
+<th scope="col">Exit</th>
+<th scope="col">stdout</th>
+<th scope="col">stderr</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>help</code>
+</td>
+<td>
+<code>{&quot;kind&quot;:&quot;option-present&quot;,&quot;options&quot;:[&quot;--help&quot;]}</code>
+</td>
+<td>
+<code>0</code>
+</td>
+<td>
+<code>noncontractual-framework-help</code>
+</td>
+<td>
+<code>empty</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/gogurt/commands/listener/commands/install/allow_extra_args</code>
-</h3>
+</h4>
 <span id="v-2e570ae5f33d965d4d0574f1">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/allow_extra_args">false</code>
 <span class="kind">boolean</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/gogurt/commands/listener/commands/install/allow_interspersed_args</code>
-</h3>
+</h4>
 <span id="v-8688dfe3b1781b6bb314ec47">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/allow_interspersed_args">true</code>
 <span class="kind">boolean</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/gogurt/commands/listener/commands/install/ignore_unknown_options</code>
-</h3>
+</h4>
 <span id="v-30ff35e6b3116fbc039123d4">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/ignore_unknown_options">false</code>
 <span class="kind">boolean</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/gogurt/commands/listener/commands/install/name</code>
-</h3>
+</h4>
 <span id="v-50f526d03269603a40e99539">
 <code data-value-pointer="/external_contract/cli/gogurt/commands/listener/commands/install/name">install</code>
 <span class="kind">string</span>
 </span>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters</code>
-</h3>
+</h4>
 <table id="v-fd4bac1fbefed2e9b527e2f2">
 <tbody>
 <tr>
@@ -1469,9 +1730,9 @@
 </table>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/gogurt/commands/listener/commands/install/result_contract</code>
-</h3>
+</h4>
 <table id="v-bbbeb750b315028031a35a9c">
 <tbody>
 <tr>
@@ -3304,9 +3565,9 @@
 </table>
 </section>
 <section>
-<h3>
+<h4>
 <code>/external_contract/cli/gogurt/commands/listener/commands/install/terminating_controls</code>
-</h3>
+</h4>
 <table id="v-3b2351b3ba5d9d76f1a05252">
 <tbody>
 <tr>
@@ -3411,1143 +3672,146 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-48a89776de7f91b173b46d03">compatibility/cli/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="some-implementations/gogurt/application/src/gogurt/cli.py">some-implementations/gogurt/application/src/gogurt/cli.py::&lt;module&gt;</code>
+<a href="source-authorities.html#source-3b2297c37dfe5a9819f51e07">cli:gogurt</a> — <code data-source-path="some-implementations/gogurt/application/src/gogurt/cli.py">some-implementations/gogurt/application/src/gogurt/cli.py::&lt;module&gt;</code>
 </li>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>cli:gogurt:gogurt:listener:install:parameter:actions_dir:values-per-occurrence</code>
-<table id="v-eadbf5cc88f52fd6ceeae12b">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-ced630d106fb7638ed70f538">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:actions_dir:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-0d6cad316f7cd74ed0c6ca3d">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:actions_dir:values-per-occurrence/id">cli:gogurt:gogurt:listener:install:parameter:actions_dir:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/3</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:0,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;is_flag&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-06a558b5689f8370f4262f99">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:actions_dir:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>minimum</code>
-</th>
 <td>
-<span id="v-a4092efa05ea4f26fdc9a478">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:actions_dir:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>value · cli-value · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:3600,&quot;minimum&quot;:0.1,&quot;reason&quot;:&quot;schema-maximum&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;type.maximum&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-67b3d4bc2303f04c3e0a9e45">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:actions_dir:values-per-occurrence/owner">gogurt</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>policy</code>
-</th>
 <td>
-<span id="v-6500a57e1797b88af0f63d9f">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:actions_dir:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/6</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:0,&quot;minimum&quot;:0,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;is_flag&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>reason</code>
-</th>
 <td>
-<span id="v-d222f19af76a4256a718f302">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:actions_dir:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/5</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>rule</code>
-</th>
 <td>
-<span id="v-5f3b7b343997a2a03670dd02">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:actions_dir:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/cli/gogurt/commands/listener/commands/install/parameters/4</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
 <td>
-<table id="v-ad498ad38483c9a813a037c0">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>cardinality · values-per-occurrence · fixed</td>
 <td>
-<span id="v-1d6ee9865f1c775fcbb1aa06">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:actions_dir:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:1,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;fixed-command-argument-arity&quot;,&quot;source_constraint&quot;:{&quot;field&quot;:&quot;nargs&quot;}}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-b521a4ab2b8d57c7c400ea78">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:actions_dir:values-per-occurrence/source_pointer">/external_contract/cli/gogurt/commands/listener/commands/install/parameters/1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-7329013359d2f3b92a06c6f0">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:actions_dir:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:gogurt:gogurt:listener:install:parameter:autorun:values-per-occurrence</code>
-<table id="v-51ebc650bf0c963d8e216335">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-2f5813de42d8ba2ef3f69fcb">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:autorun:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-c37175ad69209e173611d55b">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:autorun:values-per-occurrence/id">cli:gogurt:gogurt:listener:install:parameter:autorun:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-98b21f5614b359852a0f2b1d">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:autorun:values-per-occurrence/maximum">0</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-5e71464e5cd6f80bbb908670">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:autorun:values-per-occurrence/minimum">0</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-5f9759385c279762e0c4d142">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:autorun:values-per-occurrence/owner">gogurt</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-c34175cb0b4e5655c728738e">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:autorun:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-08068da5aefe7b8a640718c8">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:autorun:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-1f9022ea7f7ca0d1555d611c">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:autorun:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-2ee1dcc6b51de51ed10c57d0">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-7e8299172c851bfb74590737">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:autorun:values-per-occurrence/source_constraint/field">is_flag</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-9d33ff488015dbdd73020eae">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:autorun:values-per-occurrence/source_pointer">/external_contract/cli/gogurt/commands/listener/commands/install/parameters/3</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-24d9e4557a661609894b5b46">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:autorun:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:gogurt:gogurt:listener:install:parameter:config:values-per-occurrence</code>
-<table id="v-abc82be241e4743778f4a70d">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-1920c3255429a8609b3ecb30">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:config:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-58410ca662034634ee1b3333">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:config:values-per-occurrence/id">cli:gogurt:gogurt:listener:install:parameter:config:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-1054d83c11d3b4142bf90909">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:config:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-befca1d08e73a109ac258cb8">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:config:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-907189c17ac2d5ca29e077e4">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:config:values-per-occurrence/owner">gogurt</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-f7a15235ba504592600dff49">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:config:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-9467a3dabb7bdc0844973571">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:config:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-64f568d4c1fc0d458ca3aabb">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:config:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-6155f512e3755d4f7ecbb2ed">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-e93956b9d3d8d1b2489ae340">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:config:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-3803747a33e7419810a1be39">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:config:values-per-occurrence/source_pointer">/external_contract/cli/gogurt/commands/listener/commands/install/parameters/0</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-16791ef1ab8b5f758ed15efd">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:config:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:gogurt:gogurt:listener:install:parameter:interval_seconds:value</code>
-<table id="v-c29f430163ab4333e4436866">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-00e08f216913861884b9a08f">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:value/dimension">value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-57e3cb98ba0e5b2614e1ddeb">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:value/id">cli:gogurt:gogurt:listener:install:parameter:interval_seconds:value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-7764e1ab2614058d86c1b4a6">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:value/maximum">3600</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-e44ee389a68518cc96bc7920">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:value/minimum">0.1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-13d51357de149e46cb820712">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:value/owner">gogurt</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-e164db700568a5f142085e3f">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:value/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-f1382479fce50afb6d3b45a0">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:value/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-d0e79c4b106d443b8666367a">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:value/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-fc3a6cf7781256ca1e0138a8">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-f9396a922df95d54618ce4e7">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:value/source_constraint/field">type.maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-c50c6619899908573d1b7601">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:value/source_pointer">/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-10772c8d6aa25a2137c64910">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:value/unit">cli-value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:gogurt:gogurt:listener:install:parameter:interval_seconds:values-per-occurrence</code>
-<table id="v-19b745fe4217685b8b5fb0fd">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-c6ae43ad20f47c012c82a494">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-2ab9b22e23cadb37102126bc">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:values-per-occurrence/id">cli:gogurt:gogurt:listener:install:parameter:interval_seconds:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-6eca0c5875365d22c1077e0e">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-924bdadac6fc0c6e1f74108b">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-0b679e2ec33738d04129ad1b">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:values-per-occurrence/owner">gogurt</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-c2c0a8e94381caca67918d76">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-3d08833f3401a5468e7f6cf9">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-a5aff1b640a7747805c9668a">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-00e0ce1f240cdc4fa595a8cc">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-13025c44a321ba4c565ffaa7">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-c940054f05b59e1f550b58a0">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:values-per-occurrence/source_pointer">/external_contract/cli/gogurt/commands/listener/commands/install/parameters/2</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-12e46a99f32930ddf7381a86">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:interval_seconds:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:gogurt:gogurt:listener:install:parameter:json_mode:values-per-occurrence</code>
-<table id="v-34a4113ac4e41d61e44dd812">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-0feb0a0e59c220d678b0df4a">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:json_mode:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-e18a7cdaa34786a14148c147">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:json_mode:values-per-occurrence/id">cli:gogurt:gogurt:listener:install:parameter:json_mode:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-3d31f5ff5391e2b140e024ac">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:json_mode:values-per-occurrence/maximum">0</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-d0e0155a10a3ee6a8c27483d">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:json_mode:values-per-occurrence/minimum">0</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-29aed8aa2d3202172fcdf38b">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:json_mode:values-per-occurrence/owner">gogurt</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-22d416bc113c0d4c1b7f23c9">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:json_mode:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-2708b8ce9567ac8fbef80c0e">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:json_mode:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-4fe52f4fac1881e8b38807aa">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:json_mode:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-8dd99d499b1a5f475db874b4">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-95e282342bf2838490b2fbe4">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:json_mode:values-per-occurrence/source_constraint/field">is_flag</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-c77f1e07a453d442316fc05e">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:json_mode:values-per-occurrence/source_pointer">/external_contract/cli/gogurt/commands/listener/commands/install/parameters/6</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-c8c0f19eb2635a2c6f6b78df">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:json_mode:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:gogurt:gogurt:listener:install:parameter:listener_host_provider:values-per-occurrence</code>
-<table id="v-7fc577ba80e7f63ce8ce9e86">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-b340cb01b1cca62b81477c43">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:listener_host_provider:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-86e14402957c6385f51ad20a">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:listener_host_provider:values-per-occurrence/id">cli:gogurt:gogurt:listener:install:parameter:listener_host_provider:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-b90b4465a916d651589e1424">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:listener_host_provider:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-6f1cc51c5ddd4ade60bbf947">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:listener_host_provider:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-799098b1133e257d70540a3e">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:listener_host_provider:values-per-occurrence/owner">gogurt</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-2c4d369225ff1cf31f608374">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:listener_host_provider:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-7691c01511e8de63fbd5ec16">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:listener_host_provider:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-cf57da10adf7f198dc581bc6">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:listener_host_provider:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-7309a778ded4d6eaaa4deb41">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-055330e77dadd97e6d93a617">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:listener_host_provider:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-1e3998c5769a557dbb03a693">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:listener_host_provider:values-per-occurrence/source_pointer">/external_contract/cli/gogurt/commands/listener/commands/install/parameters/5</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-c63f8b060b1fb6731d6d1370">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:listener_host_provider:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>cli:gogurt:gogurt:listener:install:parameter:mounted_volume_provider:values-per-occurrence</code>
-<table id="v-5cb7d31e57832fe4d56e8708">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-d20bb83d3679bfa7cc0cb3c4">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:mounted_volume_provider:values-per-occurrence/dimension">cardinality</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-342264207f1cd30eceed6de6">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:mounted_volume_provider:values-per-occurrence/id">cli:gogurt:gogurt:listener:install:parameter:mounted_volume_provider:values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-39d2c0db22d4ffe1b82b0192">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:mounted_volume_provider:values-per-occurrence/maximum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-524cac069e87e95a8d5248bb">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:mounted_volume_provider:values-per-occurrence/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-e6bf3c96a8ea169dcc201a5f">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:mounted_volume_provider:values-per-occurrence/owner">gogurt</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-24fa6c27be9ae64e0da9d66c">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:mounted_volume_provider:values-per-occurrence/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-0dcd4c70f4043720bda5081d">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:mounted_volume_provider:values-per-occurrence/reason">fixed-command-argument-arity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-3caa6c558b4b1fb133db07d2">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:mounted_volume_provider:values-per-occurrence/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-b0f18eb85bae5000b1ce47b6">
-<tbody>
-<tr>
-<th scope="row">
-<code>field</code>
-</th>
-<td>
-<span id="v-a21ff4d653054ffd5653fc00">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:mounted_volume_provider:values-per-occurrence/source_constraint/field">nargs</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-9e996dc926c7715b8cf7e27a">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:mounted_volume_provider:values-per-occurrence/source_pointer">/external_contract/cli/gogurt/commands/listener/commands/install/parameters/4</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-c6fc40fcd79251ba6d7ed329">
-<code data-value-pointer="/audit/decisions/cli:gogurt:gogurt:listener:install:parameter:mounted_volume_provider:values-per-occurrence/unit">values-per-occurrence</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

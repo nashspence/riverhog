@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,165 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-0a371b198a8dd15e12466bc3.html">a-riverhog-minisign-witness-ledger · Durable State</a>
+<a href="index.html">All authorities</a> / <a href="a-f64ff9148fca22e3d259826e.html">a-riverhog-minisign-witness-ledger</a> / <a href="i-0a371b198a8dd15e12466bc3.html">Durable State</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>a-riverhog-minisign-witness-ledger: observations</h1>
+<p class="context">Independent Minisign collection witness for Riverhog. Persisted structures, schema heads, and v1 transition obligations.</p>
 <section id="contract" data-contract="durable-state:a-riverhog-minisign-witness-ledger:a-riverhog-minisign-witness-ledger-observations:b58fdfba86">
 <h2>Contract</h2>
-<section>
-<h3>
-<code>/external_contract/durable_state/owners/3/structure/tables/0</code>
+<div class="human-contract">
+<h3>Table: <code>observations</code>
 </h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Column</th>
+<th scope="col">Type</th>
+<th scope="col">Nullable</th>
+<th scope="col">Default</th>
+<th scope="col">Exact definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>generation</code>
+</td>
+<td>
+<code>INTEGER</code>
+</td>
+<td>no</td>
+<td>not declared</td>
+<td>
+<code>generation INTEGER NOT NULL</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>collection_id</code>
+</td>
+<td>
+<code>INTEGER</code>
+</td>
+<td>no</td>
+<td>not declared</td>
+<td>
+<code>collection_id INTEGER NOT NULL</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>revision</code>
+</td>
+<td>
+<code>TEXT</code>
+</td>
+<td>no</td>
+<td>not declared</td>
+<td>
+<code>revision TEXT NOT NULL</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>document</code>
+</td>
+<td>
+<code>BLOB</code>
+</td>
+<td>no</td>
+<td>not declared</td>
+<td>
+<code>document BLOB NOT NULL</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>statement_digest</code>
+</td>
+<td>
+<code>TEXT</code>
+</td>
+<td>yes</td>
+<td>not declared</td>
+<td>
+<code>statement_digest TEXT</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>departed</code>
+</td>
+<td>
+<code>INTEGER</code>
+</td>
+<td>no</td>
+<td>not declared</td>
+<td>
+<code>departed INTEGER NOT NULL</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>departure_cause</code>
+</td>
+<td>
+<code>TEXT</code>
+</td>
+<td>yes</td>
+<td>not declared</td>
+<td>
+<code>departure_cause TEXT</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Table constraints</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Kind</th>
+<th scope="col">Name</th>
+<th scope="col">Exact definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>primary-key</code>
+</td>
+<td>
+<code></code>
+</td>
+<td>
+<code>PRIMARY KEY (generation, collection_id)</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/durable_state/owners/3/structure/tables/0</code>
+</h4>
 <table id="v-9fcc47afa8d66f6dfa2e16a5">
 <tbody>
 <tr>
@@ -519,25 +660,42 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-180260a9d7e451c7a34f7a96.html">a-riverhog-minisign-witness-ledger durable-state identity</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-214a49c2deda0753d71abbc9">compatibility/durable-state/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code>state:a-riverhog-minisign-witness-ledger</code>
+<a href="source-authorities.html#source-d43dd7e5226b8973e8652ec6">state:a-riverhog-minisign-witness-ledger</a> — <code data-source-path="some-implementations/riverhog/applications/a-riverhog-minisign-witness/src/a_riverhog_minisign_witness/state_migrations/v1_ddl.py">some-implementations/riverhog/applications/a-riverhog-minisign-witness/src/a_riverhog_minisign_witness/state_migrations/v1_ddl.py::SQLITE_DDL</code>
+<br>
+<code data-source-path="tests/fixtures/state/v1_0001/a-riverhog-minisign-witness.sqlite.sql">tests/fixtures/state/v1_0001/a-riverhog-minisign-witness.sqlite.sql</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make release-check</code>
+<a href="source-commands.html#route-8d8d22d6a6b17edc6babcfab">make release-check</a>
 </li>
 <li>
-<code>make database-qualification</code>
+<a href="source-commands.html#route-27f281b51ec606c43bd87cc5">make database-qualification</a>
 </li>
 </ul>
 </aside>

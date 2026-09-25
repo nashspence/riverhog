@@ -1,0 +1,3028 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="on">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>compatibility/http-api/v1: riverhog · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="policies.html">Governing policies</a> / <a href="p-5bc717c2c0bac943b7a7d35f.html">Indexed applications</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>compatibility/http-api/v1: riverhog</h1>
+<aside class="audit">
+<p>Indexed contract elements under this authority; this index is not an executed result.</p>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Contract element</th>
+<th scope="col">Owned pointer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="e-f3a3dc98c07c42d8a52a1f3f.html">DELETE /v1/apps/{app}/keys/{key_id}/access</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/delete</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-775429abed21e11f645878a2.html">DELETE /v1/archive/copy-jobs/{collection_id}/{destination_store}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-597e0ed5d77067409aac4e28.html">DELETE /v1/collections/{collection_id}/provenance/verification</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1verification/delete</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-abf1d6d22c4c8800b1baf941.html">DELETE /v1/retrieval-jobs/{job_id}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs~1{job_id}/delete</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b663d094ce7e3c75dca69c48.html">GET /health/live</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1health~1live/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-03f3f8d2b88f1776eea06cc9.html">GET /health/ready</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1health~1ready/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0b6871f31c89aee1410bd4e7.html">GET /v1/app-key-access</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1app-key-access/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-52b32b84f732c524366167c0.html">GET /v1/apps</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-ef3788c683e29f947f25621a.html">GET /v1/apps/{app}/keys</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-88e5abaf8ae11fe67c4bf086.html">GET /v1/archive/copy-jobs</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0f78a9d6f0af8ae15d9028b4.html">GET /v1/archive/copy-jobs/{collection_id}/{destination_store}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d9c4d380a8c6746c91fdc85a.html">GET /v1/archive/stores</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1stores/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-9ea9dfc859f89c20ca01be32.html">GET /v1/archive/stores/{store}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1stores~1{store}/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d3433e695cb59bf9d4a63606.html">GET /v1/archive/upload-copy-intents/{collection_id}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1upload-copy-intents~1{collection_id}/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-394155b2a942456cecec089c.html">GET /v1/catalog-sync/changes</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1catalog-sync~1changes/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-59fb0a058bf6b05a19713db8.html">GET /v1/catalog-sync/checkpoint</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1catalog-sync~1checkpoint/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-25fcad87a919a4188c12dcf2.html">GET /v1/catalog-sync/collections</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1catalog-sync~1collections/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-c09b5b66ce06689c6ab9c17b.html">GET /v1/catalog/collections/{collection_id}/inventory</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1catalog~1collections~1{collection_id}~1inventory/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d7f1ccd18aff6051b0957684.html">GET /v1/collection-processing-claims</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-266ae1a67f39c3cbb4ef790f.html">GET /v1/collection-processing-claims/{claim_id}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-efaf6624b352b45f10235155.html">GET /v1/collection-processing-claims/{claim_id}/derivation</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1derivation/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-96fe0d3e1f6675ff0c090e7f.html">GET /v1/collection-processing-claims/{claim_id}/derivation/dispositions</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1derivation~1dispositions/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b32b73ad63b670b696a7195e.html">GET /v1/collection-processing-claims/{claim_id}/derivation/output-edges</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1derivation~1output-edges/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-e18590fb199ad78e50c80b42.html">GET /v1/collection-processing-claims/{claim_id}/inputs</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1inputs/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1ea31348b4b15a7bccb01bd5.html">GET /v1/collection-processing-claims/{claim_id}/outcomes</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1outcomes/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-5fbc49b6c3fe295aa99845ff.html">GET /v1/collection-processing-claims/{claim_id}/plan/artifacts</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1plan~1artifacts/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-026e102f1553d8711b5858c0.html">GET /v1/collection-upload-sessions</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-52fc4c93021c4652704af59a.html">GET /v1/collection-upload-sessions/{collection_id}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-48e509effebf13a89b23d061.html">GET /v1/collection-upload-sessions/{collection_id}/files</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1files/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-8f7651210785d68ac8943efa.html">GET /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1provenance~1journals~1{journal_id}/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-2d19d20e2054e0486be57b50.html">GET /v1/collection-upload-sessions/{collection_id}/volumes/{volume_id}/units/{unit}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1volumes~1{volume_id}~1units~1{unit}/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-5b9594a1363a56ffddb0a0ce.html">GET /v1/collection-upload-sessions/{collection_id}/work</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1work/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1e63b99e5b12beb7909da8b6.html">GET /v1/collections/{collection_id}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-2a4b8e5685636aa7e7b613c0.html">GET /v1/collections/{collection_id}/archive-copies</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1archive-copies/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-2f3ebaa0ef6a10123fb22da5.html">GET /v1/collections/{collection_id}/derivation</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1derivation/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-4c961fd2a55aeb9b7f286836.html">GET /v1/collections/{collection_id}/provenance/files</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1files/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-8b07eea321ddde683705da22.html">GET /v1/collections/{collection_id}/provenance/files/{path}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1files~1{path}/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-de722d1ac9ded25c07d0d215.html">GET /v1/collections/{collection_id}/provenance/journals/{journal_id}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals~1{journal_id}/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-5ef501c9d1ca96322565c619.html">GET /v1/collections/{collection_id}/provenance/journals/{journal_id}/agents</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1journals~1{journal_id}~1agents/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-8957e2180d77b8fad1219a1d.html">GET /v1/collections/{collection_id}/provenance/trace/{path}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1trace~1{path}/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-c481d0cae1d5262758aaf113.html">GET /v1/collections/{collection_id}/provenance/verification</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1verification/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-2c6abfea3daad0ed0552270d.html">GET /v1/collections/{collection_id}/tags</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1tags/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-7ffb16dea6ee99df5a5cb646.html">GET /v1/download-quota</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1download-quota/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-af5aac7080963ff66291387b.html">GET /v1/download-quotas</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1download-quotas/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-9933e2a7f2ead7b4e77f1d57.html">GET /v1/events</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1events/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-7bffe64eb95f5759f81294f1.html">GET /v1/retrieval-cache</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-cache/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-f1787a8367602653966d6256.html">GET /v1/retrieval-cache/objects</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-cache~1objects/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b42d44f4e8e101ec2deda0fe.html">GET /v1/retrieval-cache/objects/{collection_id}/{source_store}/{object_id}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-cache~1objects~1{collection_id}~1{source_store}~1{object_id}/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-cc73187ad6b5d6b7a7b11e3b.html">GET /v1/retrieval-jobs/{job_id}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs~1{job_id}/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-78bb516915f24b1034a91655.html">GET /v1/retrieval-jobs/{job_id}/content</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs~1{job_id}~1content/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-f85e066af4a4dfcd2b5c98a1.html">GET /v1/retrieval-plans/{plan_id}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-plans~1{plan_id}/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-3dce3feba3e4421ea5b60424.html">GET /v1/retrieval-plans/{plan_id}/files</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-plans~1{plan_id}~1files/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-c7bd1b17e44db8f1a0cf17d7.html">GET /v1/search</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1search/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-684fde5ad2191c09eea4cdf1.html">GET /v1/tags</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1tags/get</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-c3b1e6fb5211901e5143d9f9.html">HEAD /v1/collections/{collection_id}/provenance/journals/{journal_id}</a>
+</td>
+<td>
+<code>/external_contract/http_route_supplements/0</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-26471d377cb1a3a1ca0f4d49.html">HEAD /v1/retrieval-jobs/{job_id}/content</a>
+</td>
+<td>
+<code>/external_contract/http_route_supplements/1</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-bf5e33d51e31ffa20255fd83.html">PATCH /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1provenance~1journals~1{journal_id}/patch</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-cb8916c6e791adb209bee3b0.html">POST /v1/apps/{app}/keys</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-3884fc29ba985c72dde38141.html">POST /v1/apps/{app}/keys/{key_id}/access</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-6d5e828c250efee2a6a3efbb.html">POST /v1/apps/{app}/keys/{key_id}/revoke</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1revoke/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-2fcc38a0b0002e7cf659e5ad.html">POST /v1/apps/{app}/keys/{key_id}/rotate</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1rotate/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-a7ca3da6db99c3e48d59ce97.html">POST /v1/archive/copies/retire</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retire/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-fcdfdbe29f6e127d2a4d090d.html">POST /v1/archive/copies/retirement-plan</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copies~1retirement-plan/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-6b94571a3ba5b726abb10573.html">POST /v1/archive/copy-jobs</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-428d8fb96c426ed854373978.html">POST /v1/collection-processing-claims</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-458c9f7e7d02d8c2a6c104b1.html">POST /v1/collection-processing-claims/{claim_id}/abandon</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1abandon/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1c096c1d3ec22ebaefdea2b9.html">POST /v1/collection-processing-claims/{claim_id}/capabilities</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1capabilities/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0528f344c911da982dd9ff56.html">POST /v1/collection-processing-claims/{claim_id}/capabilities/{capability_id}/artifacts/seal</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1capabilities~1{capability_id}~1artifacts~1seal/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1da894eed96fc5422b7ed776.html">POST /v1/collection-processing-claims/{claim_id}/derivation/seal</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1derivation~1seal/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-84f2a2a48a62307afc800622.html">POST /v1/collection-processing-claims/{claim_id}/inputs/seal</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1inputs~1seal/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-7b58ec05d1513b0cd02a58d7.html">POST /v1/collection-processing-claims/{claim_id}/outcomes/settle</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1outcomes~1settle/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-040ee2c517683668d2b5c894.html">POST /v1/collection-processing-claims/{claim_id}/plan</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1plan/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-16920e1f71f8d8e31ba2d600.html">POST /v1/collection-processing-claims/{claim_id}/plan/artifacts/seal</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1plan~1artifacts~1seal/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1b69df6da24313e99df522ad.html">POST /v1/collection-processing-claims/{claim_id}/release</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1release/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-9f7571d0b53c0997475adcb2.html">POST /v1/collection-processing-claims/{claim_id}/renew</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1renew/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-ec99eadeb8b73803606fe898.html">POST /v1/collection-processing-claims/{claim_id}/restart</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1restart/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-872fd32b91a51a9b9401514d.html">POST /v1/collection-processing-claims/{claim_id}/settle</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1settle/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d4b853ca1846f6274bfb8e7a.html">POST /v1/collection-processing-claims/{claim_id}/source-collection-retirement</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1source-collection-retirement/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-36242b194d11b3a9c5cdd0fe.html">POST /v1/collection-upload-sessions</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-a17686daddda2f79969aff4d.html">POST /v1/collection-upload-sessions/{collection_id}/cancel</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1cancel/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-5674adc4b8684936cbba2c90.html">POST /v1/collection-upload-sessions/{collection_id}/complete</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1complete/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-35052b9673b365d6c13296b0.html">POST /v1/collection-upload-sessions/{collection_id}/discard</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1discard/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-fbbf272f1a7ef7faf8375b1a.html">POST /v1/collection-upload-sessions/{collection_id}/discard-plan</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1discard-plan/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-810b01a9db8256bb44e8b8be.html">POST /v1/collection-upload-sessions/{collection_id}/files</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1files/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-814a9406992b69d24638d42b.html">POST /v1/collection-upload-sessions/{collection_id}/heartbeat</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1heartbeat/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-11205ba1a2fdcfb35803747e.html">POST /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}/seal</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1provenance~1journals~1{journal_id}~1seal/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-cf7a14116dfea1fdf7adb0da.html">POST /v1/collection-upload-sessions/{collection_id}/raw-part-digests</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1raw-part-digests/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-3f4b7c808c6d53a02fad6685.html">POST /v1/collection-upload-sessions/{collection_id}/tags</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1tags/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-56fd791529d06dbe57720f0d.html">POST /v1/collections/{collection_id}/delete</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1delete/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d3b1cb6b883f9da4f717a265.html">POST /v1/collections/{collection_id}/deletion-plan</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1deletion-plan/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-5af0dfd654d469e6ec3ffb48.html">POST /v1/collections/{collection_id}/provenance/verification</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1provenance~1verification/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d99a63dff00c086d7bfd5027.html">POST /v1/collections/{collection_id}/tags:add</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1tags:add/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-2ee5835f965bb0dda0f345c8.html">POST /v1/collections/{collection_id}/tags:contains</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1tags:contains/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-a5511db1836b0ad961b6ab5d.html">POST /v1/collections/{collection_id}/tags:remove</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1tags:remove/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-2580db69227092fd9848487c.html">POST /v1/collections:search</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections:search/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d2a3a7dd4cc5f1687006eb46.html">POST /v1/retrieval-jobs</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-407c4fcf143bdf8b946dea7c.html">POST /v1/retrieval-jobs/{job_id}/ack</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs~1{job_id}~1ack/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-edb8a4641a7a9c65b2b81ce3.html">POST /v1/retrieval-jobs/{job_id}/renew</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-jobs~1{job_id}~1renew/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0d0df2756bb749f59a827617.html">POST /v1/retrieval-plans</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-plans/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-9e345ca0db827d1cf03d6cf2.html">POST /v1/retrieval-plans/{plan_id}/advance</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1retrieval-plans~1{plan_id}~1advance/post</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1b3b584515fc8349e453c6b2.html">PUT /v1/apps/{app}/keys/{key_id}/access</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1access/put</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-f0a8a46a1c2ca4f85924ee11.html">PUT /v1/apps/{app}/keys/{key_id}/download-quota</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1download-quota/put</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-f301c44c1612cbe849a8d160.html">PUT /v1/collection-processing-claims/{claim_id}/capabilities/{capability_id}/artifacts</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1capabilities~1{capability_id}~1artifacts/put</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-cf7f338704373ce746d4f819.html">PUT /v1/collection-processing-claims/{claim_id}/derivation/dispositions</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1derivation~1dispositions/put</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-924f2ebad9ea4c691e250249.html">PUT /v1/collection-processing-claims/{claim_id}/derivation/output-edges</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1derivation~1output-edges/put</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-56b8c81ecf79925370526ade.html">PUT /v1/collection-processing-claims/{claim_id}/inputs</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1inputs/put</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-e6cef65ec8a1e5cef9cbf220.html">PUT /v1/collection-processing-claims/{claim_id}/plan/artifacts</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-processing-claims~1{claim_id}~1plan~1artifacts/put</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-342ba22185e2333a3fc2effa.html">PUT /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1provenance~1journals~1{journal_id}/put</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-54bee1f151450e8c393dbfa1.html">PUT /v1/collection-upload-sessions/{collection_id}/volumes/{volume_id}/units/{unit}</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collection-upload-sessions~1{collection_id}~1volumes~1{volume_id}~1units~1{unit}/put</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-5f737677bed58a7fff0a5858.html">PUT /v1/collections/{collection_id}/description</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1collections~1{collection_id}~1description/put</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-00bced8388fdd463a23b074c.html">riverhog HTTP service</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/info</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-9a93fd2b49361580ebd34b48.html">schemas: AddCollectionUploadTagsRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/AddCollectionUploadTagsRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-6f2e437708da470ec2f4ceb3.html">schemas: AppAccessListFiltersOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/AppAccessListFiltersOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-10dc504add21be3d47687523.html">schemas: AppAccessListItemOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/AppAccessListItemOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-602ad0704c6cdb099ebad008.html">schemas: AppAccessListOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/AppAccessListOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-66964c6979036a3ce354b09f.html">schemas: AppAccessSetOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/AppAccessSetOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-68a974a54220d195251c94e6.html">schemas: AppKeyCreatedOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/AppKeyCreatedOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-808bca3b1d129834f75664a2.html">schemas: AppKeyListOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/AppKeyListOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-2d295efc68d2af39e8eee04d.html">schemas: AppKeyOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/AppKeyOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-3833e2314d3a4ea3da16dffa.html">schemas: AppListOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/AppListOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-aaee6e1094b4f05b78abaa7d.html">schemas: AppSummaryOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/AppSummaryOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-5076d5a23e07db84772a51b2.html">schemas: ApplicationAccessGrant</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrant</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-603d83f3eddc419e9a245016.html">schemas: ApplicationAccessGrantSet</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessGrantSet</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-74f938e6f602e0e23565f478.html">schemas: ApplicationAccessSort</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ApplicationAccessSort</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-348f10fba1a6859da4355ca7.html">schemas: ApplicationKeyId</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ApplicationKeyId</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-478338896c65c2996329f390.html">schemas: ApplicationKeySort</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ApplicationKeySort</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-752b67abefe9328e2cd917bb.html">schemas: ApplicationName</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ApplicationName</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-c5de15aeca8ad0f33a297445.html">schemas: ApplicationPermission</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ApplicationPermission</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-05427da9595943eba8b6a05f.html">schemas: ApplicationResource</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ApplicationResource</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-331468076d92f393c5c4a764.html">schemas: ApplicationSort</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ApplicationSort</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0019c56f0077f6c61b7c6b90.html">schemas: ArchiveCopyJobCanceledData</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyJobCanceledData</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1393c6c4e064185741f258ef.html">schemas: ArchiveCopyJobCanceledEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyJobCanceledEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0c17185a748aeab87048be52.html">schemas: ArchiveCopyJobCompletedData</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyJobCompletedData</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b817a356c2dc54cc09c4a9ff.html">schemas: ArchiveCopyJobCompletedEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyJobCompletedEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-fe80da460ebab8dc61f12886.html">schemas: ArchiveCopyJobFailedData</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyJobFailedData</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-fac69300757f461f2c973da7.html">schemas: ArchiveCopyJobFailedEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyJobFailedEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-9752588bdeca1e5468908707.html">schemas: ArchiveCopyJobListFiltersOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyJobListFiltersOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-25f954fffdb90266379c4707.html">schemas: ArchiveCopyJobListOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyJobListOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-2098611a5c71c4a7ba1aef3c.html">schemas: ArchiveCopyJobOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyJobOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0919c8e9f4827a7b35949913.html">schemas: ArchiveCopyJobRequestedData</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyJobRequestedData</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-ff8c79908573da843f6e7f19.html">schemas: ArchiveCopyJobRequestedEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyJobRequestedEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-47c2d21e9fe29826e50df81a.html">schemas: ArchiveCopyJobSort</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyJobSort</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0e0f1f7f201b8ae28d573689.html">schemas: ArchiveCopyJobState</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyJobState</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-7f741747af8b637132edd6a8.html">schemas: ArchiveCopyOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d58bdbbe800d3623a50e0c05.html">schemas: ArchiveCopyRetirementPlanOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyRetirementPlanOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-e865b6f731a0366c2c8ca073.html">schemas: ArchiveCopyRetirementRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyRetirementRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-07d9528b80bf98740e56d112.html">schemas: ArchiveCopyRetirementResultOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyRetirementResultOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1ebf77086f0a5e602aa32961.html">schemas: ArchiveCopyRetirementRetainedOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyRetirementRetainedOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1fb2aa443f9b184d205fde4c.html">schemas: ArchiveCopyRetirementTargetOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyRetirementTargetOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1c03adcb35f7d963842cac26.html">schemas: ArchiveDownloadAllowanceOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveDownloadAllowanceOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1240ae4641fa1494c46e8d14.html">schemas: ArchiveStoreListOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveStoreListOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0869c94e5935fd0902f129ff.html">schemas: ArchiveStoreName</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveStoreName</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-6ad1806014369fd469f6b8a7.html">schemas: ArchiveStoreOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveStoreOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-879cb7bc7e6146dc0a7b072b.html">schemas: ArchiveStoreSort</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveStoreSort</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-133905c351bc0309d3198610.html">schemas: ArtifactDispositionBatchDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionBatchDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-8bd1ee4f88ac3edebce42f01.html">schemas: ArtifactDispositionDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-cef0f8667d7eff46cbbe7fe2.html">schemas: ArtifactDispositionFailureDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionFailureDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-4943bf64bdb555258838fd30.html">schemas: ArtifactDispositionInputDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionInputDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-235ba8d36aa2e688b70a71cb.html">schemas: ArtifactDispositionOutputBatchDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionOutputBatchDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-2f594365f73d48dee70d773e.html">schemas: ArtifactDispositionOutputDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionOutputDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-215ea72bec954b1b64352e85.html">schemas: ArtifactDispositionOutputPageDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionOutputPageDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-c398d786629ce7735a13e0e1.html">schemas: ArtifactDispositionPageDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionPageDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-a0ab6276b5c5eaeb0b2e7f09.html">schemas: ArtifactDispositionSetDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionSetDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-c7d87829b6ee6fec6dce661d.html">schemas: ArtifactDispositionSetIdentityDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArtifactDispositionSetIdentityDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-89f240843204c733ae77ba2e.html">schemas: ArtifactReceivingSetDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArtifactReceivingSetDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b18ba54e890262583d6f3327.html">schemas: ArtifactSetIdentityDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArtifactSetIdentityDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-7250b6e6ba91c3387623e0ca.html">schemas: BrowsePageToken</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/BrowsePageToken</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-6391cb1d47b02ba00ac1e9ff.html">schemas: BrowseQuery</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/BrowseQuery</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1850f2772fb942042fb15ef1.html">schemas: CanonicalRelPath</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CanonicalRelPath</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-731e9798465c03b028751680.html">schemas: CapturedCollectionFileProvenanceDetailOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CapturedCollectionFileProvenanceDetailOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-ee25b349b3ed4c13469eaafb.html">schemas: CapturedCollectionFileProvenanceOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CapturedCollectionFileProvenanceOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-9d8379125f4c60ae6389eefa.html">schemas: CapturedCollectionFileProvenancePage</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CapturedCollectionFileProvenancePage</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-f6dcb5d2ac48749bb15cee25.html">schemas: CapturedCollectionFileProvenanceTraceOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CapturedCollectionFileProvenanceTraceOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-3a0768802dc4f03c05f5789f.html">schemas: CapturedCollectionProvenanceVerification</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CapturedCollectionProvenanceVerification</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-149d5bf9f164c701daa0c75e.html">schemas: CapturedFileProvenanceBinding</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CapturedFileProvenanceBinding</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-4161ac7fed310f2c19b437fc.html">schemas: CatalogSyncChangePage</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncChangePage</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-adee204df56151d0d57b65e9.html">schemas: CatalogSyncCheckpoint</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCheckpoint</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-6c8963d681b3b0d2d68a74df.html">schemas: CatalogSyncCollectionPage</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncCollectionPage</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-98be4b101daa6925aa35c37a.html">schemas: CatalogSyncDeparture</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncDeparture</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-c94db4ff6ec6731cb4334801.html">schemas: CatalogSyncDescriptor</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncDescriptor</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-acc502ae2fc3e74829c52b46.html">schemas: CatalogSyncUpsert</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CatalogSyncUpsert</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0f5c0b40bc2dfdb7e8e9293f.html">schemas: ClaimFenceDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ClaimFenceDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d590507648eb08562230d5d5.html">schemas: CollectionArchiveCopyListOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionArchiveCopyListOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d4e9b035a6ecde71081cfbca.html">schemas: CollectionArtifactBatchDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionArtifactBatchDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-16ac0d233c35641be20c52b3.html">schemas: CollectionArtifactIdentityDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionArtifactIdentityDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-3da53913fdec69fe4cb7f4ab.html">schemas: CollectionArtifactPageDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionArtifactPageDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-550d22214bde33c760ad1c55.html">schemas: CollectionDeletedData</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionDeletedData</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-5ce1f2482133fed0714c7550.html">schemas: CollectionDeletedEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionDeletedEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-6167b631aff6ec64b2862ed0.html">schemas: CollectionDeletionArchiveCopyOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionDeletionArchiveCopyOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-bd65d5941135f1e2bc7cc628.html">schemas: CollectionDeletionPlanOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionDeletionPlanOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-9612da6ea2ca2cbc3666b90d.html">schemas: CollectionDeletionResultOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionDeletionResultOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-060d7c6f8cf2949991c64359.html">schemas: CollectionDerivationDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionDerivationDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d7c7a32141c67617bf62aa87.html">schemas: CollectionDerivationResponseDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionDerivationResponseDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-8072751b82bafe6b3b9a001c.html">schemas: CollectionDescription</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionDescription</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-c6bccb33e57de88236f6edad.html">schemas: CollectionDescriptionOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionDescriptionOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-5c13377112c0e630f139f579.html">schemas: CollectionFileProvenanceDetailOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionFileProvenanceDetailOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1f725462d98caab7b7ff87d9.html">schemas: CollectionFileProvenanceTraceOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionFileProvenanceTraceOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-65411aa114231f310dc43413.html">schemas: CollectionFinalizedData</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-9de9b581cbd2555cfd959b09.html">schemas: CollectionFinalizedEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-f313cce11055dc4c6fad0fe7.html">schemas: CollectionId</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionId</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-db5af399525c4babb4327b67.html">schemas: CollectionIdParameter</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionIdParameter</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-a2ae7be8a624074b9e339825.html">schemas: CollectionProvenanceVerificationJobOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionProvenanceVerificationJobOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d30b1d6b75f9e9012373e072.html">schemas: CollectionProvenanceVerificationOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionProvenanceVerificationOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-e49734e13534ff9515f24fcd.html">schemas: CollectionRootBatchDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionRootBatchDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-cf90cc3a091a7950313011cf.html">schemas: CollectionRootIdentityDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionRootIdentityDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-df3256b045cc4c8a7b9f5644.html">schemas: CollectionRootPageDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionRootPageDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-6e8a9894b8578cce6bcb692a.html">schemas: CollectionSort</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionSort</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-c43e8ae695916b4ae623fe2b.html">schemas: CollectionSummaryOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionSummaryOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-cf2aefec442e1ef869b78b9b.html">schemas: CollectionTag</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionTag</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1ecc306336af8a09969a2863.html">schemas: CollectionTagListOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionTagListOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-f460107140931adc5797bf47.html">schemas: CollectionTagMembershipOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionTagMembershipOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-8b92fc5d164c0cf51890cfe7.html">schemas: CollectionTagMembershipRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionTagMembershipRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-52c49cce10b6ec0a48e087f7.html">schemas: CollectionTagMutationOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionTagMutationOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-28d5847a25adfe60cf346a2e.html">schemas: CollectionTagMutationRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionTagMutationRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-8467a2f8e93cc330037d2b57.html">schemas: CollectionUploadArtifactCustodyReceiptDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadArtifactCustodyReceiptDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-e0ee4202058185180ca6054c.html">schemas: CollectionUploadCopyIntentOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadCopyIntentOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-62c70a2f8d3059a7806d3cb7.html">schemas: CollectionUploadDiscardPlanOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadDiscardPlanOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-f5df8594a07f00d300d9d24f.html">schemas: CollectionUploadDiscardResultOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadDiscardResultOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-7644ff29e500885c02ad25ad.html">schemas: CollectionUploadFileIn</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileIn</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0392576ac4f2e37840d702e5.html">schemas: CollectionUploadFileOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadFileOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-ce277c52c90873f304993918.html">schemas: CollectionUploadListFiltersOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadListFiltersOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-70d05f92ebb24b983eb1d0c0.html">schemas: CollectionUploadListItemOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadListItemOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-ed05bf5578fc88b1fc8b9805.html">schemas: CollectionUploadProvenanceJournalCreateDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadProvenanceJournalCreateDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-bc4a18e024ef9bb2f1bfcc12.html">schemas: CollectionUploadProvenanceJournalStatusDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadProvenanceJournalStatusDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-09be39db1a14b79999a2ad65.html">schemas: CollectionUploadRawDigestBatchDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadRawDigestBatchDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-3606973433a3c3920fa68b80.html">schemas: CollectionUploadRawDigestProgressDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadRawDigestProgressDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-818152430779038053116d61.html">schemas: CollectionUploadRawPartsIn</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadRawPartsIn</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0542990f0013435e837b68d3.html">schemas: CollectionUploadRegistrationConstraintsOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadRegistrationConstraintsOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-97ff059dd1fad0ecccb15e4d.html">schemas: CollectionUploadSessionFilesRegistrationOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionFilesRegistrationOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-2f98c57dcf1cbaf8cb475024.html">schemas: CollectionUploadSessionOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSessionOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-58a380a41d87a8b89a810657.html">schemas: CollectionUploadSort</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadSort</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-a33df5cbcad64c982aca2d43.html">schemas: CollectionUploadState</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadState</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-012b2e011fa34efcf9ea694d.html">schemas: CollectionUploadTagsOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadTagsOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-ab787d0e59338f8a0b4e8da3.html">schemas: CollectionUploadUnitAssignmentDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadUnitAssignmentDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-3bcb8e4cd3f6f0144d9d4c68.html">schemas: CollectionUploadUnitSourceDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadUnitSourceDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-accadeb260c4d037a7e6b73f.html">schemas: CollectionUploadUnitWorkDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadUnitWorkDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-75d122909958afd8a5d9e4dd.html">schemas: CollectionUploadVolumeSummaryDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadVolumeSummaryDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d0a13ab4e6b64d65df56ddac.html">schemas: CollectionUploadWorkBatchDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionUploadWorkBatchDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-8aef7e01095ac9c9da19c01e.html">schemas: CompleteCollectionUploadCustodyOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CompleteCollectionUploadCustodyOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-7aa0e8d7d90418a52218bd2a.html">schemas: CreateAppKeyRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CreateAppKeyRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-f4641c78ec39add4f27c88d8.html">schemas: CreateArchiveCopyJobRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CreateArchiveCopyJobRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-59e2b93d11566b0cda328600.html">schemas: CreateOrResumeCollectionUploadSessionOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CreateOrResumeCollectionUploadSessionOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-e2810e1e567e60946e2b5c5e.html">schemas: CreateOrResumeCollectionUploadSessionRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CreateOrResumeCollectionUploadSessionRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-a54c45e6c7a1b6508595e22a.html">schemas: CreateRetrievalJobRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CreateRetrievalJobRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-9906808f490bf8c1de4f65e2.html">schemas: DeleteCollectionRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/DeleteCollectionRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b10886cfba9f4aafe82fe793.html">schemas: DiscardCollectionUploadRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/DiscardCollectionUploadRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-8d68cf8c216727522de6caac.html">schemas: DownloadQuotaSort</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/DownloadQuotaSort</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-a0b8289dac16eb2fe204b8f0.html">schemas: ErrorBody</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ErrorBody</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-49ba6964dfff40a8e075ce35.html">schemas: ErrorOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ErrorOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-13db67b9d8a1d40d0c621350.html">schemas: ExactSetIdentityDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ExactSetIdentityDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-a29ec3ebfa057894d8b3f41b.html">schemas: FailedArchiveCopyOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/FailedArchiveCopyOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-e476c920d7840bd228c7320d.html">schemas: FailedArchiveRootPublicationOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/FailedArchiveRootPublicationOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-fd9237cfab3666f0cad5c030.html">schemas: HTTPValidationError</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/HTTPValidationError</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-87d97205c5c4197973ac7642.html">schemas: HealthOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/HealthOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-dab274f8106455eb48326d9e.html">schemas: ImmutableFileIdentityDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ImmutableFileIdentityDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-8c8ca4ac70f0d62b796074c9.html">schemas: IncompleteArchiveCopyOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/IncompleteArchiveCopyOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-08fe9b402fb2eff09661a2ac.html">schemas: KeyDownloadQuotaListOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaListOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-33fe00474f3772d4f6925fa2.html">schemas: KeyDownloadQuotaOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/KeyDownloadQuotaOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-38c1ac840ff6a97f9b50a0b9.html">schemas: LifecycleEventCursor</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/LifecycleEventCursor</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-875fe4cc42b1a4fdd1025416.html">schemas: ListCollectionFileProvenanceOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ListCollectionFileProvenanceOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-7b1a749ba5f3a8ba6b97669b.html">schemas: ListCollectionUploadSessionFilesOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ListCollectionUploadSessionFilesOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-51918321021853cdafa38de9.html">schemas: ListCollectionUploadSessionsOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ListCollectionUploadSessionsOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-4e2ebfdb481cec0d634ea475.html">schemas: ListCollectionsOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ListCollectionsOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-050a77e317aac14f8752d06c.html">schemas: ListProvenanceJournalAgentsOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-6481a47500dea9c41248f5bd.html">schemas: MixedCollectionFileProvenancePage</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/MixedCollectionFileProvenancePage</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-84c394d9b02bf590af6406c5.html">schemas: MonthlyDownloadQuotaBytes</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/MonthlyDownloadQuotaBytes</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-344a4e99fe8b068d69cc8019.html">schemas: MutateAppAccessRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/MutateAppAccessRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-25c0d3b3dabdede3bc0558bc.html">schemas: NonnegativeDecimal</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/NonnegativeDecimal</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-487a7b83a46f40aa6e44b4c5.html">schemas: OmittedCollectionFileProvenanceDetailOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/OmittedCollectionFileProvenanceDetailOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-ebb4e586b7252710c7ec26d6.html">schemas: OmittedCollectionFileProvenanceOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/OmittedCollectionFileProvenanceOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-006f0d5fe497feeecc13d88b.html">schemas: OmittedCollectionFileProvenancePage</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/OmittedCollectionFileProvenancePage</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-20f065edd50ab837d4c8902a.html">schemas: OmittedCollectionFileProvenanceTraceOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/OmittedCollectionFileProvenanceTraceOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-805ddb0f24dcc8d3ab005fb3.html">schemas: OmittedCollectionProvenanceVerification</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/OmittedCollectionProvenanceVerification</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-736f20fa2d818a713b2c885d.html">schemas: OmittedFileProvenanceBinding</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/OmittedFileProvenanceBinding</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-50045aad659d722823778a54.html">schemas: OperationIdentityDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/OperationIdentityDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b24d7ea784bcc4db349471fd.html">schemas: OutcomeSetDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/OutcomeSetDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-99e888c33a2283dd5c9b6760.html">schemas: PendingArchiveRootPublicationOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/PendingArchiveRootPublicationOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1e873e6ec0ce051533859b56.html">schemas: PendingCollectionUploadCustodyOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/PendingCollectionUploadCustodyOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-9b5f99ff9017b132bdb39428.html">schemas: PortableCollectionHeader</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionHeader</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1a3fbc8f7a6bc64305456acd.html">schemas: PortableCollectionInventoryAuthority</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionInventoryAuthority</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b3adb44559a507ca914a84b0.html">schemas: PortableCollectionInventoryPage</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/PortableCollectionInventoryPage</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-87006f0140ff643b56f8d37d.html">schemas: PrincipalId</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/PrincipalId</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-496958f11277bb1fbb8a3a72.html">schemas: ProcessingCapabilityCreateDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityCreateDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-33338560d273817da6ce2690.html">schemas: ProcessingCapabilityDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingCapabilityDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-322487fae51c72bccaee55f4.html">schemas: ProcessingClaimAbandonDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimAbandonDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-416583de410912ca75fbb595.html">schemas: ProcessingClaimConsumerDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimConsumerDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-5def66437c373fc0b8cb9290.html">schemas: ProcessingClaimCreateDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimCreateDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b2440249571e9d95da0aec97.html">schemas: ProcessingClaimDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0ad2f000a3533f0e7b36c81c.html">schemas: ProcessingClaimFenceDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimFenceDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-42b0e1519df0d99685635812.html">schemas: ProcessingClaimFiltersDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimFiltersDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-27d4c0bfbb265221f95aee38.html">schemas: ProcessingClaimOutcomeSettlementDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomeSettlementDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-6a26ed382d2d5fa14c6327c0.html">schemas: ProcessingClaimOutcomesSettleDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-f27b52f04bc18fa1e7c65fc1.html">schemas: ProcessingClaimPageDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPageDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-07e3b3e4fc52d0497be679ab.html">schemas: ProcessingClaimPlanDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-e2c3304ca1328465edb5333d.html">schemas: ProcessingClaimPlanSealDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimPlanSealDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-dc9837104980d9d3c2392e44.html">schemas: ProcessingClaimRenewDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimRenewDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-196f8123c47500b74588735e.html">schemas: ProcessingClaimRestartDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimRestartDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-5052d8e43c784dc0394d7979.html">schemas: ProcessingClaimSettleDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimSettleDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-6495286e8c3c0238e078bb83.html">schemas: ProcessingClaimSort</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimSort</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-9bfffe70938c57f7311193e1.html">schemas: ProcessingOutcomeBindingDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingOutcomeBindingDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-673f28b6c11c3068ce509d5b.html">schemas: ProcessingOutcomeIdentityDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingOutcomeIdentityDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1ee452f77e2af57d63557b89.html">schemas: ProcessingOutcomePageDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingOutcomePageDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-df4a13803cd2c1ea41b372aa.html">schemas: ProvenanceEntryId</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProvenanceEntryId</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-fb61826bd87c9d9b33028373.html">schemas: ProvenanceExternalStateReferenceOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProvenanceExternalStateReferenceOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-9e5d37a145284877ec701816.html">schemas: ProvenanceJournalAgentOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProvenanceJournalAgentOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-895cd7cf122a356f51657a5e.html">schemas: ProvenanceJournalId</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProvenanceJournalId</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-ade2d8d42261c81a82cb4d24.html">schemas: ProvenanceJournalOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProvenanceJournalOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-75a462f2f6a7bd7e9162ebdf.html">schemas: ProvenanceSort</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProvenanceSort</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-4b5615e8ccacbc9c17746d04.html">schemas: ProvenanceStateId</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProvenanceStateId</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b3656f13adb49cf1567bcafa.html">schemas: ProvenanceStatus</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProvenanceStatus</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-e1f96f9f2fc9392f07c1c800.html">schemas: ProvenanceTraceExternalStateReferenceItemOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProvenanceTraceExternalStateReferenceItemOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-de57526dd0116b6112230507.html">schemas: ProvenanceTraceItemOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProvenanceTraceItemOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-914456388e194f8d92c5a145.html">schemas: ProvenanceTraceJournalItemOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProvenanceTraceJournalItemOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-eaf5cf36aefef3c9c8f2437d.html">schemas: ReceivingSetDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ReceivingSetDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-6a24d83954263c81e0ef0a52.html">schemas: RecipeIdentityDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RecipeIdentityDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0cc175d54aac6df18e555beb.html">schemas: RegisterCollectionUploadSessionFilesRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RegisterCollectionUploadSessionFilesRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-4ea9891f9173fed42ad6371e.html">schemas: RenewRetrievalJobRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RenewRetrievalJobRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-8cf7c521f9fe780dac1470e9.html">schemas: ReplaceAppAccessRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ReplaceAppAccessRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-475f4e0d5acb823db3aa2761.html">schemas: ReplaceCollectionDescriptionRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ReplaceCollectionDescriptionRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-c74098751aa44b5ca43c2421.html">schemas: RetireArchiveCopyRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetireArchiveCopyRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-596e2be5d0683309df8b627b.html">schemas: RetrievalCacheObjectListFiltersOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalCacheObjectListFiltersOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-7a967e034c224ca0d27fd3e2.html">schemas: RetrievalCacheObjectListOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalCacheObjectListOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-988c29a44b2c54dc31146956.html">schemas: RetrievalCacheObjectOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalCacheObjectOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b18e234f70c67a127389a8ec.html">schemas: RetrievalCachePolicyOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalCachePolicyOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-ea9f9e2f825c188815bd9431.html">schemas: RetrievalCacheProtection</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalCacheProtection</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-7cb659aaf3aa14d750f4bce9.html">schemas: RetrievalCacheSort</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalCacheSort</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-784a3b058de7c06129040802.html">schemas: RetrievalCacheState</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalCacheState</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-7242e6933fc7af4c5b6645e8.html">schemas: RetrievalCacheStatusOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalCacheStatusOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0773da81d1e6776d5f90e699.html">schemas: RetrievalCacheStoreName</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalCacheStoreName</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-d2677eec6ecb40d038cd548d.html">schemas: RetrievalCacheStoreStatusOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalCacheStoreStatusOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-efeed98f5e72881247289888.html">schemas: RetrievalCanceledData</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalCanceledData</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-ae473c9abe3e353f4f7d09c7.html">schemas: RetrievalCanceledEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalCanceledEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-7368dbfb5930d7d0fb1cce0b.html">schemas: RetrievalCompletedData</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalCompletedData</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-765327af7c23898d021e5965.html">schemas: RetrievalCompletedEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalCompletedEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-c581c71516305f61cfbc0e4b.html">schemas: RetrievalExpiredData</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredData</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-2344e6a7aeb48a718139cd2d.html">schemas: RetrievalExpiredEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalExpiredEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-cf6b337c724fb92e2ed64d76.html">schemas: RetrievalFailedData</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalFailedData</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-71060c173f8b887f8637d28f.html">schemas: RetrievalFailedEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalFailedEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-6099beebf0dc745174bff61f.html">schemas: RetrievalFileReferenceDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalFileReferenceDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0e3e08297e245d5521a558f5.html">schemas: RetrievalIssueData</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalIssueData</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-3379807933e641718961889e.html">schemas: RetrievalIssueEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalIssueEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-bae1eef77ee0f8e5a9239165.html">schemas: RetrievalJobOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalJobOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-344a2b303ac98b0f4b280ec8.html">schemas: RetrievalPlanFileOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalPlanFileOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-4ea016b5e9fbd8d89c5dde05.html">schemas: RetrievalPlanFilePageOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalPlanFilePageOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-67545a131b0b0a69b60e1f51.html">schemas: RetrievalPlanOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalPlanOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-506a35beac18e14025023a14.html">schemas: RetrievalPlanRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalPlanRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-0a2dd73b9816f6fd2ad48d6c.html">schemas: RetrievalReadyData</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalReadyData</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b0b6b4b90c702bc5446de7cf.html">schemas: RetrievalReadyEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalReadyEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-53f9db2f179254c15e082c73.html">schemas: RetrievalRenewedData</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalRenewedData</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-4e51dfa17688bdb5fd69bb26.html">schemas: RetrievalRenewedEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalRenewedEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-4c5c1a897f27baf87e9365f0.html">schemas: RetrievalRequestedData</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalRequestedData</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b7bda995d7ba18ad5186d6e5.html">schemas: RetrievalRequestedEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RetrievalRequestedEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-a101b66244bc484bbb59fd90.html">schemas: RiverhogActor</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RiverhogActor</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-bc5bd6bbd011996500337558.html">schemas: RiverhogEventPage</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RiverhogEventPage</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-2148e7c43ad590a96db23120.html">schemas: RiverhogLifecycleEvent</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/RiverhogLifecycleEvent</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-59c6d53ff9c07d55f3ad7bd4.html">schemas: SearchCollectionsRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/SearchCollectionsRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-64d57ecebe2391bf7a0ef1b7.html">schemas: SearchFileOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/SearchFileOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1123d2daf40ebdbf5edbfe5f.html">schemas: SearchOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/SearchOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-88a9818f22981171c2ea974e.html">schemas: SearchSort</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/SearchSort</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-2be636cb53c5a5339fa11e86.html">schemas: Sequence256Hex</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/Sequence256Hex</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-ee3261149e2a5f28d2e45b34.html">schemas: SetKeyDownloadQuotaRequest</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/SetKeyDownloadQuotaRequest</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-564f344546af9db7abff7075.html">schemas: SortOrder</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/SortOrder</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-50a3df172953dbc82b89ec7e.html">schemas: SourceCollectionRetirementClaimReferenceDocument</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/SourceCollectionRetirementClaimReferenceDocument</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-b6bb154a73f9a230403f8cf4.html">schemas: TagListOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/TagListOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-78c812b37652e713fc091f5c.html">schemas: TagSummaryOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/TagSummaryOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-a5f1fa6d7751540b2311e0cb.html">schemas: UploadCopyIntentOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/UploadCopyIntentOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-1e1f8394ad09bd3e4842dfd6.html">schemas: UploadCopyIntentsOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/UploadCopyIntentsOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-2383b81b78e902c849fe7c40.html">schemas: UploadedArchiveCopyOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/UploadedArchiveCopyOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-641376847dd2799e95028359.html">schemas: UploadedArchiveRootPublicationOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/UploadedArchiveRootPublicationOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-e942e3a0a50a652a3a598ae6.html">schemas: ValidationError</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ValidationError</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-edc1b74995856a0f98b29d88.html">schemas: _FileProvenanceOut</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/schemas/_FileProvenanceOut</code>
+</td>
+</tr>
+<tr>
+<td>
+<a href="e-342de74e7b926897685016a7.html">securitySchemes: HTTPBearer</a>
+</td>
+<td>
+<code>/external_contract/http_openapi/riverhog/components/securitySchemes/HTTPBearer</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

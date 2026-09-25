@@ -1,0 +1,1022 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="on">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Environment setting comparison · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="configuration.html">Audit references</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>Environment setting comparison</h1>
+<aside class="audit">
+<p>Recorded owner, consumer, and default-expression facts are discovered source facts, not observations of effective configuration.</p>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Setting</th>
+<th scope="col">Owner</th>
+<th scope="col">Consumers</th>
+<th scope="col">Default expressions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="e-08b7eb9fb08573a6dbf3adc3.html">XDG_CONFIG_HOME</a>
+</td>
+<td>a-gogurt-linux-listener</td>
+<td>a-gogurt-linux-listener</td>
+<td>user_home / &#x27;.config&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-8998a20d866de94e25f4424c.html">XDG_STATE_HOME</a>
+</td>
+<td>a-gogurt-linux-listener</td>
+<td>a-gogurt-linux-listener</td>
+<td>user_home / &#x27;.local&#x27; / &#x27;state&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-e780b2fa0160d91c0d8d875d.html">LOCALAPPDATA</a>
+</td>
+<td>a-gogurt-windows-listener</td>
+<td>a-gogurt-windows-listener</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-8aac4895fc3c7d899851a06e.html">PATHEXT</a>
+</td>
+<td>a-gogurt-windows-listener</td>
+<td>a-gogurt-windows-listener</td>
+<td>&#x27;.COM;.EXE;.BAT;.CMD&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-5d3bd01d0e48d6d77c4b78e9.html">SystemRoot</a>
+</td>
+<td>a-gogurt-windows-listener</td>
+<td>a-gogurt-windows-listener</td>
+<td>&#x27;C:\\Windows&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-dad569a3425688a9a930569f.html">A_REVIEW0_MATERIALIZER_CONFIG</a>
+</td>
+<td>a-review0-materializer</td>
+<td>a-review0-materializer</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-ea72249faddfe262af23899b.html">A_REVIEW0_MATERIALIZER_HOST</a>
+</td>
+<td>a-review0-materializer</td>
+<td>a-review0-materializer</td>
+<td>&#x27;127.0.0.1&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-f593a119eb15044418156a27.html">A_REVIEW0_MATERIALIZER_IMAGE_ID</a>
+</td>
+<td>a-review0-materializer</td>
+<td>a-review0-materializer</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-45e57f2eb0c42a4de0e3153a.html">A_REVIEW0_MATERIALIZER_PORT</a>
+</td>
+<td>a-review0-materializer</td>
+<td>a-review0-materializer</td>
+<td>&#x27;8080&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-81229aad5aa0346c9195228c.html">A_REVIEW0_MATERIALIZER_SOURCE_REVISION</a>
+</td>
+<td>a-review0-materializer</td>
+<td>a-review0-materializer</td>
+<td>&#x27;unknown&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-e62fa228ff0601c70108cec3.html">A_REVIEW0_MATERIALIZER_STATE_ROOT</a>
+</td>
+<td>a-review0-materializer</td>
+<td>a-review0-materializer</td>
+<td>&#x27;/var/lib/a-review0-materializer&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-d8b1dc4464a836e4e48a8f29.html">A_REVIEW0_MATERIALIZER_WORKSPACE</a>
+</td>
+<td>a-review0-materializer</td>
+<td>a-review0-materializer</td>
+<td>&#x27;/run/review0&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-3e6429a94495bb8b76b8da1c.html">A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_HOST</a>
+</td>
+<td>a-review0-nvenc-av1-opus-sampler</td>
+<td>a-review0-nvenc-av1-opus-sampler</td>
+<td>&#x27;127.0.0.1&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-7c58d3b2029d7d14823ddedd.html">A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_IMAGE_ID</a>
+</td>
+<td>a-review0-nvenc-av1-opus-sampler</td>
+<td>a-review0-nvenc-av1-opus-sampler</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-82e50cc39d2645538dac0a4a.html">A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_PORT</a>
+</td>
+<td>a-review0-nvenc-av1-opus-sampler</td>
+<td>a-review0-nvenc-av1-opus-sampler</td>
+<td>&#x27;8080&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-e4eaaacc2bd0888717dd56c4.html">A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_SOURCE_REVISION</a>
+</td>
+<td>a-review0-nvenc-av1-opus-sampler</td>
+<td>a-review0-nvenc-av1-opus-sampler</td>
+<td>&#x27;unknown&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-f3efb9a55f1b57127b66e434.html">A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_TOKEN</a>
+</td>
+<td>a-review0-nvenc-av1-opus-sampler</td>
+<td>a-review0-nvenc-av1-opus-sampler</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-69f5e3b4ea1a71db1439351b.html">A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_TOKEN_FILE</a>
+</td>
+<td>a-review0-nvenc-av1-opus-sampler</td>
+<td>a-review0-nvenc-av1-opus-sampler</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-069258444b2e8794927e0e22.html">A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_WORKSPACE</a>
+</td>
+<td>a-review0-nvenc-av1-opus-sampler</td>
+<td>a-review0-nvenc-av1-opus-sampler</td>
+<td>&#x27;/run/review0&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-caf5cd1e5cc80c2e758a8119.html">STOVE0_FFMPEG_BIN</a>
+</td>
+<td>a-review0-nvenc-av1-opus-sampler</td>
+<td>a-review0-nvenc-av1-opus-sampler</td>
+<td>&#x27;ffmpeg&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-d6a602650630559f7b7e31aa.html">A_REVIEW0_OPUS_SAMPLER_HOST</a>
+</td>
+<td>a-review0-opus-sampler</td>
+<td>a-review0-opus-sampler</td>
+<td>&#x27;127.0.0.1&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-d782355c12084075c63601d6.html">A_REVIEW0_OPUS_SAMPLER_IMAGE_ID</a>
+</td>
+<td>a-review0-opus-sampler</td>
+<td>a-review0-opus-sampler</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-418268f6953bf503cb1500df.html">A_REVIEW0_OPUS_SAMPLER_PORT</a>
+</td>
+<td>a-review0-opus-sampler</td>
+<td>a-review0-opus-sampler</td>
+<td>&#x27;8080&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-1043632d4bbceff8beeed308.html">A_REVIEW0_OPUS_SAMPLER_SOURCE_REVISION</a>
+</td>
+<td>a-review0-opus-sampler</td>
+<td>a-review0-opus-sampler</td>
+<td>&#x27;unknown&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-0bb5470938c29931f73c7b43.html">A_REVIEW0_OPUS_SAMPLER_TOKEN</a>
+</td>
+<td>a-review0-opus-sampler</td>
+<td>a-review0-opus-sampler</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-e736d1c24fe324c99ba81212.html">A_REVIEW0_OPUS_SAMPLER_TOKEN_FILE</a>
+</td>
+<td>a-review0-opus-sampler</td>
+<td>a-review0-opus-sampler</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-b37a6b4224c6f1aa82447a75.html">A_REVIEW0_OPUS_SAMPLER_WORKSPACE</a>
+</td>
+<td>a-review0-opus-sampler</td>
+<td>a-review0-opus-sampler</td>
+<td>&#x27;/run/review0&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-e79111fd3905e06cd92d0970.html">STOVE0_FFMPEG_BIN</a>
+</td>
+<td>a-review0-opus-sampler</td>
+<td>a-review0-opus-sampler</td>
+<td>&#x27;ffmpeg&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-bee28e66263e9ee53a5ed30c.html">A_REVIEW0_RCLONE_TARGET_CONFIG</a>
+</td>
+<td>a-review0-rclone-target</td>
+<td>a-review0-rclone-target</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-4d41b85fe2d7b0a7f1dfb2a2.html">A_REVIEW0_RCLONE_TARGET_HOST</a>
+</td>
+<td>a-review0-rclone-target</td>
+<td>a-review0-rclone-target</td>
+<td>&#x27;127.0.0.1&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-729debd74838c2d159cc89a4.html">A_REVIEW0_RCLONE_TARGET_IMAGE_ID</a>
+</td>
+<td>a-review0-rclone-target</td>
+<td>a-review0-rclone-target</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-2f177825f11106733c35b65b.html">A_REVIEW0_RCLONE_TARGET_PORT</a>
+</td>
+<td>a-review0-rclone-target</td>
+<td>a-review0-rclone-target</td>
+<td>&#x27;8080&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-926c07858988cfce7a2c36f2.html">A_REVIEW0_RCLONE_TARGET_RCLONE_BIN</a>
+</td>
+<td>a-review0-rclone-target</td>
+<td>a-review0-rclone-target</td>
+<td>&#x27;rclone&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-396ecec0ec599cba1276a7bf.html">A_REVIEW0_RCLONE_TARGET_SOURCE_REVISION</a>
+</td>
+<td>a-review0-rclone-target</td>
+<td>a-review0-rclone-target</td>
+<td>&#x27;unknown&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-2c640e38df8b3e69f2d0cd49.html">A_REVIEW0_RCLONE_TARGET_STATE_ROOT</a>
+</td>
+<td>a-review0-rclone-target</td>
+<td>a-review0-rclone-target</td>
+<td>&#x27;/var/lib/a-review0-rclone-target&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-a4d76b5e813b15fc6ee79a0c.html">A_REVIEW0_RCLONE_TARGET_WORKSPACE</a>
+</td>
+<td>a-review0-rclone-target</td>
+<td>a-review0-rclone-target</td>
+<td>&#x27;/run/review0&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-468a6ba0e3cdf751b5415137.html">A_RIVERHOG_AWS_STORE_CONFIG</a>
+</td>
+<td>a-riverhog-aws-store</td>
+<td>a-riverhog-aws-store</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-fe12f7d2f5624bb9671e6d5e.html">A_RIVERHOG_AWS_STORE_HOST</a>
+</td>
+<td>a-riverhog-aws-store</td>
+<td>a-riverhog-aws-store</td>
+<td>&#x27;127.0.0.1&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-e38608512806d9651dedbf27.html">A_RIVERHOG_AWS_STORE_PORT</a>
+</td>
+<td>a-riverhog-aws-store</td>
+<td>a-riverhog-aws-store</td>
+<td>&#x27;8080&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-0bb08718ede9f601c1d7ea62.html">A_RIVERHOG_B2_STORE_CONFIG</a>
+</td>
+<td>a-riverhog-b2-store</td>
+<td>a-riverhog-b2-store</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-11f410fad7b155e146933afe.html">A_RIVERHOG_B2_STORE_HOST</a>
+</td>
+<td>a-riverhog-b2-store</td>
+<td>a-riverhog-b2-store</td>
+<td>&#x27;127.0.0.1&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-a2041bc2e97973e1a2d385c5.html">A_RIVERHOG_B2_STORE_PORT</a>
+</td>
+<td>a-riverhog-b2-store</td>
+<td>a-riverhog-b2-store</td>
+<td>&#x27;8080&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-de2fb85961d1c3f0d6d94207.html">A_RIVERHOG_CLI_LOCAL_DATABASE</a>
+</td>
+<td>a-riverhog-cli</td>
+<td>a-riverhog-cli</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-5aa8bad6839d6a0064d9429f.html">A_RIVERHOG_CLI_LOCAL_ROOT</a>
+</td>
+<td>a-riverhog-cli</td>
+<td>a-riverhog-cli</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-42313a54c2308081080f0122.html">A_RIVERHOG_CLI_PLAIN</a>
+</td>
+<td>a-riverhog-cli</td>
+<td>a-riverhog-cli</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-ffe5dfcd9b8f7f4250140244.html">A_RIVERHOG_CLI_UPLOAD_FILE_LOG_BYTES</a>
+</td>
+<td>a-riverhog-cli</td>
+<td>a-riverhog-cli</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-9c45d14e3e1a05bb3e371c47.html">A_RIVERHOG_CLI_UPLOAD_FINALIZE_POLL_SECONDS</a>
+</td>
+<td>a-riverhog-cli</td>
+<td>a-riverhog-cli</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-a696676159e610fc5016c7c3.html">A_RIVERHOG_CLI_UPLOAD_FINALIZE_TIMEOUT_SECONDS</a>
+</td>
+<td>a-riverhog-cli</td>
+<td>a-riverhog-cli</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-c9bb34072a0ac23c897bf154.html">TERM</a>
+</td>
+<td>a-riverhog-cli</td>
+<td>a-riverhog-cli</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-73ff81476b964744c7b28508.html">A_RIVERHOG_FILESYSTEM_STORE_HOST</a>
+</td>
+<td>a-riverhog-filesystem-store</td>
+<td>a-riverhog-filesystem-store</td>
+<td>&#x27;127.0.0.1&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-3565e693c6932cfdee0bb517.html">A_RIVERHOG_FILESYSTEM_STORE_MINIMUM_FREE_BYTES</a>
+</td>
+<td>a-riverhog-filesystem-store</td>
+<td>a-riverhog-filesystem-store</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-3d4e301ec16455ea0c183e82.html">A_RIVERHOG_FILESYSTEM_STORE_PORT</a>
+</td>
+<td>a-riverhog-filesystem-store</td>
+<td>a-riverhog-filesystem-store</td>
+<td>&#x27;8080&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-7457ab57f47763c620574196.html">A_RIVERHOG_FILESYSTEM_STORE_READ_CHUNK_BYTES</a>
+</td>
+<td>a-riverhog-filesystem-store</td>
+<td>a-riverhog-filesystem-store</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-e6e25d5c4a36bdef3e1ed12a.html">A_RIVERHOG_FILESYSTEM_STORE_ROOT</a>
+</td>
+<td>a-riverhog-filesystem-store</td>
+<td>a-riverhog-filesystem-store</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-a4a5a5958d4367de22bd85fa.html">A_RIVERHOG_FILESYSTEM_STORE_SEGMENT_BYTES</a>
+</td>
+<td>a-riverhog-filesystem-store</td>
+<td>a-riverhog-filesystem-store</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-eada746df9ab627f2072509f.html">A_RIVERHOG_FILESYSTEM_STORE_TOKEN</a>
+</td>
+<td>a-riverhog-filesystem-store</td>
+<td>a-riverhog-filesystem-store</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-d96caacbfa9bb3d4d3e20c5c.html">A_RIVERHOG_FILESYSTEM_STORE_TOKEN_FILE</a>
+</td>
+<td>a-riverhog-filesystem-store</td>
+<td>a-riverhog-filesystem-store</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-0da7b339f7db7468cfcb2362.html">A_RIVERHOG_FTP_SPOOL_CONFIG</a>
+</td>
+<td>a-riverhog-ftp-spool</td>
+<td>a-riverhog-ftp-spool</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-e02f58f3f8cfb3efa8b1d8e7.html">A_RIVERHOG_FTP_SPOOL_ALLOW_INSECURE_HTTP</a>
+</td>
+<td>a-riverhog-ftp-spool-client</td>
+<td>a-riverhog-ftp-spool-client</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-d5753fe8975591454d1a2029.html">A_RIVERHOG_FTP_SPOOL_BASE_URL</a>
+</td>
+<td>a-riverhog-ftp-spool-client</td>
+<td>a-riverhog-ftp-spool-client</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-21c19fcbd81b82db7577a4a2.html">A_RIVERHOG_FTP_SPOOL_HTTP2</a>
+</td>
+<td>a-riverhog-ftp-spool-client</td>
+<td>a-riverhog-ftp-spool-client</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-1b767d2c7b768891a826f549.html">A_RIVERHOG_FTP_SPOOL_HTTP_TIMEOUT_SECONDS</a>
+</td>
+<td>a-riverhog-ftp-spool-client</td>
+<td>a-riverhog-ftp-spool-client</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-8ee7daf83be8397251397c0e.html">A_RIVERHOG_FTP_SPOOL_TOKEN</a>
+</td>
+<td>a-riverhog-ftp-spool-client</td>
+<td>a-riverhog-ftp-spool-client</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-9775507eda718cd376e22c1c.html">A_STOVE0_EXIFTOOL_OBSERVER_HOST</a>
+</td>
+<td>a-stove0-exiftool-observer</td>
+<td>a-stove0-exiftool-observer</td>
+<td>&#x27;127.0.0.1&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-6033621f685b684399630a18.html">A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_ID</a>
+</td>
+<td>a-stove0-exiftool-observer</td>
+<td>a-stove0-exiftool-observer</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-13311c5d423cbb4c17c8674b.html">A_STOVE0_EXIFTOOL_OBSERVER_PORT</a>
+</td>
+<td>a-stove0-exiftool-observer</td>
+<td>a-stove0-exiftool-observer</td>
+<td>&#x27;8080&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-b49916587a904abe401c0d73.html">A_STOVE0_EXIFTOOL_OBSERVER_SOURCE_REVISION</a>
+</td>
+<td>a-stove0-exiftool-observer</td>
+<td>a-stove0-exiftool-observer</td>
+<td>&#x27;unknown&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-2aecf693a9fc2764b87d28b7.html">A_STOVE0_EXIFTOOL_OBSERVER_TOKEN</a>
+</td>
+<td>a-stove0-exiftool-observer</td>
+<td>a-stove0-exiftool-observer</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-84482eed94a7ee850a78f6a9.html">A_STOVE0_EXIFTOOL_OBSERVER_TOKEN_FILE</a>
+</td>
+<td>a-stove0-exiftool-observer</td>
+<td>a-stove0-exiftool-observer</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-bf7caa8eca1940dcfba21918.html">A_STOVE0_EXIFTOOL_OBSERVER_WORKSPACE</a>
+</td>
+<td>a-stove0-exiftool-observer</td>
+<td>a-stove0-exiftool-observer</td>
+<td>&#x27;/run/a-stove0-exiftool-observer&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-7c887935491bc465386519f1.html">STOVE0_EXIFTOOL_BIN</a>
+</td>
+<td>a-stove0-exiftool-observer</td>
+<td>a-stove0-exiftool-observer</td>
+<td>&#x27;exiftool&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-d85eb42fc0550b9eb123f440.html">A_STOVE0_FFPROBE_SAMPLING_OBSERVER_HOST</a>
+</td>
+<td>a-stove0-ffprobe-sampling-observer</td>
+<td>a-stove0-ffprobe-sampling-observer</td>
+<td>&#x27;127.0.0.1&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-010115e77d37456b082ea267.html">A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_ID</a>
+</td>
+<td>a-stove0-ffprobe-sampling-observer</td>
+<td>a-stove0-ffprobe-sampling-observer</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-e61db0a4f7935332fbfd4df4.html">A_STOVE0_FFPROBE_SAMPLING_OBSERVER_PORT</a>
+</td>
+<td>a-stove0-ffprobe-sampling-observer</td>
+<td>a-stove0-ffprobe-sampling-observer</td>
+<td>&#x27;8080&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-14bfb429cbb31982a2543095.html">A_STOVE0_FFPROBE_SAMPLING_OBSERVER_SOURCE_REVISION</a>
+</td>
+<td>a-stove0-ffprobe-sampling-observer</td>
+<td>a-stove0-ffprobe-sampling-observer</td>
+<td>&#x27;unknown&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-d316b6019b1e59201645570e.html">A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN</a>
+</td>
+<td>a-stove0-ffprobe-sampling-observer</td>
+<td>a-stove0-ffprobe-sampling-observer</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-bd04b1d8e642c27d662a5323.html">A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN_FILE</a>
+</td>
+<td>a-stove0-ffprobe-sampling-observer</td>
+<td>a-stove0-ffprobe-sampling-observer</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-a2b995db0879cbc5344ab0ca.html">A_STOVE0_FFPROBE_SAMPLING_OBSERVER_WORKSPACE</a>
+</td>
+<td>a-stove0-ffprobe-sampling-observer</td>
+<td>a-stove0-ffprobe-sampling-observer</td>
+<td>&#x27;/run/a-stove0-ffprobe-sampling-observer&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-0a1ac4b89e921fc2d542a6eb.html">STOVE0_FFPROBE_BIN</a>
+</td>
+<td>a-stove0-ffprobe-sampling-observer</td>
+<td>a-stove0-ffprobe-sampling-observer</td>
+<td>&#x27;ffprobe&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-d3477196468c645b6d7aac2e.html">A_STOVE0_NVENC_AV1_OPUS_TARGET_HOST</a>
+</td>
+<td>a-stove0-nvenc-av1-opus-target</td>
+<td>a-stove0-nvenc-av1-opus-target</td>
+<td>&#x27;127.0.0.1&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-79a2dbf1775bd6813c0064f7.html">A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_ID</a>
+</td>
+<td>a-stove0-nvenc-av1-opus-target</td>
+<td>a-stove0-nvenc-av1-opus-target</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-15cd812a1418f043b5a44040.html">A_STOVE0_NVENC_AV1_OPUS_TARGET_PORT</a>
+</td>
+<td>a-stove0-nvenc-av1-opus-target</td>
+<td>a-stove0-nvenc-av1-opus-target</td>
+<td>&#x27;8080&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-1a3c9d36138762c2977ea98f.html">A_STOVE0_NVENC_AV1_OPUS_TARGET_SOURCE_REVISION</a>
+</td>
+<td>a-stove0-nvenc-av1-opus-target</td>
+<td>a-stove0-nvenc-av1-opus-target</td>
+<td>&#x27;unknown&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-2018c3664355e822278031c7.html">A_STOVE0_NVENC_AV1_OPUS_TARGET_STATE_ROOT</a>
+</td>
+<td>a-stove0-nvenc-av1-opus-target</td>
+<td>a-stove0-nvenc-av1-opus-target</td>
+<td>&#x27;/var/lib/a-stove0-nvenc-av1-opus-target&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-ea0bacb9dc650de0e642a32a.html">A_STOVE0_NVENC_AV1_OPUS_TARGET_TOKEN</a>
+</td>
+<td>a-stove0-nvenc-av1-opus-target</td>
+<td>a-stove0-nvenc-av1-opus-target</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-e5b916c0ae00d8cef0b2b699.html">A_STOVE0_NVENC_AV1_OPUS_TARGET_TOKEN_FILE</a>
+</td>
+<td>a-stove0-nvenc-av1-opus-target</td>
+<td>a-stove0-nvenc-av1-opus-target</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-d2c99fcaacb3b312253d320f.html">A_STOVE0_NVENC_AV1_OPUS_TARGET_WORKSPACE</a>
+</td>
+<td>a-stove0-nvenc-av1-opus-target</td>
+<td>a-stove0-nvenc-av1-opus-target</td>
+<td>&#x27;/run/a-stove0-nvenc-av1-opus-target&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-b1a1c9a9222aba37cb8cd441.html">A_STOVE0_NVENC_AV1_OPUS_TARGET_ZSTD</a>
+</td>
+<td>a-stove0-nvenc-av1-opus-target</td>
+<td>a-stove0-nvenc-av1-opus-target</td>
+<td>&#x27;zstd&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-d76b23eb6c3e0da03236c655.html">STOVE0_FFMPEG_BIN</a>
+</td>
+<td>a-stove0-nvenc-av1-opus-target</td>
+<td>a-stove0-nvenc-av1-opus-target</td>
+<td>&#x27;ffmpeg&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-5b839a33ded4831fab4494b3.html">A_STOVE0_OPUS_TARGET_HOST</a>
+</td>
+<td>a-stove0-opus-target</td>
+<td>a-stove0-opus-target</td>
+<td>&#x27;127.0.0.1&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-5198cc2c54dea927f9dd7eba.html">A_STOVE0_OPUS_TARGET_IMAGE_ID</a>
+</td>
+<td>a-stove0-opus-target</td>
+<td>a-stove0-opus-target</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-32f6a8d1b734662e2f07c271.html">A_STOVE0_OPUS_TARGET_PORT</a>
+</td>
+<td>a-stove0-opus-target</td>
+<td>a-stove0-opus-target</td>
+<td>&#x27;8080&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-a3dccc9a6c1f07d2f19ef966.html">A_STOVE0_OPUS_TARGET_SOURCE_REVISION</a>
+</td>
+<td>a-stove0-opus-target</td>
+<td>a-stove0-opus-target</td>
+<td>&#x27;unknown&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-dc1b349b5eaa22c1b624933c.html">A_STOVE0_OPUS_TARGET_STATE_ROOT</a>
+</td>
+<td>a-stove0-opus-target</td>
+<td>a-stove0-opus-target</td>
+<td>&#x27;/var/lib/a-stove0-opus-target&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-b01813a90fa84f3b4e8df723.html">A_STOVE0_OPUS_TARGET_TOKEN</a>
+</td>
+<td>a-stove0-opus-target</td>
+<td>a-stove0-opus-target</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-edc35e33b9c4cc2735acd3b7.html">A_STOVE0_OPUS_TARGET_TOKEN_FILE</a>
+</td>
+<td>a-stove0-opus-target</td>
+<td>a-stove0-opus-target</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-133bbe3d274c91dcc2f68e62.html">A_STOVE0_OPUS_TARGET_WORKSPACE</a>
+</td>
+<td>a-stove0-opus-target</td>
+<td>a-stove0-opus-target</td>
+<td>&#x27;/run/a-stove0-opus-target&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-1c06b3a509f90c30903c6d59.html">STOVE0_FFMPEG_BIN</a>
+</td>
+<td>a-stove0-opus-target</td>
+<td>a-stove0-opus-target</td>
+<td>&#x27;ffmpeg&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-803e417eaf86874ca408af50.html">RIVERHOG_ALLOW_INSECURE_HTTP</a>
+</td>
+<td>riverhog-client</td>
+<td>riverhog-client</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-6899cb2e531901556dfb4cac.html">RIVERHOG_BASE_URL</a>
+</td>
+<td>riverhog-client</td>
+<td>riverhog-client</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-8224b13fc97aabafde0bf765.html">RIVERHOG_DOWNLOAD_FILE_CONCURRENCY</a>
+</td>
+<td>riverhog-client</td>
+<td>riverhog-client</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-adea582dcce753b944fdc725.html">RIVERHOG_DOWNLOAD_FILE_WINDOW</a>
+</td>
+<td>riverhog-client</td>
+<td>riverhog-client</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-9aa72f38a7f17c5387a214eb.html">RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS</a>
+</td>
+<td>riverhog-client</td>
+<td>riverhog-client</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-25ed07ee4805761622cab69a.html">RIVERHOG_HOST_HEADER</a>
+</td>
+<td>riverhog-client</td>
+<td>riverhog-client</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-9b078161183ddfe42ef47939.html">RIVERHOG_HTTP2</a>
+</td>
+<td>riverhog-client</td>
+<td>riverhog-client</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-6584dea76b403f2845c85e69.html">RIVERHOG_HTTP_TIMEOUT_SECONDS</a>
+</td>
+<td>riverhog-client</td>
+<td>riverhog-client</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-ae9a4519aa410adb7240890b.html">RIVERHOG_TOKEN</a>
+</td>
+<td>riverhog-client</td>
+<td>riverhog-client</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-ab7c93d2a9890014e2da7bc3.html">RIVERHOG_UPLOAD_FILE_CONCURRENCY</a>
+</td>
+<td>riverhog-client</td>
+<td>riverhog-client</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-9605690ce8219bf359a996bc.html">RIVERHOG_UPLOAD_FILE_WINDOW</a>
+</td>
+<td>riverhog-client</td>
+<td>riverhog-client</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-873274b9c439b2225d8cd568.html">RIVERHOG_UPLOAD_TIMEOUT_SECONDS</a>
+</td>
+<td>riverhog-client</td>
+<td>riverhog-client</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-7c3709206844bc62a43784fd.html">LOCALAPPDATA</a>
+</td>
+<td>riverhog-provenance</td>
+<td>riverhog-provenance</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-d041ea8e7fae813bd5f1fb5e.html">RIVERHOG_PROVENANCE_STATE_HOME</a>
+</td>
+<td>riverhog-provenance</td>
+<td>riverhog-provenance</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-0e6643602e2b51f3c410ca9a.html">XDG_STATE_HOME</a>
+</td>
+<td>riverhog-provenance</td>
+<td>riverhog-provenance</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-539230cbcb7e071b320ab8c3.html">RIVERHOG_CONFIG</a>
+</td>
+<td>riverhog-server</td>
+<td>riverhog-server</td>
+<td>&#x27;&#x27;, unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-6c68686eef8cdc94c6ae422a.html">STOVE0_ALLOW_INSECURE_HTTP</a>
+</td>
+<td>stove0-api-client</td>
+<td>stove0-api-client</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-4f13e070ff596b3fe1ab37df.html">STOVE0_BASE_URL</a>
+</td>
+<td>stove0-api-client</td>
+<td>stove0-api-client</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-0a9731b41e49bb0f3a9e196a.html">STOVE0_HTTP2</a>
+</td>
+<td>stove0-api-client</td>
+<td>stove0-api-client</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-c6639ba03610900c0dbe3ffa.html">STOVE0_HTTP_TIMEOUT_SECONDS</a>
+</td>
+<td>stove0-api-client</td>
+<td>stove0-api-client</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-c67857bc977d67fde78aa3f5.html">STOVE0_TOKEN</a>
+</td>
+<td>stove0-api-client</td>
+<td>stove0-api-client</td>
+<td>unset</td>
+</tr>
+<tr>
+<td>
+<a href="e-4f255d051621156c310efe5a.html">STOVE0_CONFIG</a>
+</td>
+<td>stove0-server</td>
+<td>stove0-server</td>
+<td>&#x27;&#x27;</td>
+</tr>
+<tr>
+<td>
+<a href="e-0ce11e0fa1238abdedf0e6e2.html">STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS</a>
+</td>
+<td>stove0-target-support</td>
+<td>stove0-target-support</td>
+<td>str(DEFAULT_TERMINAL_STATE_RETENTION_SECONDS)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

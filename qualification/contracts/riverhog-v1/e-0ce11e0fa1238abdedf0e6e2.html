@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,59 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-bff89a537e9fa65e1baec0b5.html">stove0-target-support · Configuration Environment</a>
+<a href="index.html">All authorities</a> / <a href="a-a23132e8892754e98db86957.html">stove0-target-support</a> / <a href="i-bff89a537e9fa65e1baec0b5.html">Configuration Environment</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS</h1>
+<p class="context">Hardware-neutral target protocol, runtime, and conformance support for Stove0. Configuration Environment contract owned by stove0-target-support.</p>
 <section id="contract" data-contract="configuration-environment:stove0-target-support:stove0-target-terminal-state-retention-seconds:a017562b3a">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Environment setting</h3>
+<dl class="facts">
+<dt>name</dt>
+<dd>
+<code>STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS</code>
+</dd>
+<dt>owner</dt>
+<dd>
+<code>stove0-target-support</code>
+</dd>
+<dt>input shape</dt>
+<dd>
+<code>environment-string</code>
+</dd>
+</dl>
+<h4>Default expressions</h4>
+<ul>
+<li>
+<code>str(DEFAULT_TERMINAL_STATE_RETENTION_SECONDS)</code>
+</li>
+</ul>
+<h4>Consumers</h4>
+<ul>
+<li>
+<code>stove0-target-support</code>
+</li>
+</ul>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/configuration_environment/120</code>
-</h3>
+</h4>
 <table id="v-965179fc46bd1033e9035da9">
 <tbody>
 <tr>
@@ -123,170 +158,90 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-8dc08bb46173175ad6e39a86">compatibility/configuration/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code>configuration-environment:stove0-target-support:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS</code>
+<a href="source-authorities.html#source-a4a7b5aed45b310de587adc0">configuration-environment:stove0-target-support:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS</a> — <code data-source-path="some-implementations/stove0/packages/target-support/src/stove0_target_support/configuration.py">some-implementations/stove0/packages/target-support/src/stove0_target_support/configuration.py</code>
 </li>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make unit</code>
+<a href="source-commands.html#route-ce47068f504c25a93bdddb64">make unit</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>configuration-environment:stove0-target-support:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:value</code>
-<table id="v-e00883c033539178a4df08e9">
-<tbody>
+<div class="table-scroll">
+<table>
+<thead>
 <tr>
-<th scope="row">
-<code>configuration</code>
-</th>
-<td>
-<span id="v-b32f7c122e8526a8cf6cca46">
-<code data-value-pointer="/audit/decisions/configuration-environment:stove0-target-support:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:value/configuration">STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS</code>
-<span class="kind">string</span>
-</span>
-</td>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
 </tr>
-<tr>
-<th scope="row">
-<code>consumers</code>
-</th>
-<td>
-<table id="v-a803e8ea663389166cb7355c">
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>0</code>
-</th>
 <td>
-<span id="v-1ef42f7157ff94dc25e8a032">
-<code data-value-pointer="/audit/decisions/configuration-environment:stove0-target-support:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:value/consumers/0">stove0-target-support</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/configuration_environment/120</code>
+</td>
+<td>
+<code>configured-capacity/v1</code>
+</td>
+<td>value · configured-value · operational_policy</td>
+<td>
+<code>{&quot;configuration&quot;:&quot;STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS&quot;,&quot;consumers&quot;:[&quot;stove0-target-support&quot;],&quot;maximum&quot;:null,&quot;reason&quot;:&quot;operator-configured-capacity&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</td>
-</tr>
+</div>
+<h3>Configuration authority and bindings</h3>
+<p>These are discovered declaration and consumer facts, not observed effective configuration.</p>
+<div class="table-scroll">
+<table>
+<thead>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-edaefdb2746e136a8d3f7bcb">
-<code data-value-pointer="/audit/decisions/configuration-environment:stove0-target-support:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:value/dimension">value</code>
-<span class="kind">string</span>
-</span>
-</td>
+<th scope="col">Kind</th>
+<th scope="col">Consumer</th>
+<th scope="col">Source</th>
+<th scope="col">Authority or expression</th>
 </tr>
+</thead>
+<tbody>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
+<td>consumer</td>
 <td>
-<span id="v-aba3dbbcdb19f299fae45f24">
-<code data-value-pointer="/audit/decisions/configuration-environment:stove0-target-support:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:value/id">configuration-environment:stove0-target-support:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:value</code>
-<span class="kind">string</span>
-</span>
+<code>stove0-target-support</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-1a8c198ebcfe1fbf38870b9c">
-<code data-value-pointer="/audit/decisions/configuration-environment:stove0-target-support:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:value/maximum">null</code>
-<span class="kind">null</span>
-</span>
+<code data-source-path="some-implementations/stove0/packages/target-support/src/stove0_target_support/configuration.py">some-implementations/stove0/packages/target-support/src/stove0_target_support/configuration.py</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
 <td>
-<span id="v-c7d38b6d845ec90d1e63cda5">
-<code data-value-pointer="/audit/decisions/configuration-environment:stove0-target-support:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:value/owner">stove0-target-support</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-e3e431efec799b5335e994c0">
-<code data-value-pointer="/audit/decisions/configuration-environment:stove0-target-support:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:value/policy">operational_policy</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-645369a982d87a8f96f7309b">
-<code data-value-pointer="/audit/decisions/configuration-environment:stove0-target-support:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:value/reason">operator-configured-capacity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-ada34a29fab5257c6d80aa1d">
-<code data-value-pointer="/audit/decisions/configuration-environment:stove0-target-support:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:value/rule">configured-capacity/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-c130df2cf9428e2585833e71">
-<code data-value-pointer="/audit/decisions/configuration-environment:stove0-target-support:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:value/source_pointer">/external_contract/configuration_environment/120</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-8be67a5f20c9d9060c49f40d">
-<code data-value-pointer="/audit/decisions/configuration-environment:stove0-target-support:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:value/unit">configured-value</code>
-<span class="kind">string</span>
-</span>
+<code>values.get(TARGET_TERMINAL_STATE_RETENTION_ENV, str(DEFAULT_TERMINAL_STATE_RETENTION_SECONDS))</code>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

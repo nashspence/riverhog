@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,203 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-97662ede32d19804481410b5.html">riverhog · HTTP Operations</a>
+<a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-97662ede32d19804481410b5.html">HTTP Operations</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>POST /v1/apps/{app}/keys/{key_id}/rotate</h1>
+<p class="context">Riverhog archive service. Callable HTTP operations.</p>
 <section id="contract" data-contract="http-operations:riverhog:post-v1-apps-app-keys-key-id-rotate:c54abfcea8">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Operation</h3>
+<p class="lead">Rotate App Key</p>
+<dl class="facts">
+<dt>operationId</dt>
+<dd>
+<code>rotate_app_key</code>
+</dd>
+<dt>tags</dt>
+<dd>
+<code>[&quot;apps&quot;]</code>
+</dd>
+<dt>security</dt>
+<dd>
+<code>[{&quot;HTTPBearer&quot;:[]}]</code>
+</dd>
+<dt>x-riverhog-permission-requirements</dt>
+<dd>
+<code>[{&quot;any_of&quot;:[&quot;keys:manage&quot;]}]</code>
+</dd>
+</dl>
+<h3>Parameters</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Name</th>
+<th scope="col">In</th>
+<th scope="col">Required</th>
+<th scope="col">Default</th>
+<th scope="col">Schema</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>app</code>
+</td>
+<td>
+<code>path</code>
+</td>
+<td>yes</td>
+<td>not declared</td>
+<td>
+<code>string</code>; pattern: <code>^[a-z0-9]+(?:-[a-z0-9]+)*$</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>key_id</code>
+</td>
+<td>
+<code>path</code>
+</td>
+<td>yes</td>
+<td>not declared</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{16}$</code>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Responses</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Status</th>
+<th scope="col">Description</th>
+<th scope="col">Media type</th>
+<th scope="col">Schema</th>
+<th scope="col">Error codes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>200</code>
+</td>
+<td>Successful Response</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-68a974a54220d195251c94e6.html#v-cd113a1d81250f97985771ee">#/components/schemas/AppKeyCreatedOut</a>
+</td>
+<td>not declared</td>
+</tr>
+<tr>
+<td>
+<code>400</code>
+</td>
+<td>Bad Request</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>bad_request</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>401</code>
+</td>
+<td>Unauthorized</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>unauthorized</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>403</code>
+</td>
+<td>Forbidden</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>forbidden</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>404</code>
+</td>
+<td>Not Found</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>not_found</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>500</code>
+</td>
+<td>Internal Server Error</td>
+<td>
+<code>application/json</code>
+</td>
+<td>
+<a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">#/components/schemas/ErrorOut</a>
+</td>
+<td>
+<code>internal_error</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1rotate/post</code>
-</h3>
+</h4>
 <table id="v-d90ab0fb69c98b8cd0aa9b4f">
 <tbody>
 <tr>
@@ -860,139 +1039,227 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-a293c471448f1903b10c2c70.html">a-riverhog-cli app key rotate</a>
+</li>
+<li>
+<a href="e-623398029c77858046f18590.html">riverhog_client.ApiClient.rotate_app_key</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 <li>
-<code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
+<a href="source-authorities.html#source-b032bdc56b3fbe541165d1d2">operations:operation-matrix</a> — <code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>http:riverhog:operation:rotate_app_key:parameter:path:key_id:/:length</code>
-<table id="v-ccb9ba013c02f356570c742f">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1rotate/post/parameters/1/schema</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:16,&quot;minimum&quot;:16,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{16}$&quot;}}</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<details>
+<summary>Structural operation bindings</summary>
+<p>These bind maintained client, CLI, response authority, and provider routes. They are not executed qualification results.</p>
+<table id="v-f2e0849b786e2f55570ae784">
 <tbody>
 <tr>
 <th scope="row">
-<code>dimension</code>
+<code>application</code>
 </th>
 <td>
-<span id="v-a0d2f739ea13794fe489882b">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:rotate_app_key:parameter:path:key_id:~1:length/dimension">length</code>
+<span id="v-aa57463a6397828d4c0cd921">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/application">riverhog</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>id</code>
+<code>classification</code>
 </th>
 <td>
-<span id="v-d6db8d407796081263c63117">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:rotate_app_key:parameter:path:key_id:~1:length/id">http:riverhog:operation:rotate_app_key:parameter:path:key_id:/:length</code>
+<span id="v-f2ce7658d00a32eb0fd76e11">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/classification">human-cli+json</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>maximum</code>
+<code>cli_bindings</code>
 </th>
 <td>
-<span id="v-3420210ab09b4ab83e85cbc9">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:rotate_app_key:parameter:path:key_id:~1:length/maximum">16</code>
+<table id="v-84caf5145c64c979f2f34d7f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-b5a99cedb3f6031c81042282">
+<tbody>
+<tr>
+<th scope="row">
+<code>command</code>
+</th>
+<td>
+<span id="v-304ba08679e3ce949c56f0a0">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/cli_bindings/0/command">app key rotate</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>executable</code>
+</th>
+<td>
+<span id="v-cdead9b5b8d8b2a7fec8b253">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/cli_bindings/0/executable">a-riverhog-cli</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>result_identity</code>
+</th>
+<td>
+<span id="v-7a01173b8bd8771dc8767486">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/cli_bindings/0/result_identity">a-riverhog-cli-result/app/key/rotate/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source</code>
+</th>
+<td>
+<table id="v-0e176a9ad5479d1eb3b8027e">
+<tbody>
+<tr>
+<th scope="row">
+<code>line</code>
+</th>
+<td>
+<span id="v-f9b5fe6686b70e90ddead328">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/cli_bindings/0/source/line">1223</code>
 <span class="kind">number</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>minimum</code>
+<code>module</code>
 </th>
 <td>
-<span id="v-e76511eeabf306c940b70d1c">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:rotate_app_key:parameter:path:key_id:~1:length/minimum">16</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-b56f69611cf331bad74ef0ec">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:rotate_app_key:parameter:path:key_id:~1:length/owner">riverhog</code>
+<span id="v-eea0cb353e67dbb82c588b34">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/cli_bindings/0/source/module">a_riverhog_cli.main</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>policy</code>
+<code>path</code>
 </th>
 <td>
-<span id="v-957860e34349e359252cffc6">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:rotate_app_key:parameter:path:key_id:~1:length/policy">fixed</code>
+<span id="v-8d2930df75e1670d4d822a32">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/cli_bindings/0/source/path">some-implementations/riverhog/applications/a-riverhog-cli/src/a_riverhog_cli/main.py</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>reason</code>
+<code>symbol</code>
 </th>
 <td>
-<span id="v-924fb0c4215d15be290318e1">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:rotate_app_key:parameter:path:key_id:~1:length/reason">fixed-public-representation</code>
+<span id="v-5d6a98bd3ab4349c0d19a165">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/cli_bindings/0/source/symbol">app_key_rotate_cmd</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-4b699e7238c6380b26081ea6">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:rotate_app_key:parameter:path:key_id:~1:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>source_constraint</code>
+<code>cli_commands</code>
 </th>
 <td>
-<table id="v-17f021c2c7cee4b44d4379d8">
+<table id="v-07306643bad9af689f47ac69">
 <tbody>
 <tr>
 <th scope="row">
-<code>pattern</code>
+<code>0</code>
 </th>
 <td>
-<span id="v-3a0495382a1b088c26cad7db">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:rotate_app_key:parameter:path:key_id:~1:length/source_constraint/pattern">^[0-9a-f]{16}$</code>
+<span id="v-f25b9db5e7d064a62d9a6eff">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/cli_commands/0">app key rotate</code>
 <span class="kind">string</span>
 </span>
 </td>
@@ -1003,30 +1270,172 @@
 </tr>
 <tr>
 <th scope="row">
-<code>source_pointer</code>
+<code>client</code>
 </th>
 <td>
-<span id="v-1bbf8a0716862a6884decab1">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:rotate_app_key:parameter:path:key_id:~1:length/source_pointer">/external_contract/http_openapi/riverhog/paths/~1v1~1apps~1{app}~1keys~1{key_id}~1rotate/post/parameters/1/schema</code>
+<span id="v-3353b6d20d5a7fa37ca6faef">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/client">ApiClient</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<code>unit</code>
+<code>client_bindings</code>
 </th>
 <td>
-<span id="v-313731becc5a8bf0cbfa2ea2">
-<code data-value-pointer="/audit/decisions/http:riverhog:operation:rotate_app_key:parameter:path:key_id:~1:length/unit">characters</code>
+<table id="v-fb579ea37b4cd416ca6312a0">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-a8921f2fa627e475262eec43">
+<tbody>
+<tr>
+<th scope="row">
+<code>public_identity</code>
+</th>
+<td>
+<span id="v-1684f644a79252de333721d2">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/client_bindings/0/public_identity">riverhog_client.ApiClient.rotate_app_key</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source</code>
+</th>
+<td>
+<table id="v-b3f0536f7280e7570f24a43e">
+<tbody>
+<tr>
+<th scope="row">
+<code>line</code>
+</th>
+<td>
+<span id="v-1a6a37924648ed555d62e19e">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/client_bindings/0/source/line">2172</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-e4c07dcb19f1c8f18e308643">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/client_bindings/0/source/module">riverhog_client.client</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<span id="v-b49635d00d4cd2e16309af1e">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/client_bindings/0/source/path">packages/riverhog-client/src/riverhog_client/client.py</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>symbol</code>
+</th>
+<td>
+<span id="v-b244696ccf57743bb591a631">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/client_bindings/0/source/symbol">ApiClient.rotate_app_key</code>
 <span class="kind">string</span>
 </span>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>method</code>
+</th>
+<td>
+<span id="v-beb6d3f36d944d029e052f67">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/method">POST</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>operation_id</code>
+</th>
+<td>
+<span id="v-bff2616bc87cadfe8456bd31">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/operation_id">rotate_app_key</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<span id="v-dc50ef0eee132d54af2eb721">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/path">/v1/apps/{app}/keys/{key_id}/rotate</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>provider_evidence</code>
+</th>
+<td>
+<span id="v-0c836774bdcf0a11afeca3ed">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/provider_evidence">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>read_collection</code>
+</th>
+<td>
+<span id="v-4ae9b688580827d29218392d">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/read_collection">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>response_authority</code>
+</th>
+<td>
+<span id="v-a9df97ed34de7f258f1a5247">
+<code data-value-pointer="/audit/operation-qualification/rotate_app_key/response_authority">http-json</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</details>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

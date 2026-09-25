@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import copy
-import json
 import sys
 from html.parser import HTMLParser
 from pathlib import Path
@@ -14,13 +13,15 @@ if str(REPO_ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
 from contract_atlas.html_rendering import (  # noqa: E402
+    _authority_file,
     _element_file,
+    _hash,
     _inventory_file,
     contract_body,
     render_contract,
     validate_render,
 )
-from contract_atlas.model import ContractAtlasError, canonical_sha256  # noqa: E402
+from contract_atlas.model import ContractAtlasError, canonical_bytes, canonical_sha256  # noqa: E402
 from contract_atlas.records import load_bundle  # noqa: E402
 
 
@@ -88,6 +89,129 @@ def test_whole_candidate_html_has_reachable_pages_and_exact_literal(
     assert "&#40;" not in page.codes[pointer]
 
 
+def test_authority_map_and_known_human_interface_families(
+    rendered_candidate: tuple[dict[str, object], dict[str, object], dict[str, bytes]],
+) -> None:
+    closure, _audit, files = rendered_candidate
+    elements = cast(list[dict[str, object]], closure["elements"])
+    root = files["riverhog-v1/index.html"].decode()
+    authorities = {str(element["authority"]) for element in elements}
+    interfaces = {(str(element["authority"]), str(element["interface"])) for element in elements}
+    assert '<ul class="authorities">' in root
+    assert "Is this exactly the external contract" not in root
+    for authority in authorities:
+        assert root.count(f'href="{_authority_file(authority)}"') == 1
+    for authority, interface in interfaces:
+        assert f'href="{_inventory_file(authority, interface)}"' in root
+
+    def human(element: dict[str, object]) -> str:
+        page = files["riverhog-v1/" + _element_file(str(element["id"]))].decode()
+        return page.split('<div class="human-contract">', 1)[1].split('<details class="exact">', 1)[
+            0
+        ]
+
+    samples = {
+        "http-operations": ("<h3>Operation</h3>", "Parameters", "Responses"),
+        "http-schemas": ("Schema", "Fields", "Required"),
+        "cli": ("<h3>Command</h3>", "Arguments and options", "Result contract"),
+        "python": ("Python declaration", "kind"),
+        "durable-state": ("Table:", "Column", "Nullable"),
+        "process-protocol-operations": ("Process protocol operation", "Request", "Response"),
+        "process-protocol-schemas": ("Schema", "Fields"),
+        "configuration": ("Schema", "Fields"),
+        "configuration-environment": ("Environment setting", "Default expressions"),
+        "compatibility-guarantees": ('class="promise"',),
+        "extent": ('class="promise"',),
+        "runtime-images": ("Publication and compatibility facts", "platforms"),
+    }
+    for interface, phrases in samples.items():
+        candidates = [item for item in elements if item["interface"] == interface]
+        matching = next(
+            (item for item in candidates if all(phrase in human(item) for phrase in phrases)), None
+        )
+        assert matching is not None, interface
+    nested_command = next(
+        item for item in elements if item["title"] == "a-riverhog-cli app key create"
+    )
+    assert "--allow" in human(nested_command)
+    assert "Success outcomes" in human(nested_command)
+    tree = files["riverhog-v1/" + _inventory_file(str(nested_command["authority"]), "cli")].decode()
+    assert 'class="command-tree"' in tree
+    assert ">create</a>" in tree
+
+
+def test_extent_marker_routes_through_every_selection_scope(
+    rendered_candidate: tuple[dict[str, object], dict[str, object], dict[str, bytes]],
+) -> None:
+    closure, audit, files = rendered_candidate
+    elements = cast(list[dict[str, object]], closure["elements"])
+    owners = {
+        pointer: element for element in elements for pointer in cast(list[str], element["pointers"])
+    }
+    witness = next(
+        item
+        for item in cast(dict[str, Any], audit["trace"])["segmented_extent_witnesses"]
+        if item["association_status"] == "candidate" and item["result_reference"] is None
+    )
+    subject = str(witness["subject_pointers"][0])
+    pointer = max(
+        (item for item in owners if subject == item or subject.startswith(item + "/")),
+        key=len,
+    )
+    element = owners[pointer]
+    authority = str(element["authority"])
+    interface = str(element["interface"])
+    identity = str(element["id"])
+    root = files["riverhog-v1/index.html"].decode()
+    authority_page = files["riverhog-v1/" + _authority_file(authority)].decode()
+    interface_page = files["riverhog-v1/" + _inventory_file(authority, interface)].decode()
+    element_page = files["riverhog-v1/" + _element_file(identity)].decode()
+    assert f'href="{_authority_file(authority)}#audit-scope"' in root
+    assert f'href="{_inventory_file(authority, interface)}#audit-scope"' in authority_page
+    assert f'href="{_element_file(identity)}#audit"' in interface_page
+    assert "Open extent qualification" in element_page
+    assert 'class="audit-marker"' in interface_page
+    assert "📦 Extent:" in files["riverhog-v1/audit-key.html"].decode()
+
+
+def test_broad_policy_applications_retain_element_and_authority_routes(
+    rendered_candidate: tuple[dict[str, object], dict[str, object], dict[str, bytes]],
+) -> None:
+    closure, audit, files = rendered_candidate
+    policy = "compatibility/python-api/v1"
+    overlays = cast(list[dict[str, object]], audit["element_overlays"])
+    chosen_overlay = next(item for item in overlays if policy in item["policy_ids"])
+    chosen = next(
+        item
+        for item in cast(list[dict[str, object]], closure["elements"])
+        if item["id"] == chosen_overlay["id"]
+    )
+    root = f"p-{_hash(policy)}.html"
+    child = f"p-{_hash(policy)}-a-{_hash(str(chosen['authority']))}.html"
+    assert f'href="{child}"' in files["riverhog-v1/" + root].decode()
+    assert f'href="{_element_file(str(chosen["id"]))}"' in files["riverhog-v1/" + child].decode()
+
+
+def test_process_protocol_context_routes_to_its_existing_semantic_interfaces(
+    rendered_candidate: tuple[dict[str, object], dict[str, object], dict[str, bytes]],
+) -> None:
+    closure, _audit, files = rendered_candidate
+    boundaries = cast(dict[str, Any], closure["boundaries"])
+    protocol = boundaries["process_extensions"][0]
+    path = f"extension-{_hash('process-protocol:' + protocol['name'])}.html"
+    page = files["riverhog-v1/" + path].decode()
+    assert "Semantic interfaces" in page
+    for authority, interface in (
+        (protocol["contract_owner"], "python"),
+        (protocol["binding_support"], "process-protocol"),
+        (protocol["binding_support"], "process-protocol-operations"),
+        (protocol["binding_support"], "process-protocol-schemas"),
+    ):
+        assert f'href="{_inventory_file(authority, interface)}"' in page
+    assert "Supplied implementations" in page
+    assert f'href="{path}"' in files["riverhog-v1/relationships.html"].decode()
+
+
 def test_every_declared_leaf_value_is_visible_without_omission_or_mutation(
     rendered_candidate: tuple[dict[str, object], dict[str, object], dict[str, bytes]],
 ) -> None:
@@ -110,13 +234,11 @@ def test_every_declared_leaf_value_is_visible_without_omission_or_mutation(
             }
         if isinstance(value, str):
             return {
-                pointer: json.dumps(value, ensure_ascii=False)
+                pointer: canonical_bytes(value).decode("utf-8")
                 if any(ord(char) < 32 for char in value)
                 else value
             }
-        return {
-            pointer: json.dumps(value, ensure_ascii=False, allow_nan=False, separators=(",", ":"))
-        }
+        return {pointer: canonical_bytes(value).decode("utf-8")}
 
     for element in cast(list[dict[str, object]], closure["elements"]):
         page = VisibleFacts()
@@ -299,4 +421,4 @@ def test_html_literal_escaping_keeps_visible_changed_value(
     ]["contract"]["value"] = changed_pattern
     escaped = VisibleFacts()
     escaped.feed(contract_body(changed, element))
-    assert escaped.codes[pointer] == json.dumps(changed_pattern, ensure_ascii=False)
+    assert escaped.codes[pointer] == canonical_bytes(changed_pattern).decode("utf-8")

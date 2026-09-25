@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,213 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-5548924e3ea02159ee650edb.html">riverhog-catalog · Durable State</a>
+<a href="index.html">All authorities</a> / <a href="a-919a34a8115bd878cd846124.html">riverhog-catalog</a> / <a href="i-5548924e3ea02159ee650edb.html">Durable State</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>riverhog-catalog: retrieval_cache_accounting_reconciliations</h1>
+<p class="context">Encrypted archive management, catalog, and retrieval. Persisted structures, schema heads, and v1 transition obligations.</p>
 <section id="contract" data-contract="durable-state:riverhog-catalog:riverhog-catalog-retrieval-cache-accounti-b67d40a5ef:c069eb3861">
 <h2>Contract</h2>
-<section>
-<h3>
-<code>/external_contract/durable_state/owners/0/structure/tables/38</code>
+<div class="human-contract">
+<h3>Table: <code>retrieval_cache_accounting_reconciliations</code>
 </h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Column</th>
+<th scope="col">Type</th>
+<th scope="col">Nullable</th>
+<th scope="col">Default</th>
+<th scope="col">Exact definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>cache_store</code>
+</td>
+<td>
+<code>VARCHAR</code>
+</td>
+<td>no</td>
+<td>not declared</td>
+<td>
+<code>cache_store VARCHAR NOT NULL</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>generation</code>
+</td>
+<td>
+<code>BIGINT</code>
+</td>
+<td>no</td>
+<td>not declared</td>
+<td>
+<code>generation BIGINT NOT NULL</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>after_source_store</code>
+</td>
+<td>
+<code>VARCHAR</code>
+</td>
+<td>yes</td>
+<td>not declared</td>
+<td>
+<code>after_source_store VARCHAR</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>after_collection_id</code>
+</td>
+<td>
+<code>BIGINT</code>
+</td>
+<td>yes</td>
+<td>not declared</td>
+<td>
+<code>after_collection_id BIGINT</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>after_object_id</code>
+</td>
+<td>
+<code>VARCHAR</code>
+</td>
+<td>yes</td>
+<td>not declared</td>
+<td>
+<code>after_object_id VARCHAR</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>accumulated_bytes</code>
+</td>
+<td>
+<code>BIGINT</code>
+</td>
+<td>no</td>
+<td>
+<code>0</code>
+</td>
+<td>
+<code>accumulated_bytes BIGINT DEFAULT 0 NOT NULL</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>started_at</code>
+</td>
+<td>
+<code>VARCHAR</code>
+</td>
+<td>no</td>
+<td>not declared</td>
+<td>
+<code>started_at VARCHAR NOT NULL</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>updated_at</code>
+</td>
+<td>
+<code>VARCHAR</code>
+</td>
+<td>no</td>
+<td>not declared</td>
+<td>
+<code>updated_at VARCHAR NOT NULL</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Table constraints</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Kind</th>
+<th scope="col">Name</th>
+<th scope="col">Exact definition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>primary-key</code>
+</td>
+<td>
+<code></code>
+</td>
+<td>
+<code>PRIMARY KEY (cache_store)</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>foreign-key</code>
+</td>
+<td>
+<code></code>
+</td>
+<td>
+<code>FOREIGN KEY(cache_store) REFERENCES retrieval_cache_store_accounting (cache_store) ON DELETE CASCADE</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>check</code>
+</td>
+<td>
+<code>ck_cache_accounting_reconciliations_generation</code>
+</td>
+<td>
+<code>CONSTRAINT ck_cache_accounting_reconciliations_generation CHECK (generation &gt;= 0)</code>
+</td>
+</tr>
+<tr>
+<td>
+<code>check</code>
+</td>
+<td>
+<code>ck_cache_accounting_reconciliations_bytes</code>
+</td>
+<td>
+<code>CONSTRAINT ck_cache_accounting_reconciliations_bytes CHECK (accumulated_bytes &gt;= 0)</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/durable_state/owners/0/structure/tables/38</code>
+</h4>
 <table id="v-c4b3febcb2254963ceca3850">
 <tbody>
 <tr>
@@ -794,25 +983,42 @@
 </tbody>
 </table>
 </section>
+</details>
+</section>
+<section>
+<h2>Related contract elements</h2>
+<ul>
+<li>
+<a href="e-a98981ffd10782e3aa9ad291.html">riverhog-catalog durable-state identity</a>
+</li>
+</ul>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-214a49c2deda0753d71abbc9">compatibility/durable-state/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code>state:riverhog-catalog</code>
+<a href="source-authorities.html#source-d8b4a1467008c6c4fef8d47d">state:riverhog-catalog</a> — <code data-source-path="riverhog/src/riverhog_core/state_migrations/v1_ddl.py">riverhog/src/riverhog_core/state_migrations/v1_ddl.py::POSTGRESQL_DDL</code>
+<br>
+<code data-source-path="tests/fixtures/state/v1_0001/riverhog.postgresql.sql">tests/fixtures/state/v1_0001/riverhog.postgresql.sql</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make release-check</code>
+<a href="source-commands.html#route-8d8d22d6a6b17edc6babcfab">make release-check</a>
 </li>
 <li>
-<code>make database-qualification</code>
+<a href="source-commands.html#route-27f281b51ec606c43bd87cc5">make database-qualification</a>
 </li>
 </ul>
 </aside>

@@ -1,0 +1,1668 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="on">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Candidate qualification routes · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="sources.html">Audit references</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>Candidate qualification routes</h1>
+<aside class="audit">
+<p>Routes and operation bindings are candidate associations. Their presence does not assert execution or complete behavioral coverage.</p>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Route</th>
+<th scope="col">Associated elements</th>
+<th scope="col">Candidate witness groups</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code id="route-d1121e35fa7adab170fe1ee4">make build</code>
+</td>
+<td>3158</td>
+<td>0</td>
+</tr>
+<tr>
+<td>
+<code id="route-413b0b241ba870e262fb82fa">make compose-smoke</code>
+</td>
+<td>717</td>
+<td>13</td>
+</tr>
+<tr>
+<td>
+<code id="route-8c74349e71e46a4ddc36ce6a">make contract-freeze</code>
+</td>
+<td>9</td>
+<td>0</td>
+</tr>
+<tr>
+<td>
+<code id="route-27f281b51ec606c43bd87cc5">make database-qualification</code>
+</td>
+<td>151</td>
+<td>2</td>
+</tr>
+<tr>
+<td>
+<code id="route-0ba2578a3eb74fda1e38b234">make dist-smoke</code>
+</td>
+<td>3378</td>
+<td>0</td>
+</tr>
+<tr>
+<td>
+<code id="route-dd95e4459fb8ecb561da1c86">make operation-qualification</code>
+</td>
+<td>814</td>
+<td>0</td>
+</tr>
+<tr>
+<td>
+<code id="route-8d9f4da038792e4451c13b5c">make postgres-concurrency</code>
+</td>
+<td>0</td>
+<td>5</td>
+</tr>
+<tr>
+<td>
+<code id="route-f79927bd2e5d01713492338b">make provider-qualification</code>
+</td>
+<td>0</td>
+<td>6</td>
+</tr>
+<tr>
+<td>
+<code id="route-8d8d22d6a6b17edc6babcfab">make release-check</code>
+</td>
+<td>276</td>
+<td>0</td>
+</tr>
+<tr>
+<td>
+<code id="route-ce47068f504c25a93bdddb64">make unit</code>
+</td>
+<td>132</td>
+<td>14</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3>Operation qualification bindings</h3>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Application</th>
+<th scope="col">Operation</th>
+<th scope="col">Classification</th>
+<th scope="col">Client</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>a-riverhog-ftp-spool</code>
+</td>
+<td>
+<code>GET /health/live</code>
+</td>
+<td>standard-tool/protocol</td>
+<td>RiverhogFtpSpoolClient</td>
+</tr>
+<tr>
+<td>
+<code>a-riverhog-ftp-spool</code>
+</td>
+<td>
+<code>GET /health/ready</code>
+</td>
+<td>standard-tool/protocol</td>
+<td>RiverhogFtpSpoolClient</td>
+</tr>
+<tr>
+<td>
+<code>a-riverhog-ftp-spool</code>
+</td>
+<td>
+<code>POST /v1/run</code>
+</td>
+<td>human-cli+json</td>
+<td>RiverhogFtpSpoolClient</td>
+</tr>
+<tr>
+<td>
+<code>a-riverhog-ftp-spool</code>
+</td>
+<td>
+<code>GET /v1/sources/{source_id}/events</code>
+</td>
+<td>human-cli+json</td>
+<td>RiverhogFtpSpoolClient</td>
+</tr>
+<tr>
+<td>
+<code>a-riverhog-ftp-spool</code>
+</td>
+<td>
+<code>POST /v1/sources/{source_id}/flush</code>
+</td>
+<td>human-cli+json</td>
+<td>RiverhogFtpSpoolClient</td>
+</tr>
+<tr>
+<td>
+<code>a-riverhog-ftp-spool</code>
+</td>
+<td>
+<code>GET /v1/status</code>
+</td>
+<td>human-cli+json</td>
+<td>RiverhogFtpSpoolClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /health/live</code>
+</td>
+<td>standard-tool/protocol</td>
+<td>None</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /health/ready</code>
+</td>
+<td>standard-tool/protocol</td>
+<td>None</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/app-key-access</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/apps</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/apps/{app}/keys</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/apps/{app}/keys</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>DELETE /v1/apps/{app}/keys/{key_id}/access</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/apps/{app}/keys/{key_id}/access</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>PUT /v1/apps/{app}/keys/{key_id}/access</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>PUT /v1/apps/{app}/keys/{key_id}/download-quota</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/apps/{app}/keys/{key_id}/revoke</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/apps/{app}/keys/{key_id}/rotate</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/archive/copies/retire</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/archive/copies/retirement-plan</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/archive/copy-jobs</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/archive/copy-jobs</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>DELETE /v1/archive/copy-jobs/{collection_id}/{destination_store}</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/archive/copy-jobs/{collection_id}/{destination_store}</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/archive/stores</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/archive/stores/{store}</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/archive/upload-copy-intents/{collection_id}</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/catalog-sync/changes</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/catalog-sync/checkpoint</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/catalog-sync/collections</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/catalog/collections/{collection_id}/inventory</code>
+</td>
+<td>standard-tool/protocol</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collection-processing-claims</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-processing-claims</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collection-processing-claims/{claim_id}</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-processing-claims/{claim_id}/abandon</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-processing-claims/{claim_id}/capabilities</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>PUT /v1/collection-processing-claims/{claim_id}/capabilities/{capability_id}/artifacts</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-processing-claims/{claim_id}/capabilities/{capability_id}/artifacts/seal</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collection-processing-claims/{claim_id}/derivation</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collection-processing-claims/{claim_id}/derivation/dispositions</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>PUT /v1/collection-processing-claims/{claim_id}/derivation/dispositions</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collection-processing-claims/{claim_id}/derivation/output-edges</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>PUT /v1/collection-processing-claims/{claim_id}/derivation/output-edges</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-processing-claims/{claim_id}/derivation/seal</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collection-processing-claims/{claim_id}/inputs</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>PUT /v1/collection-processing-claims/{claim_id}/inputs</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-processing-claims/{claim_id}/inputs/seal</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collection-processing-claims/{claim_id}/outcomes</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-processing-claims/{claim_id}/outcomes/settle</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-processing-claims/{claim_id}/plan</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collection-processing-claims/{claim_id}/plan/artifacts</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>PUT /v1/collection-processing-claims/{claim_id}/plan/artifacts</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-processing-claims/{claim_id}/plan/artifacts/seal</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-processing-claims/{claim_id}/release</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-processing-claims/{claim_id}/renew</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-processing-claims/{claim_id}/restart</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-processing-claims/{claim_id}/settle</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-processing-claims/{claim_id}/source-collection-retirement</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collection-upload-sessions</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-upload-sessions</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collection-upload-sessions/{collection_id}</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-upload-sessions/{collection_id}/cancel</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-upload-sessions/{collection_id}/complete</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-upload-sessions/{collection_id}/discard</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-upload-sessions/{collection_id}/discard-plan</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collection-upload-sessions/{collection_id}/files</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-upload-sessions/{collection_id}/files</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-upload-sessions/{collection_id}/heartbeat</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>PATCH /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>PUT /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-upload-sessions/{collection_id}/provenance/journals/{journal_id}/seal</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-upload-sessions/{collection_id}/raw-part-digests</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collection-upload-sessions/{collection_id}/tags</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collection-upload-sessions/{collection_id}/volumes/{volume_id}/units/{unit}</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>PUT /v1/collection-upload-sessions/{collection_id}/volumes/{volume_id}/units/{unit}</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collection-upload-sessions/{collection_id}/work</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collections/{collection_id}</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collections/{collection_id}/archive-copies</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collections/{collection_id}/delete</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collections/{collection_id}/deletion-plan</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collections/{collection_id}/derivation</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>PUT /v1/collections/{collection_id}/description</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collections/{collection_id}/provenance/files</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collections/{collection_id}/provenance/files/{path}</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collections/{collection_id}/provenance/journals/{journal_id}</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>HEAD /v1/collections/{collection_id}/provenance/journals/{journal_id}</code>
+</td>
+<td>standard-tool/protocol</td>
+<td>None</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collections/{collection_id}/provenance/journals/{journal_id}/agents</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collections/{collection_id}/provenance/trace/{path}</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>DELETE /v1/collections/{collection_id}/provenance/verification</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collections/{collection_id}/provenance/verification</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collections/{collection_id}/provenance/verification</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/collections/{collection_id}/tags</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collections/{collection_id}/tags:add</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collections/{collection_id}/tags:contains</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collections/{collection_id}/tags:remove</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/collections:search</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/download-quota</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/download-quotas</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/events</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/retrieval-cache</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/retrieval-cache/objects</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/retrieval-cache/objects/{collection_id}/{source_store}/{object_id}</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/retrieval-jobs</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>DELETE /v1/retrieval-jobs/{job_id}</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/retrieval-jobs/{job_id}</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/retrieval-jobs/{job_id}/ack</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/retrieval-jobs/{job_id}/content</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>HEAD /v1/retrieval-jobs/{job_id}/content</code>
+</td>
+<td>standard-tool/protocol</td>
+<td>None</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/retrieval-jobs/{job_id}/renew</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/retrieval-plans</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/retrieval-plans/{plan_id}</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>POST /v1/retrieval-plans/{plan_id}/advance</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/retrieval-plans/{plan_id}/files</code>
+</td>
+<td>client-only-primitive</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/search</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>riverhog</code>
+</td>
+<td>
+<code>GET /v1/tags</code>
+</td>
+<td>human-cli+json</td>
+<td>ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>GET /health/live</code>
+</td>
+<td>standard-tool/protocol</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>GET /health/ready</code>
+</td>
+<td>standard-tool/protocol</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>GET /v1/admin/scheduler</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>POST /v1/admin/scheduler/run</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>GET /v1/admission-policies</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>POST /v1/admission-policies/{policy_id}:backfill</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>POST /v1/admission-policies/{policy_id}:rebaseline</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>GET /v1/admissions</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>GET /v1/admissions/{admission_id}</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>GET /v1/artifact-selections/{selection_sha256}</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>GET /v1/departure-effects</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>GET /v1/departure-effects/{departure_id}</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>GET /v1/departure-policies</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>POST /v1/departure-policies/{policy_id}:rebaseline</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>GET /v1/evaluations</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>POST /v1/evaluations</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>GET /v1/evaluations/{evaluation_id}</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>POST /v1/evaluations/{evaluation_id}/cancel</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>POST /v1/evaluations/{evaluation_id}/step</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>POST /v1/evaluations/{evaluation_id}/variants/{variant_id}/retry</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>PUT /v1/evaluations/{evaluation_id}/variants/{variant_id}/review</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>GET /v1/events</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>GET /v1/recipes</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>GET /v1/recipes/{recipe_id}</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>PUT /v1/target-executions/{job_id}/dispositions/{input_id}</code>
+</td>
+<td>client-only-primitive</td>
+<td>TargetCallbackClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>GET /v1/target-executions/{job_id}/inputs</code>
+</td>
+<td>client-only-primitive</td>
+<td>TargetCallbackClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>PUT /v1/target-executions/{job_id}/outputs/{artifact_id}</code>
+</td>
+<td>client-only-primitive</td>
+<td>TargetCallbackClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>POST /v1/target-executions/{job_id}/production/seal</code>
+</td>
+<td>client-only-primitive</td>
+<td>TargetCallbackClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>PUT /v1/target-executions/{job_id}/source-edges/{output_id}/{input_id}</code>
+</td>
+<td>client-only-primitive</td>
+<td>TargetCallbackClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>GET /v1/work</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>POST /v1/work</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>GET /v1/work/{work_id}</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>POST /v1/work/{work_id}/cancel</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>GET /v1/work/{work_id}/coordination</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>POST /v1/work/{work_id}/retry</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>POST /v1/work/{work_id}/step</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+<tr>
+<td>
+<code>stove0</code>
+</td>
+<td>
+<code>POST /v1/workflow-previews</code>
+</td>
+<td>human-cli+json</td>
+<td>Stove0ApiClient</td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

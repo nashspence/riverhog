@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,59 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-ce642ecb1846bb7e91531bbb.html">a-review0-nvenc-av1-opus-sampler · Configuration Environment</a>
+<a href="index.html">All authorities</a> / <a href="a-62bc4c07fbc3946b0281b885.html">a-review0-nvenc-av1-opus-sampler</a> / <a href="i-ce642ecb1846bb7e91531bbb.html">Configuration Environment</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_TOKEN_FILE</h1>
+<p class="context">NVENC AV1 and Opus sampler for Review0. Configuration Environment contract owned by a-review0-nvenc-av1-opus-sampler.</p>
 <section id="contract" data-contract="configuration-environment:a-review0-nvenc-av1-opus-sampler:a-review0-nvenc-av1-opus-sampler-token-file:4057a4b86f">
 <h2>Contract</h2>
+<div class="human-contract">
+<h3>Environment setting</h3>
+<dl class="facts">
+<dt>name</dt>
+<dd>
+<code>A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_TOKEN_FILE</code>
+</dd>
+<dt>owner</dt>
+<dd>
+<code>a-review0-nvenc-av1-opus-sampler</code>
+</dd>
+<dt>input shape</dt>
+<dd>
+<code>environment-string</code>
+</dd>
+</dl>
+<h4>Default expressions</h4>
+<ul>
+<li>
+<code>unset</code>
+</li>
+</ul>
+<h4>Consumers</h4>
+<ul>
+<li>
+<code>a-review0-nvenc-av1-opus-sampler</code>
+</li>
+</ul>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/configuration_environment/17</code>
-</h3>
+</h4>
 <table id="v-9de9805f4473e511240a0a24">
 <tbody>
 <tr>
@@ -123,27 +158,62 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-8dc08bb46173175ad6e39a86">compatibility/configuration/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code>configuration-environment:a-review0-nvenc-av1-opus-sampler:A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_TOKEN_FILE</code>
+<a href="source-authorities.html#source-f66ff04176b2810912c671e0">configuration-environment:a-review0-nvenc-av1-opus-sampler:A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_TOKEN_FILE</a> — <code data-source-path="some-implementations/stove0/review0/samplers/nvenc-av1-opus/src/a_review0_nvenc_av1_opus_sampler/app.py">some-implementations/stove0/review0/samplers/nvenc-av1-opus/src/a_review0_nvenc_av1_opus_sampler/app.py</code>
 </li>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make unit</code>
+<a href="source-commands.html#route-ce47068f504c25a93bdddb64">make unit</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
+<h3>Configuration authority and bindings</h3>
+<p>These are discovered declaration and consumer facts, not observed effective configuration.</p>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Kind</th>
+<th scope="col">Consumer</th>
+<th scope="col">Source</th>
+<th scope="col">Authority or expression</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>consumer</td>
+<td>
+<code>a-review0-nvenc-av1-opus-sampler</code>
+</td>
+<td>
+<code data-source-path="some-implementations/stove0/review0/samplers/nvenc-av1-opus/src/a_review0_nvenc_av1_opus_sampler/app.py">some-implementations/stove0/review0/samplers/nvenc-av1-opus/src/a_review0_nvenc_av1_opus_sampler/app.py</code>
+</td>
+<td>
+<code>os.getenv(f&#x27;{prefix}_TOKEN_FILE&#x27;)</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

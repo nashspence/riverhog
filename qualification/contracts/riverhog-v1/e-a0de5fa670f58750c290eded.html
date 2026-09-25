@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,594 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-ca1618106585662fbe847b65.html">a-riverhog-aws-store · Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-58baadba7585d7c671b342be.html">a-riverhog-aws-store</a> / <a href="i-ca1618106585662fbe847b65.html">Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>AwsStoreDocument</h1>
+<p class="context">AWS-backed Riverhog archive and retrieval store. Standalone structured-value contracts; these do not define an interaction.</p>
 <section id="contract" data-contract="schema:a-riverhog-aws-store:awsstoredocument:c719626615">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-7373ff9edabec88bbecebbb1">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 22 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>$id</dt>
+<dd>
+<code>https://nashspence.github.io/riverhog/v1/config/a-riverhog-aws-store.schema.json</code>
+</dd>
+<dt>$schema</dt>
+<dd>
+<code>https://json-schema.org/draft/2020-12/schema</code>
+</dd>
+<dt>title</dt>
+<dd>
+<code>AwsStoreDocument</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;bucket&quot;,&quot;region&quot;,&quot;token_file&quot;,&quot;access_key_id_file&quot;,&quot;secret_access_key_file&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>access_key_id_file</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; format: <code>path</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>archive_storage_class</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; minLength: <code>1</code>; default: <code>DEEP_ARCHIVE</code>
+</td>
+<td>
+<code>DEEP_ARCHIVE</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>bucket</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-02db1d3cd1ad9627e06be29d">cloudfront</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <a href="e-a0de5fa670f58750c290eded.html#v-d9f604b0bb3eadae358084af">#/$defs/AwsCloudFrontDocument</a>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>connect_timeout_seconds</code>
+</td>
+<td>no</td>
+<td>
+<code>number</code>; exclusiveMinimum: <code>0</code>; default: <code>10</code>
+</td>
+<td>
+<code>10</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-4b06829c7061eb8ee3251953">endpoint_url</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>force_path_style</code>
+</td>
+<td>no</td>
+<td>
+<code>boolean</code>; default: <code>false</code>
+</td>
+<td>
+<code>false</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-dd4e9e6ca53991719283fd2d">immediate_storage_class</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>max_attempts</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>100</code>; default: <code>8</code>
+</td>
+<td>
+<code>8</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>max_pool_connections</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>4096</code>; default: <code>32</code>
+</td>
+<td>
+<code>32</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>read_chunk_bytes</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>65536</code>; default: <code>8388608</code>
+</td>
+<td>
+<code>8388608</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>read_mode</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;immediate&quot;,&quot;restore_required&quot;]</code>; default: <code>restore_required</code>
+</td>
+<td>
+<code>restore_required</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>read_timeout_seconds</code>
+</td>
+<td>no</td>
+<td>
+<code>number</code>; exclusiveMinimum: <code>0</code>; default: <code>300</code>
+</td>
+<td>
+<code>300</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>region</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>restore_days</code>
+</td>
+<td>no</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; default: <code>3</code>
+</td>
+<td>
+<code>3</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>restore_tier</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;Bulk&quot;,&quot;Standard&quot;,&quot;Expedited&quot;]</code>; default: <code>Bulk</code>
+</td>
+<td>
+<code>Bulk</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>retry_mode</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; enum: <code>[&quot;standard&quot;,&quot;adaptive&quot;]</code>; default: <code>standard</code>
+</td>
+<td>
+<code>standard</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>root_prefix</code>
+</td>
+<td>no</td>
+<td>
+<code>string</code>; default: <code></code>
+</td>
+<td>
+<code></code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>secret_access_key_file</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; format: <code>path</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="#s-550504d0317da319dac8bb58">session_token_file</a>
+</td>
+<td>no</td>
+<td>default: <code>null</code>; any of: <code>string</code>; format: <code>path</code>; <code>null</code>
+</td>
+<td>
+<code>null</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>tcp_keepalive</code>
+</td>
+<td>no</td>
+<td>
+<code>boolean</code>; default: <code>true</code>
+</td>
+<td>
+<code>true</code>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>token_file</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; format: <code>path</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>Definitions</h4>
+<ul>
+<li>
+<a href="#s-d9f604b0bb3eadae358084af">AwsCloudFrontDocument</a>
+</li>
+</ul>
+</section>
+<section class="schema-section" id="s-02db1d3cd1ad9627e06be29d">
+<h3>Field: cloudfront</h3>
+<p class="shape">default: <code>null</code>; any of: <a href="e-a0de5fa670f58750c290eded.html#v-d9f604b0bb3eadae358084af">#/$defs/AwsCloudFrontDocument</a>; <code>null</code>
+</p>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<a href="e-a0de5fa670f58750c290eded.html#v-d9f604b0bb3eadae358084af">#/$defs/AwsCloudFrontDocument</a>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-4b06829c7061eb8ee3251953">
+<h3>Field: endpoint_url</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Endpoint Url</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-dd4e9e6ca53991719283fd2d">
+<h3>Field: immediate_storage_class</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Immediate Storage Class</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-550504d0317da319dac8bb58">
+<h3>Field: session_token_file</h3>
+<p class="shape">default: <code>null</code>; any of: <code>string</code>; format: <code>path</code>; <code>null</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>Session Token File</code>
+</dd>
+</dl>
+<h4>At least one must match</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Alternative</th>
+<th scope="col">Schema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>
+<code>string</code>; format: <code>path</code>
+</td>
+</tr>
+<tr>
+<td>2</td>
+<td>
+<code>null</code>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section class="schema-section" id="s-d9f604b0bb3eadae358084af">
+<h3>Definition: AwsCloudFrontDocument</h3>
+<p class="shape">
+<code>object</code>; 3 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>AwsCloudFrontDocument</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;base_url&quot;,&quot;public_key_id&quot;,&quot;private_key_path&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>base_url</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>private_key_path</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; format: <code>path</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>public_key_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; minLength: <code>1</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json</code>
-</h3>
+</h4>
 <table id="v-7373ff9edabec88bbecebbb1">
 <tbody>
 <tr>
@@ -1762,265 +2332,74 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-95e9a1225947118a084b8f29">compatibility/components/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="some-implementations/riverhog/storage/aws/src/a_riverhog_aws_store/config.schema.json">some-implementations/riverhog/storage/aws/src/a_riverhog_aws_store/config.schema.json</code>
+<a href="source-authorities.html#source-4e7eb1f588f732fbc7fedf5d">protocol:https://nashspence.github.io/riverhog/v1/config/a-riverhog-aws-store.schema.json</a> — <code data-source-path="some-implementations/riverhog/storage/aws/src/a_riverhog_aws_store/config.schema.json">some-implementations/riverhog/storage/aws/src/a_riverhog_aws_store/config.schema.json</code>
 </li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make dist-smoke</code>
+<a href="source-commands.html#route-0ba2578a3eb74fda1e38b234">make dist-smoke</a>
 </li>
 <li>
-<code>make build</code>
+<a href="source-commands.html#route-d1121e35fa7adab170fe1ee4">make build</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>protocol:https://nashspence.github.io/riverhog/v1/config/a-riverhog-aws-store.schema.json:/properties/max_attempts:value</code>
-<table id="v-31989e65dcb9a9b0f3d6ad95">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-c574acb7da7de3574b00bf00">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json:~1properties~1max_attempts:value/dimension">value</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json/properties/max_attempts</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>value · schema-value · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:100,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-93441da25ab97f32a8f501c4">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json:~1properties~1max_attempts:value/id">protocol:https://nashspence.github.io/riverhog/v1/config/a-riverhog-aws-store.schema.json:/properties/max_attempts:value</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json/properties/max_pool_connections</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-ea13b18772ebd962a7833340">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json:~1properties~1max_attempts:value/maximum">100</code>
-<span class="kind">number</span>
-</span>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
+<td>value · schema-value · contract_max</td>
 <td>
-<span id="v-8978f88beba0a280f09b4fe9">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json:~1properties~1max_attempts:value/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-221cae1c209dc810702389d6">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json:~1properties~1max_attempts:value/owner">https://nashspence.github.io/riverhog/v1/config/a-riverhog-aws-store.schema.json</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-2326d030c646f50c0b45b81a">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json:~1properties~1max_attempts:value/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-6acdeb375ef20cff4820784e">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json:~1properties~1max_attempts:value/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-53bd8575f736cbae4881e5d8">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json:~1properties~1max_attempts:value/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-5e6b051c6fb891aa67a2267f">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json:~1properties~1max_attempts:value/source_pointer">/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json/properties/max_attempts</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-2bc7883f829cb5d341984b1f">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json:~1properties~1max_attempts:value/unit">schema-value</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:4096,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-<li>
-<code>protocol:https://nashspence.github.io/riverhog/v1/config/a-riverhog-aws-store.schema.json:/properties/max_pool_connections:value</code>
-<table id="v-219161a4f970bba64347e81f">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-6816d5f49564ef8e5bf6cdb0">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json:~1properties~1max_pool_connections:value/dimension">value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-b4b419a2e4bbf157d72fc7f5">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json:~1properties~1max_pool_connections:value/id">protocol:https://nashspence.github.io/riverhog/v1/config/a-riverhog-aws-store.schema.json:/properties/max_pool_connections:value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-c426742744f6c124a2a9c6ae">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json:~1properties~1max_pool_connections:value/maximum">4096</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-73ce7745af1b385fa5cedc78">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json:~1properties~1max_pool_connections:value/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-2fc54e76725a0a4fe06081e0">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json:~1properties~1max_pool_connections:value/owner">https://nashspence.github.io/riverhog/v1/config/a-riverhog-aws-store.schema.json</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-dfc296d5cfc1c6e0cd82ed96">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json:~1properties~1max_pool_connections:value/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-2c590f38223571da8e3b67f7">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json:~1properties~1max_pool_connections:value/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-fd76ca4bd6757cb857094e56">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json:~1properties~1max_pool_connections:value/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-759fb0f5c9db9bd86a9408a7">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json:~1properties~1max_pool_connections:value/source_pointer">/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json/properties/max_pool_connections</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-23e29817525860f2818debeb">
-<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1config~1a-riverhog-aws-store.schema.json:~1properties~1max_pool_connections:value/unit">schema-value</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

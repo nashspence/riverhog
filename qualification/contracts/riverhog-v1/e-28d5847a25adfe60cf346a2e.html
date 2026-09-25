@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-audit="off" data-docs="off">
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,24 +12,120 @@
 <main>
 <header>
 <p>
-<a href="index.html">All authorities</a> / <a href="i-09dc1e38a978cb3e071a9885.html">riverhog · HTTP Schemas</a>
+<a href="index.html">All authorities</a> / <a href="a-cfb6aad90e04e42b98fd7ae3.html">riverhog</a> / <a href="i-09dc1e38a978cb3e071a9885.html">HTTP Schemas</a>
 </p>
 <p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
 <label class="mode">
 <input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<p class="audit-cue">
+<a href="audit-key.html">Audit key and 📦 meaning</a>
+</p>
 <noscript>
 <p>Contract-only reading remains available without JavaScript.</p>
 </noscript>
 </header>
 <h1>schemas: CollectionTagMutationRequest</h1>
+<p class="context">Riverhog archive service. Supporting HTTP data definitions; these are not callable operations.</p>
 <section id="contract" data-contract="http-schemas:riverhog:schemas-collectiontagmutationrequest:ca6e3f7900">
 <h2>Contract</h2>
+<div class="human-contract">
+<section class="schema-section" id="s-b4c101929169356a8ff58797">
+<h3>Schema</h3>
+<p class="shape">
+<code>object</code>; 4 fields; additionalProperties: <code>false</code>
+</p>
+<dl class="facts">
+<dt>title</dt>
+<dd>
+<code>CollectionTagMutationRequest</code>
+</dd>
+<dt>required</dt>
+<dd>
+<code>[&quot;operation_id&quot;,&quot;tag&quot;,&quot;expected_revision&quot;,&quot;expected_tag_set_identity&quot;]</code>
+</dd>
+<dt>type</dt>
+<dd>
+<code>object</code>
+</dd>
+<dt>additionalProperties</dt>
+<dd>
+<code>false</code>
+</dd>
+</dl>
+<h4>Fields</h4>
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Field</th>
+<th scope="col">Required</th>
+<th scope="col">Shape and bounds</th>
+<th scope="col">Default</th>
+<th scope="col">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>expected_revision</code>
+</td>
+<td>yes</td>
+<td>
+<code>integer</code>; minimum: <code>1</code>; maximum: <code>9007199254740991</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>expected_tag_set_identity</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^[0-9a-f]{64}$</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>operation_id</code>
+</td>
+<td>yes</td>
+<td>
+<code>string</code>; pattern: <code>^\S(?:[\s\S]*\S)?$</code>; minLength: <code>1</code>; maxLength: <code>256</code>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<code>tag</code>
+</td>
+<td>yes</td>
+<td>
+<a href="e-cf2aefec442e1ef869b78b9b.html#v-c3ed7114f258f4bf33ee885c">#/components/schemas/CollectionTag</a>
+</td>
+<td>not declared</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
 <section>
-<h3>
+<h4>
 <code>/external_contract/http_openapi/riverhog/components/schemas/CollectionTagMutationRequest</code>
-</h3>
+</h4>
 <table id="v-b4c101929169356a8ff58797">
 <tbody>
 <tr>
@@ -321,404 +417,86 @@
 </tbody>
 </table>
 </section>
+</details>
 </section>
 <aside class="audit" id="audit">
 <h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="policies.html#policy-5bc717c2c0bac943b7a7d35f">compatibility/http-api/v1</a>
+</li>
+</ul>
 <h3>Source associations</h3>
 <ul>
 <li>
-<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
 </li>
 <li>
-<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
-</li>
+<a href="source-authorities.html#source-c42f268fc960d0f1424d05df">openapi:riverhog</a> — <code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+<br>Framework: fastapi.applications.FastAPI</li>
 </ul>
 <h3>Candidate validation routes, not execution results</h3>
 <ul>
 <li>
-<code>make operation-qualification</code>
+<a href="source-commands.html#route-dd95e4459fb8ecb561da1c86">make operation-qualification</a>
 </li>
 <li>
-<code>make compose-smoke</code>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
 </li>
 </ul>
 <h3>Generated extent analysis</h3>
 <p>These records index source constraints; they do not add limits or progression promises.</p>
-<ul>
-<li>
-<code>http:riverhog:components:/schemas/CollectionTagMutationRequest/properties/expected_revision:value</code>
-<table id="v-7b846787c5e0d14ba5717bd2">
+<div class="table-scroll">
+<table>
+<thead>
+<tr>
+<th scope="col">Exact subject</th>
+<th scope="col">Governing rule</th>
+<th scope="col">Decision</th>
+<th scope="col">Bounds or reason</th>
+</tr>
+</thead>
 <tbody>
 <tr>
-<th scope="row">
-<code>dimension</code>
-</th>
 <td>
-<span id="v-e6fe5eb3c8940bd2061c733e">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1expected_revision:value/dimension">value</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionTagMutationRequest/properties/expected_revision</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>value · schema-value · contract_max</td>
+<td>
+<code>{&quot;maximum&quot;:9007199254740991,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>id</code>
-</th>
 <td>
-<span id="v-008fd090dfc85b98131b5db1">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1expected_revision:value/id">http:riverhog:components:/schemas/CollectionTagMutationRequest/properties/expected_revision:value</code>
-<span class="kind">string</span>
-</span>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionTagMutationRequest/properties/expected_tag_set_identity</code>
+</td>
+<td>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
+</td>
+<td>length · characters · fixed</td>
+<td>
+<code>{&quot;maximum&quot;:64,&quot;minimum&quot;:64,&quot;reason&quot;:&quot;fixed-public-representation&quot;,&quot;source_constraint&quot;:{&quot;pattern&quot;:&quot;^[0-9a-f]{64}$&quot;}}</code>
 </td>
 </tr>
 <tr>
-<th scope="row">
-<code>maximum</code>
-</th>
 <td>
-<span id="v-7534d7dbb7d0d050e2f5cd85">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1expected_revision:value/maximum">9007199254740991</code>
-<span class="kind">number</span>
-</span>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionTagMutationRequest/properties/operation_id</code>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
 <td>
-<span id="v-47f7084186e8fd9e249852ce">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1expected_revision:value/minimum">1</code>
-<span class="kind">number</span>
-</span>
+<a href="policies.html#definition-6b20b7da6a50de6d4b7f5291">extent-rule/schema-bound/v1</a>
 </td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
+<td>length · characters · contract_max</td>
 <td>
-<span id="v-84c92dd5f7cd8e8327847d0a">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1expected_revision:value/owner">riverhog</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-cb69735f9d8095bfb87ca955">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1expected_revision:value/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-26024b822158429d25237264">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1expected_revision:value/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-f763dc271f69b6bcaa5d7568">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1expected_revision:value/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-bf1909535ecd2a5bb5f04e61">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1expected_revision:value/source_pointer">/external_contract/http_openapi/riverhog/components/schemas/CollectionTagMutationRequest/properties/expected_revision</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-a010e6b196e037bdd572a450">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1expected_revision:value/unit">schema-value</code>
-<span class="kind">string</span>
-</span>
+<code>{&quot;maximum&quot;:256,&quot;minimum&quot;:1,&quot;reason&quot;:&quot;schema-maximum&quot;}</code>
 </td>
 </tr>
 </tbody>
 </table>
-</li>
-<li>
-<code>http:riverhog:components:/schemas/CollectionTagMutationRequest/properties/expected_tag_set_identity:length</code>
-<table id="v-9a9dac60e830a5ad92c9825c">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-dc3a8cf9ed757164526b755e">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1expected_tag_set_identity:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-6b928addc2d6d00eeaa2dacc">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1expected_tag_set_identity:length/id">http:riverhog:components:/schemas/CollectionTagMutationRequest/properties/expected_tag_set_identity:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-22cc0fe00bf853c77ed7d419">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1expected_tag_set_identity:length/maximum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-85bd8562df140818a811abeb">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1expected_tag_set_identity:length/minimum">64</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-5dde08ee341628c37f073815">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1expected_tag_set_identity:length/owner">riverhog</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-92a7cf0f0fe44618dcacfa97">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1expected_tag_set_identity:length/policy">fixed</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-90fb3498296ab5a46a335713">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1expected_tag_set_identity:length/reason">fixed-public-representation</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-7cc74d7b7bac60ee15eaab1c">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1expected_tag_set_identity:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_constraint</code>
-</th>
-<td>
-<table id="v-14466aaf11e4450e83abb14f">
-<tbody>
-<tr>
-<th scope="row">
-<code>pattern</code>
-</th>
-<td>
-<span id="v-b2c2ec5cf9a503b8737c9e56">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1expected_tag_set_identity:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-3f8b8cfc102b39269c1e59d1">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1expected_tag_set_identity:length/source_pointer">/external_contract/http_openapi/riverhog/components/schemas/CollectionTagMutationRequest/properties/expected_tag_set_identity</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-ebb336c05ebe030acd17477e">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1expected_tag_set_identity:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-<li>
-<code>http:riverhog:components:/schemas/CollectionTagMutationRequest/properties/operation_id:length</code>
-<table id="v-926e24f6c0ff5f92c3521136">
-<tbody>
-<tr>
-<th scope="row">
-<code>dimension</code>
-</th>
-<td>
-<span id="v-efff3b08ffd75e7dd002d45c">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1operation_id:length/dimension">length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>id</code>
-</th>
-<td>
-<span id="v-d8533ab8b6e1774807b1f4b1">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1operation_id:length/id">http:riverhog:components:/schemas/CollectionTagMutationRequest/properties/operation_id:length</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>maximum</code>
-</th>
-<td>
-<span id="v-a62e3b8aaa360d908b034398">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1operation_id:length/maximum">256</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>minimum</code>
-</th>
-<td>
-<span id="v-d101ba5cc56c480bb869c8a6">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1operation_id:length/minimum">1</code>
-<span class="kind">number</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>owner</code>
-</th>
-<td>
-<span id="v-94e7ddf8c9d31d02ba4f0ff0">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1operation_id:length/owner">riverhog</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>policy</code>
-</th>
-<td>
-<span id="v-252429ba276e52833f581813">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1operation_id:length/policy">contract_max</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>reason</code>
-</th>
-<td>
-<span id="v-63dde6aaddbc61e406375fad">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1operation_id:length/reason">schema-maximum</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>rule</code>
-</th>
-<td>
-<span id="v-a4e246b3c38aab23745a64b8">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1operation_id:length/rule">schema-bound/v1</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>source_pointer</code>
-</th>
-<td>
-<span id="v-aa866985ef42541a0a76a580">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1operation_id:length/source_pointer">/external_contract/http_openapi/riverhog/components/schemas/CollectionTagMutationRequest/properties/operation_id</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-<tr>
-<th scope="row">
-<code>unit</code>
-</th>
-<td>
-<span id="v-d9d06a4d2ff7b1edc0fe9087">
-<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionTagMutationRequest~1properties~1operation_id:length/unit">characters</code>
-<span class="kind">string</span>
-</span>
-</td>
-</tr>
-</tbody>
-</table>
-</li>
-</ul>
+</div>
 </aside>
 <footer>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>

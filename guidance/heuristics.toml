@@ -2,6 +2,38 @@
 schema = "riverhog-nonbinding-guidance/v1"
 
 [[heuristics]]
+id = "use-jcs-for-json"
+guidance = """
+Prefer RFC 8785 JSON Canonicalization Scheme (JCS) for JSON throughout the repository.
+Use the shared riverhog-canonical-json package rather than local serializer options when
+emitting or checking JSON bytes. Treat a required different spelling as an explicit
+interface choice, never as an interchangeable canonical form.
+"""
+scope = """
+New and revised JSON producers and consumers, especially contract records, protocol
+messages, persisted evidence, and values used in identity or digest calculations.
+"""
+rationale = """
+One canonical spelling prevents equivalent JSON values from drifting across packages,
+renderers, and hash boundaries. This guidance does not change independently specified
+wire contracts or make a human-readable diagnostic an identity record.
+"""
+
+[[heuristics.related_tests]]
+node = "packages/riverhog-canonical-json/tests/test_canonical_json.py::test_jcs_orders_utf16_keys_and_preserves_unicode_code_points"
+note = """
+Checks the shared encoder's key order, Unicode output, and digest for one representative
+value; does not cover every JSON producer in the repository.
+"""
+
+[[heuristics.related_tests]]
+node = "tests/unit/test_contract_html_rendering.py::test_every_declared_leaf_value_is_visible_without_omission_or_mutation"
+note = """
+Checks the contract HTML's exact displayed leaf values against JCS spelling for values
+that are shown as JSON; does not make the HTML an independent contract authority.
+"""
+
+[[heuristics]]
 id = "exact-external-effect-authority"
 guidance = """
 Prefer sealing explicit intent and acquiring destination-specific ownership before starting
