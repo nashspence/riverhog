@@ -17,6 +17,7 @@ HAND_MAINTAINED_MARKDOWN = {
     REPO / "docs/architecture.md",
 }
 GENERATED_ATLAS = REPO / "qualification/contracts/riverhog-v1"
+GENERATED_GUIDANCE = REPO / "guidance/README.md"
 REPOSITORY_MAP_TARGETS = {
     REPO / "riverhog",
     REPO / "some-implementations/gogurt",
@@ -102,7 +103,9 @@ def test_all_markdown_is_reachable_and_links_resolve() -> None:
 
 def test_hand_maintained_markdown_surface_is_explicit() -> None:
     assert {
-        path for path in _markdown_files() if GENERATED_ATLAS not in path.parents
+        path
+        for path in _markdown_files()
+        if GENERATED_ATLAS not in path.parents and path != GENERATED_GUIDANCE
     } == HAND_MAINTAINED_MARKDOWN
 
 
@@ -147,6 +150,7 @@ def test_readme_states_archive_and_adapter_authority() -> None:
         REPO / "LICENSE.md",
         REPO / "SECURITY.md",
         REPO / "docs/architecture.md",
+        GENERATED_GUIDANCE,
         REPO / "qualification/contracts/riverhog-v1/index.md",
     }
 

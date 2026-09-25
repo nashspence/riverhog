@@ -39,7 +39,6 @@ QUALIFICATION_INPUTS = {
     REPO_ROOT / "qualification/fixtures/stove0/recipes.yaml",
     REPO_ROOT / "qualification/fixtures/stove0/admissions.json",
     *CONTRACT_FILES,
-    REPO_ROOT / "qualification/policies/implementation-witnesses.json",
     REPO_ROOT / "qualification/provider/config.toml",
 }
 
@@ -213,15 +212,3 @@ def test_every_checked_qualification_input_runs_through_its_real_consumer(
     checked = checked_contract_closure["atlas"]
     assert contract_module.reassemble_projection(checked) == json.loads(json.dumps(projection))
     assert contract_module.reassemble_trace(checked) == json.loads(json.dumps(trace))
-
-    policy_script = REPO_ROOT / "scripts/implementation_policy.py"
-    policy_spec = importlib.util.spec_from_file_location(
-        "qualification_implementation_policy", policy_script
-    )
-    assert policy_spec is not None and policy_spec.loader is not None
-    policy_module = importlib.util.module_from_spec(policy_spec)
-    sys.modules[policy_spec.name] = policy_module
-    policy_spec.loader.exec_module(policy_module)
-    assert (REPO_ROOT / "qualification/policies/implementation-witnesses.json").read_text(
-        encoding="utf-8"
-    ) == policy_module._render()
