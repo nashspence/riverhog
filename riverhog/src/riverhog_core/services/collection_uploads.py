@@ -411,10 +411,6 @@ class SqlAlchemyCollectionUploadService:
                 else None
             )
             store_name = archive_store or persisted_store or self._config.archive_write_store
-            try:
-                archive_binding = self._archive_stores.require(store_name)
-            except ValueError as exc:
-                raise BadRequest(str(exc)) from exc
             persisted_cache = (
                 collection.creation_use_cache
                 if collection is not None
@@ -422,13 +418,22 @@ class SqlAlchemyCollectionUploadService:
                 if upload is not None
                 else None
             )
-            resolved_cache = resolve_use_cache(
-                requested=use_cache if use_cache is not None else persisted_cache,
-                store_name=store_name,
-                config=self._config,
-                archive_stores=self._archive_stores,
-                retrieval_cache=self._retrieval_cache,
-            )
+            if collection is not None:
+                resolved_cache = use_cache if use_cache is not None else persisted_cache
+                if not isinstance(resolved_cache, bool):
+                    raise BadRequest("use_cache must be a boolean")
+            else:
+                try:
+                    archive_binding = self._archive_stores.require(store_name)
+                except ValueError as exc:
+                    raise BadRequest(str(exc)) from exc
+                resolved_cache = resolve_use_cache(
+                    requested=use_cache if use_cache is not None else persisted_cache,
+                    store_name=store_name,
+                    config=self._config,
+                    archive_stores=self._archive_stores,
+                    retrieval_cache=self._retrieval_cache,
+                )
             if copy_to is None:
                 destinations = tuple(
                     json.loads(
@@ -441,7 +446,10 @@ class SqlAlchemyCollectionUploadService:
                 )
             else:
                 destinations = _normalize_copy_destinations(
-                    copy_to, source_store=store_name, archive_stores=self._archive_stores
+                    copy_to,
+                    source_store=store_name,
+                    archive_stores=self._archive_stores,
+                    require_availability=collection is None,
                 )
             creation_identity = _collection_upload_creation_identity(
                 ingest_source=ingest_source,
@@ -494,6 +502,15 @@ class SqlAlchemyCollectionUploadService:
                 elif upload.state == "discarding":
                     raise Conflict("collection upload discard is in progress")
                 return _upload_payload(session, upload, resumed=True)
+
+            for destination in destinations:
+                resolve_use_cache(
+                    requested=resolved_cache,
+                    store_name=destination,
+                    config=self._config,
+                    archive_stores=self._archive_stores,
+                    retrieval_cache=self._retrieval_cache,
+                )
 
             if destinations:
                 if initiator.key_id is None:
@@ -4340,15 +4357,17 @@ def _normalize_copy_destinations(
     *,
     source_store: str,
     archive_stores: ArchiveStoreRegistry,
+    require_availability: bool = True,
 ) -> tuple[str, ...]:
     if isinstance(values, str):
         raise BadRequest("copy_to must be a list of archive store names")
     destinations: list[str] = []
     for value in values:
-        try:
-            archive_stores.require(value)
-        except ValueError as exc:
-            raise BadRequest(str(exc)) from exc
+        if require_availability:
+            try:
+                archive_stores.require(value)
+            except ValueError as exc:
+                raise BadRequest(str(exc)) from exc
         if value == source_store:
             raise BadRequest("copy_to destination must differ from archive_store")
         destinations.append(value)

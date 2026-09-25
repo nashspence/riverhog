@@ -131,6 +131,7 @@
   "$id": "https://nashspence.github.io/riverhog/v1/config/a-riverhog-ftp-spool.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
+  "description": "Operator document; credentials remain file paths until policy is valid.",
   "properties": {
     "allow_insecure_http": {
       "default": false,
@@ -138,7 +139,8 @@
       "type": "boolean"
     },
     "api_token_file": {
-      "minLength": 1,
+      "format": "path",
+      "title": "Api Token File",
       "type": "string"
     },
     "claim_attempt_budget": {
@@ -205,7 +207,8 @@
       "type": "string"
     },
     "riverhog_token_file": {
-      "minLength": 1,
+      "format": "path",
+      "title": "Riverhog Token File",
       "type": "string"
     },
     "sources": {
@@ -220,10 +223,10 @@
   "required": [
     "host_id",
     "riverhog_base_url",
+    "sources",
     "riverhog_token_file",
-    "api_token_file",
-    "sources"
+    "api_token_file"
   ],
-  "title": "FtpSpoolConfig",
+  "title": "FtpSpoolDocument",
   "type": "object"
 }

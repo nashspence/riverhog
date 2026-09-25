@@ -27,6 +27,26 @@ def _source(tmp_path: Path, value: str) -> tuple[Path, list[Project]]:
     return root, [Project(name="example", path="component")]
 
 
+def test_ftp_operator_document_is_the_atlas_configuration_authority() -> None:
+    root = Path(__file__).resolve().parents[2]
+    detections = discover_configuration_documents(
+        root,
+        [
+            Project(
+                name="a-riverhog-ftp-spool",
+                path="some-implementations/riverhog/ingress/ftp",
+            )
+        ],
+    )
+    loader = [
+        item
+        for item in detections
+        if item["path"].endswith("/a_riverhog_ftp_spool/config.py")
+        and item["scope"] == "load_config"
+    ]
+    assert [item["authority_qualname"] for item in loader] == ["FtpSpoolDocument"]
+
+
 def test_configuration_detector_resolves_composed_names_and_helper_arguments(
     tmp_path: Path,
 ) -> None:

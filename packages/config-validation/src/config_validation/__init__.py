@@ -120,7 +120,7 @@ def load_validated_yaml_config(
 def read_secret_file(path: Path | str, *, label: str) -> str:
     """Read a mounted secret named by a validated config document."""
 
-    resolved = Path(path).expanduser()
+    resolved = Path(path)
     if not resolved.is_absolute():
         raise ConfigError(f"{label} must be an absolute secret-file path")
     try:

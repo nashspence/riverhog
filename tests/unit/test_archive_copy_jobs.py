@@ -32,6 +32,7 @@ from riverhog_core.catalog_models import (
     RetrievalCacheObjectRecord,
 )
 from riverhog_core.ports.archive_objects import (
+    ResumableWriteConstraints,
     WriteSegmentReceipt,
     WriteSession,
 )
@@ -44,7 +45,7 @@ from riverhog_core.services.lifecycle_events import SqlAlchemyLifecycleEventServ
 from riverhog_core.stores.mirrored_archive_resumable_object_store import (
     MirroredArchiveResumableObjectStore,
 )
-from riverhog_protocol.errors import Conflict
+from riverhog_protocol.errors import BadRequest, Conflict
 from sqlalchemy import select
 from time_formats import format_utc_timestamp, utc_now
 
@@ -243,8 +244,10 @@ def _pending_upload_copy_intent(config: RuntimeConfig) -> None:
         )
 
 
-def test_upload_copy_choices_are_atomic_and_idempotent(tmp_path: Path) -> None:
-    config, _, _, _, copy_service = _service(tmp_path / "catalog.sqlite3")
+def test_upload_copy_choices_are_atomic_and_idempotent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    config, _, _, destination, copy_service = _service(tmp_path / "catalog.sqlite3")
     producer = SqlAlchemyCollectionUploadService(config, copy_service._archive_stores)
     now = format_utc_timestamp(utc_now())
     with session_scope(make_session_factory(config.database_url)) as session:
@@ -301,13 +304,70 @@ def test_upload_copy_choices_are_atomic_and_idempotent(tmp_path: Path) -> None:
         producer.create_or_resume(**{**request, "copy_to": []})
     with pytest.raises(Conflict, match="initiator changed"):
         producer.create_or_resume(**{**request, "initiator": replace(actor, key_id="c" * 16)})
+    monkeypatch.setattr(
+        destination,
+        "write_constraints",
+        lambda: ResumableWriteConstraints(1, 1024, None),
+    )
+
+    class IncompatibleCache:
+        def mirror_write_constraints(
+            self, constraints: ResumableWriteConstraints
+        ) -> ResumableWriteConstraints | None:
+            return constraints if constraints.maximum_segment_bytes is None else None
+
+    cached_producer = SqlAlchemyCollectionUploadService(
+        config,
+        copy_service._archive_stores,
+        retrieval_cache=IncompatibleCache(),  # type: ignore[arg-type]
+    )
+    with pytest.raises(BadRequest, match="write constraints are incompatible"):
+        cached_producer.create_or_resume(
+            **{**request, "idempotency_key": "incompatible-copy-target", "use_cache": True}
+        )
     with session_scope(make_session_factory(config.database_url)) as session:
+        assert (
+            session.scalar(
+                select(CollectionUploadRecord).where(
+                    CollectionUploadRecord.idempotency_key == "incompatible-copy-target"
+                )
+            )
+            is None
+        )
         rows = session.scalars(
             select(CollectionUploadCopyIntentRecord).where(
                 CollectionUploadCopyIntentRecord.collection_id == int(opened["collection_id"])
             )
         ).all()
         assert len(rows) == 1
+
+
+def test_upload_copy_handoff_rechecks_destination_cache_constraints(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    config, _, _, destination, service = _service(tmp_path / "catalog.sqlite3")
+    _pending_upload_copy_intent(config)
+    with session_scope(make_session_factory(config.database_url)) as session:
+        intent = session.get(CollectionUploadCopyIntentRecord, (COLLECTION_ID, "b2"))
+        assert intent is not None
+        intent.use_cache = True
+    monkeypatch.setattr(
+        destination,
+        "write_constraints",
+        lambda: ResumableWriteConstraints(1, 1024, None),
+    )
+
+    class IncompatibleCache:
+        def mirror_write_constraints(self, _constraints: ResumableWriteConstraints) -> None:
+            return None
+
+    service._retrieval_cache = IncompatibleCache()  # type: ignore[assignment]
+    assert service.process_due_upload_copy_intents(limit=1) == 1
+    with session_scope(make_session_factory(config.database_url)) as session:
+        intent = session.get(CollectionUploadCopyIntentRecord, (COLLECTION_ID, "b2"))
+        assert intent is not None and intent.state == "failed"
+        assert session.get(ArchiveCopyJobRecord, (COLLECTION_ID, "b2")) is None
+    assert destination.objects == {}
 
 
 def test_upload_copy_handoff_and_event_commit_together(
@@ -568,6 +628,62 @@ def test_copy_job_explicit_cache_choice_overrides_direct_store_policy(tmp_path: 
             initiator=INITIATOR,
         )
     assert service.get(COLLECTION_ID, destination_store="b2")["use_cache"] is True
+    with session_scope(make_session_factory(config.database_url)) as session:
+        job = session.get(ArchiveCopyJobRecord, (COLLECTION_ID, "b2"))
+        assert job is not None
+        job.state = "failed"
+        session.add(
+            ArchiveCopyObjectUploadRecord(
+                collection_id=COLLECTION_ID,
+                destination_store="b2",
+                object_id=PACK_ID,
+                kind="pack",
+                object_path="archives/b2/new-copy/volume",
+                plaintext_bytes=1,
+                write_token="retained-mirror-continuation",
+                uploaded_bytes=0,
+                uploaded_segments=0,
+                total_segments=1,
+            )
+        )
+    with pytest.raises(Conflict, match="retained continuation"):
+        cached.create_or_resume(
+            COLLECTION_ID,
+            destination_store="b2",
+            use_cache=False,
+            initiator=INITIATOR,
+        )
+
+
+def test_copy_preflights_real_part_boundaries_before_read_or_write(tmp_path: Path) -> None:
+    archive = _multiple_archive_parts(FILES)
+    config, _, source, destination, service = _service(
+        tmp_path / "catalog.sqlite3", archive=archive
+    )
+    part_sizes = [row["stored_bytes"] for row in json.loads(archive.pack_parts_json)]
+    minimum = max(part_sizes) + 1
+    cache = _ArchiveCopyCache()
+    cache.mirror_write_constraints = lambda _archive: ResumableWriteConstraints(
+        minimum_nonfinal_segment_bytes=minimum,
+        maximum_segment_bytes=None,
+        maximum_segment_count=None,
+    )
+    cached = SqlAlchemyArchiveCopyJobService(
+        config,
+        service._archive_stores,
+        retrieval_cache=cache,  # type: ignore[arg-type]
+    )
+    with pytest.raises(BadRequest, match="authoritative archive parts"):
+        cached.create_or_resume(
+            COLLECTION_ID,
+            destination_store="b2",
+            use_cache=True,
+            initiator=INITIATOR,
+        )
+    assert source.prepared == []
+    assert destination.objects == {}
+    with session_scope(make_session_factory(config.database_url)) as session:
+        assert session.get(ArchiveCopyJobRecord, (COLLECTION_ID, "b2")) is None
 
 
 def test_archive_copy_preserves_the_independent_object_manifest(
@@ -638,6 +754,25 @@ def test_archive_copy_preserves_the_independent_object_manifest(
         )
         == shown
     )
+    service._archive_stores = ArchiveStoreRegistry(
+        {}, unavailable={"deep": "offline", "b2": "offline"}
+    )
+    assert (
+        service.create_or_resume(
+            COLLECTION_ID,
+            source_store="deep",
+            destination_store="b2",
+            initiator=INITIATOR,
+        )
+        == shown
+    )
+    with pytest.raises(Conflict, match="cache choice changed"):
+        service.create_or_resume(
+            COLLECTION_ID,
+            destination_store="b2",
+            use_cache=True,
+            initiator=INITIATOR,
+        )
     assert listed["jobs"] == [shown]
     events = (
         SqlAlchemyLifecycleEventService(config)

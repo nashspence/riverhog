@@ -13,6 +13,7 @@ from riverhog_core.catalog_db import initialize_db, make_session_factory, sessio
 from riverhog_core.catalog_models import CollectionArchiveCopyRecord, CollectionRecord
 from riverhog_core.runtime_config import (
     TEST_ARCHIVE_PASSPHRASE_ID,
+    RetrievalCacheStoreRegistration,
     RuntimeConfig,
     StorageAdapterRegistration,
 )
@@ -46,6 +47,10 @@ def test_degraded_container_keeps_unreachable_historical_store_visible(
         },
     )
     available = {"archive": True, "offline": False}
+    incarnation_ids = {
+        "archive": "00000000-0000-4000-8000-000000000001",
+        "offline": "00000000-0000-4000-8000-000000000002",
+    }
 
     def respond(request: httpx.Request) -> httpx.Response:
         name = "offline" if request.url.host == "127.0.0.2" else "archive"
@@ -53,11 +58,7 @@ def test_degraded_container_keeps_unreachable_historical_store_visible(
             return httpx.Response(200 if available[name] else 503)
         if request.url.path.endswith("/v1/adapter"):
             descriptor = AdapterDescriptor(
-                storage_incarnation_id=(
-                    "00000000-0000-4000-8000-000000000002"
-                    if name == "offline"
-                    else "00000000-0000-4000-8000-000000000001"
-                ),
+                storage_incarnation_id=incarnation_ids[name],
                 implementation_id="fixture.storage/v1",
                 implementation_version="1.0.0",
                 read_mode="immediate",
@@ -91,9 +92,96 @@ def test_degraded_container_keeps_unreachable_historical_store_visible(
             historical = container.archive_stores.get("offline")
             assert historical.incarnation_id == "00000000-0000-4000-8000-000000000002"
             assert historical.configured and not historical.reachable
+            available["offline"] = True
+            incarnation_ids["offline"] = "00000000-0000-4000-8000-000000000099"
+            container.storage_readiness()
+            assert not container.archive_stores.get("offline").reachable
+            incarnation_ids["offline"] = "00000000-0000-4000-8000-000000000002"
+            container.storage_readiness()
+            assert container.archive_stores.get("offline").reachable
             available["archive"] = False
             with pytest.raises(Exception, match="archive store is unavailable"):
                 container.storage_readiness()
+    finally:
+        transport_client.close()
+        deps.dispose_session_factory(factory)
+
+
+def test_unavailable_cache_is_admitted_after_recovery_without_restart(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    database_url = sqlite_url(tmp_path / "catalog.sqlite3")
+    initialize_db(database_url)
+    factory = make_session_factory(database_url)
+    base = RuntimeConfig.for_testing(database_url=database_url)
+    archive = base.archive_store("archive")
+    cache_adapter = replace(archive, name="cache", base_url="http://127.0.0.2/cache")
+    config = replace(
+        base,
+        retrieval_cache_write_segment_bytes=1024,
+        retrieval_cache_stores={
+            "cache": RetrievalCacheStoreRegistration(name="cache", adapter=cache_adapter)
+        },
+    )
+    cache_ready = False
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        name = "cache" if request.url.host == "127.0.0.2" else "archive"
+        if request.url.path.endswith("/health/ready"):
+            return httpx.Response(200 if name == "archive" or cache_ready else 503)
+        if request.url.path.endswith("/v1/adapter"):
+            return httpx.Response(
+                200,
+                json=AdapterDescriptor(
+                    storage_incarnation_id=(
+                        "00000000-0000-4000-8000-000000000002"
+                        if name == "cache"
+                        else "00000000-0000-4000-8000-000000000001"
+                    ),
+                    implementation_id="fixture.storage/v1",
+                    implementation_version="1.0.0",
+                    read_mode="restore_required" if name == "archive" else "immediate",
+                    minimum_nonfinal_segment_bytes=1,
+                    maximum_segment_bytes=1024,
+                    maximum_segment_count=10000,
+                ).model_dump(),
+            )
+        raise AssertionError(request.url.path)
+
+    transport_client = httpx.Client(transport=httpx.MockTransport(respond))
+    monkeypatch.setattr(
+        deps,
+        "_adapter_client",
+        lambda registration: StorageAdapterClient(
+            registration.base_url,
+            token="fixture",
+            allow_insecure_http=True,
+            client=transport_client,
+        ),
+    )
+    try:
+        with ExitStack() as cleanup:
+            container = deps._build_default_container(
+                config, session_factory=factory, startup_cleanup=cleanup
+            )
+            assert container.storage_readiness is not None
+            with pytest.raises(RuntimeError, match="retrieval cache"):
+                container.storage_readiness()
+            cache_ready = True
+            cache_service = container.retrieval._cache
+            assert cache_service is not None
+            ensure_accounting = cache_service._ensure_accounting_rows
+
+            def fail_accounting(_extra: object = ()) -> None:
+                raise RuntimeError("accounting unavailable")
+
+            monkeypatch.setattr(cache_service, "_ensure_accounting_rows", fail_accounting)
+            with pytest.raises(RuntimeError, match="accounting unavailable"):
+                container.storage_readiness()
+            assert cache_service._stores == {}
+            monkeypatch.setattr(cache_service, "_ensure_accounting_rows", ensure_accounting)
+            container.storage_readiness()
+            assert cache_service.store_names == ("cache",)
     finally:
         transport_client.close()
         deps.dispose_session_factory(factory)

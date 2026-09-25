@@ -46,6 +46,16 @@ def reconcile_storage_incarnations(
             (cast(StorageKind, record.kind), record.name): record
             for record in session.scalars(select(StorageIncarnationRecord).with_for_update())
         }
+        configured_names: dict[str, StorageKind] = {}
+        for kind, name in observations:
+            previous_kind = configured_names.setdefault(name, kind)
+            if previous_kind != kind or any(
+                historical_name == name and historical_kind != kind
+                for historical_kind, historical_name in records
+            ):
+                raise StorageBindingConflict(
+                    f"storage name {name} is reserved for one archive or cache role"
+                )
         for key, record in records.items():
             if key not in observations and record.state == "bound":
                 record.state = "disabled"

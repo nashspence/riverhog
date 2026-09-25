@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -8,6 +10,7 @@ from a_riverhog_ftp_spool.app import FtpSpoolComposition
 from a_riverhog_ftp_spool.config import (
     FTP_SPOOL_CONFIG_SCHEMA,
     FtpSpoolConfig,
+    FtpSpoolDocument,
     SourceConfig,
     generated_config_schema,
     load_config,
@@ -55,6 +58,37 @@ def test_adapter_secrets_are_loaded_from_named_files(tmp_path: Path) -> None:
     (tmp_path / "adapter.token").write_text("\n", encoding="utf-8")
     with pytest.raises(ValueError, match="api_token_file must contain a nonempty secret"):
         load_config(config_path)
+
+
+def test_invalid_operator_policy_never_renders_mounted_tokens(tmp_path: Path) -> None:
+    config_path = tmp_path / "ftp-spool.yaml"
+    _write_config(config_path, tmp_path / "ftp", host_id="invalid-host-id")
+    secrets = ("synthetic-riverhog-secret", "synthetic-adapter-secret")
+    (tmp_path / "riverhog.token").write_text(secrets[0], encoding="utf-8")
+    (tmp_path / "adapter.token").write_text(secrets[1], encoding="utf-8")
+
+    with pytest.raises(ValueError, match="host_id must be a lowercase UUID URN") as error:
+        load_config(config_path)
+    rendered = repr(error.value)
+    command = Path(sys.executable).parent / "a-riverhog-ftp-spool"
+    result = subprocess.run(
+        [str(command), "--config", str(config_path), "check-config"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode != 0
+    rendered += result.stdout + result.stderr
+    assert all(secret not in rendered for secret in secrets)
+
+
+def test_operator_document_is_the_published_config_authority() -> None:
+    schema = FtpSpoolDocument.model_json_schema()
+    assert set(schema["properties"]) == set(FTP_SPOOL_CONFIG_SCHEMA["properties"])
+    assert "riverhog_token_file" in schema["required"]
+    assert "api_token_file" in schema["required"]
+    assert "riverhog_token" not in schema["properties"]
+    assert "api_token" not in schema["properties"]
 
 
 def test_listener_loads_only_its_source_without_riverhog_credentials(tmp_path: Path) -> None:
