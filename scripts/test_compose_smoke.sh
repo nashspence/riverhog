@@ -564,6 +564,11 @@ while time.monotonic() < deadline:
                 time.sleep(0.1)
             else:
                 raise AssertionError('FTP listener did not receive the exact interrupted prefix')
+            # Close the transfer through the protocol's abort path. Closing
+            # the control socket first can let a FIN on the data socket turn
+            # this prefix into a successful complete upload under load.
+            assert ftp.abort().startswith('426 ')
+            assert ftp.getresp().startswith('226 ')
         finally:
             ftp.close()
             data.close()
