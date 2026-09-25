@@ -263,7 +263,8 @@ def validate_job(job: Job) -> None:
             raise ValueError("bad submission calendars")
         for url in job.submit_urls:
             calendar_url(url)
-        tips = pending(read_proof(job.proof, job.statement_digest)) if job.proof is not None else set()
+        tips = (pending(read_proof(job.proof, job.statement_digest))
+                if job.proof is not None else set())
         if type(job.work) is not tuple or len(job.work) > MAX_WORK:
             raise ValueError("bad work size")
         keys = set()
@@ -309,12 +310,13 @@ def step(job: Job, calendar: Calendar, *, now: int, allow: frozenset[str],
     never the file digest by accident. Keep retrying pending paths even after a
     Bitcoin marker appears: an attacker can forge a marker, not a valid anchor.
     """
-    validate_job(job)
+    dump_job(job)  # Validate the complete persistence budget before any I/O.
     if not integer(now) or type(allow) is not frozenset:
         raise ValueError("invalid scheduler inputs")
     for url in allow:
         calendar_url(url)
     job = _discover(job, allow, now)
+    dump_job(job)  # Newly enabled pending work must also fit before I/O.
     due = [w for w in job.work if w.due is not None and w.due <= now and w.url in allow]
     if not due:
         return job
@@ -343,13 +345,18 @@ def step(job: Job, calendar: Calendar, *, now: int, allow: frozenset[str],
         proof = write_proof(root)
         work = remaining if selected.kind == "submit" else (*remaining, updated)
         candidate = _discover(replace(job, proof=proof, work=work), allow, now)
-        validate_job(candidate)
+        try:
+            dump_job(candidate)
+        except StateError as exc:
+            raise ProofError("merged state size limit") from exc
         return candidate
     except CalendarError as exc:
         updated = replace(updated, error=exc.code, due=next_due if exc.retryable else None)
     except ProofError:
         updated = replace(updated, error="bad_proof")
-    return replace(job, work=tuple(sorted((*remaining, updated), key=lambda w: w.key)))
+    result = replace(job, work=tuple(sorted((*remaining, updated), key=lambda w: w.key)))
+    dump_job(result)  # Never return progress that the reference store cannot serialize.
+    return result
 
 
 def dump_job(job: Job) -> bytes:
@@ -526,8 +533,9 @@ def verify(proof: bytes, statement_digest: bytes, bitcoin: Bitcoin, *,
             continue
         # Validate even a custom Bitcoin port. Mainnet consensus validation remains
         # the port's explicit trust contract; hash consistency alone is insufficient.
-        if (not integer(anchor.height) or anchor.height != height or type(anchor.header) is not bytes
-                or len(anchor.header) != 80 or not integer(anchor.tip_height, minimum=height)):
+        if (not integer(anchor.height) or anchor.height != height
+                or type(anchor.header) is not bytes or len(anchor.header) != 80
+                or not integer(anchor.tip_height, minimum=height)):
             checks.append(Check("unavailable", height, "invalid_anchor"))
             continue
         expected_hash = hashlib.sha256(hashlib.sha256(anchor.header).digest()).digest()[::-1]
