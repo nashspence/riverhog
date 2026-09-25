@@ -70,7 +70,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-riverhog-filesystem-store` | [A_RIVERHOG_FILESYSTEM_STORE_TOKEN](../../authorities/a-riverhog-filesystem-store/configuration-environment/a-riverhog-filesystem-store-token.md#pa-46927f7111) |
 | `a-riverhog-filesystem-store` | [A_RIVERHOG_FILESYSTEM_STORE_TOKEN_FILE](../../authorities/a-riverhog-filesystem-store/configuration-environment/a-riverhog-filesystem-store-token-file.md#pa-bb5dc955b4) |
 | `a-riverhog-ftp-spool` | [A_RIVERHOG_FTP_SPOOL_CONFIG](../../authorities/a-riverhog-ftp-spool/configuration-environment/a-riverhog-ftp-spool-config.md#pa-d71b25d961) |
-| `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool:configuration:ftp-spool-config configuration](../../authorities/a-riverhog-ftp-spool/configuration/a-riverhog-ftp-spool-configuration-ftp-spool-config-configuration.md#pa-5b98fcfb98) |
+| `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool:configuration:ftp-spool-document configuration](../../authorities/a-riverhog-ftp-spool/configuration/a-riverhog-ftp-spool-configuration-ftp-spool-document-configuration.md#pa-07d26e11ba) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool:configuration:source-config configuration](../../authorities/a-riverhog-ftp-spool/configuration/a-riverhog-ftp-spool-configuration-source-config-configuration.md#pa-601d6c5dcf) |
 | `a-riverhog-ftp-spool-client` | [A_RIVERHOG_FTP_SPOOL_ALLOW_INSECURE_HTTP](../../authorities/a-riverhog-ftp-spool-client/configuration-environment/a-riverhog-ftp-spool-allow-insecure-http.md#pa-7716bd2f7d) |
 | `a-riverhog-ftp-spool-client` | [A_RIVERHOG_FTP_SPOOL_BASE_URL](../../authorities/a-riverhog-ftp-spool-client/configuration-environment/a-riverhog-ftp-spool-base-url.md#pa-5e507c05d7) |

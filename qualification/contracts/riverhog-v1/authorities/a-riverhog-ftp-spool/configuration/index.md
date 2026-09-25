@@ -10,5 +10,5 @@ Configuration Documents contract owned by a-riverhog-ftp-spool.
 
 [Compare configuration documents](../../../evidence/configuration/documents.md#c-9c0b6efc83-ddde5b8757) for this authority.
 
-- [ftp-spool-config](a-riverhog-ftp-spool-configuration-ftp-spool-config-configuration.md)
+- [ftp-spool-document](a-riverhog-ftp-spool-configuration-ftp-spool-document-configuration.md)
 - [source-config](a-riverhog-ftp-spool-configuration-source-config-configuration.md)

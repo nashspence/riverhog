@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-05b7ae6f2b"></a>`kind`: `"class"`
-- <a id="s-46e7af5f1f"></a>`signature`: `"'(*, host_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], riverhog_base_url: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2048)], riverhog_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], allow_insecure_http: bool = False, api_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], provenance_observer: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=255)] = None, sources: Annotated[tuple[a_riverhog_ftp_spool.config.SourceConfig, ...], MinLen(min_length=1)], poll_seconds: Annotated[float, Ge(ge=0.1), Le(le=3600)] = 5.0, pending_claim_capacity: Annotated[int, Ge(ge=1)] = 128, claim_attempt_budget: Annotated[int, Ge(ge=2)] = 8, discovery_entry_budget: Annotated[int, Ge(ge=1)] = 4096, completion_failure_capacity: Annotated[int, Ge(ge=1)] = 128, completion_failure_attempt_budget: Annotated[int, Ge(ge=1)] = 8) -> None'"`
+- <a id="s-46e7af5f1f"></a>`signature`: `"'(*, host_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], riverhog_base_url: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2048)], allow_insecure_http: bool = False, provenance_observer: Annotated[str \| None, MinLen(min_length=1), MaxLen(max_length=255)] = None, sources: Annotated[tuple[a_riverhog_ftp_spool.config.SourceConfig, ...], MinLen(min_length=1)], poll_seconds: Annotated[float, Ge(ge=0.1), Le(le=3600)] = 5.0, pending_claim_capacity: Annotated[int, Ge(ge=1)] = 128, claim_attempt_budget: Annotated[int, Ge(ge=2)] = 8, discovery_entry_budget: Annotated[int, Ge(ge=1)] = 4096, completion_failure_capacity: Annotated[int, Ge(ge=1)] = 128, completion_failure_attempt_budget: Annotated[int, Ge(ge=1)] = 8, riverhog_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], api_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)]) -> None'"`
 
 #### Validated model schema
 
@@ -30,7 +30,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-17cf68c0e7"></a>`type`: `"object"`
 - <a id="s-afa8e29886"></a>`additionalProperties`: `false`
-- <a id="s-6649691b3a"></a>`required`: `["host_id","riverhog_base_url","riverhog_token","api_token","sources"]`
+- <a id="s-6649691b3a"></a>`required`: `["host_id","riverhog_base_url","sources","riverhog_token","api_token"]`
 
 ##### Fields
 
@@ -131,7 +131,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 2e7b5ff1c65ef0f3c807302ec3f6dda8db2921968fe69487e00d12d1ca27f134 -->
+<!-- exact-contract-value: 035c46f33e548631686aa735ea8e33ba127bd35d72f5286fcf841e5615bb9e27 -->
 
 ```json
 {
@@ -336,13 +336,13 @@ The following JSON is the complete value owned at each machine-authority pointer
       "required": [
         "host_id",
         "riverhog_base_url",
+        "sources",
         "riverhog_token",
-        "api_token",
-        "sources"
+        "api_token"
       ],
       "type": "object"
     },
-    "signature": "'(*, host_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], riverhog_base_url: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2048)], riverhog_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], allow_insecure_http: bool = False, api_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], provenance_observer: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=255)] = None, sources: Annotated[tuple[a_riverhog_ftp_spool.config.SourceConfig, ...], MinLen(min_length=1)], poll_seconds: Annotated[float, Ge(ge=0.1), Le(le=3600)] = 5.0, pending_claim_capacity: Annotated[int, Ge(ge=1)] = 128, claim_attempt_budget: Annotated[int, Ge(ge=2)] = 8, discovery_entry_budget: Annotated[int, Ge(ge=1)] = 4096, completion_failure_capacity: Annotated[int, Ge(ge=1)] = 128, completion_failure_attempt_budget: Annotated[int, Ge(ge=1)] = 8) -> None'"
+    "signature": "'(*, host_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=255)], riverhog_base_url: Annotated[str, MinLen(min_length=1), MaxLen(max_length=2048)], allow_insecure_http: bool = False, provenance_observer: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=255)] = None, sources: Annotated[tuple[a_riverhog_ftp_spool.config.SourceConfig, ...], MinLen(min_length=1)], poll_seconds: Annotated[float, Ge(ge=0.1), Le(le=3600)] = 5.0, pending_claim_capacity: Annotated[int, Ge(ge=1)] = 128, claim_attempt_budget: Annotated[int, Ge(ge=2)] = 8, discovery_entry_budget: Annotated[int, Ge(ge=1)] = 4096, completion_failure_capacity: Annotated[int, Ge(ge=1)] = 128, completion_failure_attempt_budget: Annotated[int, Ge(ge=1)] = 8, riverhog_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)], api_token: Annotated[str, MinLen(min_length=1), MaxLen(max_length=4096)]) -> None'"
   },
   "distribution": "a-riverhog-ftp-spool",
   "module": "a_riverhog_ftp_spool",

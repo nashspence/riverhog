@@ -13,7 +13,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-riverhog-aws-store` | [AwsStoreDocument](../../authorities/a-riverhog-aws-store/schema/awsstoredocument.md#pa-1ad451b888) |
 | `a-riverhog-b2-store` | [B2StoreDocument](../../authorities/a-riverhog-b2-store/schema/b2storedocument.md#pa-85e4642e7b) |
 | `a-riverhog-event-relay` | [EventRelayConfig](../../authorities/a-riverhog-event-relay/schema/eventrelayconfig.md#pa-e91d7cb818) |
-| `a-riverhog-ftp-spool` | [FtpSpoolConfig](../../authorities/a-riverhog-ftp-spool/schema/ftpspoolconfig.md#pa-98787743dc) |
+| `a-riverhog-ftp-spool` | [FtpSpoolDocument](../../authorities/a-riverhog-ftp-spool/schema/ftpspooldocument.md#pa-9f254f4f83) |
 | `a-riverhog-linux-provenance-contract-lib` | [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-file-stat.json](../../authorities/a-riverhog-linux-provenance-contract-lib/schema/https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-linux-file-stat-json.md#pa-027f32b412) |
 | `a-riverhog-linux-provenance-contract-lib` | [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fs-flags.json](../../authorities/a-riverhog-linux-provenance-contract-lib/schema/https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-linux-fs-flags-json.md#pa-902d064440) |
 | `a-riverhog-linux-provenance-contract-lib` | [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json](../../authorities/a-riverhog-linux-provenance-contract-lib/schema/https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-linux-fsxattr-json.md#pa-4df72ed7c0) |

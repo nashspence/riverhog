@@ -4,7 +4,7 @@
 
 FTP upload spool and ingestion adapter for Riverhog.
 
-Contract elements: **53** · Extent decisions: **95**
+Contract elements: **53** · Extent decisions: **93**
 
 ## Interfaces
 

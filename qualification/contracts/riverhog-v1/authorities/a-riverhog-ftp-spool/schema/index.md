@@ -6,4 +6,4 @@ Standalone structured-value contracts; these do not define an interaction.
 
 ## Contract elements
 
-- [FtpSpoolConfig](ftpspoolconfig.md)
+- [FtpSpoolDocument](ftpspooldocument.md)

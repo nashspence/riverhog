@@ -236,6 +236,14 @@ class SqlAlchemyArchiveCopyJobService:
                 (normalized_collection_id, destination),
             )
             job = session.get(ArchiveCopyJobRecord, (normalized_collection_id, destination))
+            if existing is not None and archive_copy_is_complete(existing):
+                if job is None or job.state != "completed":
+                    raise Conflict("destination already has an uploaded archive copy")
+                if use_cache is not None and job.use_cache != use_cache:
+                    raise Conflict("archive copy job cache choice changed")
+                if source is not None and job.source_store != source:
+                    raise Conflict("archive copy job source choice changed")
+                return _job_payload(job)
             resolved_cache = resolve_use_cache(
                 requested=(job.use_cache if use_cache is None and job is not None else use_cache),
                 store_name=destination,
@@ -256,12 +264,20 @@ class SqlAlchemyArchiveCopyJobService:
                 and job.source_store != source
             ):
                 raise Conflict("archive copy job source choice changed")
-            if existing is not None and archive_copy_is_complete(existing):
-                if job is not None and job.state == "completed":
-                    if job.use_cache != resolved_cache:
-                        raise Conflict("archive copy job cache choice changed")
-                    return _job_payload(job)
-                raise Conflict("destination already has an uploaded archive copy")
+            if job is not None and job.state == "failed" and job.use_cache != resolved_cache:
+                continuation = session.scalar(
+                    select(ArchiveCopyObjectUploadRecord.object_id)
+                    .where(
+                        ArchiveCopyObjectUploadRecord.collection_id == normalized_collection_id,
+                        ArchiveCopyObjectUploadRecord.destination_store == destination,
+                        ArchiveCopyObjectUploadRecord.write_token.is_not(None),
+                    )
+                    .limit(1)
+                )
+                if continuation is not None:
+                    raise Conflict(
+                        "archive copy job cache choice changed with retained continuation"
+                    )
             source_copy = _select_source_copy(
                 collection,
                 config=self._config,
@@ -270,6 +286,13 @@ class SqlAlchemyArchiveCopyJobService:
                 archive_stores=self._archive_stores,
             )
             self._archive_stores.require_incarnation(source_copy.store, source_copy.incarnation_id)
+            self._preflight_source_parts(
+                session,
+                collection_id=normalized_collection_id,
+                source_store=source_copy.store,
+                destination_store=destination,
+                use_cache=resolved_cache,
+            )
             if job is None:
                 job = self._create_job_in_session(
                     session,
@@ -680,6 +703,24 @@ class SqlAlchemyArchiveCopyJobService:
             if source_copy is None or not archive_copy_is_complete(source_copy):
                 _fail_upload_copy_intent(intent, "source_unavailable")
                 return
+            try:
+                resolved_cache = resolve_use_cache(
+                    requested=intent.use_cache,
+                    store_name=destination_store,
+                    config=self._config,
+                    archive_stores=self._archive_stores,
+                    retrieval_cache=self._retrieval_cache,
+                )
+                self._preflight_source_parts(
+                    session,
+                    collection_id=collection_id,
+                    source_store=intent.source_store,
+                    destination_store=destination_store,
+                    use_cache=resolved_cache,
+                )
+            except BadRequest:
+                _fail_upload_copy_intent(intent, "configuration_changed")
+                return
             job = session.get(ArchiveCopyJobRecord, (collection_id, destination_store))
             if job is None:
                 destination_copy = session.get(
@@ -694,7 +735,7 @@ class SqlAlchemyArchiveCopyJobService:
                     collection_id=collection_id,
                     source_store=intent.source_store,
                     destination_store=destination_store,
-                    use_cache=intent.use_cache,
+                    use_cache=resolved_cache,
                     initiator=principal,
                     event_context_json=intent.event_context_json,
                     requested_at=now,
@@ -719,6 +760,47 @@ class SqlAlchemyArchiveCopyJobService:
             intent.next_attempt_at = format_utc_timestamp(
                 utc_now() + timedelta(seconds=delay_seconds)
             )
+
+    def _preflight_source_parts(
+        self,
+        session: Session,
+        *,
+        collection_id: int,
+        source_store: str,
+        destination_store: str,
+        use_cache: bool,
+    ) -> None:
+        destination = self._archive_stores.require(destination_store)
+        constraints = destination.resumable_objects.write_constraints()
+        if use_cache:
+            if self._retrieval_cache is None:
+                raise BadRequest("use_cache requires a configured retrieval cache")
+            mirror_constraints = getattr(self._retrieval_cache, "mirror_write_constraints", None)
+            if callable(mirror_constraints):
+                common = mirror_constraints(constraints)
+                if common is None:
+                    raise BadRequest(
+                        "archive and retrieval cache write constraints are incompatible"
+                    )
+                constraints = common
+        parts = session.scalars(
+            select(CollectionArchiveObjectRecord.archive_parts_json).where(
+                CollectionArchiveObjectRecord.collection_id == collection_id,
+                CollectionArchiveObjectRecord.store == source_store,
+                CollectionArchiveObjectRecord.kind.in_(("pack", "segment")),
+            )
+        )
+        for archive_parts_json in parts:
+            rows = _part_rows(archive_parts_json)
+            try:
+                for _ in iter_write_segments(
+                    (_part_int(row, "stored_bytes") for row in rows), constraints
+                ):
+                    pass
+            except ValueError as exc:
+                raise BadRequest(
+                    "authoritative archive parts cannot satisfy destination write constraints"
+                ) from exc
 
     def _process_one(self, *, collection_id: int, destination_store: str) -> None:
         current = utc_now()
@@ -822,6 +904,7 @@ class SqlAlchemyArchiveCopyJobService:
                 read_requested_at = job.read_requested_at
                 ready_at = job.ready_at
                 destination_storage_prefix = job.destination_storage_prefix
+                use_cache = job.use_cache
                 if not finalize:
                     job.state = "checking"
                     job.next_attempt_at = None
@@ -843,6 +926,15 @@ class SqlAlchemyArchiveCopyJobService:
                 destination_store=destination_store,
             )
             return
+
+        with session_scope(self._session_factory) as session:
+            self._preflight_source_parts(
+                session,
+                collection_id=collection_id,
+                source_store=source_store_name,
+                destination_store=destination_store_name,
+                use_cache=use_cache,
+            )
 
         source_store = self._archive_stores.require(source_store_name).store
         estimated_ready_at: str | None

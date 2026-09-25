@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 import yaml
+from riverhog_api import deps
 from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.pack_retrieval import PackRangeRetrievalPolicy
 from riverhog_core.runtime_config import (
@@ -17,6 +18,7 @@ from riverhog_core.runtime_config import (
 )
 from riverhog_core.runtime_document import generated_config_schema, load_runtime_config
 from riverhog_core.throughput import ArchiveThroughputTuning
+from riverhog_storage_adapter_support import StorageAdapterClient
 
 from tests.unit.db_helpers import sqlite_url
 
@@ -69,6 +71,52 @@ def _write(path: Path, document: dict[str, object]) -> None:
 
 def test_published_config_schema_matches_parser() -> None:
     assert json.loads(_SCHEMA.read_text(encoding="utf-8")) == generated_config_schema()
+
+
+def test_storage_names_are_global_and_token_paths_are_absolute(tmp_path: Path) -> None:
+    archive = StorageAdapterRegistration(
+        name="shared", base_url="https://storage.invalid", token_file=tmp_path / "token"
+    )
+    cache = RetrievalCacheStoreRegistration(name="shared", adapter=archive)
+    with pytest.raises(ValueError, match="distinct names"):
+        _config(
+            tmp_path,
+            archive_write_store="shared",
+            archive_read_order=("shared",),
+            archive_stores={"shared": archive},
+            retrieval_cache_stores={"shared": cache},
+        )
+    with pytest.raises(ValueError, match="token file must be absolute"):
+        _config(
+            tmp_path,
+            archive_write_store="shared",
+            archive_read_order=("shared",),
+            archive_stores={"shared": replace(archive, token_file=Path("~/token"))},
+        )
+
+
+def test_adapter_secret_path_has_one_loader_and_client_interpretation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    path, document = _document(tmp_path, monkeypatch)
+    archive = document["archive_stores"]
+    assert isinstance(archive, dict)
+    archive["archive"]["token_file"] = "~/adapter.token"
+    _write(path, document)
+    with pytest.raises(ValueError, match="absolute secret-file path"):
+        load_runtime_config()
+
+    archive["archive"]["token_file"] = str(tmp_path / "adapter_token_file")
+    _write(path, document)
+    config = load_runtime_config()
+    observed: list[Path] = []
+    monkeypatch.setattr(
+        StorageAdapterClient,
+        "from_token_file",
+        lambda _base_url, *, token_file, **_kwargs: observed.append(token_file),
+    )
+    deps._adapter_client(config.archive_stores["archive"])
+    assert observed == [tmp_path / "adapter_token_file"]
 
 
 def test_runtime_configuration_fields_have_explicit_production_consumers() -> None:

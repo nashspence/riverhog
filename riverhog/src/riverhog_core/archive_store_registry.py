@@ -31,16 +31,36 @@ class ArchiveStoreRegistry:
         *,
         unavailable: Mapping[str, str] | None = None,
         probes: Mapping[str, Callable[[], None]] | None = None,
+        recover: Callable[[str | None], None] | None = None,
     ) -> None:
         self._stores = dict(stores)
         self._unavailable = dict(unavailable or {})
         self._probes = dict(probes or {})
+        self._recover = recover
+
+    def set_recovery(self, recover: Callable[[str | None], None]) -> None:
+        self._recover = recover
+
+    def admit(
+        self,
+        name: str,
+        binding: ArchiveStoreBinding,
+        *,
+        probe: Callable[[], None],
+    ) -> None:
+        self._probes = {**self._probes, name: probe}
+        self._stores = {**self._stores, name: binding}
+        self._unavailable.pop(name, None)
 
     @property
     def names(self) -> tuple[str, ...]:
+        if self._recover is not None:
+            self._recover(None)
         return tuple(name for name in self._stores if self._usable(name))
 
     def require(self, name: str) -> ArchiveStoreBinding:
+        if name not in self._stores and self._recover is not None:
+            self._recover(name)
         try:
             binding = self._stores[name]
         except KeyError as exc:
@@ -61,6 +81,8 @@ class ArchiveStoreRegistry:
         return binding
 
     def items(self) -> tuple[tuple[str, ArchiveStoreBinding], ...]:
+        if self._recover is not None:
+            self._recover(None)
         return tuple(
             (name, binding) for name, binding in self._stores.items() if self._usable(name)
         )

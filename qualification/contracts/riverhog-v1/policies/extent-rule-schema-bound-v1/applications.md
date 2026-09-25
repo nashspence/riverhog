@@ -96,7 +96,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-riverhog-event-relay` | [a-riverhog-event-relay:configuration:event-relay-config configuration](../../authorities/a-riverhog-event-relay/configuration/a-riverhog-event-relay-configuration-event-relay-config-configuration.md#pa-ca7fafedd1) |
 | `a-riverhog-filesystem-store` | [a-riverhog-filesystem-store](../../authorities/a-riverhog-filesystem-store/cli/a-riverhog-filesystem-store.md#pa-fbb9880eb6) |
 | `a-riverhog-filesystem-store` | [a-riverhog-filesystem-store-materialize](../../authorities/a-riverhog-filesystem-store/cli/a-riverhog-filesystem-store-materialize.md#pa-5610cfe99f) |
-| `a-riverhog-ftp-spool` | [FtpSpoolConfig](../../authorities/a-riverhog-ftp-spool/schema/ftpspoolconfig.md#pa-3cbba6915a) |
+| `a-riverhog-ftp-spool` | [FtpSpoolDocument](../../authorities/a-riverhog-ftp-spool/schema/ftpspooldocument.md#pa-0b2693ec64) |
 | `a-riverhog-ftp-spool` | [GET /v1/sources/{source_id}/events](../../authorities/a-riverhog-ftp-spool/http-operations/get-v1-sources-source-id-events.md#pa-98a19bfc5b) |
 | `a-riverhog-ftp-spool` | [GET /v1/status](../../authorities/a-riverhog-ftp-spool/http-operations/get-v1-status.md#pa-4c16dde080) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool.md#pa-e5a62b5f62) |
@@ -105,7 +105,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool listen](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-listen.md#pa-2ea1d0d5dd) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool serve](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-serve.md#pa-2a682abfe1) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool status](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool-status.md#pa-71bd161250) |
-| `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool:configuration:ftp-spool-config configuration](../../authorities/a-riverhog-ftp-spool/configuration/a-riverhog-ftp-spool-configuration-ftp-spool-config-configuration.md#pa-e70c151a7c) |
+| `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool:configuration:ftp-spool-document configuration](../../authorities/a-riverhog-ftp-spool/configuration/a-riverhog-ftp-spool-configuration-ftp-spool-document-configuration.md#pa-d382605210) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool:configuration:source-config configuration](../../authorities/a-riverhog-ftp-spool/configuration/a-riverhog-ftp-spool-configuration-source-config-configuration.md#pa-ed4e2be1c8) |
 | `a-riverhog-ftp-spool` | [schemas: AttemptFailedEvent](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-attemptfailedevent.md#pa-c8f6afcca8) |
 | `a-riverhog-ftp-spool` | [schemas: AttemptFailedPayload](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-attemptfailedpayload.md#pa-892bdd15fb) |

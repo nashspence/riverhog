@@ -15,7 +15,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-riverhog-cli` | [a-riverhog-cli collection upload start](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-collection-upload-start.md#pa-c3cff7cb75) |
 | `a-riverhog-event-relay` | [EventRelayConfig](../../authorities/a-riverhog-event-relay/schema/eventrelayconfig.md#pa-c5104619af) |
 | `a-riverhog-filesystem-store` | [a-riverhog-filesystem-store-materialize](../../authorities/a-riverhog-filesystem-store/cli/a-riverhog-filesystem-store-materialize.md#pa-cb3846edb7) |
-| `a-riverhog-ftp-spool` | [FtpSpoolConfig](../../authorities/a-riverhog-ftp-spool/schema/ftpspoolconfig.md#pa-c394699d77) |
+| `a-riverhog-ftp-spool` | [FtpSpoolDocument](../../authorities/a-riverhog-ftp-spool/schema/ftpspooldocument.md#pa-9169888516) |
 | `a-riverhog-ftp-spool` | [POST /v1/run](../../authorities/a-riverhog-ftp-spool/http-operations/post-v1-run.md#pa-591ccf3e13) |
 | `a-riverhog-ftp-spool` | [POST /v1/sources/{source_id}/flush](../../authorities/a-riverhog-ftp-spool/http-operations/post-v1-sources-source-id-flush.md#pa-4ee4ea0c4c) |
 | `a-riverhog-ftp-spool` | [schemas: ClaimRegisteredPayload](../../authorities/a-riverhog-ftp-spool/http-schemas/schemas-claimregisteredpayload.md#pa-0b44ca866f) |

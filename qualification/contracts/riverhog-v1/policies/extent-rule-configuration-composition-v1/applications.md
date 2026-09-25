@@ -10,7 +10,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 |---|---|
 | `a-review0-rclone-target` | [a-review0-rclone-target:configuration:rclone-target-config configuration](../../authorities/a-review0-rclone-target/configuration/a-review0-rclone-target-configuration-rclone-target-config-configuration.md#pa-657061dcbc) |
 | `a-riverhog-event-relay` | [a-riverhog-event-relay:configuration:event-relay-config configuration](../../authorities/a-riverhog-event-relay/configuration/a-riverhog-event-relay-configuration-event-relay-config-configuration.md#pa-81bb2f229a) |
-| `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool:configuration:ftp-spool-config configuration](../../authorities/a-riverhog-ftp-spool/configuration/a-riverhog-ftp-spool-configuration-ftp-spool-config-configuration.md#pa-dd900c11ef) |
+| `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool:configuration:ftp-spool-document configuration](../../authorities/a-riverhog-ftp-spool/configuration/a-riverhog-ftp-spool-configuration-ftp-spool-document-configuration.md#pa-5a3da44fda) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool:configuration:source-config configuration](../../authorities/a-riverhog-ftp-spool/configuration/a-riverhog-ftp-spool-configuration-source-config-configuration.md#pa-dbaa47bfdd) |
 | `gogurt-core` | [gogurt-core:configuration:gogurt-routes-schema configuration](../../authorities/gogurt-core/configuration/gogurt-core-configuration-gogurt-routes-schema-configuration.md#pa-c6a5b8bc5d) |
 | `review0-target-lib` | [review0-target-lib:configuration:review-target-config configuration](../../authorities/review0-target-lib/configuration/review0-target-lib-configuration-review-target-config-configuration.md#pa-35f11b6a54) |

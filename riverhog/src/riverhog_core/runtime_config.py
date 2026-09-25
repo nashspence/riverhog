@@ -215,8 +215,8 @@ class RuntimeConfig:
                     allow_insecure_http=store.allow_insecure_http,
                 ),
             )
-            if str(store.token_file) == ".":
-                raise ValueError(f"archive store {name} adapter token file must be set")
+            if not store.token_file.is_absolute():
+                raise ValueError(f"archive store {name} adapter token file must be absolute")
             if store.maximum_connections < 1:
                 raise ValueError(
                     f"archive store {name} adapter maximum connections must be positive"
@@ -296,8 +296,10 @@ class RuntimeConfig:
                     allow_insecure_http=registration.adapter.allow_insecure_http,
                 ),
             )
-            if str(cache.token_file) == ".":
-                raise ValueError(f"retrieval cache store {name} adapter token file must be set")
+            if not cache.token_file.is_absolute():
+                raise ValueError(
+                    f"retrieval cache store {name} adapter token file must be absolute"
+                )
             if cache.maximum_connections < 1:
                 raise ValueError(
                     f"retrieval cache store {name} adapter maximum connections must be positive"
@@ -316,6 +318,12 @@ class RuntimeConfig:
                 raise ValueError(f"retrieval cache store {name} admission budget must be positive")
             normalized_cache_stores[name] = replace(registration, adapter=cache)
         object.__setattr__(self, "retrieval_cache_stores", normalized_cache_stores)
+        overlapping_names = set(normalized_archive_stores) & set(normalized_cache_stores)
+        if overlapping_names:
+            raise ValueError(
+                "archive and retrieval cache stores must have distinct names: "
+                + ", ".join(sorted(overlapping_names))
+            )
         if self.retrieval_cache_write_segment_bytes < 1:
             raise ValueError("retrieval_cache_write_segment_bytes must be >= 1")
         if self.retrieval_cache_new_archive_lease.total_seconds() <= 0:

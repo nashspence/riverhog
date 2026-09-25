@@ -4,6 +4,7 @@ from collections.abc import Callable
 from contextlib import ExitStack
 from dataclasses import dataclass, field
 from functools import lru_cache, partial
+from threading import RLock
 from typing import Annotated
 
 from fastapi import Depends
@@ -64,7 +65,11 @@ from riverhog_core.services.provenance import SqlAlchemyProvenanceService
 from riverhog_core.services.retrieval import SqlAlchemyRetrievalService
 from riverhog_core.services.retrieval_cache import SqlAlchemyRetrievalCache
 from riverhog_core.services.search import SqlAlchemySearchService
-from riverhog_core.storage_incarnations import StorageName, reconcile_storage_incarnations
+from riverhog_core.storage_incarnations import (
+    StorageBindingConflict,
+    StorageName,
+    reconcile_storage_incarnations,
+)
 from riverhog_core.stores.storage_adapter_archive_objects import (
     StorageAdapterArchiveObjectRangeStore,
     StorageAdapterArchiveResumableObjectStore,
@@ -99,7 +104,7 @@ class ServiceContainer:
     download_quotas: DownloadAllowance
     session_factory: SessionFactory
     browse_tokens: BrowseTokenCodec
-    storage_adapter_clients: tuple[StorageAdapterClient, ...] = ()
+    storage_adapter_clients: list[StorageAdapterClient] = field(default_factory=list)
     storage_readiness: Callable[[], None] | None = None
     bootstrap_token: str = field(default="", repr=False)
 
@@ -116,28 +121,10 @@ def _archive_store_registry(
     download_allowance: DownloadAllowance,
     unavailable: dict[str, str] | None = None,
 ) -> ArchiveStoreRegistry:
-    validated_adapters = {
-        name: validated_storage_adapter(adapter) for name, adapter in adapters.items()
-    }
     return ArchiveStoreRegistry(
         {
-            name: ArchiveStoreBinding(
-                incarnation_id=validated_adapters[name].descriptor().storage_incarnation_id,
-                store=StorageAdapterArchiveStore(
-                    config,
-                    name=name,
-                    adapter=validated_adapters[name],
-                    download_allowance=download_allowance,
-                ),
-                resumable_objects=StorageAdapterArchiveResumableObjectStore(
-                    validated_adapters[name]
-                ),
-                immutable_objects=StorageAdapterImmutableArchiveObjectStore(
-                    validated_adapters[name]
-                ),
-                object_ranges=StorageAdapterArchiveObjectRangeStore(validated_adapters[name]),
-            )
-            for name in adapters
+            name: _archive_store_binding(config, name, adapter, download_allowance)
+            for name, adapter in adapters.items()
         },
         unavailable=unavailable,
         probes={
@@ -145,6 +132,27 @@ def _archive_store_registry(
             for name, client in adapters.items()
             if isinstance(client, StorageAdapterClient)
         },
+    )
+
+
+def _archive_store_binding(
+    config: RuntimeConfig,
+    name: str,
+    client: StorageAdapterClient,
+    download_allowance: DownloadAllowance,
+) -> ArchiveStoreBinding:
+    adapter = validated_storage_adapter(client)
+    return ArchiveStoreBinding(
+        incarnation_id=adapter.descriptor().storage_incarnation_id,
+        store=StorageAdapterArchiveStore(
+            config,
+            name=name,
+            adapter=adapter,
+            download_allowance=download_allowance,
+        ),
+        resumable_objects=StorageAdapterArchiveResumableObjectStore(adapter),
+        immutable_objects=StorageAdapterImmutableArchiveObjectStore(adapter),
+        object_ranges=StorageAdapterArchiveObjectRangeStore(adapter),
     )
 
 
@@ -173,6 +181,7 @@ def _build_default_container(
     throughput_tuning = config.throughput_tuning
     transfer_resources = ArchiveTransferResources.from_tuning(throughput_tuning)
     adapters: dict[str, StorageAdapterClient] = {}
+    archive_clients: dict[str, StorageAdapterClient] = {}
     all_clients: list[StorageAdapterClient] = []
     observations: dict[StorageName, str | None] = {}
     read_modes: dict[StorageName, str] = {}
@@ -181,6 +190,7 @@ def _build_default_container(
         client = _adapter_client(store)
         startup_cleanup.callback(client.close)
         all_clients.append(client)
+        archive_clients[name] = client
         try:
             client.check_readiness()
             descriptor = client.refresh_descriptor()
@@ -201,11 +211,13 @@ def _build_default_container(
             + ", ".join(restore_required)
         )
     cache_clients: dict[str, StorageAdapterClient] = {}
+    configured_cache_clients: dict[str, StorageAdapterClient] = {}
     cache_stores: dict[str, StorageAdapterRetrievalCache] = {}
     for name, registration in config.retrieval_cache_stores.items():
         client = _adapter_client(registration.adapter)
         startup_cleanup.callback(client.close)
         all_clients.append(client)
+        configured_cache_clients[name] = client
         try:
             client.check_readiness()
             descriptor = client.refresh_descriptor()
@@ -236,7 +248,7 @@ def _build_default_container(
             {name: config.retrieval_cache_stores[name] for name in cache_stores},
             session_factory=session_factory,
         )
-        if cache_stores
+        if config.retrieval_cache_stores
         else None
     )
     download_allowance = SqlAlchemyDownloadAllowance(
@@ -250,7 +262,94 @@ def _build_default_container(
         unavailable=unavailable,
     )
 
+    recovery_lock = RLock()
+
+    def _replace_rejected_client(kind: str, name: str) -> None:
+        clients = archive_clients if kind == "archive" else configured_cache_clients
+        old_client = clients[name]
+        replacement = _adapter_client(
+            config.archive_stores[name]
+            if kind == "archive"
+            else config.retrieval_cache_stores[name].adapter
+        )
+        clients[name] = replacement
+        all_clients.remove(old_client)
+        all_clients.append(replacement)
+        old_client.close()
+
+    def _recover(kind: str, name: str | None = None) -> None:
+        with recovery_lock:
+            clients = archive_clients if kind == "archive" else configured_cache_clients
+            admitted = adapters if kind == "archive" else cache_clients
+            for candidate in (name,) if name is not None else tuple(clients):
+                if candidate not in clients or candidate in admitted:
+                    continue
+                client = clients[candidate]
+                try:
+                    client.check_readiness()
+                    descriptor = client.refresh_descriptor()
+                    if (
+                        kind == "archive"
+                        and descriptor.read_mode == "restore_required"
+                        and not config.retrieval_cache_stores
+                    ):
+                        continue
+                    if kind == "archive":
+                        archive_binding = _archive_store_binding(
+                            config, candidate, client, download_allowance
+                        )
+                    else:
+                        cache_binding = StorageAdapterRetrievalCache(
+                            candidate,
+                            client,
+                            write_segment_bytes=config.retrieval_cache_write_segment_bytes,
+                            throughput_tuning=throughput_tuning,
+                            transfer_resources=transfer_resources,
+                        )
+                    key: StorageName = (kind, candidate)  # type: ignore[assignment]
+                    candidate_observations = {
+                        **observations,
+                        key: descriptor.storage_incarnation_id,
+                    }
+                    candidate_read_modes = {**read_modes, key: descriptor.read_mode}
+                    reservations = reconcile_storage_incarnations(
+                        session_factory,
+                        candidate_observations,
+                        read_modes=candidate_read_modes,
+                    )
+                    client.pin_incarnation(reservations[key])
+                except StorageBindingConflict:
+                    _replace_rejected_client(kind, candidate)
+                    continue
+                except StorageAdapterRejection:
+                    continue
+                except ValueError:
+                    continue
+                if kind == "archive":
+                    archive_stores.admit(
+                        candidate,
+                        archive_binding,
+                        probe=partial(_probe_storage_adapter, client),
+                    )
+                    adapters[candidate] = client
+                else:
+                    assert retrieval_cache is not None
+                    retrieval_cache.admit_store(
+                        candidate,
+                        cache_binding,
+                        config.retrieval_cache_stores[candidate],
+                    )
+                    cache_clients[candidate] = client
+                observations[key] = descriptor.storage_incarnation_id
+                read_modes[key] = descriptor.read_mode
+
+    archive_stores.set_recovery(lambda name: _recover("archive", name))
+    if retrieval_cache is not None:
+        retrieval_cache.set_recovery(lambda: _recover("cache"))
+
     def check_storage_readiness() -> None:
+        _recover("archive")
+        _recover("cache")
         archive_stores.require(config.archive_write_store)
         usable_names = set(archive_stores.names)
         readable = [
@@ -348,7 +447,7 @@ def _build_default_container(
             config.browse_token_signing_key,
             lifetime_seconds=int(config.browse_token_lifetime.total_seconds()),
         ),
-        storage_adapter_clients=tuple(all_clients),
+        storage_adapter_clients=all_clients,
         storage_readiness=check_storage_readiness,
         bootstrap_token=config.bootstrap_token,
     )

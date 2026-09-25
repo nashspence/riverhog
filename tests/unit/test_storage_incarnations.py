@@ -63,6 +63,20 @@ def test_one_physical_incarnation_may_serve_archive_and_cache_roles(tmp_path) ->
         assert require_storage_incarnation(session, "cache", "local") == _FIRST
 
 
+def test_historical_storage_name_cannot_change_role(tmp_path) -> None:
+    database_url = sqlite_url(tmp_path / "catalog.sqlite3")
+    initialize_db(database_url)
+    factory = make_session_factory(database_url)
+    reconcile_storage_incarnations(factory, {("archive", "shared"): _FIRST})
+    reconcile_storage_incarnations(factory, {})
+    with pytest.raises(StorageBindingConflict, match="one archive or cache role"):
+        reconcile_storage_incarnations(factory, {("cache", "shared"): _FIRST})
+    with pytest.raises(StorageBindingConflict, match="one archive or cache role"):
+        reconcile_storage_incarnations(
+            factory, {("archive", "new"): _FIRST, ("cache", "new"): _FIRST}
+        )
+
+
 def test_unreachable_binding_does_not_disable_other_storage(tmp_path) -> None:
     database_url = sqlite_url(tmp_path / "catalog.sqlite3")
     initialize_db(database_url)

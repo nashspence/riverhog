@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Iterable, Iterator, Mapping
+from collections.abc import Callable, Iterable, Iterator, Mapping
 
 from riverhog_storage_adapter_protocol import StorageAdapterRejection
 from sqlalchemy import delete, select, tuple_
@@ -43,25 +43,46 @@ class SqlAlchemyRetrievalCache:
         registrations: Mapping[str, RetrievalCacheStoreRegistration],
         *,
         session_factory: SessionFactory,
+        recover: Callable[[], None] | None = None,
     ) -> None:
         if tuple(stores) != tuple(registrations):
             raise ValueError("retrieval cache stores and registrations differ")
         self._stores = dict(stores)
         self._registrations = dict(registrations)
         self._session_factory = session_factory
+        self._recover = recover
         self._ensure_accounting_rows()
+
+    def set_recovery(self, recover: Callable[[], None]) -> None:
+        self._recover = recover
+
+    def admit_store(
+        self,
+        name: str,
+        store: StorageAdapterRetrievalCache,
+        registration: RetrievalCacheStoreRegistration,
+    ) -> None:
+        self._ensure_accounting_rows((name,))
+        self._registrations = {**self._registrations, name: registration}
+        self._stores = {**self._stores, name: store}
 
     @property
     def store_names(self) -> tuple[str, ...]:
+        if self._recover is not None:
+            self._recover()
         return tuple(self._stores)
 
     def is_usable_store(self, *, cache_store: str, incarnation_id: str) -> bool:
+        if self._recover is not None:
+            self._recover()
         store = self._stores.get(cache_store)
         return store is not None and store.is_current_incarnation(incarnation_id)
 
     def mirror_write_constraints(
         self, archive: ResumableWriteConstraints
     ) -> ResumableWriteConstraints | None:
+        if self._recover is not None:
+            self._recover()
         from riverhog_core.placement_choices import common_write_constraints
 
         candidates = tuple(
@@ -190,6 +211,8 @@ class SqlAlchemyRetrievalCache:
         object_id: str,
         expected_bytes: int,
     ) -> RetrievalCacheAdmission | None:
+        if self._recover is not None:
+            self._recover()
         if not owner.strip():
             raise ValueError("retrieval cache admission owner must be non-empty")
         if expected_bytes < 1:
@@ -787,9 +810,9 @@ class SqlAlchemyRetrievalCache:
             raise RuntimeError(f"retrieval cache accounting is unavailable: {cache_store}")
         return row
 
-    def _ensure_accounting_rows(self) -> None:
+    def _ensure_accounting_rows(self, extra: Iterable[str] = ()) -> None:
         with session_scope(self._session_factory) as session:
-            for cache_store in self._stores:
+            for cache_store in (*self._stores, *extra):
                 if session.get(RetrievalCacheStoreAccountingRecord, cache_store) is not None:
                     continue
                 try:

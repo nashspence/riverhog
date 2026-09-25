@@ -1258,6 +1258,7 @@ def test_small_collection_moves_directly_from_source_unit_to_final_custody(
     assert len(finalized_events) == 1
     assert finalized_events[0].payload["archive_root_sha256"] == plaintext_root_sha256
 
+    service._archive_stores = ArchiveStoreRegistry({}, unavailable={"archive": "offline"})
     resumed = service.create_or_resume(
         idempotency_key="upload-1",
         ingest_source="fixture",

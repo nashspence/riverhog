@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import copy
 import json
 import os
 from importlib.resources import files
@@ -58,12 +57,10 @@ class SourceConfig(ConfigModel):
         return self
 
 
-class FtpSpoolConfig(ConfigModel):
+class _FtpSpoolPolicy(ConfigModel):
     host_id: str = Field(min_length=1, max_length=255)
     riverhog_base_url: str = Field(min_length=1, max_length=2048)
-    riverhog_token: str = Field(min_length=1, max_length=4096, repr=False)
     allow_insecure_http: bool = False
-    api_token: str = Field(min_length=1, max_length=4096, repr=False)
     provenance_observer: str | None = Field(default=None, min_length=1, max_length=255)
     sources: tuple[SourceConfig, ...] = Field(min_length=1)
     poll_seconds: float = Field(default=5.0, ge=0.1, le=3600)
@@ -102,14 +99,40 @@ class FtpSpoolConfig(ConfigModel):
         raise KeyError(source_id)
 
 
+class FtpSpoolConfig(_FtpSpoolPolicy):
+    """Resolved runtime state; credentials are never operator document fields."""
+
+    riverhog_token: str = Field(min_length=1, max_length=4096, repr=False)
+    api_token: str = Field(min_length=1, max_length=4096, repr=False)
+
+
+class FtpSpoolDocument(_FtpSpoolPolicy):
+    """Operator document; credentials remain file paths until policy is valid."""
+
+    riverhog_token_file: Path
+    api_token_file: Path
+
+
 def load_config(path: Path | None = None) -> FtpSpoolConfig:
     raw_path = str(path) if path is not None else os.environ.get("A_RIVERHOG_FTP_SPOOL_CONFIG", "")
     if not raw_path.strip():
         raise ValueError("A_RIVERHOG_FTP_SPOOL_CONFIG is required")
-    payload = _load_document(Path(raw_path).expanduser())
-    for name in ("riverhog_token", "api_token"):
-        payload[name] = read_secret_file(str(payload.pop(f"{name}_file")), label=f"{name}_file")
-    return FtpSpoolConfig.model_validate(payload)
+    document = FtpSpoolDocument.model_validate(
+        load_validated_yaml_config(Path(raw_path).expanduser(), FTP_SPOOL_CONFIG_SCHEMA)
+    )
+    riverhog_token = read_secret_file(document.riverhog_token_file, label="riverhog_token_file")
+    api_token = read_secret_file(document.api_token_file, label="api_token_file")
+    if len(riverhog_token) > 4096 or len(api_token) > 4096:
+        raise ValueError("FTP spool token file exceeds the maximum token length")
+    return FtpSpoolConfig.model_construct(
+        **{
+            name: value
+            for name, value in document.__dict__.items()
+            if name not in {"riverhog_token_file", "api_token_file"}
+        },
+        riverhog_token=riverhog_token,
+        api_token=api_token,
+    )
 
 
 def load_source_config(path: Path | None, source_id: str) -> SourceConfig:
@@ -139,16 +162,7 @@ def _load_document(path: Path) -> dict[str, object]:
 def generated_config_schema() -> dict[str, object]:
     """Derive the published document schema from the executable typed model."""
 
-    schema = copy.deepcopy(FtpSpoolConfig.model_json_schema())
-    properties = schema["properties"]
-    required = schema["required"]
-    for name in ("riverhog_token", "api_token"):
-        properties.pop(name)
-        properties[f"{name}_file"] = {
-            "minLength": 1,
-            "type": "string",
-        }
-        required[required.index(name)] = f"{name}_file"
+    schema = FtpSpoolDocument.model_json_schema()
     schema["$schema"] = "https://json-schema.org/draft/2020-12/schema"
     schema["$id"] = (
         "https://nashspence.github.io/riverhog/v1/config/a-riverhog-ftp-spool.schema.json"
