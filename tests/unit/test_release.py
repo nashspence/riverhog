@@ -208,11 +208,29 @@ def test_shared_supplied_library_cannot_claim_unprefixed_family_name() -> None:
         for project in projects
     ]
 
-    assert "review0-planner" in module.FAMILY_MACHINERY_DISTRIBUTIONS
-    with pytest.raises(
-        module.ReleaseError, match="unregistered=\\['gogurt-path-volume-support'\\]"
-    ):
-        module._validate_supplied_distribution_names(renamed)
+    naming = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))["naming"]
+    assert "review0-planner" in naming["supplied_family_machinery_distributions"]
+    with pytest.raises(module.ReleaseError, match=r"unregistered=\['gogurt-path-volume-support'\]"):
+        module._validate_supplied_distribution_names(renamed, naming)
+
+
+@pytest.mark.parametrize(
+    "naming",
+    [
+        None,
+        {},
+        {"supplied_family_machinery_distributions": ["gogurt", "gogurt"]},
+        {"supplied_family_machinery_distributions": ["review0-planner", "gogurt"]},
+        {"supplied_family_machinery_distributions": ["a-gogurt-helper"]},
+        {"supplied_family_machinery_distributions": ["Gogurt"]},
+        {"supplied_family_machinery_distributions": [], "unreviewed": True},
+    ],
+)
+def test_supplied_family_naming_registry_is_fail_closed(naming: object) -> None:
+    module = load_script()
+    projects = module.validate_release_contract(REPO_ROOT)
+    with pytest.raises(module.ReleaseError, match="supplied family naming registry"):
+        module._validate_supplied_distribution_names(projects, naming)
 
 
 def test_python_distribution_identities_use_pep_503_canonical_names(

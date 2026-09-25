@@ -8,6 +8,15 @@ from tests.workspace import workspace_pyprojects
 REPO = Path(__file__).resolve().parents[2]
 ENTRYPOINTS = {REPO / "README.md", REPO / "AGENTS.md"}
 DURABLE_CONTEXT = {REPO / "docs/architecture.md"}
+HAND_MAINTAINED_MARKDOWN = {
+    REPO / "AGENTS.md",
+    REPO / "LICENSE.md",
+    REPO / "README.md",
+    REPO / "SECURITY.md",
+    REPO / "THIRD_PARTY_NOTICES.md",
+    REPO / "docs/architecture.md",
+}
+GENERATED_ATLAS = REPO / "qualification/contracts/riverhog-v1"
 REPOSITORY_MAP_TARGETS = {
     REPO / "riverhog",
     REPO / "some-implementations/gogurt",
@@ -91,6 +100,12 @@ def test_all_markdown_is_reachable_and_links_resolve() -> None:
     assert markdown == reachable
 
 
+def test_hand_maintained_markdown_surface_is_explicit() -> None:
+    assert {
+        path for path in _markdown_files() if GENERATED_ATLAS not in path.parents
+    } == HAND_MAINTAINED_MARKDOWN
+
+
 def test_main_context_documents_are_exact_and_directly_routed() -> None:
     assert set((REPO / "docs").glob("*.md")) == DURABLE_CONTEXT
 
@@ -146,6 +161,7 @@ def test_agents_requires_post_push_github_validation() -> None:
     assert "Keep the protected `release/v1` branch pinned as an ancestor" in agents
     assert "Provider qualification stays disabled" in agents
     assert "never moves a v1 tag" in agents
+    assert "Changes to root `README.md` or `docs/architecture.md` are exceptional" in agents
 
 
 def test_agents_requires_locked_disposable_container_tool_stages() -> None:

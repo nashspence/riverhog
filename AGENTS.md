@@ -51,6 +51,9 @@ Durable documentation has distinct roles:
 
 Licensing and security reporting remain in their conventional top-level files. Do not add
 release reference or duplicate executable contracts to `main`.
+Changes to root `README.md` or `docs/architecture.md` are exceptional: normally make them
+only to correct explicit material drift unless the maintainer specifically directs broader
+documentation work.
 
 ## Work
 

@@ -11,14 +11,10 @@ integrate through public contracts.
 
 ## Contributions
 
-New mechanisms are independently owned and published over Riverhog's public contracts.
-The `some-implementations/` tree contains supplied applications and components with their
-own identities and maintained interfaces.
-Concrete supplied implementations and their libraries use `a-` or `an-` names. Unprefixed coined
-family names identify that family's own API, contracts, extension points, clients, runtimes,
-planners, and support machinery. Sharing a library among several supplied implementations does
-not give it family authority.
-Report suspected vulnerabilities privately through [security reporting](SECURITY.md).
+Extensions should normally be built and released independently against Riverhog's
+published contracts. Contributing or requesting additional code in this repository is
+generally not recommended. Report suspected vulnerabilities privately through
+[security reporting](SECURITY.md).
 
 ## Start here
 

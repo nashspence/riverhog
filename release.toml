@@ -7,6 +7,30 @@ python_distribution_channel = "github-release"
 source_url = "https://github.com/nashspence/riverhog"
 documentation_url = "https://nashspence.github.io/riverhog/v1/"
 
+[naming]
+supplied_family_machinery_distributions = [
+  "gogurt",
+  "gogurt-core",
+  "gogurt-listener-runtime",
+  "review0-planner",
+  "review0-sampler-client",
+  "review0-sampler-lib",
+  "review0-sampler-protocol",
+  "review0-target-contracts",
+  "review0-target-lib",
+  "stove0-api-client",
+  "stove0-observer-client",
+  "stove0-observer-protocol",
+  "stove0-observer-support",
+  "stove0-operator-contracts",
+  "stove0-protocol",
+  "stove0-recipe-config",
+  "stove0-server",
+  "stove0-target-client",
+  "stove0-target-protocol",
+  "stove0-target-support",
+]
+
 [governance]
 repository = "nashspence/riverhog"
 maintainer = "nashspence"
