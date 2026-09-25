@@ -16,7 +16,7 @@ def fixture_storage_incarnation_id(kind: str, name: str) -> str:
 
 def seed_storage_incarnation(session: Session, kind: str, name: str) -> str:
     incarnation_id = fixture_storage_incarnation_id(kind, name)
-    if session.get(StorageIncarnationRecord, incarnation_id) is None:
+    if session.get(StorageIncarnationRecord, (kind, name)) is None:
         session.add(
             StorageIncarnationRecord(
                 id=incarnation_id,
