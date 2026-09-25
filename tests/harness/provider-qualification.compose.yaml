@@ -1,7 +1,17 @@
 services:
+  qualification-filesystem-cache-init:
+    image: a-riverhog-filesystem-store:dev
+    restart: "no"
+    command: ["python", "-m", "a_riverhog_filesystem_store.incarnation", "/var/lib/riverhog-filesystem"]
+    volumes:
+      - qualification-filesystem-cache-data:/var/lib/riverhog-filesystem
+
   qualification-filesystem-cache-adapter:
     image: a-riverhog-filesystem-store:dev
     restart: unless-stopped
+    depends_on:
+      qualification-filesystem-cache-init:
+        condition: service_completed_successfully
     environment:
       A_RIVERHOG_FILESYSTEM_STORE_TOKEN_FILE: /run/secrets/riverhog-storage-adapter.token
       A_RIVERHOG_FILESYSTEM_STORE_ROOT: /var/lib/riverhog-filesystem

@@ -28,6 +28,8 @@ class RetrievalCacheAdmission:
 
 
 class RetrievalCache(Protocol):
+    def is_usable_store(self, *, cache_store: str, incarnation_id: str) -> bool: ...
+
     def mirror_write_constraints(
         self, archive: ResumableWriteConstraints
     ) -> ResumableWriteConstraints | None: ...

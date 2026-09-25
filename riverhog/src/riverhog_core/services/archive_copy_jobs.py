@@ -47,7 +47,7 @@ from riverhog_core.catalog_models import (
 )
 from riverhog_core.collection_access import collection_access_filter, require_collection_access
 from riverhog_core.pack_upload import PACK_VOLUME_CONTENT_TYPE
-from riverhog_core.placement_choices import archive_binding_sha256, resolve_use_cache
+from riverhog_core.placement_choices import resolve_use_cache
 from riverhog_core.ports.archive_objects import (
     ArchiveResumableObjectStore,
     ImmutableArchiveObjectStore,
@@ -268,7 +268,9 @@ class SqlAlchemyArchiveCopyJobService:
                 config=self._config,
                 destination_store=destination,
                 source_store=source,
+                archive_stores=self._archive_stores,
             )
+            self._archive_stores.require_incarnation(source_copy.store, source_copy.incarnation_id)
             if job is None:
                 job = self._create_job_in_session(
                     session,
@@ -284,6 +286,8 @@ class SqlAlchemyArchiveCopyJobService:
                 if job.state == "canceling":
                     raise Conflict("archive copy cancellation cleanup is still in progress")
                 job.source_store = source_copy.store
+                job.source_incarnation_id = source_copy.incarnation_id
+                job.destination_incarnation_id = self._archive_stores.incarnation_id(destination)
                 job.use_cache = resolved_cache
                 job.initiated_by_app = initiator.id
                 job.initiated_by_key_id = initiator.key_id
@@ -318,7 +322,11 @@ class SqlAlchemyArchiveCopyJobService:
         job = ArchiveCopyJobRecord(
             collection_id=collection_id,
             source_store=source_store,
+            source_incarnation_id=_required_copy(
+                session, collection_id, source_store
+            ).incarnation_id,
             destination_store=destination_store,
+            destination_incarnation_id=self._archive_stores.incarnation_id(destination_store),
             destination_storage_prefix=destination.new_collection_archive_storage_prefix(),
             use_cache=use_cache,
             initiated_by_app=initiator.id,
@@ -632,17 +640,13 @@ class SqlAlchemyArchiveCopyJobService:
                 _fail_upload_copy_intent(intent, "source_unavailable")
                 return
             try:
-                source_binding = archive_binding_sha256(self._config, intent.source_store)
-                destination_binding = archive_binding_sha256(self._config, intent.destination_store)
-                self._archive_stores.require(intent.source_store)
-                self._archive_stores.require(intent.destination_store)
+                self._archive_stores.require_incarnation(
+                    intent.source_store, intent.source_incarnation_id
+                )
+                self._archive_stores.require_incarnation(
+                    intent.destination_store, intent.destination_incarnation_id
+                )
             except ValueError:
-                _fail_upload_copy_intent(intent, "configuration_changed")
-                return
-            if (
-                source_binding != intent.source_binding_sha256
-                or destination_binding != intent.destination_binding_sha256
-            ):
                 _fail_upload_copy_intent(intent, "configuration_changed")
                 return
             key = session.get(AppKeyRecord, intent.initiated_by_key_id, with_for_update=True)
@@ -759,6 +763,7 @@ class SqlAlchemyArchiveCopyJobService:
                     destination_copy = CollectionArchiveCopyRecord(
                         collection_id=collection_id,
                         store=destination_store_name,
+                        incarnation_id=job.destination_incarnation_id,
                         state="uploading",
                         archive_storage_prefix=job.destination_storage_prefix,
                     )
@@ -2038,11 +2043,16 @@ def _select_source_copy(
     config: RuntimeConfig,
     destination_store: str,
     source_store: str | None,
+    archive_stores: ArchiveStoreRegistry,
 ) -> CollectionArchiveCopyRecord:
+    usable = dict(archive_stores.items())
     candidates = [
         copy
         for copy in collection.archive_copies
-        if copy.store != destination_store and archive_copy_is_complete(copy)
+        if copy.store != destination_store
+        and archive_copy_is_complete(copy)
+        and copy.store in usable
+        and usable[copy.store].incarnation_id == copy.incarnation_id
     ]
     if source_store is not None:
         candidates = [copy for copy in candidates if copy.store == source_store]

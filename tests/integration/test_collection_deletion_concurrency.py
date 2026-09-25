@@ -69,6 +69,7 @@ from sqlalchemy import select, text
 from sqlalchemy.orm import Session
 
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
+from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
 
 pytestmark = pytest.mark.integration
 
@@ -167,9 +168,11 @@ class RetirementArchiveStore:
         raise AssertionError("retirement path does not verify archives")
 
 
-def _archive_store_binding(store: BlockingArchiveStore) -> ArchiveStoreBinding:
+def _archive_store_binding(
+    store: BlockingArchiveStore, *, name: str = "deep"
+) -> ArchiveStoreBinding:
     return replace(
-        archive_store_binding(MemoryArchiveStore()),
+        archive_store_binding(MemoryArchiveStore(), name=name),
         store=cast(ArchiveStore, store),
     )
 
@@ -223,6 +226,7 @@ def _seed(database_url: str) -> None:
         copy = CollectionArchiveCopyRecord(
             collection_id=COLLECTION_ID,
             store="deep",
+            incarnation_id=seed_storage_incarnation(session, "archive", "deep"),
             state="uploaded",
             archive_storage_prefix="archives/opaque-docs",
             last_uploaded_at="2026-07-18T00:00:00.000000000Z",
@@ -278,6 +282,7 @@ def _add_tag_publication(
         CollectionTagPublicationRecord(
             collection_id=copy.collection_id,
             store=copy.store,
+            incarnation_id=copy.incarnation_id,
             desired_revision=collection.tag_revision,
             desired_tag_set_identity=collection.tag_set_identity,
             desired_head_identity=collection.tag_head_identity,
@@ -322,6 +327,7 @@ def _seed_second_input(database_url: str) -> CollectionRootIdentity:
         copy = CollectionArchiveCopyRecord(
             collection_id=SECOND_COLLECTION_ID,
             store="deep",
+            incarnation_id=seed_storage_incarnation(session, "archive", "deep"),
             state="uploaded",
             archive_storage_prefix="archives/opaque-second",
             last_uploaded_at="2026-07-18T00:00:00.000000000Z",
@@ -516,7 +522,7 @@ def _upload_service(database_url: str) -> SqlAlchemyCollectionUploadService:
     )
     return SqlAlchemyCollectionUploadService(
         config,
-        ArchiveStoreRegistry({"deep": archive_store_binding(MemoryArchiveStore())}),
+        ArchiveStoreRegistry({"deep": archive_store_binding(MemoryArchiveStore(), name="deep")}),
     )
 
 
@@ -717,6 +723,7 @@ def _seed_derived_output(
             CollectionArchiveCopyRecord(
                 collection_id=output_collection_id,
                 store="deep",
+                incarnation_id=seed_storage_incarnation(session, "archive", "deep"),
                 state="uploaded",
                 archive_storage_prefix=f"archives/derived-{output_collection_id}",
                 last_uploaded_at="2026-01-01T00:00:00.000000000Z",
@@ -864,6 +871,7 @@ def _seed_multi_input_derived_output(
         copy = CollectionArchiveCopyRecord(
             collection_id=2,
             store="deep",
+            incarnation_id=seed_storage_incarnation(session, "archive", "deep"),
             state="uploaded",
             archive_storage_prefix="archives/derived-multi",
             last_uploaded_at="2026-01-01T00:00:00.000000000Z",
@@ -897,6 +905,7 @@ def _seed_b2_copy(database_url: str) -> None:
         b2 = CollectionArchiveCopyRecord(
             collection_id=COLLECTION_ID,
             store="b2",
+            incarnation_id=seed_storage_incarnation(session, "archive", "b2"),
             state="uploaded",
             archive_storage_prefix="archives/b2-opaque-docs",
             last_uploaded_at=deep.last_uploaded_at,
@@ -1610,7 +1619,7 @@ def test_postgres_multi_input_retirement_resumes_after_first_source_deletion(
     registry = ArchiveStoreRegistry(
         {
             "deep": replace(
-                archive_store_binding(MemoryArchiveStore()),
+                archive_store_binding(MemoryArchiveStore(), name="deep"),
                 store=cast(ArchiveStore, store),
             )
         }
@@ -1702,7 +1711,7 @@ def test_retirement_marker_forces_retrieval_to_replan_onto_a_retained_copy(
     stores = ArchiveStoreRegistry(
         {
             "deep": _archive_store_binding(deep),
-            "b2": _archive_store_binding(b2),
+            "b2": _archive_store_binding(b2, name="b2"),
         }
     )
     retirement = SqlAlchemyArchiveCopyRetirementService(config, stores)

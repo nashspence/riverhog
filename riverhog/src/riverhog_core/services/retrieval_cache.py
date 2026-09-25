@@ -10,6 +10,7 @@ from time_formats import format_utc_timestamp, utc_now
 
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.catalog_models import (
+    CollectionArchiveCopyRecord,
     RetrievalCacheAccountingReconciliationRecord,
     RetrievalCacheLeaseRecord,
     RetrievalCacheObjectRecord,
@@ -29,6 +30,7 @@ from riverhog_core.services.retrieval_cache_accounting import (
     adjust_cache_committed_bytes,
     locked_cache_accounting,
 )
+from riverhog_core.storage_incarnations import require_storage_incarnation
 from riverhog_core.stores.storage_adapter_retrieval_cache import StorageAdapterRetrievalCache
 
 
@@ -52,6 +54,10 @@ class SqlAlchemyRetrievalCache:
     @property
     def store_names(self) -> tuple[str, ...]:
         return tuple(self._stores)
+
+    def is_usable_store(self, *, cache_store: str, incarnation_id: str) -> bool:
+        store = self._stores.get(cache_store)
+        return store is not None and store.is_current_incarnation(incarnation_id)
 
     def mirror_write_constraints(
         self, archive: ResumableWriteConstraints
@@ -211,6 +217,9 @@ class SqlAlchemyRetrievalCache:
                         session.add(
                             RetrievalCachePopulationRecord(
                                 source_store=source_store,
+                                source_incarnation_id=require_storage_incarnation(
+                                    session, "archive", source_store
+                                ),
                                 collection_id=collection_id,
                                 object_id=object_id,
                                 cache_store=None,
@@ -619,6 +628,9 @@ class SqlAlchemyRetrievalCache:
             accounting.reserved_bytes += expected_bytes
             accounting.updated_at = format_utc_timestamp(utc_now())
             population.cache_store = cache_store
+            population.cache_incarnation_id = require_storage_incarnation(
+                session, "cache", cache_store
+            )
             population.object_path = self._stores[cache_store].object_path(*key)
             population.write_token = None
             population.state = "admitting"
@@ -641,6 +653,7 @@ class SqlAlchemyRetrievalCache:
             population = session.get(RetrievalCachePopulationRecord, key)
             if population is not None:
                 population.cache_store = None
+                population.cache_incarnation_id = None
                 population.object_path = None
                 population.write_token = None
                 population.state = "waiting" if waiting else population.state
@@ -784,6 +797,9 @@ class SqlAlchemyRetrievalCache:
                         session.add(
                             RetrievalCacheStoreAccountingRecord(
                                 cache_store=cache_store,
+                                cache_incarnation_id=require_storage_incarnation(
+                                    session, "cache", cache_store
+                                ),
                                 reserved_bytes=0,
                                 committed_bytes=0,
                                 updated_at=format_utc_timestamp(utc_now()),
@@ -828,6 +844,11 @@ def register_cache_ready(
     object_id: str,
     receipt: RetrievalCacheReceipt,
 ) -> None:
+    source_copy = session.get(CollectionArchiveCopyRecord, (collection_id, source_store))
+    if source_copy is None:
+        raise RuntimeError("retrieval cache source copy is unavailable")
+    source_incarnation_id = source_copy.incarnation_id
+    cache_incarnation_id = require_storage_incarnation(session, "cache", receipt.cache_store)
     key = (source_store, collection_id, object_id)
     population = session.get(RetrievalCachePopulationRecord, key)
     existing = session.get(RetrievalCacheObjectRecord, key)
@@ -845,6 +866,7 @@ def register_cache_ready(
             if accounting is None:
                 accounting = RetrievalCacheStoreAccountingRecord(
                     cache_store=receipt.cache_store,
+                    cache_incarnation_id=cache_incarnation_id,
                     reserved_bytes=0,
                     committed_bytes=existing.stored_bytes,
                     updated_at=format_utc_timestamp(utc_now()),
@@ -860,9 +882,11 @@ def register_cache_ready(
     session.add(
         RetrievalCacheObjectRecord(
             source_store=source_store,
+            source_incarnation_id=source_incarnation_id,
             collection_id=collection_id,
             object_id=object_id,
             cache_store=receipt.cache_store,
+            cache_incarnation_id=cache_incarnation_id,
             object_path=receipt.object_path,
             revision=receipt.revision,
             stored_bytes=receipt.stored_bytes,
@@ -880,6 +904,7 @@ def register_cache_ready(
     if accounting is None:
         accounting = RetrievalCacheStoreAccountingRecord(
             cache_store=receipt.cache_store,
+            cache_incarnation_id=cache_incarnation_id,
             reserved_bytes=0,
             committed_bytes=0,
             updated_at=format_utc_timestamp(utc_now()),

@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import replace
 from pathlib import Path
 
+import pytest
 from riverhog_api.mappers import map_archive_store
 from riverhog_api.schemas.archive_stores import ArchiveStoreOut
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
@@ -16,9 +17,17 @@ from riverhog_core.catalog_models import (
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.archive_stores import SqlAlchemyArchiveStoreService
 from riverhog_core.services.download_allowances import SqlAlchemyDownloadAllowance
+from riverhog_core.storage_incarnations import (
+    StorageBindingConflict,
+    reconcile_storage_incarnations,
+)
 
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
 from tests.unit.db_helpers import sqlite_url
+from tests.unit.storage_incarnation_fixtures import (
+    fixture_storage_incarnation_id,
+    seed_storage_incarnation,
+)
 
 
 def _config(path: Path) -> RuntimeConfig:
@@ -39,6 +48,7 @@ def _config(path: Path) -> RuntimeConfig:
 def _seed(path: Path) -> None:
     factory = make_session_factory(sqlite_url(path))
     with session_scope(factory) as session:
+        seed_storage_incarnation(session, "archive", "deep")
         session.add(
             CollectionRecord(
                 id=1,
@@ -64,6 +74,7 @@ def _seed(path: Path) -> None:
         copy = CollectionArchiveCopyRecord(
             collection_id=1,
             store="deep",
+            incarnation_id=fixture_storage_incarnation_id("archive", "deep"),
             state="uploaded",
             archive_storage_prefix="collections/1",
             last_uploaded_at="2026-01-01T00:00:00.000000000Z",
@@ -93,10 +104,12 @@ def _seed(path: Path) -> None:
 
 def _stores(*, include_b2: bool = False) -> ArchiveStoreRegistry:
     stores = {
-        "deep": archive_store_binding(MemoryArchiveStore(read_mode="restore_required")),
+        "deep": archive_store_binding(
+            MemoryArchiveStore(read_mode="restore_required"), name="deep"
+        ),
     }
     if include_b2:
-        stores["b2"] = archive_store_binding(MemoryArchiveStore(read_mode="immediate"))
+        stores["b2"] = archive_store_binding(MemoryArchiveStore(read_mode="immediate"), name="b2")
     return ArchiveStoreRegistry(stores)
 
 
@@ -116,6 +129,46 @@ def test_archive_store_summary_uses_database_aggregates_and_validates_api_schema
     assert response.stored_bytes == 30
     assert response.read_priority == 1
     assert response.write_target is True
+
+
+def test_removed_store_keeps_visible_holdings_and_reserved_name(tmp_path: Path) -> None:
+    path = tmp_path / "catalog.sqlite3"
+    initialize_db(sqlite_url(path))
+    _seed(path)
+    factory = make_session_factory(sqlite_url(path))
+    reconcile_storage_incarnations(factory, {})
+    config = _config(path)
+    spare = replace(config.archive_store("deep"), name="spare", base_url="http://127.0.0.1/spare")
+    disabled = SqlAlchemyArchiveStoreService(
+        replace(
+            config,
+            archive_stores={"spare": spare},
+            archive_write_store="spare",
+            archive_read_order=("spare",),
+        ),
+        ArchiveStoreRegistry({}),
+        session_factory=factory,
+    ).get("deep")
+    assert disabled.incarnation_id == fixture_storage_incarnation_id("archive", "deep")
+    assert disabled.administrative_state == "disabled"
+    assert disabled.configured is False and disabled.reachable is False
+    assert disabled.objects == 2 and disabled.stored_bytes == 30
+
+    with pytest.raises(StorageBindingConflict, match="reserved"):
+        reconcile_storage_incarnations(
+            factory,
+            {("archive", "deep"): "00000000-0000-4000-8000-000000000002"},
+        )
+    reconcile_storage_incarnations(
+        factory,
+        {("archive", "deep"): fixture_storage_incarnation_id("archive", "deep")},
+        read_modes={("archive", "deep"): "restore_required"},
+    )
+    rebound = SqlAlchemyArchiveStoreService(_config(path), _stores(), session_factory=factory).get(
+        "deep"
+    )
+    assert rebound.administrative_state == "bound"
+    assert rebound.incarnation_id == disabled.incarnation_id
 
 
 def test_archive_store_list_is_bounded_filterable_and_sorted(tmp_path: Path) -> None:

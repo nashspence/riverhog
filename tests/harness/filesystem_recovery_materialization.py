@@ -15,6 +15,7 @@ def prepare(workspace: Path) -> None:
         FilesystemStorageAdapter,
         FilesystemStorageAdapterConfig,
     )
+    from a_riverhog_filesystem_store.incarnation import provision_storage_root
     from riverhog_storage_adapter_protocol import (
         SmallObjectWriteRequest,
         WriteStartRequest,
@@ -37,6 +38,8 @@ def prepare(workspace: Path) -> None:
         tags=("camera", "qualification"),
     )
     root = workspace / "adapter-root"
+    root.mkdir()
+    provision_storage_root(root)
     adapter = FilesystemStorageAdapter(
         FilesystemStorageAdapterConfig(root=root, minimum_free_bytes=0)
     )

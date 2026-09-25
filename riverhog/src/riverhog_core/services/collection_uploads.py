@@ -226,7 +226,7 @@ from riverhog_core.pack_volume import (
     pack_volume_plan_bytes,
     parse_pack_volume_plan,
 )
-from riverhog_core.placement_choices import archive_binding_sha256, resolve_use_cache
+from riverhog_core.placement_choices import resolve_use_cache
 from riverhog_core.ports.archive_objects import ArchiveResumableObjectStore
 from riverhog_core.ports.retrieval_cache import RetrievalCache
 from riverhog_core.raw_upload import RawUploadCheckpoint, RawVolumeUploader
@@ -553,6 +553,7 @@ class SqlAlchemyCollectionUploadService:
                     else None
                 ),
                 archive_store=store_name,
+                archive_incarnation_id=archive_binding.incarnation_id,
                 use_cache=resolved_cache,
                 copy_to_json=json.dumps(destinations, separators=(",", ":")),
                 opened_at=now,
@@ -576,11 +577,9 @@ class SqlAlchemyCollectionUploadService:
                     CollectionUploadCopyIntentRecord(
                         collection_id=upload.collection_id,
                         destination_store=destination,
+                        destination_incarnation_id=self._archive_stores.incarnation_id(destination),
                         source_store=store_name,
-                        destination_binding_sha256=archive_binding_sha256(
-                            self._config, destination
-                        ),
-                        source_binding_sha256=archive_binding_sha256(self._config, store_name),
+                        source_incarnation_id=archive_binding.incarnation_id,
                         initiated_by_app=initiator.id,
                         initiated_by_key_id=initiator.key_id,
                         event_context_json=context_json,
@@ -2631,6 +2630,7 @@ class SqlAlchemyCollectionUploadService:
             copy = CollectionArchiveCopyRecord(
                 collection_id=upload.collection_id,
                 store=upload.archive_store,
+                incarnation_id=upload.archive_incarnation_id,
                 state="uploaded",
                 archive_storage_prefix=upload.archive_storage_prefix,
                 last_uploaded_at=now,
@@ -2643,6 +2643,7 @@ class SqlAlchemyCollectionUploadService:
                 CollectionDescriptionPublicationRecord(
                     collection_id=upload.collection_id,
                     store=upload.archive_store,
+                    incarnation_id=upload.archive_incarnation_id,
                     desired_revision=upload.description_revision,
                     desired_identity=upload.description_identity,
                     published_revision=upload.description_revision,
@@ -2675,6 +2676,7 @@ class SqlAlchemyCollectionUploadService:
                 CollectionTagPublicationRecord(
                     collection_id=upload.collection_id,
                     store=upload.archive_store,
+                    incarnation_id=upload.archive_incarnation_id,
                     desired_revision=upload.tag_revision,
                     desired_tag_set_identity=upload.tag_set_identity,
                     desired_head_identity=upload.tag_head_identity,

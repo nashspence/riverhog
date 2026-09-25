@@ -80,6 +80,7 @@ _CHALLENGE_PREFIX = "delete"
 _ACTIVE_RETRIEVAL_STATES = {"requested", "ready"}
 _EXECUTION_KEY = "_execution"
 _CATALOG_EVENT_SEQUENCE_KEY = "_catalog_event_sequence"
+_STORAGE_INCARNATIONS_KEY = "_storage_incarnations"
 _CATALOG_DELETE_BATCH = 100
 
 
@@ -135,7 +136,7 @@ class SqlAlchemyCollectionDeletionService:
             plan["challenge"] = (
                 None if plan["blockers"] else plan_challenge(_CHALLENGE_PREFIX, plan, expires)
             )
-            return plan
+            return _public_plan(plan)
 
     def delete(
         self,
@@ -316,12 +317,17 @@ class SqlAlchemyCollectionDeletionService:
                 if copy is None or copy.archive_storage_prefix is None:
                     raise Conflict("collection description has no owned archive copy")
                 description_store = description.store
+                description_incarnation_id = copy.incarnation_id
                 description_prefix = copy.archive_storage_prefix
             else:
                 description_store = None
+                description_incarnation_id = None
                 description_prefix = None
         if description_store is not None and description_prefix is not None:
-            self._archive_stores.require(description_store).store.delete_collection_description(
+            assert description_incarnation_id is not None
+            self._archive_stores.require_incarnation(
+                description_store, description_incarnation_id
+            ).store.delete_collection_description(
                 collection_id=collection_id,
                 archive_storage_prefix=description_prefix,
             )
@@ -348,12 +354,17 @@ class SqlAlchemyCollectionDeletionService:
                 if copy is None or copy.archive_storage_prefix is None:
                     raise Conflict("collection tags have no owned archive copy")
                 tag_store = tag_publication.store
+                tag_incarnation_id = copy.incarnation_id
                 tag_prefix = copy.archive_storage_prefix
             else:
                 tag_store = None
+                tag_incarnation_id = None
                 tag_prefix = None
         if tag_store is not None and tag_prefix is not None:
-            self._archive_stores.require(tag_store).store.delete_collection_tags(
+            assert tag_incarnation_id is not None
+            self._archive_stores.require_incarnation(
+                tag_store, tag_incarnation_id
+            ).store.delete_collection_tags(
                 collection_id=collection_id,
                 archive_storage_prefix=tag_prefix,
             )
@@ -384,8 +395,12 @@ class SqlAlchemyCollectionDeletionService:
             else:
                 identity = _archive_object_identity(archive)
                 store_name = archive.store
+                copy = session.get(CollectionArchiveCopyRecord, (collection_id, store_name))
+                if copy is None:
+                    raise Conflict("collection archive object has no owned copy")
+                incarnation_id = copy.incarnation_id
         if archive is not None:
-            self._delete_archive_identity(collection_id, store_name, identity)
+            self._delete_archive_identity(collection_id, store_name, incarnation_id, identity)
             with session_scope(self._session_factory) as session:
                 current_archive = session.get(
                     CollectionArchiveObjectRecord,
@@ -670,9 +685,12 @@ class SqlAlchemyCollectionDeletionService:
         self,
         collection_id: int,
         store_name: str,
+        incarnation_id: str,
         identity: ArchiveObjectIdentity,
     ) -> None:
-        self._archive_stores.require(store_name).store.delete_collection_archive(
+        self._archive_stores.require_incarnation(
+            store_name, incarnation_id
+        ).store.delete_collection_archive(
             collection_id=collection_id,
             objects=(identity,),
         )
@@ -804,6 +822,7 @@ def _build_plan(
         "file_count": int(file_count),
         "bytes": int(file_bytes),
         "archive_copies": archive_copies,
+        _STORAGE_INCARNATIONS_KEY: {archive.store: archive.incarnation_id for archive in archives},
         "archive_object_count": archive_object_count,
         "remote_storage_bytes": remote_storage_bytes,
         "upload_file_count": upload_file_count,
@@ -828,7 +847,7 @@ def _public_plan(plan: dict[str, object]) -> dict[str, object]:
     return {
         key: value
         for key, value in plan.items()
-        if key not in {_EXECUTION_KEY, _CATALOG_EVENT_SEQUENCE_KEY}
+        if key not in {_EXECUTION_KEY, _CATALOG_EVENT_SEQUENCE_KEY, _STORAGE_INCARNATIONS_KEY}
     }
 
 

@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 from a_riverhog_filesystem_store import app
+from a_riverhog_filesystem_store.incarnation import provision_storage_root
 
 
 def test_config_from_environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
@@ -52,6 +53,8 @@ def test_main_wires_asgi_service_and_releases_root_lock(
     tmp_path: Path,
 ) -> None:
     root = tmp_path / "cache"
+    root.mkdir()
+    provision_storage_root(root)
     monkeypatch.setenv("A_RIVERHOG_FILESYSTEM_STORE_ROOT", str(root))
     monkeypatch.setenv("A_RIVERHOG_FILESYSTEM_STORE_TOKEN", "test-token")
     monkeypatch.setenv("A_RIVERHOG_FILESYSTEM_STORE_MINIMUM_FREE_BYTES", "0B")

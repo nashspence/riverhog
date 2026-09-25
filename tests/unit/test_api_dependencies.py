@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from contextlib import ExitStack
+from dataclasses import replace
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
 
+import httpx
 import pytest
 from riverhog_api import deps
 from riverhog_core.catalog_db import initialize_db, make_session_factory, session_scope
@@ -13,8 +16,87 @@ from riverhog_core.runtime_config import (
     RuntimeConfig,
     StorageAdapterRegistration,
 )
+from riverhog_core.storage_incarnations import reconcile_storage_incarnations
+from riverhog_storage_adapter_protocol import AdapterDescriptor
+from riverhog_storage_adapter_support import StorageAdapterClient
 
 from tests.unit.db_helpers import sqlite_url
+from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
+
+
+def test_degraded_container_keeps_unreachable_historical_store_visible(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    database_url = sqlite_url(tmp_path / "catalog.sqlite3")
+    initialize_db(database_url)
+    factory = make_session_factory(database_url)
+    base = RuntimeConfig.for_testing(database_url=database_url)
+    archive = base.archive_store("archive")
+    offline = replace(archive, name="offline", base_url="http://127.0.0.2/offline")
+    config = replace(
+        base,
+        archive_stores={"archive": archive, "offline": offline},
+        archive_read_order=("archive", "offline"),
+    )
+    reconcile_storage_incarnations(
+        factory,
+        {
+            ("archive", "archive"): "00000000-0000-4000-8000-000000000001",
+            ("archive", "offline"): "00000000-0000-4000-8000-000000000002",
+        },
+    )
+    available = {"archive": True, "offline": False}
+
+    def respond(request: httpx.Request) -> httpx.Response:
+        name = "offline" if request.url.host == "127.0.0.2" else "archive"
+        if request.url.path.endswith("/health/ready"):
+            return httpx.Response(200 if available[name] else 503)
+        if request.url.path.endswith("/v1/adapter"):
+            descriptor = AdapterDescriptor(
+                storage_incarnation_id=(
+                    "00000000-0000-4000-8000-000000000002"
+                    if name == "offline"
+                    else "00000000-0000-4000-8000-000000000001"
+                ),
+                implementation_id="fixture.storage/v1",
+                implementation_version="1.0.0",
+                read_mode="immediate",
+                minimum_nonfinal_segment_bytes=1,
+                maximum_segment_bytes=1024,
+                maximum_segment_count=10000,
+            )
+            return httpx.Response(200, json=descriptor.model_dump())
+        raise AssertionError(f"unexpected adapter request: {request.url.path}")
+
+    transport_client = httpx.Client(transport=httpx.MockTransport(respond))
+    monkeypatch.setattr(
+        deps,
+        "_adapter_client",
+        lambda registration: StorageAdapterClient(
+            registration.base_url,
+            token="fixture",
+            allow_insecure_http=True,
+            client=transport_client,
+        ),
+    )
+    try:
+        with ExitStack() as cleanup:
+            container = deps._build_default_container(
+                config,
+                session_factory=factory,
+                startup_cleanup=cleanup,
+            )
+            assert container.storage_readiness is not None
+            container.storage_readiness()
+            historical = container.archive_stores.get("offline")
+            assert historical.incarnation_id == "00000000-0000-4000-8000-000000000002"
+            assert historical.configured and not historical.reachable
+            available["archive"] = False
+            with pytest.raises(Exception, match="archive store is unavailable"):
+                container.storage_readiness()
+    finally:
+        transport_client.close()
+        deps.dispose_session_factory(factory)
 
 
 def test_default_container_closes_startup_resources_after_missing_required_cache(
@@ -40,6 +122,12 @@ def test_default_container_closes_startup_resources_after_missing_required_cache
 
         def descriptor(self) -> Any:
             return SimpleNamespace(read_mode="restore_required")
+
+        def refresh_descriptor(self) -> Any:
+            return SimpleNamespace(
+                read_mode="restore_required",
+                storage_incarnation_id="00000000-0000-4000-8000-000000000001",
+            )
 
         def close(self) -> None:
             closed.append("adapter")
@@ -97,6 +185,7 @@ def test_startup_rejects_an_uploaded_copy_without_recovery_descriptor(tmp_path: 
     initialize_db(database_url)
     factory = make_session_factory(database_url)
     with session_scope(factory) as session:
+        incarnation_id = seed_storage_incarnation(session, "archive", "archive")
         session.add(
             CollectionRecord(
                 id=1,
@@ -117,6 +206,7 @@ def test_startup_rejects_an_uploaded_copy_without_recovery_descriptor(tmp_path: 
             CollectionArchiveCopyRecord(
                 collection_id=1,
                 store="archive",
+                incarnation_id=incarnation_id,
                 state="uploaded",
                 archive_storage_prefix="archives/fixture",
                 last_uploaded_at="2026-08-24T00:00:00.000000000Z",

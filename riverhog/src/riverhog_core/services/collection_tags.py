@@ -672,6 +672,7 @@ class SqlAlchemyCollectionTagService:
                 gc = CollectionTagNodeGcRecord(
                     collection_id=published.collection_id,
                     store=published.store,
+                    incarnation_id=publication.incarnation_id,
                     node_digest=published.node_digest,
                     expected_head_identity=publication.published_head_identity,
                     object_path=published.object_path,
@@ -707,6 +708,7 @@ class SqlAlchemyCollectionTagService:
             gc.state = "deleting"
             collection_id = gc.collection_id
             store_name = gc.store
+            incarnation_id = gc.incarnation_id
             digest = gc.node_digest
             expected_head_identity = gc.expected_head_identity
             prefix = copy.archive_storage_prefix
@@ -715,7 +717,9 @@ class SqlAlchemyCollectionTagService:
             stored_bytes = published.stored_bytes
             expected_stored_sha256 = published.stored_sha256
         try:
-            self._archive_stores.require(store_name).store.delete_collection_tag_node(
+            self._archive_stores.require_incarnation(
+                store_name, incarnation_id
+            ).store.delete_collection_tag_node(
                 collection_id=collection_id,
                 archive_storage_prefix=prefix,
                 digest=digest,
@@ -980,7 +984,7 @@ class SqlAlchemyCollectionTagService:
                 encoded = None
                 decoded = None
                 publication.state = "publishing_head"
-        store = self._archive_stores.require(store_name).store
+        store = self._archive_stores.require_incarnation(store_name, attempt.incarnation_id).store
         if digest is not None and encoded is not None and decoded is not None:
             try:
                 receipt = store.publish_collection_tag_node(
@@ -1420,6 +1424,7 @@ def _settle_mutation(
             target = CollectionTagPublicationRecord(
                 collection_id=collection_id,
                 store=copy.store,
+                incarnation_id=copy.incarnation_id,
                 desired_revision=head.revision,
                 desired_tag_set_identity=head.tag_set_identity,
                 desired_head_identity=head.head_identity,
@@ -1545,9 +1550,13 @@ def ensure_tag_publication_for_copy(
 
     publication = session.get(CollectionTagPublicationRecord, (collection.id, store_name))
     if publication is None:
+        copy = session.get(CollectionArchiveCopyRecord, (collection.id, store_name))
+        if copy is None:
+            raise RuntimeError("tag publication has no owned archive copy")
         publication = CollectionTagPublicationRecord(
             collection_id=collection.id,
             store=store_name,
+            incarnation_id=copy.incarnation_id,
             desired_revision=collection.tag_revision,
             desired_tag_set_identity=collection.tag_set_identity,
             desired_head_identity=collection.tag_head_identity,

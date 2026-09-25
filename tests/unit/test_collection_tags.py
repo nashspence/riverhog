@@ -89,6 +89,7 @@ from tests.unit.archive_object_fixtures import (
     seed_archive_copy,
 )
 from tests.unit.db_helpers import sqlite_url
+from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
 from tests.unit.test_storage_adapter_archive_store import _VersionedMemoryAdapter
 
 
@@ -1055,7 +1056,7 @@ def test_tag_replica_reconciles_exact_ambiguous_attempt_before_newer_desired(
     registry = ArchiveStoreRegistry(
         {
             "archive": archive_store_binding(primary),
-            "mirror": archive_store_binding(mirror),
+            "mirror": archive_store_binding(mirror, name="mirror"),
         }
     )
     with session_scope(factory) as session:  # type: ignore[arg-type]
@@ -1065,6 +1066,7 @@ def test_tag_replica_reconciles_exact_ambiguous_attempt_before_newer_desired(
             copy := CollectionArchiveCopyRecord(
                 collection_id=1,
                 store="mirror",
+                incarnation_id=seed_storage_incarnation(session, "archive", "mirror"),
                 state="uploaded",
                 archive_storage_prefix="archives/mirror/opaque-docs",
                 last_uploaded_at=utc_timestamp_now(),
@@ -2371,7 +2373,7 @@ def test_persistent_tag_gc_failure_is_bounded_and_does_not_starve_other_publicat
     registry = ArchiveStoreRegistry(
         {
             "archive": archive_store_binding(archive),
-            "mirror": archive_store_binding(mirror),
+            "mirror": archive_store_binding(mirror, name="mirror"),
         }
     )
     with session_scope(factory) as session:  # type: ignore[arg-type]
@@ -2385,6 +2387,7 @@ def test_persistent_tag_gc_failure_is_bounded_and_does_not_starve_other_publicat
             mirror_copy := CollectionArchiveCopyRecord(
                 collection_id=1,
                 store="mirror",
+                incarnation_id=seed_storage_incarnation(session, "archive", "mirror"),
                 state="uploaded",
                 archive_storage_prefix="archives/mirror/opaque-docs",
                 last_uploaded_at=utc_timestamp_now(),

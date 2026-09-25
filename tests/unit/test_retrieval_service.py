@@ -34,12 +34,16 @@ from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUploadService
 from riverhog_core.services.retrieval import SqlAlchemyRetrievalService
 from riverhog_protocol import CollectionUploadRawDigestBatchDocument, collection_tag_sha256
-from riverhog_protocol.errors import Conflict, NotFound, PreconditionFailed
+from riverhog_protocol.errors import Conflict, NotFound, PreconditionFailed, ServiceUnavailable
 from sqlalchemy import select
 
 from tests.unit.archive_object_fixtures import MemoryArchiveStore
 from tests.unit.artifact_scope_fixtures import persisted_artifact_scope
 from tests.unit.db_helpers import sqlite_url
+from tests.unit.storage_incarnation_fixtures import (
+    fixture_storage_incarnation_id,
+    seed_storage_incarnation,
+)
 from tests.unit.test_archive_root import MemoryImmutableStore
 from tests.unit.test_pack_upload import MemoryResumableStore
 
@@ -102,6 +106,14 @@ class MemoryRetrievalCache:
         self.objects: dict[tuple[str, str | None], bytes] = {}
         self.range_requests: list[tuple[str, int, int]] = []
         self.deleted: list[tuple[str, str | None]] = []
+        self.available = True
+
+    def is_usable_store(self, *, cache_store: str, incarnation_id: str) -> bool:
+        return (
+            self.available
+            and cache_store == "memory"
+            and incarnation_id == fixture_storage_incarnation_id("cache", "memory")
+        )
 
     def admit(
         self,
@@ -313,6 +325,10 @@ def _seed_collection(
         retrieval_pending_timeout=pending_timeout or timedelta(hours=72),
     )
     initialize_db(database_url)
+    with session_scope(make_session_factory(database_url)) as session:
+        seed_storage_incarnation(session, "archive", "archive")
+        if cache is not None:
+            seed_storage_incarnation(session, "cache", "memory")
     resumable = MemoryResumableStore()
     ranges = MemoryArchiveRangeStore(resumable)
     root_store = MemoryImmutableStore()
@@ -320,6 +336,7 @@ def _seed_collection(
     archive_registry = ArchiveStoreRegistry(
         {
             "archive": ArchiveStoreBinding(
+                incarnation_id=fixture_storage_incarnation_id("archive", "archive"),
                 store=cast(ArchiveStore, archive_store),
                 resumable_objects=resumable,
                 immutable_objects=root_store,
@@ -787,6 +804,30 @@ def test_restore_required_job_caches_ciphertext_then_serves_logical_range(
     assert b"".join(chunks) == files["target.bin"]
     assert cache.range_requests
     assert ranges.requests == []
+
+
+def test_unavailable_cached_copy_is_not_selected_or_served(tmp_path: Path) -> None:
+    cache = MemoryRetrievalCache()
+    service, collection_id, _ranges, _store = _seed_collection(
+        tmp_path,
+        {"document.txt": b"document"},
+        read_mode="restore_required",
+        cache=cache,
+    )
+    job = _ready_job(service, collection_id, "document.txt")
+    assert _drive_requested(service, job)["state"] == "ready"
+    assert service.plan(((collection_id, "document.txt"),))["requires_restore"] is False
+
+    cache.available = False
+    assert service.plan(((collection_id, "document.txt"),))["requires_restore"] is True
+    with pytest.raises(ServiceUnavailable, match="cache incarnation is unavailable"):
+        content, _bytes, _sha256 = service.content(
+            principal_id="reader",
+            job_id=str(job["id"]),
+            collection_id=collection_id,
+            path="document.txt",
+        )
+        b"".join(content)
 
 
 def test_restore_is_not_requested_until_cache_placement_is_admitted(tmp_path: Path) -> None:

@@ -15,6 +15,7 @@ from a_riverhog_filesystem_store import (
     FilesystemStorageAdapter,
     FilesystemStorageAdapterConfig,
 )
+from a_riverhog_filesystem_store.incarnation import provision_storage_root
 from a_riverhog_filesystem_store.materialize import (
     MaterializationError,
     MaterializationInterrupted,
@@ -33,6 +34,8 @@ from riverhog_storage_adapter_protocol import (
 
 
 def _adapter(root: Path) -> FilesystemStorageAdapter:
+    root.mkdir(parents=True, exist_ok=True)
+    provision_storage_root(root)
     return FilesystemStorageAdapter(
         FilesystemStorageAdapterConfig(
             root=root,

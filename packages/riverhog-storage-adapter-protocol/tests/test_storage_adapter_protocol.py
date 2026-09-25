@@ -62,6 +62,29 @@ def _completion_precondition(
     )
 
 
+def test_adapter_descriptor_requires_a_canonical_storage_incarnation_id() -> None:
+    descriptor = AdapterDescriptor(
+        storage_incarnation_id="aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1",
+        implementation_id="fixture.storage/v1",
+        implementation_version="1.0.0",
+        read_mode="immediate",
+        minimum_nonfinal_segment_bytes=1,
+    )
+    assert descriptor.storage_incarnation_id == "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1"
+    for invalid in (
+        "AAAAAAAA-AAAA-4AAA-8AAA-AAAAAAAAAAA1",
+        "00000000-0000-1000-8000-000000000001",
+        "00000000-0000-4000-0000-000000000001",
+        "archive",
+    ):
+        with pytest.raises(ValidationError):
+            AdapterDescriptor.model_validate(
+                {**descriptor.model_dump(), "storage_incarnation_id": invalid}
+            )
+    with pytest.raises(ValidationError):
+        AdapterDescriptor.model_validate(descriptor.model_dump(exclude={"storage_incarnation_id"}))
+
+
 def test_exact_storage_byte_count_has_string_wire_and_schema() -> None:
     request = WriteStartRequest(
         object_path="archives/exact/object",
@@ -238,6 +261,7 @@ def test_validated_port_rejects_direct_response_and_stream_drift() -> None:
         )
 
     descriptor = AdapterDescriptor(
+        storage_incarnation_id="00000000-0000-4000-8000-000000000001",
         implementation_id="fixture.storage/v1",
         implementation_version="1.0.0",
         read_mode="immediate",
@@ -563,6 +587,7 @@ def test_object_read_receipt_binds_observed_locator_and_range() -> None:
 
 def test_descriptor_exposes_only_runtime_facts_needed_by_riverhog() -> None:
     descriptor = AdapterDescriptor(
+        storage_incarnation_id="00000000-0000-4000-8000-000000000001",
         implementation_id="fixture.storage/v1",
         implementation_version="1.0.0",
         read_mode="restore_required",
@@ -597,6 +622,7 @@ def test_read_preparation_carries_only_exact_opaque_objects() -> None:
 
 def test_response_validators_bind_exact_requests_and_closed_readiness_states() -> None:
     descriptor = AdapterDescriptor(
+        storage_incarnation_id="00000000-0000-4000-8000-000000000001",
         implementation_id="fixture.storage/v1",
         implementation_version="1.0.0",
         read_mode="immediate",
@@ -677,6 +703,7 @@ def test_listed_write_segments_allow_sparse_restart_state_but_completion_does_no
         segments=(second,),
     )
     descriptor = AdapterDescriptor(
+        storage_incarnation_id="00000000-0000-4000-8000-000000000001",
         implementation_id="fixture.storage/v1",
         implementation_version="1.0.0",
         read_mode="immediate",
@@ -722,6 +749,7 @@ def test_segment_constraints_are_shared_by_listing_and_completion() -> None:
         expected_bytes=5,
     )
     descriptor = AdapterDescriptor(
+        storage_incarnation_id="00000000-0000-4000-8000-000000000001",
         implementation_id="fixture.storage/v1",
         implementation_version="1.0.0",
         read_mode="immediate",

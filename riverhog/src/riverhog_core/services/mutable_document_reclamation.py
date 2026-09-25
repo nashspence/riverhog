@@ -13,6 +13,7 @@ from time_formats import format_utc_timestamp, utc_now, utc_timestamp_now
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
 from riverhog_core.catalog_db import SessionFactory, session_scope
 from riverhog_core.catalog_models import (
+    CollectionArchiveCopyRecord,
     CollectionDescriptionPublicationRecord,
     CollectionMutableDocumentReclamationRecord,
     CollectionTagPublicationRecord,
@@ -59,6 +60,10 @@ def retain_superseded_mutable_document(
         and replacement.stored_sha256 == stored_sha256
     ):
         return
+    copy = session.get(CollectionArchiveCopyRecord, (collection_id, store))
+    if copy is None:
+        raise RuntimeError("mutable document has no owned archive copy")
+    incarnation_id = copy.incarnation_id
     identity = hashlib.sha256(
         b"riverhog-mutable-document-reclamation/v1\x00"
         + document_kind.encode("ascii")
@@ -66,6 +71,8 @@ def retain_superseded_mutable_document(
         + str(collection_id).encode("ascii")
         + b"\x00"
         + store.encode("utf-8")
+        + b"\x00"
+        + incarnation_id.encode("ascii")
         + b"\x00"
         + object_path.encode("utf-8")
         + b"\x00"
@@ -79,6 +86,7 @@ def retain_superseded_mutable_document(
                 receipt_identity=identity,
                 collection_id=collection_id,
                 store=store,
+                incarnation_id=incarnation_id,
                 document_kind=document_kind,
                 object_path=object_path,
                 provider_revision=provider_revision,
@@ -129,11 +137,14 @@ def process_due_mutable_document_reclamations(
             row.state = "deleting"
             identity = row.receipt_identity
             store_name = row.store
+            incarnation_id = row.incarnation_id
             object_path = row.object_path
             provider_revision = row.provider_revision
             stored_sha256 = row.stored_sha256
         try:
-            archive_stores.require(store_name).store.delete_collection_document_revision(
+            archive_stores.require_incarnation(
+                store_name, incarnation_id
+            ).store.delete_collection_document_revision(
                 object_path=object_path,
                 provider_revision=provider_revision,
                 expected_stored_sha256=stored_sha256,

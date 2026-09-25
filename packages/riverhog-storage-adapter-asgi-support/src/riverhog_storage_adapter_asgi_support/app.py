@@ -15,10 +15,12 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.security import HTTPBearer
 from http_api_contracts import FRAMED_BODY_MEDIA_TYPE, HealthOut, operation_openapi
 from riverhog_storage_adapter_protocol import (
+    AdapterDescriptor,
     StorageAdapterError,
     StorageAdapterErrorBody,
     StorageAdapterErrorCode,
     StorageAdapterPort,
+    validate_storage_incarnation_id,
 )
 from riverhog_storage_adapter_support.http_binding import (
     FRAMED_STORAGE_ADAPTER_HTTP_PATHS,
@@ -122,7 +124,8 @@ def create_storage_adapter_app(
         try:
             if readiness is not None:
                 readiness()
-            binding.adapter.descriptor()
+            if not isinstance(adapter.descriptor(), AdapterDescriptor):
+                raise ValueError("storage adapter descriptor is invalid")
         except Exception:
             return _error(503, "provider_unavailable", "storage adapter is not ready")
         return JSONResponse({"service": service, "status": "ok"})
@@ -131,6 +134,25 @@ def create_storage_adapter_app(
         scheme, _, supplied = request.headers.get("authorization", "").partition(" ")
         if scheme.casefold() != "bearer" or not secrets.compare_digest(supplied, credential):
             return _error(401, "unauthorized", "Bearer credential is not authorized")
+        if request.url.path != "/v1/adapter" and request.method.upper() in methods_by_path.get(
+            request.url.path, set()
+        ):
+            supplied_incarnation = request.headers.get("riverhog-expected-storage-incarnation", "")
+            try:
+                expected_incarnation = validate_storage_incarnation_id(supplied_incarnation)
+            except ValueError:
+                return _error(
+                    400, "invalid_request", "storage incarnation precondition is required"
+                )
+            try:
+                descriptor = adapter.descriptor()
+                if not isinstance(descriptor, AdapterDescriptor):
+                    raise ValueError("storage adapter descriptor is invalid")
+                observed_incarnation = descriptor.storage_incarnation_id
+            except Exception:
+                return _error(503, "provider_unavailable", "storage incarnation is unavailable")
+            if observed_incarnation != expected_incarnation:
+                return _error(503, "provider_unavailable", "storage incarnation changed")
         if request.method.upper() == "POST" and request.url.path in (
             FRAMED_STORAGE_ADAPTER_HTTP_PATHS
         ):

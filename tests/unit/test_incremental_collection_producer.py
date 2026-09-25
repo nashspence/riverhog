@@ -19,7 +19,7 @@ from riverhog_core.app_permissions import (
     Principal,
 )
 from riverhog_core.archive_store_registry import ArchiveStoreRegistry
-from riverhog_core.catalog_db import initialize_db
+from riverhog_core.catalog_db import initialize_db, make_session_factory, session_scope
 from riverhog_core.collection_plan import CollectionVolumePolicy
 from riverhog_core.runtime_config import RuntimeConfig
 from riverhog_core.services.collection_uploads import SqlAlchemyCollectionUploadService
@@ -36,6 +36,7 @@ from riverhog_protocol.manifest import collection_content_identity_ordered
 
 from tests.unit.archive_object_fixtures import MemoryArchiveStore, archive_store_binding
 from tests.unit.db_helpers import sqlite_url
+from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
 
 
 class _CustodyApi:
@@ -460,6 +461,8 @@ def _bounded_service_api(tmp_path: Path) -> tuple[_ServiceApi, MemoryArchiveStor
     database_url = sqlite_url(tmp_path / "catalog.sqlite3")
     config = RuntimeConfig.for_testing(database_url=database_url, archive_scrypt_work_factor=1)
     initialize_db(database_url)
+    with session_scope(make_session_factory(database_url)) as session:
+        seed_storage_incarnation(session, "archive", "archive")
     store = MemoryArchiveStore()
     binding = replace(archive_store_binding(store), store=store)
     service = SqlAlchemyCollectionUploadService(

@@ -36,6 +36,7 @@ from riverhog_core.services.app_keys import SqlAlchemyAppKeyService
 from riverhog_protocol.errors import BadRequest, Forbidden, NotFound, Unauthorized
 
 from tests.unit.db_helpers import sqlite_url
+from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
 
 BOOTSTRAP = Principal(
     id="bootstrap",
@@ -385,6 +386,7 @@ def test_revocation_cancels_key_jobs_and_releases_unused_download_reservations(
                 bytes=100,
                 sha256="2" * 64,
                 source_store="fixture",
+                source_incarnation_id=seed_storage_incarnation(session, "archive", "fixture"),
                 requires_restore=False,
             )
         )

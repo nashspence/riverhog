@@ -87,6 +87,7 @@ class MemoryAdapter:
 
     def descriptor(self) -> AdapterDescriptor:
         return AdapterDescriptor(
+            storage_incarnation_id="00000000-0000-4000-8000-000000000001",
             implementation_id="fixture.storage/v1",
             implementation_version="1.0.0",
             read_mode="immediate",
@@ -694,9 +695,57 @@ def test_small_object_and_exact_range_round_trip() -> None:
         assert metadata is not None
         assert metadata.stored_sha256 == receipt.stored_sha256
         assert ranged == content[7:13]
+        read_request = next(
+            request for request in requests if request.url.path == "/v1/objects/read"
+        )
+        assert read_request.headers["Riverhog-Expected-Storage-Incarnation"] == (
+            adapter.descriptor().storage_incarnation_id
+        )
         put_request = next(request for request in requests if request.url.path == "/v1/objects/put")
         assert int(put_request.headers["Content-Length"]) == len(put_request.content)
         assert "Transfer-Encoding" not in put_request.headers
+    finally:
+        client.close()
+        http.close()
+
+
+def test_streaming_read_preserves_adapter_unavailable_error() -> None:
+    adapter = MemoryAdapter()
+    error = canonical_json_bytes(
+        {
+            "error": {
+                "code": "provider_unavailable",
+                "message": "storage incarnation changed",
+            }
+        }
+    )
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.url.path == "/v1/adapter":
+            return httpx.Response(200, json=adapter.descriptor().model_dump(mode="json"))
+        assert request.url.path == "/v1/objects/read"
+        assert request.headers["Riverhog-Expected-Storage-Incarnation"] == (
+            adapter.descriptor().storage_incarnation_id
+        )
+        return httpx.Response(503, stream=httpx.ByteStream(error))
+
+    http = httpx.Client(transport=httpx.MockTransport(handler))
+    client = StorageAdapterClient(
+        "http://adapter.example.test",
+        token="fixture-token",
+        allow_insecure_http=True,
+        client=http,
+    )
+    try:
+        with pytest.raises(StorageAdapterProtocolError) as failed:
+            client.read_object(
+                ObjectReadRequest(
+                    object=ObjectLocator(object_path="archives/id/object"),
+                    expected_bytes=1,
+                )
+            )
+        assert failed.value.status_code == 503
+        assert failed.value.code == "provider_unavailable"
     finally:
         client.close()
         http.close()
@@ -808,6 +857,7 @@ def test_binding_enforces_advertised_write_segment_limits() -> None:
     class LimitedAdapter(MemoryAdapter):
         def descriptor(self) -> AdapterDescriptor:
             return AdapterDescriptor(
+                storage_incarnation_id="00000000-0000-4000-8000-000000000001",
                 implementation_id="fixture.storage/v1",
                 implementation_version="1.0.0",
                 read_mode="immediate",
@@ -920,7 +970,7 @@ def test_client_surfaces_the_closed_adapter_error() -> None:
     assert binding.handle("POST", "/v1/objects/head", duplicate).status == 400
 
     def handler(request: httpx.Request) -> httpx.Response:
-        result = binding.handle("POST", "/v1/objects/head", request.read())
+        result = binding.handle(request.method, request.url.path, request.read())
         assert isinstance(result.body, bytes)
         return httpx.Response(
             result.status,

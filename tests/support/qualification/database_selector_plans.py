@@ -220,8 +220,58 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
         "'2026-08-28T00:00:' || lpad((g % 60)::text, 2, '0') || '.' || lpad(g::text, 6, '0') || 'Z'"
     )
     sha = "repeat(md5(g::text), 2)"
+    archive_id = "'00000000-0000-4000-8000-' || lpad((2000 + (g % 16))::text, 12, '0')"
+    copy_id = "'00000000-0000-4000-8000-' || lpad((3000 + (g % 16))::text, 12, '0')"
+    cache_id = (
+        "CASE WHEN g % 2 = 0 THEN '00000000-0000-4000-8000-000000004000' "
+        "ELSE '00000000-0000-4000-8000-000000004001' END"
+    )
     with engine.begin() as connection:
         for statement in (
+            """
+            INSERT INTO storage_incarnations (
+                id, kind, name, state, binding_generation, created_at, last_bound_at,
+                last_read_mode
+            ) VALUES (
+                '00000000-0000-4000-8000-000000001000', 'archive', 'archive',
+                'bound', 1, '2026-08-28T00:00:00.000000000Z',
+                '2026-08-28T00:00:00.000000000Z', 'immediate'
+            )
+            """,
+            """
+            INSERT INTO storage_incarnations (
+                id, kind, name, state, binding_generation, created_at, last_bound_at,
+                last_read_mode
+            )
+            SELECT '00000000-0000-4000-8000-' || lpad((2000 + n)::text, 12, '0'),
+                   'archive', 'archive-' || lpad(n::text, 2, '0'), 'bound', 1,
+                   '2026-08-28T00:00:00.000000000Z',
+                   '2026-08-28T00:00:00.000000000Z', 'immediate'
+            FROM generate_series(0, 15) AS n
+            """,
+            """
+            INSERT INTO storage_incarnations (
+                id, kind, name, state, binding_generation, created_at, last_bound_at,
+                last_read_mode
+            )
+            SELECT '00000000-0000-4000-8000-' || lpad((3000 + n)::text, 12, '0'),
+                   'archive', 'copy-' || lpad(n::text, 2, '0'), 'bound', 1,
+                   '2026-08-28T00:00:00.000000000Z',
+                   '2026-08-28T00:00:00.000000000Z', 'immediate'
+            FROM generate_series(0, 15) AS n
+            """,
+            """
+            INSERT INTO storage_incarnations (
+                id, kind, name, state, binding_generation, created_at, last_bound_at,
+                last_read_mode
+            ) VALUES
+                ('00000000-0000-4000-8000-000000004000', 'cache', 'local',
+                 'bound', 1, '2026-08-28T00:00:00.000000000Z',
+                 '2026-08-28T00:00:00.000000000Z', 'immediate'),
+                ('00000000-0000-4000-8000-000000004001', 'cache', 'elastic',
+                 'bound', 1, '2026-08-28T00:00:00.000000000Z',
+                 '2026-08-28T00:00:00.000000000Z', 'immediate')
+            """,
             f"""
             INSERT INTO collection_tags (
                 tag_sha256, tag, search_text, created_at, updated_at, collection_count
@@ -323,6 +373,7 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
                 provenance_identity, encryption_format, passphrase_id,
                 initiated_by_principal_id, initiated_by_key_id, event_context_json,
                 state, custody_mode, lease_expires_at, orphaned_at, archive_store,
+                archive_incarnation_id,
                 use_cache, copy_to_json, opened_at, last_activity_at, closed_at, archive_phase,
                 archive_phase_updated_at, archive_attempt_count,
                 archive_next_attempt_at, archive_last_attempt_at, archive_failure,
@@ -338,7 +389,8 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
                    CASE WHEN g = {rows} THEN 'open' ELSE 'orphaned' END,
                    'producer-retained', NULL,
                    CASE WHEN g = {rows} THEN NULL ELSE {timestamp} END,
-                   'archive', false, '[]', {timestamp}, {timestamp}, NULL,
+                   'archive', '00000000-0000-4000-8000-000000001000',
+                   false, '[]', {timestamp}, {timestamp}, NULL,
                    CASE WHEN g = {rows} THEN 'planning' ELSE 'orphaned' END,
                    {timestamp}, 0, NULL, NULL, NULL, 'qualification/' || g,
                    '{{}}', g % 32, g * 1024, 0, 0,
@@ -392,10 +444,11 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
             """,
             f"""
             INSERT INTO collection_archive_copies (
-                collection_id, store, state, archive_storage_prefix,
+                collection_id, store, incarnation_id, state, archive_storage_prefix,
                 last_uploaded_at, last_verified_at
             )
-            SELECT g, 'archive-' || lpad((g % 16)::text, 2, '0'), 'uploaded',
+            SELECT g, 'archive-' || lpad((g % 16)::text, 2, '0'),
+                   {archive_id}, 'uploaded',
                    'collections/' || g, {timestamp}, {timestamp}
             FROM generate_series(1, {rows}) AS g
             """,
@@ -413,12 +466,14 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
             """,
             f"""
             INSERT INTO retrieval_cache_objects (
-                source_store, collection_id, object_id, cache_store, object_path, revision,
+                source_store, source_incarnation_id, collection_id, object_id,
+                cache_store, cache_incarnation_id, object_path, revision,
                 stored_bytes, stored_sha256, cached_at, verified_at, state
             )
-            SELECT 'archive-' || lpad((g % 16)::text, 2, '0'), g,
+            SELECT 'archive-' || lpad((g % 16)::text, 2, '0'), {archive_id}, g,
                    'object-' || lpad(g::text, 6, '0'),
                    CASE WHEN g % 2 = 0 THEN 'local' ELSE 'elastic' END,
+                   {cache_id},
                    'collections/' || g || '/object', 'revision-' || g,
                    g + 64, {sha}, {timestamp}, {timestamp},
                    CASE WHEN g = {rows} THEN 'delete_pending' ELSE 'ready' END
@@ -437,11 +492,13 @@ def _seed_selector_relations(engine: Engine, *, rows: int) -> None:
             """,
             f"""
             INSERT INTO archive_copy_jobs (
-                collection_id, destination_store, destination_storage_prefix,
-                source_store, use_cache, initiated_by_app, state, requested_at
+                collection_id, destination_store, destination_incarnation_id,
+                destination_storage_prefix, source_store, source_incarnation_id,
+                use_cache, initiated_by_app, state, requested_at
             )
-            SELECT g, 'copy-' || lpad((g % 16)::text, 2, '0'),
+            SELECT g, 'copy-' || lpad((g % 16)::text, 2, '0'), {copy_id},
                    'copies/' || g, 'archive-' || lpad((g % 16)::text, 2, '0'),
+                   {archive_id},
                    false, 'qualification',
                    CASE WHEN g = {rows} THEN 'requested' ELSE 'waiting' END,
                    {timestamp}

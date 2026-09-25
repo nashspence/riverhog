@@ -144,6 +144,7 @@ def _load_catalog_models() -> None:
         RetrievalPlanObjectRecord,
         RetrievalPlanPlacementRecord,
         RetrievalPlanRecord,
+        StorageIncarnationRecord,
     )
 
     _ = (
@@ -205,6 +206,7 @@ def _load_catalog_models() -> None:
         RetrievalCacheAccountingReconciliationRecord,
         RetrievalCachePopulationRecord,
         RetrievalCacheStoreAccountingRecord,
+        StorageIncarnationRecord,
     )
 
 

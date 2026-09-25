@@ -7,6 +7,27 @@ CREATE TABLE state_schema_revision (
     CONSTRAINT state_schema_revision_pkc PRIMARY KEY (version_num)
 );
 
+CREATE TABLE storage_incarnations (
+	id VARCHAR(36) NOT NULL,
+	kind VARCHAR NOT NULL,
+	name VARCHAR NOT NULL,
+	state VARCHAR NOT NULL,
+	binding_generation BIGINT NOT NULL,
+	created_at VARCHAR NOT NULL,
+	last_bound_at VARCHAR,
+	last_read_mode VARCHAR,
+	PRIMARY KEY (id),
+	CONSTRAINT uq_storage_incarnations_reserved_name UNIQUE (kind, name),
+	CONSTRAINT uq_storage_incarnations_id_name UNIQUE (id, name),
+	CONSTRAINT ck_storage_incarnations_kind CHECK (kind IN ('archive','cache')),
+	CONSTRAINT ck_storage_incarnations_state CHECK (state IN ('bound','disabled','retired')),
+	CONSTRAINT ck_storage_incarnations_generation CHECK (binding_generation >= 1),
+	CONSTRAINT ck_storage_incarnations_read_mode CHECK (last_read_mode IS NULL OR last_read_mode IN ('immediate','restore_required')),
+	CONSTRAINT ck_storage_incarnations_uuid4 CHECK (length(id) = 36 AND substr(id, 9, 1) = '-' AND substr(id, 14, 1) = '-' AND substr(id, 19, 1) = '-' AND substr(id, 24, 1) = '-' AND substr(id, 15, 1) = '4' AND substr(id, 20, 1) >= '8' AND substr(id, 20, 1) <= 'b' AND length(replace(id, '-', '')) = 32 AND lower(replace(id, '-', '')) = replace(id, '-', '') AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '-', ''), '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)
+);
+
+CREATE INDEX ix_storage_incarnations_state ON storage_incarnations (kind, state, name);
+
 CREATE TABLE app_keys (
 	id VARCHAR NOT NULL,
 	app VARCHAR NOT NULL,
@@ -189,9 +210,9 @@ CREATE INDEX ix_collection_tags_updated_at ON collection_tags (updated_at, tag_s
 CREATE TABLE collection_upload_copy_intents (
 	collection_id BIGINT NOT NULL,
 	destination_store VARCHAR NOT NULL,
+	destination_incarnation_id VARCHAR(36) NOT NULL,
 	source_store VARCHAR NOT NULL,
-	destination_binding_sha256 VARCHAR NOT NULL,
-	source_binding_sha256 VARCHAR NOT NULL,
+	source_incarnation_id VARCHAR(36) NOT NULL,
 	initiated_by_app VARCHAR NOT NULL,
 	initiated_by_key_id VARCHAR NOT NULL,
 	event_context_json TEXT,
@@ -204,6 +225,8 @@ CREATE TABLE collection_upload_copy_intents (
 	job_created BOOLEAN,
 	failure_code VARCHAR,
 	PRIMARY KEY (collection_id, destination_store),
+	FOREIGN KEY(source_incarnation_id, source_store) REFERENCES storage_incarnations (id, name),
+	FOREIGN KEY(destination_incarnation_id, destination_store) REFERENCES storage_incarnations (id, name),
 	CONSTRAINT ck_collection_upload_copy_intents_state CHECK (state IN ('accepted','pending','handed_off','failed','canceled')),
 	CONSTRAINT ck_collection_upload_copy_intents_attempts CHECK (attempts >= 0)
 );
@@ -241,6 +264,7 @@ CREATE TABLE collection_uploads (
 	lease_expires_at VARCHAR,
 	orphaned_at VARCHAR,
 	archive_store VARCHAR NOT NULL,
+	archive_incarnation_id VARCHAR(36) NOT NULL,
 	use_cache BOOLEAN NOT NULL,
 	copy_to_json TEXT NOT NULL,
 	opened_at VARCHAR NOT NULL,
@@ -289,6 +313,7 @@ CREATE TABLE collection_uploads (
 	uploaded_payload_bytes BIGINT DEFAULT 0 NOT NULL,
 	search_text VARCHAR NOT NULL,
 	PRIMARY KEY (collection_id),
+	FOREIGN KEY(archive_incarnation_id, archive_store) REFERENCES storage_incarnations (id, name),
 	CONSTRAINT ck_collection_uploads_file_count CHECK (file_count >= 0),
 	CONSTRAINT ck_collection_uploads_tree_progress CHECK (archive_tree_next_file_order >= 0),
 	CONSTRAINT ck_collection_uploads_volume_progress CHECK (length(archive_volume_next_sequence) = 64 AND lower(archive_volume_next_sequence) = archive_volume_next_sequence AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(archive_volume_next_sequence, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
@@ -455,9 +480,11 @@ CREATE INDEX ix_lifecycle_events_owner_subject_context ON lifecycle_events (owne
 
 CREATE TABLE retrieval_cache_populations (
 	source_store VARCHAR NOT NULL,
+	source_incarnation_id VARCHAR(36) NOT NULL,
 	collection_id BIGINT NOT NULL,
 	object_id VARCHAR NOT NULL,
 	cache_store VARCHAR,
+	cache_incarnation_id VARCHAR(36),
 	object_path VARCHAR,
 	write_token VARCHAR,
 	expected_bytes BIGINT NOT NULL,
@@ -466,6 +493,8 @@ CREATE TABLE retrieval_cache_populations (
 	updated_at VARCHAR NOT NULL,
 	failure TEXT,
 	PRIMARY KEY (source_store, collection_id, object_id),
+	FOREIGN KEY(source_incarnation_id, source_store) REFERENCES storage_incarnations (id, name),
+	FOREIGN KEY(cache_incarnation_id, cache_store) REFERENCES storage_incarnations (id, name),
 	CONSTRAINT ck_retrieval_cache_populations_expected_bytes CHECK (expected_bytes >= 1),
 	CONSTRAINT ck_retrieval_cache_populations_state CHECK (state IN ('waiting','admitting','admitted','writing','abandoning')),
 	CONSTRAINT ck_retrieval_cache_populations_session CHECK (cache_store IS NULL AND object_path IS NULL AND write_token IS NULL AND state IN ('waiting','abandoning') OR cache_store IS NOT NULL AND object_path IS NOT NULL AND (write_token IS NULL AND state = 'admitting' OR write_token IS NOT NULL AND state IN ('admitted','writing') OR state = 'abandoning'))
@@ -475,11 +504,13 @@ CREATE INDEX ix_retrieval_cache_populations_store_state ON retrieval_cache_popul
 
 CREATE TABLE retrieval_cache_store_accounting (
 	cache_store VARCHAR NOT NULL,
+	cache_incarnation_id VARCHAR(36) NOT NULL,
 	reserved_bytes BIGINT DEFAULT 0 NOT NULL,
 	committed_bytes BIGINT DEFAULT 0 NOT NULL,
 	generation BIGINT DEFAULT 0 NOT NULL,
 	updated_at VARCHAR NOT NULL,
 	PRIMARY KEY (cache_store),
+	FOREIGN KEY(cache_incarnation_id, cache_store) REFERENCES storage_incarnations (id, name),
 	CONSTRAINT ck_retrieval_cache_store_accounting_reserved CHECK (reserved_bytes >= 0),
 	CONSTRAINT ck_retrieval_cache_store_accounting_committed CHECK (committed_bytes >= 0),
 	CONSTRAINT ck_retrieval_cache_store_accounting_generation CHECK (generation >= 0)
@@ -556,6 +587,7 @@ CREATE INDEX ix_archive_download_reservations_expiry ON archive_download_reserva
 CREATE TABLE collection_archive_copies (
 	collection_id BIGINT NOT NULL,
 	store VARCHAR NOT NULL,
+	incarnation_id VARCHAR(36) NOT NULL,
 	state VARCHAR NOT NULL,
 	archive_storage_prefix VARCHAR,
 	last_uploaded_at VARCHAR,
@@ -563,6 +595,7 @@ CREATE TABLE collection_archive_copies (
 	failure VARCHAR,
 	PRIMARY KEY (collection_id, store),
 	FOREIGN KEY(collection_id) REFERENCES collections (id) ON DELETE CASCADE,
+	FOREIGN KEY(incarnation_id, store) REFERENCES storage_incarnations (id, name),
 	CONSTRAINT ck_collection_archive_copies_state CHECK (state IN ('pending','uploading','uploaded','retrying','failed'))
 );
 
@@ -1089,8 +1122,10 @@ CREATE INDEX ix_retrieval_jobs_due ON retrieval_jobs (state, next_poll_at, id);
 CREATE TABLE archive_copy_jobs (
 	collection_id BIGINT NOT NULL,
 	destination_store VARCHAR NOT NULL,
+	destination_incarnation_id VARCHAR(36) NOT NULL,
 	destination_storage_prefix VARCHAR NOT NULL,
 	source_store VARCHAR NOT NULL,
+	source_incarnation_id VARCHAR(36) NOT NULL,
 	use_cache BOOLEAN NOT NULL,
 	initiated_by_app VARCHAR NOT NULL,
 	initiated_by_key_id VARCHAR,
@@ -1108,6 +1143,8 @@ CREATE TABLE archive_copy_jobs (
 	failure VARCHAR,
 	search_text VARCHAR GENERATED ALWAYS AS (lower(CAST(collection_id AS TEXT) || ' ' || source_store || ' ' || destination_store || ' ' || state)) STORED NOT NULL,
 	PRIMARY KEY (collection_id, destination_store),
+	FOREIGN KEY(source_incarnation_id, source_store) REFERENCES storage_incarnations (id, name),
+	FOREIGN KEY(destination_incarnation_id, destination_store) REFERENCES storage_incarnations (id, name),
 	FOREIGN KEY(collection_id, source_store) REFERENCES collection_archive_copies (collection_id, store) ON DELETE CASCADE,
 	CONSTRAINT ck_archive_copy_jobs_state CHECK (state IN ('requested','waiting','checking','copying','canceling','completed','failed','canceled')),
 	CONSTRAINT ck_archive_copy_jobs_batch CHECK (batch_start_order IS NULL AND batch_end_order IS NULL OR batch_start_order IS NOT NULL AND batch_end_order >= batch_start_order),
@@ -1130,10 +1167,12 @@ CREATE INDEX ix_archive_copy_jobs_state ON archive_copy_jobs (state, collection_
 CREATE TABLE archive_copy_retirements (
 	collection_id BIGINT NOT NULL,
 	store VARCHAR NOT NULL,
+	incarnation_id VARCHAR(36) NOT NULL,
 	challenge VARCHAR NOT NULL,
 	plan_json TEXT NOT NULL,
 	started_at VARCHAR NOT NULL,
 	PRIMARY KEY (collection_id, store),
+	FOREIGN KEY(incarnation_id, store) REFERENCES storage_incarnations (id, name),
 	FOREIGN KEY(collection_id, store) REFERENCES collection_archive_copies (collection_id, store) ON DELETE CASCADE
 );
 
@@ -1191,6 +1230,7 @@ CREATE INDEX ix_collection_derivations_claim ON collection_derivations (claim_id
 CREATE TABLE collection_description_publications (
 	collection_id BIGINT NOT NULL,
 	store VARCHAR NOT NULL,
+	incarnation_id VARCHAR(36) NOT NULL,
 	desired_revision BIGINT NOT NULL,
 	desired_identity VARCHAR(64) NOT NULL,
 	published_revision BIGINT NOT NULL,
@@ -1206,6 +1246,7 @@ CREATE TABLE collection_description_publications (
 	stored_sha256 VARCHAR(64),
 	published_at VARCHAR,
 	PRIMARY KEY (collection_id, store),
+	FOREIGN KEY(incarnation_id, store) REFERENCES storage_incarnations (id, name),
 	FOREIGN KEY(collection_id, store) REFERENCES collection_archive_copies (collection_id, store) ON DELETE CASCADE,
 	CONSTRAINT ck_description_publications_desired_revision CHECK (desired_revision >= 0 AND desired_revision <= 9007199254740991),
 	CONSTRAINT ck_description_publications_published_revision CHECK (published_revision >= 0 AND published_revision <= 9007199254740991),
@@ -1433,6 +1474,7 @@ CREATE INDEX ix_provenance_verification_reachability_work ON collection_provenan
 CREATE TABLE collection_mutable_document_publication_attempts (
 	collection_id BIGINT NOT NULL,
 	store VARCHAR NOT NULL,
+	incarnation_id VARCHAR(36) NOT NULL,
 	document_kind VARCHAR NOT NULL,
 	attempt_identity VARCHAR(64) NOT NULL,
 	document_revision BIGINT NOT NULL,
@@ -1446,6 +1488,7 @@ CREATE TABLE collection_mutable_document_publication_attempts (
 	prior_stored_sha256 VARCHAR(64),
 	created_at VARCHAR NOT NULL,
 	PRIMARY KEY (collection_id, store, document_kind),
+	FOREIGN KEY(incarnation_id, store) REFERENCES storage_incarnations (id, name),
 	FOREIGN KEY(collection_id, store) REFERENCES collection_archive_copies (collection_id, store) ON DELETE CASCADE,
 	CONSTRAINT ck_mutable_document_publication_attempts_kind CHECK (document_kind IN ('description','tag_head')),
 	CONSTRAINT ck_mutable_document_publication_attempts_identity CHECK (length(attempt_identity) = 64 AND lower(attempt_identity) = attempt_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(attempt_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
@@ -1454,10 +1497,10 @@ CREATE TABLE collection_mutable_document_publication_attempts (
 	CONSTRAINT ck_mutable_document_publication_attempts_bytes CHECK (octet_length(document_bytes) > 0 AND octet_length(document_bytes) <= 65807),
 	CONSTRAINT ck_mutable_document_publication_attempts_prior_receipt CHECK (prior_object_path IS NULL AND prior_provider_revision IS NULL AND prior_stored_bytes IS NULL AND prior_stored_sha256 IS NULL OR prior_object_path IS NOT NULL AND prior_stored_bytes IS NOT NULL AND prior_stored_bytes > 0 AND prior_stored_sha256 IS NOT NULL),
 	CONSTRAINT ck_mutable_document_publication_attempts_prior_sha256 CHECK (prior_stored_sha256 IS NULL OR length(prior_stored_sha256) = 64 AND lower(prior_stored_sha256) = prior_stored_sha256 AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(prior_stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
+	UNIQUE (attempt_identity),
 	CONSTRAINT ck_sha256_0f9f415e5b2f4112 CHECK (length(attempt_identity) = 64 AND lower(attempt_identity) = attempt_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(attempt_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
 	CONSTRAINT ck_sha256_2b9f56df047af7b5 CHECK (length(document_identity) = 64 AND lower(document_identity) = document_identity AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(document_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	CONSTRAINT ck_sha256_a1e9d33ca9fd7958 CHECK (prior_stored_sha256 IS NULL OR length(prior_stored_sha256) = 64 AND lower(prior_stored_sha256) = prior_stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(prior_stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = ''),
-	UNIQUE (attempt_identity)
+	CONSTRAINT ck_sha256_a1e9d33ca9fd7958 CHECK (prior_stored_sha256 IS NULL OR length(prior_stored_sha256) = 64 AND lower(prior_stored_sha256) = prior_stored_sha256 AND replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(prior_stored_sha256, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '') = '')
 );
 
 CREATE INDEX ix_mutable_document_publication_attempts_created ON collection_mutable_document_publication_attempts (created_at, collection_id, store, document_kind);
@@ -1466,6 +1509,7 @@ CREATE TABLE collection_mutable_document_reclamations (
 	receipt_identity VARCHAR(64) NOT NULL,
 	collection_id BIGINT NOT NULL,
 	store VARCHAR NOT NULL,
+	incarnation_id VARCHAR(36) NOT NULL,
 	document_kind VARCHAR NOT NULL,
 	object_path VARCHAR NOT NULL,
 	provider_revision VARCHAR NOT NULL,
@@ -1475,6 +1519,7 @@ CREATE TABLE collection_mutable_document_reclamations (
 	next_attempt_at VARCHAR NOT NULL,
 	failure TEXT,
 	PRIMARY KEY (receipt_identity),
+	FOREIGN KEY(incarnation_id, store) REFERENCES storage_incarnations (id, name),
 	CONSTRAINT ck_mutable_document_reclamations_identity CHECK (length(receipt_identity) = 64 AND lower(receipt_identity) = receipt_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(receipt_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_mutable_document_reclamations_kind CHECK (document_kind IN ('description','tag_head')),
 	CONSTRAINT ck_mutable_document_reclamations_bytes CHECK (stored_bytes > 0),
@@ -1491,6 +1536,7 @@ CREATE INDEX ix_collection_mutable_document_reclamations_owner ON collection_mut
 CREATE TABLE collection_tag_publications (
 	collection_id BIGINT NOT NULL,
 	store VARCHAR NOT NULL,
+	incarnation_id VARCHAR(36) NOT NULL,
 	desired_revision BIGINT NOT NULL,
 	desired_tag_set_identity VARCHAR(64) NOT NULL,
 	desired_head_identity VARCHAR(64) NOT NULL,
@@ -1506,6 +1552,7 @@ CREATE TABLE collection_tag_publications (
 	head_stored_sha256 VARCHAR(64),
 	published_at VARCHAR,
 	PRIMARY KEY (collection_id, store),
+	FOREIGN KEY(incarnation_id, store) REFERENCES storage_incarnations (id, name),
 	FOREIGN KEY(collection_id, store) REFERENCES collection_archive_copies (collection_id, store) ON DELETE CASCADE,
 	CONSTRAINT ck_collection_tag_publications_desired_revision CHECK (desired_revision >= 1 AND desired_revision <= 9007199254740991),
 	CONSTRAINT ck_collection_tag_publications_published_revision CHECK (published_revision >= 0 AND published_revision <= 9007199254740991),
@@ -1642,8 +1689,10 @@ CREATE TABLE retrieval_plan_files (
 	bytes BIGINT NOT NULL,
 	sha256 VARCHAR(64) NOT NULL,
 	source_store VARCHAR NOT NULL,
+	source_incarnation_id VARCHAR(36) NOT NULL,
 	requires_restore BOOLEAN NOT NULL,
 	PRIMARY KEY (plan_id, file_order),
+	FOREIGN KEY(source_incarnation_id, source_store) REFERENCES storage_incarnations (id, name),
 	FOREIGN KEY(plan_id) REFERENCES retrieval_plans (id) ON DELETE CASCADE,
 	FOREIGN KEY(collection_id, path) REFERENCES collection_files (collection_id, path),
 	UNIQUE (plan_id, collection_id, path),
@@ -1721,6 +1770,7 @@ CREATE UNIQUE INDEX ix_collection_processing_claim_artifacts_order ON collection
 CREATE TABLE collection_tag_node_gc (
 	collection_id BIGINT NOT NULL,
 	store VARCHAR NOT NULL,
+	incarnation_id VARCHAR(36) NOT NULL,
 	node_digest VARCHAR(64) NOT NULL,
 	expected_head_identity VARCHAR(64) NOT NULL,
 	object_path VARCHAR NOT NULL,
@@ -1729,6 +1779,7 @@ CREATE TABLE collection_tag_node_gc (
 	next_attempt_at VARCHAR NOT NULL,
 	failure TEXT,
 	PRIMARY KEY (collection_id, store, node_digest),
+	FOREIGN KEY(incarnation_id, store) REFERENCES storage_incarnations (id, name),
 	FOREIGN KEY(collection_id, store, node_digest) REFERENCES collection_tag_published_nodes (collection_id, store, node_digest) ON DELETE CASCADE,
 	CONSTRAINT ck_collection_tag_node_gc_digest CHECK (length(node_digest) = 64 AND lower(node_digest) = node_digest AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(node_digest, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
 	CONSTRAINT ck_collection_tag_node_gc_head CHECK (length(expected_head_identity) = 64 AND lower(expected_head_identity) = expected_head_identity AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(expected_head_identity, '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0),
@@ -1777,9 +1828,11 @@ CREATE UNIQUE INDEX ix_collection_processing_capability_artifacts_order ON colle
 
 CREATE TABLE retrieval_cache_objects (
 	source_store VARCHAR NOT NULL,
+	source_incarnation_id VARCHAR(36) NOT NULL,
 	collection_id BIGINT NOT NULL,
 	object_id VARCHAR NOT NULL,
 	cache_store VARCHAR NOT NULL,
+	cache_incarnation_id VARCHAR(36) NOT NULL,
 	object_path VARCHAR NOT NULL,
 	revision VARCHAR,
 	stored_bytes BIGINT NOT NULL,
@@ -1789,6 +1842,8 @@ CREATE TABLE retrieval_cache_objects (
 	state VARCHAR NOT NULL,
 	search_text VARCHAR GENERATED ALWAYS AS (lower(source_store || ' ' || cache_store || ' ' || object_id)) STORED NOT NULL,
 	PRIMARY KEY (source_store, collection_id, object_id),
+	FOREIGN KEY(source_incarnation_id, source_store) REFERENCES storage_incarnations (id, name),
+	FOREIGN KEY(cache_incarnation_id, cache_store) REFERENCES storage_incarnations (id, name),
 	FOREIGN KEY(collection_id, source_store, object_id) REFERENCES collection_archive_objects (collection_id, store, object_id) ON DELETE CASCADE,
 	CONSTRAINT ck_retrieval_cache_objects_bytes CHECK (stored_bytes >= 0),
 	CONSTRAINT ck_retrieval_cache_objects_sha256 CHECK (stored_sha256 IS NULL OR length(stored_sha256) = 64),
@@ -1817,6 +1872,7 @@ CREATE TABLE retrieval_plan_objects (
 	object_order VARCHAR(64) NOT NULL,
 	collection_id BIGINT NOT NULL,
 	source_store VARCHAR NOT NULL,
+	source_incarnation_id VARCHAR(36) NOT NULL,
 	object_id VARCHAR NOT NULL,
 	kind VARCHAR NOT NULL,
 	plaintext_bytes BIGINT NOT NULL,
@@ -1824,8 +1880,11 @@ CREATE TABLE retrieval_plan_objects (
 	sha256 VARCHAR(64),
 	read_mode VARCHAR NOT NULL,
 	cache_store VARCHAR,
+	cache_incarnation_id VARCHAR(36),
 	retrieval_bytes VARCHAR(64) NOT NULL,
 	PRIMARY KEY (plan_id, object_order),
+	FOREIGN KEY(source_incarnation_id, source_store) REFERENCES storage_incarnations (id, name),
+	FOREIGN KEY(cache_incarnation_id, cache_store) REFERENCES storage_incarnations (id, name),
 	FOREIGN KEY(plan_id) REFERENCES retrieval_plans (id) ON DELETE CASCADE,
 	FOREIGN KEY(collection_id, source_store, object_id) REFERENCES collection_archive_objects (collection_id, store, object_id),
 	UNIQUE (plan_id, collection_id, source_store, object_id),
@@ -1877,7 +1936,9 @@ CREATE TABLE retrieval_job_object_progress (
 	prepare_requested_at VARCHAR,
 	next_poll_at VARCHAR NOT NULL,
 	cache_store VARCHAR,
+	cache_incarnation_id VARCHAR(36),
 	PRIMARY KEY (job_id, object_order),
+	FOREIGN KEY(cache_incarnation_id, cache_store) REFERENCES storage_incarnations (id, name),
 	FOREIGN KEY(job_id, plan_id) REFERENCES retrieval_jobs (id, plan_id) ON DELETE CASCADE,
 	FOREIGN KEY(plan_id, object_order) REFERENCES retrieval_plan_objects (plan_id, object_order),
 	CONSTRAINT ck_retrieval_job_object_progress_state CHECK (state IN ('preparing','requested','ready'))

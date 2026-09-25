@@ -24,6 +24,8 @@ from riverhog_core.runtime_config import (
 from riverhog_core.services.retrieval_cache import SqlAlchemyRetrievalCache
 from sqlalchemy import text
 
+from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
+
 pytestmark = pytest.mark.integration
 
 
@@ -38,6 +40,9 @@ def database_url() -> Iterator[str]:
         connection.execute(text(f'DROP TABLE IF EXISTS "{STATE_VERSION_TABLE}"'))
     engine.dispose()
     initialize_db(value)
+    with session_scope(make_session_factory(value)) as session:
+        seed_storage_incarnation(session, "archive", "deep")
+        seed_storage_incarnation(session, "cache", "local")
     try:
         yield value
     finally:

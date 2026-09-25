@@ -43,6 +43,8 @@ from riverhog_protocol.errors import Conflict
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from tests.unit.storage_incarnation_fixtures import seed_storage_incarnation
+
 NOW = "2026-08-15T00:00:00Z"
 WORK_ID = "b" * 64
 EXECUTION_ID = "d" * 64
@@ -99,6 +101,7 @@ def _collection(
         CollectionArchiveCopyRecord(
             collection_id=collection_id,
             store="hot",
+            incarnation_id=seed_storage_incarnation(session, "archive", "hot"),
             state="uploaded",
             archive_storage_prefix=f"collections/{collection_id}",
             last_uploaded_at=NOW,
@@ -735,6 +738,7 @@ def test_expired_execution_upload_remains_a_deletion_blocker(
                 event_context_json=None,
                 state="open",
                 archive_store="hot",
+                archive_incarnation_id=seed_storage_incarnation(session, "archive", "hot"),
                 opened_at=NOW,
                 last_activity_at=NOW,
                 closed_at=None,

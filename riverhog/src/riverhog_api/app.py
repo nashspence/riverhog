@@ -421,7 +421,9 @@ def create_app(
     )
     async def health_ready() -> dict[str, str]:
         try:
-            get_or_create_container()
+            container = get_or_create_container()
+            if container.storage_readiness is not None:
+                container.storage_readiness()
         except Exception as exc:
             raise ServiceUnavailable("Riverhog runtime dependencies are not ready") from exc
         return {"service": "riverhog", "status": "ok"}

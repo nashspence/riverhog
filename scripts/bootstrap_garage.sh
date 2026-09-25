@@ -48,3 +48,18 @@ compose exec -T garage /garage -c /etc/garage.toml -h "${garage_node}" bucket al
 if [[ "${cache_access_key_id}" != "${archive_access_key_id}" || "${cache_bucket}" != "${archive_bucket}" ]]; then
   compose exec -T garage /garage -c /etc/garage.toml -h "${garage_node}" bucket allow --read --write --owner "${cache_bucket}" --key "${cache_access_key_id}"
 fi
+
+provision_bucket_incarnation() {
+  export RIVERHOG_GARAGE_PROVISION_BUCKET="$1"
+  export RIVERHOG_GARAGE_PROVISION_ACCESS_KEY_ID="$2"
+  export RIVERHOG_GARAGE_PROVISION_SECRET_ACCESS_KEY="$3"
+  compose run --rm -T --no-deps --entrypoint python \
+    -e RIVERHOG_GARAGE_PROVISION_BUCKET \
+    -e RIVERHOG_GARAGE_PROVISION_ACCESS_KEY_ID \
+    -e RIVERHOG_GARAGE_PROVISION_SECRET_ACCESS_KEY \
+    test -m tests.harness.provision_garage_incarnation
+}
+provision_bucket_incarnation "${archive_bucket}" "${archive_access_key_id}" "${archive_secret_access_key}"
+if [[ "${cache_bucket}" != "${archive_bucket}" ]]; then
+  provision_bucket_incarnation "${cache_bucket}" "${cache_access_key_id}" "${cache_secret_access_key}"
+fi

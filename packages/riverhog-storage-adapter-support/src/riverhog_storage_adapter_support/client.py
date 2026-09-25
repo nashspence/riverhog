@@ -42,6 +42,7 @@ from riverhog_storage_adapter_protocol import (
     validate_object_read_response,
     validate_read_status_response,
     validate_small_object_response,
+    validate_storage_incarnation_id,
     validate_write_completion_request,
     validate_write_segment_page_response,
     validate_write_segment_request,
@@ -99,6 +100,7 @@ class StorageAdapterClient:
         )
         self._headers = {"Authorization": f"Bearer {credential}"}
         self._descriptor: AdapterDescriptor | None = None
+        self._expected_incarnation_id: str | None = None
         self._owns_client = client is None
         self._client = client or httpx.Client(
             http2=True,
@@ -136,7 +138,35 @@ class StorageAdapterClient:
     def descriptor(self) -> AdapterDescriptor:
         if self._descriptor is None:
             self._descriptor = self._model("GET", "/v1/adapter", AdapterDescriptor)
+            if self._expected_incarnation_id is None:
+                self._expected_incarnation_id = self._descriptor.storage_incarnation_id
         return self._descriptor
+
+    def pin_incarnation(self, incarnation_id: str) -> None:
+        """Fence every subsequent effect to the catalog-admitted storage owner."""
+        expected = validate_storage_incarnation_id(incarnation_id)
+        if self.refresh_descriptor().storage_incarnation_id != expected:
+            raise StorageAdapterProtocolError(
+                "storage adapter incarnation differs from the admitted owner",
+                code="provider_unavailable",
+            )
+        self._expected_incarnation_id = expected
+
+    def refresh_descriptor(self) -> AdapterDescriptor:
+        """Fetch live adapter identity without trusting the cached descriptor."""
+        observed = self._model("GET", "/v1/adapter", AdapterDescriptor)
+        if (
+            self._expected_incarnation_id is not None
+            and observed.storage_incarnation_id != self._expected_incarnation_id
+        ):
+            raise StorageAdapterProtocolError(
+                "storage adapter incarnation changed",
+                code="provider_unavailable",
+            )
+        self._descriptor = observed
+        if self._expected_incarnation_id is None:
+            self._expected_incarnation_id = observed.storage_incarnation_id
+        return observed
 
     def check_readiness(self) -> None:
         self._require_success(self._request("GET", "/health/ready"))
@@ -249,7 +279,7 @@ class StorageAdapterClient:
         context = self._client.stream(
             "POST",
             f"{self.base_url}/v1/objects/read",
-            headers=self._headers,
+            headers=self._request_headers("/v1/objects/read"),
             json=request.model_dump(mode="json", exclude_none=True),
         )
         response = context.__enter__()
@@ -414,7 +444,7 @@ class StorageAdapterClient:
             return self._client.request(
                 method,
                 f"{self.base_url}{path}",
-                headers={**self._headers, **dict(headers or {})},
+                headers=self._request_headers(path, headers),
                 json=(
                     payload.model_dump(mode="json", exclude_none=True)
                     if payload is not None
@@ -425,6 +455,20 @@ class StorageAdapterClient:
         except httpx.HTTPError as exc:
             raise StorageAdapterProtocolError(f"storage adapter request failed: {exc}") from exc
 
+    def _request_headers(
+        self, path: str, headers: Mapping[str, str] | None = None
+    ) -> dict[str, str]:
+        if path != "/v1/adapter" and path.startswith("/v1/"):
+            if self._expected_incarnation_id is None:
+                self.descriptor()
+            assert self._expected_incarnation_id is not None
+            incarnation_headers = {
+                "Riverhog-Expected-Storage-Incarnation": self._expected_incarnation_id
+            }
+        else:
+            incarnation_headers = {}
+        return {**self._headers, **dict(headers or {}), **incarnation_headers}
+
     def _require_success(self, response: httpx.Response) -> None:
         if not response.is_success:
             self._raise_response(response)
@@ -432,8 +476,9 @@ class StorageAdapterClient:
     @staticmethod
     def _raise_response(response: httpx.Response) -> None:
         try:
-            parse_identity_json(response.content)
-            error = StorageAdapterError.model_validate_json(response.content).error
+            body = response.read()
+            parse_identity_json(body)
+            error = StorageAdapterError.model_validate_json(body).error
         except (ValidationError, ValueError):
             raise StorageAdapterProtocolError(
                 f"storage adapter returned HTTP {response.status_code}",

@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import os
+from io import BytesIO
 from typing import Any, cast
 
 from a_riverhog_b2_store import app as adapter_app
+from a_riverhog_s3_store_lib.incarnation import marker_document, marker_key
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
@@ -14,6 +16,10 @@ class _Client:
 
     def head_bucket(self, **request: str) -> None:
         self.ready.append(request)
+
+    def get_object(self, **request: str) -> dict[str, object]:
+        assert request == {"Bucket": "fixture-bucket", "Key": marker_key("")}
+        return {"Body": BytesIO(marker_document("00000000-0000-4000-8000-000000000001"))}
 
 
 def test_backblaze_artifact_is_one_immediate_s3_target(
