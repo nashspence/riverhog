@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-review0-opus-sampler:a-review0-opus-sampler-host:440b298713 -->
+<!-- contract-element: configuration-environment:a-review0-opus-sampler:a-review0-opus-sampler-host:491eba2c17 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-b211a29ced"></a>
+<a id="s-c9bbf6ae4d"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-9c278af545"></a>`consumers` | `["a-review0-opus-sampler"]` |
-| <a id="s-ccc7b8f4c0"></a>`default_expressions` | `["'127.0.0.1'"]` |
-| <a id="s-d0c4986063"></a>`id` | `"a-review0-opus-sampler:environment:A_REVIEW0_OPUS_SAMPLER_HOST"` |
-| <a id="s-8f8f263604"></a>`input_shape` | `"environment-string"` |
-| <a id="s-18bbe5ebd0"></a>`name` | `"A_REVIEW0_OPUS_SAMPLER_HOST"` |
-| <a id="s-2f1faef8a9"></a>`owner` | `"a-review0-opus-sampler"` |
+| <a id="s-f8e9201576"></a>`consumers` | `["a-review0-opus-sampler"]` |
+| <a id="s-d4eff3f5c1"></a>`default_expressions` | `["'127.0.0.1'"]` |
+| <a id="s-cf2890bc74"></a>`id` | `"a-review0-opus-sampler:environment:A_REVIEW0_OPUS_SAMPLER_HOST"` |
+| <a id="s-d5025fbc5e"></a>`input_shape` | `"environment-string"` |
+| <a id="s-3ea82a14dd"></a>`name` | `"A_REVIEW0_OPUS_SAMPLER_HOST"` |
+| <a id="s-12f813c67b"></a>`owner` | `"a-review0-opus-sampler"` |
 
 ## Governing policies
 
-- <a id="pa-dfb53d2aac"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-071ea74866"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/23`
+- `/external_contract/configuration_environment/20`
 
 ### Exact owned JSON
 

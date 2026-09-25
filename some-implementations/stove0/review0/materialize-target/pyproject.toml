@@ -15,6 +15,7 @@ maintainers = [{ name = "Nash Spence" }]
 classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.12", "Typing :: Typed"]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
 dependencies = [
+  "config-validation>=0.1,<0.2",
   "fastapi>=0.111,<1.0",
   "pydantic>=2.7,<3.0",
   "riverhog-client>=0.1,<0.2",
@@ -28,6 +29,7 @@ dependencies = [
 a-review0-materializer = "a_review0_materializer.app:main"
 
 [tool.uv.sources]
+config-validation = { workspace = true }
 riverhog-client = { workspace = true }
 review0-target-contracts = { workspace = true }
 review0-target-lib = { workspace = true }

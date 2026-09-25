@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-stove0-exiftool-observer:a-stove0-exiftool-observer-image-id:658c85d119 -->
+<!-- contract-element: configuration-environment:a-stove0-exiftool-observer:a-stove0-exiftool-observer-image-id:24c5bd6c7c -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-965179fc46"></a>
+<a id="s-1c368e3bbb"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-4433b3c434"></a>`consumers` | `["a-stove0-exiftool-observer"]` |
-| <a id="s-83ba75a7bc"></a>`default_expressions` | `["''"]` |
-| <a id="s-efd9f29cdd"></a>`id` | `"a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_ID"` |
-| <a id="s-7284882569"></a>`input_shape` | `"environment-string"` |
-| <a id="s-4dd5bfca84"></a>`name` | `"A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_ID"` |
-| <a id="s-7d68affc90"></a>`owner` | `"a-stove0-exiftool-observer"` |
+| <a id="s-0e717d7f5c"></a>`consumers` | `["a-stove0-exiftool-observer"]` |
+| <a id="s-ed83d1071c"></a>`default_expressions` | `["''"]` |
+| <a id="s-8acc408344"></a>`id` | `"a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_ID"` |
+| <a id="s-18b068f2a0"></a>`input_shape` | `"environment-string"` |
+| <a id="s-561f90128c"></a>`name` | `"A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_ID"` |
+| <a id="s-2750bfabee"></a>`owner` | `"a-stove0-exiftool-observer"` |
 
 ## Governing policies
 
-- <a id="pa-de7177264b"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-0a83c6a858"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/120`
+- `/external_contract/configuration_environment/64`
 
 ### Exact owned JSON
 

@@ -104,3 +104,29 @@ def validate_json_schema(
     path = ".".join(str(part) for part in error.absolute_path)
     suffix = f"{path}: " if path else ""
     raise ConfigError(f"{label}: {suffix}{error.message}")
+
+
+def load_validated_yaml_config(
+    path: Path,
+    schema: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Validate one operator document before any component initialization."""
+
+    raw = load_yaml_config(path)
+    validate_json_schema(raw, schema, label=str(path))
+    return raw
+
+
+def read_secret_file(path: Path | str, *, label: str) -> str:
+    """Read a mounted secret named by a validated config document."""
+
+    resolved = Path(path).expanduser()
+    if not resolved.is_absolute():
+        raise ConfigError(f"{label} must be an absolute secret-file path")
+    try:
+        value = resolved.read_text(encoding="utf-8").strip()
+    except OSError as exc:
+        raise ConfigError(f"{label} cannot be read: {type(exc).__name__}") from exc
+    if not value:
+        raise ConfigError(f"{label} must contain a nonempty secret")
+    return value

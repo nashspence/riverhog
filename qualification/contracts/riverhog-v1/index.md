@@ -4,7 +4,7 @@
 
 This generated snapshot accounts for the externally exposed surfaces discovered from this repository revision. Discovery means inclusion; no separate acceptance decision is required.
 
-Included contract elements: **4379** · Extent decisions: **2178**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
+Included contract elements: **4258** · Extent decisions: **2271**. Complete accounting does not establish desirable contracts, behavioral proof, freeze approval, or release readiness.
 
 ## Audit references
 
@@ -43,8 +43,9 @@ Included contract elements: **4379** · Extent decisions: **2178**. Complete acc
   - [Python](authorities/a-gogurt-windows-volume/python/index.md) (3)
 
 - [a-review0-materializer](authorities/a-review0-materializer/index.md) — Review0 materialization target for Stove0. Implements protocol: [stove0-target](extensions/process-protocol-stove0-target.md).
+  - [Schemas](authorities/a-review0-materializer/schema/index.md) (1)
   - [CLI](authorities/a-review0-materializer/cli/index.md) (1)
-  - [Configuration Environment](authorities/a-review0-materializer/configuration-environment/index.md) (10)
+  - [Configuration Environment](authorities/a-review0-materializer/configuration-environment/index.md) (7)
   - [Python](authorities/a-review0-materializer/python/index.md) (9)
 
 - [a-review0-nvenc-av1-opus-sampler](authorities/a-review0-nvenc-av1-opus-sampler/index.md) — NVENC AV1 and Opus sampler for Review0. Implements protocol: [review0-sampler](extensions/process-protocol-review0-sampler.md).
@@ -58,18 +59,24 @@ Included contract elements: **4379** · Extent decisions: **2178**. Complete acc
   - [Python](authorities/a-review0-opus-sampler/python/index.md) (3)
 
 - [a-review0-rclone-target](authorities/a-review0-rclone-target/index.md) — Review0 rclone delivery target for Stove0. Implements protocol: [stove0-target](extensions/process-protocol-stove0-target.md).
+  - [Schemas](authorities/a-review0-rclone-target/schema/index.md) (1)
   - [CLI](authorities/a-review0-rclone-target/cli/index.md) (1)
-  - [Configuration Environment](authorities/a-review0-rclone-target/configuration-environment/index.md) (15)
+  - [Configuration Documents](authorities/a-review0-rclone-target/configuration/index.md) (1)
+  - [Configuration Environment](authorities/a-review0-rclone-target/configuration-environment/index.md) (8)
   - [Python](authorities/a-review0-rclone-target/python/index.md) (11)
 
 - [a-riverhog-aws-store](authorities/a-riverhog-aws-store/index.md) — AWS-backed Riverhog archive and retrieval store. Implements protocol: [riverhog-storage-adapter](extensions/process-protocol-riverhog-storage-adapter.md).
+  - [Schemas](authorities/a-riverhog-aws-store/schema/index.md) (1)
   - [CLI](authorities/a-riverhog-aws-store/cli/index.md) (1)
-  - [Configuration Environment](authorities/a-riverhog-aws-store/configuration-environment/index.md) (30)
+  - [Configuration Documents](authorities/a-riverhog-aws-store/configuration/index.md) (1)
+  - [Configuration Environment](authorities/a-riverhog-aws-store/configuration-environment/index.md) (3)
   - [Python](authorities/a-riverhog-aws-store/python/index.md) (7)
 
 - [a-riverhog-b2-store](authorities/a-riverhog-b2-store/index.md) — Backblaze B2-backed Riverhog archive and retrieval store. Implements protocol: [riverhog-storage-adapter](extensions/process-protocol-riverhog-storage-adapter.md).
+  - [Schemas](authorities/a-riverhog-b2-store/schema/index.md) (1)
   - [CLI](authorities/a-riverhog-b2-store/cli/index.md) (1)
-  - [Configuration Environment](authorities/a-riverhog-b2-store/configuration-environment/index.md) (20)
+  - [Configuration Documents](authorities/a-riverhog-b2-store/configuration/index.md) (1)
+  - [Configuration Environment](authorities/a-riverhog-b2-store/configuration-environment/index.md) (3)
 
 - [a-riverhog-cli](authorities/a-riverhog-cli/index.md) — Command-line client for Riverhog.
   - [CLI](authorities/a-riverhog-cli/cli/index.md) (87)
@@ -79,6 +86,7 @@ Included contract elements: **4379** · Extent decisions: **2178**. Complete acc
   - [Durable State](authorities/a-riverhog-cli-local/durable-state/index.md) (7)
 
 - [a-riverhog-event-relay](authorities/a-riverhog-event-relay/index.md) — Native lifecycle-event to CloudEvents webhook relay.
+  - [Schemas](authorities/a-riverhog-event-relay/schema/index.md) (1)
   - [CLI](authorities/a-riverhog-event-relay/cli/index.md) (5)
   - [Configuration Documents](authorities/a-riverhog-event-relay/configuration/index.md) (1)
 
@@ -95,9 +103,10 @@ Included contract elements: **4379** · Extent decisions: **2178**. Complete acc
   - **[HTTP Schemas](authorities/a-riverhog-ftp-spool/http-schemas/index.md)** [📦](authorities/a-riverhog-ftp-spool/http-schemas/evidence-gaps.md) (19)
   - [HTTP Service Declaration](authorities/a-riverhog-ftp-spool/http-service-declaration/index.md) (1)
   - [HTTP Security Schemes](authorities/a-riverhog-ftp-spool/http-security-schemes/index.md) (1)
+  - [Schemas](authorities/a-riverhog-ftp-spool/schema/index.md) (1)
   - [CLI](authorities/a-riverhog-ftp-spool/cli/index.md) (8)
   - [Configuration Documents](authorities/a-riverhog-ftp-spool/configuration/index.md) (2)
-  - [Configuration Environment](authorities/a-riverhog-ftp-spool/configuration-environment/index.md) (3)
+  - [Configuration Environment](authorities/a-riverhog-ftp-spool/configuration-environment/index.md) (1)
   - [Python](authorities/a-riverhog-ftp-spool/python/index.md) (14)
 
 - [a-riverhog-ftp-spool-client](authorities/a-riverhog-ftp-spool-client/index.md) — Client for the Riverhog FTP upload spool.
@@ -275,8 +284,10 @@ Included contract elements: **4379** · Extent decisions: **2178**. Complete acc
   - [Durable State](authorities/riverhog-provenance-installation/durable-state/index.md) (1)
 
 - [riverhog-server](authorities/riverhog-server/index.md) — Encrypted archive management, catalog, and retrieval.
+  - [Schemas](authorities/riverhog-server/schema/index.md) (1)
   - [CLI](authorities/riverhog-server/cli/index.md) (5)
-  - [Configuration Environment](authorities/riverhog-server/configuration-environment/index.md) (51)
+  - [Configuration Documents](authorities/riverhog-server/configuration/index.md) (1)
+  - [Configuration Environment](authorities/riverhog-server/configuration-environment/index.md) (1)
 
 - [riverhog-storage-adapter-asgi-support](authorities/riverhog-storage-adapter-asgi-support/index.md) — Authenticated ASGI shell for independently scoped Riverhog storage adapters.
   - [Python](authorities/riverhog-storage-adapter-asgi-support/python/index.md) (1)
@@ -320,7 +331,6 @@ Included contract elements: **4379** · Extent decisions: **2178**. Complete acc
   - [Python](authorities/stove0-observer-support/python/index.md) (37)
 
 - [stove0-operator-contracts](authorities/stove0-operator-contracts/index.md) — Canonical public state contracts for the Stove0 v1 operator surface.
-  - [Configuration Documents](authorities/stove0-operator-contracts/configuration/index.md) (2)
   - [Python](authorities/stove0-operator-contracts/python/index.md) (133)
 
 - [stove0-protocol](authorities/stove0-protocol/index.md) — Canonical content-opaque collection orchestration contracts for Stove0.
@@ -331,8 +341,10 @@ Included contract elements: **4379** · Extent decisions: **2178**. Complete acc
   - [Python](authorities/stove0-recipe-config/python/index.md) (30)
 
 - [stove0-server](authorities/stove0-server/index.md) — Content-opaque transformation application for Riverhog.
+  - [Schemas](authorities/stove0-server/schema/index.md) (1)
   - [CLI](authorities/stove0-server/cli/index.md) (7)
-  - [Configuration Environment](authorities/stove0-server/configuration-environment/index.md) (27)
+  - [Configuration Documents](authorities/stove0-server/configuration/index.md) (1)
+  - [Configuration Environment](authorities/stove0-server/configuration-environment/index.md) (1)
   - [Python](authorities/stove0-server/python/index.md) (333)
 
 - [stove0-target-client](authorities/stove0-target-client/index.md) — Narrow HTTP client for Stove0 transform targets.

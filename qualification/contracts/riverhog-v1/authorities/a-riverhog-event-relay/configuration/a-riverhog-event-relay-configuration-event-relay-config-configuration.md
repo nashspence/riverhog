@@ -16,6 +16,8 @@ Exact externally visible contract owned by this contract element.
 <a id="s-f40c23f549"></a>
 
 - <a id="s-8286f8de9e"></a>`type`: `"object"`
+- <a id="s-7365d989eb"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/config/a-riverhog-event-relay.schema.json"`
+- <a id="s-9054566ec5"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
 - <a id="s-6b9677ef17"></a>`additionalProperties`: `false`
 - <a id="s-73b2756a68"></a>`required`: `["state_path","sources"]`
 - <a id="s-12e3daa577"></a>`title`: `"EventRelayConfig"`
@@ -39,7 +41,7 @@ Exact externally visible contract owned by this contract element.
 
 - <a id="s-cecef785c6"></a>`type`: `"object"`
 - <a id="s-d167e79bb6"></a>`additionalProperties`: `false`
-- <a id="s-bedc976a1e"></a>`required`: `["name","events_url","token_env","webhook_url_env"]`
+- <a id="s-bedc976a1e"></a>`required`: `["name","events_url","token_file","webhook_url_file"]`
 - <a id="s-579fda1d5b"></a>`title`: `"SourceConfig"`
 
 #### Fields
@@ -48,8 +50,8 @@ Exact externally visible contract owned by this contract element.
 |---|---:|---|---|
 | <a id="s-f6c70f9ac1"></a>`events_url` | yes | type="string"; minLength=1; title="Events Url" |  |
 | <a id="s-49f0f9b143"></a>`name` | yes | type="string"; minLength=1; pattern="^[A-Za-z0-9._-]+$"; title="Name" |  |
-| <a id="s-b0a160f43a"></a>`token_env` | yes | type="string"; minLength=1; title="Token Env" |  |
-| <a id="s-5d2372dc90"></a>`webhook_url_env` | yes | type="string"; minLength=1; title="Webhook Url Env" |  |
+| <a id="s-0adc56a4ce"></a>`token_file` | yes | type="string"; format="path"; title="Token File" |  |
+| <a id="s-e9febabc6d"></a>`webhook_url_file` | yes | type="string"; format="path"; title="Webhook Url File" |  |
 
 ### Progression, limits, and lifecycle
 
@@ -100,7 +102,7 @@ Shared facts for every subject below: maximum=100; minimum=1; reason="schema-max
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: b76bd416664590dffc5dd040ab003e7fe37e6bfed90feb5fc2e90b07b21f9f12 -->
+<!-- exact-contract-value: cd781d51982d9bda6a9632dc44b2f9e2cc78bfa7513d8b332b6691386785ff98 -->
 
 ```json
 {
@@ -119,27 +121,29 @@ The following JSON is the complete value owned at each machine-authority pointer
           "title": "Name",
           "type": "string"
         },
-        "token_env": {
-          "minLength": 1,
-          "title": "Token Env",
+        "token_file": {
+          "format": "path",
+          "title": "Token File",
           "type": "string"
         },
-        "webhook_url_env": {
-          "minLength": 1,
-          "title": "Webhook Url Env",
+        "webhook_url_file": {
+          "format": "path",
+          "title": "Webhook Url File",
           "type": "string"
         }
       },
       "required": [
         "name",
         "events_url",
-        "token_env",
-        "webhook_url_env"
+        "token_file",
+        "webhook_url_file"
       ],
       "title": "SourceConfig",
       "type": "object"
     }
   },
+  "$id": "https://nashspence.github.io/riverhog/v1/config/a-riverhog-event-relay.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "properties": {
     "batch_size": {

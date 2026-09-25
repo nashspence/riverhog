@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-riverhog-filesystem-store:a-riverhog-filesystem-store-token:6b19cb30f8 -->
+<!-- contract-element: configuration-environment:a-riverhog-filesystem-store:a-riverhog-filesystem-store-token:33ac9209ea -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-63f2a8f8ec"></a>
+<a id="s-021597da78"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-7635dc7bce"></a>`consumers` | `["a-riverhog-filesystem-store"]` |
-| <a id="s-9adaac50e0"></a>`default_expressions` | `["unset"]` |
-| <a id="s-5ba55aed0e"></a>`id` | `"a-riverhog-filesystem-store:environment:A_RIVERHOG_FILESYSTEM_STORE_TOKEN"` |
-| <a id="s-74c255c80c"></a>`input_shape` | `"environment-string"` |
-| <a id="s-0b8c0a3aae"></a>`name` | `"A_RIVERHOG_FILESYSTEM_STORE_TOKEN"` |
-| <a id="s-26fd49b762"></a>`owner` | `"a-riverhog-filesystem-store"` |
+| <a id="s-de450a9408"></a>`consumers` | `["a-riverhog-filesystem-store"]` |
+| <a id="s-1d23c0d90d"></a>`default_expressions` | `["unset"]` |
+| <a id="s-7b17b012fe"></a>`id` | `"a-riverhog-filesystem-store:environment:A_RIVERHOG_FILESYSTEM_STORE_TOKEN"` |
+| <a id="s-487e8c583c"></a>`input_shape` | `"environment-string"` |
+| <a id="s-9d016ce2fa"></a>`name` | `"A_RIVERHOG_FILESYSTEM_STORE_TOKEN"` |
+| <a id="s-1cfe26331e"></a>`owner` | `"a-riverhog-filesystem-store"` |
 
 ## Governing policies
 
-- <a id="pa-d98d22b071"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-46927f7111"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -51,7 +51,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/109`
+- `/external_contract/configuration_environment/55`
 
 ### Exact owned JSON
 

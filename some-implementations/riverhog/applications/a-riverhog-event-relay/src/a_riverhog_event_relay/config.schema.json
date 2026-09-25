@@ -1,0 +1,86 @@
+{
+  "$defs": {
+    "SourceConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "events_url": {
+          "minLength": 1,
+          "title": "Events Url",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9._-]+$",
+          "title": "Name",
+          "type": "string"
+        },
+        "token_file": {
+          "format": "path",
+          "title": "Token File",
+          "type": "string"
+        },
+        "webhook_url_file": {
+          "format": "path",
+          "title": "Webhook Url File",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "events_url",
+        "token_file",
+        "webhook_url_file"
+      ],
+      "title": "SourceConfig",
+      "type": "object"
+    }
+  },
+  "$id": "https://nashspence.github.io/riverhog/v1/config/a-riverhog-event-relay.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "batch_size": {
+      "default": 100,
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Batch Size",
+      "type": "integer"
+    },
+    "poll_interval_seconds": {
+      "default": 5.0,
+      "exclusiveMinimum": 0,
+      "title": "Poll Interval Seconds",
+      "type": "number"
+    },
+    "request_timeout_seconds": {
+      "default": 10.0,
+      "exclusiveMinimum": 0,
+      "title": "Request Timeout Seconds",
+      "type": "number"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/SourceConfig"
+      },
+      "minItems": 1,
+      "title": "Sources",
+      "type": "array"
+    },
+    "state_path": {
+      "format": "path",
+      "title": "State Path",
+      "type": "string"
+    },
+    "version": {
+      "default": 1,
+      "title": "Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "state_path",
+    "sources"
+  ],
+  "title": "EventRelayConfig",
+  "type": "object"
+}

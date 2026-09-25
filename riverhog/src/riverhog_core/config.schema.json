@@ -1,0 +1,452 @@
+{
+  "$defs": {
+    "ArchiveStoreDocument": {
+      "additionalProperties": false,
+      "properties": {
+        "allow_insecure_http": {
+          "default": false,
+          "title": "Allow Insecure Http",
+          "type": "boolean"
+        },
+        "base_url": {
+          "minLength": 1,
+          "title": "Base Url",
+          "type": "string"
+        },
+        "download_safety_buffer_bytes": {
+          "default": "0B",
+          "title": "Download Safety Buffer Bytes",
+          "type": "string"
+        },
+        "maximum_connections": {
+          "default": 32,
+          "minimum": 1,
+          "title": "Maximum Connections",
+          "type": "integer"
+        },
+        "monthly_download_allowance_bytes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Monthly Download Allowance Bytes"
+        },
+        "timeout_seconds": {
+          "default": 300.0,
+          "exclusiveMinimum": 0,
+          "title": "Timeout Seconds",
+          "type": "number"
+        },
+        "token_file": {
+          "format": "path",
+          "title": "Token File",
+          "type": "string"
+        }
+      },
+      "required": [
+        "base_url",
+        "token_file"
+      ],
+      "title": "ArchiveStoreDocument",
+      "type": "object"
+    },
+    "CacheStoreDocument": {
+      "additionalProperties": false,
+      "properties": {
+        "admission_budget_bytes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Admission Budget Bytes"
+        },
+        "admission_enabled": {
+          "default": true,
+          "title": "Admission Enabled",
+          "type": "boolean"
+        },
+        "allow_insecure_http": {
+          "default": false,
+          "title": "Allow Insecure Http",
+          "type": "boolean"
+        },
+        "base_url": {
+          "minLength": 1,
+          "title": "Base Url",
+          "type": "string"
+        },
+        "maximum_connections": {
+          "default": 32,
+          "minimum": 1,
+          "title": "Maximum Connections",
+          "type": "integer"
+        },
+        "timeout_seconds": {
+          "default": 300.0,
+          "exclusiveMinimum": 0,
+          "title": "Timeout Seconds",
+          "type": "number"
+        },
+        "token_file": {
+          "format": "path",
+          "title": "Token File",
+          "type": "string"
+        }
+      },
+      "required": [
+        "base_url",
+        "token_file"
+      ],
+      "title": "CacheStoreDocument",
+      "type": "object"
+    },
+    "RangePolicyDocument": {
+      "additionalProperties": false,
+      "properties": {
+        "billing_mode": {
+          "default": "returned_bytes",
+          "enum": [
+            "returned_bytes",
+            "whole_object"
+          ],
+          "title": "Billing Mode",
+          "type": "string"
+        },
+        "max_request_ciphertext_bytes": {
+          "default": "67108864",
+          "title": "Max Request Ciphertext Bytes",
+          "type": "string"
+        },
+        "merge_gap_ciphertext_bytes": {
+          "default": "0",
+          "title": "Merge Gap Ciphertext Bytes",
+          "type": "string"
+        }
+      },
+      "title": "RangePolicyDocument",
+      "type": "object"
+    },
+    "ThroughputDocument": {
+      "additionalProperties": false,
+      "properties": {
+        "age_derivation_concurrency": {
+          "default": 4,
+          "minimum": 1,
+          "title": "Age Derivation Concurrency",
+          "type": "integer"
+        },
+        "age_session_cache_entries": {
+          "default": 128,
+          "minimum": 0,
+          "title": "Age Session Cache Entries",
+          "type": "integer"
+        },
+        "retrieval_max_inflight_bytes": {
+          "default": "1073741824",
+          "title": "Retrieval Max Inflight Bytes",
+          "type": "string"
+        },
+        "retrieval_read_chunk_bytes": {
+          "default": "8388608",
+          "title": "Retrieval Read Chunk Bytes",
+          "type": "string"
+        },
+        "retrieval_request_concurrency": {
+          "default": 8,
+          "minimum": 1,
+          "title": "Retrieval Request Concurrency",
+          "type": "integer"
+        },
+        "source_read_chunk_bytes": {
+          "default": "8388608",
+          "title": "Source Read Chunk Bytes",
+          "type": "string"
+        },
+        "upload_max_inflight_bytes": {
+          "default": "1342177280",
+          "title": "Upload Max Inflight Bytes",
+          "type": "string"
+        },
+        "upload_prepare_concurrency": {
+          "default": 8,
+          "minimum": 1,
+          "title": "Upload Prepare Concurrency",
+          "type": "integer"
+        },
+        "upload_request_concurrency": {
+          "default": 4,
+          "minimum": 1,
+          "title": "Upload Request Concurrency",
+          "type": "integer"
+        },
+        "write_concurrency": {
+          "default": 4,
+          "minimum": 1,
+          "title": "Write Concurrency",
+          "type": "integer"
+        }
+      },
+      "title": "ThroughputDocument",
+      "type": "object"
+    },
+    "VolumePolicyDocument": {
+      "additionalProperties": false,
+      "properties": {
+        "pack_files": {
+          "default": 50000,
+          "minimum": 1,
+          "title": "Pack Files",
+          "type": "integer"
+        },
+        "pack_member_bytes": {
+          "default": "16777216",
+          "title": "Pack Member Bytes",
+          "type": "string"
+        },
+        "pack_part_plaintext_bytes": {
+          "default": "67108864",
+          "title": "Pack Part Plaintext Bytes",
+          "type": "string"
+        },
+        "pack_source_bytes": {
+          "default": "33554432",
+          "title": "Pack Source Bytes",
+          "type": "string"
+        },
+        "raw_part_plaintext_bytes": {
+          "default": "67108864",
+          "title": "Raw Part Plaintext Bytes",
+          "type": "string"
+        },
+        "raw_volume_plaintext_bytes": {
+          "default": "17179869184",
+          "title": "Raw Volume Plaintext Bytes",
+          "type": "string"
+        }
+      },
+      "title": "VolumePolicyDocument",
+      "type": "object"
+    }
+  },
+  "$id": "https://nashspence.github.io/riverhog/v1/config/riverhog-server.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "archive_active_passphrase_id": {
+      "minLength": 1,
+      "title": "Archive Active Passphrase Id",
+      "type": "string"
+    },
+    "archive_passphrase_files": {
+      "additionalProperties": {
+        "format": "path",
+        "type": "string"
+      },
+      "minProperties": 1,
+      "title": "Archive Passphrase Files",
+      "type": "object"
+    },
+    "archive_read_order": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Archive Read Order",
+      "type": "array"
+    },
+    "archive_scrypt_work_factor": {
+      "default": 18,
+      "maximum": 22,
+      "minimum": 1,
+      "title": "Archive Scrypt Work Factor",
+      "type": "integer"
+    },
+    "archive_stores": {
+      "additionalProperties": {
+        "$ref": "#/$defs/ArchiveStoreDocument"
+      },
+      "minProperties": 1,
+      "title": "Archive Stores",
+      "type": "object"
+    },
+    "archive_upload_sweep_interval": {
+      "default": "30s",
+      "title": "Archive Upload Sweep Interval",
+      "type": "string"
+    },
+    "archive_write_store": {
+      "minLength": 1,
+      "title": "Archive Write Store",
+      "type": "string"
+    },
+    "bootstrap_token_file": {
+      "format": "path",
+      "title": "Bootstrap Token File",
+      "type": "string"
+    },
+    "browse_token_lifetime": {
+      "default": "24h",
+      "title": "Browse Token Lifetime",
+      "type": "string"
+    },
+    "browse_token_signing_key_file": {
+      "format": "path",
+      "title": "Browse Token Signing Key File",
+      "type": "string"
+    },
+    "catalog_sync_bootstrap_lifetime": {
+      "default": "7d",
+      "title": "Catalog Sync Bootstrap Lifetime",
+      "type": "string"
+    },
+    "catalog_sync_cursor_lifetime": {
+      "default": "24h",
+      "title": "Catalog Sync Cursor Lifetime",
+      "type": "string"
+    },
+    "catalog_sync_history_reap_batch_size": {
+      "default": 100,
+      "minimum": 1,
+      "title": "Catalog Sync History Reap Batch Size",
+      "type": "integer"
+    },
+    "catalog_sync_history_retention": {
+      "default": "30d",
+      "title": "Catalog Sync History Retention",
+      "type": "string"
+    },
+    "catalog_sync_page_size_max": {
+      "default": 100,
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Catalog Sync Page Size Max",
+      "type": "integer"
+    },
+    "collection_upload_custody_lease": {
+      "default": "1h",
+      "title": "Collection Upload Custody Lease",
+      "type": "string"
+    },
+    "database_url_file": {
+      "format": "path",
+      "title": "Database Url File",
+      "type": "string"
+    },
+    "event_context_reap_batch_size": {
+      "default": 100,
+      "minimum": 1,
+      "title": "Event Context Reap Batch Size",
+      "type": "integer"
+    },
+    "event_context_retention": {
+      "default": "30d",
+      "title": "Event Context Retention",
+      "type": "string"
+    },
+    "log_level": {
+      "default": "INFO",
+      "title": "Log Level",
+      "type": "string"
+    },
+    "public_base_url": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Public Base Url"
+    },
+    "range_policy": {
+      "$ref": "#/$defs/RangePolicyDocument"
+    },
+    "range_policy_by_store": {
+      "additionalProperties": {
+        "$ref": "#/$defs/RangePolicyDocument"
+      },
+      "title": "Range Policy By Store",
+      "type": "object"
+    },
+    "retrieval_cache_new_archive_enabled": {
+      "default": true,
+      "title": "Retrieval Cache New Archive Enabled",
+      "type": "boolean"
+    },
+    "retrieval_cache_new_archive_lease": {
+      "default": "72h",
+      "title": "Retrieval Cache New Archive Lease",
+      "type": "string"
+    },
+    "retrieval_cache_stores": {
+      "additionalProperties": {
+        "$ref": "#/$defs/CacheStoreDocument"
+      },
+      "title": "Retrieval Cache Stores",
+      "type": "object"
+    },
+    "retrieval_cache_sweep_interval": {
+      "default": "5m",
+      "title": "Retrieval Cache Sweep Interval",
+      "type": "string"
+    },
+    "retrieval_cache_write_segment_bytes": {
+      "default": "67108864",
+      "title": "Retrieval Cache Write Segment Bytes",
+      "type": "string"
+    },
+    "retrieval_default_lease": {
+      "default": "24h",
+      "title": "Retrieval Default Lease",
+      "type": "string"
+    },
+    "retrieval_estimated_latency": {
+      "default": "48h",
+      "title": "Retrieval Estimated Latency",
+      "type": "string"
+    },
+    "retrieval_max_lease": {
+      "default": "7d",
+      "title": "Retrieval Max Lease",
+      "type": "string"
+    },
+    "retrieval_pending_timeout": {
+      "default": "72h",
+      "title": "Retrieval Pending Timeout",
+      "type": "string"
+    },
+    "retrieval_restore_poll_interval": {
+      "default": "5m",
+      "title": "Retrieval Restore Poll Interval",
+      "type": "string"
+    },
+    "throughput": {
+      "$ref": "#/$defs/ThroughputDocument"
+    },
+    "volume_policy": {
+      "$ref": "#/$defs/VolumePolicyDocument"
+    }
+  },
+  "required": [
+    "database_url_file",
+    "bootstrap_token_file",
+    "browse_token_signing_key_file",
+    "archive_passphrase_files",
+    "archive_active_passphrase_id",
+    "archive_write_store",
+    "archive_stores"
+  ],
+  "title": "RiverhogDocument",
+  "type": "object"
+}

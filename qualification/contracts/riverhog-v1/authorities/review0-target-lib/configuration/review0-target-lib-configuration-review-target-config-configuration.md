@@ -16,8 +16,10 @@ Exact externally visible contract owned by this contract element.
 <a id="s-a36460a25e"></a>
 
 - <a id="s-9d34f79eb6"></a>`type`: `"object"`
+- <a id="s-42302d487a"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/config/a-review0-materializer.schema.json"`
+- <a id="s-4fb3b9d6b9"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
 - <a id="s-527636665f"></a>`additionalProperties`: `false`
-- <a id="s-9d7ec3f827"></a>`required`: `["samplers"]`
+- <a id="s-9d7ec3f827"></a>`required`: `["token_file","samplers"]`
 - <a id="s-abe0a8b0da"></a>`title`: `"ReviewTargetConfig"`
 
 ### Fields
@@ -25,6 +27,7 @@ Exact externally visible contract owned by this contract element.
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-386ccfd902"></a>`samplers` | yes | type="array"; items=([SamplerConfig](#s-6124ed84f7)); minItems=1; title="Samplers" |  |
+| <a id="s-9b4b5ca376"></a>`token_file` | yes | type="string"; format="path"; title="Token File" |  |
 
 ### Definitions
 
@@ -96,7 +99,7 @@ Shared facts for every subject below: capacity_authority={"declared_maximum":nul
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 277fd97240352a778d6ac6516fca9257d8e6225b787b2cf540d39d262155ba8c -->
+<!-- exact-contract-value: dcbeb2400fa5d3f23bda3236b18cbaa27307ef9f2abda4afe193a04ac1a2bdcc -->
 
 ```json
 {
@@ -147,6 +150,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       "type": "object"
     }
   },
+  "$id": "https://nashspence.github.io/riverhog/v1/config/a-review0-materializer.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "properties": {
     "samplers": {
@@ -156,9 +161,15 @@ The following JSON is the complete value owned at each machine-authority pointer
       "minItems": 1,
       "title": "Samplers",
       "type": "array"
+    },
+    "token_file": {
+      "format": "path",
+      "title": "Token File",
+      "type": "string"
     }
   },
   "required": [
+    "token_file",
     "samplers"
   ],
   "title": "ReviewTargetConfig",

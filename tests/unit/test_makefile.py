@@ -1,17 +1,13 @@
 from __future__ import annotations
 
-import ast
 import os
 import re
 import shlex
 import subprocess
-from dataclasses import asdict
 from pathlib import Path
-from unittest.mock import patch
 
 import pytest
 import yaml
-from riverhog_core.runtime_config import load_runtime_config
 from yaml.nodes import MappingNode, Node, SequenceNode
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -181,83 +177,35 @@ def _assert_unique_yaml_mapping_keys(node: Node) -> None:
             _assert_unique_yaml_mapping_keys(value)
 
 
-def test_compose_has_unique_keys_and_runtime_owned_environment() -> None:
+def test_compose_has_unique_keys_and_one_validated_runtime_document() -> None:
     compose_text = COMPOSE_FILE.read_text(encoding="utf-8")
     compose_node = yaml.compose(compose_text)
     assert compose_node is not None
     _assert_unique_yaml_mapping_keys(compose_node)
-
     compose = yaml.safe_load(compose_text)
-    runtime_source = "\n".join(
-        path.read_text(encoding="utf-8")
-        for package in (
-            REPO_ROOT / "riverhog/src/riverhog_core",
-            REPO_ROOT / "riverhog/src/riverhog_api",
+    for service in ("state", "app", "test"):
+        assert compose["services"][service]["environment"]["RIVERHOG_CONFIG"] == (
+            "/etc/riverhog/config.yaml"
         )
-        for path in package.rglob("*.py")
+        assert "env_file" not in compose["services"][service]
+    fixture = REPO_ROOT / "qualification/fixtures/riverhog/config.yaml"
+    from config_validation import validate_json_schema
+    from riverhog_core.runtime_document import generated_config_schema
+
+    validate_json_schema(
+        yaml.safe_load(fixture.read_text()), generated_config_schema(), label="fixture"
     )
-    configured_names = {
-        name for name in compose["services"]["app"]["environment"] if name.startswith("RIVERHOG_")
-    }
-    dynamic_archive_store_names = {
-        name for name in configured_names if name.startswith("RIVERHOG_ARCHIVE_STORE_")
-    }
-    cache_store_settings = (
-        "_ADAPTER_URL",
-        "_ADAPTER_TOKEN_FILE",
-        "_ADAPTER_ALLOW_INSECURE_HTTP",
-        "_ADAPTER_MAX_CONNECTIONS",
-        "_ADAPTER_TIMEOUT_SECONDS",
-        "_ADMISSION_ENABLED",
-        "_ADMISSION_BUDGET_BYTES",
-    )
-    dynamic_cache_store_names = {
-        name
-        for name in configured_names
-        if name.startswith("RIVERHOG_RETRIEVAL_CACHE_") and name.endswith(cache_store_settings)
-    }
-    assert all(
-        name in runtime_source
-        for name in configured_names - dynamic_archive_store_names - dynamic_cache_store_names
-    )
-    assert "RIVERHOG_ARCHIVE_STORE_" in runtime_source
-    assert "RIVERHOG_RETRIEVAL_CACHE_{store}_{setting}" in runtime_source
-    assert {name.rsplit("_", 1)[-1] for name in dynamic_archive_store_names} <= {
-        "URL",
-        "BYTES",
-        "CONNECTIONS",
-        "FILE",
-        "HTTP",
-        "SECONDS",
-    }
 
 
-def test_compose_services_publish_every_static_runtime_setting() -> None:
-    runtime_trees = (
-        ast.parse(path.read_text(encoding="utf-8"))
-        for package in (
-            REPO_ROOT / "riverhog/src/riverhog_core",
-            REPO_ROOT / "riverhog/src/riverhog_api",
-        )
-        for path in package.rglob("*.py")
-    )
-    runtime_names = {
-        node.args[0].value
-        for runtime_tree in runtime_trees
-        for node in ast.walk(runtime_tree)
-        if isinstance(node, ast.Call)
-        and isinstance(node.func, ast.Attribute)
-        and node.func.attr in {"get", "getenv"}
-        and node.args
-        and isinstance(node.args[0], ast.Constant)
-        and isinstance(node.args[0].value, str)
-        and node.args[0].value.startswith("RIVERHOG_")
-    }
+def test_compose_services_publish_only_the_config_path() -> None:
     compose = yaml.safe_load(COMPOSE_FILE.read_text(encoding="utf-8"))
-
-    assert runtime_names
-    for service in ("app", "test"):
-        assert runtime_names <= set(compose["services"][service]["environment"])
+    for service in ("state", "app", "test"):
+        names = {
+            name
+            for name in compose["services"][service]["environment"]
+            if name.startswith("RIVERHOG_")
+        }
+        assert names == {"RIVERHOG_CONFIG"}
 
 
 def test_bundled_garage_is_development_only_and_not_an_application_dependency() -> None:
@@ -298,132 +246,26 @@ def test_compose_host_interpolation_has_a_default_or_explicit_requirement() -> N
     assert all("-" in expression or "?" in expression for expression in expressions)
 
 
-def test_compose_policy_defaults_match_runtime_defaults() -> None:
+def test_compose_mounts_document_and_separate_secret_files() -> None:
     compose = yaml.safe_load(COMPOSE_FILE.read_text(encoding="utf-8"))
-    compose_environment: dict[str, str] = {}
-    for name, raw_value in compose["services"]["app"]["environment"].items():
-        value = str(raw_value)
-        match = re.fullmatch(r"\$\{[A-Z0-9_]+:?-([^}]*)\}", value)
-        compose_environment[name] = match.group(1) if match else value
-
-    explicit_secrets = {
-        "RIVERHOG_ARCHIVE_PASSPHRASES_JSON": '{"compose-test-key-v1":"archive-secret"}',
-        "RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID": "compose-test-key-v1",
-        "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY": "riverhog-compose-test-browse-signing-key-v1",
+    required_targets = {
+        "/etc/riverhog/config.yaml",
+        "/run/secrets/riverhog-database-url",
+        "/run/secrets/riverhog-bootstrap-token",
+        "/run/secrets/riverhog-browse-key",
+        "/run/secrets/riverhog-archive-passphrase",
+        "/run/secrets/riverhog-storage-adapter.token",
     }
-    compose_environment.update(explicit_secrets)
-    assert str(compose["services"]["app"]["environment"]["RIVERHOG_BOOTSTRAP_TOKEN"]).startswith(
-        "${RIVERHOG_BOOTSTRAP_TOKEN:?"
-    )
-    for name in (
-        "RIVERHOG_ARCHIVE_PASSPHRASES_JSON",
-        "RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID",
-        "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY",
-    ):
-        assert str(compose["services"]["app"]["environment"][name]).startswith(f"${{{name}:?")
-    assert "REQUIRE_EXPLICIT" not in COMPOSE_FILE.read_text(encoding="utf-8")
-
-    with patch.dict(os.environ, explicit_secrets, clear=True):
-        runtime_defaults = asdict(load_runtime_config())
-    with patch.dict(os.environ, compose_environment, clear=True):
-        compose_defaults = asdict(load_runtime_config())
-
-    topology_fields = {
-        "database_url",
-        "public_base_url",
-        "retrieval_cache_stores",
-    }
-    archive_topology_fields = {
-        "allow_insecure_http",
-        "base_url",
-        "token_file",
-    }
-    for defaults in (runtime_defaults, compose_defaults):
-        for store in defaults["archive_stores"].values():
-            for field in archive_topology_fields:
-                store.pop(field)
-    for field in topology_fields:
-        runtime_defaults.pop(field)
-        compose_defaults.pop(field)
-
-    assert compose_defaults == runtime_defaults
-
-
-def test_compose_services_publish_the_archive_runtime_configuration() -> None:
-    required = {
-        "RIVERHOG_ARCHIVE_STORES",
-        "RIVERHOG_ARCHIVE_WRITE_STORE",
-        "RIVERHOG_ARCHIVE_READ_ORDER",
-        "RIVERHOG_ARCHIVE_STORE_ARCHIVE_ADAPTER_URL",
-        "RIVERHOG_ARCHIVE_STORE_ARCHIVE_ADAPTER_TOKEN_FILE",
-        "RIVERHOG_ARCHIVE_STORE_ARCHIVE_ADAPTER_ALLOW_INSECURE_HTTP",
-        "RIVERHOG_ARCHIVE_STORE_ARCHIVE_ADAPTER_MAX_CONNECTIONS",
-        "RIVERHOG_ARCHIVE_STORE_ARCHIVE_ADAPTER_TIMEOUT_SECONDS",
-        "RIVERHOG_ARCHIVE_STORE_ARCHIVE_MONTHLY_DOWNLOAD_ALLOWANCE_BYTES",
-        "RIVERHOG_ARCHIVE_STORE_ARCHIVE_DOWNLOAD_SAFETY_BUFFER_BYTES",
-        "RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES",
-        "RIVERHOG_ARCHIVE_WRITE_CONCURRENCY",
-        "RIVERHOG_ARCHIVE_PREPARE_CONCURRENCY",
-        "RIVERHOG_ARCHIVE_UPLOAD_REQUEST_CONCURRENCY",
-        "RIVERHOG_ARCHIVE_PASSPHRASES_JSON",
-        "RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID",
-        "RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR",
-        "RIVERHOG_ARCHIVE_UPLOAD_SWEEP_INTERVAL",
-        "RIVERHOG_BOOTSTRAP_TOKEN",
-        "RIVERHOG_INGRESS_MAX_INFLIGHT_BYTES",
-        "RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES",
-        "RIVERHOG_AGE_SESSION_CACHE_ENTRIES",
-        "RIVERHOG_AGE_SESSION_DERIVATION_CONCURRENCY",
-        "RIVERHOG_RETRIEVAL_CACHE_STORES",
-        "RIVERHOG_RETRIEVAL_CACHE_LOCAL_ADAPTER_URL",
-        "RIVERHOG_RETRIEVAL_CACHE_LOCAL_ADAPTER_TOKEN_FILE",
-        "RIVERHOG_RETRIEVAL_CACHE_LOCAL_ADAPTER_ALLOW_INSECURE_HTTP",
-        "RIVERHOG_RETRIEVAL_CACHE_LOCAL_ADAPTER_MAX_CONNECTIONS",
-        "RIVERHOG_RETRIEVAL_CACHE_LOCAL_ADAPTER_TIMEOUT_SECONDS",
-        "RIVERHOG_RETRIEVAL_CACHE_LOCAL_ADMISSION_ENABLED",
-        "RIVERHOG_RETRIEVAL_CACHE_LOCAL_ADMISSION_BUDGET_BYTES",
-        "RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_ENABLED",
-        "RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_LEASE",
-        "RIVERHOG_RETRIEVAL_DEFAULT_LEASE",
-        "RIVERHOG_RETRIEVAL_MAX_LEASE",
-        "RIVERHOG_RETRIEVAL_PENDING_TIMEOUT",
-        "RIVERHOG_RETRIEVAL_CACHE_SWEEP_INTERVAL",
-        "RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL",
-        "RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY",
-        "RIVERHOG_RETRIEVAL_REQUEST_CONCURRENCY",
-        "RIVERHOG_RETRIEVAL_MAX_INFLIGHT_BYTES",
-        "RIVERHOG_RETRIEVAL_READ_CHUNK_BYTES",
-        "RIVERHOG_EVENT_CONTEXT_RETENTION",
-        "RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE",
-        "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY",
-        "RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME",
-        "RIVERHOG_CATALOG_SYNC_CURSOR_LIFETIME",
-        "RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION",
-        "RIVERHOG_CATALOG_SYNC_PAGE_SIZE_MAX",
-        "RIVERHOG_CATALOG_SYNC_HISTORY_REAP_BATCH_SIZE",
-    }
-    compose = yaml.safe_load(COMPOSE_FILE.read_text(encoding="utf-8"))
     for service in ("app", "test"):
-        assert required <= set(compose["services"][service]["environment"])
-        assert compose["services"][service]["env_file"] == [
-            {
-                "path": "${RIVERHOG_COMPOSE_ENV_FILE:-../.env.compose}",
-                "required": False,
-            }
-        ]
-        mounts = compose["services"][service].get("volumes", [])
-        assert {
-            "type": "bind",
-            "source": (
-                "${RIVERHOG_STORAGE_ADAPTER_TOKEN_HOST_PATH:-"
-                "../tests/harness/garage-storage-adapter.token}"
-            ),
-            "target": "/run/secrets/riverhog-storage-adapter.token",
-            "read_only": True,
-        } in mounts
-
-    compose_helper = (REPO_ROOT / "scripts" / "_compose_env.sh").read_text(encoding="utf-8")
-    assert 'export RIVERHOG_COMPOSE_ENV_FILE="${COMPOSE_ENV_FILE}"' in compose_helper
+        mounts = compose["services"][service]["volumes"]
+        short_targets = {entry.split(":")[-2] for entry in mounts if isinstance(entry, str)}
+        bind_targets = {entry["target"] for entry in mounts if isinstance(entry, dict)}
+        assert required_targets <= short_targets | bind_targets
+    state_mounts = compose["services"]["state"]["volumes"]
+    assert {entry.split(":")[-2] for entry in state_mounts} == {
+        "/etc/riverhog/config.yaml",
+        "/run/secrets/riverhog-database-url",
+    }
 
 
 @pytest.mark.parametrize(
@@ -847,12 +689,6 @@ def test_postgres_concurrency_target_uses_disposable_postgres(tmp_path: Path) ->
     assert "tests/integration/test_download_allowance_concurrency.py" in docker_log
     assert "tests/integration/test_retrieval_cache_admission_concurrency.py" in docker_log
     assert " down --volumes --remove-orphans" in docker_log
-
-    harness = (REPO_ROOT / "scripts" / "test_postgres_concurrency.sh").read_text(encoding="utf-8")
-    assert "RIVERHOG_BOOTSTRAP_TOKEN" in harness
-    assert "RIVERHOG_ARCHIVE_PASSPHRASES_JSON" in harness
-    assert "RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID" in harness
-    assert "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY" in harness
 
 
 def test_dockerfiles_keep_dependency_layers_independent_of_docs_and_tests() -> None:

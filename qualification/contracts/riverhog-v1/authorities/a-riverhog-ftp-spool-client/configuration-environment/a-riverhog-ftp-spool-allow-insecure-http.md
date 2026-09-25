@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-riverhog-ftp-spool-client:a-riverhog-ftp-spool-allow-insecure-http:25be65ec32 -->
+<!-- contract-element: configuration-environment:a-riverhog-ftp-spool-client:a-riverhog-ftp-spool-allow-insecure-http:c7e7f85485 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-6d8ed99c25"></a>
+<a id="s-53a88dfb96"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-455d12eaca"></a>`consumers` | `["a-riverhog-ftp-spool-client"]` |
-| <a id="s-1072ddffa8"></a>`default_expressions` | `["unset"]` |
-| <a id="s-70cf382471"></a>`id` | `"a-riverhog-ftp-spool-client:environment:A_RIVERHOG_FTP_SPOOL_ALLOW_INSECURE_HTTP"` |
-| <a id="s-1b2f5581d2"></a>`input_shape` | `"environment-string"` |
-| <a id="s-1b616d0548"></a>`name` | `"A_RIVERHOG_FTP_SPOOL_ALLOW_INSECURE_HTTP"` |
-| <a id="s-8d577f9560"></a>`owner` | `"a-riverhog-ftp-spool-client"` |
+| <a id="s-cad8bbbd17"></a>`consumers` | `["a-riverhog-ftp-spool-client"]` |
+| <a id="s-dadceebea3"></a>`default_expressions` | `["unset"]` |
+| <a id="s-dbe47075d5"></a>`id` | `"a-riverhog-ftp-spool-client:environment:A_RIVERHOG_FTP_SPOOL_ALLOW_INSECURE_HTTP"` |
+| <a id="s-f6d00c3d7b"></a>`input_shape` | `"environment-string"` |
+| <a id="s-c305899a87"></a>`name` | `"A_RIVERHOG_FTP_SPOOL_ALLOW_INSECURE_HTTP"` |
+| <a id="s-02d8846ea8"></a>`owner` | `"a-riverhog-ftp-spool-client"` |
 
 ## Governing policies
 
-- <a id="pa-b8675737ed"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-7716bd2f7d"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/114`
+- `/external_contract/configuration_environment/58`
 
 ### Exact owned JSON
 

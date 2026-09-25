@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import pytest
 import yaml
 from a_riverhog_ftp_spool.app import FtpSpoolComposition
 from a_riverhog_ftp_spool.config import (
+    FTP_SPOOL_CONFIG_SCHEMA,
     FtpSpoolConfig,
     SourceConfig,
+    generated_config_schema,
     load_config,
     load_source_config,
 )
@@ -17,11 +18,15 @@ REPO_ROOT = Path(__file__).parents[5]
 
 
 def _write_config(path: Path, root: Path, *, host_id: str) -> None:
+    (path.parent / "riverhog.token").write_text("riverhog-file-token\n", encoding="utf-8")
+    (path.parent / "adapter.token").write_text("adapter-file-token\n", encoding="utf-8")
     path.write_text(
-        json.dumps(
+        yaml.safe_dump(
             {
                 "host_id": host_id,
                 "riverhog_base_url": "https://riverhog.invalid",
+                "riverhog_token_file": str(path.parent / "riverhog.token"),
+                "api_token_file": str(path.parent / "adapter.token"),
                 "provenance_observer": "fixture-observer",
                 "sources": [
                     {
@@ -36,34 +41,24 @@ def _write_config(path: Path, root: Path, *, host_id: str) -> None:
     )
 
 
-def test_adapter_secrets_accept_exactly_one_direct_or_file_source(
-    monkeypatch: pytest.MonkeyPatch,
-    tmp_path: Path,
-) -> None:
-    config_path = tmp_path / "ftp-spool.json"
+def test_adapter_secrets_are_loaded_from_named_files(tmp_path: Path) -> None:
+    config_path = tmp_path / "ftp-spool.yaml"
     _write_config(
         config_path,
         tmp_path / "ftp",
         host_id="urn:uuid:00000000-0000-4000-8000-000000000001",
     )
-    riverhog_token = tmp_path / "riverhog.token"
-    adapter_token = tmp_path / "adapter.token"
-    riverhog_token.write_text("riverhog-file-token\n", encoding="utf-8")
-    adapter_token.write_text("adapter-file-token\n", encoding="utf-8")
-    monkeypatch.setenv("RIVERHOG_TOKEN_FILE", str(riverhog_token))
-    monkeypatch.setenv("A_RIVERHOG_FTP_SPOOL_API_TOKEN_FILE", str(adapter_token))
-
     config = load_config(config_path)
 
     assert config.riverhog_token == "riverhog-file-token"
     assert config.api_token == "adapter-file-token"
-    monkeypatch.setenv("RIVERHOG_TOKEN", "direct")
-    with pytest.raises(ValueError, match="mutually exclusive"):
+    (tmp_path / "adapter.token").write_text("\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="api_token_file must contain a nonempty secret"):
         load_config(config_path)
 
 
 def test_listener_loads_only_its_source_without_riverhog_credentials(tmp_path: Path) -> None:
-    config_path = tmp_path / "ftp-spool.json"
+    config_path = tmp_path / "ftp-spool.yaml"
     _write_config(
         config_path,
         tmp_path / "ftp",
@@ -107,7 +102,7 @@ def test_supplied_compose_is_ftp_only_bounded_and_unprivileged() -> None:
     assert listener["command"][:4] == [
         "a-riverhog-ftp-spool",
         "--config",
-        "/etc/riverhog/ftp-spool.json",
+        "/etc/riverhog/ftp-spool.yaml",
         "listen",
     ]
     assert "/run/secrets/ftp_password" in listener["command"]
@@ -119,7 +114,7 @@ def test_supplied_compose_is_ftp_only_bounded_and_unprivileged() -> None:
     config_mount = next(
         item
         for item in services["ftp-spool"]["volumes"]
-        if item["target"] == "/etc/riverhog/ftp-spool.json"
+        if item["target"] == "/etc/riverhog/ftp-spool.yaml"
     )
     assert config_mount["source"] == (
         "${A_RIVERHOG_FTP_SPOOL_CONFIG_HOST_PATH:"
@@ -152,17 +147,19 @@ def test_completion_failure_work_and_capacity_are_explicit(tmp_path: Path) -> No
 
 
 def test_supplied_configuration_is_current_and_secret_injected(
-    monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
     riverhog_token = tmp_path / "riverhog.token"
     adapter_token = tmp_path / "adapter.token"
     riverhog_token.write_text("riverhog\n", encoding="utf-8")
     adapter_token.write_text("adapter\n", encoding="utf-8")
-    monkeypatch.setenv("RIVERHOG_TOKEN_FILE", str(riverhog_token))
-    monkeypatch.setenv("A_RIVERHOG_FTP_SPOOL_API_TOKEN_FILE", str(adapter_token))
-
-    config = load_config(REPO_ROOT / "qualification/fixtures/a-riverhog-ftp-spool/config.json")
+    fixture = REPO_ROOT / "qualification/fixtures/a-riverhog-ftp-spool/config.yaml"
+    document = yaml.safe_load(fixture.read_text(encoding="utf-8"))
+    document["riverhog_token_file"] = str(riverhog_token)
+    document["api_token_file"] = str(adapter_token)
+    local_config = tmp_path / "ftp-spool.yaml"
+    local_config.write_text(yaml.safe_dump(document), encoding="utf-8")
+    config = load_config(local_config)
 
     assert config.host_id == "urn:uuid:00000000-0000-4000-8000-000000000001"
     assert config.riverhog_base_url == "http://app:8000"
@@ -188,16 +185,13 @@ def test_adapter_config_path_environment_is_connected(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    config_path = tmp_path / "ftp-spool.json"
+    config_path = tmp_path / "ftp-spool.yaml"
     _write_config(
         config_path,
         tmp_path / "ftp",
         host_id="urn:uuid:00000000-0000-4000-8000-000000000001",
     )
     monkeypatch.setenv("A_RIVERHOG_FTP_SPOOL_CONFIG", str(config_path))
-    monkeypatch.setenv("RIVERHOG_TOKEN", "riverhog")
-    monkeypatch.setenv("A_RIVERHOG_FTP_SPOOL_API_TOKEN", "adapter")
-
     assert load_config().host_id == "urn:uuid:00000000-0000-4000-8000-000000000001"
 
 
@@ -205,12 +199,27 @@ def test_capture_configuration_requires_a_canonical_provenance_host_identity(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    config_path = tmp_path / "ftp-spool.json"
+    config_path = tmp_path / "ftp-spool.yaml"
     _write_config(config_path, tmp_path / "ftp", host_id="human-label")
-    monkeypatch.setenv("RIVERHOG_TOKEN", "riverhog")
-    monkeypatch.setenv("A_RIVERHOG_FTP_SPOOL_API_TOKEN", "adapter")
 
     with pytest.raises(ValueError, match="host_id must be a lowercase UUID URN"):
+        load_config(config_path)
+
+
+def test_published_yaml_schema_matches_typed_document_and_rejects_extra_policy(
+    tmp_path: Path,
+) -> None:
+    assert FTP_SPOOL_CONFIG_SCHEMA == generated_config_schema()
+    config_path = tmp_path / "ftp-spool.yaml"
+    _write_config(
+        config_path,
+        tmp_path / "ftp",
+        host_id="urn:uuid:00000000-0000-4000-8000-000000000001",
+    )
+    document = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    document["unknown_policy"] = True
+    config_path.write_text(yaml.safe_dump(document), encoding="utf-8")
+    with pytest.raises(ValueError, match="Additional properties are not allowed"):
         load_config(config_path)
 
 

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-review0-materializer:a-review0-materializer-state-root:6e1ba0d6a1 -->
+<!-- contract-element: configuration-environment:a-review0-materializer:a-review0-materializer-state-root:568d931d95 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-8f9926b885"></a>
+<a id="s-b7a4f6f148"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-9172f4f7f0"></a>`consumers` | `["a-review0-materializer"]` |
-| <a id="s-0f0e40311d"></a>`default_expressions` | `["'/var/lib/a-review0-materializer'"]` |
-| <a id="s-4e688baa7f"></a>`id` | `"a-review0-materializer:environment:A_REVIEW0_MATERIALIZER_STATE_ROOT"` |
-| <a id="s-25ca4126b5"></a>`input_shape` | `"environment-string"` |
-| <a id="s-1fd2f143d5"></a>`name` | `"A_REVIEW0_MATERIALIZER_STATE_ROOT"` |
-| <a id="s-42b278dcfa"></a>`owner` | `"a-review0-materializer"` |
+| <a id="s-7590734788"></a>`consumers` | `["a-review0-materializer"]` |
+| <a id="s-d8ebd849d8"></a>`default_expressions` | `["'/var/lib/a-review0-materializer'"]` |
+| <a id="s-a600f51a3c"></a>`id` | `"a-review0-materializer:environment:A_REVIEW0_MATERIALIZER_STATE_ROOT"` |
+| <a id="s-81d1d3813e"></a>`input_shape` | `"environment-string"` |
+| <a id="s-727a81b3ac"></a>`name` | `"A_REVIEW0_MATERIALIZER_STATE_ROOT"` |
+| <a id="s-10a1945249"></a>`owner` | `"a-review0-materializer"` |
 
 ## Governing policies
 
-- <a id="pa-969c9f4ca8"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-d04bcdc081"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/11`
+- `/external_contract/configuration_environment/10`
 
 ### Exact owned JSON
 

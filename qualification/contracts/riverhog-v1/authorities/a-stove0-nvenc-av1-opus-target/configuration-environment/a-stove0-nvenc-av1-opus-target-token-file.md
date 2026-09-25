@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-stove0-nvenc-av1-opus-target:a-stove0-nvenc-av1-opus-target-token-file:026bc7d18e -->
+<!-- contract-element: configuration-environment:a-stove0-nvenc-av1-opus-target:a-stove0-nvenc-av1-opus-target-token-file:a7876175a1 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-0860e7403d"></a>
+<a id="s-8a57472b3d"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-9be6b52731"></a>`consumers` | `["a-stove0-nvenc-av1-opus-target"]` |
-| <a id="s-0bd5eb779f"></a>`default_expressions` | `["unset"]` |
-| <a id="s-c18f78a25e"></a>`id` | `"a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_TOKEN_FILE"` |
-| <a id="s-6d50564c65"></a>`input_shape` | `"environment-string"` |
-| <a id="s-880697c149"></a>`name` | `"A_STOVE0_NVENC_AV1_OPUS_TARGET_TOKEN_FILE"` |
-| <a id="s-7d7836cab8"></a>`owner` | `"a-stove0-nvenc-av1-opus-target"` |
+| <a id="s-8b87502075"></a>`consumers` | `["a-stove0-nvenc-av1-opus-target"]` |
+| <a id="s-9e470cf17e"></a>`default_expressions` | `["unset"]` |
+| <a id="s-0d275a9d51"></a>`id` | `"a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_TOKEN_FILE"` |
+| <a id="s-f9b9e2d406"></a>`input_shape` | `"environment-string"` |
+| <a id="s-ebf779a82f"></a>`name` | `"A_STOVE0_NVENC_AV1_OPUS_TARGET_TOKEN_FILE"` |
+| <a id="s-0db1e92c3c"></a>`owner` | `"a-stove0-nvenc-av1-opus-target"` |
 
 ## Governing policies
 
-- <a id="pa-50b7a808bd"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-fd72bdd478"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/141`
+- `/external_contract/configuration_environment/85`
 
 ### Exact owned JSON
 

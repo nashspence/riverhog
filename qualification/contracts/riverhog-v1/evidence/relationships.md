@@ -5,7 +5,7 @@
 Inspect the exact declared dependency, packaging, and extension joins. Node identities and relationship edges have separate inventories.
 
 - [Relationship nodes](relationships/nodes.md) (100)
-- [Relationship edges](relationships/edges.md) (297)
+- [Relationship edges](relationships/edges.md) (307)
 
 | Node kind | Count |
 |---|---:|
@@ -18,7 +18,7 @@ Inspect the exact declared dependency, packaging, and extension joins. Node iden
 | Relationship | Count |
 |---|---:|
 | `binds-protocol` | 4 |
-| `depends-on` | 237 |
+| `depends-on` | 247 |
 | `implements-extension-point` | 14 |
 | `implements-protocol` | 11 |
 | `installed-as` | 4 |

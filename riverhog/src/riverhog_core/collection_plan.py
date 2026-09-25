@@ -26,7 +26,6 @@ from riverhog_core.raw_volume import (
 
 COLLECTION_VOLUME_PLAN_FORMAT = "collection-volume-plan/v1"
 _SHA256_RE = re.compile(r"[0-9a-f]{64}")
-_BYTES_RE = re.compile(r"^(\d+(?:_\d+)*)([kmgt]i?b?|b)?$", re.IGNORECASE)
 
 
 @dataclass(frozen=True, slots=True)
@@ -67,40 +66,6 @@ class CollectionVolumePolicy:
             raise ValueError("pack volume contains too many construction parts")
         if self.pack_files > ARCHIVE_PACK_FILES_MAX:
             raise ValueError("pack member target exceeds the v1 construction limit")
-
-    @classmethod
-    def from_env(cls, values: Mapping[str, str]) -> CollectionVolumePolicy:
-        """Load layout knobs that are persisted into each immutable collection plan."""
-
-        common_part_bytes = _env_bytes(
-            values,
-            "RIVERHOG_ARCHIVE_PART_PLAINTEXT_BYTES",
-            DEFAULT_PART_PLAINTEXT_BYTES,
-        )
-        return cls(
-            pack_source_bytes=_env_bytes(
-                values,
-                "RIVERHOG_PACK_SOURCE_BYTES",
-                DEFAULT_PACK_SOURCE_BYTES,
-            ),
-            pack_files=_env_int(
-                values,
-                "RIVERHOG_PACK_FILES",
-                ARCHIVE_PACK_FILES_MAX,
-            ),
-            pack_member_bytes=_env_bytes(
-                values,
-                "RIVERHOG_PACK_MEMBER_BYTES",
-                DEFAULT_PACK_MEMBER_BYTES,
-            ),
-            pack_part_plaintext_bytes=common_part_bytes,
-            raw_volume_plaintext_bytes=_env_bytes(
-                values,
-                "RIVERHOG_RAW_VOLUME_PLAINTEXT_BYTES",
-                DEFAULT_RAW_VOLUME_PLAINTEXT_BYTES,
-            ),
-            raw_part_plaintext_bytes=common_part_bytes,
-        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -242,41 +207,3 @@ def _normalized_files(files: Sequence[ArchiveFile]) -> tuple[ArchiveFile, ...]:
     if not normalized:
         raise ValueError("collection volume plan requires at least one file")
     return tuple(sorted(normalized, key=lambda current: current.path))
-
-
-def _env_int(values: Mapping[str, str], name: str, default: int) -> int:
-    raw = values.get(name)
-    if raw is None or not raw.strip():
-        return default
-    try:
-        return int(raw.strip())
-    except ValueError as exc:
-        raise ValueError(f"{name} must be an integer") from exc
-
-
-def _env_bytes(values: Mapping[str, str], name: str, default: int) -> int:
-    raw = values.get(name)
-    if raw is None or not raw.strip():
-        return default
-    candidate = raw.strip().replace(" ", "")
-    match = _BYTES_RE.fullmatch(candidate)
-    if match is None:
-        raise ValueError(f"{name} must be a byte size such as 64MiB")
-    amount = int(match.group(1).replace("_", ""))
-    unit = (match.group(2) or "b").casefold()
-    scale = {
-        "b": 1,
-        "k": 1000,
-        "kb": 1000,
-        "m": 1000**2,
-        "mb": 1000**2,
-        "g": 1000**3,
-        "gb": 1000**3,
-        "t": 1000**4,
-        "tb": 1000**4,
-        "kib": 1024,
-        "mib": 1024**2,
-        "gib": 1024**3,
-        "tib": 1024**4,
-    }[unit]
-    return amount * scale

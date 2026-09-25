@@ -249,7 +249,6 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-server` | [stove0_core.Stove0RiverhogClient.target_authority](../../../authorities/stove0-server/python/stove0-core-stove0riverhogclient-target-authority.md#pa-cb5d7865bf) |
 | `stove0-server` | [stove0_core.Stove0RiverhogClient.verify_and_settle](../../../authorities/stove0-server/python/stove0-core-stove0riverhogclient-verify-and-settle.md#pa-f1284e490b) |
 | `stove0-server` | [stove0_core.Stove0RuntimeConfig](../../../authorities/stove0-server/python/stove0-core-stove0runtimeconfig.md#pa-d649d3d79d) |
-| `stove0-server` | [stove0_core.Stove0RuntimeConfig.from_environment](../../../authorities/stove0-server/python/stove0-core-stove0runtimeconfig-from-environment.md#pa-9329effd9e) |
 | `stove0-server` | [stove0_core.Stove0Scheduler](../../../authorities/stove0-server/python/stove0-core-stove0scheduler.md#pa-6e40bfe717) |
 | `stove0-server` | [stove0_core.Stove0Scheduler.advance](../../../authorities/stove0-server/python/stove0-core-stove0scheduler-advance.md#pa-d8c7a640e0) |
 | `stove0-server` | [stove0_core.Stove0Scheduler.run_once](../../../authorities/stove0-server/python/stove0-core-stove0scheduler-run-once.md#pa-fc04699eef) |
@@ -337,7 +336,8 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-server` | [stove0_core.WorkStore.target_source_edge_page](../../../authorities/stove0-server/python/stove0-core-workstore-target-source-edge-page.md#pa-11b55ffa05) |
 | `stove0-server` | [stove0_core.WorkflowPreviewService](../../../authorities/stove0-server/python/stove0-core-workflowpreviewservice.md#pa-52c9ddda8c) |
 | `stove0-server` | [stove0_core.WorkflowPreviewService.preview](../../../authorities/stove0-server/python/stove0-core-workflowpreviewservice-preview.md#pa-a7d4817069) |
-| `stove0-server` | [stove0_core.database_url_from_environment](../../../authorities/stove0-server/python/stove0-core-database-url-from-environment.md#pa-5351da0f85) |
+| `stove0-server` | [stove0_core.database_url_from_config](../../../authorities/stove0-server/python/stove0-core-database-url-from-config.md#pa-3c42a374d1) |
+| `stove0-server` | [stove0_core.load_stove0_config](../../../authorities/stove0-server/python/stove0-core-load-stove0-config.md#pa-e5317703c4) |
 | `stove0-server` | [stove0_core.project_coordination](../../../authorities/stove0-server/python/stove0-core-project-coordination.md#pa-f6270475da) |
 | `stove0-server` | [stove0_core.scheduler_role](../../../authorities/stove0-server/python/stove0-core-scheduler-role.md#pa-6974655056) |
 | `stove0-server` | [stove0_core.stove0_state_schema](../../../authorities/stove0-server/python/stove0-core-stove0-state-schema.md#pa-cb283bd8e0) |

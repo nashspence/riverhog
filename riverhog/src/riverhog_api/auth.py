@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import os
 import secrets
 from collections.abc import Callable, Sequence
 from typing import Annotated, Any, cast
@@ -30,8 +29,6 @@ from riverhog_protocol.errors import Forbidden, Unauthorized
 
 from riverhog_api.deps import ContainerDep, ServiceContainer
 
-BOOTSTRAP_TOKEN_ENV = "RIVERHOG_BOOTSTRAP_TOKEN"
-
 _bearer = HTTPBearer(auto_error=False)
 BearerCredentials = Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)]
 PermissionDependency = Callable[..., Principal]
@@ -41,7 +38,7 @@ def authenticate_token(token: str, container: ServiceContainer) -> Principal | N
     supplied = token.strip()
     if not supplied:
         return None
-    bootstrap = os.getenv(BOOTSTRAP_TOKEN_ENV, "")
+    bootstrap = getattr(container, "bootstrap_token", None)
     if bootstrap and secrets.compare_digest(supplied, bootstrap):
         return Principal(
             id="bootstrap",
@@ -248,7 +245,6 @@ ProvenanceExporter = Annotated[
 __all__ = [
     "ArchiveManager",
     "ArchiveReader",
-    "BOOTSTRAP_TOKEN_ENV",
     "CatalogReader",
     "CollectionCreator",
     "CollectionDescriptionManager",

@@ -4,7 +4,6 @@ import base64
 import binascii
 import hashlib
 import json
-import os
 import uuid
 from collections.abc import Iterator, Sequence
 from datetime import datetime, timedelta
@@ -82,7 +81,6 @@ from riverhog_core.domain.archive import StoredArchivePart
 from riverhog_core.pack_retrieval import (
     PackMemberRangeReader,
     PackMemberRetrievalSource,
-    PackRangeRetrievalPolicy,
     PackVolumeRetrievalSource,
     plan_pack_range_retrieval,
 )
@@ -183,7 +181,7 @@ class SqlAlchemyRetrievalService:
         self._cache = retrieval_cache
         self._download_allowance = download_allowance
         self._session_factory = session_factory or make_session_factory(config.database_url)
-        self._throughput = throughput_tuning or ArchiveThroughputTuning.from_env(os.environ)
+        self._throughput = throughput_tuning or config.throughput_tuning
         self._resources = transfer_resources or ArchiveTransferResources.from_tuning(
             self._throughput
         )
@@ -1014,10 +1012,7 @@ class SqlAlchemyRetrievalService:
                     data_offset=placement.object_offset,
                 ),
             ),
-            policy=PackRangeRetrievalPolicy.from_env(
-                os.environ,
-                store_name=planned_object.source_store,
-            ),
+            policy=self._config.range_policy_for_store(planned_object.source_store),
         ).accounted_remote_bytes
 
     @staticmethod
@@ -1345,10 +1340,7 @@ class SqlAlchemyRetrievalService:
                 resources=self._resources,
                 session_cache=self._age_sessions[passphrase_id],
                 timing_observer=log_transfer_timing,
-                policy=PackRangeRetrievalPolicy.from_env(
-                    os.environ,
-                    store_name=source_store,
-                ),
+                policy=self._config.range_policy_for_store(source_store),
             ).iter_member_range(source, member, offset=offset, size=requested_size)
             return chunks, expected_bytes, expected_sha256
 

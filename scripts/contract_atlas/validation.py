@@ -512,7 +512,9 @@ def validate_atlas(
     external = cast(Mapping[str, object], projection_value["external_contract"])
     projected_configuration = [
         *cast(Sequence[Mapping[str, object]], external["configuration_environment"]),
-        *cast(Sequence[Mapping[str, object]], external["configuration_environment_patterns"]),
+        *cast(
+            Sequence[Mapping[str, object]], external.get("configuration_environment_patterns", [])
+        ),
     ]
     registry_configuration = [
         *cast(Sequence[Mapping[str, object]], configuration_registry["records"]),

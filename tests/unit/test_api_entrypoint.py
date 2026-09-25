@@ -1,10 +1,10 @@
 import importlib.metadata
 import json
 from pathlib import Path
-from types import SimpleNamespace
 from typing import Any
 
 from riverhog_api import app as api_app
+from riverhog_core import runtime_document
 
 from tests.unit.db_helpers import sqlite_url
 
@@ -39,9 +39,9 @@ def test_api_state_commands_report_and_verify_the_current_revision(
 ) -> None:
     database_url = sqlite_url(tmp_path / "catalog.sqlite3")
     monkeypatch.setattr(
-        api_app,
-        "load_runtime_config",
-        lambda: SimpleNamespace(database_url=database_url),
+        runtime_document,
+        "database_url_from_document",
+        lambda _path: database_url,
     )
 
     assert api_app.main(["state", "status", "--json"]) == 0

@@ -15,7 +15,7 @@ from riverhog_core.throughput import (
 
 
 def test_archive_throughput_tuning_exposes_only_effective_runtime_controls() -> None:
-    tuning = ArchiveThroughputTuning.from_env({})
+    tuning = ArchiveThroughputTuning()
 
     assert tuning.upload_prepare_concurrency == 8
     assert tuning.write_concurrency == 4
@@ -28,19 +28,17 @@ def test_archive_throughput_tuning_exposes_only_effective_runtime_controls() -> 
     assert tuning.age_session_cache_entries == 128
     assert tuning.age_derivation_concurrency == 4
 
-    customized = ArchiveThroughputTuning.from_env(
-        {
-            "RIVERHOG_ARCHIVE_PREPARE_CONCURRENCY": "12",
-            "RIVERHOG_ARCHIVE_WRITE_CONCURRENCY": "8",
-            "RIVERHOG_ARCHIVE_UPLOAD_REQUEST_CONCURRENCY": "16",
-            "RIVERHOG_INGRESS_MAX_INFLIGHT_BYTES": "2GiB",
-            "RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES": "16MiB",
-            "RIVERHOG_RETRIEVAL_REQUEST_CONCURRENCY": "16",
-            "RIVERHOG_RETRIEVAL_MAX_INFLIGHT_BYTES": "3GiB",
-            "RIVERHOG_RETRIEVAL_READ_CHUNK_BYTES": "4MiB",
-            "RIVERHOG_AGE_SESSION_CACHE_ENTRIES": "256",
-            "RIVERHOG_AGE_SESSION_DERIVATION_CONCURRENCY": "6",
-        }
+    customized = ArchiveThroughputTuning(
+        upload_prepare_concurrency=12,
+        write_concurrency=8,
+        upload_request_concurrency=16,
+        upload_max_inflight_bytes=2 * 1024**3,
+        source_read_chunk_bytes=16 * 1024**2,
+        retrieval_request_concurrency=16,
+        retrieval_max_inflight_bytes=3 * 1024**3,
+        retrieval_read_chunk_bytes=4 * 1024**2,
+        age_session_cache_entries=256,
+        age_derivation_concurrency=6,
     )
 
     assert customized.upload_prepare_concurrency == 12
@@ -54,18 +52,13 @@ def test_archive_throughput_tuning_exposes_only_effective_runtime_controls() -> 
     assert customized.age_session_cache_entries == 256
     assert customized.age_derivation_concurrency == 6
 
-    scaled = ArchiveThroughputTuning.from_env(
-        {
-            "RIVERHOG_ARCHIVE_PREPARE_CONCURRENCY": "256",
-            "RIVERHOG_AGE_SESSION_CACHE_ENTRIES": "8192",
-        }
-    )
+    scaled = ArchiveThroughputTuning(upload_prepare_concurrency=256, age_session_cache_entries=8192)
     assert scaled.upload_prepare_concurrency == 256
     assert scaled.age_session_cache_entries == 8192
 
 
 def test_shared_transfer_resources_use_process_wide_tuning_limits() -> None:
-    tuning = ArchiveThroughputTuning.from_env({})
+    tuning = ArchiveThroughputTuning()
     resources = ArchiveTransferResources.from_tuning(tuning)
 
     assert resources.upload_bytes.capacity == tuning.upload_max_inflight_bytes

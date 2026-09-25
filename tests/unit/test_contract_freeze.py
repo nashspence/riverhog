@@ -162,7 +162,6 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "cli",
         "configuration_documents",
         "configuration_environment",
-        "configuration_environment_patterns",
         "durable_state",
         "extents",
         "http_openapi",
@@ -253,11 +252,10 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     assert trace["coverage"]["source_kinds"] == {
         "audit": 1,
         "cli": 31,
-        "configuration": 8,
-        "configuration-environment": 251,
-        "configuration-environment-pattern": 2,
+        "configuration": 11,
+        "configuration-environment": 121,
         "openapi": 3,
-        "protocol": 35,
+        "protocol": 43,
         "python": 65,
         "release": 1,
         "release-distribution": 75,
@@ -313,32 +311,32 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     configuration = trace["configuration_registry"]
     configuration_documents = trace["configuration_document_registry"]
     assert configuration_documents["counts"] == {
-        "contracts": 8,
-        "detections": 8,
-        "resolved_detections": 8,
+        "contracts": 11,
+        "detections": 12,
+        "resolved_detections": 12,
     }
-    assert set(configuration_documents["coverage"].values()) == {0, 8}
+    assert set(configuration_documents["coverage"].values()) == {0, 11, 12}
     assert {item["id"] for item in configuration_documents["candidates"]} == set(
         external["configuration_documents"]
     )
     assert configuration["counts"] == {
-        "contracts": 251,
-        "detections": 198,
-        "patterns": 2,
-        "resolution_exceptions": 6,
-        "resolved_detections": 198,
-        "unique_environment_names": 241,
+        "contracts": 121,
+        "detections": 125,
+        "patterns": 0,
+        "resolution_exceptions": 0,
+        "resolved_detections": 125,
+        "unique_environment_names": 116,
         "by_owner": {
             "a-gogurt-linux-listener": 2,
             "a-gogurt-windows-listener": 3,
             "a-riverhog-cli": 7,
             "riverhog-client": 12,
-            "a-riverhog-ftp-spool": 3,
+            "a-riverhog-ftp-spool": 1,
             "a-riverhog-ftp-spool-client": 5,
             "riverhog-provenance": 3,
-            "riverhog-server": 49,
-            "a-riverhog-aws-store": 30,
-            "a-riverhog-b2-store": 20,
+            "riverhog-server": 1,
+            "a-riverhog-aws-store": 3,
+            "a-riverhog-b2-store": 3,
             "a-riverhog-filesystem-store": 8,
             "stove0-api-client": 5,
             "a-stove0-exiftool-observer": 8,
@@ -347,9 +345,9 @@ def test_checked_contract_freeze_matches_every_executable_authority(
             "a-stove0-nvenc-av1-opus-target": 10,
             "a-review0-opus-sampler": 8,
             "a-stove0-opus-target": 9,
-            "a-review0-materializer": 10,
-            "a-review0-rclone-target": 15,
-            "stove0-server": 27,
+            "a-review0-materializer": 7,
+            "a-review0-rclone-target": 8,
+            "stove0-server": 1,
             "stove0-target-support": 1,
         },
     }
@@ -361,7 +359,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     )
     assert {
         item["owner"] for item in configuration["records"] if item["name"] == "RIVERHOG_BASE_URL"
-    } == {"riverhog-client", "a-riverhog-ftp-spool", "stove0-server"}
+    } == {"riverhog-client"}
     assert not any(item["authority"] == "configuration" for item in checked.root["elements"])
     assert not any(item["interface"] == "boundary" for item in checked.root["elements"])
     assert not any(
@@ -536,22 +534,19 @@ def test_boundary_freeze_allows_new_coordinates_but_protects_existing_topology()
 
 
 def test_configuration_resolution_fails_closed_on_an_owner_outside_the_frozen_topology(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     module = load_script()
-    changed = (
-        (REPO_ROOT / "qualification/contract-freeze-exceptions.toml")
-        .read_text(encoding="utf-8")
-        .replace(
-            'source_authority_id = "configuration:a-riverhog-event-relay:'
-            'configuration:event-relay-config"',
-            'source_authority_id = "configuration:unowned-setting"',
-            1,
-        )
-    )
-    contract = tmp_path / "contract-freeze-exceptions.toml"
-    contract.write_text(changed, encoding="utf-8")
-    monkeypatch.setattr(module, "CONTRACT_FREEZE_EXCEPTIONS", contract)
+    original = module._configuration_registry
+
+    def unowned_resolution(*args: Any, **kwargs: Any) -> dict[str, object]:
+        registry = original(*args, **kwargs)
+        registry["resolution_exceptions"] = [
+            {"source_authority_id": "configuration:unowned-setting"}
+        ]
+        return registry
+
+    monkeypatch.setattr(module, "_configuration_registry", unowned_resolution)
 
     projection = module.contract_projection()
     with pytest.raises(module.ContractFreezeError, match="unknown authorities"):
@@ -997,7 +992,9 @@ def test_exception_overlay_cannot_create_an_undetected_candidate(
 ) -> None:
     module = load_script()
     changed = (
-        (REPO_ROOT / "qualification/contract-freeze-exceptions.toml").read_text(encoding="utf-8")
+        (REPO_ROOT / "qualification/contract-freeze-exceptions.toml")
+        .read_text(encoding="utf-8")
+        .replace("resolution = []\n", "")
         + "\n[[resolution]]\n"
         + 'detection_id = "configuration-read:missing:missing"\n'
         + 'source_authority_id = "configuration:missing"\n'
@@ -1011,22 +1008,19 @@ def test_exception_overlay_cannot_create_an_undetected_candidate(
         module._environment_resolutions(projects)
 
 
-def test_removing_resolution_hints_preserves_detection_and_fails_unresolved(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+def test_unresolved_configuration_read_fails_closed_even_when_detected(
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     module = load_script()
     projects = module.release_contract.validate_release_contract(REPO_ROOT)
     before = module._environment_detections(projects)
-    path = tmp_path / "contract-freeze-exceptions.toml"
-    path.write_text(
-        'format = "riverhog-contract-freeze-exceptions/v1"\nresolution = []\n',
-        encoding="utf-8",
-    )
-    monkeypatch.setattr(module, "CONTRACT_FREEZE_EXCEPTIONS", path)
+    unresolved = copy.deepcopy(before)
+    unresolved[0]["resolved_names"] = []
+    monkeypatch.setattr(module, "_environment_detections", lambda _projects: unresolved)
 
-    assert module._environment_detections(projects) == before
+    assert [item["id"] for item in unresolved] == [item["id"] for item in before]
     with pytest.raises(module.ContractFreezeError, match="configuration reads are unresolved"):
-        module.contract_projection()
+        module._environment_inventory(projects)
 
 
 def test_extent_semantic_diff_is_grouped_by_owning_boundary() -> None:

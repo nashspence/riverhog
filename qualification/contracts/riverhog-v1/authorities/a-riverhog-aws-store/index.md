@@ -4,10 +4,12 @@
 
 AWS-backed Riverhog archive and retrieval store.
 
-Contract elements: **38** · Extent decisions: **8**
+Contract elements: **13** · Extent decisions: **8**
 
 ## Interfaces
 
+- [Schemas](schema/index.md) (1)
 - [CLI](cli/index.md) (1)
-- [Configuration Environment](configuration-environment/index.md) (30)
+- [Configuration Documents](configuration/index.md) (1)
+- [Configuration Environment](configuration-environment/index.md) (3)
 - [Python](python/index.md) (7)

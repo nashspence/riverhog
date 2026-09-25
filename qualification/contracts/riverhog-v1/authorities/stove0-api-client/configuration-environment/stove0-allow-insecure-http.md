@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-api-client:stove0-allow-insecure-http:725f60eac8 -->
+<!-- contract-element: configuration-environment:stove0-api-client:stove0-allow-insecure-http:ac9127f745 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-fd7d73e69a"></a>
+<a id="s-6d8ed99c25"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-a55a59faa3"></a>`consumers` | `["stove0-api-client"]` |
-| <a id="s-d1b08aa8b5"></a>`default_expressions` | `["unset"]` |
-| <a id="s-46c2e22331"></a>`id` | `"stove0-api-client:environment:STOVE0_ALLOW_INSECURE_HTTP"` |
-| <a id="s-cf58e17e41"></a>`input_shape` | `"environment-string"` |
-| <a id="s-2148cfff12"></a>`name` | `"STOVE0_ALLOW_INSECURE_HTTP"` |
-| <a id="s-fe294b0ec7"></a>`owner` | `"stove0-api-client"` |
+| <a id="s-455d12eaca"></a>`consumers` | `["stove0-api-client"]` |
+| <a id="s-1072ddffa8"></a>`default_expressions` | `["unset"]` |
+| <a id="s-70cf382471"></a>`id` | `"stove0-api-client:environment:STOVE0_ALLOW_INSECURE_HTTP"` |
+| <a id="s-1b2f5581d2"></a>`input_shape` | `"environment-string"` |
+| <a id="s-1b616d0548"></a>`name` | `"STOVE0_ALLOW_INSECURE_HTTP"` |
+| <a id="s-8d577f9560"></a>`owner` | `"stove0-api-client"` |
 
 ## Governing policies
 
-- <a id="pa-6184e58746"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-e1e7b1e11d"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/218`
+- `/external_contract/configuration_environment/114`
 
 ### Exact owned JSON
 

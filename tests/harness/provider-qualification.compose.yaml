@@ -9,6 +9,7 @@ services:
   qualification-filesystem-cache-adapter:
     image: a-riverhog-filesystem-store:dev
     restart: unless-stopped
+    group_add: ["${RIVERHOG_QUALIFICATION_SECRET_GID}"]
     depends_on:
       qualification-filesystem-cache-init:
         condition: service_completed_successfully
@@ -32,10 +33,14 @@ services:
   aws-deep-archive-adapter:
     image: a-riverhog-aws-store:dev
     restart: unless-stopped
-    env_file:
-      - path: ${RIVERHOG_QUALIFICATION_AWS_ADAPTER_ENV_FILE}
-        required: true
+    group_add: ["${RIVERHOG_QUALIFICATION_SECRET_GID}"]
+    environment:
+      A_RIVERHOG_AWS_STORE_CONFIG: /etc/riverhog/aws-store.yaml
     volumes:
+      - ${A_RIVERHOG_AWS_STORE_CONFIG_HOST_PATH}:/etc/riverhog/aws-store.yaml:ro
+      - ${A_RIVERHOG_AWS_STORE_ACCESS_KEY_ID_HOST_PATH}:/run/secrets/aws-access-key-id:ro
+      - ${A_RIVERHOG_AWS_STORE_SECRET_ACCESS_KEY_HOST_PATH}:/run/secrets/aws-secret-access-key:ro
+      - ${A_RIVERHOG_AWS_STORE_SESSION_TOKEN_HOST_PATH}:/run/secrets/aws-session-token:ro
       - type: bind
         source: ${RIVERHOG_STORAGE_ADAPTER_TOKEN_HOST_PATH}
         target: /run/secrets/riverhog-storage-adapter.token
@@ -54,10 +59,13 @@ services:
   b2-archive-adapter:
     image: a-riverhog-b2-store:dev
     restart: unless-stopped
-    env_file:
-      - path: ${RIVERHOG_QUALIFICATION_B2_ARCHIVE_ADAPTER_ENV_FILE}
-        required: true
+    group_add: ["${RIVERHOG_QUALIFICATION_SECRET_GID}"]
+    environment:
+      A_RIVERHOG_B2_STORE_CONFIG: /etc/riverhog/b2-store.yaml
     volumes:
+      - ${A_RIVERHOG_B2_ARCHIVE_CONFIG_HOST_PATH}:/etc/riverhog/b2-store.yaml:ro
+      - ${A_RIVERHOG_B2_ARCHIVE_ACCESS_KEY_ID_HOST_PATH}:/run/secrets/b2-archive-access-key-id:ro
+      - ${A_RIVERHOG_B2_ARCHIVE_SECRET_ACCESS_KEY_HOST_PATH}:/run/secrets/b2-archive-secret-access-key:ro
       - type: bind
         source: ${RIVERHOG_STORAGE_ADAPTER_TOKEN_HOST_PATH}
         target: /run/secrets/riverhog-storage-adapter.token
@@ -72,10 +80,13 @@ services:
   b2-retrieval-cache-adapter:
     image: a-riverhog-b2-store:dev
     restart: unless-stopped
-    env_file:
-      - path: ${RIVERHOG_QUALIFICATION_B2_CACHE_ADAPTER_ENV_FILE}
-        required: true
+    group_add: ["${RIVERHOG_QUALIFICATION_SECRET_GID}"]
+    environment:
+      A_RIVERHOG_B2_STORE_CONFIG: /etc/riverhog/b2-store.yaml
     volumes:
+      - ${A_RIVERHOG_B2_CACHE_CONFIG_HOST_PATH}:/etc/riverhog/b2-store.yaml:ro
+      - ${A_RIVERHOG_B2_CACHE_ACCESS_KEY_ID_HOST_PATH}:/run/secrets/b2-cache-access-key-id:ro
+      - ${A_RIVERHOG_B2_CACHE_SECRET_ACCESS_KEY_HOST_PATH}:/run/secrets/b2-cache-secret-access-key:ro
       - type: bind
         source: ${RIVERHOG_STORAGE_ADAPTER_TOKEN_HOST_PATH}
         target: /run/secrets/riverhog-storage-adapter.token
@@ -88,6 +99,7 @@ services:
       start_period: 2s
 
   app:
+    group_add: ["${RIVERHOG_QUALIFICATION_SECRET_GID}"]
     depends_on:
       qualification-filesystem-cache-adapter:
         condition: service_healthy
@@ -97,6 +109,12 @@ services:
         condition: service_healthy
       b2-retrieval-cache-adapter:
         condition: service_healthy
+
+  state:
+    group_add: ["${RIVERHOG_QUALIFICATION_SECRET_GID}"]
+
+  test:
+    group_add: ["${RIVERHOG_QUALIFICATION_SECRET_GID}"]
 
 volumes:
   qualification-filesystem-cache-data:

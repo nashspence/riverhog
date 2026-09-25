@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-target-support:stove0-target-terminal-state-retention-seconds:752fba5e89 -->
+<!-- contract-element: configuration-environment:stove0-target-support:stove0-target-terminal-state-retention-seconds:a017562b3a -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,16 +13,16 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-37d4154806"></a>
+<a id="s-965179fc46"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-3a95964586"></a>`consumers` | `["stove0-target-support"]` |
-| <a id="s-a06ebcd7f7"></a>`default_expressions` | `["str(DEFAULT_TERMINAL_STATE_RETENTION_SECONDS)"]` |
-| <a id="s-a7490fddb1"></a>`id` | `"stove0-target-support:environment:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS"` |
-| <a id="s-f0104dac03"></a>`input_shape` | `"environment-string"` |
-| <a id="s-19bb9dbcb4"></a>`name` | `"STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS"` |
-| <a id="s-814e1b222c"></a>`owner` | `"stove0-target-support"` |
+| <a id="s-4433b3c434"></a>`consumers` | `["stove0-target-support"]` |
+| <a id="s-83ba75a7bc"></a>`default_expressions` | `["str(DEFAULT_TERMINAL_STATE_RETENTION_SECONDS)"]` |
+| <a id="s-efd9f29cdd"></a>`id` | `"stove0-target-support:environment:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS"` |
+| <a id="s-7284882569"></a>`input_shape` | `"environment-string"` |
+| <a id="s-4dd5bfca84"></a>`name` | `"STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS"` |
+| <a id="s-7d68affc90"></a>`owner` | `"stove0-target-support"` |
 
 ### Progression, limits, and lifecycle
 
@@ -32,14 +32,14 @@ Shared facts for every subject below: configuration="STOVE0_TARGET_TERMINAL_STAT
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS](#s-37d4154806) | `value · configured-value · operational_policy` | shared above |
+| [STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS](#s-965179fc46) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
-- <a id="pa-1e43cd3bb3"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
-- <a id="pa-f02445be5b"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
+- <a id="pa-f46ec3eda4"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-3a837c5567"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -63,7 +63,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/250`
+- `/external_contract/configuration_environment/120`
 
 ### Exact owned JSON
 

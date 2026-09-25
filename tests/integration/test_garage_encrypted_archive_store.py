@@ -19,7 +19,8 @@ from riverhog_core.ports.archive_objects import (
     WriteSession,
 )
 from riverhog_core.ports.archive_store import ArchiveObjectIdentity
-from riverhog_core.runtime_config import StorageAdapterRegistration, load_runtime_config
+from riverhog_core.runtime_config import StorageAdapterRegistration
+from riverhog_core.runtime_document import load_runtime_config
 from riverhog_core.services.retrieval_cache import SqlAlchemyRetrievalCache
 from riverhog_core.storage_incarnations import reconcile_storage_incarnations
 from riverhog_core.stores.mirrored_archive_resumable_object_store import (
@@ -32,7 +33,7 @@ from riverhog_core.stores.storage_adapter_archive_objects import (
 )
 from riverhog_core.stores.storage_adapter_archive_store import StorageAdapterArchiveStore
 from riverhog_core.stores.storage_adapter_retrieval_cache import StorageAdapterRetrievalCache
-from riverhog_core.throughput import ArchiveThroughputTuning, ArchiveTransferResources
+from riverhog_core.throughput import ArchiveTransferResources
 from riverhog_storage_adapter_protocol import DeletePrefixRequest
 from riverhog_storage_adapter_support import StorageAdapterClient
 
@@ -81,7 +82,7 @@ def test_canonical_archive_capabilities_against_garage_adapter(tmp_path: Path) -
         name=config.archive_write_store,
         adapter=archive_client,
     )
-    throughput_tuning = ArchiveThroughputTuning.from_env(os.environ)
+    throughput_tuning = config.throughput_tuning
     cache_candidate = StorageAdapterRetrievalCache(
         cache_registration.name,
         cache_client,

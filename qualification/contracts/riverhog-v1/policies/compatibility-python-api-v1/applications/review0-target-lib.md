@@ -9,6 +9,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | Authority | Contract element |
 |---|---|
 | `review0-target-lib` | [review0_target_lib.ReviewTargetConfig](../../../authorities/review0-target-lib/python/review0-target-lib-reviewtargetconfig.md#pa-7483154de3) |
+| `review0-target-lib` | [review0_target_lib.ReviewTargetConfig.absolute_target_token_file](../../../authorities/review0-target-lib/python/review0-target-lib-reviewtargetconfig-absolute-target-token-file.md#pa-4f8899607a) |
 | `review0-target-lib` | [review0_target_lib.ReviewTargetConfig.canonical_samplers](../../../authorities/review0-target-lib/python/review0-target-lib-reviewtargetconfig-canonical-samplers.md#pa-fb3f1bf20d) |
 | `review0-target-lib` | [review0_target_lib.ReviewTargetServiceBase](../../../authorities/review0-target-lib/python/review0-target-lib-reviewtargetservicebase.md#pa-538e0debfb) |
 | `review0-target-lib` | [review0_target_lib.ReviewTargetServiceBase.cancel_job](../../../authorities/review0-target-lib/python/review0-target-lib-reviewtargetservicebase-cancel-job.md#pa-4d22e00b07) |
@@ -25,6 +26,5 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `review0-target-lib` | [review0_target_lib.SamplerRegistration.descriptor](../../../authorities/review0-target-lib/python/review0-target-lib-samplerregistration-descriptor.md#pa-ba29833e1b) |
 | `review0-target-lib` | [review0_target_lib.create_target_app](../../../authorities/review0-target-lib/python/review0-target-lib-create-target-app.md#pa-21a35b5940) |
 | `review0-target-lib` | [review0_target_lib.file_identity](../../../authorities/review0-target-lib/python/review0-target-lib-file-identity.md#pa-ffd784a88e) |
-| `review0-target-lib` | [review0_target_lib.load_sampler_registrations](../../../authorities/review0-target-lib/python/review0-target-lib-load-sampler-registrations.md#pa-e53a8cb1ce) |
-| `review0-target-lib` | [review0_target_lib.parse_sampler_registrations](../../../authorities/review0-target-lib/python/review0-target-lib-parse-sampler-registrations.md#pa-cd60bc3e65) |
 | `review0-target-lib` | [review0_target_lib.review_options_schema](../../../authorities/review0-target-lib/python/review0-target-lib-review-options-schema.md#pa-643ed429d1) |
+| `review0-target-lib` | [review0_target_lib.sampler_registrations](../../../authorities/review0-target-lib/python/review0-target-lib-sampler-registrations.md#pa-fcd3919e12) |

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-stove0-ffprobe-sampling-observer:stove0-ffprobe-bin:fa1d1446e5 -->
+<!-- contract-element: configuration-environment:a-stove0-ffprobe-sampling-observer:stove0-ffprobe-bin:0a207b9e77 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-830a33f58f"></a>
+<a id="s-3efbdd0d50"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-33dee50a09"></a>`consumers` | `["a-stove0-ffprobe-sampling-observer"]` |
-| <a id="s-d60d0efc38"></a>`default_expressions` | `["'ffprobe'"]` |
-| <a id="s-1134d2a2b0"></a>`id` | `"a-stove0-ffprobe-sampling-observer:environment:STOVE0_FFPROBE_BIN"` |
-| <a id="s-cf5d831d6b"></a>`input_shape` | `"environment-string"` |
-| <a id="s-d6448f56b3"></a>`name` | `"STOVE0_FFPROBE_BIN"` |
-| <a id="s-faa4c8819d"></a>`owner` | `"a-stove0-ffprobe-sampling-observer"` |
+| <a id="s-e5a8456801"></a>`consumers` | `["a-stove0-ffprobe-sampling-observer"]` |
+| <a id="s-7044fe0ae8"></a>`default_expressions` | `["'ffprobe'"]` |
+| <a id="s-c4e21ab4c8"></a>`id` | `"a-stove0-ffprobe-sampling-observer:environment:STOVE0_FFPROBE_BIN"` |
+| <a id="s-ee31f3135d"></a>`input_shape` | `"environment-string"` |
+| <a id="s-8bf9d9fca2"></a>`name` | `"STOVE0_FFPROBE_BIN"` |
+| <a id="s-33c76d2bc9"></a>`owner` | `"a-stove0-ffprobe-sampling-observer"` |
 
 ## Governing policies
 
-- <a id="pa-136ee5cd4e"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-04ef071d85"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/134`
+- `/external_contract/configuration_environment/78`
 
 ### Exact owned JSON
 

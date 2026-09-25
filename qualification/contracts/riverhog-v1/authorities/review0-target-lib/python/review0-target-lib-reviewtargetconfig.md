@@ -22,21 +22,24 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-7b8e08bebf"></a>`kind`: `"class"`
-- <a id="s-05f5ea7b65"></a>`signature`: `"'(*, samplers: Annotated[tuple[review0_target_lib.app.SamplerConfig, ...], MinLen(min_length=1)]) -> None'"`
+- <a id="s-05f5ea7b65"></a>`signature`: `"'(*, token_file: pathlib.Path, samplers: Annotated[tuple[review0_target_lib.app.SamplerConfig, ...], MinLen(min_length=1)]) -> None'"`
 
 #### Validated model schema
 
 <a id="s-9dc5e308ce"></a>
 
 - <a id="s-ce4f1b405e"></a>`type`: `"object"`
+- <a id="s-79d9e15e35"></a>`$id`: `"https://nashspence.github.io/riverhog/v1/config/a-review0-materializer.schema.json"`
+- <a id="s-7a2920a0c2"></a>`$schema`: `"https://json-schema.org/draft/2020-12/schema"`
 - <a id="s-a478bee950"></a>`additionalProperties`: `false`
-- <a id="s-4df306873a"></a>`required`: `["samplers"]`
+- <a id="s-4df306873a"></a>`required`: `["token_file","samplers"]`
 
 ##### Fields
 
 | Field | Required | Shape | Description |
 |---|---:|---|---|
 | <a id="s-df0aa70de8"></a>`samplers` | yes | type="array"; items=([SamplerConfig](#s-3b21bbffbc)); minItems=1 |  |
+| <a id="s-416fbe45fa"></a>`token_file` | yes | type="string"; format="path" |  |
 
 ##### Definitions
 
@@ -63,6 +66,7 @@ Exact externally visible contract owned by this contract element.
 
 ### Related interface records
 
+- [absolute_target_token_file](review0-target-lib-reviewtargetconfig-absolute-target-token-file.md)
 - [canonical_samplers](review0-target-lib-reviewtargetconfig-canonical-samplers.md)
 
 ## Governing policies
@@ -92,7 +96,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 64776575443ce22f83fdbf81b76b78404334c23ea5d720e32b9b3aeeac4be55b -->
+<!-- exact-contract-value: a21a74b22c1fd319e9df0f31f10718da9e75e33131d753fa9289c303acdd748e -->
 
 ```json
 {
@@ -139,6 +143,8 @@ The following JSON is the complete value owned at each machine-authority pointer
           "type": "object"
         }
       },
+      "$id": "https://nashspence.github.io/riverhog/v1/config/a-review0-materializer.schema.json",
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
       "additionalProperties": false,
       "properties": {
         "samplers": {
@@ -147,14 +153,19 @@ The following JSON is the complete value owned at each machine-authority pointer
           },
           "minItems": 1,
           "type": "array"
+        },
+        "token_file": {
+          "format": "path",
+          "type": "string"
         }
       },
       "required": [
+        "token_file",
         "samplers"
       ],
       "type": "object"
     },
-    "signature": "'(*, samplers: Annotated[tuple[review0_target_lib.app.SamplerConfig, ...], MinLen(min_length=1)]) -> None'"
+    "signature": "'(*, token_file: pathlib.Path, samplers: Annotated[tuple[review0_target_lib.app.SamplerConfig, ...], MinLen(min_length=1)]) -> None'"
   },
   "distribution": "review0-target-lib",
   "module": "review0_target_lib",

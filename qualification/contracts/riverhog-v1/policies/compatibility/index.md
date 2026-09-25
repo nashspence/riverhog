@@ -8,8 +8,8 @@ Each definition has one primary location and states its own scope. The links bel
 |---|---|
 | [compatibility/archive/v1](../../authorities/release/compatibility-guarantees/compatibility-archive.md#p-915b8756ae) | Scope stated in definition; no element index |
 | [compatibility/cli/v1](../../authorities/release/compatibility-guarantees/compatibility-cli.md#p-48a89776de) | [220 indexed contract elements](../compatibility-cli-v1/applications.md) |
-| [compatibility/components/v1](../../authorities/release/compatibility-guarantees/compatibility-components.md#p-95e9a12259) | [218 indexed contract elements](../compatibility-components-v1/applications.md) |
-| [compatibility/configuration/v1](../../authorities/release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461) | [261 indexed contract elements](../compatibility-configuration-v1/applications.md) |
+| [compatibility/components/v1](../../authorities/release/compatibility-guarantees/compatibility-components.md#p-95e9a12259) | [226 indexed contract elements](../compatibility-components-v1/applications.md) |
+| [compatibility/configuration/v1](../../authorities/release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461) | [132 indexed contract elements](../compatibility-configuration-v1/applications.md) |
 | [compatibility/durable-state/v1](../../authorities/release/compatibility-guarantees/compatibility-durable-state.md#p-214a49c2de) | [151 indexed contract elements](../compatibility-durable-state-v1/applications.md) |
 | [compatibility/http-api/v1](../../authorities/release/compatibility-guarantees/compatibility-http-api.md#p-5bc717c2c0) | [585 indexed contract elements](../compatibility-http-api-v1/applications.md) |
 | [compatibility/licensing/v1](../../authorities/release/compatibility-guarantees/compatibility-licensing.md#p-c6988e244a) | Scope stated in definition; no element index |

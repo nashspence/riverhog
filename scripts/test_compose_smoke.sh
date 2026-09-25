@@ -8,20 +8,6 @@ configure_compose_tty
 export COMPOSE_PROFILES=development
 export SOURCE_REVISION="${SOURCE_REVISION:-$(git -C "${ROOT_DIR}" rev-parse HEAD)}"
 export RIVERHOG_API_PORT="${RIVERHOG_API_PORT:-0}"
-export RIVERHOG_BOOTSTRAP_TOKEN="${RIVERHOG_BOOTSTRAP_TOKEN:-riverhog-compose-smoke-bootstrap-token}"
-if [[ -z "${RIVERHOG_ARCHIVE_PASSPHRASES_JSON:-}" ]]; then
-  export RIVERHOG_ARCHIVE_PASSPHRASES_JSON='{"compose-smoke-key-v1":"riverhog-compose-smoke-archive-passphrase"}'
-fi
-export RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID="${RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID:-compose-smoke-key-v1}"
-export RIVERHOG_BROWSE_TOKEN_SIGNING_KEY="${RIVERHOG_BROWSE_TOKEN_SIGNING_KEY:-riverhog-compose-smoke-browse-token-key-v1}"
-export RIVERHOG_RETRIEVAL_CACHE_STORES="${RIVERHOG_RETRIEVAL_CACHE_STORES:-local,elastic}"
-export RIVERHOG_RETRIEVAL_CACHE_LOCAL_ADAPTER_URL="${RIVERHOG_RETRIEVAL_CACHE_LOCAL_ADAPTER_URL:-http://filesystem-cache-adapter:8080}"
-export RIVERHOG_RETRIEVAL_CACHE_LOCAL_ADAPTER_TOKEN_FILE="${RIVERHOG_RETRIEVAL_CACHE_LOCAL_ADAPTER_TOKEN_FILE:-/run/secrets/riverhog-storage-adapter.token}"
-export RIVERHOG_RETRIEVAL_CACHE_LOCAL_ADAPTER_ALLOW_INSECURE_HTTP="${RIVERHOG_RETRIEVAL_CACHE_LOCAL_ADAPTER_ALLOW_INSECURE_HTTP:-true}"
-export RIVERHOG_RETRIEVAL_CACHE_LOCAL_ADMISSION_BUDGET_BYTES="${RIVERHOG_RETRIEVAL_CACHE_LOCAL_ADMISSION_BUDGET_BYTES:-1MiB}"
-export RIVERHOG_RETRIEVAL_CACHE_ELASTIC_ADAPTER_URL="${RIVERHOG_RETRIEVAL_CACHE_ELASTIC_ADAPTER_URL:-http://elastic-cache-adapter:8080}"
-export RIVERHOG_RETRIEVAL_CACHE_ELASTIC_ADAPTER_TOKEN_FILE="${RIVERHOG_RETRIEVAL_CACHE_ELASTIC_ADAPTER_TOKEN_FILE:-/run/secrets/riverhog-storage-adapter.token}"
-export RIVERHOG_RETRIEVAL_CACHE_ELASTIC_ADAPTER_ALLOW_INSECURE_HTTP="${RIVERHOG_RETRIEVAL_CACHE_ELASTIC_ADAPTER_ALLOW_INSECURE_HTTP:-true}"
 
 smoke_root="$(mktemp -d "${TMPDIR:-/tmp}/riverhog-compose-smoke.XXXXXX")"
 smoke_file_count="${STOVE0_SMOKE_FILE_COUNT:-16}"
@@ -49,8 +35,7 @@ stove0_project="${COMPOSE_PROJECT_NAME}-stove0"
 adapter_project="${COMPOSE_PROJECT_NAME}-ftp-spool"
 stove0_compose_file="${ROOT_DIR}/some-implementations/stove0/application/compose.yaml"
 adapter_compose_file="${ROOT_DIR}/some-implementations/riverhog/ingress/ftp/compose.yaml"
-export STOVE0_RECIPES_HOST_PATH="${ROOT_DIR}/qualification/fixtures/stove0/recipes.yaml"
-export STOVE0_ADMISSIONS_HOST_PATH="${ROOT_DIR}/qualification/fixtures/stove0/admissions.json"
+export STOVE0_CONFIG_HOST_PATH="${smoke_root}/stove0.yaml"
 
 stove0_compose() {
   docker compose --project-name "${stove0_project}" --file "${stove0_compose_file}" "$@"
@@ -152,7 +137,7 @@ compose exec -T postgres createdb --username riverhog --owner riverhog stove0
 compose exec -T postgres psql --username riverhog --dbname stove0 \
   --command 'CREATE EXTENSION pg_trgm WITH SCHEMA public;'
 
-bootstrap_token="$(compose_env_value RIVERHOG_BOOTSTRAP_TOKEN riverhog-compose-smoke-bootstrap-token)"
+bootstrap_token="$(cat "${ROOT_DIR}/tests/harness/riverhog-bootstrap-token")"
 create_code="import json, os, urllib.request
 health = json.load(urllib.request.urlopen('http://127.0.0.1:8000/health/ready'))
 assert health['status'] == 'ok'
@@ -233,38 +218,43 @@ printf '%s\n' 'a-riverhog-ftp-spool-compose-smoke-token' > "${secret_root}/ftp-s
 printf '%s\n' 'a-riverhog-ftp-spool-compose-smoke-password' > "${secret_root}/ftp-spool-password"
 chmod 0640 "${secret_root}"/*
 
-adapter_config="${smoke_root}/ftp-spool.json"
-printf '%s\n' '{' \
-  '  "host_id": "urn:uuid:00000000-0000-4000-8000-000000000522",' \
-  '  "riverhog_base_url": "http://app:8000",' \
-  '  "allow_insecure_http": true,' \
-  '  "poll_seconds": 0.25,' \
-  '  "pending_claim_capacity": 16,' \
-  '  "claim_attempt_budget": 8,' \
-  '  "discovery_entry_budget": 4096,' \
-  '  "completion_failure_capacity": 16,' \
-  '  "completion_failure_attempt_budget": 8,' \
-  '  "sources": [' \
-  '    {' \
-  '      "id": "ftp-smoke",' \
-  '      "root": "/intake/ftp",' \
-  '      "ingest_source": "ftp:compose-smoke",' \
-  '      "close_mode": "explicit-flush",' \
-  "      \"max_files\": ${smoke_claim_file_count}," \
-  "      \"max_bytes\": ${smoke_max_bytes}," \
-  '      "description": "FTP exact-event compose qualification",' \
-  '      "tags": [],' \
-  '      "provenance": "omit",' \
-  '      "provenance_omission_reason": "The FTP producer cannot observe the source host filesystem."' \
-  '    }' \
-  '  ]' \
-  '}' > "${adapter_config}"
+sed '/^recipes:/,$d' "${ROOT_DIR}/qualification/fixtures/stove0/config.yaml" > "${STOVE0_CONFIG_HOST_PATH}"
+printf '%s\n' 'recipes:' >> "${STOVE0_CONFIG_HOST_PATH}"
+sed 's/^/  /' "${ROOT_DIR}/qualification/fixtures/stove0/recipes.yaml" >> "${STOVE0_CONFIG_HOST_PATH}"
+printf '%s\n' 'admissions:' >> "${STOVE0_CONFIG_HOST_PATH}"
+sed 's/^/  /' "${ROOT_DIR}/qualification/fixtures/stove0/admissions.json" >> "${STOVE0_CONFIG_HOST_PATH}"
+chmod 0640 "${STOVE0_CONFIG_HOST_PATH}"
+
+adapter_config="${smoke_root}/ftp-spool.yaml"
+cat > "${adapter_config}" <<EOF
+host_id: urn:uuid:00000000-0000-4000-8000-000000000522
+riverhog_base_url: http://app:8000
+riverhog_token_file: /run/secrets/riverhog_token
+api_token_file: /run/secrets/api_token
+allow_insecure_http: true
+poll_seconds: 0.25
+pending_claim_capacity: 16
+claim_attempt_budget: 8
+discovery_entry_budget: 4096
+completion_failure_capacity: 16
+completion_failure_attempt_budget: 8
+sources:
+  - id: ftp-smoke
+    root: /intake/ftp
+    ingest_source: ftp:compose-smoke
+    close_mode: explicit-flush
+    max_files: ${smoke_claim_file_count}
+    max_bytes: ${smoke_max_bytes}
+    description: FTP exact-event compose qualification
+    tags: []
+    provenance: omit
+    provenance_omission_reason: The FTP producer cannot observe the source host filesystem.
+EOF
 chmod 0640 "${adapter_config}"
 
 export RIVERHOG_CONTROL_NETWORK="${COMPOSE_PROJECT_NAME}_default"
 export STOVE0_SECRET_FILE_GID="$(id -g)"
 export STOVE0_API_PORT=0
-export STOVE0_SCHEDULER_INTERVAL_SECONDS=0.25
 export STOVE0_OBSERVER_TMPFS_SIZE=256m
 export STOVE0_TARGET_TMPFS_SIZE=256m
 export REVIEW0_TMPFS_SIZE=256m
@@ -293,6 +283,36 @@ export A_REVIEW0_RCLONE_TARGET_IMAGE_ID="sha256:$(printf '7%.0s' {1..64})"
 # review targets are created only after this bootstrap value is replaced with
 # the running sampler's exact descriptor identity below.
 export A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256="$(printf '5%.0s' {1..64})"
+materializer_config="${smoke_root}/review-materializer.yaml"
+rclone_target_config="${smoke_root}/review-rclone-target.yaml"
+export A_REVIEW0_MATERIALIZER_CONFIG_HOST_PATH="${materializer_config}"
+export A_REVIEW0_RCLONE_TARGET_CONFIG_HOST_PATH="${rclone_target_config}"
+write_review_configs() {
+  cat > "${materializer_config}" <<EOF
+token_file: /run/secrets/a_review0_materializer_token
+samplers:
+  - id: opus
+    base_url: http://a-review0-opus-sampler:8080
+    token_file: /run/secrets/a_review0_opus_sampler_token
+    allow_insecure_http: true
+    descriptor_sha256: ${A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256}
+    image_id: ${A_STOVE0_OPUS_TARGET_IMAGE_ID}
+EOF
+  cat > "${rclone_target_config}" <<EOF
+token_file: /run/secrets/a_review0_rclone_target_token
+destination_identity: ${REVIEW0_RCLONE_EFFECT_DESTINATION_IDENTITY:-bdb097e00217151eda04cc51bff5262f21aea08af4da16df5467d727570875a1}
+rclone_remote: /var/lib/review0-delivery
+samplers:
+  - id: opus
+    base_url: http://a-review0-opus-sampler:8080
+    token_file: /run/secrets/a_review0_opus_sampler_token
+    allow_insecure_http: true
+    descriptor_sha256: ${A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256}
+    image_id: ${A_STOVE0_OPUS_TARGET_IMAGE_ID}
+EOF
+  chmod 0644 "${materializer_config}" "${rclone_target_config}"
+}
+write_review_configs
 export A_RIVERHOG_FTP_SPOOL_API_PORT=0
 export A_RIVERHOG_FTP_SPOOL_PORT=0
 export A_RIVERHOG_FTP_SPOOL_PUBLIC_HOST=
@@ -322,6 +342,7 @@ print(json.load(urllib.request.urlopen(request))['descriptor_sha256'])"
 export A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256="$(
   stove0_compose exec -T a-review0-opus-sampler python -c "${sampler_descriptor_code}"
 )"
+write_review_configs
 stove0_compose up --detach --build --wait a-review0-materializer a-review0-rclone-target
 stove0_compose exec -T a-review0-materializer python -c "import json, urllib.request; request = urllib.request.Request('http://127.0.0.1:8080/v1/target', headers={'Authorization': 'Bearer stove0-compose-review-materialize-target-token'}); assert json.load(urllib.request.urlopen(request))['protocol'] == 'stove0-transform-target/v1'"
 stove0_compose exec -T a-review0-rclone-target python -c "import json, urllib.request; request = urllib.request.Request('http://127.0.0.1:8080/v1/target', headers={'Authorization': 'Bearer stove0-compose-review-rclone-effect-target-token'}); assert json.load(urllib.request.urlopen(request))['protocol'] == 'stove0-effect-target/v1'"
@@ -485,9 +506,10 @@ compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
 
 # Reload the same independently deployed FTP spool with the classified source
 # policy used by the established Riverhog-to-Stove0 compose proof.
-adapter_config_next="${smoke_root}/ftp-spool.next.json"
-jq '.sources[0].description = "Classified FTP compose qualification"
-  | .sources[0].tags = ["stove0/conformance"]' \
+adapter_config_next="${smoke_root}/ftp-spool.next.yaml"
+sed \
+  -e 's/description: FTP exact-event compose qualification/description: Classified FTP compose qualification/' \
+  -e 's/^    tags: \[\]/    tags: [stove0\/conformance]/' \
   "${adapter_config}" > "${adapter_config_next}"
 chmod 0640 "${adapter_config_next}"
 mv "${adapter_config_next}" "${adapter_config}"
@@ -1061,8 +1083,8 @@ compose run --rm "${COMPOSE_RUN_TTY_ARGS[@]}" "${client_environment[@]}" \
 state_metrics_code="import json
 from collections import Counter
 from sqlalchemy import text
-from stove0_core import SqlAlchemyStateStore, database_url_from_environment
-store = SqlAlchemyStateStore(database_url_from_environment(), initialize=False)
+from stove0_core import SqlAlchemyStateStore, database_url_from_config
+store = SqlAlchemyStateStore(database_url_from_config(), initialize=False)
 rows = list(store.iter_work(sort='work_id', order='asc'))
 assert rows and all(row.phase == 'complete' for row in rows), rows
 table_names = (

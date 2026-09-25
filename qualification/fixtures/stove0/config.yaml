@@ -1,0 +1,43 @@
+database_url_file: /run/secrets/stove0_database_url
+api_token_file: /run/secrets/stove0_api_token
+riverhog_base_url: http://app:8000
+riverhog_token_file: /run/secrets/stove0_riverhog_token
+riverhog_allow_insecure_http: true
+browse_token_signing_key_file: /run/secrets/stove0_browse_token_signing_key
+declared_workspace_protection: memory-backed
+scheduler_interval_seconds: 0.25
+observers:
+  exiftool:
+    base_url: http://a-stove0-exiftool-observer:8080
+    token_file: /run/secrets/a_stove0_exiftool_observer_token
+    allow_insecure_http: true
+    semantic_validator_providers: [media-metadata]
+  ffprobe-sampling:
+    base_url: http://a-stove0-ffprobe-sampling-observer:8080
+    token_file: /run/secrets/a_stove0_ffprobe_sampling_observer_token
+    allow_insecure_http: true
+    semantic_validator_providers: [media-sampling]
+targets:
+  nvenc-av1-opus:
+    base_url: http://a-stove0-nvenc-av1-opus-target:8080
+    token_file: /run/secrets/a_stove0_nvenc_av1_opus_target_token
+    allow_insecure_http: true
+  opus:
+    base_url: http://a-stove0-opus-target:8080
+    token_file: /run/secrets/a_stove0_opus_target_token
+    allow_insecure_http: true
+  review:
+    base_url: http://a-review0-materializer:8080
+    token_file: /run/secrets/a_review0_materializer_token
+    allow_insecure_http: true
+  review-effect:
+    base_url: http://a-review0-rclone-target:8080
+    token_file: /run/secrets/a_review0_rclone_target_token
+    allow_insecure_http: true
+target_callback_base_url: http://api:8080
+target_callback_allow_insecure_http: true
+target_callback_signing_key_file: /run/secrets/stove0_target_callback_signing_key
+recipes:
+  format: stove0-recipes/v1
+  operations: []
+  recipes: []

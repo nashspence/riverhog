@@ -8,12 +8,19 @@ These are the indexed contract-element applications. Each link reaches the polic
 
 | Authority | Contract element |
 |---|---|
+| `a-review0-materializer` | [ReviewTargetConfig](../../authorities/a-review0-materializer/schema/reviewtargetconfig.md#pa-6e1000b32b) |
 | `a-review0-materializer` | [a-review0-materializer](../../authorities/a-review0-materializer/cli/a-review0-materializer.md#pa-1d50036b74) |
 | `a-review0-nvenc-av1-opus-sampler` | [a-review0-nvenc-av1-opus-sampler](../../authorities/a-review0-nvenc-av1-opus-sampler/cli/a-review0-nvenc-av1-opus-sampler.md#pa-49d1732f33) |
 | `a-review0-opus-sampler` | [a-review0-opus-sampler](../../authorities/a-review0-opus-sampler/cli/a-review0-opus-sampler.md#pa-55baed850c) |
+| `a-review0-rclone-target` | [RcloneTargetConfig](../../authorities/a-review0-rclone-target/schema/rclonetargetconfig.md#pa-c32d8e8921) |
 | `a-review0-rclone-target` | [a-review0-rclone-target](../../authorities/a-review0-rclone-target/cli/a-review0-rclone-target.md#pa-4a095d8f22) |
+| `a-review0-rclone-target` | [a-review0-rclone-target:configuration:rclone-target-config configuration](../../authorities/a-review0-rclone-target/configuration/a-review0-rclone-target-configuration-rclone-target-config-configuration.md#pa-d5d4c9717c) |
+| `a-riverhog-aws-store` | [AwsStoreDocument](../../authorities/a-riverhog-aws-store/schema/awsstoredocument.md#pa-26348edcd2) |
 | `a-riverhog-aws-store` | [a-riverhog-aws-store](../../authorities/a-riverhog-aws-store/cli/a-riverhog-aws-store.md#pa-cab529a7cf) |
+| `a-riverhog-aws-store` | [a-riverhog-aws-store:configuration:aws-store-document configuration](../../authorities/a-riverhog-aws-store/configuration/a-riverhog-aws-store-configuration-aws-store-document-configuration.md#pa-88d6af0723) |
+| `a-riverhog-b2-store` | [B2StoreDocument](../../authorities/a-riverhog-b2-store/schema/b2storedocument.md#pa-dc017c60c0) |
 | `a-riverhog-b2-store` | [a-riverhog-b2-store](../../authorities/a-riverhog-b2-store/cli/a-riverhog-b2-store.md#pa-ff885e29ef) |
+| `a-riverhog-b2-store` | [a-riverhog-b2-store:configuration:b2-store-document configuration](../../authorities/a-riverhog-b2-store/configuration/a-riverhog-b2-store-configuration-b2-store-document-configuration.md#pa-dd9237292e) |
 | `a-riverhog-cli` | [a-riverhog-cli app key access add](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-access-add.md#pa-f721fbde13) |
 | `a-riverhog-cli` | [a-riverhog-cli app key access list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-access-list.md#pa-9cc1f1b99b) |
 | `a-riverhog-cli` | [a-riverhog-cli app key access remove](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-app-key-access-remove.md#pa-c21283e949) |
@@ -81,6 +88,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-riverhog-cli` | [a-riverhog-cli retrieval cache show](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-retrieval-cache-show.md#pa-b0214c7f16) |
 | `a-riverhog-cli` | [a-riverhog-cli retrieval cache status](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-retrieval-cache-status.md#pa-35d30e5d73) |
 | `a-riverhog-cli` | [a-riverhog-cli tag list](../../authorities/a-riverhog-cli/cli/a-riverhog-cli-tag-list.md#pa-ab81cc1f04) |
+| `a-riverhog-event-relay` | [EventRelayConfig](../../authorities/a-riverhog-event-relay/schema/eventrelayconfig.md#pa-d28f686ef1) |
 | `a-riverhog-event-relay` | [a-riverhog-event-relay](../../authorities/a-riverhog-event-relay/cli/a-riverhog-event-relay.md#pa-4276941b8f) |
 | `a-riverhog-event-relay` | [a-riverhog-event-relay state status](../../authorities/a-riverhog-event-relay/cli/a-riverhog-event-relay-state-status.md#pa-98375adf77) |
 | `a-riverhog-event-relay` | [a-riverhog-event-relay state upgrade](../../authorities/a-riverhog-event-relay/cli/a-riverhog-event-relay-state-upgrade.md#pa-43833b989f) |
@@ -88,6 +96,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `a-riverhog-event-relay` | [a-riverhog-event-relay:configuration:event-relay-config configuration](../../authorities/a-riverhog-event-relay/configuration/a-riverhog-event-relay-configuration-event-relay-config-configuration.md#pa-ca7fafedd1) |
 | `a-riverhog-filesystem-store` | [a-riverhog-filesystem-store](../../authorities/a-riverhog-filesystem-store/cli/a-riverhog-filesystem-store.md#pa-fbb9880eb6) |
 | `a-riverhog-filesystem-store` | [a-riverhog-filesystem-store-materialize](../../authorities/a-riverhog-filesystem-store/cli/a-riverhog-filesystem-store-materialize.md#pa-5610cfe99f) |
+| `a-riverhog-ftp-spool` | [FtpSpoolConfig](../../authorities/a-riverhog-ftp-spool/schema/ftpspoolconfig.md#pa-3cbba6915a) |
 | `a-riverhog-ftp-spool` | [GET /v1/sources/{source_id}/events](../../authorities/a-riverhog-ftp-spool/http-operations/get-v1-sources-source-id-events.md#pa-98a19bfc5b) |
 | `a-riverhog-ftp-spool` | [GET /v1/status](../../authorities/a-riverhog-ftp-spool/http-operations/get-v1-status.md#pa-4c16dde080) |
 | `a-riverhog-ftp-spool` | [a-riverhog-ftp-spool](../../authorities/a-riverhog-ftp-spool/cli/a-riverhog-ftp-spool.md#pa-e5a62b5f62) |
@@ -397,9 +406,11 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-provenance` | [Riverhog v1 bounded provenance file bindings](../../authorities/riverhog-provenance/schema/riverhog-v1-bounded-provenance-file-bindings.md#pa-f6bc343394) |
 | `riverhog-provenance` | [Riverhog v1 bounded provenance volume](../../authorities/riverhog-provenance/schema/riverhog-v1-bounded-provenance-volume.md#pa-f4c4abeed0) |
 | `riverhog-provenance` | [Riverhog v1 immutable provenance root](../../authorities/riverhog-provenance/schema/riverhog-v1-immutable-provenance-root.md#pa-99050d3f45) |
+| `riverhog-server` | [RiverhogDocument](../../authorities/riverhog-server/schema/riverhogdocument.md#pa-a681b3b3d6) |
 | `riverhog-server` | [riverhog-api state status](../../authorities/riverhog-server/cli/riverhog-api-state-status.md#pa-86b6c5cd9f) |
 | `riverhog-server` | [riverhog-api state upgrade](../../authorities/riverhog-server/cli/riverhog-api-state-upgrade.md#pa-c8a8236ef6) |
 | `riverhog-server` | [riverhog-api state verify](../../authorities/riverhog-server/cli/riverhog-api-state-verify.md#pa-8c2c2abc90) |
+| `riverhog-server` | [riverhog-server:configuration:riverhog-document configuration](../../authorities/riverhog-server/configuration/riverhog-server-configuration-riverhog-document-configuration.md#pa-1f550eb2b2) |
 | `riverhog-storage-adapter-support` | [generated:riverhog-storage-adapter: AdapterDescriptor](../../authorities/riverhog-storage-adapter-support/process-protocol-schemas/generated-riverhog-storage-adapter-adapterdescriptor.md#pa-c70497d24e) |
 | `riverhog-storage-adapter-support` | [generated:riverhog-storage-adapter: CompletedObjectReceipt](../../authorities/riverhog-storage-adapter-support/process-protocol-schemas/generated-riverhog-storage-adapter-completedobjectreceipt.md#pa-353bcdbc18) |
 | `riverhog-storage-adapter-support` | [generated:riverhog-storage-adapter: CompletedWriteLookupRequest](../../authorities/riverhog-storage-adapter-support/process-protocol-schemas/generated-riverhog-storage-adapter-completedwritelookuprequest.md#pa-98dada603a) |
@@ -541,14 +552,14 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-observer-support` | [generated:stove0-observer: ObserverDescriptor](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observerdescriptor.md#pa-81237e0250) |
 | `stove0-observer-support` | [stove0-observer-conformance](../../authorities/stove0-observer-support/cli/stove0-observer-conformance.md#pa-66e96d960e) |
 | `stove0-observer-support` | [stove0-observer-schemas](../../authorities/stove0-observer-support/cli/stove0-observer-schemas.md#pa-4b56d463bb) |
-| `stove0-operator-contracts` | [stove0-operator-contracts:configuration:admission-catalog configuration](../../authorities/stove0-operator-contracts/configuration/stove0-operator-contracts-configuration-admission-catalog-configuration.md#pa-126ab7c383) |
-| `stove0-operator-contracts` | [stove0-operator-contracts:configuration:departure-catalog configuration](../../authorities/stove0-operator-contracts/configuration/stove0-operator-contracts-configuration-departure-catalog-configuration.md#pa-e39530102d) |
 | `stove0-recipe-config` | [stove0-recipe-config:configuration:recipe-catalog configuration](../../authorities/stove0-recipe-config/configuration/stove0-recipe-config-configuration-recipe-catalog-configuration.md#pa-e9e4492790) |
+| `stove0-server` | [Stove0Document](../../authorities/stove0-server/schema/stove0document.md#pa-678dcf0dae) |
 | `stove0-server` | [stove0-server scheduler](../../authorities/stove0-server/cli/stove0-server-scheduler.md#pa-e77fd772cd) |
 | `stove0-server` | [stove0-server serve](../../authorities/stove0-server/cli/stove0-server-serve.md#pa-5c148b52cd) |
 | `stove0-server` | [stove0-server state status](../../authorities/stove0-server/cli/stove0-server-state-status.md#pa-e13e7e1231) |
 | `stove0-server` | [stove0-server state upgrade](../../authorities/stove0-server/cli/stove0-server-state-upgrade.md#pa-caed35ff5e) |
 | `stove0-server` | [stove0-server state verify](../../authorities/stove0-server/cli/stove0-server-state-verify.md#pa-ad16511921) |
+| `stove0-server` | [stove0-server:configuration:stove0-document configuration](../../authorities/stove0-server/configuration/stove0-server-configuration-stove0-document-configuration.md#pa-4ab0197277) |
 | `stove0-target-support` | [generated:stove0-target: OperationContract](../../authorities/stove0-target-support/process-protocol-schemas/generated-stove0-target-operationcontract.md#pa-a7cca2a7b5) |
 | `stove0-target-support` | [generated:stove0-target: TargetConformanceResult](../../authorities/stove0-target-support/process-protocol-schemas/generated-stove0-target-targetconformanceresult.md#pa-2fd4e8911b) |
 | `stove0-target-support` | [generated:stove0-target: TargetDescriptor](../../authorities/stove0-target-support/process-protocol-schemas/generated-stove0-target-targetdescriptor.md#pa-1151c39033) |

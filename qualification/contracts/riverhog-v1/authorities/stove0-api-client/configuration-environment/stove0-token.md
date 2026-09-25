@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-api-client:stove0-token:5fbf398cf4 -->
+<!-- contract-element: configuration-environment:stove0-api-client:stove0-token:96265db1fd -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-15035a28e0"></a>
+<a id="s-f0ba6e17dd"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-950ec387ff"></a>`consumers` | `["stove0-api-client"]` |
-| <a id="s-ad12dc509a"></a>`default_expressions` | `["unset"]` |
-| <a id="s-85a7db9bee"></a>`id` | `"stove0-api-client:environment:STOVE0_TOKEN"` |
-| <a id="s-48f3fe11a2"></a>`input_shape` | `"environment-string"` |
-| <a id="s-20ead7c234"></a>`name` | `"STOVE0_TOKEN"` |
-| <a id="s-b5a7f86294"></a>`owner` | `"stove0-api-client"` |
+| <a id="s-9c7aa095b0"></a>`consumers` | `["stove0-api-client"]` |
+| <a id="s-18c60035f0"></a>`default_expressions` | `["unset"]` |
+| <a id="s-bc0136d5ee"></a>`id` | `"stove0-api-client:environment:STOVE0_TOKEN"` |
+| <a id="s-0aac19877e"></a>`input_shape` | `"environment-string"` |
+| <a id="s-3e59f086de"></a>`name` | `"STOVE0_TOKEN"` |
+| <a id="s-f783132f7f"></a>`owner` | `"stove0-api-client"` |
 
 ## Governing policies
 
-- <a id="pa-69191ea63d"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-b3839ef3ef"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/222`
+- `/external_contract/configuration_environment/118`
 
 ### Exact owned JSON
 

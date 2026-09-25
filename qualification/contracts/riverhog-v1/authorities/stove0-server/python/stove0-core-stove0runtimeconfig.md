@@ -22,7 +22,7 @@ Exact externally visible contract owned by this contract element.
 ### Declared structure
 
 - <a id="s-27b721241f"></a>`kind`: `"class"`
-- <a id="s-7065095398"></a>`signature`: `"\"(database_url: 'str', api_token: 'str \| None', riverhog_base_url: 'str', riverhog_token: 'str', riverhog_allow_insecure_http: 'bool', recipes_path: 'Path', observers: 'dict[str, EndpointRegistration]', targets: 'dict[str, EndpointRegistration]', target_callback_base_url: 'str', target_callback_allow_insecure_http: 'bool', target_callback_signing_key: 'str', target_authority_batch_size: 'int', declared_workspace_protection: 'DeclaredWorkspaceProtection', claim_lease_seconds: 'int', capability_ttl_seconds: 'int', scheduler_interval_seconds: 'float', operational_state_retention_seconds: 'int', browse_token_signing_key: 'str', admissions: 'AdmissionCatalog' = AdmissionCatalog(format='stove0-admissions/v1', policies=()), departures: 'DepartureCatalog' = DepartureCatalog(format='stove0-departures/v1', policies=()), departure_targets: 'dict[str, EndpointRegistration]' = <factory>, browse_token_lifetime_seconds: 'int' = 86400) -> None\""`
+- <a id="s-7065095398"></a>`signature`: `"\"(database_url: 'str', api_token: 'str \| None', riverhog_base_url: 'str', riverhog_token: 'str', riverhog_allow_insecure_http: 'bool', recipes: 'RecipeCatalog', observers: 'dict[str, EndpointRegistration]', targets: 'dict[str, EndpointRegistration]', target_callback_base_url: 'str', target_callback_allow_insecure_http: 'bool', target_callback_signing_key: 'str', target_authority_batch_size: 'int', declared_workspace_protection: 'DeclaredWorkspaceProtection', claim_lease_seconds: 'int', capability_ttl_seconds: 'int', scheduler_interval_seconds: 'float', operational_state_retention_seconds: 'int', browse_token_signing_key: 'str', admissions: 'AdmissionCatalog' = AdmissionCatalog(format='stove0-admissions/v1', policies=()), departures: 'DepartureCatalog' = DepartureCatalog(format='stove0-departures/v1', policies=()), departure_targets: 'dict[str, EndpointRegistration]' = <factory>, browse_token_lifetime_seconds: 'int' = 86400) -> None\""`
 
 #### Dataclass fields
 
@@ -33,7 +33,7 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-767512f5c0"></a>`riverhog_base_url` | `'str'` | `required` |
 | <a id="s-a6def3844c"></a>`riverhog_token` | `'str'` | `required` |
 | <a id="s-c7810b455c"></a>`riverhog_allow_insecure_http` | `'bool'` | `required` |
-| <a id="s-34ff4ac11b"></a>`recipes_path` | `'Path'` | `required` |
+| <a id="s-34ff4ac11b"></a>`recipes` | `'RecipeCatalog'` | `required` |
 | <a id="s-8d22ebcb0b"></a>`observers` | `'dict[str, EndpointRegistration]'` | `required` |
 | <a id="s-43dfcd4128"></a>`targets` | `'dict[str, EndpointRegistration]'` | `required` |
 | <a id="s-bfa40386df"></a>`target_callback_base_url` | `'str'` | `required` |
@@ -50,12 +50,6 @@ Exact externally visible contract owned by this contract element.
 | <a id="s-da08bd651f"></a>`departures` | `'DepartureCatalog'` | `DepartureCatalog(format='stove0-departures/v1', policies=())` |
 | <a id="s-0f27061b36"></a>`departure_targets` | `'dict[str, EndpointRegistration]'` | `factory` |
 | <a id="s-8774872c2d"></a>`browse_token_lifetime_seconds` | `'int'` | `86400` |
-
-## Maintained corroboration
-
-### Related interface records
-
-- [from_environment](stove0-core-stove0runtimeconfig-from-environment.md)
 
 ## Governing policies
 
@@ -84,7 +78,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7a8021bb5ce728b3e3f8c563b4da067b3ad048584570672f283486ea063a8a5f -->
+<!-- exact-contract-value: 6a74eca84f8b13d81b08cdacc1b1c2f450b487876f8eba6a63f151fa8ce25b96 -->
 
 ```json
 {
@@ -117,8 +111,8 @@ The following JSON is the complete value owned at each machine-authority pointer
       },
       {
         "default": "required",
-        "name": "recipes_path",
-        "type": "'Path'"
+        "name": "recipes",
+        "type": "'RecipeCatalog'"
       },
       {
         "default": "required",
@@ -202,7 +196,7 @@ The following JSON is the complete value owned at each machine-authority pointer
       }
     ],
     "kind": "class",
-    "signature": "\"(database_url: 'str', api_token: 'str | None', riverhog_base_url: 'str', riverhog_token: 'str', riverhog_allow_insecure_http: 'bool', recipes_path: 'Path', observers: 'dict[str, EndpointRegistration]', targets: 'dict[str, EndpointRegistration]', target_callback_base_url: 'str', target_callback_allow_insecure_http: 'bool', target_callback_signing_key: 'str', target_authority_batch_size: 'int', declared_workspace_protection: 'DeclaredWorkspaceProtection', claim_lease_seconds: 'int', capability_ttl_seconds: 'int', scheduler_interval_seconds: 'float', operational_state_retention_seconds: 'int', browse_token_signing_key: 'str', admissions: 'AdmissionCatalog' = AdmissionCatalog(format='stove0-admissions/v1', policies=()), departures: 'DepartureCatalog' = DepartureCatalog(format='stove0-departures/v1', policies=()), departure_targets: 'dict[str, EndpointRegistration]' = <factory>, browse_token_lifetime_seconds: 'int' = 86400) -> None\""
+    "signature": "\"(database_url: 'str', api_token: 'str | None', riverhog_base_url: 'str', riverhog_token: 'str', riverhog_allow_insecure_http: 'bool', recipes: 'RecipeCatalog', observers: 'dict[str, EndpointRegistration]', targets: 'dict[str, EndpointRegistration]', target_callback_base_url: 'str', target_callback_allow_insecure_http: 'bool', target_callback_signing_key: 'str', target_authority_batch_size: 'int', declared_workspace_protection: 'DeclaredWorkspaceProtection', claim_lease_seconds: 'int', capability_ttl_seconds: 'int', scheduler_interval_seconds: 'float', operational_state_retention_seconds: 'int', browse_token_signing_key: 'str', admissions: 'AdmissionCatalog' = AdmissionCatalog(format='stove0-admissions/v1', policies=()), departures: 'DepartureCatalog' = DepartureCatalog(format='stove0-departures/v1', policies=()), departure_targets: 'dict[str, EndpointRegistration]' = <factory>, browse_token_lifetime_seconds: 'int' = 86400) -> None\""
   },
   "distribution": "stove0-server",
   "module": "stove0_core",

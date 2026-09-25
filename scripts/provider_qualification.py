@@ -25,6 +25,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any, Protocol, cast
 
+import yaml
 from riverhog_canonical_json import canonical_json_bytes
 from time_formats import epoch_ns_from_datetime, format_utc_timestamp, parse_utc_timestamp
 
@@ -2341,18 +2342,41 @@ def _write_private_environment(path: Path, values: Mapping[str, str]) -> None:
         raise
 
 
-def _adapter_environment_paths(output: Path) -> dict[str, Path]:
+def _adapter_config_paths(output: Path) -> dict[str, Path]:
     resolved = output.expanduser().resolve()
     return {
-        "aws-deep-archive": resolved.with_name(f"{resolved.name}.aws-adapter"),
-        "b2-archive": resolved.with_name(f"{resolved.name}.b2-archive-adapter"),
-        "b2-retrieval-cache": resolved.with_name(f"{resolved.name}.b2-cache-adapter"),
+        "aws-deep-archive": resolved.with_name(f"{resolved.name}.aws-adapter.yaml"),
+        "b2-archive": resolved.with_name(f"{resolved.name}.b2-archive-adapter.yaml"),
+        "b2-retrieval-cache": resolved.with_name(f"{resolved.name}.b2-cache-adapter.yaml"),
     }
 
 
-def _riverhog_environment_path(output: Path) -> Path:
+def _riverhog_config_path(output: Path) -> Path:
     resolved = output.expanduser().resolve()
-    return resolved.with_name(f"{resolved.name}.riverhog")
+    return resolved.with_name(f"{resolved.name}.riverhog.yaml")
+
+
+def _private_artifact_path(output: Path, name: str) -> Path:
+    resolved = output.expanduser().resolve()
+    return resolved.with_name(f"{resolved.name}.{name}")
+
+
+def _write_private_bytes(path: Path, value: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o640)
+    try:
+        os.fchmod(descriptor, 0o640)
+        with os.fdopen(descriptor, "wb") as handle:
+            handle.write(value)
+            handle.flush()
+            os.fsync(handle.fileno())
+    except BaseException:
+        path.unlink(missing_ok=True)
+        raise
+
+
+def _write_private_yaml(path: Path, document: Mapping[str, Any]) -> None:
+    _write_private_bytes(path, yaml.safe_dump(dict(document), sort_keys=True).encode("utf-8"))
 
 
 def _storage_adapter_token_path(values: Mapping[str, str]) -> Path:
@@ -2373,7 +2397,7 @@ def _storage_adapter_token_path(values: Mapping[str, str]) -> Path:
     return path
 
 
-def write_runtime_environment(
+def write_runtime_configuration(
     *,
     config: QualificationConfig,
     checkpoint: QualificationCheckpoint,
@@ -2390,127 +2414,193 @@ def write_runtime_environment(
     cloudfront_base_url, cloudfront_public_key_id = cloudfront.runtime_configuration()
     private_key_path = _cloudfront_private_key_path(config, values)
     token_path = _storage_adapter_token_path(values)
-    adapter_outputs = _adapter_environment_paths(output)
-    riverhog_runtime: dict[str, str] = {
-        "RIVERHOG_ARCHIVE_STORES": "b2-archive,aws-deep-archive",
-        "RIVERHOG_ARCHIVE_WRITE_STORE": "b2-archive",
-        "RIVERHOG_ARCHIVE_READ_ORDER": "aws-deep-archive,b2-archive",
-        "RIVERHOG_ARCHIVE_PASSPHRASES_JSON": json.dumps(
-            {
-                QUALIFICATION_PASSPHRASE_ID: _required_env(
-                    values, "RIVERHOG_QUALIFICATION_ARCHIVE_PASSPHRASE"
-                )
-            },
-            sort_keys=True,
-            separators=(",", ":"),
-        ),
-        "RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID": QUALIFICATION_PASSPHRASE_ID,
-        "RIVERHOG_BOOTSTRAP_TOKEN": _required_env(values, "RIVERHOG_QUALIFICATION_BOOTSTRAP_TOKEN"),
-        "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY": f"qualification-{uuid.uuid4().hex}",
-        "RIVERHOG_PUBLIC_BASE_URL": "",
-        "RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY": "48h",
-        "RIVERHOG_RETRIEVAL_CACHE_STORES": "filesystem-cache,b2-cache",
-        "RIVERHOG_RETRIEVAL_CACHE_FILESYSTEM_CACHE_ADAPTER_URL": (
-            "http://qualification-filesystem-cache-adapter:8080"
-        ),
-        "RIVERHOG_RETRIEVAL_CACHE_FILESYSTEM_CACHE_ADAPTER_TOKEN_FILE": (
-            "/run/secrets/riverhog-storage-adapter.token"
-        ),
-        "RIVERHOG_RETRIEVAL_CACHE_FILESYSTEM_CACHE_ADAPTER_ALLOW_INSECURE_HTTP": "true",
-        "RIVERHOG_RETRIEVAL_CACHE_FILESYSTEM_CACHE_ADMISSION_BUDGET_BYTES": (
-            str(QUALIFICATION_FILESYSTEM_CACHE_BUDGET_BYTES)
-        ),
-        "RIVERHOG_RETRIEVAL_CACHE_B2_CACHE_ADAPTER_URL": ("http://b2-retrieval-cache-adapter:8080"),
-        "RIVERHOG_RETRIEVAL_CACHE_B2_CACHE_ADAPTER_TOKEN_FILE": (
-            "/run/secrets/riverhog-storage-adapter.token"
-        ),
-        "RIVERHOG_RETRIEVAL_CACHE_B2_CACHE_ADAPTER_ALLOW_INSECURE_HTTP": "true",
-        "RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_ENABLED": "true",
-        "RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_LEASE": (QUALIFICATION_NEW_ARCHIVE_CACHE_LEASE),
-        "RIVERHOG_RETRIEVAL_CACHE_SWEEP_INTERVAL": QUALIFICATION_CACHE_SWEEP_INTERVAL,
-        "RIVERHOG_RETRIEVAL_DEFAULT_LEASE": f"{config.restore_copy_days}d",
-        "RIVERHOG_RETRIEVAL_MAX_LEASE": f"{config.restore_copy_days}d",
-        "RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL": QUALIFICATION_RESTORE_POLL_INTERVAL,
-        "SOURCE_REVISION": checkpoint.source_sha,
-    }
-    for logical_name in ("b2-archive", "aws-deep-archive"):
-        prefix = f"RIVERHOG_ARCHIVE_STORE_{_store_env_suffix(logical_name)}_"
-        riverhog_runtime.update(
-            {
-                f"{prefix}ADAPTER_URL": (f"http://{logical_name}-adapter:8080"),
-                f"{prefix}ADAPTER_TOKEN_FILE": ("/run/secrets/riverhog-storage-adapter.token"),
-                f"{prefix}ADAPTER_ALLOW_INSECURE_HTTP": "true",
-            }
-        )
-    deep_prefix = "RIVERHOG_ARCHIVE_STORE_AWS_DEEP_ARCHIVE_"
-    riverhog_runtime.update(
-        {
-            f"{deep_prefix}MONTHLY_DOWNLOAD_ALLOWANCE_BYTES": "1TB",
-            f"{deep_prefix}DOWNLOAD_SAFETY_BUFFER_BYTES": "10GB",
-        }
+    adapter_paths = _adapter_config_paths(output)
+    riverhog_path = _riverhog_config_path(output)
+    secret_names = (
+        "database-url",
+        "bootstrap-token",
+        "browse-key",
+        "archive-passphrase",
+        "storage-adapter-token",
+        "cloudfront-key",
+        "aws-access-key-id",
+        "aws-secret-access-key",
+        "aws-session-token",
+        "b2-archive-access-key-id",
+        "b2-archive-secret-access-key",
+        "b2-cache-access-key-id",
+        "b2-cache-secret-access-key",
     )
-
+    secret_paths = {name: _private_artifact_path(output, name) for name in secret_names}
     aws = by_name["aws-deep-archive"]
     aws_key, aws_secret, aws_session = _runtime_credentials(aws, values)
-    adapter_environments = {
-        "aws-deep-archive": {
-            "A_RIVERHOG_AWS_STORE_TOKEN_FILE": ("/run/secrets/riverhog-storage-adapter.token"),
-            "A_RIVERHOG_AWS_STORE_ENDPOINT_URL": _s3_endpoint(aws, values),
-            "A_RIVERHOG_AWS_STORE_REGION": aws.region,
-            "A_RIVERHOG_AWS_STORE_BUCKET": aws.bucket_name,
-            "A_RIVERHOG_AWS_STORE_ACCESS_KEY_ID": aws_key,
-            "A_RIVERHOG_AWS_STORE_SECRET_ACCESS_KEY": aws_secret,
-            "A_RIVERHOG_AWS_STORE_SESSION_TOKEN": aws_session or "",
-            "A_RIVERHOG_AWS_STORE_FORCE_PATH_STYLE": "false",
-            "A_RIVERHOG_AWS_STORE_ROOT_PREFIX": checkpoint.namespace,
-            "A_RIVERHOG_AWS_STORE_READ_MODE": "restore_required",
-            "A_RIVERHOG_AWS_STORE_ARCHIVE_STORAGE_CLASS": "DEEP_ARCHIVE",
-            "A_RIVERHOG_AWS_STORE_RESTORE_TIER": config.restore_tier.capitalize(),
-            "A_RIVERHOG_AWS_STORE_RESTORE_DAYS": str(config.restore_copy_days),
-            "A_RIVERHOG_AWS_STORE_CLOUDFRONT_BASE_URL": cloudfront_base_url,
-            "A_RIVERHOG_AWS_STORE_CLOUDFRONT_PUBLIC_KEY_ID": (cloudfront_public_key_id),
-            "A_RIVERHOG_AWS_STORE_CLOUDFRONT_PRIVATE_KEY_PATH": (
-                "/run/secrets/riverhog-cloudfront.pem"
-            ),
-        }
-    }
-    for logical_name in ("b2-archive", "b2-retrieval-cache"):
-        bucket = by_name[logical_name]
-        access_key, secret_key, _session_token = _runtime_credentials(bucket, values)
-        adapter_environments[logical_name] = {
-            "A_RIVERHOG_B2_STORE_TOKEN_FILE": ("/run/secrets/riverhog-storage-adapter.token"),
-            "A_RIVERHOG_B2_STORE_ENDPOINT_URL": _s3_endpoint(bucket, values),
-            "A_RIVERHOG_B2_STORE_REGION": bucket.region,
-            "A_RIVERHOG_B2_STORE_BUCKET": bucket.bucket_name,
-            "A_RIVERHOG_B2_STORE_ACCESS_KEY_ID": access_key,
-            "A_RIVERHOG_B2_STORE_SECRET_ACCESS_KEY": secret_key,
-            "A_RIVERHOG_B2_STORE_FORCE_PATH_STYLE": "false",
-            "A_RIVERHOG_B2_STORE_ROOT_PREFIX": checkpoint.namespace,
-        }
-
-    riverhog_output = _riverhog_environment_path(output)
-    compose_runtime = {
-        **riverhog_runtime,
-        "RIVERHOG_STORAGE_ADAPTER_TOKEN_HOST_PATH": str(token_path),
-        "A_RIVERHOG_AWS_STORE_CLOUDFRONT_PRIVATE_KEY_HOST_PATH": str(private_key_path),
-        "RIVERHOG_QUALIFICATION_AWS_ADAPTER_ENV_FILE": str(adapter_outputs["aws-deep-archive"]),
-        "RIVERHOG_QUALIFICATION_B2_ARCHIVE_ADAPTER_ENV_FILE": str(adapter_outputs["b2-archive"]),
-        "RIVERHOG_QUALIFICATION_B2_CACHE_ADAPTER_ENV_FILE": str(
-            adapter_outputs["b2-retrieval-cache"]
+    b2_archive = by_name["b2-archive"]
+    b2_archive_key, b2_archive_secret, _ = _runtime_credentials(b2_archive, values)
+    b2_cache = by_name["b2-retrieval-cache"]
+    b2_cache_key, b2_cache_secret, _ = _runtime_credentials(b2_cache, values)
+    secret_values = {
+        "database-url": values.get(
+            "RIVERHOG_QUALIFICATION_DATABASE_URL",
+            "postgresql+psycopg://riverhog:riverhog@postgres:5432/riverhog",
+        ).encode("utf-8"),
+        "bootstrap-token": _required_env(values, "RIVERHOG_QUALIFICATION_BOOTSTRAP_TOKEN").encode(
+            "utf-8"
         ),
-        "RIVERHOG_COMPOSE_ENV_FILE": str(riverhog_output),
-        "TEST_COMPOSE_PROJECT_NAME": f"riverhog-qualification-{checkpoint.run_id[:12]}",
+        "browse-key": f"qualification-{uuid.uuid4().hex}".encode(),
+        "archive-passphrase": _required_env(
+            values, "RIVERHOG_QUALIFICATION_ARCHIVE_PASSPHRASE"
+        ).encode("utf-8"),
+        "storage-adapter-token": token_path.read_bytes(),
+        "cloudfront-key": private_key_path.read_bytes(),
+        "aws-access-key-id": aws_key.encode("utf-8"),
+        "aws-secret-access-key": aws_secret.encode("utf-8"),
+        "aws-session-token": (aws_session or "").encode("utf-8"),
+        "b2-archive-access-key-id": b2_archive_key.encode("utf-8"),
+        "b2-archive-secret-access-key": b2_archive_secret.encode("utf-8"),
+        "b2-cache-access-key-id": b2_cache_key.encode("utf-8"),
+        "b2-cache-secret-access-key": b2_cache_secret.encode("utf-8"),
     }
-    outputs = [output.expanduser().resolve(), riverhog_output, *adapter_outputs.values()]
-    if any(path.exists() for path in outputs):
-        raise QualificationError("deployment environment output must not already exist")
+    riverhog_document: dict[str, Any] = {
+        "database_url_file": "/run/secrets/riverhog-database-url",
+        "bootstrap_token_file": "/run/secrets/riverhog-bootstrap-token",
+        "browse_token_signing_key_file": "/run/secrets/riverhog-browse-key",
+        "archive_passphrase_files": {
+            QUALIFICATION_PASSPHRASE_ID: "/run/secrets/riverhog-archive-passphrase"
+        },
+        "archive_active_passphrase_id": QUALIFICATION_PASSPHRASE_ID,
+        "archive_write_store": "b2-archive",
+        "archive_read_order": ["aws-deep-archive", "b2-archive"],
+        "archive_stores": {
+            "b2-archive": {
+                "base_url": "http://b2-archive-adapter:8080",
+                "token_file": "/run/secrets/riverhog-storage-adapter.token",
+                "allow_insecure_http": True,
+            },
+            "aws-deep-archive": {
+                "base_url": "http://aws-deep-archive-adapter:8080",
+                "token_file": "/run/secrets/riverhog-storage-adapter.token",
+                "allow_insecure_http": True,
+                "monthly_download_allowance_bytes": "1TB",
+                "download_safety_buffer_bytes": "10GB",
+            },
+        },
+        "retrieval_cache_stores": {
+            "filesystem-cache": {
+                "base_url": "http://qualification-filesystem-cache-adapter:8080",
+                "token_file": "/run/secrets/riverhog-storage-adapter.token",
+                "allow_insecure_http": True,
+                "admission_budget_bytes": str(QUALIFICATION_FILESYSTEM_CACHE_BUDGET_BYTES),
+            },
+            "b2-cache": {
+                "base_url": "http://b2-retrieval-cache-adapter:8080",
+                "token_file": "/run/secrets/riverhog-storage-adapter.token",
+                "allow_insecure_http": True,
+            },
+        },
+        "retrieval_estimated_latency": "48h",
+        "retrieval_cache_new_archive_enabled": True,
+        "retrieval_cache_new_archive_lease": QUALIFICATION_NEW_ARCHIVE_CACHE_LEASE,
+        "retrieval_cache_sweep_interval": QUALIFICATION_CACHE_SWEEP_INTERVAL,
+        "retrieval_default_lease": f"{config.restore_copy_days}d",
+        "retrieval_max_lease": f"{config.restore_copy_days}d",
+        "retrieval_restore_poll_interval": QUALIFICATION_RESTORE_POLL_INTERVAL,
+    }
+    aws_document: dict[str, Any] = {
+        "token_file": "/run/secrets/riverhog-storage-adapter.token",
+        "endpoint_url": _s3_endpoint(aws, values),
+        "region": aws.region,
+        "bucket": aws.bucket_name,
+        "access_key_id_file": "/run/secrets/aws-access-key-id",
+        "secret_access_key_file": "/run/secrets/aws-secret-access-key",
+        "force_path_style": False,
+        "root_prefix": checkpoint.namespace,
+        "read_mode": "restore_required",
+        "archive_storage_class": "DEEP_ARCHIVE",
+        "restore_tier": config.restore_tier.capitalize(),
+        "restore_days": config.restore_copy_days,
+        "cloudfront": {
+            "base_url": cloudfront_base_url,
+            "public_key_id": cloudfront_public_key_id,
+            "private_key_path": "/run/secrets/riverhog-cloudfront.pem",
+        },
+    }
+    if aws_session:
+        aws_document["session_token_file"] = "/run/secrets/aws-session-token"
+    b2_documents = {}
+    for logical_name, bucket, key_file, secret_file in (
+        (
+            "b2-archive",
+            b2_archive,
+            "/run/secrets/b2-archive-access-key-id",
+            "/run/secrets/b2-archive-secret-access-key",
+        ),
+        (
+            "b2-retrieval-cache",
+            b2_cache,
+            "/run/secrets/b2-cache-access-key-id",
+            "/run/secrets/b2-cache-secret-access-key",
+        ),
+    ):
+        b2_documents[logical_name] = {
+            "token_file": "/run/secrets/riverhog-storage-adapter.token",
+            "endpoint_url": _s3_endpoint(bucket, values),
+            "region": bucket.region,
+            "bucket": bucket.bucket_name,
+            "access_key_id_file": key_file,
+            "secret_access_key_file": secret_file,
+            "force_path_style": False,
+            "root_prefix": checkpoint.namespace,
+        }
+    compose_runtime = {
+        "SOURCE_REVISION": checkpoint.source_sha,
+        "TEST_COMPOSE_PROJECT_NAME": f"riverhog-qualification-{checkpoint.run_id[:12]}",
+        "RIVERHOG_QUALIFICATION_SECRET_GID": str(os.getgid()),
+        "RIVERHOG_CONFIG_HOST_PATH": str(riverhog_path),
+        "RIVERHOG_DATABASE_URL_HOST_PATH": str(secret_paths["database-url"]),
+        "RIVERHOG_BOOTSTRAP_TOKEN_HOST_PATH": str(secret_paths["bootstrap-token"]),
+        "RIVERHOG_BROWSE_KEY_HOST_PATH": str(secret_paths["browse-key"]),
+        "RIVERHOG_ARCHIVE_PASSPHRASE_HOST_PATH": str(secret_paths["archive-passphrase"]),
+        "RIVERHOG_STORAGE_ADAPTER_TOKEN_HOST_PATH": str(secret_paths["storage-adapter-token"]),
+        "A_RIVERHOG_AWS_STORE_CONFIG_HOST_PATH": str(adapter_paths["aws-deep-archive"]),
+        "A_RIVERHOG_AWS_STORE_CLOUDFRONT_PRIVATE_KEY_HOST_PATH": str(
+            secret_paths["cloudfront-key"]
+        ),
+        "A_RIVERHOG_AWS_STORE_ACCESS_KEY_ID_HOST_PATH": str(secret_paths["aws-access-key-id"]),
+        "A_RIVERHOG_AWS_STORE_SECRET_ACCESS_KEY_HOST_PATH": str(
+            secret_paths["aws-secret-access-key"]
+        ),
+        "A_RIVERHOG_AWS_STORE_SESSION_TOKEN_HOST_PATH": str(secret_paths["aws-session-token"]),
+        "A_RIVERHOG_B2_ARCHIVE_CONFIG_HOST_PATH": str(adapter_paths["b2-archive"]),
+        "A_RIVERHOG_B2_ARCHIVE_ACCESS_KEY_ID_HOST_PATH": str(
+            secret_paths["b2-archive-access-key-id"]
+        ),
+        "A_RIVERHOG_B2_ARCHIVE_SECRET_ACCESS_KEY_HOST_PATH": str(
+            secret_paths["b2-archive-secret-access-key"]
+        ),
+        "A_RIVERHOG_B2_CACHE_CONFIG_HOST_PATH": str(adapter_paths["b2-retrieval-cache"]),
+        "A_RIVERHOG_B2_CACHE_ACCESS_KEY_ID_HOST_PATH": str(secret_paths["b2-cache-access-key-id"]),
+        "A_RIVERHOG_B2_CACHE_SECRET_ACCESS_KEY_HOST_PATH": str(
+            secret_paths["b2-cache-secret-access-key"]
+        ),
+    }
+    paths = [
+        output.expanduser().resolve(),
+        riverhog_path,
+        *adapter_paths.values(),
+        *secret_paths.values(),
+    ]
+    if any(path.exists() for path in paths):
+        raise QualificationError("deployment configuration output must not already exist")
     try:
+        for name, path in secret_paths.items():
+            _write_private_bytes(path, secret_values[name])
+        _write_private_yaml(riverhog_path, riverhog_document)
+        _write_private_yaml(adapter_paths["aws-deep-archive"], aws_document)
+        for logical_name in ("b2-archive", "b2-retrieval-cache"):
+            _write_private_yaml(adapter_paths[logical_name], b2_documents[logical_name])
         _write_private_environment(output, compose_runtime)
-        _write_private_environment(riverhog_output, riverhog_runtime)
-        for logical_name, path in adapter_outputs.items():
-            _write_private_environment(path, adapter_environments[logical_name])
     except BaseException:
-        for path in outputs:
+        for path in paths:
             path.unlink(missing_ok=True)
         raise
 
@@ -4047,8 +4137,8 @@ def _parser() -> argparse.ArgumentParser:
     cleanup_b2.add_argument("--checkpoint", type=Path, required=True)
 
     runtime = commands.add_parser(
-        "runtime-env",
-        help="write a permission-restricted disposable deployment environment",
+        "runtime-config",
+        help="write permission-restricted deployment documents and mounted secret files",
     )
     runtime.add_argument("config", type=Path)
     runtime.add_argument("--checkpoint", type=Path, required=True)
@@ -4134,11 +4224,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             _cleanup_b2_namespace(checkpoint, buckets, os.environ)
             _print_json({"cleaned": True, "format": CHECKPOINT_FORMAT})
             return 0
-        if args.command == "runtime-env":
+        if args.command == "runtime-config":
             config = load_config(args.config)
             checkpoint = load_checkpoint(args.checkpoint)
             buckets = resolve_buckets(config, os.environ)
-            write_runtime_environment(
+            write_runtime_configuration(
                 config=config,
                 checkpoint=checkpoint,
                 buckets=buckets,

@@ -9,7 +9,7 @@ import uuid
 from collections.abc import Sequence
 from pathlib import Path
 
-from riverhog_core.runtime_config import load_runtime_config
+from riverhog_core.runtime_document import load_runtime_config
 from riverhog_storage_adapter_protocol import (
     AdapterDescriptor,
     CompletedWriteLookupRequest,

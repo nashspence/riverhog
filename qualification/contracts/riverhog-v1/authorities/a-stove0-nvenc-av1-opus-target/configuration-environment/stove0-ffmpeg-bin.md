@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-stove0-nvenc-av1-opus-target:stove0-ffmpeg-bin:954024bf6a -->
+<!-- contract-element: configuration-environment:a-stove0-nvenc-av1-opus-target:stove0-ffmpeg-bin:cd1da39e51 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-78853bee33"></a>
+<a id="s-5fe6983476"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-7e93422191"></a>`consumers` | `["a-stove0-nvenc-av1-opus-target"]` |
-| <a id="s-2fbfea52d4"></a>`default_expressions` | `["'ffmpeg'"]` |
-| <a id="s-c3ae61da87"></a>`id` | `"a-stove0-nvenc-av1-opus-target:environment:STOVE0_FFMPEG_BIN"` |
-| <a id="s-83d4c87af5"></a>`input_shape` | `"environment-string"` |
-| <a id="s-5142b62fff"></a>`name` | `"STOVE0_FFMPEG_BIN"` |
-| <a id="s-38a4ecd2f9"></a>`owner` | `"a-stove0-nvenc-av1-opus-target"` |
+| <a id="s-939e46bead"></a>`consumers` | `["a-stove0-nvenc-av1-opus-target"]` |
+| <a id="s-4e50679c67"></a>`default_expressions` | `["'ffmpeg'"]` |
+| <a id="s-46a05f24bc"></a>`id` | `"a-stove0-nvenc-av1-opus-target:environment:STOVE0_FFMPEG_BIN"` |
+| <a id="s-0ce1d91389"></a>`input_shape` | `"environment-string"` |
+| <a id="s-f7d158a894"></a>`name` | `"STOVE0_FFMPEG_BIN"` |
+| <a id="s-0050bf8e14"></a>`owner` | `"a-stove0-nvenc-av1-opus-target"` |
 
 ## Governing policies
 
-- <a id="pa-8997796635"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-4c4e40d880"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/144`
+- `/external_contract/configuration_environment/88`
 
 ### Exact owned JSON
 

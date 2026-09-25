@@ -1,232 +1,172 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
-from stove0_core import Stove0RuntimeConfig, database_url_from_environment
+import yaml
+from stove0_core import database_url_from_config, load_stove0_config
+from stove0_core.runtime_config import generated_config_schema
+
+SCHEMA = Path(__file__).parents[1] / "server/src/stove0_core/config.schema.json"
 
 
-def _environment(recipes: Path) -> dict[str, str]:
-    recipes.write_text("operations: []\nrecipes: []\n", encoding="utf-8")
-    return {
-        "STOVE0_DATABASE_URL": "postgresql+psycopg://stove0@postgres/stove0",
-        "RIVERHOG_BASE_URL": "https://riverhog.invalid",
-        "RIVERHOG_TOKEN": "role-specific-riverhog-token",
-        "STOVE0_RECIPES_PATH": str(recipes),
-        "STOVE0_DECLARED_WORKSPACE_PROTECTION": "encrypted-at-rest",
-        "STOVE0_BROWSE_TOKEN_SIGNING_KEY": "stove0-test-browse-token-signing-key-v1",
+def _config(tmp_path: Path) -> tuple[Path, dict[str, object]]:
+    secrets = {
+        "database_url_file": "postgresql+psycopg://stove0@postgres/stove0",
+        "api_token_file": "operator-token",
+        "riverhog_token_file": "role-specific-riverhog-token",
+        "browse_token_signing_key_file": "stove0-test-browse-token-signing-key-v1",
     }
+    document: dict[str, object] = {
+        "riverhog_base_url": "https://riverhog.invalid",
+        "declared_workspace_protection": "encrypted-at-rest",
+        "recipes": {"format": "stove0-recipes/v1", "operations": [], "recipes": []},
+    }
+    for name, value in secrets.items():
+        path = tmp_path / name
+        path.write_text(value + "\n", encoding="utf-8")
+        document[name] = str(path)
+    path = tmp_path / "stove0.yaml"
+    _write(path, document)
+    return path, document
 
 
-def test_scheduler_configuration_does_not_require_operator_api_secret(
-    tmp_path: Path,
-) -> None:
-    config = Stove0RuntimeConfig.from_environment(
-        _environment(tmp_path / "recipes.yaml"),
-        require_api_token=False,
-    )
+def _write(path: Path, document: dict[str, object]) -> None:
+    path.write_text(yaml.safe_dump(document, sort_keys=True), encoding="utf-8")
 
+
+def test_published_schema_matches_parser() -> None:
+    assert json.loads(SCHEMA.read_text(encoding="utf-8")) == generated_config_schema()
+
+
+def test_scheduler_configuration_does_not_require_operator_api_secret(tmp_path: Path) -> None:
+    path, document = _config(tmp_path)
+    document.pop("api_token_file")
+    _write(path, document)
+    config = load_stove0_config(path, require_api_token=False)
     assert config.api_token is None
     assert config.riverhog_token == "role-specific-riverhog-token"
     assert config.declared_workspace_protection == "encrypted-at-rest"
+    assert config.recipes.recipes == ()
 
 
-def test_runtime_requires_a_workspace_protection_declaration(tmp_path: Path) -> None:
-    environment = _environment(tmp_path / "recipes.yaml")
-    environment.pop("STOVE0_DECLARED_WORKSPACE_PROTECTION")
-
-    with pytest.raises(ValueError, match="STOVE0_DECLARED_WORKSPACE_PROTECTION is required"):
-        Stove0RuntimeConfig.from_environment(environment, require_api_token=False)
-
-
-def test_runtime_configuration_connects_every_control_plane_setting(tmp_path: Path) -> None:
-    environment = _environment(tmp_path / "recipes.yaml")
-    admissions = tmp_path / "admissions.json"
-    admissions.write_text(
-        '{"format":"stove0-admissions/v1","policies":[{'
-        '"id":"camera","revision":1,"selector":{"kind":"tags","required":["camera"]},'
-        '"recipe_id":"fixture/v1","recipe_revision":"1",'
-        '"recipe_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",'
-        '"effective_intent":{}}]}',
-        encoding="utf-8",
+def test_runtime_configuration_connects_policy_and_registrations(tmp_path: Path) -> None:
+    path, document = _config(tmp_path)
+    callback_key = tmp_path / "callback-key"
+    callback_key.write_text("target-callback-signing-key\n", encoding="utf-8")
+    observer_token = tmp_path / "observer-token"
+    observer_token.write_text("observer-secret\n", encoding="utf-8")
+    document.update(
+        riverhog_allow_insecure_http=True,
+        declared_workspace_protection="memory-backed",
+        claim_lease_seconds=240,
+        capability_ttl_seconds=120,
+        scheduler_interval_seconds=0.5,
+        operational_state_retention_seconds=86400,
+        browse_token_lifetime_seconds=7200,
+        target_authority_batch_size=17,
+        observers={
+            "probe": {
+                "base_url": "http://probe:8080",
+                "token_file": str(observer_token),
+                "allow_insecure_http": True,
+                "semantic_validator_providers": ["fixture"],
+            }
+        },
+        targets={"target": {"base_url": "https://target.invalid"}},
+        departure_targets={"index": {"base_url": "https://index.invalid"}},
+        target_callback_base_url="http://stove0.internal:8080",
+        target_callback_allow_insecure_http=True,
+        target_callback_signing_key_file=str(callback_key),
+        admissions={"format": "stove0-admissions/v1", "policies": []},
+        departures={"format": "stove0-departures/v1", "policies": []},
     )
-    departures = tmp_path / "departures.json"
-    departures.write_text(
-        '{"format":"stove0-departures/v1","policies":[{'
-        '"id":"withdraw-index","revision":1,"selector":{"kind":"all"},'
-        '"target_registration_id":"index",'
-        '"target_identity":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}]}',
-        encoding="utf-8",
-    )
-    environment.update(
-        {
-            "STOVE0_API_TOKEN": "operator-token",
-            "RIVERHOG_ALLOW_INSECURE_HTTP": "true",
-            "STOVE0_DECLARED_WORKSPACE_PROTECTION": "memory-backed",
-            "STOVE0_CLAIM_LEASE_SECONDS": "240",
-            "STOVE0_CAPABILITY_TTL_SECONDS": "120",
-            "STOVE0_SCHEDULER_INTERVAL_SECONDS": "0.5",
-            "STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS": "86400",
-            "STOVE0_BROWSE_TOKEN_SIGNING_KEY": "stove0-test-browse-token-signing-key-v1",
-            "STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS": "7200",
-            "STOVE0_OBSERVERS_JSON": (
-                '{"probe":{"base_url":"http://probe:8080","allow_insecure_http":true,'
-                '"semantic_validator_providers":["fixture"]}}'
-            ),
-            "STOVE0_TARGETS_JSON": (
-                '{"target":{"base_url":"https://target.invalid","allow_insecure_http":false}}'
-            ),
-            "STOVE0_TARGET_CALLBACK_BASE_URL": "http://stove0.internal:8080",
-            "STOVE0_TARGET_CALLBACK_ALLOW_INSECURE_HTTP": "true",
-            "STOVE0_TARGET_CALLBACK_SIGNING_KEY": "target-callback-signing-key",
-            "STOVE0_TARGET_AUTHORITY_BATCH_SIZE": "17",
-            "STOVE0_ADMISSIONS_PATH": str(admissions),
-            "STOVE0_DEPARTURES_PATH": str(departures),
-            "STOVE0_DEPARTURE_TARGETS_JSON": (
-                '{"index":{"base_url":"https://index.invalid","allow_insecure_http":false}}'
-            ),
-        }
-    )
-
-    config = Stove0RuntimeConfig.from_environment(environment)
-
+    _write(path, document)
+    config = load_stove0_config(path)
     assert config.api_token == "operator-token"
-    assert config.riverhog_base_url == "https://riverhog.invalid"
     assert config.riverhog_allow_insecure_http is True
-    assert config.recipes_path == (tmp_path / "recipes.yaml").resolve()
-    assert config.admissions.policies[0].id == "camera"
-    assert config.departures.policies[0].id == "withdraw-index"
-    assert config.departure_targets["index"].base_url == "https://index.invalid"
-    assert config.observers["probe"].base_url == "http://probe:8080"
-    assert config.observers["probe"].allow_insecure_http is True
+    assert config.observers["probe"].token == "observer-secret"
     assert config.observers["probe"].semantic_validator_providers == ("fixture",)
     assert config.targets["target"].base_url == "https://target.invalid"
-    assert config.targets["target"].allow_insecure_http is False
-    assert config.targets["target"].semantic_validator_providers == ()
+    assert config.departure_targets["index"].base_url == "https://index.invalid"
+    assert config.departures.format == "stove0-departures/v1"
     assert config.target_callback_base_url == "http://stove0.internal:8080"
     assert config.target_callback_allow_insecure_http is True
     assert config.target_callback_signing_key == "target-callback-signing-key"
     assert config.target_authority_batch_size == 17
-    assert config.declared_workspace_protection == "memory-backed"
     assert config.claim_lease_seconds == 240
     assert config.capability_ttl_seconds == 120
     assert config.scheduler_interval_seconds == 0.5
     assert config.operational_state_retention_seconds == 86400
-    assert config.browse_token_signing_key == "stove0-test-browse-token-signing-key-v1"
     assert config.browse_token_lifetime_seconds == 7200
 
 
-def test_runtime_secrets_accept_exactly_one_direct_or_file_source(tmp_path: Path) -> None:
-    environment = _environment(tmp_path / "recipes.yaml")
-    token = tmp_path / "riverhog.token"
-    token.write_text("from-file\n", encoding="utf-8")
-    environment.pop("RIVERHOG_TOKEN")
-    environment["RIVERHOG_TOKEN_FILE"] = str(token)
-
-    config = Stove0RuntimeConfig.from_environment(
-        environment,
-        require_api_token=False,
-    )
-
-    assert config.riverhog_token == "from-file"
-    environment["RIVERHOG_TOKEN"] = "direct"
-    with pytest.raises(ValueError, match="mutually exclusive"):
-        Stove0RuntimeConfig.from_environment(environment, require_api_token=False)
+def test_missing_api_secret_and_callback_secret_fail_before_startup(tmp_path: Path) -> None:
+    path, document = _config(tmp_path)
+    document.pop("api_token_file")
+    _write(path, document)
+    with pytest.raises(ValueError, match="api_token_file is required"):
+        load_stove0_config(path)
+    document["targets"] = {"target": {"base_url": "https://target.invalid"}}
+    document["target_callback_base_url"] = "https://stove0.invalid"
+    _write(path, document)
+    with pytest.raises(ValueError, match="target_callback_signing_key_file is required"):
+        load_stove0_config(path, require_api_token=False)
 
 
-def test_operator_api_configuration_requires_its_bearer_secret(tmp_path: Path) -> None:
-    with pytest.raises(ValueError, match="STOVE0_API_TOKEN or STOVE0_API_TOKEN_FILE is required"):
-        Stove0RuntimeConfig.from_environment(_environment(tmp_path / "recipes.yaml"))
+def test_database_url_is_postgresql_only(tmp_path: Path) -> None:
+    path, document = _config(tmp_path)
+    Path(str(document["database_url_file"])).write_text("sqlite+pysqlite:///:memory:")
+    with pytest.raises(ValueError, match="must use postgresql"):
+        database_url_from_config(path)
+    with pytest.raises(ValueError, match="must use postgresql"):
+        load_stove0_config(path)
 
 
-def test_every_stove0_role_requires_explicit_browse_signing_material(tmp_path: Path) -> None:
-    environment = _environment(tmp_path / "recipes.yaml")
-    environment.pop("STOVE0_BROWSE_TOKEN_SIGNING_KEY")
+def test_schema_rejects_unknown_policy_and_nonfinite_interval(tmp_path: Path) -> None:
+    path, document = _config(tmp_path)
+    document["STOVE0_TARGETS_JSON"] = "{}"
+    _write(path, document)
+    with pytest.raises(ValueError, match="Additional properties are not allowed"):
+        load_stove0_config(path)
+    document.pop("STOVE0_TARGETS_JSON")
+    document["scheduler_interval_seconds"] = float("nan")
+    _write(path, document)
+    with pytest.raises(ValueError, match="non-finite"):
+        load_stove0_config(path)
 
-    with pytest.raises(
-        ValueError,
-        match=(
-            "STOVE0_BROWSE_TOKEN_SIGNING_KEY or STOVE0_BROWSE_TOKEN_SIGNING_KEY_FILE is required"
-        ),
-    ):
-        Stove0RuntimeConfig.from_environment(environment, require_api_token=False)
+
+def test_registration_provider_constraints_and_secret_errors(tmp_path: Path) -> None:
+    path, document = _config(tmp_path)
+    document["observers"] = {
+        "probe": {
+            "base_url": "https://probe.invalid",
+            "semantic_validator_providers": ["same", "same"],
+        }
+    }
+    _write(path, document)
+    with pytest.raises(ValueError, match="must be nonempty and unique"):
+        load_stove0_config(path)
+    document["observers"] = {}
+    document["targets"] = {
+        "target": {
+            "base_url": "https://target.invalid",
+            "semantic_validator_providers": ["fixture"],
+        }
+    }
+    _write(path, document)
+    with pytest.raises(ValueError, match="Additional properties are not allowed"):
+        load_stove0_config(path)
+    document["targets"] = {}
+    document["riverhog_token_file"] = str(tmp_path / "missing")
+    _write(path, document)
+    with pytest.raises(ValueError, match="cannot be read"):
+        load_stove0_config(path)
 
 
-def test_stove0_runtime_repr_does_not_emit_secret_material(tmp_path: Path) -> None:
-    config = Stove0RuntimeConfig.from_environment(
-        _environment(tmp_path / "recipes.yaml"),
-        require_api_token=False,
-    )
-
-    rendered = repr(config)
+def test_runtime_repr_does_not_emit_secret_material(tmp_path: Path) -> None:
+    path, _ = _config(tmp_path)
+    rendered = repr(load_stove0_config(path))
     assert "role-specific-riverhog-token" not in rendered
     assert "stove0-test-browse-token-signing-key-v1" not in rendered
-
-
-def test_configured_targets_require_an_independent_callback_signing_secret(
-    tmp_path: Path,
-) -> None:
-    environment = _environment(tmp_path / "recipes.yaml")
-    environment["STOVE0_TARGETS_JSON"] = '{"target":{"base_url":"https://target.invalid"}}'
-    environment["STOVE0_TARGET_CALLBACK_BASE_URL"] = "https://stove0.invalid"
-
-    with pytest.raises(
-        ValueError,
-        match=(
-            "STOVE0_TARGET_CALLBACK_SIGNING_KEY or "
-            "STOVE0_TARGET_CALLBACK_SIGNING_KEY_FILE is required"
-        ),
-    ):
-        Stove0RuntimeConfig.from_environment(environment, require_api_token=False)
-
-
-def test_runtime_database_is_postgresql_only(tmp_path: Path) -> None:
-    environment = _environment(tmp_path / "recipes.yaml")
-    environment["STOVE0_DATABASE_URL"] = "sqlite+pysqlite:///:memory:"
-
-    with pytest.raises(ValueError, match="STOVE0_DATABASE_URL must use postgresql"):
-        Stove0RuntimeConfig.from_environment(environment, require_api_token=False)
-    with pytest.raises(ValueError, match="STOVE0_DATABASE_URL must use postgresql"):
-        database_url_from_environment(environment)
-
-
-def test_semantic_validator_providers_are_observer_only_and_unique(tmp_path: Path) -> None:
-    environment = _environment(tmp_path / "recipes.yaml")
-    environment["STOVE0_OBSERVERS_JSON"] = (
-        '{"probe":{"base_url":"https://probe.invalid",'
-        '"semantic_validator_providers":["same","same"]}}'
-    )
-    with pytest.raises(ValueError, match="providers repeat"):
-        Stove0RuntimeConfig.from_environment(environment, require_api_token=False)
-
-    environment["STOVE0_OBSERVERS_JSON"] = "{}"
-    environment["STOVE0_TARGETS_JSON"] = (
-        '{"target":{"base_url":"https://target.invalid",'
-        '"semantic_validator_providers":["fixture"]}}'
-    )
-    with pytest.raises(ValueError, match="cannot configure semantic validators"):
-        Stove0RuntimeConfig.from_environment(environment, require_api_token=False)
-
-
-@pytest.mark.parametrize("value", ["nan", "inf", "-inf"])
-def test_scheduler_interval_must_be_finite(tmp_path: Path, value: str) -> None:
-    environment = _environment(tmp_path / "recipes.yaml")
-    environment["STOVE0_SCHEDULER_INTERVAL_SECONDS"] = value
-
-    with pytest.raises(ValueError, match="must be at least"):
-        Stove0RuntimeConfig.from_environment(
-            environment,
-            require_api_token=False,
-        )
-
-
-@pytest.mark.parametrize("value", ["0", "129"])
-def test_target_authority_batch_size_is_bounded(tmp_path: Path, value: str) -> None:
-    environment = _environment(tmp_path / "recipes.yaml")
-    environment["STOVE0_TARGET_AUTHORITY_BATCH_SIZE"] = value
-
-    with pytest.raises(ValueError, match="must be at"):
-        Stove0RuntimeConfig.from_environment(
-            environment,
-            require_api_token=False,
-        )

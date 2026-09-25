@@ -4,9 +4,11 @@
 
 Backblaze B2-backed Riverhog archive and retrieval store.
 
-Contract elements: **21** · Extent decisions: **8**
+Contract elements: **6** · Extent decisions: **8**
 
 ## Interfaces
 
+- [Schemas](schema/index.md) (1)
 - [CLI](cli/index.md) (1)
-- [Configuration Environment](configuration-environment/index.md) (20)
+- [Configuration Documents](configuration/index.md) (1)
+- [Configuration Environment](configuration-environment/index.md) (3)

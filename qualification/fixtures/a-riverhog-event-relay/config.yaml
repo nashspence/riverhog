@@ -1,0 +1,6 @@
+state_path: /state/event-relay.sqlite3
+sources:
+  - name: stove0
+    events_url: https://stove0.example.invalid/v1/events
+    token_file: /run/secrets/event-source-token
+    webhook_url_file: /run/secrets/event-webhook-url

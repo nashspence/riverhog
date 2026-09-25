@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-review0-rclone-target:a-review0-rclone-target-workspace:f0b0c96040 -->
+<!-- contract-element: configuration-environment:a-review0-rclone-target:a-review0-rclone-target-workspace:1cbd5c7596 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-b86dc65d81"></a>
+<a id="s-6710649fb3"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-1e81b89850"></a>`consumers` | `["a-review0-rclone-target"]` |
-| <a id="s-c2b6d2d02a"></a>`default_expressions` | `["'/run/review0'"]` |
-| <a id="s-657f4a2ce7"></a>`id` | `"a-review0-rclone-target:environment:A_REVIEW0_RCLONE_TARGET_WORKSPACE"` |
-| <a id="s-af86639504"></a>`input_shape` | `"environment-string"` |
-| <a id="s-08fd5560b5"></a>`name` | `"A_REVIEW0_RCLONE_TARGET_WORKSPACE"` |
-| <a id="s-6f4b6e09b4"></a>`owner` | `"a-review0-rclone-target"` |
+| <a id="s-fe5e426476"></a>`consumers` | `["a-review0-rclone-target"]` |
+| <a id="s-8068b7b57e"></a>`default_expressions` | `["'/run/review0'"]` |
+| <a id="s-6bfdc5327e"></a>`id` | `"a-review0-rclone-target:environment:A_REVIEW0_RCLONE_TARGET_WORKSPACE"` |
+| <a id="s-62400e816f"></a>`input_shape` | `"environment-string"` |
+| <a id="s-3a8258723c"></a>`name` | `"A_REVIEW0_RCLONE_TARGET_WORKSPACE"` |
+| <a id="s-373b12e6ec"></a>`owner` | `"a-review0-rclone-target"` |
 
 ## Governing policies
 
-- <a id="pa-ecf4d6afd5"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-5a290d51a8"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/45`
+- `/external_contract/configuration_environment/35`
 
 ### Exact owned JSON
 

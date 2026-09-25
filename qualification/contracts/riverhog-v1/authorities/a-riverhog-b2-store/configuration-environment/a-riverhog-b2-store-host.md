@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-riverhog-b2-store:a-riverhog-b2-store-host:c7b0b7d199 -->
+<!-- contract-element: configuration-environment:a-riverhog-b2-store:a-riverhog-b2-store-host:2cf11bbb5e -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-cbedc559e6"></a>
+<a id="s-c26bd33aa8"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-339b989f89"></a>`consumers` | `["a-riverhog-b2-store"]` |
-| <a id="s-02e4d9f7d4"></a>`default_expressions` | `["'127.0.0.1'"]` |
-| <a id="s-ab96b2e072"></a>`id` | `"a-riverhog-b2-store:environment:A_RIVERHOG_B2_STORE_HOST"` |
-| <a id="s-debabc62df"></a>`input_shape` | `"environment-string"` |
-| <a id="s-7dead87c9e"></a>`name` | `"A_RIVERHOG_B2_STORE_HOST"` |
-| <a id="s-a99760a4aa"></a>`owner` | `"a-riverhog-b2-store"` |
+| <a id="s-cbfe80a062"></a>`consumers` | `["a-riverhog-b2-store"]` |
+| <a id="s-8d23212c1a"></a>`default_expressions` | `["'127.0.0.1'"]` |
+| <a id="s-a3f3fe3044"></a>`id` | `"a-riverhog-b2-store:environment:A_RIVERHOG_B2_STORE_HOST"` |
+| <a id="s-7d81361521"></a>`input_shape` | `"environment-string"` |
+| <a id="s-501ec97f37"></a>`name` | `"A_RIVERHOG_B2_STORE_HOST"` |
+| <a id="s-06c79d612b"></a>`owner` | `"a-riverhog-b2-store"` |
 
 ## Governing policies
 
-- <a id="pa-81ce4f061a"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-2173006a61"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/82`
+- `/external_contract/configuration_environment/40`
 
 ### Exact owned JSON
 

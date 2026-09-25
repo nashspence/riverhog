@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-riverhog-filesystem-store:a-riverhog-filesystem-store-read-chunk-bytes:a66347c8ee -->
+<!-- contract-element: configuration-environment:a-riverhog-filesystem-store:a-riverhog-filesystem-store-read-chunk-bytes:7e4bd4d16f -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,16 +13,16 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-62bc3f7cc9"></a>
+<a id="s-ef146f919d"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-119f21dafe"></a>`consumers` | `["a-riverhog-filesystem-store"]` |
-| <a id="s-3c87eac384"></a>`default_expressions` | `["''"]` |
-| <a id="s-01069a2d81"></a>`id` | `"a-riverhog-filesystem-store:environment:A_RIVERHOG_FILESYSTEM_STORE_READ_CHUNK_BYTES"` |
-| <a id="s-a900a6f3a0"></a>`input_shape` | `"environment-string"` |
-| <a id="s-02fadb9af0"></a>`name` | `"A_RIVERHOG_FILESYSTEM_STORE_READ_CHUNK_BYTES"` |
-| <a id="s-6ab5fa12ac"></a>`owner` | `"a-riverhog-filesystem-store"` |
+| <a id="s-93a23b729e"></a>`consumers` | `["a-riverhog-filesystem-store"]` |
+| <a id="s-4a3b51c44c"></a>`default_expressions` | `["''"]` |
+| <a id="s-7df70bf7e9"></a>`id` | `"a-riverhog-filesystem-store:environment:A_RIVERHOG_FILESYSTEM_STORE_READ_CHUNK_BYTES"` |
+| <a id="s-202888fb55"></a>`input_shape` | `"environment-string"` |
+| <a id="s-4e7ddbc9fe"></a>`name` | `"A_RIVERHOG_FILESYSTEM_STORE_READ_CHUNK_BYTES"` |
+| <a id="s-3e6453e97a"></a>`owner` | `"a-riverhog-filesystem-store"` |
 
 ### Progression, limits, and lifecycle
 
@@ -32,14 +32,14 @@ Shared facts for every subject below: configuration="A_RIVERHOG_FILESYSTEM_STORE
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [A_RIVERHOG_FILESYSTEM_STORE_READ_CHUNK_BYTES](#s-62bc3f7cc9) | `value · configured-value · operational_policy` | shared above |
+| [A_RIVERHOG_FILESYSTEM_STORE_READ_CHUNK_BYTES](#s-ef146f919d) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
-- <a id="pa-0078e77c0a"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
-- <a id="pa-e7d220fd1b"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
+- <a id="pa-6479ccab28"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-f908776864"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -63,7 +63,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/106`
+- `/external_contract/configuration_environment/52`
 
 ### Exact owned JSON
 

@@ -24,7 +24,8 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 |---|---|---|---|
 | <a id="s-375b606e4b"></a>`host`<br>`--host` | optional option; 1 value | not recorded | `"127.0.0.1"` |
 | <a id="s-c69eac7cfd"></a>`port`<br>`--port` | optional option; 1 value | int | `8080` |
-| <a id="s-5cd3ecf03d"></a>`provision_root`<br>`--provision-root` | optional flag; 0 values | not recorded | `false` |
+| <a id="s-5cd3ecf03d"></a>`config`<br>`--config` | optional option; 1 value | Path | not recorded |
+| <a id="s-44b03b9202"></a>`provision_root`<br>`--provision-root` | optional flag; 0 values | not recorded | `false` |
 
 ### Terminating controls
 
@@ -62,7 +63,8 @@ Shared facts for every subject below: reason="fixed-command-argument-arity"; sou
 |---|---|---|
 | [CLI parameter --host](#s-375b606e4b) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1 |
 | [CLI parameter --port](#s-c69eac7cfd) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1 |
-| [CLI parameter --provision-root](#s-5cd3ecf03d) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0 |
+| [CLI parameter --config](#s-5cd3ecf03d) | `cardinality · values-per-occurrence · fixed` | maximum=1; minimum=1 |
+| [CLI parameter --provision-root](#s-44b03b9202) | `cardinality · values-per-occurrence · fixed` | maximum=0; minimum=0 |
 
 ## Governing policies
 
@@ -116,7 +118,7 @@ true
 
 ### `/external_contract/cli/a-riverhog-aws-store/parameters`
 
-<!-- exact-contract-value: 2e7bfbe785f76e807173a7daf67d956193711ab9464e7a8d9054a8340b54b804 -->
+<!-- exact-contract-value: 26841198a73cbed8d6deda2fc36237e8090024fea41c8956df857db2208ff195 -->
 
 ```json
 [
@@ -140,6 +142,16 @@ true
     ],
     "required": false,
     "type": "int"
+  },
+  {
+    "dest": "config",
+    "kind": "_StoreAction",
+    "nargs": null,
+    "options": [
+      "--config"
+    ],
+    "required": false,
+    "type": "Path"
   },
   {
     "default": false,

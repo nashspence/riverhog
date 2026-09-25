@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-riverhog-cli:a-riverhog-cli-local-root:4b51727d94 -->
+<!-- contract-element: configuration-environment:a-riverhog-cli:a-riverhog-cli-local-root:9cf08c255a -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-5b5ad305a7"></a>
+<a id="s-c80b060880"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-d3dd57dbb2"></a>`consumers` | `["a-riverhog-cli"]` |
-| <a id="s-c889318b3c"></a>`default_expressions` | `["''"]` |
-| <a id="s-6178250fdc"></a>`id` | `"a-riverhog-cli:environment:A_RIVERHOG_CLI_LOCAL_ROOT"` |
-| <a id="s-fe5e59c7f3"></a>`input_shape` | `"environment-string"` |
-| <a id="s-cf768fb7d8"></a>`name` | `"A_RIVERHOG_CLI_LOCAL_ROOT"` |
-| <a id="s-87339d9e18"></a>`owner` | `"a-riverhog-cli"` |
+| <a id="s-fe8922d859"></a>`consumers` | `["a-riverhog-cli"]` |
+| <a id="s-63325e3b83"></a>`default_expressions` | `["''"]` |
+| <a id="s-8546fde067"></a>`id` | `"a-riverhog-cli:environment:A_RIVERHOG_CLI_LOCAL_ROOT"` |
+| <a id="s-2ae46bdb0a"></a>`input_shape` | `"environment-string"` |
+| <a id="s-e9729640af"></a>`name` | `"A_RIVERHOG_CLI_LOCAL_ROOT"` |
+| <a id="s-09d7007204"></a>`owner` | `"a-riverhog-cli"` |
 
 ## Governing policies
 
-- <a id="pa-04cd258ab9"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-2f721b4cc2"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/97`
+- `/external_contract/configuration_environment/43`
 
 ### Exact owned JSON
 

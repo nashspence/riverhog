@@ -21,11 +21,14 @@ urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "
 dependencies = [
   "boto3>=1.35,<2.0",
   "botocore>=1.35,<2.0",
+  "config-validation>=0.1,<0.2",
+  "pydantic>=2.7,<3.0",
   "riverhog-storage-adapter-protocol>=0.1,<0.2",
   "time-formats>=0.1,<0.2",
 ]
 
 [tool.uv.sources]
+config-validation = { workspace = true }
 riverhog-storage-adapter-protocol = { workspace = true }
 time-formats = { workspace = true }
 

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-riverhog-filesystem-store:a-riverhog-filesystem-store-minimum-free-bytes:fce9e8df73 -->
+<!-- contract-element: configuration-environment:a-riverhog-filesystem-store:a-riverhog-filesystem-store-minimum-free-bytes:92080e6aa5 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,16 +13,16 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-549c81fb7a"></a>
+<a id="s-71aef6f25d"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-da01a86256"></a>`consumers` | `["a-riverhog-filesystem-store"]` |
-| <a id="s-600627c040"></a>`default_expressions` | `["''"]` |
-| <a id="s-b1b61e3fa9"></a>`id` | `"a-riverhog-filesystem-store:environment:A_RIVERHOG_FILESYSTEM_STORE_MINIMUM_FREE_BYTES"` |
-| <a id="s-59a3425c54"></a>`input_shape` | `"environment-string"` |
-| <a id="s-dd46bf31d6"></a>`name` | `"A_RIVERHOG_FILESYSTEM_STORE_MINIMUM_FREE_BYTES"` |
-| <a id="s-6bf4797208"></a>`owner` | `"a-riverhog-filesystem-store"` |
+| <a id="s-a3df3866fb"></a>`consumers` | `["a-riverhog-filesystem-store"]` |
+| <a id="s-3fe8602d6c"></a>`default_expressions` | `["''"]` |
+| <a id="s-ffb1f55176"></a>`id` | `"a-riverhog-filesystem-store:environment:A_RIVERHOG_FILESYSTEM_STORE_MINIMUM_FREE_BYTES"` |
+| <a id="s-cf559f5a8f"></a>`input_shape` | `"environment-string"` |
+| <a id="s-8019296a33"></a>`name` | `"A_RIVERHOG_FILESYSTEM_STORE_MINIMUM_FREE_BYTES"` |
+| <a id="s-796b4f0f4b"></a>`owner` | `"a-riverhog-filesystem-store"` |
 
 ### Progression, limits, and lifecycle
 
@@ -32,14 +32,14 @@ Shared facts for every subject below: configuration="A_RIVERHOG_FILESYSTEM_STORE
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [A_RIVERHOG_FILESYSTEM_STORE_MINIMUM_FREE_BYTES](#s-549c81fb7a) | `value · configured-value · operational_policy` | shared above |
+| [A_RIVERHOG_FILESYSTEM_STORE_MINIMUM_FREE_BYTES](#s-71aef6f25d) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
-- <a id="pa-a7f58856dc"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
-- <a id="pa-c763df1dcf"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
+- <a id="pa-f4546f171c"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-72607adc2f"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -63,7 +63,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/104`
+- `/external_contract/configuration_environment/50`
 
 ### Exact owned JSON
 

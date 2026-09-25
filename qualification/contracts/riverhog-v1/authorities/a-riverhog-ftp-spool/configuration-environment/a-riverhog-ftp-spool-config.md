@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-riverhog-ftp-spool:a-riverhog-ftp-spool-config:411f1d5faa -->
+<!-- contract-element: configuration-environment:a-riverhog-ftp-spool:a-riverhog-ftp-spool-config:0fd5c7f595 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-7baa03212b"></a>
+<a id="s-79f8ec8b66"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-8d23c42891"></a>`consumers` | `["a-riverhog-ftp-spool"]` |
-| <a id="s-c2f443c58f"></a>`default_expressions` | `["''"]` |
-| <a id="s-0da1805b51"></a>`id` | `"a-riverhog-ftp-spool:environment:A_RIVERHOG_FTP_SPOOL_CONFIG"` |
-| <a id="s-abd8a91df5"></a>`input_shape` | `"environment-string"` |
-| <a id="s-aa9b56325e"></a>`name` | `"A_RIVERHOG_FTP_SPOOL_CONFIG"` |
-| <a id="s-5216e992db"></a>`owner` | `"a-riverhog-ftp-spool"` |
+| <a id="s-3b66af5af9"></a>`consumers` | `["a-riverhog-ftp-spool"]` |
+| <a id="s-f033f04804"></a>`default_expressions` | `["''"]` |
+| <a id="s-523002be62"></a>`id` | `"a-riverhog-ftp-spool:environment:A_RIVERHOG_FTP_SPOOL_CONFIG"` |
+| <a id="s-08d11a5f6d"></a>`input_shape` | `"environment-string"` |
+| <a id="s-af9e9db7e5"></a>`name` | `"A_RIVERHOG_FTP_SPOOL_CONFIG"` |
+| <a id="s-228a0a0fe8"></a>`owner` | `"a-riverhog-ftp-spool"` |
 
 ## Governing policies
 
-- <a id="pa-4ff5607281"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-d71b25d961"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -51,7 +51,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/111`
+- `/external_contract/configuration_environment/57`
 
 ### Exact owned JSON
 

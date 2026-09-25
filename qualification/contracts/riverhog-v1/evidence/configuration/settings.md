@@ -11,15 +11,12 @@ Recorded consumer and default facts come from discovery. Use the contract elemen
 | <a id="c-9c0b6efc83-793e1d7472"></a>`a-gogurt-windows-listener` | [LOCALAPPDATA](../../authorities/a-gogurt-windows-listener/configuration-environment/localappdata.md) | `a-gogurt-windows-listener` | `unset` |
 | `a-gogurt-windows-listener` | [PATHEXT](../../authorities/a-gogurt-windows-listener/configuration-environment/pathext.md) | `a-gogurt-windows-listener` | `'.COM;.EXE;.BAT;.CMD'` |
 | `a-gogurt-windows-listener` | [SystemRoot](../../authorities/a-gogurt-windows-listener/configuration-environment/systemroot.md) | `a-gogurt-windows-listener` | `'C:\\Windows'` |
-| <a id="c-9c0b6efc83-515aafaf42"></a>`a-review0-materializer` | [A_REVIEW0_MATERIALIZER_HOST](../../authorities/a-review0-materializer/configuration-environment/a-review0-materializer-host.md) | `a-review0-materializer` | `'127.0.0.1'` |
+| <a id="c-9c0b6efc83-515aafaf42"></a>`a-review0-materializer` | [A_REVIEW0_MATERIALIZER_CONFIG](../../authorities/a-review0-materializer/configuration-environment/a-review0-materializer-config.md) | `a-review0-materializer` | `unset` |
+| `a-review0-materializer` | [A_REVIEW0_MATERIALIZER_HOST](../../authorities/a-review0-materializer/configuration-environment/a-review0-materializer-host.md) | `a-review0-materializer` | `'127.0.0.1'` |
 | `a-review0-materializer` | [A_REVIEW0_MATERIALIZER_IMAGE_ID](../../authorities/a-review0-materializer/configuration-environment/a-review0-materializer-image-id.md) | `a-review0-materializer` | `''` |
 | `a-review0-materializer` | [A_REVIEW0_MATERIALIZER_PORT](../../authorities/a-review0-materializer/configuration-environment/a-review0-materializer-port.md) | `a-review0-materializer` | `'8080'` |
-| `a-review0-materializer` | [A_REVIEW0_MATERIALIZER_SAMPLERS_JSON](../../authorities/a-review0-materializer/configuration-environment/a-review0-materializer-samplers-json.md) | `a-review0-materializer` | `unset` |
-| `a-review0-materializer` | [A_REVIEW0_MATERIALIZER_SAMPLERS_JSON_FILE](../../authorities/a-review0-materializer/configuration-environment/a-review0-materializer-samplers-json-file.md) | `a-review0-materializer` | `unset` |
 | `a-review0-materializer` | [A_REVIEW0_MATERIALIZER_SOURCE_REVISION](../../authorities/a-review0-materializer/configuration-environment/a-review0-materializer-source-revision.md) | `a-review0-materializer` | `'unknown'` |
 | `a-review0-materializer` | [A_REVIEW0_MATERIALIZER_STATE_ROOT](../../authorities/a-review0-materializer/configuration-environment/a-review0-materializer-state-root.md) | `a-review0-materializer` | `'/var/lib/a-review0-materializer'` |
-| `a-review0-materializer` | [A_REVIEW0_MATERIALIZER_TOKEN](../../authorities/a-review0-materializer/configuration-environment/a-review0-materializer-token.md) | `a-review0-materializer` | `unset` |
-| `a-review0-materializer` | [A_REVIEW0_MATERIALIZER_TOKEN_FILE](../../authorities/a-review0-materializer/configuration-environment/a-review0-materializer-token-file.md) | `a-review0-materializer` | `unset` |
 | `a-review0-materializer` | [A_REVIEW0_MATERIALIZER_WORKSPACE](../../authorities/a-review0-materializer/configuration-environment/a-review0-materializer-workspace.md) | `a-review0-materializer` | `'/run/review0'` |
 | <a id="c-9c0b6efc83-62bc4c07fb"></a>`a-review0-nvenc-av1-opus-sampler` | [A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_HOST](../../authorities/a-review0-nvenc-av1-opus-sampler/configuration-environment/a-review0-nvenc-av1-opus-sampler-host.md) | `a-review0-nvenc-av1-opus-sampler` | `'127.0.0.1'` |
 | `a-review0-nvenc-av1-opus-sampler` | [A_REVIEW0_NVENC_AV1_OPUS_SAMPLER_IMAGE_ID](../../authorities/a-review0-nvenc-av1-opus-sampler/configuration-environment/a-review0-nvenc-av1-opus-sampler-image-id.md) | `a-review0-nvenc-av1-opus-sampler` | `''` |
@@ -37,71 +34,20 @@ Recorded consumer and default facts come from discovery. Use the contract elemen
 | `a-review0-opus-sampler` | [A_REVIEW0_OPUS_SAMPLER_TOKEN_FILE](../../authorities/a-review0-opus-sampler/configuration-environment/a-review0-opus-sampler-token-file.md) | `a-review0-opus-sampler` | `unset` |
 | `a-review0-opus-sampler` | [A_REVIEW0_OPUS_SAMPLER_WORKSPACE](../../authorities/a-review0-opus-sampler/configuration-environment/a-review0-opus-sampler-workspace.md) | `a-review0-opus-sampler` | `'/run/review0'` |
 | `a-review0-opus-sampler` | [STOVE0_FFMPEG_BIN](../../authorities/a-review0-opus-sampler/configuration-environment/stove0-ffmpeg-bin.md) | `a-review0-opus-sampler` | `'ffmpeg'` |
-| <a id="c-9c0b6efc83-834f85115e"></a>`a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_DESTINATION_IDENTITY](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-destination-identity.md) | `a-review0-rclone-target` | `''` |
+| <a id="c-9c0b6efc83-834f85115e"></a>`a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_CONFIG](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-config.md) | `a-review0-rclone-target` | `unset` |
 | `a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_HOST](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-host.md) | `a-review0-rclone-target` | `'127.0.0.1'` |
 | `a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_IMAGE_ID](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-image-id.md) | `a-review0-rclone-target` | `''` |
 | `a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_PORT](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-port.md) | `a-review0-rclone-target` | `'8080'` |
 | `a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_RCLONE_BIN](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-rclone-bin.md) | `a-review0-rclone-target` | `'rclone'` |
-| `a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_RCLONE_CONFIG_FILE](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-rclone-config-file.md) | `a-review0-rclone-target` | `''` |
-| `a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_RCLONE_REMOTE](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-rclone-remote.md) | `a-review0-rclone-target` | `''` |
-| `a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_RCLONE_TIMEOUT_SECONDS](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-rclone-timeout-seconds.md) | `a-review0-rclone-target` | `'86400'` |
-| `a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_SAMPLERS_JSON](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-samplers-json.md) | `a-review0-rclone-target` | `unset` |
-| `a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_SAMPLERS_JSON_FILE](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-samplers-json-file.md) | `a-review0-rclone-target` | `unset` |
 | `a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_SOURCE_REVISION](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-source-revision.md) | `a-review0-rclone-target` | `'unknown'` |
 | `a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_STATE_ROOT](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-state-root.md) | `a-review0-rclone-target` | `'/var/lib/a-review0-rclone-target'` |
-| `a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_TOKEN](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-token.md) | `a-review0-rclone-target` | `unset` |
-| `a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_TOKEN_FILE](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-token-file.md) | `a-review0-rclone-target` | `unset` |
 | `a-review0-rclone-target` | [A_REVIEW0_RCLONE_TARGET_WORKSPACE](../../authorities/a-review0-rclone-target/configuration-environment/a-review0-rclone-target-workspace.md) | `a-review0-rclone-target` | `'/run/review0'` |
-| <a id="c-9c0b6efc83-58baadba75"></a>`a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_ACCESS_KEY_ID](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-access-key-id.md) | `a-riverhog-aws-store` | `unset` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_ACCESS_KEY_ID_FILE](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-access-key-id-file.md) | `a-riverhog-aws-store` | `unset` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_ARCHIVE_STORAGE_CLASS](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-archive-storage-class.md) | `a-riverhog-aws-store` | `''` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_BUCKET](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-bucket.md) | `a-riverhog-aws-store` | `''` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_CLOUDFRONT_BASE_URL](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-cloudfront-base-url.md) | `a-riverhog-aws-store` | `''` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_CLOUDFRONT_PRIVATE_KEY_PATH](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-cloudfront-private-key-path.md) | `a-riverhog-aws-store` | `''` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_CLOUDFRONT_PUBLIC_KEY_ID](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-cloudfront-public-key-id.md) | `a-riverhog-aws-store` | `''` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_CONNECT_TIMEOUT_SECONDS](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-connect-timeout-seconds.md) | `a-riverhog-aws-store` | `''` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_ENDPOINT_URL](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-endpoint-url.md) | `a-riverhog-aws-store` | `''` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_FORCE_PATH_STYLE](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-force-path-style.md) | `a-riverhog-aws-store` | `''` |
+| <a id="c-9c0b6efc83-58baadba75"></a>`a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_CONFIG](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-config.md) | `a-riverhog-aws-store` | `unset` |
 | `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_HOST](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-host.md) | `a-riverhog-aws-store` | `'127.0.0.1'` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_IMMEDIATE_STORAGE_CLASS](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-immediate-storage-class.md) | `a-riverhog-aws-store` | `''` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_MAX_ATTEMPTS](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-max-attempts.md) | `a-riverhog-aws-store` | `''` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_MAX_POOL_CONNECTIONS](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-max-pool-connections.md) | `a-riverhog-aws-store` | `''` |
 | `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_PORT](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-port.md) | `a-riverhog-aws-store` | `'8080'` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_READ_CHUNK_BYTES](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-read-chunk-bytes.md) | `a-riverhog-aws-store` | `''` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_READ_MODE](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-read-mode.md) | `a-riverhog-aws-store` | `''` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_READ_TIMEOUT_SECONDS](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-read-timeout-seconds.md) | `a-riverhog-aws-store` | `''` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_REGION](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-region.md) | `a-riverhog-aws-store` | `''` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_RESTORE_DAYS](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-restore-days.md) | `a-riverhog-aws-store` | `''` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_RESTORE_TIER](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-restore-tier.md) | `a-riverhog-aws-store` | `''` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_RETRY_MODE](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-retry-mode.md) | `a-riverhog-aws-store` | `''` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_ROOT_PREFIX](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-root-prefix.md) | `a-riverhog-aws-store` | `''` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_SECRET_ACCESS_KEY](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-secret-access-key.md) | `a-riverhog-aws-store` | `unset` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_SECRET_ACCESS_KEY_FILE](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-secret-access-key-file.md) | `a-riverhog-aws-store` | `unset` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_SESSION_TOKEN](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-session-token.md) | `a-riverhog-aws-store` | `unset` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_SESSION_TOKEN_FILE](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-session-token-file.md) | `a-riverhog-aws-store` | `unset` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_TCP_KEEPALIVE](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-tcp-keepalive.md) | `a-riverhog-aws-store` | `''` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_TOKEN](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-token.md) | `a-riverhog-aws-store` | `unset` |
-| `a-riverhog-aws-store` | [A_RIVERHOG_AWS_STORE_TOKEN_FILE](../../authorities/a-riverhog-aws-store/configuration-environment/a-riverhog-aws-store-token-file.md) | `a-riverhog-aws-store` | `unset` |
-| <a id="c-9c0b6efc83-776a28f6b1"></a>`a-riverhog-b2-store` | [A_RIVERHOG_B2_STORE_ACCESS_KEY_ID](../../authorities/a-riverhog-b2-store/configuration-environment/a-riverhog-b2-store-access-key-id.md) | `a-riverhog-b2-store` | `unset` |
-| `a-riverhog-b2-store` | [A_RIVERHOG_B2_STORE_ACCESS_KEY_ID_FILE](../../authorities/a-riverhog-b2-store/configuration-environment/a-riverhog-b2-store-access-key-id-file.md) | `a-riverhog-b2-store` | `unset` |
-| `a-riverhog-b2-store` | [A_RIVERHOG_B2_STORE_BUCKET](../../authorities/a-riverhog-b2-store/configuration-environment/a-riverhog-b2-store-bucket.md) | `a-riverhog-b2-store` | `''` |
-| `a-riverhog-b2-store` | [A_RIVERHOG_B2_STORE_CONNECT_TIMEOUT_SECONDS](../../authorities/a-riverhog-b2-store/configuration-environment/a-riverhog-b2-store-connect-timeout-seconds.md) | `a-riverhog-b2-store` | `''` |
-| `a-riverhog-b2-store` | [A_RIVERHOG_B2_STORE_ENDPOINT_URL](../../authorities/a-riverhog-b2-store/configuration-environment/a-riverhog-b2-store-endpoint-url.md) | `a-riverhog-b2-store` | `''` |
-| `a-riverhog-b2-store` | [A_RIVERHOG_B2_STORE_FORCE_PATH_STYLE](../../authorities/a-riverhog-b2-store/configuration-environment/a-riverhog-b2-store-force-path-style.md) | `a-riverhog-b2-store` | `''` |
+| <a id="c-9c0b6efc83-776a28f6b1"></a>`a-riverhog-b2-store` | [A_RIVERHOG_B2_STORE_CONFIG](../../authorities/a-riverhog-b2-store/configuration-environment/a-riverhog-b2-store-config.md) | `a-riverhog-b2-store` | `unset` |
 | `a-riverhog-b2-store` | [A_RIVERHOG_B2_STORE_HOST](../../authorities/a-riverhog-b2-store/configuration-environment/a-riverhog-b2-store-host.md) | `a-riverhog-b2-store` | `'127.0.0.1'` |
-| `a-riverhog-b2-store` | [A_RIVERHOG_B2_STORE_MAX_ATTEMPTS](../../authorities/a-riverhog-b2-store/configuration-environment/a-riverhog-b2-store-max-attempts.md) | `a-riverhog-b2-store` | `''` |
-| `a-riverhog-b2-store` | [A_RIVERHOG_B2_STORE_MAX_POOL_CONNECTIONS](../../authorities/a-riverhog-b2-store/configuration-environment/a-riverhog-b2-store-max-pool-connections.md) | `a-riverhog-b2-store` | `''` |
 | `a-riverhog-b2-store` | [A_RIVERHOG_B2_STORE_PORT](../../authorities/a-riverhog-b2-store/configuration-environment/a-riverhog-b2-store-port.md) | `a-riverhog-b2-store` | `'8080'` |
-| `a-riverhog-b2-store` | [A_RIVERHOG_B2_STORE_READ_CHUNK_BYTES](../../authorities/a-riverhog-b2-store/configuration-environment/a-riverhog-b2-store-read-chunk-bytes.md) | `a-riverhog-b2-store` | `''` |
-| `a-riverhog-b2-store` | [A_RIVERHOG_B2_STORE_READ_TIMEOUT_SECONDS](../../authorities/a-riverhog-b2-store/configuration-environment/a-riverhog-b2-store-read-timeout-seconds.md) | `a-riverhog-b2-store` | `''` |
-| `a-riverhog-b2-store` | [A_RIVERHOG_B2_STORE_REGION](../../authorities/a-riverhog-b2-store/configuration-environment/a-riverhog-b2-store-region.md) | `a-riverhog-b2-store` | `''` |
-| `a-riverhog-b2-store` | [A_RIVERHOG_B2_STORE_RETRY_MODE](../../authorities/a-riverhog-b2-store/configuration-environment/a-riverhog-b2-store-retry-mode.md) | `a-riverhog-b2-store` | `''` |
-| `a-riverhog-b2-store` | [A_RIVERHOG_B2_STORE_ROOT_PREFIX](../../authorities/a-riverhog-b2-store/configuration-environment/a-riverhog-b2-store-root-prefix.md) | `a-riverhog-b2-store` | `''` |
-| `a-riverhog-b2-store` | [A_RIVERHOG_B2_STORE_SECRET_ACCESS_KEY](../../authorities/a-riverhog-b2-store/configuration-environment/a-riverhog-b2-store-secret-access-key.md) | `a-riverhog-b2-store` | `unset` |
-| `a-riverhog-b2-store` | [A_RIVERHOG_B2_STORE_SECRET_ACCESS_KEY_FILE](../../authorities/a-riverhog-b2-store/configuration-environment/a-riverhog-b2-store-secret-access-key-file.md) | `a-riverhog-b2-store` | `unset` |
-| `a-riverhog-b2-store` | [A_RIVERHOG_B2_STORE_TCP_KEEPALIVE](../../authorities/a-riverhog-b2-store/configuration-environment/a-riverhog-b2-store-tcp-keepalive.md) | `a-riverhog-b2-store` | `''` |
-| `a-riverhog-b2-store` | [A_RIVERHOG_B2_STORE_TOKEN](../../authorities/a-riverhog-b2-store/configuration-environment/a-riverhog-b2-store-token.md) | `a-riverhog-b2-store` | `unset` |
-| `a-riverhog-b2-store` | [A_RIVERHOG_B2_STORE_TOKEN_FILE](../../authorities/a-riverhog-b2-store/configuration-environment/a-riverhog-b2-store-token-file.md) | `a-riverhog-b2-store` | `unset` |
 | <a id="c-9c0b6efc83-fd9a0838e2"></a>`a-riverhog-cli` | [A_RIVERHOG_CLI_LOCAL_DATABASE](../../authorities/a-riverhog-cli/configuration-environment/a-riverhog-cli-local-database.md) | `a-riverhog-cli` | `''` |
 | `a-riverhog-cli` | [A_RIVERHOG_CLI_LOCAL_ROOT](../../authorities/a-riverhog-cli/configuration-environment/a-riverhog-cli-local-root.md) | `a-riverhog-cli` | `''` |
 | `a-riverhog-cli` | [A_RIVERHOG_CLI_PLAIN](../../authorities/a-riverhog-cli/configuration-environment/a-riverhog-cli-plain.md) | `a-riverhog-cli` | `''` |
@@ -118,8 +64,6 @@ Recorded consumer and default facts come from discovery. Use the contract elemen
 | `a-riverhog-filesystem-store` | [A_RIVERHOG_FILESYSTEM_STORE_TOKEN](../../authorities/a-riverhog-filesystem-store/configuration-environment/a-riverhog-filesystem-store-token.md) | `a-riverhog-filesystem-store` | `unset` |
 | `a-riverhog-filesystem-store` | [A_RIVERHOG_FILESYSTEM_STORE_TOKEN_FILE](../../authorities/a-riverhog-filesystem-store/configuration-environment/a-riverhog-filesystem-store-token-file.md) | `a-riverhog-filesystem-store` | `unset` |
 | <a id="c-9c0b6efc83-ddde5b8757"></a>`a-riverhog-ftp-spool` | [A_RIVERHOG_FTP_SPOOL_CONFIG](../../authorities/a-riverhog-ftp-spool/configuration-environment/a-riverhog-ftp-spool-config.md) | `a-riverhog-ftp-spool` | `''` |
-| `a-riverhog-ftp-spool` | [RIVERHOG_ALLOW_INSECURE_HTTP](../../authorities/a-riverhog-ftp-spool/configuration-environment/riverhog-allow-insecure-http.md) | `a-riverhog-ftp-spool` | `'false'` |
-| `a-riverhog-ftp-spool` | [RIVERHOG_BASE_URL](../../authorities/a-riverhog-ftp-spool/configuration-environment/riverhog-base-url.md) | `a-riverhog-ftp-spool` | `''` |
 | <a id="c-9c0b6efc83-26f9a24cc3"></a>`a-riverhog-ftp-spool-client` | [A_RIVERHOG_FTP_SPOOL_ALLOW_INSECURE_HTTP](../../authorities/a-riverhog-ftp-spool-client/configuration-environment/a-riverhog-ftp-spool-allow-insecure-http.md) | `a-riverhog-ftp-spool-client` | `unset` |
 | `a-riverhog-ftp-spool-client` | [A_RIVERHOG_FTP_SPOOL_BASE_URL](../../authorities/a-riverhog-ftp-spool-client/configuration-environment/a-riverhog-ftp-spool-base-url.md) | `a-riverhog-ftp-spool-client` | `unset` |
 | `a-riverhog-ftp-spool-client` | [A_RIVERHOG_FTP_SPOOL_HTTP2](../../authorities/a-riverhog-ftp-spool-client/configuration-environment/a-riverhog-ftp-spool-http2.md) | `a-riverhog-ftp-spool-client` | `unset` |
@@ -175,85 +119,11 @@ Recorded consumer and default facts come from discovery. Use the contract elemen
 | <a id="c-9c0b6efc83-81870add65"></a>`riverhog-provenance` | [LOCALAPPDATA](../../authorities/riverhog-provenance/configuration-environment/localappdata.md) | `riverhog-provenance` | `unset` |
 | `riverhog-provenance` | [RIVERHOG_PROVENANCE_STATE_HOME](../../authorities/riverhog-provenance/configuration-environment/riverhog-provenance-state-home.md) | `riverhog-provenance` | `unset` |
 | `riverhog-provenance` | [XDG_STATE_HOME](../../authorities/riverhog-provenance/configuration-environment/xdg-state-home.md) | `riverhog-provenance` | `unset` |
-| <a id="c-9c0b6efc83-6efea6f4cb"></a>`riverhog-server` | [RIVERHOG_AGE_SESSION_CACHE_ENTRIES](../../authorities/riverhog-server/configuration-environment/riverhog-age-session-cache-entries.md) | `riverhog-server` | `unset` |
-| `riverhog-server` | [RIVERHOG_AGE_SESSION_DERIVATION_CONCURRENCY](../../authorities/riverhog-server/configuration-environment/riverhog-age-session-derivation-concurrency.md) | `riverhog-server` | `unset` |
-| `riverhog-server` | [RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID](../../authorities/riverhog-server/configuration-environment/riverhog-archive-active-passphrase-id.md) | `riverhog-server` | `''` |
-| `riverhog-server` | [RIVERHOG_ARCHIVE_PART_PLAINTEXT_BYTES](../../authorities/riverhog-server/configuration-environment/riverhog-archive-part-plaintext-bytes.md) | `riverhog-server` | `unset` |
-| `riverhog-server` | [RIVERHOG_ARCHIVE_PASSPHRASES_JSON](../../authorities/riverhog-server/configuration-environment/riverhog-archive-passphrases-json.md) | `riverhog-server` | `''` |
-| `riverhog-server` | [RIVERHOG_ARCHIVE_PREPARE_CONCURRENCY](../../authorities/riverhog-server/configuration-environment/riverhog-archive-prepare-concurrency.md) | `riverhog-server` | `unset` |
-| `riverhog-server` | [RIVERHOG_ARCHIVE_READ_ORDER](../../authorities/riverhog-server/configuration-environment/riverhog-archive-read-order.md) | `riverhog-server` | `','.join(names)` |
-| `riverhog-server` | [RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR](../../authorities/riverhog-server/configuration-environment/riverhog-archive-scrypt-work-factor.md) | `riverhog-server` | `str(DEFAULT_ARCHIVE_SCRYPT_WORK_FACTOR)` |
-| `riverhog-server` | [RIVERHOG_ARCHIVE_STORES](../../authorities/riverhog-server/configuration-environment/riverhog-archive-stores.md) | `riverhog-server` | `'archive'` |
-| `riverhog-server` | [RIVERHOG_ARCHIVE_UPLOAD_REQUEST_CONCURRENCY](../../authorities/riverhog-server/configuration-environment/riverhog-archive-upload-request-concurrency.md) | `riverhog-server` | `unset` |
-| `riverhog-server` | [RIVERHOG_ARCHIVE_UPLOAD_SWEEP_INTERVAL](../../authorities/riverhog-server/configuration-environment/riverhog-archive-upload-sweep-interval.md) | `riverhog-server` | `'30s'` |
-| `riverhog-server` | [RIVERHOG_ARCHIVE_WRITE_CONCURRENCY](../../authorities/riverhog-server/configuration-environment/riverhog-archive-write-concurrency.md) | `riverhog-server` | `unset` |
-| `riverhog-server` | [RIVERHOG_ARCHIVE_WRITE_STORE](../../authorities/riverhog-server/configuration-environment/riverhog-archive-write-store.md) | `riverhog-server` | `names[0]` |
-| `riverhog-server` | [RIVERHOG_BOOTSTRAP_TOKEN](../../authorities/riverhog-server/configuration-environment/riverhog-bootstrap-token.md) | `riverhog-server` | `''` |
-| `riverhog-server` | [RIVERHOG_BROWSE_TOKEN_LIFETIME](../../authorities/riverhog-server/configuration-environment/riverhog-browse-token-lifetime.md) | `riverhog-server` | `'24h'` |
-| `riverhog-server` | [RIVERHOG_BROWSE_TOKEN_SIGNING_KEY](../../authorities/riverhog-server/configuration-environment/riverhog-browse-token-signing-key.md) | `riverhog-server` | `''` |
-| `riverhog-server` | [RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME](../../authorities/riverhog-server/configuration-environment/riverhog-catalog-sync-bootstrap-lifetime.md) | `riverhog-server` | `'7d'` |
-| `riverhog-server` | [RIVERHOG_CATALOG_SYNC_CURSOR_LIFETIME](../../authorities/riverhog-server/configuration-environment/riverhog-catalog-sync-cursor-lifetime.md) | `riverhog-server` | `'24h'` |
-| `riverhog-server` | [RIVERHOG_CATALOG_SYNC_HISTORY_REAP_BATCH_SIZE](../../authorities/riverhog-server/configuration-environment/riverhog-catalog-sync-history-reap-batch-size.md) | `riverhog-server` | `'100'` |
-| `riverhog-server` | [RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION](../../authorities/riverhog-server/configuration-environment/riverhog-catalog-sync-history-retention.md) | `riverhog-server` | `'30d'` |
-| `riverhog-server` | [RIVERHOG_CATALOG_SYNC_PAGE_SIZE_MAX](../../authorities/riverhog-server/configuration-environment/riverhog-catalog-sync-page-size-max.md) | `riverhog-server` | `str(CATALOG_SYNC_PAGE_SIZE_MAX)` |
-| `riverhog-server` | [RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE](../../authorities/riverhog-server/configuration-environment/riverhog-collection-upload-custody-lease.md) | `riverhog-server` | `'1h'` |
-| `riverhog-server` | [RIVERHOG_DATABASE_URL](../../authorities/riverhog-server/configuration-environment/riverhog-database-url.md) | `riverhog-server` | `''` |
-| `riverhog-server` | [RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE](../../authorities/riverhog-server/configuration-environment/riverhog-event-context-reap-batch-size.md) | `riverhog-server` | `'100'` |
-| `riverhog-server` | [RIVERHOG_EVENT_CONTEXT_RETENTION](../../authorities/riverhog-server/configuration-environment/riverhog-event-context-retention.md) | `riverhog-server` | `'30d'` |
-| `riverhog-server` | [RIVERHOG_INGRESS_MAX_INFLIGHT_BYTES](../../authorities/riverhog-server/configuration-environment/riverhog-ingress-max-inflight-bytes.md) | `riverhog-server` | `unset` |
-| `riverhog-server` | [RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES](../../authorities/riverhog-server/configuration-environment/riverhog-ingress-source-read-chunk-bytes.md) | `riverhog-server` | `unset` |
-| `riverhog-server` | [RIVERHOG_LOG_LEVEL](../../authorities/riverhog-server/configuration-environment/riverhog-log-level.md) | `riverhog-server` | `DEFAULT_LOG_LEVEL` |
-| `riverhog-server` | [RIVERHOG_PACK_FILES](../../authorities/riverhog-server/configuration-environment/riverhog-pack-files.md) | `riverhog-server` | `unset` |
-| `riverhog-server` | [RIVERHOG_PACK_MEMBER_BYTES](../../authorities/riverhog-server/configuration-environment/riverhog-pack-member-bytes.md) | `riverhog-server` | `unset` |
-| `riverhog-server` | [RIVERHOG_PACK_SOURCE_BYTES](../../authorities/riverhog-server/configuration-environment/riverhog-pack-source-bytes.md) | `riverhog-server` | `unset` |
-| `riverhog-server` | [RIVERHOG_PUBLIC_BASE_URL](../../authorities/riverhog-server/configuration-environment/riverhog-public-base-url.md) | `riverhog-server` | `''` |
-| `riverhog-server` | [RIVERHOG_RAW_VOLUME_PLAINTEXT_BYTES](../../authorities/riverhog-server/configuration-environment/riverhog-raw-volume-plaintext-bytes.md) | `riverhog-server` | `unset` |
-| `riverhog-server` | [RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_ENABLED](../../authorities/riverhog-server/configuration-environment/riverhog-retrieval-cache-new-archive-enabled.md) | `riverhog-server` | `'true'` |
-| `riverhog-server` | [RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_LEASE](../../authorities/riverhog-server/configuration-environment/riverhog-retrieval-cache-new-archive-lease.md) | `riverhog-server` | `'72h'` |
-| `riverhog-server` | [RIVERHOG_RETRIEVAL_CACHE_STORES](../../authorities/riverhog-server/configuration-environment/riverhog-retrieval-cache-stores.md) | `riverhog-server` | `''` |
-| `riverhog-server` | [RIVERHOG_RETRIEVAL_CACHE_SWEEP_INTERVAL](../../authorities/riverhog-server/configuration-environment/riverhog-retrieval-cache-sweep-interval.md) | `riverhog-server` | `'5m'` |
-| `riverhog-server` | [RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES](../../authorities/riverhog-server/configuration-environment/riverhog-retrieval-cache-write-segment-bytes.md) | `riverhog-server` | `'64MiB'` |
-| `riverhog-server` | [RIVERHOG_RETRIEVAL_DEFAULT_LEASE](../../authorities/riverhog-server/configuration-environment/riverhog-retrieval-default-lease.md) | `riverhog-server` | `'24h'` |
-| `riverhog-server` | [RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY](../../authorities/riverhog-server/configuration-environment/riverhog-retrieval-estimated-latency.md) | `riverhog-server` | `'48h'` |
-| `riverhog-server` | [RIVERHOG_RETRIEVAL_MAX_INFLIGHT_BYTES](../../authorities/riverhog-server/configuration-environment/riverhog-retrieval-max-inflight-bytes.md) | `riverhog-server` | `unset` |
-| `riverhog-server` | [RIVERHOG_RETRIEVAL_MAX_LEASE](../../authorities/riverhog-server/configuration-environment/riverhog-retrieval-max-lease.md) | `riverhog-server` | `'7d'` |
-| `riverhog-server` | [RIVERHOG_RETRIEVAL_MAX_RANGE_BYTES](../../authorities/riverhog-server/configuration-environment/riverhog-retrieval-max-range-bytes.md) | `riverhog-server` | `unset` |
-| `riverhog-server` | [RIVERHOG_RETRIEVAL_PENDING_TIMEOUT](../../authorities/riverhog-server/configuration-environment/riverhog-retrieval-pending-timeout.md) | `riverhog-server` | `'72h'` |
-| `riverhog-server` | [RIVERHOG_RETRIEVAL_RANGE_BILLING_MODE](../../authorities/riverhog-server/configuration-environment/riverhog-retrieval-range-billing-mode.md) | `riverhog-server` | `unset` |
-| `riverhog-server` | [RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES](../../authorities/riverhog-server/configuration-environment/riverhog-retrieval-range-merge-gap-bytes.md) | `riverhog-server` | `unset` |
-| `riverhog-server` | [RIVERHOG_RETRIEVAL_READ_CHUNK_BYTES](../../authorities/riverhog-server/configuration-environment/riverhog-retrieval-read-chunk-bytes.md) | `riverhog-server` | `unset` |
-| `riverhog-server` | [RIVERHOG_RETRIEVAL_REQUEST_CONCURRENCY](../../authorities/riverhog-server/configuration-environment/riverhog-retrieval-request-concurrency.md) | `riverhog-server` | `unset` |
-| `riverhog-server` | [RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL](../../authorities/riverhog-server/configuration-environment/riverhog-retrieval-restore-poll-interval.md) | `riverhog-server` | `'5m'` |
+| <a id="c-9c0b6efc83-6efea6f4cb"></a>`riverhog-server` | [RIVERHOG_CONFIG](../../authorities/riverhog-server/configuration-environment/riverhog-config.md) | `riverhog-server` | `'', unset` |
 | <a id="c-9c0b6efc83-d81d0dac73"></a>`stove0-api-client` | [STOVE0_ALLOW_INSECURE_HTTP](../../authorities/stove0-api-client/configuration-environment/stove0-allow-insecure-http.md) | `stove0-api-client` | `unset` |
 | `stove0-api-client` | [STOVE0_BASE_URL](../../authorities/stove0-api-client/configuration-environment/stove0-base-url.md) | `stove0-api-client` | `unset` |
 | `stove0-api-client` | [STOVE0_HTTP2](../../authorities/stove0-api-client/configuration-environment/stove0-http2.md) | `stove0-api-client` | `unset` |
 | `stove0-api-client` | [STOVE0_HTTP_TIMEOUT_SECONDS](../../authorities/stove0-api-client/configuration-environment/stove0-http-timeout-seconds.md) | `stove0-api-client` | `unset` |
 | `stove0-api-client` | [STOVE0_TOKEN](../../authorities/stove0-api-client/configuration-environment/stove0-token.md) | `stove0-api-client` | `unset` |
-| <a id="c-9c0b6efc83-38913a60d9"></a>`stove0-server` | [RIVERHOG_ALLOW_INSECURE_HTTP](../../authorities/stove0-server/configuration-environment/riverhog-allow-insecure-http.md) | `stove0-server` | `unset` |
-| `stove0-server` | [RIVERHOG_BASE_URL](../../authorities/stove0-server/configuration-environment/riverhog-base-url.md) | `stove0-server` | `''` |
-| `stove0-server` | [RIVERHOG_TOKEN](../../authorities/stove0-server/configuration-environment/riverhog-token.md) | `stove0-server` | `''` |
-| `stove0-server` | [RIVERHOG_TOKEN_FILE](../../authorities/stove0-server/configuration-environment/riverhog-token-file.md) | `stove0-server` | `''` |
-| `stove0-server` | [STOVE0_ADMISSIONS_PATH](../../authorities/stove0-server/configuration-environment/stove0-admissions-path.md) | `stove0-server` | `''` |
-| `stove0-server` | [STOVE0_API_TOKEN](../../authorities/stove0-server/configuration-environment/stove0-api-token.md) | `stove0-server` | `''` |
-| `stove0-server` | [STOVE0_API_TOKEN_FILE](../../authorities/stove0-server/configuration-environment/stove0-api-token-file.md) | `stove0-server` | `''` |
-| `stove0-server` | [STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS](../../authorities/stove0-server/configuration-environment/stove0-browse-token-lifetime-seconds.md) | `stove0-server` | `str(default)` |
-| `stove0-server` | [STOVE0_BROWSE_TOKEN_SIGNING_KEY](../../authorities/stove0-server/configuration-environment/stove0-browse-token-signing-key.md) | `stove0-server` | `''` |
-| `stove0-server` | [STOVE0_BROWSE_TOKEN_SIGNING_KEY_FILE](../../authorities/stove0-server/configuration-environment/stove0-browse-token-signing-key-file.md) | `stove0-server` | `''` |
-| `stove0-server` | [STOVE0_CAPABILITY_TTL_SECONDS](../../authorities/stove0-server/configuration-environment/stove0-capability-ttl-seconds.md) | `stove0-server` | `str(default)` |
-| `stove0-server` | [STOVE0_CLAIM_LEASE_SECONDS](../../authorities/stove0-server/configuration-environment/stove0-claim-lease-seconds.md) | `stove0-server` | `str(default)` |
-| `stove0-server` | [STOVE0_DATABASE_URL](../../authorities/stove0-server/configuration-environment/stove0-database-url.md) | `stove0-server` | `''` |
-| `stove0-server` | [STOVE0_DATABASE_URL_FILE](../../authorities/stove0-server/configuration-environment/stove0-database-url-file.md) | `stove0-server` | `''` |
-| `stove0-server` | [STOVE0_DECLARED_WORKSPACE_PROTECTION](../../authorities/stove0-server/configuration-environment/stove0-declared-workspace-protection.md) | `stove0-server` | `''` |
-| `stove0-server` | [STOVE0_DEPARTURES_PATH](../../authorities/stove0-server/configuration-environment/stove0-departures-path.md) | `stove0-server` | `''` |
-| `stove0-server` | [STOVE0_DEPARTURE_TARGETS_JSON](../../authorities/stove0-server/configuration-environment/stove0-departure-targets-json.md) | `stove0-server` | `'{}'` |
-| `stove0-server` | [STOVE0_OBSERVERS_JSON](../../authorities/stove0-server/configuration-environment/stove0-observers-json.md) | `stove0-server` | `'{}'` |
-| `stove0-server` | [STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS](../../authorities/stove0-server/configuration-environment/stove0-operational-state-retention-seconds.md) | `stove0-server` | `str(default)` |
-| `stove0-server` | [STOVE0_RECIPES_PATH](../../authorities/stove0-server/configuration-environment/stove0-recipes-path.md) | `stove0-server` | `''` |
-| `stove0-server` | [STOVE0_SCHEDULER_INTERVAL_SECONDS](../../authorities/stove0-server/configuration-environment/stove0-scheduler-interval-seconds.md) | `stove0-server` | `str(default)` |
-| `stove0-server` | [STOVE0_TARGETS_JSON](../../authorities/stove0-server/configuration-environment/stove0-targets-json.md) | `stove0-server` | `'{}'` |
-| `stove0-server` | [STOVE0_TARGET_AUTHORITY_BATCH_SIZE](../../authorities/stove0-server/configuration-environment/stove0-target-authority-batch-size.md) | `stove0-server` | `str(default)` |
-| `stove0-server` | [STOVE0_TARGET_CALLBACK_ALLOW_INSECURE_HTTP](../../authorities/stove0-server/configuration-environment/stove0-target-callback-allow-insecure-http.md) | `stove0-server` | `unset` |
-| `stove0-server` | [STOVE0_TARGET_CALLBACK_BASE_URL](../../authorities/stove0-server/configuration-environment/stove0-target-callback-base-url.md) | `stove0-server` | `''` |
-| `stove0-server` | [STOVE0_TARGET_CALLBACK_SIGNING_KEY](../../authorities/stove0-server/configuration-environment/stove0-target-callback-signing-key.md) | `stove0-server` | `''` |
-| `stove0-server` | [STOVE0_TARGET_CALLBACK_SIGNING_KEY_FILE](../../authorities/stove0-server/configuration-environment/stove0-target-callback-signing-key-file.md) | `stove0-server` | `''` |
+| <a id="c-9c0b6efc83-38913a60d9"></a>`stove0-server` | [STOVE0_CONFIG](../../authorities/stove0-server/configuration-environment/stove0-config.md) | `stove0-server` | `''` |
 | <a id="c-9c0b6efc83-a23132e889"></a>`stove0-target-support` | [STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS](../../authorities/stove0-target-support/configuration-environment/stove0-target-terminal-state-retention-seconds.md) | `stove0-target-support` | `str(DEFAULT_TERMINAL_STATE_RETENTION_SECONDS)` |

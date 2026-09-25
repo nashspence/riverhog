@@ -263,16 +263,10 @@ def test_batch_reader_uses_parallel_range_requests_under_a_byte_budget() -> None
 
 
 def test_range_policy_supports_per_store_overrides_with_global_fallback() -> None:
-    policy = PackRangeRetrievalPolicy.from_env(
-        {
-            "RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES": "1MiB",
-            "RIVERHOG_RETRIEVAL_MAX_RANGE_BYTES": "32MiB",
-            "RIVERHOG_RETRIEVAL_RANGE_BILLING_MODE": "returned_bytes",
-            "RIVERHOG_ARCHIVE_STORE_B2_RETRIEVAL_RANGE_MERGE_GAP_BYTES": "4MiB",
-            "RIVERHOG_ARCHIVE_STORE_B2_RETRIEVAL_MAX_RANGE_BYTES": "16MiB",
-            "RIVERHOG_ARCHIVE_STORE_B2_RETRIEVAL_RANGE_BILLING_MODE": "whole_object",
-        },
-        store_name="b2",
+    policy = PackRangeRetrievalPolicy(
+        merge_gap_ciphertext_bytes=4 * 1024 * 1024,
+        max_request_ciphertext_bytes=16 * 1024 * 1024,
+        billing_mode=BILLING_MODE_WHOLE_OBJECT,
     )
 
     assert policy.merge_gap_ciphertext_bytes == 4 * 1024 * 1024

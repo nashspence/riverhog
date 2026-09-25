@@ -1,0 +1,23 @@
+database_url_file: /run/secrets/riverhog-database-url
+bootstrap_token_file: /run/secrets/riverhog-bootstrap-token
+browse_token_signing_key_file: /run/secrets/riverhog-browse-key
+archive_passphrase_files:
+  compose-smoke-key-v1: /run/secrets/riverhog-archive-passphrase
+archive_active_passphrase_id: compose-smoke-key-v1
+archive_write_store: archive
+archive_read_order: [archive]
+archive_stores:
+  archive:
+    base_url: http://archive-adapter:8080
+    token_file: /run/secrets/riverhog-storage-adapter.token
+    allow_insecure_http: true
+retrieval_cache_stores:
+  local:
+    base_url: http://filesystem-cache-adapter:8080
+    token_file: /run/secrets/riverhog-storage-adapter.token
+    allow_insecure_http: true
+    admission_budget_bytes: 1MiB
+  elastic:
+    base_url: http://elastic-cache-adapter:8080
+    token_file: /run/secrets/riverhog-storage-adapter.token
+    allow_insecure_http: true

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-stove0-opus-target:a-stove0-opus-target-port:aca6cb6d66 -->
+<!-- contract-element: configuration-environment:a-stove0-opus-target:a-stove0-opus-target-port:26a5117d03 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-e262a7b7fb"></a>
+<a id="s-74f1ce0aa1"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-c6ad71c6b4"></a>`consumers` | `["a-stove0-opus-target"]` |
-| <a id="s-f57ba9da34"></a>`default_expressions` | `["'8080'"]` |
-| <a id="s-5617dd1d1b"></a>`id` | `"a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_PORT"` |
-| <a id="s-6cff6cc3f4"></a>`input_shape` | `"environment-string"` |
-| <a id="s-7eccff2ac5"></a>`name` | `"A_STOVE0_OPUS_TARGET_PORT"` |
-| <a id="s-32a8ee0908"></a>`owner` | `"a-stove0-opus-target"` |
+| <a id="s-14c637bf7d"></a>`consumers` | `["a-stove0-opus-target"]` |
+| <a id="s-438a310e71"></a>`default_expressions` | `["'8080'"]` |
+| <a id="s-5670701bbc"></a>`id` | `"a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_PORT"` |
+| <a id="s-5218f9ba8a"></a>`input_shape` | `"environment-string"` |
+| <a id="s-9911339263"></a>`name` | `"A_STOVE0_OPUS_TARGET_PORT"` |
+| <a id="s-a4a31c47b8"></a>`owner` | `"a-stove0-opus-target"` |
 
 ## Governing policies
 
-- <a id="pa-1d3a528690"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-71bce18bb8"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/147`
+- `/external_contract/configuration_environment/91`
 
 ### Exact owned JSON
 

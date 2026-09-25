@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-riverhog-ftp-spool-client:a-riverhog-ftp-spool-base-url:a8e79bead4 -->
+<!-- contract-element: configuration-environment:a-riverhog-ftp-spool-client:a-riverhog-ftp-spool-base-url:c9eb198bb2 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-0cc068cac2"></a>
+<a id="s-749bd6e141"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-ba1e600e45"></a>`consumers` | `["a-riverhog-ftp-spool-client"]` |
-| <a id="s-dfb31422c2"></a>`default_expressions` | `["unset"]` |
-| <a id="s-d5be6be860"></a>`id` | `"a-riverhog-ftp-spool-client:environment:A_RIVERHOG_FTP_SPOOL_BASE_URL"` |
-| <a id="s-de85ca3ff3"></a>`input_shape` | `"environment-string"` |
-| <a id="s-d7bcf43917"></a>`name` | `"A_RIVERHOG_FTP_SPOOL_BASE_URL"` |
-| <a id="s-c095dc5b0b"></a>`owner` | `"a-riverhog-ftp-spool-client"` |
+| <a id="s-032458916b"></a>`consumers` | `["a-riverhog-ftp-spool-client"]` |
+| <a id="s-595d4c8a28"></a>`default_expressions` | `["unset"]` |
+| <a id="s-6b131cbb88"></a>`id` | `"a-riverhog-ftp-spool-client:environment:A_RIVERHOG_FTP_SPOOL_BASE_URL"` |
+| <a id="s-deda87c07c"></a>`input_shape` | `"environment-string"` |
+| <a id="s-94ad8621b7"></a>`name` | `"A_RIVERHOG_FTP_SPOOL_BASE_URL"` |
+| <a id="s-c4e479ca84"></a>`owner` | `"a-riverhog-ftp-spool-client"` |
 
 ## Governing policies
 
-- <a id="pa-e26b11b7d0"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-5e507c05d7"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/115`
+- `/external_contract/configuration_environment/59`
 
 ### Exact owned JSON
 

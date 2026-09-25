@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-riverhog-filesystem-store:a-riverhog-filesystem-store-root:cfaba395f7 -->
+<!-- contract-element: configuration-environment:a-riverhog-filesystem-store:a-riverhog-filesystem-store-root:3fd8e8c650 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-b002419278"></a>
+<a id="s-1cd6fe0a97"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-e3ac27b7d7"></a>`consumers` | `["a-riverhog-filesystem-store"]` |
-| <a id="s-a3b4239e3f"></a>`default_expressions` | `["''"]` |
-| <a id="s-42e9fbb861"></a>`id` | `"a-riverhog-filesystem-store:environment:A_RIVERHOG_FILESYSTEM_STORE_ROOT"` |
-| <a id="s-dc370af86b"></a>`input_shape` | `"environment-string"` |
-| <a id="s-058d8b8874"></a>`name` | `"A_RIVERHOG_FILESYSTEM_STORE_ROOT"` |
-| <a id="s-46978b3ca6"></a>`owner` | `"a-riverhog-filesystem-store"` |
+| <a id="s-923821698e"></a>`consumers` | `["a-riverhog-filesystem-store"]` |
+| <a id="s-31873541f2"></a>`default_expressions` | `["''"]` |
+| <a id="s-a7a2756f2e"></a>`id` | `"a-riverhog-filesystem-store:environment:A_RIVERHOG_FILESYSTEM_STORE_ROOT"` |
+| <a id="s-f7fb27f6db"></a>`input_shape` | `"environment-string"` |
+| <a id="s-8f98162f43"></a>`name` | `"A_RIVERHOG_FILESYSTEM_STORE_ROOT"` |
+| <a id="s-5f637bee10"></a>`owner` | `"a-riverhog-filesystem-store"` |
 
 ## Governing policies
 
-- <a id="pa-32ab95b05e"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-c3dbdd0b32"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/107`
+- `/external_contract/configuration_environment/53`
 
 ### Exact owned JSON
 

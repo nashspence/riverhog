@@ -24,6 +24,7 @@ Value counts describe supplied CLI values per occurrence. Defaults and environme
 |---|---|---|---|
 | <a id="s-421b2c6e52"></a>`host`<br>`--host` | optional option; 1 value | not recorded | `"127.0.0.1"` |
 | <a id="s-df475762a7"></a>`port`<br>`--port` | optional option; 1 value | int | `8080` |
+| <a id="s-40dfdac2db"></a>`config`<br>`--config` | optional option; 1 value | Path | not recorded |
 
 ### Terminating controls
 
@@ -61,6 +62,7 @@ Shared facts for every subject below: maximum=1; minimum=1; reason="fixed-comman
 |---|---|---|
 | [CLI parameter --host](#s-421b2c6e52) | `cardinality · values-per-occurrence · fixed` | shared above |
 | [CLI parameter --port](#s-df475762a7) | `cardinality · values-per-occurrence · fixed` | shared above |
+| [CLI parameter --config](#s-40dfdac2db) | `cardinality · values-per-occurrence · fixed` | shared above |
 
 ## Governing policies
 
@@ -114,7 +116,7 @@ true
 
 ### `/external_contract/cli/a-review0-rclone-target/parameters`
 
-<!-- exact-contract-value: ecc6f99dbe14513025a57c9b575b12b7e3c3add71a319df647c17cd2f15bcd28 -->
+<!-- exact-contract-value: f857bd4206ea0bdac2bf007bf3b3c1249a47159b066675265d30304fb215c8b3 -->
 
 ```json
 [
@@ -138,6 +140,16 @@ true
     ],
     "required": false,
     "type": "int"
+  },
+  {
+    "dest": "config",
+    "kind": "_StoreAction",
+    "nargs": null,
+    "options": [
+      "--config"
+    ],
+    "required": false,
+    "type": "Path"
   }
 ]
 ```

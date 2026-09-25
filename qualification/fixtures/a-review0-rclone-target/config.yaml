@@ -1,0 +1,10 @@
+token_file: /run/secrets/review-target-token
+samplers:
+  - id: fake-sampler
+    base_url: https://sampler.example.invalid
+    token_file: /run/secrets/review-sampler-token
+    descriptor_sha256: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    image_id: sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+destination_identity: cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+rclone_remote: "fake-remote:"
+rclone_config_file: /run/secrets/review-rclone-config

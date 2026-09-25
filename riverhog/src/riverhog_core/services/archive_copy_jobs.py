@@ -3,7 +3,6 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-import os
 import re
 import threading
 import time
@@ -169,7 +168,7 @@ class SqlAlchemyArchiveCopyJobService:
         self._archive_stores = archive_stores
         self._retrieval_cache = retrieval_cache
         self._session_factory = session_factory or make_session_factory(config.database_url)
-        self._throughput = throughput_tuning or ArchiveThroughputTuning.from_env(os.environ)
+        self._throughput = throughput_tuning or config.throughput_tuning
         self._resources = transfer_resources or ArchiveTransferResources.from_tuning(
             self._throughput
         )

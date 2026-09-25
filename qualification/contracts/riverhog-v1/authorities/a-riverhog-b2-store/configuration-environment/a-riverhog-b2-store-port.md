@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-riverhog-b2-store:a-riverhog-b2-store-port:e3b01afc58 -->
+<!-- contract-element: configuration-environment:a-riverhog-b2-store:a-riverhog-b2-store-port:89c135542d -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-8a57472b3d"></a>
+<a id="s-b200cddc47"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-8b87502075"></a>`consumers` | `["a-riverhog-b2-store"]` |
-| <a id="s-9e470cf17e"></a>`default_expressions` | `["'8080'"]` |
-| <a id="s-0d275a9d51"></a>`id` | `"a-riverhog-b2-store:environment:A_RIVERHOG_B2_STORE_PORT"` |
-| <a id="s-f9b9e2d406"></a>`input_shape` | `"environment-string"` |
-| <a id="s-ebf779a82f"></a>`name` | `"A_RIVERHOG_B2_STORE_PORT"` |
-| <a id="s-0db1e92c3c"></a>`owner` | `"a-riverhog-b2-store"` |
+| <a id="s-a64ea888cd"></a>`consumers` | `["a-riverhog-b2-store"]` |
+| <a id="s-45ea5bbfc8"></a>`default_expressions` | `["'8080'"]` |
+| <a id="s-114bfa5509"></a>`id` | `"a-riverhog-b2-store:environment:A_RIVERHOG_B2_STORE_PORT"` |
+| <a id="s-e3a22daa43"></a>`input_shape` | `"environment-string"` |
+| <a id="s-5b43242159"></a>`name` | `"A_RIVERHOG_B2_STORE_PORT"` |
+| <a id="s-3435db812d"></a>`owner` | `"a-riverhog-b2-store"` |
 
 ## Governing policies
 
-- <a id="pa-d0ac170e40"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-9f62f668fc"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/85`
+- `/external_contract/configuration_environment/41`
 
 ### Exact owned JSON
 

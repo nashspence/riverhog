@@ -3,7 +3,6 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
-import os
 import re
 import secrets
 import uuid
@@ -323,7 +322,7 @@ class SqlAlchemyCollectionUploadService:
         self._config = config
         self._archive_stores = archive_stores
         self._retrieval_cache = retrieval_cache
-        self._policy = policy or CollectionVolumePolicy.from_env(os.environ)
+        self._policy = policy or config.volume_policy
         self._session_factory = session_factory or make_session_factory(config.database_url)
         self._checkpoints = SqlAlchemyArchiveUploadCheckpointStore(
             config,
@@ -333,7 +332,7 @@ class SqlAlchemyCollectionUploadService:
             config,
             session_factory=self._session_factory,
         )
-        tuning = throughput_tuning or ArchiveThroughputTuning.from_env(os.environ)
+        tuning = throughput_tuning or config.throughput_tuning
         self._throughput = tuning
         self._resources = transfer_resources or ArchiveTransferResources.from_tuning(tuning)
         self._age_sessions = {

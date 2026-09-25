@@ -58,7 +58,8 @@ from stove0_core import (
     Stove0WorkService,
     TargetCallbackAuthority,
     WorkflowPreviewService,
-    database_url_from_environment,
+    database_url_from_config,
+    load_stove0_config,
     scheduler_role,
     stove0_state_schema,
 )
@@ -187,7 +188,7 @@ class Stove0Composition:
                 for key, value in config.targets.items()
             }
         )
-        recipes = RecipeCatalog.load(config.recipes_path)
+        recipes = config.recipes
         planner = RecipePlanner(
             catalog=recipes,
             riverhog=riverhog_api,
@@ -1269,7 +1270,7 @@ def _parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     if args.command == "state":
-        schema = stove0_state_schema(database_url_from_environment())
+        schema = stove0_state_schema(database_url_from_config())
         try:
             if args.state_command == "status":
                 status = schema.status()
@@ -1289,7 +1290,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 f"({payload['current_revision'] or 'none'} -> {payload['head_revision']})"
             )
         return 0
-    config = Stove0RuntimeConfig.from_environment(
+    config = load_stove0_config(
         require_api_token=args.command == "serve",
     )
     composition = Stove0Composition.build(config)

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-review0-rclone-target:a-review0-rclone-target-host:4b23a3cf8c -->
+<!-- contract-element: configuration-environment:a-review0-rclone-target:a-review0-rclone-target-host:4761a550bd -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-a9fb2eff34"></a>
+<a id="s-eb2021dc66"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-c00038c38f"></a>`consumers` | `["a-review0-rclone-target"]` |
-| <a id="s-5600fa3893"></a>`default_expressions` | `["'127.0.0.1'"]` |
-| <a id="s-c9b454920d"></a>`id` | `"a-review0-rclone-target:environment:A_REVIEW0_RCLONE_TARGET_HOST"` |
-| <a id="s-bca3c308a4"></a>`input_shape` | `"environment-string"` |
-| <a id="s-caff9576d7"></a>`name` | `"A_REVIEW0_RCLONE_TARGET_HOST"` |
-| <a id="s-69d21c7a53"></a>`owner` | `"a-review0-rclone-target"` |
+| <a id="s-f72318c871"></a>`consumers` | `["a-review0-rclone-target"]` |
+| <a id="s-c5edc5ccb1"></a>`default_expressions` | `["'127.0.0.1'"]` |
+| <a id="s-f6f255e1f5"></a>`id` | `"a-review0-rclone-target:environment:A_REVIEW0_RCLONE_TARGET_HOST"` |
+| <a id="s-546d76419e"></a>`input_shape` | `"environment-string"` |
+| <a id="s-b4738a40ad"></a>`name` | `"A_REVIEW0_RCLONE_TARGET_HOST"` |
+| <a id="s-407a9add94"></a>`owner` | `"a-review0-rclone-target"` |
 
 ## Governing policies
 
-- <a id="pa-2be3de6109"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-066998ffc2"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/32`
+- `/external_contract/configuration_environment/29`
 
 ### Exact owned JSON
 

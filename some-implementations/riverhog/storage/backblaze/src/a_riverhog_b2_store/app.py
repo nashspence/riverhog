@@ -3,26 +3,49 @@
 from __future__ import annotations
 
 import argparse
-import contextlib
 import importlib.metadata
+import json
 import os
 from collections.abc import Sequence
+from importlib.resources import files
 from pathlib import Path
-from typing import Literal
 
 import uvicorn
 from a_riverhog_s3_store_lib import (
-    S3ClientConfig,
     S3StorageAdapter,
     S3StorageAdapterConfig,
-    S3TransportTuning,
     create_s3_client,
 )
 from a_riverhog_s3_store_lib.incarnation import provision_storage_incarnation
+from a_riverhog_s3_store_lib.runtime_config import S3StoreDocument
+from config_validation import load_validated_yaml_config
+from pydantic import ConfigDict, Field
 from riverhog_storage_adapter_asgi_support import create_storage_adapter_app
 
 SERVICE = "a-riverhog-b2-store"
 _PREFIX = "A_RIVERHOG_B2_STORE_"
+
+
+class B2StoreDocument(S3StoreDocument):
+    model_config = ConfigDict(
+        extra="forbid",
+        frozen=True,
+        json_schema_extra={
+            "$id": "https://nashspence.github.io/riverhog/v1/config/a-riverhog-b2-store.schema.json",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+        },
+    )
+
+    endpoint_url: str = Field(min_length=1)
+
+
+B2_CONFIG_SCHEMA: dict[str, object] = json.loads(
+    files("a_riverhog_b2_store").joinpath("config.schema.json").read_text(encoding="utf-8")
+)
+
+
+def load_config(path: Path) -> B2StoreDocument:
+    return B2StoreDocument.model_validate(load_validated_yaml_config(path, B2_CONFIG_SCHEMA))
 
 
 _CLI_RESULT_CONTRACT = {
@@ -69,49 +92,37 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--version", action="version", version=importlib.metadata.version(SERVICE))
     parser.add_argument("--host", default=os.getenv(f"{_PREFIX}HOST", "127.0.0.1"))
     parser.add_argument("--port", type=int, default=int(os.getenv(f"{_PREFIX}PORT", "8080")))
+    parser.add_argument("--config", type=Path, default=os.getenv(f"{_PREFIX}CONFIG"))
     parser.add_argument("--provision-root", action="store_true")
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
-    bucket = _required("BUCKET")
-    client = create_s3_client(
-        S3ClientConfig(
-            endpoint_url=_required("ENDPOINT_URL"),
-            region=_required("REGION"),
-            access_key_id=_secret("ACCESS_KEY_ID"),
-            secret_access_key=_secret("SECRET_ACCESS_KEY"),
-            force_path_style=_bool("FORCE_PATH_STYLE", False),
-        ),
-        tuning=S3TransportTuning(
-            max_pool_connections=_int("MAX_POOL_CONNECTIONS", 32),
-            connect_timeout_seconds=_float("CONNECT_TIMEOUT_SECONDS", 10.0),
-            read_timeout_seconds=_float("READ_TIMEOUT_SECONDS", 300.0),
-            max_attempts=_int("MAX_ATTEMPTS", 8),
-            retry_mode=_retry_mode(_optional("RETRY_MODE") or "standard"),
-            tcp_keepalive=_bool("TCP_KEEPALIVE", True),
-        ),
-    )
-    root_prefix = _optional("ROOT_PREFIX") or ""
+    if args.config is None:
+        raise ValueError(f"{_PREFIX}CONFIG or --config is required")
+    config = load_config(args.config)
+    token = config.token()
+    client_config = config.client_config()
+    tuning = config.transport_tuning()
+    client = create_s3_client(client_config, tuning=tuning)
     if args.provision_root:
-        provision_storage_incarnation(client, bucket=bucket, root_prefix=root_prefix)
+        provision_storage_incarnation(client, bucket=config.bucket, root_prefix=config.root_prefix)
         return 0
-    token = _secret("TOKEN")
     adapter = S3StorageAdapter(
         client,
         S3StorageAdapterConfig(
             implementation_id="a-riverhog-b2-store/v1",
             implementation_version=importlib.metadata.version(SERVICE),
-            bucket=bucket,
-            root_prefix=root_prefix,
+            bucket=config.bucket,
+            root_prefix=config.root_prefix,
             read_mode="immediate",
-            read_chunk_bytes=_int("READ_CHUNK_BYTES", 8 * 1024 * 1024),
+            read_chunk_bytes=config.read_chunk_bytes,
         ),
     )
 
     def readiness() -> None:
-        client.head_bucket(Bucket=bucket)
+        client.head_bucket(Bucket=config.bucket)
 
     uvicorn.run(
         create_storage_adapter_app(
@@ -126,61 +137,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     return 0
 
 
-def _secret(name: str) -> str:
-    direct_name = f"{_PREFIX}{name}"
-    file_name = f"{direct_name}_FILE"
-    direct = os.getenv(direct_name)
-    path = os.getenv(file_name)
-    if bool(direct) == bool(path):
-        raise ValueError(f"set exactly one of {direct_name} or {file_name}")
-    value = direct if direct is not None else Path(str(path)).read_text(encoding="utf-8")
-    if not value.strip():
-        raise ValueError(f"{direct_name} must be nonempty")
-    with contextlib.suppress(KeyError):
-        os.environ.pop(direct_name)
-    return value.strip()
-
-
-def _required(name: str) -> str:
-    variable = f"{_PREFIX}{name}"
-    value = os.getenv(variable, "").strip()
-    if not value:
-        raise ValueError(f"{variable} must be nonempty")
-    return value
-
-
-def _optional(name: str) -> str | None:
-    value = os.getenv(f"{_PREFIX}{name}", "").strip()
-    return value or None
-
-
-def _int(name: str, default: int) -> int:
-    return int(_optional(name) or str(default))
-
-
-def _float(name: str, default: float) -> float:
-    return float(_optional(name) or str(default))
-
-
-def _bool(name: str, default: bool) -> bool:
-    value = _optional(name)
-    if value is None:
-        return default
-    if value.casefold() in {"1", "true", "yes", "on"}:
-        return True
-    if value.casefold() in {"0", "false", "no", "off"}:
-        return False
-    raise ValueError(f"{_PREFIX}{name} must be boolean")
-
-
-def _retry_mode(value: str) -> Literal["standard", "adaptive"]:
-    if value not in {"standard", "adaptive"}:
-        raise ValueError("Backblaze adapter retry mode must be standard or adaptive")
-    return "adaptive" if value == "adaptive" else "standard"
-
-
 if __name__ == "__main__":
     raise SystemExit(main())
 
 
-__all__ = ["SERVICE", "main"]
+__all__ = ["B2_CONFIG_SCHEMA", "B2StoreDocument", "SERVICE", "load_config", "main"]

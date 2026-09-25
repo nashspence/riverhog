@@ -189,37 +189,57 @@ run_uv pip install \
   "${server_wheels[@]}"
 (
   cd "${SCRATCH}"
-  server_startup='from riverhog_api.app import create_app; create_app()'
-  if env -u PYTHONPATH \
-    RIVERHOG_ARCHIVE_PASSPHRASES_JSON='' \
-    RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID=distribution-smoke-key-v1 \
-    RIVERHOG_BROWSE_TOKEN_SIGNING_KEY=distribution-smoke-browse-token-signing-key-v1 \
-    "${SCRATCH}/server/bin/python" -I -c "${server_startup}" >/dev/null 2>&1; then
-    printf '%s\n' 'installed Riverhog accepted a missing archive passphrase set' >&2
-    exit 1
-  fi
-  if env -u PYTHONPATH \
-    RIVERHOG_ARCHIVE_PASSPHRASES_JSON='{"distribution-smoke-key-v1":"distribution-smoke-archive-passphrase"}' \
-    RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID='' \
-    RIVERHOG_BROWSE_TOKEN_SIGNING_KEY=distribution-smoke-browse-token-signing-key-v1 \
-    "${SCRATCH}/server/bin/python" -I -c "${server_startup}" >/dev/null 2>&1; then
-    printf '%s\n' 'installed Riverhog accepted a missing active archive passphrase ID' >&2
-    exit 1
-  fi
-  if env -u PYTHONPATH \
-    RIVERHOG_ARCHIVE_PASSPHRASES_JSON='{"distribution-smoke-key-v1":"distribution-smoke-archive-passphrase"}' \
-    RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID=distribution-smoke-key-v1 \
-    RIVERHOG_BROWSE_TOKEN_SIGNING_KEY='' \
-    "${SCRATCH}/server/bin/python" -I -c "${server_startup}" >/dev/null 2>&1; then
-    printf '%s\n' 'installed Riverhog accepted a missing browse signing key' >&2
-    exit 1
-  fi
-  env -u PYTHONPATH \
-    RIVERHOG_ARCHIVE_PASSPHRASES_JSON='{"distribution-smoke-key-v1":"distribution-smoke-archive-passphrase"}' \
-    RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID=distribution-smoke-key-v1 \
-    RIVERHOG_BROWSE_TOKEN_SIGNING_KEY=distribution-smoke-browse-token-signing-key-v1 \
-    "${SCRATCH}/server/bin/python" -I -c \
-    'import importlib.metadata as m; from riverhog_api.app import create_app; app = create_app(); assert app.version == m.version("riverhog-server"); assert any(ep.name == "riverhog-api" for ep in m.entry_points(group="console_scripts"))'
+  env -u PYTHONPATH "${SCRATCH}/server/bin/python" -I - "${SCRATCH}" <<'PY'
+import importlib.metadata as metadata
+import os
+import sys
+from pathlib import Path
+
+import yaml
+from riverhog_api.app import create_app
+
+root = Path(sys.argv[1])
+def secret(name, value):
+    path = root / name
+    path.write_text(value + "\n")
+    return str(path)
+
+document = {
+    "database_url_file": secret("database-url", "postgresql+psycopg://app:pass@localhost/app"),
+    "bootstrap_token_file": secret("bootstrap-token", "distribution-smoke-bootstrap-token"),
+    "browse_token_signing_key_file": secret("browse-key", "distribution-smoke-browse-token-signing-key-v1"),
+    "archive_passphrase_files": {
+        "distribution-smoke-key-v1": secret("archive-passphrase", "distribution-smoke-archive-passphrase")
+    },
+    "archive_active_passphrase_id": "distribution-smoke-key-v1",
+    "archive_write_store": "archive",
+    "archive_stores": {
+        "archive": {
+            "base_url": "https://archive.example.invalid",
+            "token_file": secret("adapter-token", "distribution-smoke-adapter-token"),
+        }
+    },
+}
+path = root / "server-config.yaml"
+os.environ["RIVERHOG_CONFIG"] = str(path)
+
+def reject(name, changed):
+    path.write_text(yaml.safe_dump(changed))
+    try:
+        create_app()
+    except ValueError:
+        return
+    raise AssertionError(f"installed Riverhog accepted {name}")
+
+reject("missing archive passphrase set", {**document, "archive_passphrase_files": {}})
+reject("missing active archive passphrase ID", {**document, "archive_active_passphrase_id": ""})
+empty_key = secret("empty-browse-key", "")
+reject("missing browse signing key", {**document, "browse_token_signing_key_file": empty_key})
+path.write_text(yaml.safe_dump(document))
+app = create_app()
+assert app.version == metadata.version("riverhog-server")
+assert any(ep.name == "riverhog-api" for ep in metadata.entry_points(group="console_scripts"))
+PY
 )
 
 smoke_workspace_distribution \

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-stove0-exiftool-observer:a-stove0-exiftool-observer-token:8dd96b7482 -->
+<!-- contract-element: configuration-environment:a-stove0-exiftool-observer:a-stove0-exiftool-observer-token:0e427ecb5d -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-f3dc096fc3"></a>
+<a id="s-a44ff15aa7"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-89ecd9cd3b"></a>`consumers` | `["a-stove0-exiftool-observer"]` |
-| <a id="s-26ca0734d7"></a>`default_expressions` | `["unset"]` |
-| <a id="s-201310b467"></a>`id` | `"a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_TOKEN"` |
-| <a id="s-df24c034cb"></a>`input_shape` | `"environment-string"` |
-| <a id="s-4baab6d3a2"></a>`name` | `"A_STOVE0_EXIFTOOL_OBSERVER_TOKEN"` |
-| <a id="s-7580b0bc08"></a>`owner` | `"a-stove0-exiftool-observer"` |
+| <a id="s-cbfaedd8f7"></a>`consumers` | `["a-stove0-exiftool-observer"]` |
+| <a id="s-2b9491bcda"></a>`default_expressions` | `["unset"]` |
+| <a id="s-2908730b97"></a>`id` | `"a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_TOKEN"` |
+| <a id="s-96390f5c80"></a>`input_shape` | `"environment-string"` |
+| <a id="s-394d41cd98"></a>`name` | `"A_STOVE0_EXIFTOOL_OBSERVER_TOKEN"` |
+| <a id="s-436907c2b0"></a>`owner` | `"a-stove0-exiftool-observer"` |
 
 ## Governing policies
 
-- <a id="pa-3d7f5ab40b"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-ba17320a4e"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -51,7 +51,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/123`
+- `/external_contract/configuration_environment/67`
 
 ### Exact owned JSON
 

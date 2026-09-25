@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-review0-opus-sampler:stove0-ffmpeg-bin:578ecf4dac -->
+<!-- contract-element: configuration-environment:a-review0-opus-sampler:stove0-ffmpeg-bin:51b2eb3513 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-2d908ff8df"></a>
+<a id="s-d99f18df3b"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-c799298a70"></a>`consumers` | `["a-review0-opus-sampler"]` |
-| <a id="s-539ad8b835"></a>`default_expressions` | `["'ffmpeg'"]` |
-| <a id="s-69dffd9a14"></a>`id` | `"a-review0-opus-sampler:environment:STOVE0_FFMPEG_BIN"` |
-| <a id="s-f8a11ba5cc"></a>`input_shape` | `"environment-string"` |
-| <a id="s-c530fa2f45"></a>`name` | `"STOVE0_FFMPEG_BIN"` |
-| <a id="s-c6f518f261"></a>`owner` | `"a-review0-opus-sampler"` |
+| <a id="s-68e07c8d40"></a>`consumers` | `["a-review0-opus-sampler"]` |
+| <a id="s-58d09e6295"></a>`default_expressions` | `["'ffmpeg'"]` |
+| <a id="s-c87e6808a4"></a>`id` | `"a-review0-opus-sampler:environment:STOVE0_FFMPEG_BIN"` |
+| <a id="s-fe1f42fe30"></a>`input_shape` | `"environment-string"` |
+| <a id="s-7a39009700"></a>`name` | `"STOVE0_FFMPEG_BIN"` |
+| <a id="s-32350f9b3a"></a>`owner` | `"a-review0-opus-sampler"` |
 
 ## Governing policies
 
-- <a id="pa-75e319a243"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-1a7faa5d4e"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/30`
+- `/external_contract/configuration_environment/27`
 
 ### Exact owned JSON
 

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-riverhog-cli:a-riverhog-cli-local-database:25a4634338 -->
+<!-- contract-element: configuration-environment:a-riverhog-cli:a-riverhog-cli-local-database:1271204c2b -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-6e5c2a5e00"></a>
+<a id="s-ba8bf00da0"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-8adc3e5c22"></a>`consumers` | `["a-riverhog-cli"]` |
-| <a id="s-76a1552434"></a>`default_expressions` | `["''"]` |
-| <a id="s-61aa35b3fe"></a>`id` | `"a-riverhog-cli:environment:A_RIVERHOG_CLI_LOCAL_DATABASE"` |
-| <a id="s-eb67453ab2"></a>`input_shape` | `"environment-string"` |
-| <a id="s-bc8e0830d2"></a>`name` | `"A_RIVERHOG_CLI_LOCAL_DATABASE"` |
-| <a id="s-8e15fbe367"></a>`owner` | `"a-riverhog-cli"` |
+| <a id="s-fefed5a14e"></a>`consumers` | `["a-riverhog-cli"]` |
+| <a id="s-9f9519b503"></a>`default_expressions` | `["''"]` |
+| <a id="s-6e9078eeef"></a>`id` | `"a-riverhog-cli:environment:A_RIVERHOG_CLI_LOCAL_DATABASE"` |
+| <a id="s-b017fa7a37"></a>`input_shape` | `"environment-string"` |
+| <a id="s-5c224fe460"></a>`name` | `"A_RIVERHOG_CLI_LOCAL_DATABASE"` |
+| <a id="s-316a058fc1"></a>`owner` | `"a-riverhog-cli"` |
 
 ## Governing policies
 
-- <a id="pa-4c6923f91b"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-3adfcddcd7"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/96`
+- `/external_contract/configuration_environment/42`
 
 ### Exact owned JSON
 

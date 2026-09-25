@@ -9,6 +9,7 @@ Declared public imports and their selected exact structural contracts.
 ### `review0_target_lib`
 
 - [ReviewTargetConfig](review0-target-lib-reviewtargetconfig.md)
+  - [absolute_target_token_file](review0-target-lib-reviewtargetconfig-absolute-target-token-file.md)
   - [canonical_samplers](review0-target-lib-reviewtargetconfig-canonical-samplers.md)
 - [ReviewTargetServiceBase](review0-target-lib-reviewtargetservicebase.md)
   - [cancel_job](review0-target-lib-reviewtargetservicebase-cancel-job.md)
@@ -25,6 +26,5 @@ Declared public imports and their selected exact structural contracts.
   - [descriptor](review0-target-lib-samplerregistration-descriptor.md)
 - [create_target_app](review0-target-lib-create-target-app.md)
 - [file_identity](review0-target-lib-file-identity.md)
-- [load_sampler_registrations](review0-target-lib-load-sampler-registrations.md)
-- [parse_sampler_registrations](review0-target-lib-parse-sampler-registrations.md)
 - [review_options_schema](review0-target-lib-review-options-schema.md)
+- [sampler_registrations](review0-target-lib-sampler-registrations.md)

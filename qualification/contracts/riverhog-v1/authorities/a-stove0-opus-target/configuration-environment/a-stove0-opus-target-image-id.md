@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-stove0-opus-target:a-stove0-opus-target-image-id:c75178496c -->
+<!-- contract-element: configuration-environment:a-stove0-opus-target:a-stove0-opus-target-image-id:13d75b6db5 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-5d16c3676e"></a>
+<a id="s-f34a6099fd"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-a4f6afb693"></a>`consumers` | `["a-stove0-opus-target"]` |
-| <a id="s-3a22260cfc"></a>`default_expressions` | `["''"]` |
-| <a id="s-b53af91022"></a>`id` | `"a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_IMAGE_ID"` |
-| <a id="s-5fe728f6a8"></a>`input_shape` | `"environment-string"` |
-| <a id="s-93dd6b430c"></a>`name` | `"A_STOVE0_OPUS_TARGET_IMAGE_ID"` |
-| <a id="s-36acc9190a"></a>`owner` | `"a-stove0-opus-target"` |
+| <a id="s-333cb6b464"></a>`consumers` | `["a-stove0-opus-target"]` |
+| <a id="s-855c76d1b6"></a>`default_expressions` | `["''"]` |
+| <a id="s-e45db274e8"></a>`id` | `"a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_IMAGE_ID"` |
+| <a id="s-6d41d32f3a"></a>`input_shape` | `"environment-string"` |
+| <a id="s-e8b92a27c1"></a>`name` | `"A_STOVE0_OPUS_TARGET_IMAGE_ID"` |
+| <a id="s-37c4cf2e50"></a>`owner` | `"a-stove0-opus-target"` |
 
 ## Governing policies
 
-- <a id="pa-434bf02457"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-626ec11bdd"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/146`
+- `/external_contract/configuration_environment/90`
 
 ### Exact owned JSON
 

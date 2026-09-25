@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 import re
 import time
-from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
+from collections.abc import Callable, Iterable, Iterator, Sequence
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 
@@ -121,36 +121,6 @@ class PackRangeRetrievalPolicy:
             BILLING_MODE_WHOLE_OBJECT,
         }:
             raise ValueError("pack range billing mode is invalid")
-
-    @classmethod
-    def from_env(
-        cls,
-        values: Mapping[str, str],
-        *,
-        store_name: str | None = None,
-    ) -> PackRangeRetrievalPolicy:
-        return cls(
-            merge_gap_ciphertext_bytes=_scoped_env_bytes(
-                values,
-                "RIVERHOG_RETRIEVAL_RANGE_MERGE_GAP_BYTES",
-                0,
-                store_name=store_name,
-            ),
-            max_request_ciphertext_bytes=_scoped_env_bytes(
-                values,
-                "RIVERHOG_RETRIEVAL_MAX_RANGE_BYTES",
-                DEFAULT_MAX_RANGE_REQUEST_BYTES,
-                store_name=store_name,
-            ),
-            billing_mode=_scoped_env_value(
-                values,
-                "RIVERHOG_RETRIEVAL_RANGE_BILLING_MODE",
-                BILLING_MODE_RETURNED_BYTES,
-                store_name=store_name,
-            )
-            .strip()
-            .casefold(),
-        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -755,74 +725,3 @@ def _read_exact(chunks: Iterable[bytes], *, expected_bytes: int, label: str) -> 
     if len(out) != expected_bytes:
         raise ValueError(f"{label} byte count mismatch")
     return bytes(out)
-
-
-def _scoped_env_value(
-    values: Mapping[str, str],
-    global_name: str,
-    default: str,
-    *,
-    store_name: str | None,
-) -> str:
-    if store_name is not None:
-        normalized = store_name.strip().casefold()
-        if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", normalized):
-            raise ValueError("archive store name is invalid for retrieval tuning")
-        suffix = normalized.upper().replace("-", "_")
-        setting = global_name.removeprefix("RIVERHOG_")
-        scoped_name = f"RIVERHOG_ARCHIVE_STORE_{suffix}_{setting}"
-        scoped = values.get(scoped_name)
-        if scoped is not None and scoped.strip():
-            return scoped
-    value = values.get(global_name)
-    return value if value is not None and value.strip() else default
-
-
-def _scoped_env_bytes(
-    values: Mapping[str, str],
-    global_name: str,
-    default: int,
-    *,
-    store_name: str | None,
-) -> int:
-    raw = _scoped_env_value(
-        values,
-        global_name,
-        str(default),
-        store_name=store_name,
-    )
-    return _parse_bytes(raw, global_name)
-
-
-def _parse_bytes(raw: str, name: str) -> int:
-    candidate = raw.strip().casefold().replace(" ", "")
-    units = {
-        "b": 1,
-        "kib": 1024,
-        "mib": 1024**2,
-        "gib": 1024**3,
-        "kb": 1000,
-        "mb": 1000**2,
-        "gb": 1000**3,
-    }
-    for suffix in sorted(units, key=len, reverse=True):
-        if candidate.endswith(suffix):
-            number = candidate[: -len(suffix)]
-            break
-    else:
-        suffix = "b"
-        number = candidate
-    try:
-        value = int(number) * units[suffix]
-    except (KeyError, ValueError) as exc:
-        raise ValueError(f"{name} must be a byte size such as 64MiB") from exc
-    if value < 0:
-        raise ValueError(f"{name} must be non-negative")
-    return value
-
-
-def _env_bytes(values: Mapping[str, str], name: str, default: int) -> int:
-    raw = values.get(name)
-    if raw is None or not raw.strip():
-        return default
-    return _parse_bytes(raw, name)

@@ -1,0 +1,9 @@
+bucket: fake-archive-bucket
+region: us-east-1
+token_file: /run/secrets/storage-adapter-token
+access_key_id_file: /run/secrets/aws-access-key-id
+secret_access_key_file: /run/secrets/aws-secret-access-key
+read_mode: restore_required
+archive_storage_class: DEEP_ARCHIVE
+restore_tier: Bulk
+restore_days: 3

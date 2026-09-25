@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-riverhog-ftp-spool-client:a-riverhog-ftp-spool-token:1f7fcec12c -->
+<!-- contract-element: configuration-environment:a-riverhog-ftp-spool-client:a-riverhog-ftp-spool-token:528becf5a5 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-f0ba6e17dd"></a>
+<a id="s-bff615c87e"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-9c7aa095b0"></a>`consumers` | `["a-riverhog-ftp-spool-client"]` |
-| <a id="s-18c60035f0"></a>`default_expressions` | `["unset"]` |
-| <a id="s-bc0136d5ee"></a>`id` | `"a-riverhog-ftp-spool-client:environment:A_RIVERHOG_FTP_SPOOL_TOKEN"` |
-| <a id="s-0aac19877e"></a>`input_shape` | `"environment-string"` |
-| <a id="s-3e59f086de"></a>`name` | `"A_RIVERHOG_FTP_SPOOL_TOKEN"` |
-| <a id="s-f783132f7f"></a>`owner` | `"a-riverhog-ftp-spool-client"` |
+| <a id="s-b6aa311db5"></a>`consumers` | `["a-riverhog-ftp-spool-client"]` |
+| <a id="s-62067d9431"></a>`default_expressions` | `["unset"]` |
+| <a id="s-27e6fb1e12"></a>`id` | `"a-riverhog-ftp-spool-client:environment:A_RIVERHOG_FTP_SPOOL_TOKEN"` |
+| <a id="s-1e94bb914a"></a>`input_shape` | `"environment-string"` |
+| <a id="s-6be1a5a47c"></a>`name` | `"A_RIVERHOG_FTP_SPOOL_TOKEN"` |
+| <a id="s-cf178005dd"></a>`owner` | `"a-riverhog-ftp-spool-client"` |
 
 ## Governing policies
 
-- <a id="pa-67df6b38c6"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-08dbfa74ad"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/118`
+- `/external_contract/configuration_environment/62`
 
 ### Exact owned JSON
 

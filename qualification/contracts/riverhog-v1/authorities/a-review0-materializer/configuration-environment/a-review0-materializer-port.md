@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-review0-materializer:a-review0-materializer-port:b732b4accb -->
+<!-- contract-element: configuration-environment:a-review0-materializer:a-review0-materializer-port:de07edcf0b -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-2436bad7d4"></a>
+<a id="s-1966a8d0ec"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-478f37a840"></a>`consumers` | `["a-review0-materializer"]` |
-| <a id="s-a9c79e933b"></a>`default_expressions` | `["'8080'"]` |
-| <a id="s-7ed31707ad"></a>`id` | `"a-review0-materializer:environment:A_REVIEW0_MATERIALIZER_PORT"` |
-| <a id="s-d5950a2bc2"></a>`input_shape` | `"environment-string"` |
-| <a id="s-7d2e712aed"></a>`name` | `"A_REVIEW0_MATERIALIZER_PORT"` |
-| <a id="s-cfbebc15f6"></a>`owner` | `"a-review0-materializer"` |
+| <a id="s-9a2311e6cd"></a>`consumers` | `["a-review0-materializer"]` |
+| <a id="s-6b12b9694a"></a>`default_expressions` | `["'8080'"]` |
+| <a id="s-cf3af0a6fd"></a>`id` | `"a-review0-materializer:environment:A_REVIEW0_MATERIALIZER_PORT"` |
+| <a id="s-0f9cc1851c"></a>`input_shape` | `"environment-string"` |
+| <a id="s-4341315209"></a>`name` | `"A_REVIEW0_MATERIALIZER_PORT"` |
+| <a id="s-4ea39658ad"></a>`owner` | `"a-review0-materializer"` |
 
 ## Governing policies
 
-- <a id="pa-0f694302d9"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-2e73cc9a68"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/7`
+- `/external_contract/configuration_environment/8`
 
 ### Exact owned JSON
 

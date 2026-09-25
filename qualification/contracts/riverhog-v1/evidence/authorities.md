@@ -11,8 +11,8 @@ The ordinary atlas map owns the authority/interface inventory and its scope desc
 | `artifact-verification` | 3 |
 | `cli` | 220 |
 | `compatibility-guarantees` | 9 |
-| `configuration` | 8 |
-| `configuration-environment` | 253 |
+| `configuration` | 11 |
+| `configuration-environment` | 121 |
 | `durable-state` | 151 |
 | `extent` | 12 |
 | `http-operations` | 153 |
@@ -28,7 +28,7 @@ The ordinary atlas map owns the authority/interface inventory and its scope desc
 | `python-distributions` | 75 |
 | `release-artifacts` | 12 |
 | `runtime-images` | 15 |
-| `schema` | 31 |
+| `schema` | 39 |
 | `versioning-tags` | 5 |
 
 ## Declared aggregate scopes

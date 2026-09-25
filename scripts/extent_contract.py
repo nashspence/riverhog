@@ -1071,7 +1071,7 @@ def extent_projection(external_contract: Mapping[str, Any]) -> dict[str, object]
     decisions.extend(
         _configuration_environment_decisions(
             external_contract["configuration_environment"],
-            external_contract["configuration_environment_patterns"],
+            external_contract.get("configuration_environment_patterns", []),
         )
     )
     for authority, document in sorted(external_contract["configuration_documents"].items()):

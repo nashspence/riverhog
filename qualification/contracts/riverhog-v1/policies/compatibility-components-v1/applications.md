@@ -8,6 +8,12 @@ These are the indexed contract-element applications. Each link reaches the polic
 
 | Authority | Contract element |
 |---|---|
+| `a-review0-materializer` | [ReviewTargetConfig](../../authorities/a-review0-materializer/schema/reviewtargetconfig.md#pa-7d04cbe544) |
+| `a-review0-rclone-target` | [RcloneTargetConfig](../../authorities/a-review0-rclone-target/schema/rclonetargetconfig.md#pa-6f686db690) |
+| `a-riverhog-aws-store` | [AwsStoreDocument](../../authorities/a-riverhog-aws-store/schema/awsstoredocument.md#pa-1ad451b888) |
+| `a-riverhog-b2-store` | [B2StoreDocument](../../authorities/a-riverhog-b2-store/schema/b2storedocument.md#pa-85e4642e7b) |
+| `a-riverhog-event-relay` | [EventRelayConfig](../../authorities/a-riverhog-event-relay/schema/eventrelayconfig.md#pa-e91d7cb818) |
+| `a-riverhog-ftp-spool` | [FtpSpoolConfig](../../authorities/a-riverhog-ftp-spool/schema/ftpspoolconfig.md#pa-98787743dc) |
 | `a-riverhog-linux-provenance-contract-lib` | [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-file-stat.json](../../authorities/a-riverhog-linux-provenance-contract-lib/schema/https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-linux-file-stat-json.md#pa-027f32b412) |
 | `a-riverhog-linux-provenance-contract-lib` | [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fs-flags.json](../../authorities/a-riverhog-linux-provenance-contract-lib/schema/https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-linux-fs-flags-json.md#pa-902d064440) |
 | `a-riverhog-linux-provenance-contract-lib` | [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/linux-fsxattr.json](../../authorities/a-riverhog-linux-provenance-contract-lib/schema/https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-linux-fsxattr-json.md#pa-4df72ed7c0) |
@@ -163,6 +169,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `riverhog-provenance` | [Riverhog v1 bounded provenance volume](../../authorities/riverhog-provenance/schema/riverhog-v1-bounded-provenance-volume.md#pa-cac0e18f7e) |
 | `riverhog-provenance` | [Riverhog v1 immutable provenance root](../../authorities/riverhog-provenance/schema/riverhog-v1-immutable-provenance-root.md#pa-c560b8e596) |
 | `riverhog-provenance` | [https://nashspence.github.io/riverhog/v1/provenance/observers/schemas/sparse-map.json](../../authorities/riverhog-provenance/schema/https-nashspence-github-io-riverhog-v1-provenance-observers-schemas-sparse-map-json.md#pa-a849b03c15) |
+| `riverhog-server` | [RiverhogDocument](../../authorities/riverhog-server/schema/riverhogdocument.md#pa-7997f9fac2) |
 | `riverhog-storage-adapter-support` | [GET /v1/adapter](../../authorities/riverhog-storage-adapter-support/process-protocol-operations/get-v1-adapter.md#pa-4231f30e02) |
 | `riverhog-storage-adapter-support` | [POST /v1/objects/delete](../../authorities/riverhog-storage-adapter-support/process-protocol-operations/post-v1-objects-delete.md#pa-0deca7866e) |
 | `riverhog-storage-adapter-support` | [POST /v1/objects/delete-prefix](../../authorities/riverhog-storage-adapter-support/process-protocol-operations/post-v1-objects-delete-prefix.md#pa-2c37cc2699) |
@@ -212,6 +219,7 @@ These are the indexed contract-element applications. Each link reaches the polic
 | `stove0-observer-support` | [generated:stove0-observer: ObserverConformanceResult](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observerconformanceresult.md#pa-1b9cb8a9bb) |
 | `stove0-observer-support` | [generated:stove0-observer: ObserverContract](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observercontract.md#pa-638a161bb5) |
 | `stove0-observer-support` | [generated:stove0-observer: ObserverDescriptor](../../authorities/stove0-observer-support/process-protocol-schemas/generated-stove0-observer-observerdescriptor.md#pa-d9eedee78b) |
+| `stove0-server` | [Stove0Document](../../authorities/stove0-server/schema/stove0document.md#pa-5033e8ce7b) |
 | `stove0-target-support` | [GET /v1/jobs/{job_id}](../../authorities/stove0-target-support/process-protocol-operations/get-v1-jobs-job-id.md#pa-ce36c98d69) |
 | `stove0-target-support` | [GET /v1/target](../../authorities/stove0-target-support/process-protocol-operations/get-v1-target.md#pa-27ae111c49) |
 | `stove0-target-support` | [POST /v1/jobs/{job_id}/cancel](../../authorities/stove0-target-support/process-protocol-operations/post-v1-jobs-job-id-cancel.md#pa-054413e081) |

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-stove0-ffprobe-sampling-observer:a-stove0-ffprobe-sampling-observer-port:a1b76f9fd6 -->
+<!-- contract-element: configuration-environment:a-stove0-ffprobe-sampling-observer:a-stove0-ffprobe-sampling-observer-port:e52ea80637 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-37916ffbac"></a>
+<a id="s-a4749ac7f3"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-d11e2a81c9"></a>`consumers` | `["a-stove0-ffprobe-sampling-observer"]` |
-| <a id="s-4c55035830"></a>`default_expressions` | `["'8080'"]` |
-| <a id="s-f8ea685fed"></a>`id` | `"a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_PORT"` |
-| <a id="s-a104fdac21"></a>`input_shape` | `"environment-string"` |
-| <a id="s-55951875b9"></a>`name` | `"A_STOVE0_FFPROBE_SAMPLING_OBSERVER_PORT"` |
-| <a id="s-b688a3006f"></a>`owner` | `"a-stove0-ffprobe-sampling-observer"` |
+| <a id="s-a43b0da62e"></a>`consumers` | `["a-stove0-ffprobe-sampling-observer"]` |
+| <a id="s-14e364ccc3"></a>`default_expressions` | `["'8080'"]` |
+| <a id="s-bff0e51f69"></a>`id` | `"a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_PORT"` |
+| <a id="s-9ac8b2959d"></a>`input_shape` | `"environment-string"` |
+| <a id="s-45655e8c1b"></a>`name` | `"A_STOVE0_FFPROBE_SAMPLING_OBSERVER_PORT"` |
+| <a id="s-6c4637bf18"></a>`owner` | `"a-stove0-ffprobe-sampling-observer"` |
 
 ## Governing policies
 
-- <a id="pa-7a10f89f99"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-d5e4b7d0ac"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/129`
+- `/external_contract/configuration_environment/73`
 
 ### Exact owned JSON
 

@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-stove0-exiftool-observer:stove0-exiftool-bin:f292ebdb5a -->
+<!-- contract-element: configuration-environment:a-stove0-exiftool-observer:stove0-exiftool-bin:11f085ba90 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-ee5a428565"></a>
+<a id="s-91af6fdd5c"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-2023dd6f92"></a>`consumers` | `["a-stove0-exiftool-observer"]` |
-| <a id="s-2e694ff7f4"></a>`default_expressions` | `["'exiftool'"]` |
-| <a id="s-0690b54cdc"></a>`id` | `"a-stove0-exiftool-observer:environment:STOVE0_EXIFTOOL_BIN"` |
-| <a id="s-cf9fff09ce"></a>`input_shape` | `"environment-string"` |
-| <a id="s-8563584654"></a>`name` | `"STOVE0_EXIFTOOL_BIN"` |
-| <a id="s-3016559a93"></a>`owner` | `"a-stove0-exiftool-observer"` |
+| <a id="s-b3f49ca63f"></a>`consumers` | `["a-stove0-exiftool-observer"]` |
+| <a id="s-915d92d4ad"></a>`default_expressions` | `["'exiftool'"]` |
+| <a id="s-202000a564"></a>`id` | `"a-stove0-exiftool-observer:environment:STOVE0_EXIFTOOL_BIN"` |
+| <a id="s-7d40f9b692"></a>`input_shape` | `"environment-string"` |
+| <a id="s-814b85f667"></a>`name` | `"STOVE0_EXIFTOOL_BIN"` |
+| <a id="s-4cd44f5a55"></a>`owner` | `"a-stove0-exiftool-observer"` |
 
 ## Governing policies
 
-- <a id="pa-9db07b3d1d"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-d8d7697438"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/126`
+- `/external_contract/configuration_environment/70`
 
 ### Exact owned JSON
 

@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-import os
 from io import BytesIO
-from typing import Any, cast
+from pathlib import Path
+from typing import Any
 
+import pytest
+import yaml
 from a_riverhog_b2_store import app as adapter_app
 from a_riverhog_s3_store_lib.incarnation import marker_document, marker_key
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
 
 
 class _Client:
@@ -24,26 +24,38 @@ class _Client:
 
 def test_backblaze_artifact_is_one_immediate_s3_target(
     monkeypatch: Any,
+    tmp_path: Path,
 ) -> None:
-    values = {
-        "A_RIVERHOG_B2_STORE_TOKEN": "adapter-token",
-        "A_RIVERHOG_B2_STORE_ENDPOINT_URL": "https://s3.us-west.example.test",
-        "A_RIVERHOG_B2_STORE_REGION": "us-west-test",
-        "A_RIVERHOG_B2_STORE_BUCKET": "fixture-bucket",
-        "A_RIVERHOG_B2_STORE_ACCESS_KEY_ID": "key-id",
-        "A_RIVERHOG_B2_STORE_SECRET_ACCESS_KEY": "secret-key",
+    config_path = tmp_path / "b2.yaml"
+    document: dict[str, object] = {
+        "endpoint_url": "https://s3.us-west.example.test",
+        "region": "us-west-test",
+        "bucket": "fixture-bucket",
     }
-    for name, value in values.items():
-        monkeypatch.setenv(name, value)
+    for name, value in {
+        "token": "adapter-token",
+        "access_key_id": "key-id",
+        "secret_access_key": "secret-key",
+    }.items():
+        path = tmp_path / f"{name}.secret"
+        path.write_text(f"{value}\n", encoding="utf-8")
+        document[f"{name}_file"] = str(path)
+    config_path.write_text(yaml.safe_dump(document), encoding="utf-8")
     client = _Client()
     configs: list[object] = []
     apps: list[object] = []
+    bindings: list[dict[str, Any]] = []
 
     def create(config: object, *, tuning: object) -> _Client:
         configs.extend((config, tuning))
         return client
 
     monkeypatch.setattr(adapter_app, "create_s3_client", create)
+    monkeypatch.setattr(
+        adapter_app,
+        "create_storage_adapter_app",
+        lambda **kwargs: bindings.append(kwargs) or object(),
+    )
     monkeypatch.setattr(
         "a_riverhog_b2_store.app.importlib.metadata.version",
         lambda _name: "1.0.0",
@@ -53,19 +65,19 @@ def test_backblaze_artifact_is_one_immediate_s3_target(
         lambda app, **_kwargs: apps.append(app),
     )
 
-    assert adapter_app.main([]) == 0
+    assert adapter_app.main(["--config", str(config_path)]) == 0
     assert len(configs) == 2
     assert len(apps) == 1
-    http = TestClient(cast(FastAPI, apps[0]))
-    descriptor = http.get(
-        "/v1/adapter",
-        headers={"Authorization": "Bearer adapter-token"},
-    )
-
-    assert descriptor.status_code == 200
-    assert descriptor.json()["implementation_id"] == "a-riverhog-b2-store/v1"
-    assert descriptor.json()["read_mode"] == "immediate"
-    assert http.get("/health/ready").status_code == 200
+    assert bindings[0]["token"] == "adapter-token"
+    descriptor = bindings[0]["adapter"].descriptor()
+    assert descriptor.implementation_id == "a-riverhog-b2-store/v1"
+    assert descriptor.read_mode == "immediate"
+    bindings[0]["readiness"]()
     assert client.ready == [{"Bucket": "fixture-bucket"}]
-    assert "A_RIVERHOG_B2_STORE_TOKEN" not in os.environ
-    assert "A_RIVERHOG_B2_STORE_SECRET_ACCESS_KEY" not in os.environ
+    assert adapter_app.B2_CONFIG_SCHEMA == adapter_app.B2StoreDocument.model_json_schema()
+
+    document["unknown_policy"] = True
+    config_path.write_text(yaml.safe_dump(document), encoding="utf-8")
+    with pytest.raises(ValueError, match="Additional properties are not allowed"):
+        adapter_app.main(["--config", str(config_path)])
+    assert len(configs) == 2

@@ -19,6 +19,7 @@ classifiers = [
 ]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
 dependencies = [
+  "config-validation>=0.1,<0.2",
   "fastapi>=0.111,<1.0",
   "http-api-contracts>=0.1,<0.2",
   "lifecycle-events>=0.1,<0.2",
@@ -37,6 +38,7 @@ dependencies = [
 a-riverhog-ftp-spool = "a_riverhog_ftp_spool.app:main"
 
 [tool.uv.sources]
+config-validation = { workspace = true }
 http-api-contracts = { workspace = true }
 lifecycle-events = { workspace = true }
 a-riverhog-ftp-spool-client = { workspace = true }

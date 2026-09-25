@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-review0-rclone-target:a-review0-rclone-target-source-revision:5bbdc6511b -->
+<!-- contract-element: configuration-environment:a-review0-rclone-target:a-review0-rclone-target-source-revision:2ff080a4de -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-b200cddc47"></a>
+<a id="s-f77147b1c3"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-a64ea888cd"></a>`consumers` | `["a-review0-rclone-target"]` |
-| <a id="s-45ea5bbfc8"></a>`default_expressions` | `["'unknown'"]` |
-| <a id="s-114bfa5509"></a>`id` | `"a-review0-rclone-target:environment:A_REVIEW0_RCLONE_TARGET_SOURCE_REVISION"` |
-| <a id="s-e3a22daa43"></a>`input_shape` | `"environment-string"` |
-| <a id="s-5b43242159"></a>`name` | `"A_REVIEW0_RCLONE_TARGET_SOURCE_REVISION"` |
-| <a id="s-3435db812d"></a>`owner` | `"a-review0-rclone-target"` |
+| <a id="s-4504ac9a24"></a>`consumers` | `["a-review0-rclone-target"]` |
+| <a id="s-dd23c689a9"></a>`default_expressions` | `["'unknown'"]` |
+| <a id="s-d6c9861ab7"></a>`id` | `"a-review0-rclone-target:environment:A_REVIEW0_RCLONE_TARGET_SOURCE_REVISION"` |
+| <a id="s-327d2c8e3c"></a>`input_shape` | `"environment-string"` |
+| <a id="s-8af67c498b"></a>`name` | `"A_REVIEW0_RCLONE_TARGET_SOURCE_REVISION"` |
+| <a id="s-e1481d42fc"></a>`owner` | `"a-review0-rclone-target"` |
 
 ## Governing policies
 
-- <a id="pa-199e5db7eb"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-639e088429"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/41`
+- `/external_contract/configuration_environment/33`
 
 ### Exact owned JSON
 

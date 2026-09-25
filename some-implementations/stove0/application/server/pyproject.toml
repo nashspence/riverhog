@@ -20,6 +20,7 @@ classifiers = [
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
 dependencies = [
   "alembic>=1.18.5,<2.0",
+  "config-validation>=0.1,<0.2",
   "fastapi>=0.111,<1.0",
   "http-api-contracts>=0.1,<0.2",
   "psycopg[binary]>=3.3,<4.0",
@@ -45,6 +46,7 @@ dependencies = [
 stove0-server = "stove0_api.app:main"
 
 [tool.uv.sources]
+config-validation = { workspace = true }
 http-api-contracts = { workspace = true }
 riverhog-client = { workspace = true }
 riverhog-canonical-json = { workspace = true }

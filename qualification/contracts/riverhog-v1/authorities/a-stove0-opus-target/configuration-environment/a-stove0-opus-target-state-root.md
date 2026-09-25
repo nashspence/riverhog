@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-stove0-opus-target:a-stove0-opus-target-state-root:76949775b8 -->
+<!-- contract-element: configuration-environment:a-stove0-opus-target:a-stove0-opus-target-state-root:b6f5f1d9ba -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-6b9a1cd0e6"></a>
+<a id="s-1513c088ba"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-a1ede7b4cd"></a>`consumers` | `["a-stove0-opus-target"]` |
-| <a id="s-0e927dd781"></a>`default_expressions` | `["'/var/lib/a-stove0-opus-target'"]` |
-| <a id="s-eb324e3723"></a>`id` | `"a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_STATE_ROOT"` |
-| <a id="s-0147bb6300"></a>`input_shape` | `"environment-string"` |
-| <a id="s-b2c273c0ba"></a>`name` | `"A_STOVE0_OPUS_TARGET_STATE_ROOT"` |
-| <a id="s-4e30a4d523"></a>`owner` | `"a-stove0-opus-target"` |
+| <a id="s-9d88b5d281"></a>`consumers` | `["a-stove0-opus-target"]` |
+| <a id="s-bb088213c3"></a>`default_expressions` | `["'/var/lib/a-stove0-opus-target'"]` |
+| <a id="s-eeebfb92ac"></a>`id` | `"a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_STATE_ROOT"` |
+| <a id="s-f5438b1f3d"></a>`input_shape` | `"environment-string"` |
+| <a id="s-66c149272c"></a>`name` | `"A_STOVE0_OPUS_TARGET_STATE_ROOT"` |
+| <a id="s-f9c1542d89"></a>`owner` | `"a-stove0-opus-target"` |
 
 ## Governing policies
 
-- <a id="pa-dd1d16ab5c"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-dc9445faca"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/149`
+- `/external_contract/configuration_environment/93`
 
 ### Exact owned JSON
 

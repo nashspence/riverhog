@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-stove0-opus-target:stove0-ffmpeg-bin:7db23dcde4 -->
+<!-- contract-element: configuration-environment:a-stove0-opus-target:stove0-ffmpeg-bin:c784ec40d8 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-e5598ea0d6"></a>
+<a id="s-5b5ad305a7"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-4b0a5cb145"></a>`consumers` | `["a-stove0-opus-target"]` |
-| <a id="s-bb69afeff8"></a>`default_expressions` | `["'ffmpeg'"]` |
-| <a id="s-6097d28502"></a>`id` | `"a-stove0-opus-target:environment:STOVE0_FFMPEG_BIN"` |
-| <a id="s-a1ce093d0a"></a>`input_shape` | `"environment-string"` |
-| <a id="s-22c3b4e1d8"></a>`name` | `"STOVE0_FFMPEG_BIN"` |
-| <a id="s-a4aef99b1b"></a>`owner` | `"a-stove0-opus-target"` |
+| <a id="s-d3dd57dbb2"></a>`consumers` | `["a-stove0-opus-target"]` |
+| <a id="s-c889318b3c"></a>`default_expressions` | `["'ffmpeg'"]` |
+| <a id="s-6178250fdc"></a>`id` | `"a-stove0-opus-target:environment:STOVE0_FFMPEG_BIN"` |
+| <a id="s-fe5e59c7f3"></a>`input_shape` | `"environment-string"` |
+| <a id="s-cf768fb7d8"></a>`name` | `"STOVE0_FFMPEG_BIN"` |
+| <a id="s-87339d9e18"></a>`owner` | `"a-stove0-opus-target"` |
 
 ## Governing policies
 
-- <a id="pa-fa96214304"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-d7d77b7d73"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/153`
+- `/external_contract/configuration_environment/97`
 
 ### Exact owned JSON
 

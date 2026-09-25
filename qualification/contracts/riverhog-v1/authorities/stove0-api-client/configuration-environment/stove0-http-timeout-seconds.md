@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:stove0-api-client:stove0-http-timeout-seconds:ca2f9484db -->
+<!-- contract-element: configuration-environment:stove0-api-client:stove0-http-timeout-seconds:2740c83a64 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,16 +13,16 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-d379f95cd5"></a>
+<a id="s-03d76831f6"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-870e27d6d7"></a>`consumers` | `["stove0-api-client"]` |
-| <a id="s-a6086f3882"></a>`default_expressions` | `["unset"]` |
-| <a id="s-77c851083b"></a>`id` | `"stove0-api-client:environment:STOVE0_HTTP_TIMEOUT_SECONDS"` |
-| <a id="s-f84395a381"></a>`input_shape` | `"environment-string"` |
-| <a id="s-6d3338e47b"></a>`name` | `"STOVE0_HTTP_TIMEOUT_SECONDS"` |
-| <a id="s-94769e9eea"></a>`owner` | `"stove0-api-client"` |
+| <a id="s-9d176682fc"></a>`consumers` | `["stove0-api-client"]` |
+| <a id="s-6af6fd9c96"></a>`default_expressions` | `["unset"]` |
+| <a id="s-70fa9907ac"></a>`id` | `"stove0-api-client:environment:STOVE0_HTTP_TIMEOUT_SECONDS"` |
+| <a id="s-79dd557f69"></a>`input_shape` | `"environment-string"` |
+| <a id="s-709f3f0d7c"></a>`name` | `"STOVE0_HTTP_TIMEOUT_SECONDS"` |
+| <a id="s-3cae61146e"></a>`owner` | `"stove0-api-client"` |
 
 ### Progression, limits, and lifecycle
 
@@ -32,14 +32,14 @@ Shared facts for every subject below: configuration="STOVE0_HTTP_TIMEOUT_SECONDS
 
 | Applies to | Contract | Bounds or reason |
 |---|---|---|
-| [STOVE0_HTTP_TIMEOUT_SECONDS](#s-d379f95cd5) | `value · configured-value · operational_policy` | shared above |
+| [STOVE0_HTTP_TIMEOUT_SECONDS](#s-03d76831f6) | `value · configured-value · operational_policy` | shared above |
 
 ## Governing policies
 
 [Extent principles](../../../policies/extent_principles/index.md) govern all extent rules and recorded decisions.
 
-- <a id="pa-a7ace2328d"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
-- <a id="pa-859dd05d33"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
+- <a id="pa-3434ef9a5e"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-d17a1e570c"></a>[extent-rule/configured-capacity/v1](../../extent-contract/extent/extent-rule-configured-capacity.md#p-3ebc61fc99)
 
 ## Evidence
 
@@ -63,7 +63,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/221`
+- `/external_contract/configuration_environment/117`
 
 ### Exact owned JSON
 

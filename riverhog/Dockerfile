@@ -25,6 +25,7 @@ WORKDIR /workspace
 COPY pyproject.toml uv.lock ./
 COPY riverhog/pyproject.toml riverhog/pyproject.toml
 COPY riverhog/src riverhog/src
+COPY packages/config-validation packages/config-validation
 COPY packages/riverhog-application-access packages/riverhog-application-access
 COPY packages/http-api-contracts packages/http-api-contracts
 COPY packages/riverhog-canonical-json packages/riverhog-canonical-json

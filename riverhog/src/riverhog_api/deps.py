@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-import os
 from collections.abc import Callable
 from contextlib import ExitStack
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import lru_cache, partial
 from typing import Annotated
 
@@ -29,8 +28,8 @@ from riverhog_core.ports.download_allowance import DownloadAllowance
 from riverhog_core.runtime_config import (
     RuntimeConfig,
     StorageAdapterRegistration,
-    load_runtime_config,
 )
+from riverhog_core.runtime_document import load_runtime_config
 from riverhog_core.services.app_keys import SqlAlchemyAppKeyService
 from riverhog_core.services.archive_copy_jobs import SqlAlchemyArchiveCopyJobService
 from riverhog_core.services.archive_copy_retirements import (
@@ -73,7 +72,7 @@ from riverhog_core.stores.storage_adapter_archive_objects import (
 )
 from riverhog_core.stores.storage_adapter_archive_store import StorageAdapterArchiveStore
 from riverhog_core.stores.storage_adapter_retrieval_cache import StorageAdapterRetrievalCache
-from riverhog_core.throughput import ArchiveThroughputTuning, ArchiveTransferResources
+from riverhog_core.throughput import ArchiveTransferResources
 from riverhog_storage_adapter_protocol import StorageAdapterRejection, validated_storage_adapter
 from riverhog_storage_adapter_support import StorageAdapterClient
 from sqlalchemy import select
@@ -102,6 +101,7 @@ class ServiceContainer:
     browse_tokens: BrowseTokenCodec
     storage_adapter_clients: tuple[StorageAdapterClient, ...] = ()
     storage_readiness: Callable[[], None] | None = None
+    bootstrap_token: str = field(default="", repr=False)
 
     def close(self) -> None:
         dispose_session_factory(self.session_factory)
@@ -170,7 +170,7 @@ def _build_default_container(
     startup_cleanup: ExitStack,
 ) -> ServiceContainer:
     _require_archive_encryption_bindings(config, session_factory=session_factory)
-    throughput_tuning = ArchiveThroughputTuning.from_env(os.environ)
+    throughput_tuning = config.throughput_tuning
     transfer_resources = ArchiveTransferResources.from_tuning(throughput_tuning)
     adapters: dict[str, StorageAdapterClient] = {}
     all_clients: list[StorageAdapterClient] = []
@@ -292,6 +292,7 @@ def _build_default_container(
             retrieval_cache=retrieval_cache,
             session_factory=session_factory,
             throughput_tuning=throughput_tuning,
+            policy=config.volume_policy,
             transfer_resources=transfer_resources,
         ),
         collection_workflows=SqlAlchemyCollectionWorkflowService(
@@ -349,6 +350,7 @@ def _build_default_container(
         ),
         storage_adapter_clients=tuple(all_clients),
         storage_readiness=check_storage_readiness,
+        bootstrap_token=config.bootstrap_token,
     )
 
 

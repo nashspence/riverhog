@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+import yaml
 from stove0_api.app import main
 from stove0_core import SqlAlchemyStateStore, stove0_state_schema
 
@@ -28,7 +29,23 @@ def test_state_cli_enforces_the_postgresql_deployment_boundary(
     tmp_path: Path,
 ) -> None:  # type: ignore[no-untyped-def]
     database_url = f"sqlite+pysqlite:///{tmp_path / 'stove0.sqlite3'}"
-    monkeypatch.setenv("STOVE0_DATABASE_URL", database_url)
+    database_url_file = tmp_path / "database-url"
+    database_url_file.write_text(database_url, encoding="utf-8")
+    config = tmp_path / "stove0.yaml"
+    config.write_text(
+        yaml.safe_dump(
+            {
+                "database_url_file": str(database_url_file),
+                "riverhog_base_url": "https://riverhog.invalid",
+                "riverhog_token_file": str(tmp_path / "riverhog-token"),
+                "browse_token_signing_key_file": str(tmp_path / "browse-key"),
+                "declared_workspace_protection": "encrypted-at-rest",
+                "recipes": {"format": "stove0-recipes/v1", "operations": [], "recipes": []},
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("STOVE0_CONFIG", str(config))
 
-    with pytest.raises(ValueError, match="STOVE0_DATABASE_URL must use postgresql"):
+    with pytest.raises(ValueError, match="Stove0 database URL must use postgresql"):
         main(["state", "upgrade", "--json"])

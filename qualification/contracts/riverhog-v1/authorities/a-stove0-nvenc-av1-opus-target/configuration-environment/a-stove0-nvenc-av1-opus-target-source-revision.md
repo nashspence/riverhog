@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-stove0-nvenc-av1-opus-target:a-stove0-nvenc-av1-opus-target-source-revision:fafe4caf78 -->
+<!-- contract-element: configuration-environment:a-stove0-nvenc-av1-opus-target:a-stove0-nvenc-av1-opus-target-source-revision:72f5efecfe -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-04dd294881"></a>
+<a id="s-cbedc559e6"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-fd706f529a"></a>`consumers` | `["a-stove0-nvenc-av1-opus-target"]` |
-| <a id="s-e4b45436b2"></a>`default_expressions` | `["'unknown'"]` |
-| <a id="s-e177560e94"></a>`id` | `"a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_SOURCE_REVISION"` |
-| <a id="s-05c3b10e59"></a>`input_shape` | `"environment-string"` |
-| <a id="s-33cb89739d"></a>`name` | `"A_STOVE0_NVENC_AV1_OPUS_TARGET_SOURCE_REVISION"` |
-| <a id="s-4423e20b47"></a>`owner` | `"a-stove0-nvenc-av1-opus-target"` |
+| <a id="s-339b989f89"></a>`consumers` | `["a-stove0-nvenc-av1-opus-target"]` |
+| <a id="s-02e4d9f7d4"></a>`default_expressions` | `["'unknown'"]` |
+| <a id="s-ab96b2e072"></a>`id` | `"a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_SOURCE_REVISION"` |
+| <a id="s-debabc62df"></a>`input_shape` | `"environment-string"` |
+| <a id="s-7dead87c9e"></a>`name` | `"A_STOVE0_NVENC_AV1_OPUS_TARGET_SOURCE_REVISION"` |
+| <a id="s-a99760a4aa"></a>`owner` | `"a-stove0-nvenc-av1-opus-target"` |
 
 ## Governing policies
 
-- <a id="pa-e0ba8063ec"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-11896ba3d1"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/138`
+- `/external_contract/configuration_environment/82`
 
 ### Exact owned JSON
 

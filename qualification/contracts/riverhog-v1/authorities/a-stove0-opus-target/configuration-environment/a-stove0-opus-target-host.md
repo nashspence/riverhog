@@ -2,7 +2,7 @@
 
 [Atlas](../../../index.md) · [Authority](../index.md) · [Interface](index.md) · [Policies](../../../policies/index.md)
 
-<!-- contract-element: configuration-environment:a-stove0-opus-target:a-stove0-opus-target-host:42864d5462 -->
+<!-- contract-element: configuration-environment:a-stove0-opus-target:a-stove0-opus-target-host:b146a79cc9 -->
 
 Exact externally visible contract owned by this contract element.
 
@@ -13,20 +13,20 @@ Exact externally visible contract owned by this contract element.
 
 ## External contract
 
-<a id="s-4abc02115b"></a>
+<a id="s-3a00485a0d"></a>
 
 | Field | Value |
 |---|---|
-| <a id="s-4e0a108175"></a>`consumers` | `["a-stove0-opus-target"]` |
-| <a id="s-2d82ee102a"></a>`default_expressions` | `["'127.0.0.1'"]` |
-| <a id="s-f2e09fd5e9"></a>`id` | `"a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_HOST"` |
-| <a id="s-40ccec5f8c"></a>`input_shape` | `"environment-string"` |
-| <a id="s-ca538f225d"></a>`name` | `"A_STOVE0_OPUS_TARGET_HOST"` |
-| <a id="s-79625ca4c2"></a>`owner` | `"a-stove0-opus-target"` |
+| <a id="s-f4162f50d7"></a>`consumers` | `["a-stove0-opus-target"]` |
+| <a id="s-64cdad0f75"></a>`default_expressions` | `["'127.0.0.1'"]` |
+| <a id="s-c084c603a4"></a>`id` | `"a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_HOST"` |
+| <a id="s-198c63854c"></a>`input_shape` | `"environment-string"` |
+| <a id="s-811edc1b84"></a>`name` | `"A_STOVE0_OPUS_TARGET_HOST"` |
+| <a id="s-a77e047c01"></a>`owner` | `"a-stove0-opus-target"` |
 
 ## Governing policies
 
-- <a id="pa-267bad1e1b"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
+- <a id="pa-ab1741c8f1"></a>[compatibility/configuration/v1](../../release/compatibility-guarantees/compatibility-configuration.md#p-8dc08bb461)
 
 ## Evidence
 
@@ -50,7 +50,7 @@ The owning implementation defines the setting. These declarations, consumer bind
 
 ### Machine authority
 
-- `/external_contract/configuration_environment/145`
+- `/external_contract/configuration_environment/89`
 
 ### Exact owned JSON
 

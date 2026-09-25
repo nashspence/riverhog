@@ -912,8 +912,11 @@ def _primary_contract(authority: str, title: str) -> tuple[dict[str, Any], str]:
         ),
         (
             "riverhog-server",
-            "RIVERHOG_ARCHIVE_STORE_{store}_{setting}",
-            ('`parameters · store · normalization` | `"uppercase-dashes-to-underscores"`',),
+            "riverhog-server:configuration:riverhog-document configuration",
+            (
+                '`archive_stores` | yes | type="object"',
+                '`retrieval_cache_stores` | no | type="object"',
+            ),
         ),
         (
             "a-riverhog-ftp-spool-custody",
