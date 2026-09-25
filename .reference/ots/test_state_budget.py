@@ -8,7 +8,7 @@ from opentimestamps.core.op import OpAppend
 from opentimestamps.core.timestamp import Timestamp
 
 import ots_core as core
-from test_ots_core import A, ALLOW, DIGEST, Calendar, initial, raw
+from test_ots_core import ALLOW, DIGEST, A, Calendar, initial, raw
 
 
 def test_merged_proof_must_fit_serialized_state_budget(monkeypatch):

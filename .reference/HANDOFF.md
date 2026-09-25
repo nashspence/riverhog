@@ -11,6 +11,8 @@ Model: GPT-6 Astra Pro
 Configuration: no separately exposed effort configuration
 Requested by: Riverhog maintainer, relaying the session 3 integration agent's request
 Published by: OpenAI ChatGPT through the connected GitHub publication tools
+GitHub transport identity: the authorized nashspence account; this is not a claim
+that the maintainer personally authored or validated the generated implementation.
 
 ## Purpose and contents
 
@@ -39,7 +41,7 @@ do not apply mechanically. The exact published reference SHA recorded in #870 is
 the durable handoff identity, not this branch name. No merge request or closing
 keyword is used.
 
-## Validation performed at initial publication
+## Validation evidence
 
 - Reviewed #903, accepted #870 scope, exact main/base tree, AGENTS.md, README.md,
   architecture, licensing, workspace/test settings, and CI trigger boundaries.
@@ -49,9 +51,21 @@ keyword is used.
 - Independently assembled the genesis transaction/header/proof vector with
   standard-library hashing; checked the block hash and Merkle root against
   Bitcoin Core's published genesis constants.
-- Focused dependency-backed tests: pending the reference branch workflow at this
-  initial publication. Do not read this record as a passing-test claim. Exact
-  results, including any follow-up revisions, belong in the final #870 handoff.
+- Initial published commit `4bdfe565284741a2a3fb19982937873cb0cae832`:
+  isolated dependency installation, compilation and **71 tests passed** in GitHub
+  Actions run https://github.com/nashspence/riverhog/actions/runs/36076954591.
+- Persistence-budget follow-up `2e532ef8d69916328b4a333753f3395c737a57b6`:
+  compilation and **74 tests passed**, including three new state-size regressions,
+  in https://github.com/nashspence/riverhog/actions/runs/36077358396. That run also
+  identified three lint findings (default-call declaration and test import sorting).
+  This revision makes the immutable retry default an explicit singleton and declares
+  the isolated reference modules as first-party imports, with the reported ordering.
+- The final #870 handoff records the exact published tip and its complete workflow
+  result after these corrections. This file records historical checks at the SHAs
+  above rather than pretending to embed its own final, self-referential commit SHA.
+- GitHub comparison against the audited base showed only `.reference/**` and the
+  single branch-restricted reference workflow added; no existing file changed.
+  Main was rechecked and remained at the audited base during publication.
 
 ## Not validated / known limitations
 

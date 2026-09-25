@@ -208,6 +208,9 @@ class Retry:
         return min(self.maximum, self.initial * (1 << min(max(attempts - 1, 0), 63)))
 
 
+DEFAULT_RETRY = Retry()
+
+
 @dataclass(frozen=True)
 class Work:
     kind: str
@@ -303,7 +306,7 @@ def _discover(job: Job, allow: frozenset[str], now: int) -> Job:
 
 
 def step(job: Job, calendar: Calendar, *, now: int, allow: frozenset[str],
-         retry: Retry = Retry()) -> Job:
+         retry: Retry = DEFAULT_RETRY) -> Job:
     """At most ONE calendar exchange, no sleep, no clock read, no database access.
 
     Keep all prior evidence on failure. Pending lookups use the subnode's digest,
