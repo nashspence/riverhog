@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>riverhog_protocol.CollectionId · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-99b3d079e6c87a1dff566c19.html">riverhog-protocol · Python</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>riverhog_protocol.CollectionId</h1>
+<section id="contract" data-contract="python:riverhog-protocol:riverhog-protocol-collectionid:3a038c2a42">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/python/riverhog_protocol.CollectionId</code>
+</h3>
+<table id="v-ff7dcdfca747a35c70b4f12f">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-531ac4fb9c93cd6ac506f201">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-575eb4c71f5813370d741a08">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionId/contract/kind">type-alias</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>value</code>
+</th>
+<td>
+<span id="v-05f232b3cfa0a25ae196c18d">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionId/contract/value">typing.Annotated[int, BeforeValidator(func=&lt;function CollectionId.&lt;locals&gt;.&lt;lambda&gt;&gt;, json_schema_input_type=PydanticUndefined), FieldInfo(annotation=NoneType, required=True, metadata=[Ge(ge=1)]), PlainSerializer(func=&lt;function CollectionId.&lt;locals&gt;.&lt;lambda&gt;&gt;, return_type=&lt;class &#x27;str&#x27;&gt;, when_used=&#x27;always&#x27;), WithJsonSchema(json_schema={&#x27;allOf&#x27;: [{&#x27;type&#x27;: &#x27;string&#x27;, &#x27;pattern&#x27;: &#x27;^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\\s\\S])&#x27;}, {&#x27;not&#x27;: {&#x27;const&#x27;: &#x27;0&#x27;}}]}, mode=None)]</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-5bc94a5e9d80970f7b978696">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionId/distribution">riverhog-protocol</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-4d09a221350cfae137a2a735">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionId/module">riverhog_protocol</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-da657b4a75ad8fd37187379e">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionId/name">CollectionId</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-935a0bd60877cc66f3775d81">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CollectionId/unit">export</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="packages/riverhog-protocol/src/riverhog_protocol/__init__.py">packages/riverhog-protocol/src/riverhog_protocol/__init__.py</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

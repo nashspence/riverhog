@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>riverhog_protocol.ProcessingClaimPlanSealDocument · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-99b3d079e6c87a1dff566c19.html">riverhog-protocol · Python</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>riverhog_protocol.ProcessingClaimPlanSealDocument</h1>
+<section id="contract" data-contract="python:riverhog-protocol:riverhog-protocol-processingclaimplansealdocument:87a3413aae">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument</code>
+</h3>
+<table id="v-071ecf24c08546b0ebaece19">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-0afd73e86829990e3c71e4a8">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-e30f6c29f8cbd5f6455ffcce">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/kind">class</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-5166053768b765cb855c245b">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-9bf5a26264db78ddde6c88de">
+<tbody>
+<tr>
+<th scope="row">
+<code>NonnegativeDecimal</code>
+</th>
+<td>
+<table id="v-6d9026fe450fb8bb5e50ae3f">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-81153d285805f8cddd0f3e8b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/NonnegativeDecimal/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c0723d8a7c0010428e1e08f5">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/NonnegativeDecimal/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>OperationIdentityDocument</code>
+</th>
+<td>
+<table id="v-fa7d9bfff2902fbecc35c727">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-8ff32c861855ef8b854ea137">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OperationIdentityDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-90aad2d526662c9588b4063d">
+<tbody>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-ecf17275abefc6977543f9bb">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-b973a5a82a1bfa6570916f90">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OperationIdentityDocument/properties/id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7ebc702feafe26d5da3974e3">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OperationIdentityDocument/properties/id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>sha256</code>
+</th>
+<td>
+<table id="v-cdfa89074aaa8bd4a7944199">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-257cfdf7ec5d80bafb6329e1">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OperationIdentityDocument/properties/sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8b8ab6160cf9c674702e89cc">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OperationIdentityDocument/properties/sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-eee6fe2a10359215fb683a77">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-187fabf14b36796c0a96e959">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OperationIdentityDocument/required/0">id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-c5708fd6955a2d7feb5e3c6e">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OperationIdentityDocument/required/1">sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-71e0f2bcc107e868a746a201">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/$defs/OperationIdentityDocument/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-95df9fb5b4d13f983c4b6857">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>if</code>
+</th>
+<td>
+<table id="v-1c58018aaa2549ae78ec81b4">
+<tbody>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-30d567763fb3da5f6f550583">
+<tbody>
+<tr>
+<th scope="row">
+<code>source_collection_retirement_policy</code>
+</th>
+<td>
+<table id="v-26ec89ea6add890f14db51f1">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-58b210d7bbfe64a3343a0203">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/if/properties/source_collection_retirement_policy/const">retain</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-cf3b3ca1f508ab83e056a7d0">
+<tbody>
+<tr>
+<th scope="row">
+<code>controller_evidence</code>
+</th>
+<td>
+<table id="v-24f056ab1af39bc811dc1d00">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-55f1f835a7302f6a8b22526d">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/controller_evidence/additionalProperties">true</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-926ce2f9ed140e5749620732">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/controller_evidence/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-encoded-bytes-max</code>
+</th>
+<td>
+<span id="v-fa615e4a3c00f5691457aa26">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/controller_evidence/x-riverhog-encoded-bytes-max">16777216</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-extent</code>
+</th>
+<td>
+<table id="v-ea82c0b2427648256239d01c">
+<tbody>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-eef71b2f3d6c09c1c9b89d42">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/controller_evidence/x-riverhog-extent/policy">contract_max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-604b2f656900edec6f99d221">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/controller_evidence/x-riverhog-extent/reason">bounded-controller-evidence-envelope</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>controller_evidence_sha256</code>
+</th>
+<td>
+<table id="v-bae704d1c6201254e5cf7a8b">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-ef5e42eb9b4b03a62813a572">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/controller_evidence_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-95012ddd1cfb9d71ac7fff0e">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/controller_evidence_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>execution_id</code>
+</th>
+<td>
+<table id="v-18261de7910a9855e80abed9">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-595bec4800b3424dbcb7037b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/execution_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-227d4722e9b0627df853b3b4">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/execution_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>fence</code>
+</th>
+<td>
+<table id="v-6fbb64b83418460ba8b59fbd">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-16de6bb92a6afa0034d1ae1d">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/fence/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-9f2670a99d8cbdbe2079ebf1.html#v-6d9026fe450fb8bb5e50ae3f">Definition</a>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-33c203a9a465350beb13e568">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/fence/ge">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>operation</code>
+</th>
+<td>
+<table id="v-2549d87071aa74357b432be3">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-ff599e94ea6ae437151abb9a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/operation/$ref">#/$defs/OperationIdentityDocument</code>
+<span class="kind">string</span> <a href="e-9f2670a99d8cbdbe2079ebf1.html#v-fa7d9bfff2902fbecc35c727">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_collection_retirement_grace_seconds</code>
+</th>
+<td>
+<table id="v-aae1d93e69c95969b4a25ba8">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-0a1e8af9447a66de1f8945dd">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/source_collection_retirement_grace_seconds/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-9f2670a99d8cbdbe2079ebf1.html#v-6d9026fe450fb8bb5e50ae3f">Definition</a>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-2e67e71b70854e71da30d7fc">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/source_collection_retirement_grace_seconds/ge">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_collection_retirement_policy</code>
+</th>
+<td>
+<table id="v-af0a3b1cd9a521c5b2c22a16">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-51630455d4572a48f005db02">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/source_collection_retirement_policy/default">retain</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-95f5ea4aabb39d8d1cd2a999">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-5d4e29c62f09674c8635112f">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/source_collection_retirement_policy/enum/0">retain</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-4a30a13f6a1c292e1d97cb90">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/source_collection_retirement_policy/enum/1">retire-after-verified-output</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f95f998ec696d9d2a9d34da1">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/properties/source_collection_retirement_policy/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-accf47b326a58601d55d9822">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-d84f5d3030c5a6dc2970148a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/required/0">fence</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-8b14ebcbdec50d7a3127e2b2">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/required/1">execution_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-49a797220d049653b235f9e8">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/required/2">controller_evidence</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-9202393ec84af64e89d34289">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/required/3">controller_evidence_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-56ed587d8248dafae51ae2da">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/required/4">operation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>then</code>
+</th>
+<td>
+<table id="v-77762ccc0fcb244615c26f83">
+<tbody>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-645e80c13b951ab596377de1">
+<tbody>
+<tr>
+<th scope="row">
+<code>source_collection_retirement_grace_seconds</code>
+</th>
+<td>
+<table id="v-4cad0de555ba6655d4737b27">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-3db69c6e76e911dde2f06a78">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/then/properties/source_collection_retirement_grace_seconds/const">0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2cf7e6847fb9b66908356a91">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-b97d8a7237a1c75e2a4b6a45">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/contract/signature">&quot;(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], execution_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], controller_evidence: dict[str, typing.Any], controller_evidence_sha256: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], operation: riverhog_protocol.collection_workflow_transport.OperationIdentityDocument, source_collection_retirement_policy: Literal[&#x27;retain&#x27;, &#x27;retire-after-verified-output&#x27;] = &#x27;retain&#x27;, source_collection_retirement_grace_seconds: Annotated[NonnegativeDecimal, Ge(ge=0)] = &lt;factory&gt;) -&gt; None&quot;</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-f320099d6de2043cb284c3ae">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/distribution">riverhog-protocol</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-ef581ea4543093041710adb5">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/module">riverhog_protocol</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-4ba730e043d084903285200e">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/name">ProcessingClaimPlanSealDocument</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-73111f7c5a2905dcc8da33c8">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimPlanSealDocument/unit">export</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="packages/riverhog-protocol/src/riverhog_protocol/__init__.py">packages/riverhog-protocol/src/riverhog_protocol/__init__.py</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

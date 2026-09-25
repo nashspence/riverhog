@@ -1,0 +1,1038 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DELETE /v1/archive/copy-jobs/{collection_id}/{destination_store} · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-97662ede32d19804481410b5.html">riverhog · HTTP Operations</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>DELETE /v1/archive/copy-jobs/{collection_id}/{destination_store}</h1>
+<section id="contract" data-contract="http-operations:riverhog:delete-v1-archive-copy-jobs-collection-id-4487e5eb5a:54dd53d10c">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete</code>
+</h3>
+<table id="v-18e6483b5508a04763c4feb8">
+<tbody>
+<tr>
+<th scope="row">
+<code>operationId</code>
+</th>
+<td>
+<span id="v-449598abcea9911209bfe418">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/operationId">cancel_archive_copy_job</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>parameters</code>
+</th>
+<td>
+<table id="v-abe94e646e62fbca962746ce">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-b1cd137b821f166d1a152366">
+<tbody>
+<tr>
+<th scope="row">
+<code>in</code>
+</th>
+<td>
+<span id="v-3307da4fb9234f041d91b9b5">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/parameters/0/in">path</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-cb78cc861b1aac13f734a356">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/parameters/0/name">collection_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<span id="v-2d750aa20b2aa7a9e2e222d2">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/parameters/0/required">true</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-7b5899705645bf94df7ebb8b">
+<tbody>
+<tr>
+<th scope="row">
+<code>allOf</code>
+</th>
+<td>
+<table id="v-679d1be92977c7321097d3ce">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-7b17baa7a77a20f6eca2beff">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-1fc5feea9cd3a817139f0356">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/parameters/0/schema/allOf/0/pattern">^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-099b0c4e0b75755a0852fec9">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/parameters/0/schema/allOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-f8f19426fa080231fec2160a">
+<tbody>
+<tr>
+<th scope="row">
+<code>not</code>
+</th>
+<td>
+<table id="v-96417d8260ad25caaf94281a">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-756d647ecc00c3017d9533f6">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/parameters/0/schema/allOf/1/not/const">0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-088b26983b69f321f0dd47dc">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/parameters/0/schema/title">Collection Id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-669cb4f1f869a1d5136055aa">
+<tbody>
+<tr>
+<th scope="row">
+<code>in</code>
+</th>
+<td>
+<span id="v-0f52b51614f908229c1e1fb3">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/parameters/1/in">path</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-ca97dc1e8345a3e33b9b711d">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/parameters/1/name">destination_store</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<span id="v-78927f98cf913203b9a39b34">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/parameters/1/required">true</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-66cbdc938be68d74d3ffa0df">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-8255761060dcef61e6696ed0">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/parameters/1/schema/pattern">^[a-z0-9]+(?:-[a-z0-9]+)*$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-2565cabe3fad612e09245e50">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/parameters/1/schema/title">Destination Store</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-eecd701fa7f089ef9f63ebc6">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/parameters/1/schema/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>responses</code>
+</th>
+<td>
+<table id="v-9cb4018d7d526a2f3da4f552">
+<tbody>
+<tr>
+<th scope="row">
+<code>200</code>
+</th>
+<td>
+<table id="v-4e13233952efcc08ee9b8043">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-b5394987e12570797b915895">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-2a2c2b343c3190323d84d779">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-8aa517dead89cf5386480120">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-54ef4babd6341d6d38ec7dec">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/responses/200/content/application~1json/schema/$ref">#/components/schemas/ArchiveCopyJobOut</code>
+<span class="kind">string</span> <a href="e-2098611a5c71c4a7ba1aef3c.html#v-7eb40bb862c83000f7448a1c">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-8f526db9e8a537c6224c5284">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/responses/200/description">Successful Response</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>400</code>
+</th>
+<td>
+<table id="v-f52277ff44846fb400d31339">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-d7eee8e1ef47e7605acecbef">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-d6650902420d98130e3d6dc4">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-c3b9712ebdb943474faabe4d">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-4e1ee0fcdcfe2e55864678ab">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/responses/400/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-36434ffccb0bed7f5cd89b1a">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/responses/400/description">Bad Request</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-6c8ac0db3bc5f6c65265e0f1">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-5ec510b636eef01d8abe3bfa">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/responses/400/x-riverhog-error-codes/0">bad_request</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>401</code>
+</th>
+<td>
+<table id="v-d96831181be2f6561bb2dd62">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-887ed0b34f9a4347d924153e">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-b162b8ecb8764aab3d378aa4">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-cf8a348db9d15d394636607b">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-d308a5e7c24a326289b71ede">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/responses/401/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-f0f0a6409adb184979bda349">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/responses/401/description">Unauthorized</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-6a3672d78b5e6996e6ade48e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-22566a8352bc5768ce6c1ce0">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/responses/401/x-riverhog-error-codes/0">unauthorized</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>403</code>
+</th>
+<td>
+<table id="v-a61398d992da6504692c3166">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-80b1360c844861ab756412e8">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-6ec9fd75bdacd61f9db15a2d">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-763e4d876649a3ff6b3a6138">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-26643a0843a8c22cc0e187e1">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/responses/403/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-98107e15593b617d3f74dea7">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/responses/403/description">Forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-c68acb4816a3da9831c0392b">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-0795459d91702648ac1f7584">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/responses/403/x-riverhog-error-codes/0">forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>404</code>
+</th>
+<td>
+<table id="v-c6c74e6e57490d005e58e5f4">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-d8ce67dbeee353f81a165f14">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-b0cb41a44c6c3f61ec83013f">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-845e86c08481ffd7640265ec">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-2d49d221a7d8d323f8227173">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/responses/404/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-5cd6b382eaa030a02cbb63aa">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/responses/404/description">Not Found</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-7c9a14b35a1aa1220c754cde">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-2cb709598ffd9f637c383c3b">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/responses/404/x-riverhog-error-codes/0">not_found</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>409</code>
+</th>
+<td>
+<table id="v-934f84315e042e52502d170f">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-0e1509eb2396a3093efbbe65">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-3512cba038d28147aead9256">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-b45d2f383d78cb849afc4dfa">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c81b765b949242a9c1e38eb8">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/responses/409/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-bf73b1a122e2a1d480a7bcdb">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/responses/409/description">Conflict</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-0b3e3dd540bc1e0416ef25b0">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-6ef656782af8a80c0d65ccca">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/responses/409/x-riverhog-error-codes/0">invalid_state</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>500</code>
+</th>
+<td>
+<table id="v-98f51fa5f55b8c77c409199f">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-0803a37f39b73aac0d485abd">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-aa7ebd5eb0a0967b5a483218">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-f3e85870116472670d59d82c">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-6d19d6e29bf5116699d52a78">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/responses/500/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-49ba6964dfff40a8e075ce35.html#v-212c496b13fabcfa1fa00eaa">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-15200523adb35a17cb890581">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/responses/500/description">Internal Server Error</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-779971a42135feab35ae1be7">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-0a7dbbedfd695c2c561c0c30">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/responses/500/x-riverhog-error-codes/0">internal_error</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>security</code>
+</th>
+<td>
+<table id="v-0726c57ae8401fda1862556b">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-a3ec8cb7e35315bf4cab67d5">
+<tbody>
+<tr>
+<th scope="row">
+<code>HTTPBearer</code>
+</th>
+<td>
+<span id="v-7520c7b2d0072c651f3973b7">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/security/0/HTTPBearer">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>summary</code>
+</th>
+<td>
+<span id="v-747cd635119d059861249843">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/summary">Cancel Archive Copy Job</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>tags</code>
+</th>
+<td>
+<table id="v-4eacfb4d5faeab829c4f1239">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-b74c86dfc86606e51f927f0a">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/tags/0">archive</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-permission-requirements</code>
+</th>
+<td>
+<table id="v-5194796756aac8624dc01303">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-654ba1a2462c38d9cdaf4bfd">
+<tbody>
+<tr>
+<th scope="row">
+<code>any_of</code>
+</th>
+<td>
+<table id="v-418992a4745e2d4de1ba1d6e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-c4e4b9db0c4458c17a12aefc">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/paths/~1v1~1archive~1copy-jobs~1{collection_id}~1{destination_store}/delete/x-riverhog-permission-requirements/0/any_of/0">archives:manage</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>riverhog-catalog: ux_collection_archive_object_uploads_sequence · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-5548924e3ea02159ee650edb.html">riverhog-catalog · Durable State</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>riverhog-catalog: ux_collection_archive_object_uploads_sequence</h1>
+<section id="contract" data-contract="durable-state:riverhog-catalog:riverhog-catalog-ux-collection-archive-ob-5df9d4fd7b:3c2408b779">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/durable_state/owners/0/structure/unique_indexes/2</code>
+</h3>
+<table id="v-762029a2426909f3dbf40051">
+<tbody>
+<tr>
+<th scope="row">
+<code>columns</code>
+</th>
+<td>
+<table id="v-f058d4166a300a707e3822f9">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-a91a3729810288d229c8def3">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/unique_indexes/2/columns/0">collection_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-4af2e8d9eea09e94a9c09c59">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/unique_indexes/2/columns/1">sequence</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-8fa025f8c0338b4ffe508942">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/unique_indexes/2/definition">CREATE UNIQUE INDEX ux_collection_archive_object_uploads_sequence ON collection_archive_object_uploads (collection_id, sequence)</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-db22bf3ae25213ba1d1c5ce9">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/unique_indexes/2/name">ux_collection_archive_object_uploads_sequence</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>table</code>
+</th>
+<td>
+<span id="v-2072be6c65bbd8dcc598f08d">
+<code data-value-pointer="/external_contract/durable_state/owners/0/structure/unique_indexes/2/table">collection_archive_object_uploads</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code>state:riverhog-catalog</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make release-check</code>
+</li>
+<li>
+<code>make database-qualification</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

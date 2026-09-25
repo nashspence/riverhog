@@ -1,0 +1,1503 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: BranchSetPlan · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: BranchSetPlan</h1>
+<section id="contract" data-contract="http-schemas:stove0:schemas-branchsetplan:16a1882289">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan</code>
+</h3>
+<table id="v-df3b3ca9c285a5b49bbc97ba">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-de877f1e4e7c5fd57bb46c8c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-d18dd59d55c24214b0a96aee">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/description">One immutable set of required branches and one optional exact join.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-6e7536880c125fad9c0927b4">
+<tbody>
+<tr>
+<th scope="row">
+<code>branch_set_sha256</code>
+</th>
+<td>
+<table id="v-fb4dbc4b31153fa14d0e6e6d">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a2a3307ccf2cbaa6351cb5ba">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/branch_set_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-fb123cf59cdfb75bdac10553">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/branch_set_sha256/title">Branch Set Sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f251010c4278803c6822a658">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/branch_set_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>branches</code>
+</th>
+<td>
+<table id="v-dfc86678811858b30e524490">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-fb885abf4042d1d63e6e3766">
+<tbody>
+<tr>
+<th scope="row">
+<code>discriminator</code>
+</th>
+<td>
+<table id="v-ee815f6534acfbc077528900">
+<tbody>
+<tr>
+<th scope="row">
+<code>mapping</code>
+</th>
+<td>
+<table id="v-2d74adaf52257381a9e140d7">
+<tbody>
+<tr>
+<th scope="row">
+<code>coordination</code>
+</th>
+<td>
+<span id="v-2296fd41ae95dafdeef561f5">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/branches/items/discriminator/mapping/coordination">#/components/schemas/CoordinationBranchPlan</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>leaf</code>
+</th>
+<td>
+<span id="v-ddb738b86f60bb4ab5a04e61">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/branches/items/discriminator/mapping/leaf">#/components/schemas/BranchPlan</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>propertyName</code>
+</th>
+<td>
+<span id="v-65e1e71e821ce31b4c5ed54b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/branches/items/discriminator/propertyName">kind</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>oneOf</code>
+</th>
+<td>
+<table id="v-3cf2bd6f5eab01d237ca6627">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-dcef9b696c53679c2300f190">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-cc96a7f60d2b8c068d5ebea4">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/branches/items/oneOf/0/$ref">#/components/schemas/BranchPlan</code>
+<span class="kind">string</span> <a href="e-3285e9630309e5bcc3fa0d45.html#v-5396b7fe222eefc5271fc111">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-cd41c15e2a610c3da9ef6123">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-d342c4e45ab13f2a3837c51e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/branches/items/oneOf/1/$ref">#/components/schemas/CoordinationBranchPlan</code>
+<span class="kind">string</span> <a href="e-aafbfe9f806d4c58cb979dad.html#v-88cc4139d6a81c2e0d45c35f">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-57f7c4f2852bb734cd23bc0c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/branches/minItems">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-a0e517642f100056c65ca7bc">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/branches/title">Branches</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-af847ae4a6e6a6b52532496e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/branches/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>decision_sha256</code>
+</th>
+<td>
+<table id="v-32fa6f6e6c19663699df7a7c">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-d1441cfbb4deeff050515885">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/decision_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-b339f214c502f1b00a155073">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/decision_sha256/title">Decision Sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-349dcba4cd104f99a8abc01b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/decision_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>evidence_sha256s</code>
+</th>
+<td>
+<table id="v-80f9b8d7773b56726ac0bee4">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-d7174ea9468ec8147bf8d9d7">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/evidence_sha256s/default">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-6ec4f4098ab186a426671f96">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-bf23cb372f56e76185c137c5">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/evidence_sha256s/items/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0440035b9ef687156a902324">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/evidence_sha256s/items/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-7bf4073bd91676d349f459a8">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/evidence_sha256s/title">Evidence Sha256S</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4a3682f4be18988ccbecb88e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/evidence_sha256s/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<table id="v-3b5284256e1d196980043450">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-1081345a8a17cecddb1e3b78">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/format/const">stove0-branch-set/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-422346e1ae16c66869a131a9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/format/default">stove0-branch-set/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-412fa1a3e1b2fefbd521f262">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/format/title">Format</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-72519808bc562ae50a6b716c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/format/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>join</code>
+</th>
+<td>
+<table id="v-debaf9ead54f9d7cbd5ff2e5">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-d10e272cf8f7dde722b655d6">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-ef0249cf321334d3c1b88f4c">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-49c5eaa67e14ec8fd9a5e1e9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/join/anyOf/0/$ref">#/components/schemas/JoinDeclaration</code>
+<span class="kind">string</span> <a href="e-b93006aaa215b46e90f8bbda.html#v-5693acffb61ea54c0793dc6e">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-a4f6d9f9750c36ec8660ca41">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-727fe6ffeb17185a32faecc3">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/join/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>parent_work</code>
+</th>
+<td>
+<table id="v-254366e7ed1bb833864ddd8e">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-f06f5e3c9d330674cabeffe2">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/parent_work/$ref">#/components/schemas/WorkIdentity</code>
+<span class="kind">string</span> <a href="e-1110829e373d996c619f19a2.html#v-4f74f11a9ba26db932e44a71">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_collection_retirement_grace_seconds</code>
+</th>
+<td>
+<table id="v-edbb8b3842be045aff3849f4">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-377ae07c07e15ef1f2b18d1e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/source_collection_retirement_grace_seconds/default">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-ccebeb21c7293b51adb0621a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/source_collection_retirement_grace_seconds/minimum">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-33b8c4461c4a83ab4e518762">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/source_collection_retirement_grace_seconds/title">Source Collection Retirement Grace Seconds</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a50ad9ea7989b56fd2a98a03">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/source_collection_retirement_grace_seconds/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_collection_retirement_policy</code>
+</th>
+<td>
+<table id="v-eee184b86d3693d84d894006">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-626840372425394ab9a713f5">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/source_collection_retirement_policy/default">retain</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-a6243d2b25284199f4ed8974">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-0a4e3209458059afc2964068">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/source_collection_retirement_policy/enum/0">retain</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-6db28b3a0a6274b383e2136e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/source_collection_retirement_policy/enum/1">retire-after-verified-output</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-52f0ec628eebae35557db31f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/source_collection_retirement_policy/title">Source Collection Retirement Policy</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b01978506f62df07ccc2dc39">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/source_collection_retirement_policy/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-3e1eb8b0eefc3730a592dad7">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-61aad0158a642dcd9098cbf2">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/required/0">parent_work</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-8940b2176536eb750903b801">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/required/1">decision_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-e762dcb9c53385deb7f87e16">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/required/2">branches</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-068f99edf6b2f0983150801d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/required/3">branch_set_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-9669fa3e5cc1872c6065adad">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/title">BranchSetPlan</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6d1665c52c09fc28c2a73e23">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<p>These records index source constraints; they do not add limits or progression promises.</p>
+<ul>
+<li>
+<code>http:stove0:components:/schemas/BranchSetPlan/properties/branch_set_sha256:length</code>
+<table id="v-7d30ca662d1eff85c60125fd">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-27fd83b3e247959c1612f302">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branch_set_sha256:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-543ad5f0aab9081f3fd416ef">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branch_set_sha256:length/id">http:stove0:components:/schemas/BranchSetPlan/properties/branch_set_sha256:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-3234dd035d7be28777aee09e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branch_set_sha256:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-b9eebe169d7051f0bf8d6940">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branch_set_sha256:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-dfa4c96f499139c7aa9fbb11">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branch_set_sha256:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-d43d6e612180ecf987b21a86">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branch_set_sha256:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-b62b88f5331a79cf81994422">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branch_set_sha256:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-de9e32e241c4506258adba2b">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branch_set_sha256:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-09086892b5b61393989abe60">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-dd7a5b688fc8b5c0758f3acb">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branch_set_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-a3b34d2e8b85839da032a6f2">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branch_set_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/branch_set_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-90ca91c67d5f8f379c536660">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branch_set_sha256:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/BranchSetPlan/properties/branches:cardinality</code>
+<table id="v-ec992860fd88915d72ac8fd0">
+<tbody>
+<tr>
+<th scope="row">
+<code>capacity_authority</code>
+</th>
+<td>
+<table id="v-b5394e73b8c82b67b6342303">
+<tbody>
+<tr>
+<th scope="row">
+<code>declared_maximum</code>
+</th>
+<td>
+<span id="v-9fa2e49d4a9a193f905a55cc">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branches:cardinality/capacity_authority/declared_maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>hidden_maximum</code>
+</th>
+<td>
+<span id="v-82fe68b81d50d90e9635d113">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branches:cardinality/capacity_authority/hidden_maximum">forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-57b8c3a76ea2286f7a5d3446">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branches:cardinality/capacity_authority/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-5d0cfe6ecfaa3f7507dbe1c6">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branches:cardinality/dimension">cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-ed540be061a80e112c900abb">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branches:cardinality/id">http:stove0:components:/schemas/BranchSetPlan/properties/branches:cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-1f84c7296d6b8e07a1433397">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branches:cardinality/maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-ff4a1b10cd67dac6fde02623">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branches:cardinality/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-4d3391d7e7e625f095d9b13f">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branches:cardinality/policy">operational_policy</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-5f2ab5dfa0537f44f4fd3d9d">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branches:cardinality/reason">no-declared-semantic-maximum</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-4fb269802f99855909932983">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branches:cardinality/rule">no-semantic-maximum/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-593fb8cacef75c2c55db3475">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branches:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/branches</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-d00a10201482b812d2ed2d1f">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1branches:cardinality/unit">items</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/BranchSetPlan/properties/decision_sha256:length</code>
+<table id="v-4e7baf9b1626121ce129cc9c">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-27749f732f26d3b5a3c2c115">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1decision_sha256:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-66fdc58d947a0ee3a18871e9">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1decision_sha256:length/id">http:stove0:components:/schemas/BranchSetPlan/properties/decision_sha256:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-49c4c09b09570ed8c35d202e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1decision_sha256:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-856ce63012bb243f48082f42">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1decision_sha256:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-ca73252948ed3b0d50006081">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1decision_sha256:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-e736a853b862c72b62fa45a2">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1decision_sha256:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-9ca35e3f375fb8b2712cf549">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1decision_sha256:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-e6093ecf8e44bfa2982376b1">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1decision_sha256:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-0100228925ccb41e876822aa">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-2271eede141a61a4fbd3145a">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1decision_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-4aff7a146ccafe71d05313c6">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1decision_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/decision_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-d4cd5365e09f774933a6d022">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1decision_sha256:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/BranchSetPlan/properties/evidence_sha256s/items:length</code>
+<table id="v-75f88a96747030a95a52b1c6">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-b03238fe0c07efec5cf1dbde">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s~1items:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-4036b436155c006dcfe02e4b">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s~1items:length/id">http:stove0:components:/schemas/BranchSetPlan/properties/evidence_sha256s/items:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-7137a26cada289258e9e4918">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s~1items:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-4f9f50303fe9d979e783ee6d">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s~1items:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-e0841d2d7e6d9a6b2ab343e8">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s~1items:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-536f8d2b369d5a428a81d857">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s~1items:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-d3196ab365703fe8dedec6b7">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s~1items:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-0472ade775d8a539875b43ec">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s~1items:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-ac6ff5e798e0cdd74f31bc39">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a5ad8935f08f29c6955bfe42">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s~1items:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-1fd07640441353e46edff110">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s~1items:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/evidence_sha256s/items</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-cef92c8538497e716990924d">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s~1items:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/BranchSetPlan/properties/evidence_sha256s:cardinality</code>
+<table id="v-f0930045e3644fe07520d451">
+<tbody>
+<tr>
+<th scope="row">
+<code>capacity_authority</code>
+</th>
+<td>
+<table id="v-bac2c559462140b70f7b18a5">
+<tbody>
+<tr>
+<th scope="row">
+<code>declared_maximum</code>
+</th>
+<td>
+<span id="v-645ab2df9d6dee351b3613b9">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s:cardinality/capacity_authority/declared_maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>hidden_maximum</code>
+</th>
+<td>
+<span id="v-a926c1b82add6d9b632bf536">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s:cardinality/capacity_authority/hidden_maximum">forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-1f2543fc20504838aa4aac03">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s:cardinality/capacity_authority/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-1f985d2c2d1acc263d42b57c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s:cardinality/dimension">cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-2d57fd08656e99fd0462f6c1">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s:cardinality/id">http:stove0:components:/schemas/BranchSetPlan/properties/evidence_sha256s:cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-3143ed819f8e32c53cc46ad8">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s:cardinality/maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-d3894a67584c387ec2827144">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s:cardinality/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-7adee5238db58951fb62abf4">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s:cardinality/policy">operational_policy</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-5d4e96014a68d557859ad58c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s:cardinality/reason">no-declared-semantic-maximum</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-271789e37d4ad950ca464093">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s:cardinality/rule">no-semantic-maximum/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-b0605eb2240cc73bef42fcda">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchSetPlan/properties/evidence_sha256s</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-fe110a1e2609d77874b388da">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSetPlan~1properties~1evidence_sha256s:cardinality/unit">items</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

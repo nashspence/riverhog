@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GET /v1/recipes/{recipe_id} · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-ebb825f7ec999f00a9d2c150.html">stove0 · HTTP Operations</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>GET /v1/recipes/{recipe_id}</h1>
+<section id="contract" data-contract="http-operations:stove0:get-v1-recipes-recipe-id:f1c9d819af">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get</code>
+</h3>
+<table id="v-2ed760441cd1eb36c6ce1cd5">
+<tbody>
+<tr>
+<th scope="row">
+<code>operationId</code>
+</th>
+<td>
+<span id="v-721e8eec1f2215f7d0b1fcf7">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/operationId">get_recipe</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>parameters</code>
+</th>
+<td>
+<table id="v-3cac53d98dd0735d9e2fb1ef">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-6eecb65b87cb011029969930">
+<tbody>
+<tr>
+<th scope="row">
+<code>in</code>
+</th>
+<td>
+<span id="v-a8fce2f4d300b7b65c319f31">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/parameters/0/in">path</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-8013912c3b29ba48e463a303">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/parameters/0/name">recipe_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<span id="v-785fd4eb1738c2ea0b2309b2">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/parameters/0/required">true</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-169f329b18dd03004077bd64">
+<tbody>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-34750fc8ec1ae24071bb6255">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/parameters/0/schema/title">Recipe Id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-061e3ae9d915649618f0d682">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/parameters/0/schema/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-220fc4fec4249b90ddefe11b">
+<tbody>
+<tr>
+<th scope="row">
+<code>in</code>
+</th>
+<td>
+<span id="v-6ad5ad8300702d4a763924e0">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/parameters/1/in">query</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-9e851c8caca6b2ba636b39a5">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/parameters/1/name">revision</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<span id="v-89b1274038df1745734dc806">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/parameters/1/required">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-d971a6acb2fceaee891e4f03">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-f26f33c9f98d07c7052bbf27">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-e422f433208c05cf5dbba478">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-49fa908c2f1a517ce0c6039a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/parameters/1/schema/anyOf/0/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-e51ce493b3b7ddc2c9fa6599">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a6e54cd498a6891796d78877">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/parameters/1/schema/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-b1311382cb1fc1290d715805">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/parameters/1/schema/title">Revision</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>responses</code>
+</th>
+<td>
+<table id="v-9cefdba0d54aa77eed5c0f69">
+<tbody>
+<tr>
+<th scope="row">
+<code>200</code>
+</th>
+<td>
+<table id="v-ffae93a9f94c6c67fa54e793">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-e9f0da6dd9e6c8995a9afb33">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-a0085a9caa0af0590ab42d7a">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-844ec0dcd4e79f4a3073ec92">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-b8b0083c4ae530e81badb60e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/responses/200/content/application~1json/schema/$ref">#/components/schemas/RecipeView</code>
+<span class="kind">string</span> <a href="e-ddd49605a340c27a8f422367.html#v-a03e326ae153dfad190097ae">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-51b81b595f5f5ebd202ac37f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/responses/200/description">Successful Response</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>400</code>
+</th>
+<td>
+<table id="v-65ca6825cae77ac438ed245b">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-ff9e1cf94f45be08596ffa6b">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-3e768ead095502493d67deae">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-0471391b41e0b512f1237f87">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-f0ef74baea0752b8cf92ecbb">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/responses/400/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-3e6be1757de52ddc871ec69c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/responses/400/description">Bad Request</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-01630345cca3a32a31dbd1db">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-f4b42dfec5d3f8b94370c68d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/responses/400/x-riverhog-error-codes/0">bad_request</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>401</code>
+</th>
+<td>
+<table id="v-c9702de05ea6eca3a0cf2803">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-f67e337dbd1fead601cb5768">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-626abd907ee692d4caa816c7">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-b4f20aa93d3cecc0b2e997e5">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-f2fe9c58e6eba0aefc976abf">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/responses/401/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-47f7c686d098454943dc7846">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/responses/401/description">Unauthorized</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-5a4fa69550483b16d9b231b5">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-46aaf11e4ea94cf5e980487b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/responses/401/x-riverhog-error-codes/0">unauthorized</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>403</code>
+</th>
+<td>
+<table id="v-67220f46666823507a462598">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-ce82b6cc27f59a0051f69c94">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-df35694b3f3d0580be8101a7">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-b331a2f3574eeec3707790c4">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-9838a077a7d65769833a45d4">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/responses/403/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-43c45fc75fe28503dc4d01e3">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/responses/403/description">Forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-cb95b7c1b1c3d9c58a0dda50">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-63af79bea6757f22a43ef5f9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/responses/403/x-riverhog-error-codes/0">forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>404</code>
+</th>
+<td>
+<table id="v-b3e1dbfa691ddf09aacbd6e6">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-9d7e64069491d37f89087cf0">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-627c2795d2592e1dd867aac7">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-af3581f8abbde8b517a83180">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-34d789908f6db5df8fbcdca4">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/responses/404/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-0ef9c5d44d977af99cb05f4b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/responses/404/description">Not Found</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-36a8994c7564f00fb1de55cd">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-4edd43b64f46606940667a09">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/responses/404/x-riverhog-error-codes/0">not_found</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>500</code>
+</th>
+<td>
+<table id="v-82071bf9f710d9640eadc772">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-7e922be4978fb5881485d8ec">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-f1a90c704c695ef2036e10dd">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-3463c48063a0d36e068e3310">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-1497c7b6d57555f15be2bd1e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/responses/500/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-01e66dedd6dda543c5e5f685">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/responses/500/description">Internal Server Error</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-5638a84ef57ce9ed101d4045">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-9982b3c7b49fa0f0a8df2a1d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/responses/500/x-riverhog-error-codes/0">internal_error</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>summary</code>
+</th>
+<td>
+<span id="v-0aba5a30b1d2ddced3c32534">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/summary">Get Recipe</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>tags</code>
+</th>
+<td>
+<table id="v-d6cb9cf2fcd356914da088ef">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-41988de2c5546abde6da3fe1">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1recipes~1{recipe_id}/get/tags/0">recipes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

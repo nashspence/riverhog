@@ -1,0 +1,1805 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>stove0_operator_contracts.SchedulerRun · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-4014113053127b8b1eb889a0.html">stove0-operator-contracts · Python</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>stove0_operator_contracts.SchedulerRun</h1>
+<section id="contract" data-contract="python:stove0-operator-contracts:stove0-operator-contracts-schedulerrun:7c5d6153ae">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/python/stove0_operator_contracts.SchedulerRun</code>
+</h3>
+<table id="v-9052785ed56514b1fe8c4019">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-5e19a19241bd7c10bc37cd85">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-707b5c10863b8bd56b2c99e5">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/kind">class</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-bea95f16ce97e074e7b5ea6f">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-d6ac3114e22062af889b2fda">
+<tbody>
+<tr>
+<th scope="row">
+<code>AdmissionRun</code>
+</th>
+<td>
+<table id="v-bba32c184c26b6736c52f39f">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-752b8dc46db60865340ad5b7">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/AdmissionRun/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-ec182b655e4796846d32ca4e">
+<tbody>
+<tr>
+<th scope="row">
+<code>failures</code>
+</th>
+<td>
+<table id="v-dcac46254deffeb9d9e73818">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-41736d90ed67a18a067f82dc">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/AdmissionRun/properties/failures/default">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-745b1891fd27fd38bfe0647d">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-df9b606820f8f0469adef835">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/AdmissionRun/properties/failures/items/$ref">#/$defs/SchedulerFailure</code>
+<span class="kind">string</span> <a href="e-3402755593bca54617bbe59b.html#v-f931be92db37cb2a43c21b66">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ed6e37beacecf731a0fe02d0">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/AdmissionRun/properties/failures/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>progressed</code>
+</th>
+<td>
+<table id="v-5720136508c0cbb8cba6c5d0">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-e61faa04aad29270d5519aae">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a4163a63490445656780a8a4">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/AdmissionRun/properties/progressed/items/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-03197d15318e533adc8f3840">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/AdmissionRun/properties/progressed/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-9353c602749a67dcc7904af0">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-9bc57f20c552d7c3eb8dab50">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/AdmissionRun/required/0">progressed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-43fd4a01036bfec0f32c62e8">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/AdmissionRun/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>DepartureRun</code>
+</th>
+<td>
+<table id="v-532856ee63ef731099abd03d">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-c1c82c7ebdbb8bd1071880bd">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/DepartureRun/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-840d417736438bd05a743771">
+<tbody>
+<tr>
+<th scope="row">
+<code>failures</code>
+</th>
+<td>
+<table id="v-7bc408630b30216f44e9be66">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-3bea6e77194ed5953bb924f7">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/DepartureRun/properties/failures/default">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-95ccbde959ea580b6fd80800">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-2ef836945383b5200c0e02c2">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/DepartureRun/properties/failures/items/$ref">#/$defs/SchedulerFailure</code>
+<span class="kind">string</span> <a href="e-3402755593bca54617bbe59b.html#v-f931be92db37cb2a43c21b66">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1034668c56b451d0892b7524">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/DepartureRun/properties/failures/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>progressed</code>
+</th>
+<td>
+<table id="v-beb6af687f356e0c0885984c">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-d411b161196e1b816833f5bb">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-43735d12f6d9bb2478615da4">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/DepartureRun/properties/progressed/items/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1f41eda3c9de00e74e723d3a">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/DepartureRun/properties/progressed/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-ee96b247d61507e05b2b32b9">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-f42c2cb6cf692cb09016048e">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/DepartureRun/required/0">progressed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4f6f2cd5ef8ce0a33a8399f0">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/DepartureRun/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>SchedulerFailure</code>
+</th>
+<td>
+<table id="v-f931be92db37cb2a43c21b66">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-f3510270498dc63a62f4b734">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerFailure/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-b16dbcb016fdf92d55db47c1">
+<tbody>
+<tr>
+<th scope="row">
+<code>error</code>
+</th>
+<td>
+<table id="v-512d9ab40fdd9e820517241b">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-cd4da9515ea95843f7731384">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerFailure/properties/error/maxLength">1000</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-cebb0243e3232d3b3eb000be">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerFailure/properties/error/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d19d062110cd38ddc155fc32">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerFailure/properties/error/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>event_id</code>
+</th>
+<td>
+<table id="v-13280c6b71179629dbc271de">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-d7aeaafabc3e31145eb46c00">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-7caa282f5a41dcc105732a24">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e925807cdb58142a56ca0c2b">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerFailure/properties/event_id/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-f13a2bf8caebf3dad6d99c4d">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bc87013f47deb55c260879ec">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerFailure/properties/event_id/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-0e15dc465e5412b8bbac34da">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerFailure/properties/event_id/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>work_id</code>
+</th>
+<td>
+<table id="v-75e71774bf83a4652f5654f9">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-b7caf6ba4217232bed0ee389">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-e9c1a32d5c887f8f964465a8">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-f62c2fdb7f6b3c53ddbdc5f1">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerFailure/properties/work_id/anyOf/0/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a28dc70e43da2f0db878ad37">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerFailure/properties/work_id/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-f427a69852b5e345cb686ccc">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b545c72fd234046db9661bde">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerFailure/properties/work_id/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-e5a70f0ce4e18e761adced1a">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerFailure/properties/work_id/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-23b1103e4104ec5ea03d9e1f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-a842772d7e910242d66a42f5">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerFailure/required/0">error</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a2b7b3701d8fae82ea0a800c">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerFailure/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>SchedulerPruning</code>
+</th>
+<td>
+<table id="v-bc7006be4634e707445740b8">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-dfed785beedf221b89abc4ac">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-00383a38684d5d0023dd34ed">
+<tbody>
+<tr>
+<th scope="row">
+<code>evaluation_bytes</code>
+</th>
+<td>
+<table id="v-c49ada348c505833ba88ebbf">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-e7f203e32ee321a581186f2e">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/properties/evaluation_bytes/minimum">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-13395edcf5210ff7f457d02f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/properties/evaluation_bytes/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>evaluations</code>
+</th>
+<td>
+<table id="v-1d33d965d7c255c3a361fdad">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-2da059bf9a82584bf3b4aa2e">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/properties/evaluations/minimum">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d8e89d757df150f2f7900f64">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/properties/evaluations/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>event_bytes</code>
+</th>
+<td>
+<table id="v-169eacceb3d676077913ec5c">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-28f75bfbff85f3f6554cffce">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/properties/event_bytes/minimum">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f49cf27897c401e3b3cf9e39">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/properties/event_bytes/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>events</code>
+</th>
+<td>
+<table id="v-283e0cec4a21f39f0aecef77">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-c1d5f0e369f31d4ecb2c894a">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/properties/events/minimum">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-92b5a15534fefe321d934e01">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/properties/events/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>selection_bytes</code>
+</th>
+<td>
+<table id="v-ed7b295716dfc4f42f60136d">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-285338c1ea7e9020d72614bb">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/properties/selection_bytes/minimum">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-267aa9728fab56effd633410">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/properties/selection_bytes/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>selections</code>
+</th>
+<td>
+<table id="v-99367b5ff37c637268accd3d">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-b7e60a839aaf171609670676">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/properties/selections/minimum">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-16eb3bc6fcaba25cd5690a9e">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/properties/selections/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>work</code>
+</th>
+<td>
+<table id="v-96c5fc98bd7ef7d2bfc2d2e8">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-a5ac56eddb0e6f38c9f3bad8">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/properties/work/minimum">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4c747edf02bf39521db4b2ad">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/properties/work/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>work_bytes</code>
+</th>
+<td>
+<table id="v-a763f69d364295201f28c85b">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-081b9f52b6ed81284fc167e8">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/properties/work_bytes/minimum">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-dd0c52bc9c2107c55c995e3f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/properties/work_bytes/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-861def0134c689cd12a87c1c">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-d45f9b5a9d364e2a06a8b1c5">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/required/0">work</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-63c554d3d3a26b7d28dc3978">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/required/1">work_bytes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-eda0780ab37bce4436433890">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/required/2">evaluations</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-7672fde094813b753c036832">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/required/3">evaluation_bytes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-9d5864c3def8c253440b2d2b">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/required/4">selections</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-b0f6fd193c980be84def07b0">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/required/5">selection_bytes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-a62c75c8408dca0488588d8e">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/required/6">events</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-8aab79edb529d252dc6ee886">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/required/7">event_bytes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-557c53c486d8112d4560fe09">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerPruning/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>SchedulerWorkBatch</code>
+</th>
+<td>
+<table id="v-85f50ba4cecb8e9621357f61">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-6b95ba490b60b958e7044852">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerWorkBatch/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-ca3d68d5891c2e69a37d94f3">
+<tbody>
+<tr>
+<th scope="row">
+<code>cursor</code>
+</th>
+<td>
+<table id="v-febaa7cdbee87e0b6e21455f">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-80598a6a32fa18254a1bf9ed">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerWorkBatch/properties/cursor/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>failures</code>
+</th>
+<td>
+<table id="v-83204bb86df4f846d9689854">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-b4e9ff93df6f506e6db4c0e0">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-24ab97ee74976b9be861f1b4">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerWorkBatch/properties/failures/items/$ref">#/$defs/SchedulerFailure</code>
+<span class="kind">string</span> <a href="e-3402755593bca54617bbe59b.html#v-f931be92db37cb2a43c21b66">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f19a6b2c159e8b29024cd595">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerWorkBatch/properties/failures/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>next_cursor</code>
+</th>
+<td>
+<table id="v-71bf1bf9828f04885187511d">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b4abcd2ca5c89438a091f2c9">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerWorkBatch/properties/next_cursor/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>progressed</code>
+</th>
+<td>
+<table id="v-491358acb97418d3b8742fbc">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-7575127c40eb82a1a05810f0">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-d0bdd005f40846385e7cbeb4">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerWorkBatch/properties/progressed/items/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d541242e65ea374c82ec88d1">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerWorkBatch/properties/progressed/items/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3f88338f0c987ed5b771833e">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerWorkBatch/properties/progressed/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>role</code>
+</th>
+<td>
+<table id="v-d2bfd7f1c29857904c35637d">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-54b6d51b065cd028273b0e23">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-c09c2730023817b933c1198b">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerWorkBatch/properties/role/enum/0">controller</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-c581d4eadf340ab9c54eea36">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerWorkBatch/properties/role/enum/1">worker</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-39d71d5834a2b05850df225d">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerWorkBatch/properties/role/enum/2">combined</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-da16e20ce5c1768ec2b2b43c">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerWorkBatch/properties/role/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-461dbd2a8fbb68c78087e6ec">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-437489471078c38e5ffd86d2">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerWorkBatch/required/0">role</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-286560f5c384e7fdfa6f13d9">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerWorkBatch/required/1">cursor</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-1e333c1e37d1d0fcf7cedf6f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerWorkBatch/required/2">next_cursor</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-06094117464611563631443b">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerWorkBatch/required/3">progressed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-ce9027d1e6be5f52c7ba39af">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerWorkBatch/required/4">failures</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d46866def37ea77cf866005a">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/$defs/SchedulerWorkBatch/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-ccf4a0a0bd13b54db92e7746">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-087e619815b771b2dd498c12">
+<tbody>
+<tr>
+<th scope="row">
+<code>admission</code>
+</th>
+<td>
+<table id="v-4529d53325231caba4ca497c">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-d836f32a198a7f6abf2b7455">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-d0109ba41ab05b16882368f4">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c5a533a7bc8819ea0afec7dc">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/properties/admission/anyOf/0/$ref">#/$defs/AdmissionRun</code>
+<span class="kind">string</span> <a href="e-3402755593bca54617bbe59b.html#v-bba32c184c26b6736c52f39f">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-b6c2fadcf4bbd770c7c4edcc">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9df11abc6dd3f12dd6090f37">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/properties/admission/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-407bc7bd026ed9d5e33f7a5a">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/properties/admission/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>departure</code>
+</th>
+<td>
+<table id="v-a914eb2a8d1c710a7e544dba">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-0077edb1cd5aa83856b54db7">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-32334da5963b031b75031d95">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-3e6990fa0ef4395771334810">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/properties/departure/anyOf/0/$ref">#/$defs/DepartureRun</code>
+<span class="kind">string</span> <a href="e-3402755593bca54617bbe59b.html#v-532856ee63ef731099abd03d">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-63ff001197f587487d75ff8f">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e1a532793fe25f3b04e281a8">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/properties/departure/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-04babcad758426b77d75458f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/properties/departure/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pruning</code>
+</th>
+<td>
+<table id="v-d0ff3529cf6dd82c38b6c377">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-a49f27bcf6b282f4d5a09629">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-6f978e5cb5f0eb534e2f131a">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-a9f3b85d262d131a14d7a5ac">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/properties/pruning/anyOf/0/$ref">#/$defs/SchedulerPruning</code>
+<span class="kind">string</span> <a href="e-3402755593bca54617bbe59b.html#v-bc7006be4634e707445740b8">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-fa60550f94f74011056a0c4f">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5d74a9072597531fe468c55f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/properties/pruning/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>work</code>
+</th>
+<td>
+<table id="v-557354c3af9c93fb374398db">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-5253f2d982b4342ebeb8b270">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/properties/work/$ref">#/$defs/SchedulerWorkBatch</code>
+<span class="kind">string</span> <a href="e-3402755593bca54617bbe59b.html#v-85f50ba4cecb8e9621357f61">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-ed13546b9e0cc0dae27fb7bc">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-7ec5f3edf2fa0b42fecf1c08">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/required/0">pruning</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-0ac25fd4d8231aa024ee1fed">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/required/1">work</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c7db1dc77d69d22fe048fc53">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-ac3c4af9b1f5dcd76621326a">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/contract/signature">&#x27;(*, pruning: stove0_operator_contracts.SchedulerPruning | None, admission: stove0_operator_contracts.AdmissionRun | None = None, departure: stove0_operator_contracts.DepartureRun | None = None, work: stove0_operator_contracts.SchedulerWorkBatch) -&gt; None&#x27;</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-e6d0614c12b6f0d36e7cc27c">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/distribution">stove0-operator-contracts</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-3af0525ee142785f347055ca">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/module">stove0_operator_contracts</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-a21009d9bc6dfa07409cf14a">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/name">SchedulerRun</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-7d4de8abc1a9040c8f2b68a2">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.SchedulerRun/unit">export</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py">some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

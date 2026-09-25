@@ -1,0 +1,1232 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: AdmissionPolicyStatus · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: AdmissionPolicyStatus</h1>
+<section id="contract" data-contract="http-schemas:stove0:schemas-admissionpolicystatus:fd93f71473">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus</code>
+</h3>
+<table id="v-6f7e6eda6daee045701b3ca9">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-ed97910e07a54a317e3ef9ae">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-5e8f2dc6929ede25d124f2ac">
+<tbody>
+<tr>
+<th scope="row">
+<code>authorization_view_identity</code>
+</th>
+<td>
+<table id="v-7abab665dab3937b9693aa53">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-9bb4818279985adf66dd50e3">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-c9abb94bd5a58ec06af1534a">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-745a48a0e7ba02cbba654683">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/authorization_view_identity/anyOf/0/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bd1f13f3ddbf1c48f66a8510">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/authorization_view_identity/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-703fd5e6950c38175c21c75c">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bc0ab00b7e881b45130b5608">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/authorization_view_identity/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-f8320ed60629bba5095171d5">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/authorization_view_identity/title">Authorization View Identity</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>baseline_mode</code>
+</th>
+<td>
+<table id="v-90608235c3de4987b309d417">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-d337619e81f26a0a4dacfec8">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-38d362abef205601d9bdd573">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/baseline_mode/enum/0">observe</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-72767a10fdcf97ec4f5f9355">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/baseline_mode/enum/1">backfill</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-bebbc061fce1d4454d353f48">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/baseline_mode/title">Baseline Mode</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c61abb6b49312d377cbc583b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/baseline_mode/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>phase</code>
+</th>
+<td>
+<table id="v-9fbfaae5b45c5b55279df40d">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-f3fce73089ce498be4300631">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-35991dc6ada0618a072af2cb">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/phase/enum/0">new</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-00c83ae7ddee253cc0e6b767">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/phase/enum/1">baseline</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-a940a419773ea8a01c404532">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/phase/enum/2">following</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-97994e83828c460ed1838cf2">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/phase/enum/3">reset_required</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-012940052fa493e251c570c5">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/phase/title">Phase</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4e137d7bd9ead8ced51fde5c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/phase/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<table id="v-320c09e9e83ffa6789c95f35">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-56231724109eb0f2bb5420cd">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/policy/$ref">#/components/schemas/AdmissionPolicy</code>
+<span class="kind">string</span> <a href="e-73daed23d92b3faa3e513b52.html#v-9dd4f15559b162a0ae2df245">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_sha256</code>
+</th>
+<td>
+<table id="v-bc8436892ead6b0afc65ff94">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-cf24d905a1d0b91d79b5c198">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/policy_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-8e0592bf89c3ab472bd968c7">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/policy_sha256/title">Policy Sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9932fb77b070af5de67db0e1">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/policy_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_identity</code>
+</th>
+<td>
+<table id="v-8a42f28aeff4fd7b5bbc5e95">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-eb8785ce1fccced284ae85be">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-1edd94b4086a41ef6892c511">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-9eb35d6fc089fcbbf9c60a2e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/source_identity/anyOf/0/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-01a50ea4e638b454b103bddc">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/source_identity/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-ea9bca7d5ce3af53b1d3f022">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-764d6c8d9b6df738068c1362">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/source_identity/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-cad86f2db8efabdf47424a55">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/source_identity/title">Source Identity</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>through_revision</code>
+</th>
+<td>
+<table id="v-81ea7bf804e6014ec4e8048a">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-fe2686b44a187701c7df8ed4">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/through_revision/pattern">^(?:0|[1-9][0-9]*)$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-f4a7d6d5486679acc7e0663e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/through_revision/title">Through Revision</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5b7d8f096b8e7f4a992048a4">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/through_revision/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>updated_at</code>
+</th>
+<td>
+<table id="v-ded9b01a7b9bcb9ad716ac8a">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-30bf406d3ba23c9273a09c11">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/updated_at/maxLength">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-3a4953e5170ac67118d74606">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/updated_at/minLength">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-aa710ff1c614f6f8fccb209f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/updated_at/pattern">^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-aac2793920f028ac21233c0d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/updated_at/title">Updated At</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9186693e4294feed831839ce">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/updated_at/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-ca6bf7a882e0acba4889d8af">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-b4ebea9779e3a6cd499aaaad">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/required/0">policy</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-51b0d5d4d46281914019c5c9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/required/1">policy_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-0138c22196679f92eb5e5bd0">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/required/2">phase</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-99c1976c549c8a974314f669">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/required/3">baseline_mode</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-3f43af443efbc981ffd76dd9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/required/4">through_revision</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-b0b71c9ccd032eb3e5885e23">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/required/5">updated_at</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-450662ebf5c792b57c93dab7">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/title">AdmissionPolicyStatus</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5d10ddd2ecf1798f01a94d32">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<p>These records index source constraints; they do not add limits or progression promises.</p>
+<ul>
+<li>
+<code>http:stove0:components:/schemas/AdmissionPolicyStatus/properties/authorization_view_identity/anyOf/0:length</code>
+<table id="v-9ea06000763975f5e6ccd800">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-5f763db23b59d322f1a144ed">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1authorization_view_identity~1anyOf~10:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-17bfd622f3699ca56293f187">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1authorization_view_identity~1anyOf~10:length/id">http:stove0:components:/schemas/AdmissionPolicyStatus/properties/authorization_view_identity/anyOf/0:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-1b88cf88322de276fbee2454">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1authorization_view_identity~1anyOf~10:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-99b8a56b4f12cbd0eb0df943">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1authorization_view_identity~1anyOf~10:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-5796d7019b68139258709c75">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1authorization_view_identity~1anyOf~10:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-ef8c4b2932a582dc0a3c2d06">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1authorization_view_identity~1anyOf~10:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-ed3a275fcd3edf3af95a13ce">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1authorization_view_identity~1anyOf~10:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-fe9125cc43626828c8d11f6f">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1authorization_view_identity~1anyOf~10:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-38ac8fb09969c95362665df7">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-420def11683ebec15e5cf5ab">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1authorization_view_identity~1anyOf~10:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-c29a4eb610c74e4c2d1bff4c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1authorization_view_identity~1anyOf~10:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/authorization_view_identity/anyOf/0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-b6b2022abbb7663d4161a6dd">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1authorization_view_identity~1anyOf~10:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/AdmissionPolicyStatus/properties/policy_sha256:length</code>
+<table id="v-96565cc25eae21cba76e1a03">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-7ff6ec92127542ee7a647855">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1policy_sha256:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-4822e9c8bf2a077df52d137f">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1policy_sha256:length/id">http:stove0:components:/schemas/AdmissionPolicyStatus/properties/policy_sha256:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-5432049ead6beaacecf2e767">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1policy_sha256:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-fbae3aaa294a2d1de56f48e1">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1policy_sha256:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-9e7523f7dbd6131b0b0115a4">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1policy_sha256:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-22454f3a441aa237ec9986c5">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1policy_sha256:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-725b06ce8e5106eb558ee479">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1policy_sha256:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-03a6adcd422f2293e31994d2">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1policy_sha256:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-82f70e2a12886b9b85f6ac98">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-f39c956753dd38442f498025">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1policy_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-4087ae89a18e1e7479417f67">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1policy_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/policy_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-ef23a766c336814679ea834c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1policy_sha256:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/AdmissionPolicyStatus/properties/source_identity/anyOf/0:length</code>
+<table id="v-f9d00fd21a8aa954228d2165">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-0bac1df0eb5f1ce324babbdc">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1source_identity~1anyOf~10:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-f57c07827503f4d27a6d0e22">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1source_identity~1anyOf~10:length/id">http:stove0:components:/schemas/AdmissionPolicyStatus/properties/source_identity/anyOf/0:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-518c58d4787b5a0ee5a3f5bc">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1source_identity~1anyOf~10:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-0ca4772042b46720288f49aa">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1source_identity~1anyOf~10:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-878ba4c09028f357a1b0a1a3">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1source_identity~1anyOf~10:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-6ada69442e4939076d25ebda">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1source_identity~1anyOf~10:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-8cb53a6cb60bc3826d40fab1">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1source_identity~1anyOf~10:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-ff78342cba93779b108191a1">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1source_identity~1anyOf~10:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-0ede61e678af983cee11ac86">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-df5d07dad3c8c4b6e8f078b4">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1source_identity~1anyOf~10:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-4123188a8ab4758da69dd824">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1source_identity~1anyOf~10:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/source_identity/anyOf/0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-7afa85e0bf1652f2f6311f1e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1source_identity~1anyOf~10:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/AdmissionPolicyStatus/properties/updated_at:length</code>
+<table id="v-20665e9f18e42a835c4a4c97">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-5840f149d5aa610b44b62b5c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1updated_at:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-f25b40b3389acc6efcaea48e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1updated_at:length/id">http:stove0:components:/schemas/AdmissionPolicyStatus/properties/updated_at:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-c0b3fc8da373a4d4ac5885e9">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1updated_at:length/maximum">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-78ddfcc705b124d6112f1a72">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1updated_at:length/minimum">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-529853774ec4743d0216061a">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1updated_at:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-c606cc16615787487b9df9d0">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1updated_at:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-391c3e596c9e36060ed5b17e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1updated_at:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-e8145c6296251b9fbc939315">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1updated_at:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-77e872f339893fb23b6baedd">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1updated_at:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/AdmissionPolicyStatus/properties/updated_at</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-7f9432be7e197d3e2d0e0e01">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1AdmissionPolicyStatus~1properties~1updated_at:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

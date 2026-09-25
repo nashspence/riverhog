@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>POST /v1/evaluations · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-ebb825f7ec999f00a9d2c150.html">stove0 · HTTP Operations</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>POST /v1/evaluations</h1>
+<section id="contract" data-contract="http-operations:stove0:post-v1-evaluations:1a8ff20c1b">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post</code>
+</h3>
+<table id="v-cd6a7cc532107ce690d4d22a">
+<tbody>
+<tr>
+<th scope="row">
+<code>operationId</code>
+</th>
+<td>
+<span id="v-2d04567f8508e6c384ba391e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/operationId">create_evaluation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>requestBody</code>
+</th>
+<td>
+<table id="v-5f4b6ec140bc5952cce64c30">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-5a8fb4a57fe6d39b3739356d">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-ca30d217d84c27200b65fece">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-eb1cb01a4e74a8aebdf4f1ae">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-d2c83640453fe4d761be0fb3">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/requestBody/content/application~1json/schema/$ref">#/components/schemas/EvaluationDefinition</code>
+<span class="kind">string</span> <a href="e-39ccbcda0050ac9b2b456e63.html#v-60000b3b201886b944354a82">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<span id="v-858b1ff2f291de1f384e4d7d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/requestBody/required">true</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>responses</code>
+</th>
+<td>
+<table id="v-45dfa754804c27cafcdc86ac">
+<tbody>
+<tr>
+<th scope="row">
+<code>201</code>
+</th>
+<td>
+<table id="v-1c5ea98d8a96c43ca7a876dc">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-5f44843a228328ce55672973">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-db0c048805eb440ae97c50d3">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-7bd71ff120836c814c38d97e">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-54ef281c7b56fc5c38c5dc31">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/responses/201/content/application~1json/schema/$ref">#/components/schemas/EvaluationView</code>
+<span class="kind">string</span> <a href="e-3076dba6479c056c8b343061.html#v-230a00e66668197d35fe1277">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-76a3908f5f2964fa0bf6d270">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/responses/201/description">Successful Response</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>400</code>
+</th>
+<td>
+<table id="v-de7e63a5d5cb18524715d584">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-ce76c30c022193d75052874b">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-dd99121af99472bd4806a5b7">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-b7cf3a1d7289143ede653304">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-64c7b9f6d82eb9e1a621c94a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/responses/400/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-3620262b351da5a0d5859bd4">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/responses/400/description">Bad Request</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-d53cbe556baf064b7fc7a27a">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-41dc66ae99d5f2b6628e5b9d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/responses/400/x-riverhog-error-codes/0">bad_request</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>401</code>
+</th>
+<td>
+<table id="v-08f49ad1569a554f95159a6a">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-1e675a1bad0304debf673c05">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-54c4298bbd3df8ec31963b86">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-f737f5562b69821e463d9cd9">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-57205052011852f40771756c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/responses/401/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-469164380200fc6bf533994d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/responses/401/description">Unauthorized</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-761290ec4479fda7caee505a">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-63a6fd1bc26404144e08eb6d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/responses/401/x-riverhog-error-codes/0">unauthorized</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>403</code>
+</th>
+<td>
+<table id="v-d8276dc1efa9d0767d79985a">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-e117860321047eb72004350a">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-f004c3cd61e35e797d6ae79c">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-adc6e1fa2f792cc339010d12">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-48ecb084d24337a7f88fbe48">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/responses/403/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-544f05caba8dba0038ba5116">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/responses/403/description">Forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-aa771f55775f919498717c59">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-bb108a35ceed4bf563545592">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/responses/403/x-riverhog-error-codes/0">forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>409</code>
+</th>
+<td>
+<table id="v-80cd6bb9b4cc51ab47b34872">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-bd047b329c7cee4b40f6a80d">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-ef38a05c1808c10404857a6a">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-ff8f53673f43a3214c85c482">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-db5e66a5c912cd7d1a40b45d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/responses/409/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-273cd21a1e75f5f65d96456a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/responses/409/description">Conflict</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-2aafe3f366092fff19701ee5">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-4e1adc14b84a36ac5deec61e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/responses/409/x-riverhog-error-codes/0">conflict</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>500</code>
+</th>
+<td>
+<table id="v-823425572c02e44b6bdf8e08">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-ef81ebe1be9213e0f9d24822">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-1119a81ebb09d077a561a02e">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-70d6fd7eefe75426a721f46c">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c703ba3c1835a925ae8ce710">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/responses/500/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-6520fae27bc955abcbcf993b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/responses/500/description">Internal Server Error</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-232fadfc9c6235c7ee4603a5">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-c0d7c7150bdc243539d37d83">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/responses/500/x-riverhog-error-codes/0">internal_error</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>summary</code>
+</th>
+<td>
+<span id="v-69f2b2da848f59344ad42b7f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/summary">Create Evaluation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>tags</code>
+</th>
+<td>
+<table id="v-985805b80e840781d3c3edf9">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-b502c4d0f40797fe1f84266c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1evaluations/post/tags/0">evaluations</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

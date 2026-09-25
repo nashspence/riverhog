@@ -1,0 +1,972 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GET /v1/target-executions/{job_id}/inputs · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-ebb825f7ec999f00a9d2c150.html">stove0 · HTTP Operations</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>GET /v1/target-executions/{job_id}/inputs</h1>
+<section id="contract" data-contract="http-operations:stove0:get-v1-target-executions-job-id-inputs:6c7f3ca62d">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get</code>
+</h3>
+<table id="v-dd498ea95c9fb0f652b9d529">
+<tbody>
+<tr>
+<th scope="row">
+<code>operationId</code>
+</th>
+<td>
+<span id="v-0754069f027c77cc272e458b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/operationId">get_target_execution_inputs</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>parameters</code>
+</th>
+<td>
+<table id="v-7a9e775a84efae7b5ce27424">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-71bac0a8b322c5af4ecd9f16">
+<tbody>
+<tr>
+<th scope="row">
+<code>in</code>
+</th>
+<td>
+<span id="v-3218ee0df615e90691a659b1">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/parameters/0/in">path</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-cebaa6a8d41cdb2c0aaa2395">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/parameters/0/name">job_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<span id="v-cb577322e06a5f218efb9543">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/parameters/0/required">true</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-1188c9c7b025e2874e2a2d59">
+<tbody>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-9c7ab0b6c5f207a419cfca63">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/parameters/0/schema/title">Job Id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0fdf223a1ac597e3faf516e0">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/parameters/0/schema/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-f3e43785cadc51ec9a2b0e19">
+<tbody>
+<tr>
+<th scope="row">
+<code>in</code>
+</th>
+<td>
+<span id="v-feb97f97264c757e233fe8a2">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/parameters/1/in">query</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-cfd9ce14b5eb5c76a058ec57">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/parameters/1/name">continuation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<span id="v-ebc276e5d11d80842b9500db">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/parameters/1/required">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-ea948d52e36579a953e208bb">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-6b975dd976d6bb96c6be697d">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-ee26024d3914bd1dcc302ea4">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d6e0041f734d4de39ddcb60a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/parameters/1/schema/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-94aafbfbd7a9cba4cee1c606">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b2f7520e43a387dd839d5b90">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/parameters/1/schema/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-09366867be462e0dfc2156b9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/parameters/1/schema/title">Continuation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>responses</code>
+</th>
+<td>
+<table id="v-b0d275a5ed5e27b29a3aae34">
+<tbody>
+<tr>
+<th scope="row">
+<code>200</code>
+</th>
+<td>
+<table id="v-9070ff8872d31964541c84d2">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-3c3737fea8da3d07e25567e4">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-2ae1aae4a50740324b847578">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-b9dca8ad0f26986814667892">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-046a1871360803971d25fd3c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/responses/200/content/application~1json/schema/$ref">#/components/schemas/TargetInputPage</code>
+<span class="kind">string</span> <a href="e-a235658501cab590661f3c4f.html#v-eef3cd75b191c2088906f237">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-ff7bd9d7b62123ed362311e8">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/responses/200/description">Successful Response</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>400</code>
+</th>
+<td>
+<table id="v-06d3c2e4e6160b2143762dce">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-512960f29e8590c1cef20621">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-94c1c74144e7494f19f28512">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-76d621438fa7fec54e9bc1e4">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-90915d84b7f187fe36715a19">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/responses/400/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-b624b7c0cdf510d79fed0ae6">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/responses/400/description">Bad Request</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-40f4572786cb0f9f39bfcd5e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-317a8b85bbd56b0efcf91fe6">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/responses/400/x-riverhog-error-codes/0">bad_request</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>401</code>
+</th>
+<td>
+<table id="v-7c20e23ee1676d483cdde2f7">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-1c3e1eab0130f7837dd290e2">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-f5198626ea97020a8ea8bdec">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-cf164685b78b52df49aaf624">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-ef9e1a03a131a5e9523e9bee">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/responses/401/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-4a2f53788a4491bcc4f5e39b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/responses/401/description">Unauthorized</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-e9d1f224e0e727ea81f3ff04">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-458c52f654a94b5fe816fc56">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/responses/401/x-riverhog-error-codes/0">unauthorized</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>403</code>
+</th>
+<td>
+<table id="v-a3ab3c82cc50560633120ab8">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-aea179d9deb3e475813d313a">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-157c8dfefe676e3424be12ae">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-e85a7551022aed270e4b20fe">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-ada6ab0cd8d2aeec3588a3df">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/responses/403/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-7ac53dc4f43a0467d5a39124">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/responses/403/description">Forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-e397a3ab6322c1da42b07f84">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-78dc5d2409a502caf6410380">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/responses/403/x-riverhog-error-codes/0">forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>500</code>
+</th>
+<td>
+<table id="v-f3a5b7a840c58bd19e1c0785">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-1cc1f89e36100bb704a7e414">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-8fa08653305dc4aea8817524">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-2c19eca917910420fe5224bb">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-fc2b727f360ef85a934ba377">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/responses/500/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-a869dcbe26cda5def8aa5da4">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/responses/500/description">Internal Server Error</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-a9ea7d852064ba3d4796b378">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-a03bacc9e9b4e523fb116358">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/responses/500/x-riverhog-error-codes/0">internal_error</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>summary</code>
+</th>
+<td>
+<span id="v-8899a415e1ab2f4f4433ce80">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/summary">Get Target Execution Inputs</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>tags</code>
+</th>
+<td>
+<table id="v-dba21f2f5d5313fd45f0a74b">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-31fcf487c805a19760293a2b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/tags/0">target-executions</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-interface</code>
+</th>
+<td>
+<span id="v-a22e55d9dc5b2ca03789f53d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/x-riverhog-interface">client-only-primitive</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-read-collection</code>
+</th>
+<td>
+<table id="v-490fc10b203c80644dc5b140">
+<tbody>
+<tr>
+<th scope="row">
+<code>authority</code>
+</th>
+<td>
+<span id="v-3cd0fae6da7ded8f38733bd1">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/x-riverhog-read-collection/authority">target-input-authority</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>cursor_parameter</code>
+</th>
+<td>
+<span id="v-62f7d8a82827ad214804cf95">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/x-riverhog-read-collection/cursor_parameter">continuation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>fixed_limit</code>
+</th>
+<td>
+<span id="v-29ef587f8487d9134004e096">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/x-riverhog-read-collection/fixed_limit">256</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-d4f5347eb32d5164107861b0">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get/x-riverhog-read-collection/kind">exact-authority-page</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<p>These records index source constraints; they do not add limits or progression promises.</p>
+<ul>
+<li>
+<code>http:stove0:operation:get_target_execution_inputs:logical-result</code>
+<table id="v-2c7af442921d464472b095ba">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-c6cdf51d98e5d931f763cf5a">
+<code data-value-pointer="/audit/decisions/http:stove0:operation:get_target_execution_inputs:logical-result/dimension">logical-result-cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-5898adbe09b7f1ccbb407038">
+<code data-value-pointer="/audit/decisions/http:stove0:operation:get_target_execution_inputs:logical-result/id">http:stove0:operation:get_target_execution_inputs:logical-result</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-e017584e622ee2e8d67b1a60">
+<code data-value-pointer="/audit/decisions/http:stove0:operation:get_target_execution_inputs:logical-result/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-f8fc617952e91c164bc63a28">
+<code data-value-pointer="/audit/decisions/http:stove0:operation:get_target_execution_inputs:logical-result/policy">segmented_no_total_max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>progression</code>
+</th>
+<td>
+<table id="v-32122437957927dcd84734af">
+<tbody>
+<tr>
+<th scope="row">
+<code>authority</code>
+</th>
+<td>
+<span id="v-c2cd4663d4f4299f2a52b85a">
+<code data-value-pointer="/audit/decisions/http:stove0:operation:get_target_execution_inputs:logical-result/progression/authority">target-input-authority</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>cursor_parameter</code>
+</th>
+<td>
+<span id="v-52fb2e555211f9e92503ab72">
+<code data-value-pointer="/audit/decisions/http:stove0:operation:get_target_execution_inputs:logical-result/progression/cursor_parameter">continuation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>fixed_limit</code>
+</th>
+<td>
+<span id="v-3da243e4adc4d6df8b8c8a9b">
+<code data-value-pointer="/audit/decisions/http:stove0:operation:get_target_execution_inputs:logical-result/progression/fixed_limit">256</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-2a00649f2437da280f983f25">
+<code data-value-pointer="/audit/decisions/http:stove0:operation:get_target_execution_inputs:logical-result/progression/kind">exact-authority-page</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-f67dd9247ebd063d0087bfd3">
+<code data-value-pointer="/audit/decisions/http:stove0:operation:get_target_execution_inputs:logical-result/reason">bounded-route-progression</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-ed4e7ae80964052a815036f7">
+<code data-value-pointer="/audit/decisions/http:stove0:operation:get_target_execution_inputs:logical-result/rule">route-progression/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-d93f69510366d677a2b70e33">
+<code data-value-pointer="/audit/decisions/http:stove0:operation:get_target_execution_inputs:logical-result/source_pointer">/external_contract/http_openapi/stove0/paths/~1v1~1target-executions~1{job_id}~1inputs/get</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-d36875adfba1fbb452e0a2f7">
+<code data-value-pointer="/audit/decisions/http:stove0:operation:get_target_execution_inputs:logical-result/unit">items</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

@@ -110,7 +110,7 @@ def test_operation_trace_binds_the_actual_parser_callback_and_rejects_ambiguity(
 
 
 def test_prior_read_authority_links_remain_contract_side_audit_context() -> None:
-    trace = json.loads(ARTIFACT.read_text(encoding="utf-8"))["trace"]
+    trace = json.loads(ARTIFACT.with_name("riverhog-v1-audit.json").read_text())["trace"]
     witnesses = {item["id"]: item for item in trace["read_authority_witnesses"]}
     assert set(witnesses) == {
         "catalog-sync-read-authority-lifetime/v1",
@@ -150,14 +150,16 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     checked_contract_closure: dict[str, Any],
 ) -> None:
     module = load_script()
-    projection, trace, generated = module._generated_atlas()
-    checked = checked_contract_closure["atlas"]
+    checked = checked_contract_closure["discovered"]
+    bundle = checked_contract_closure["bundle"]
+    projection = checked_contract_closure["projection"]
+    trace = checked_contract_closure["trace"]
 
-    assert ARTIFACT.read_bytes() == module.canonical_bytes(generated.root)
-    assert checked.root == generated.root
-    assert checked.files == generated.files
-    assert module.reassemble_projection(checked) == json.loads(json.dumps(projection))
-    assert module.reassemble_trace(checked) == json.loads(json.dumps(trace))
+    assert ARTIFACT.read_bytes() == module.canonical_bytes(bundle.closure)
+    assert module.AUDIT_OUTPUT.read_bytes() == module.canonical_bytes(bundle.audit)
+    assert module._checked_candidate_matches(
+        bundle, module.render_contract(bundle.closure, bundle.audit)
+    )
     assert projection["format"] == "riverhog-contract-freeze/v1"
     assert set(projection) == {"format", "series", "boundaries", "external_contract"}
     boundaries = projection["boundaries"]
@@ -412,12 +414,11 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     } & {item["authority"] for item in checked.root["elements"]}
 
     root = checked.root
-    assert root["format"] == "riverhog-contract-machine-closure/v1"
+    assert root["format"] == "riverhog-contract-discovery/v1"
     assert root["projection"]
     assert root["trace"]
     assert root["counts"]["contract_elements"] == len(root["elements"])
     assert root["counts"]["extent_decisions"] == len(extents["decisions"])
-    assert root["counts"]["atlas_documents"] == len(root["atlas"]["documents"])
     assert root["discovery"]["anomalies"] == {
         "duplicate": 0,
         "missing": 0,
@@ -426,12 +427,15 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "stale": 0,
         "undecided": 0,
     }
-    assert all(path.endswith(".md") for path in checked.files)
-    assert not any(path.endswith(".json") for path in checked.files)
+    assert all(
+        path.suffix in {".html", ".css", ".js", ".json"}
+        for path in module.RENDER_DIRECTORY.iterdir()
+    )
+    assert (module.RENDER_DIRECTORY / "index.html").is_file()
     assert root["identities"]["boundary_canonical_sha256"] == trace["boundary_canonical_sha256"]
     release = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
     freeze = release["governance"]["boundary_freeze"]
-    protected_boundaries = module.reassemble_projection(checked)["boundaries"]
+    protected_boundaries = projection["boundaries"]
     assert freeze["status"] == "frozen"
     assert freeze["protected_boundary_sha256"] == module._boundary_canonical_sha256(
         module._protected_boundary(protected_boundaries, freeze)
@@ -813,7 +817,7 @@ def test_python_external_discovery_uses_public_exports_and_includes_them_automat
 def test_installed_entry_points_all_resolve_to_included_cli_trees(
     checked_contract_closure: dict[str, Any],
 ) -> None:
-    checked = checked_contract_closure["atlas"]
+    checked = checked_contract_closure["discovered"]
     projection, trace = checked.root["projection"], checked.root["trace"]
     installed = {
         name
@@ -1096,13 +1100,13 @@ def test_audit_commands_route_by_authority_interface_and_dossier(
     checked_contract_closure: dict[str, Any],
 ) -> None:
     module = load_script()
-    monkeypatch.setattr(module, "load_atlas", lambda _path: checked_contract_closure["atlas"])
+    monkeypatch.setattr(module, "load_bundle", lambda _path: checked_contract_closure["bundle"])
 
     assert module.main(["summary"]) == 0
     summary = json.loads(capsys.readouterr().out)
-    assert summary["format"] == "riverhog-contract-machine-closure/v1"
+    assert summary["format"] == "riverhog-contract-closure/v1"
     assert summary["discovery_anomalies"]["missing"] == 0
-    assert summary["atlas_root"] == "riverhog-v1/index.md"
+    assert summary["render_root"] == "riverhog-v1/index.html"
 
     assert module.main(["list", "--authority", "riverhog", "--interface", "http-operations"]) == 0
     elements = json.loads(capsys.readouterr().out)

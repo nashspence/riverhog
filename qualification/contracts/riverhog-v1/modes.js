@@ -1,0 +1,41 @@
+'use strict';
+const root=document.documentElement;
+const audit=document.getElementById('audit-mode');
+const docs=document.getElementById('docs-mode');
+root.dataset.js='yes';
+function apply(){const url=new URL(location.href);
+  root.dataset.audit=url.searchParams.get('audit')==='1'&&audit&&!audit.disabled?'on':'off';
+  root.dataset.docs=url.searchParams.get('docs')==='1'&&docs&&!docs.disabled?'on':'off';
+  if(audit)audit.checked=root.dataset.audit==='on';
+  if(docs)docs.checked=root.dataset.docs==='on';}
+function changed(){const url=new URL(location.href);
+  for(const [key,control] of [['audit',audit],['docs',docs]])
+    if(control&&control.checked)url.searchParams.set(key,'1');else url.searchParams.delete(key);
+  history.pushState(null,'',url);apply();}
+if(audit)audit.addEventListener('change',changed);
+if(docs)docs.addEventListener('change',changed);
+addEventListener('popstate',apply);
+document.addEventListener('click',event=>{
+  const link=event.target.closest('a[href]');if(!link)return;
+  const url=new URL(link.href,location.href);
+  if(url.origin!==location.origin||!url.pathname.endsWith('.html'))return;
+  for(const key of ['audit','docs'])if(root.dataset[key]==='on')url.searchParams.set(key,'1');
+  else url.searchParams.delete(key);
+  link.href=url.href;});
+apply();
+const sources=[...document.querySelectorAll('code[data-source-path]')];
+if(sources.length)fetch(new URL('../build-manifest.json',location.href))
+  .then(response=>response.ok?response.json():null)
+  .then(manifest=>{
+    if(!manifest||manifest.format!=='riverhog-contract-preview-build/v1'||
+       !/^[0-9a-f]{40}$/.test(manifest.source_sha))return;
+    for(const source of sources){
+      const path=source.dataset.sourcePath.split('/').map(encodeURIComponent).join('/');
+      const line=source.dataset.sourceLine;
+      const link=document.createElement('a');
+      link.href='https://github.com/nashspence/riverhog/blob/'+manifest.source_sha+'/'+path+
+        (line?'#L'+line:'');
+      link.dataset.sourceLink='exact-commit';
+      source.replaceWith(link);link.append(source);
+    }
+  }).catch(()=>{});

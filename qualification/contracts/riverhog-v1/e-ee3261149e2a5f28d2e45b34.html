@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: SetKeyDownloadQuotaRequest · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-09dc1e38a978cb3e071a9885.html">riverhog · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: SetKeyDownloadQuotaRequest</h1>
+<section id="contract" data-contract="http-schemas:riverhog:schemas-setkeydownloadquotarequest:80b2d25092">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/riverhog/components/schemas/SetKeyDownloadQuotaRequest</code>
+</h3>
+<table id="v-2b28861351624a6799e7f561">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-a8046636a56e8a7e8b0db446">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/SetKeyDownloadQuotaRequest/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-2644316a7c1792f858eed30c">
+<tbody>
+<tr>
+<th scope="row">
+<code>monthly_bytes</code>
+</th>
+<td>
+<table id="v-60ad711d072278b3dd7e80fa">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-654d12eae1623f83c57604d0">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-05367945cb1848335331d0a1">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-cb09401cac518d2300ecd069">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/SetKeyDownloadQuotaRequest/properties/monthly_bytes/anyOf/0/$ref">#/components/schemas/MonthlyDownloadQuotaBytes</code>
+<span class="kind">string</span> <a href="e-84c394d9b02bf590af6406c5.html#v-9cef6e06dafc141a106e96d7">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-7237480cb333b940a5fd2b8a">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e66da370fa904e0942fc0fc8">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/SetKeyDownloadQuotaRequest/properties/monthly_bytes/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-de326106bcc805d81af47b3f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-0a4c2f336995fe434256de79">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/SetKeyDownloadQuotaRequest/required/0">monthly_bytes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-cb58ebc063f915f6fc068445">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/SetKeyDownloadQuotaRequest/title">SetKeyDownloadQuotaRequest</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7a74c08ed54b7bacf91650cd">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/SetKeyDownloadQuotaRequest/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

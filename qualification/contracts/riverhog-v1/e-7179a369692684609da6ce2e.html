@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>stove0_target_protocol.TargetOperationSupport · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-5c5fbaec38dbfcb96276df03.html">stove0-target-protocol · Python</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>stove0_target_protocol.TargetOperationSupport</h1>
+<section id="contract" data-contract="python:stove0-target-protocol:stove0-target-protocol-targetoperationsupport:b53f051474">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/python/stove0_target_protocol.TargetOperationSupport</code>
+</h3>
+<table id="v-ece49ed72bf14216179d7fe1">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-d82aec2e2ee8a0bd6be5c52d">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-fde8de99adc80a3ea0fecb81">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/kind">class</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-10716ebc9a4badc1a92769a6">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-c521be8d6dfcd78349085612">
+<tbody>
+<tr>
+<th scope="row">
+<code>JsonSchemaValidationProfile</code>
+</th>
+<td>
+<table id="v-4d216f06dc8838056afc909a">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-00250b9842cfe4c038e1d3fc">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/$defs/JsonSchemaValidationProfile/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-f0fe8d31fa82c1083fc00ec7">
+<tbody>
+<tr>
+<th scope="row">
+<code>dialect</code>
+</th>
+<td>
+<table id="v-c9f51832b4487c4debda18bf">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-8b7df99e5e9a7f64bb348d43">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/$defs/JsonSchemaValidationProfile/properties/dialect/const">https://json-schema.org/draft/2020-12/schema</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-bca38dd834140fc478ed842f">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/$defs/JsonSchemaValidationProfile/properties/dialect/default">https://json-schema.org/draft/2020-12/schema</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1269223977e6d2d9c98c27ed">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/$defs/JsonSchemaValidationProfile/properties/dialect/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>format_policy</code>
+</th>
+<td>
+<table id="v-988df887f19b5eb194986c45">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-6c2720cec0df5d7e790ef6fc">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/$defs/JsonSchemaValidationProfile/properties/format_policy/const">annotation-only</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-911f8892339648a854f377f5">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/$defs/JsonSchemaValidationProfile/properties/format_policy/default">annotation-only</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5b23088f73881e282246b111">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/$defs/JsonSchemaValidationProfile/properties/format_policy/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-e8500aebb9e228aa2ad49e67">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-504ff529a1578c5e7f341a63">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/$defs/JsonSchemaValidationProfile/properties/id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9b6b2191e6e8ac3cd2f6994f">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/$defs/JsonSchemaValidationProfile/properties/id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>profile_sha256</code>
+</th>
+<td>
+<table id="v-6d9c9027adc72348ae5968a2">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-21a8a07fd9cae9c3b3790508">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/$defs/JsonSchemaValidationProfile/properties/profile_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0012d73e78486f00a30c1062">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/$defs/JsonSchemaValidationProfile/properties/profile_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-ef007486c729f713019b03d1">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-a7928c730c108ba957ce479a">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-f9b1659e6a94511d53502031">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/$defs/JsonSchemaValidationProfile/properties/schema/additionalProperties/$ref">#/$defs/JsonValue</code>
+<span class="kind">string</span> <a href="e-7179a369692684609da6ce2e.html#v-8a10c7d7bac3525afa5f0d20">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6893099e58dbaf1802ce0613">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/$defs/JsonSchemaValidationProfile/properties/schema/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-69b1b2493f54c3def3699fb2">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-ca9f164dda1ead3393acc00c">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/$defs/JsonSchemaValidationProfile/required/0">id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-ef1c18f5532c83c3fc75fdd0">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/$defs/JsonSchemaValidationProfile/required/1">profile_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-07dd39a2efa33e5c74c49a87">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/$defs/JsonSchemaValidationProfile/required/2">schema</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-855b6b3a83d4cf45b6ddd9ee">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/$defs/JsonSchemaValidationProfile/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>JsonValue</code>
+</th>
+<td>
+<span id="v-8a10c7d7bac3525afa5f0d20">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/$defs/JsonValue">{}</code>
+<span class="kind">object</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-65b19975dd02c7d60349d003">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-3cb2833823c786b6c90f1a5b">
+<tbody>
+<tr>
+<th scope="row">
+<code>operation_contract_sha256</code>
+</th>
+<td>
+<table id="v-1925f23f92527113c93b8ea8">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-5b54ba12ab68ab52eb503366">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/properties/operation_contract_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-578618139d067a9102275bff">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/properties/operation_contract_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>operation_id</code>
+</th>
+<td>
+<table id="v-23db59566811d205d32f7b51">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-5fc7e36c476e6428af62995a">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/properties/operation_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6bcb2269c5361b8461a48744">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/properties/operation_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>options_schema</code>
+</th>
+<td>
+<table id="v-7487ad020a0842a3204f9d76">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-3fc8f2b86168b250758d555f">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/properties/options_schema/$ref">#/$defs/JsonSchemaValidationProfile</code>
+<span class="kind">string</span> <a href="e-7179a369692684609da6ce2e.html#v-4d216f06dc8838056afc909a">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>result_kind</code>
+</th>
+<td>
+<table id="v-31423e02bf0f65bfc27f6d4a">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-0191fa2992e12eaab1a20567">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/properties/result_kind/default">collection</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-64a070447c2ec57426aa29cd">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-82d0fed635043220864f7c4a">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/properties/result_kind/enum/0">collection</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-42498aa32ed62cf4622ca011">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/properties/result_kind/enum/1">external-effect</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2008be5cb658aade498fa4a9">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/properties/result_kind/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-3c8fc80f86317dbf1fe34a28">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-3a470fcf54746989d343ee81">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/required/0">operation_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-0e21d8ce282f08d262736c28">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/required/1">operation_contract_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-bc6797c5a72e58699bd328f5">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/required/2">options_schema</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6c21a79efd060cfc33083837">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-3a10ce622c10cf4fc4f72730">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/contract/signature">&quot;(*, operation_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], operation_contract_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], result_kind: Literal[&#x27;collection&#x27;, &#x27;external-effect&#x27;] = &#x27;collection&#x27;, options_schema: stove0_protocol.models.JsonSchemaValidationProfile) -&gt; None&quot;</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-fb8dec99b27ed79d1a708969">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/distribution">stove0-target-protocol</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-d3dd75b48fc7257d75f278fe">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/module">stove0_target_protocol</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-b261ef37aff7af7ae95678fd">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/name">TargetOperationSupport</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-058a6a2cb675800993378b0c">
+<code data-value-pointer="/external_contract/python/stove0_target_protocol.TargetOperationSupport/unit">export</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="some-implementations/stove0/packages/target-protocol/src/stove0_target_protocol/__init__.py">some-implementations/stove0/packages/target-protocol/src/stove0_target_protocol/__init__.py</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,760 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>stove0_operator_contracts.BranchSetAdmittedEvent · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-4014113053127b8b1eb889a0.html">stove0-operator-contracts · Python</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>stove0_operator_contracts.BranchSetAdmittedEvent</h1>
+<section id="contract" data-contract="python:stove0-operator-contracts:stove0-operator-contracts-branchsetadmittedevent:ebe45d3f32">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent</code>
+</h3>
+<table id="v-643e4d67ba3e2f526d27fbbb">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-162038edf038cb1fa1cfb505">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-05870c1e04eb5f02b3da0e8a">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/kind">class</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-e283b2a5c347c4c61c750d03">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-3339509ca8969a3868618172">
+<tbody>
+<tr>
+<th scope="row">
+<code>BranchSetAdmittedEventData</code>
+</th>
+<td>
+<table id="v-d6a962fc6b340618789c45de">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-95d68e868475198c8ac9e728">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/$defs/BranchSetAdmittedEventData/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-0b48d408eb0bf10a674ece44">
+<tbody>
+<tr>
+<th scope="row">
+<code>admitted_work_count</code>
+</th>
+<td>
+<table id="v-201f0a3187f14c5475b25b1d">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-9596d3ec0c421fee655d77ec">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/$defs/BranchSetAdmittedEventData/properties/admitted_work_count/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e73e00179333d0755bc14660">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/$defs/BranchSetAdmittedEventData/properties/admitted_work_count/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>branch_count</code>
+</th>
+<td>
+<table id="v-ea78a957eb960650ef491199">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-c8c0cfd9dfc706da439de74f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/$defs/BranchSetAdmittedEventData/properties/branch_count/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0d48ed771fee4cf0c852ee01">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/$defs/BranchSetAdmittedEventData/properties/branch_count/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>branch_set_sha256</code>
+</th>
+<td>
+<table id="v-60611ab00a84abe3174f6791">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-93228ad5aac7129772aeb2c3">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/$defs/BranchSetAdmittedEventData/properties/branch_set_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-24e66b2b36825a4d42190a71">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/$defs/BranchSetAdmittedEventData/properties/branch_set_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>phase</code>
+</th>
+<td>
+<table id="v-3bb511aec11d55225e960494">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-1c7204fbe142b1564552deab">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/$defs/BranchSetAdmittedEventData/properties/phase/const">coordinating</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d982de354f4530b458ddeea6">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/$defs/BranchSetAdmittedEventData/properties/phase/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>revision</code>
+</th>
+<td>
+<table id="v-0800b318fb84237f0d568c64">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-41adac43627745fd72811019">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/$defs/BranchSetAdmittedEventData/properties/revision/minimum">2</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-503f7c17b482c60b10035a79">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/$defs/BranchSetAdmittedEventData/properties/revision/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>work_id</code>
+</th>
+<td>
+<table id="v-3676a3d00b7816a6cd1452f3">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-4db5aac7e02eeaee1d2e3c86">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/$defs/BranchSetAdmittedEventData/properties/work_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-89f0f30c3d9e3055aafa0b88">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/$defs/BranchSetAdmittedEventData/properties/work_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-08e68e009333a8f0edc04f9a">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-ccd73a669dea85708bb39d3c">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/$defs/BranchSetAdmittedEventData/required/0">work_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-88c9ef7d36fd02c647b155ff">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/$defs/BranchSetAdmittedEventData/required/1">phase</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-4e55ec7c422287ae29fc274d">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/$defs/BranchSetAdmittedEventData/required/2">revision</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-bcd4a57cb3a5a51af7b50b51">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/$defs/BranchSetAdmittedEventData/required/3">branch_set_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-faff5743b9e8eaab9af4605d">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/$defs/BranchSetAdmittedEventData/required/4">branch_count</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-b3db7512bdb262b72d1e7bd9">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/$defs/BranchSetAdmittedEventData/required/5">admitted_work_count</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-836e18250538bed92deb2df7">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/$defs/BranchSetAdmittedEventData/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-ebe041e1168e2dcf92a704a9">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-fbd2ec67175636847681aee1">
+<tbody>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-f22a2d873f6c401696ec246e">
+<tbody>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-2a8847f9cb33af807c884807">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/properties/id/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-97178eaaef1f67e40af5584f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/properties/id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>occurred_at</code>
+</th>
+<td>
+<table id="v-686249532f7cc8a6cefd6624">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-48d998769bb36172771a96b8">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/properties/occurred_at/maxLength">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-76428053b05c7ae2a19108b4">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/properties/occurred_at/minLength">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-ee3180a66a1f0c7a28246bbc">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/properties/occurred_at/pattern">^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-411395e4b4eaa3b2ef37ad11">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/properties/occurred_at/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>payload</code>
+</th>
+<td>
+<table id="v-a38724e7c56c3b35b3bd78ef">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c374d14487d04796a11ff189">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/properties/payload/$ref">#/$defs/BranchSetAdmittedEventData</code>
+<span class="kind">string</span> <a href="e-5337dfa0b2b0f6e51dc156b7.html#v-d6a962fc6b340618789c45de">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>subject</code>
+</th>
+<td>
+<table id="v-a19d40f37de1c1e6fc2514b0">
+<tbody>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-bfa414b5d18055b5b822bcf5">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/properties/subject/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-504337aaeb3b7e55d1184388">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/properties/subject/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<table id="v-3e97f83f26f77d1098fe3df8">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-09e19151e6c8241b5b5ab4ec">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/properties/type/const">io.riverhog.stove0.branch-set.admitted</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-70a63a6f3f2e39a1c2a93875">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/properties/type/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-0a9fe158b924f09bffac67d5">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-607eff0579d745adb4b54f49">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/required/0">id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-312af1ca29c062d3825e36c6">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/required/1">type</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-e0914ff33849895d0334c285">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/required/2">subject</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-bfc23f100fea6108fa34147c">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/required/3">occurred_at</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-2458cd0159dd4eb2eb0e8243">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/required/4">payload</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f41888b130df34bd4ee7cc04">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-30a03ecf14859a1428ee6ae6">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/contract/signature">&quot;(*, id: Annotated[str, MinLen(min_length=1)], type: Literal[&#x27;io.riverhog.stove0.branch-set.admitted&#x27;], subject: Annotated[str, MinLen(min_length=1)], occurred_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern=&#x27;^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\.[0-9]{9}Z$&#x27;, ascii_only=None), AfterValidator(func=&lt;function require_canonical_utc_timestamp&gt;)], payload: stove0_operator_contracts.BranchSetAdmittedEventData) -&gt; None&quot;</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-95baea4ea7743693ef7efbb0">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/distribution">stove0-operator-contracts</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-0aacbe8bfe9524b7456cda96">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/module">stove0_operator_contracts</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-9be6a4d5745a2e5fc547a642">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/name">BranchSetAdmittedEvent</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-956d10453f4341e44b376bc5">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.BranchSetAdmittedEvent/unit">export</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py">some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

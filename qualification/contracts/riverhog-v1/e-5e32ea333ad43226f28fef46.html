@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>riverhog_client.ApiClient.create_or_resume_collection_upload_session · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-edf95ca2b5efbd400a099cb7.html">riverhog-client · Python</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>riverhog_client.ApiClient.create_or_resume_collection_upload_session</h1>
+<section id="contract" data-contract="python:riverhog-client:riverhog-client-apiclient-create-or-resum-f84e68612c:f414754ecb">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/python/riverhog_client.ApiClient.create_or_resume_collection_upload_session</code>
+</h3>
+<table id="v-5d904b10b5d0544050726e5c">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-09417d2643a90109d2dd621a">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-e1a4baa9ca6a53fee4583314">
+<code data-value-pointer="/external_contract/python/riverhog_client.ApiClient.create_or_resume_collection_upload_session/contract/kind">method</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-c2d3a9347fbb85671f4f87d9">
+<code data-value-pointer="/external_contract/python/riverhog_client.ApiClient.create_or_resume_collection_upload_session/contract/signature">&quot;(self, idempotency_key: &#x27;CollectionUploadIdempotencyKey&#x27;, *, ingest_source: &#x27;str | None&#x27; = None, description: &#x27;CollectionDescription | None&#x27; = None, tags: &#x27;Sequence[CollectionTag]&#x27; = (), initial_tag_set_identity: &#x27;str&#x27;, archive_store: &#x27;ArchiveStoreName | None&#x27; = None, use_cache: &#x27;bool | None&#x27; = None, copy_to: &#x27;Sequence[ArchiveStoreName] | None&#x27; = None, event_context: &#x27;Mapping[str, Any] | None&#x27; = None, provenance_mode: &#x27;ProvenanceMode&#x27; = &#x27;captured&#x27;, provenance_omission_reason: &#x27;str | None&#x27; = None, custody_mode: &#x27;CollectionUploadCustodyMode&#x27; = &#x27;producer-retained&#x27;) -&gt; &#x27;dict[str, Any]&#x27;&quot;</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-f3bc3a752451c941a5a0ac0b">
+<code data-value-pointer="/external_contract/python/riverhog_client.ApiClient.create_or_resume_collection_upload_session/distribution">riverhog-client</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-1e0b87df51ff19a4cb72b464">
+<code data-value-pointer="/external_contract/python/riverhog_client.ApiClient.create_or_resume_collection_upload_session/module">riverhog_client</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-27afda93b03ed857f01d3f05">
+<code data-value-pointer="/external_contract/python/riverhog_client.ApiClient.create_or_resume_collection_upload_session/name">create_or_resume_collection_upload_session</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-3d4c7ee6dd5763b8e76d163a">
+<code data-value-pointer="/external_contract/python/riverhog_client.ApiClient.create_or_resume_collection_upload_session/owner">riverhog_client.ApiClient</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-5005d0beb3b64a4cc483966e">
+<code data-value-pointer="/external_contract/python/riverhog_client.ApiClient.create_or_resume_collection_upload_session/unit">member</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="packages/riverhog-client/src/riverhog_client/__init__.py">packages/riverhog-client/src/riverhog_client/__init__.py</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

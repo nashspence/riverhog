@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>release · Compatibility Guarantees · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>release · Compatibility Guarantees</h1>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Owned promise</th>
+</tr>
+</thead>
+<tbody>
+<tr data-element="compatibility-guarantees:release:compatibility-archive:3eeae311a6">
+<td>
+<a href="e-325dd4e466bf9e808fbff6cc.html">Compatibility: archive</a>
+</td>
+<td>
+<code class="literal-prose" data-value-pointer="/external_contract/release/compatibility/archive">A valid v1 archive remains independently recoverable throughout the supported v1 lifetime. Pack construction, ingress checkpointing, and resumable-write strategies are not archive-format compatibility promises.</code>
+<span class="kind">string</span>
+</td>
+</tr>
+<tr data-element="compatibility-guarantees:release:compatibility-cli:4725926ddf">
+<td>
+<a href="e-b352af10b5fe5469cff2b5d3.html">Compatibility: cli</a>
+</td>
+<td>
+<code class="literal-prose" data-value-pointer="/external_contract/release/compatibility/cli">Command names, options, exit status, and structured output remain backward compatible throughout v1; prose output is for people.</code>
+<span class="kind">string</span>
+</td>
+</tr>
+<tr data-element="compatibility-guarantees:release:compatibility-components:a629957190">
+<td>
+<a href="e-e11e8aa8a7cf10211214e0fe.html">Compatibility: components</a>
+</td>
+<td>
+<code class="literal-prose" data-value-pointer="/external_contract/release/compatibility/components">A supported deployment runs components from one coordinated product version.</code>
+<span class="kind">string</span>
+</td>
+</tr>
+<tr data-element="compatibility-guarantees:release:compatibility-configuration:75542d5f5b">
+<td>
+<a href="e-15e2e266f753cb544237d6f8.html">Compatibility: configuration</a>
+</td>
+<td>
+<code class="literal-prose" data-value-pointer="/external_contract/release/compatibility/configuration">Accepted v1 configuration remains valid throughout v1 unless an unsafe value must be rejected.</code>
+<span class="kind">string</span>
+</td>
+</tr>
+<tr data-element="compatibility-guarantees:release:compatibility-durable-state:e2e7d5faf0">
+<td>
+<a href="e-acb5adfdf32642afdb0b8381.html">Compatibility: durable state</a>
+</td>
+<td>
+<code class="literal-prose" data-value-pointer="/external_contract/release/compatibility/durable_state">Every later v1 release applies each durable-state authority&#x27;s declared transition rule to state created by every earlier v1 release; this does not promise downgrade support or earlier software reading later state.</code>
+<span class="kind">string</span>
+</td>
+</tr>
+<tr data-element="compatibility-guarantees:release:compatibility-http-api:bd82c796ba">
+<td>
+<a href="e-7bb6c2762f189727c686307e.html">Compatibility: http api</a>
+</td>
+<td>
+<code class="literal-prose" data-value-pointer="/external_contract/release/compatibility/http_api">Published v1 HTTP and native lifecycle-event contracts remain backward compatible throughout v1.</code>
+<span class="kind">string</span>
+</td>
+</tr>
+<tr data-element="compatibility-guarantees:release:compatibility-licensing:4f3dd01b07">
+<td>
+<a href="e-d9106dddb102bbc2baf8e363.html">Compatibility: licensing</a>
+</td>
+<td>
+<code class="literal-prose" data-value-pointer="/external_contract/release/compatibility/licensing">Each continuing first-party Python distribution and OCI repository published in v1 retains every SPDX license alternative granted when that coordinate first shipped in v1; withdrawing a baseline grant requires a new major version.</code>
+<span class="kind">string</span>
+</td>
+</tr>
+<tr data-element="compatibility-guarantees:release:compatibility-python-api:20c622516a">
+<td>
+<a href="e-595ebd1d7f6b4d0912135ade.html">Compatibility: python api</a>
+</td>
+<td>
+<code class="literal-prose" data-value-pointer="/external_contract/release/compatibility/python_api">Freeze-protected declared public-module exports, callable signatures, selected constants, enum members and values, and selected public model and dataclass structures remain backward compatible throughout v1.</code>
+<span class="kind">string</span>
+</td>
+</tr>
+<tr data-element="compatibility-guarantees:release:compatibility-recovery:916e8684a0">
+<td>
+<a href="e-b7977b58be57080241e598b7.html">Compatibility: recovery</a>
+</td>
+<td>
+<code class="literal-prose" data-value-pointer="/external_contract/release/compatibility/recovery">Every later v1 recovery release reads every valid earlier v1 archive and provenance set.</code>
+<span class="kind">string</span>
+</td>
+</tr>
+</tbody>
+</table>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

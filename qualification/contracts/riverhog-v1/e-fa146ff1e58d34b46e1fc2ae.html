@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>POST /v1/writes/segment · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-c1cb56ed421b50c80e39fe6f.html">riverhog-storage-adapter-support · Process Protocol Operations</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>POST /v1/writes/segment</h1>
+<section id="contract" data-contract="process-protocol-operations:riverhog-storage-adapter-support:post-v1-writes-segment:eaa3da1373">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2</code>
+</h3>
+<table id="v-03c1670982754aed75ff43c8">
+<tbody>
+<tr>
+<th scope="row">
+<code>error_schema</code>
+</th>
+<td>
+<span id="v-6f813e4ad511c0a21a498365">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/error_schema">StorageAdapterError</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>errors</code>
+</th>
+<td>
+<table id="v-e17c32558da172283fd44b1f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-933da7d74cf47d4cc03e16a7">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-bde5bc90d9fe474abc30b3fc">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/errors/0/code">unauthorized</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-090eb213e95c83982f79ad71">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/errors/0/status">401</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-6a4f69630ead5d0b5263761e">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-edb93c1e6ddf694031cf9904">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/errors/1/code">invalid_request</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-10b18364c2d3b1631e067c18">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/errors/1/status">400</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-e9a127cd2ac4d3b653998056">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-18a9f460846a5d131fcf6851">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/errors/2/code">provider_unavailable</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-4c57b8958109912ce305d9e8">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/errors/2/status">503</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<table id="v-1e9f5f9b0689d12e351c78cb">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-4a5949c98e1c256801409d03">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/errors/3/code">internal_failure</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-fb856b854b717c20ff42d61f">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/errors/3/status">500</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<table id="v-af34eba4d504c86e061c1ae0">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-ce87a85cf0367acad069e2f9">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/errors/4/code">length_required</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-f13f48d386ff84580bfd0f71">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/errors/4/status">411</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<table id="v-af42f17b985e997a4c234227">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-fbd27bcc4f5a2562cdf754a0">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/errors/5/code">request_too_large</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-643631b51fff22c120af8f89">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/errors/5/status">413</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<table id="v-0e8001416bd7e8e1adc552b7">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-6cc1f4cb16493019c4c212b5">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/errors/6/code">invalid_path</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-dfbcc2737f84ff5d65d7dd2b">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/errors/6/status">400</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<table id="v-085e95d59d6fc0c88ede519f">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-01f46e385855efebec47458a">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/errors/7/code">not_found</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-bd5de3c7c054f5d87e52eb3b">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/errors/7/status">404</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>method</code>
+</th>
+<td>
+<span id="v-7e7663a8a5951144e96e4c43">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/method">POST</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<span id="v-fd5e55b5c5e02c945742557b">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/path">/v1/writes/segment</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path_parameters</code>
+</th>
+<td>
+<span id="v-8a2723c53864336f91298b71">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/path_parameters">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>request</code>
+</th>
+<td>
+<table id="v-5cd9c8363e63ca78230b5dd5">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-3bfa85290e7fb868bba473f5">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/request/kind">framed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<span id="v-57afa659bbf969db7895e171">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/request/schema">WriteSegmentRequest</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>response</code>
+</th>
+<td>
+<table id="v-4616d351cbbfcb6639f2d77a">
+<tbody>
+<tr>
+<th scope="row">
+<code>headers</code>
+</th>
+<td>
+<span id="v-aecef75decec7f753f1e3914">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/response/headers">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-b861ca9474ca8a3e71e152bf">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/response/kind">json</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<span id="v-87ebd1e2f99032784261dc63">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/response/schema">WriteSegmentReceipt</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>statuses</code>
+</th>
+<td>
+<table id="v-469536dec61c9f162e68c20f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-4295b2cdad67912c431d0530">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/http_binding/operations/2/response/statuses/0">200</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py">packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: CoordinationChildSettlementRef · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: CoordinationChildSettlementRef</h1>
+<section id="contract" data-contract="http-schemas:stove0:schemas-coordinationchildsettlementref:0cf64d6302">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/stove0/components/schemas/CoordinationChildSettlementRef</code>
+</h3>
+<table id="v-f6790286f883bb65a6c13e4a">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-b392bc8dcbb75bccb0cfd75a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationChildSettlementRef/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-6a3dd809556eec054233d334">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationChildSettlementRef/description">Exact direct-child success included in a coordination settlement.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-08f93ca74dcb2b5fe08f88d1">
+<tbody>
+<tr>
+<th scope="row">
+<code>branch_id</code>
+</th>
+<td>
+<table id="v-d752442b7ffdabd008ab78d7">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-ed0bcb9e0dbc6319eeff96c6">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationChildSettlementRef/properties/branch_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-426b7152cc78ea1e6559ff80">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationChildSettlementRef/properties/branch_id/title">Branch Id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e4f14cd8763fe0afa4292dd2">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationChildSettlementRef/properties/branch_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<table id="v-bcaee0be024bb6b92a4d0d89">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-9c3e51c7c02480f523bcf172">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-567eafc6a067af499289d167">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationChildSettlementRef/properties/kind/enum/0">collection</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-0a2b84d77032543d5064d5c7">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationChildSettlementRef/properties/kind/enum/1">external-effect</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-b8a47076ee6f10f05b55e1c3">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationChildSettlementRef/properties/kind/enum/2">coordination</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-899d48da93afef7616ec7eba">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationChildSettlementRef/properties/kind/title">Kind</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-828a854b5bd21a6b77ee8d94">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationChildSettlementRef/properties/kind/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>settlement_sha256</code>
+</th>
+<td>
+<table id="v-2bf9c1c0c25b5bccae500db7">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-03061ebb1d1b047c083c9068">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationChildSettlementRef/properties/settlement_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-f001ebc0e9b0af9c2ae41389">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationChildSettlementRef/properties/settlement_sha256/title">Settlement Sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b6819f1d7b1ec7d8bdc2e4eb">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationChildSettlementRef/properties/settlement_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-497ade4f165600fce489e8ff">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-dbde16298db6d299aa27ac2c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationChildSettlementRef/required/0">branch_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-b2e5a74138a85c3295fb9f4d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationChildSettlementRef/required/1">kind</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-25ea2a6dbcc1f1873dee38de">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationChildSettlementRef/required/2">settlement_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-331df79f8a9041c7dbc51e98">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationChildSettlementRef/title">CoordinationChildSettlementRef</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c278867e111b3c37f58210a9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationChildSettlementRef/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<p>These records index source constraints; they do not add limits or progression promises.</p>
+<ul>
+<li>
+<code>http:stove0:components:/schemas/CoordinationChildSettlementRef/properties/settlement_sha256:length</code>
+<table id="v-4ee1a930c51c21e3560230c5">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-f806d48b0a33356de2b736e3">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationChildSettlementRef~1properties~1settlement_sha256:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-a25dd5ffa7adb6b74c559f5e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationChildSettlementRef~1properties~1settlement_sha256:length/id">http:stove0:components:/schemas/CoordinationChildSettlementRef/properties/settlement_sha256:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-64d1aeceaf1211f10ebdfc52">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationChildSettlementRef~1properties~1settlement_sha256:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-133c4ef9bf601343fd3f8a0d">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationChildSettlementRef~1properties~1settlement_sha256:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-3e82ee70b3cf8612a9190e80">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationChildSettlementRef~1properties~1settlement_sha256:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-db7e22d4349378527e536dcf">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationChildSettlementRef~1properties~1settlement_sha256:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-7fd230cea3ca982b9029b128">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationChildSettlementRef~1properties~1settlement_sha256:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-c1e3c35f7fc4428f927dadfb">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationChildSettlementRef~1properties~1settlement_sha256:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-69112fd87c7b2581bed29dc9">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-ef035d4da97fb50bc9fa07d2">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationChildSettlementRef~1properties~1settlement_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-d16270a47dea46f41a8acaf5">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationChildSettlementRef~1properties~1settlement_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/CoordinationChildSettlementRef/properties/settlement_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-a606b8b20ffa218b19aa73a4">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationChildSettlementRef~1properties~1settlement_sha256:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

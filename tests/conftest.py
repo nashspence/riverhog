@@ -19,11 +19,19 @@ def checked_contract_closure() -> dict[str, Any]:
     if str(scripts) not in sys.path:
         sys.path.insert(0, str(scripts))
     contract_atlas = importlib.import_module("contract_atlas")
-    checked = contract_atlas.load_atlas(repo_root / "qualification/contracts/riverhog-v1.json")
+    contract_records = importlib.import_module("contract_atlas.records")
+    contract_freeze = importlib.import_module("contract_freeze")
+    checked = contract_records.load_bundle(repo_root / "qualification/contracts/riverhog-v1.json")
+    projection = contract_freeze.contract_projection()
+    trace = contract_freeze.trace_projection(projection)
+    discovered = contract_atlas.build_discovered_contract(projection, trace)
+    generated_closure, _generated_audit = contract_records.build_records(discovered)
+    assert checked.closure == generated_closure
     return {
-        "atlas": checked,
-        "projection": contract_atlas.reassemble_projection(checked),
-        "trace": contract_atlas.reassemble_trace(checked),
+        "discovered": discovered,
+        "bundle": checked,
+        "projection": projection,
+        "trace": trace,
     }
 
 

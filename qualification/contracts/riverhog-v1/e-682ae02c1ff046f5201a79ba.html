@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>riverhog_protocol.CatalogSyncCheckpoint · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-99b3d079e6c87a1dff566c19.html">riverhog-protocol · Python</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>riverhog_protocol.CatalogSyncCheckpoint</h1>
+<section id="contract" data-contract="python:riverhog-protocol:riverhog-protocol-catalogsynccheckpoint:aa221b8bb5">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint</code>
+</h3>
+<table id="v-b897c77a221e866940268005">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-508733814edc20a4f7a691b7">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-d6b8c82e544925cece7a0d18">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/contract/kind">class</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-013e1b52c800d9c97687b6d9">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-c72c1e934d868118400f0adb">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-01bd88b61264535a91c052f5">
+<tbody>
+<tr>
+<th scope="row">
+<code>authorization_view_identity</code>
+</th>
+<td>
+<table id="v-cdc54045edba94c36436e83c">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-348d98ed8747d7f1013f38de">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/contract/schema/properties/authorization_view_identity/maxLength">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-20ca0ca7659b0ae710b99828">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/contract/schema/properties/authorization_view_identity/minLength">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-54ea7d3b682453aaf1ed8eee">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/contract/schema/properties/authorization_view_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d0483a810472739fa9b269d8">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/contract/schema/properties/authorization_view_identity/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>catalog_cursor</code>
+</th>
+<td>
+<table id="v-c6ec2def9176d75d8a2759bf">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-d266020c6efb7ac49947c728">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/contract/schema/properties/catalog_cursor/maxLength">4096</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-83f9b0644e2654c7051591ad">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/contract/schema/properties/catalog_cursor/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9479f0ea91e0544a195fad5f">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/contract/schema/properties/catalog_cursor/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<table id="v-619001cf1fe24b5ab1d2dd37">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-aa20370154d34801f7af04b3">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/contract/schema/properties/format/const">riverhog-catalog-sync/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-cdd3381f7085673408ea768a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/contract/schema/properties/format/default">riverhog-catalog-sync/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-21101f6a239ef41b5d38939d">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/contract/schema/properties/format/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_identity</code>
+</th>
+<td>
+<table id="v-5a3c7515cb2528ebff20037e">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-d2bf4fd9799d7b1fbb3b8f87">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/contract/schema/properties/source_identity/maxLength">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-90d6241e41955b246c61051f">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/contract/schema/properties/source_identity/minLength">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-62dec1eae6b3f5066243ab45">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/contract/schema/properties/source_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-dcc6c563c7faeedd719ad6a8">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/contract/schema/properties/source_identity/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-b0d7ce36a121903ef8520fed">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-2242e0ecfa8e39a3022398fd">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/contract/schema/required/0">source_identity</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-693b6096b78edb2de440920c">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/contract/schema/required/1">authorization_view_identity</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-1edc72bfa40c92dce7fbfe52">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/contract/schema/required/2">catalog_cursor</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-64033b90ee8a3cc77ca18d26">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-9dada88db2a6a9aec176242d">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/contract/signature">&quot;(*, format: Literal[&#x27;riverhog-catalog-sync/v1&#x27;] = &#x27;riverhog-catalog-sync/v1&#x27;, source_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], authorization_view_identity: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=64, max_length=64, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)], catalog_cursor: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=1, max_length=4096, pattern=None, ascii_only=None)]) -&gt; None&quot;</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-5a6f81591eb8cf01b1d01217">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/distribution">riverhog-protocol</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-e38dfd13d2f1a945a49d3bc1">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/module">riverhog_protocol</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-f303c7898e2bb76820681342">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/name">CatalogSyncCheckpoint</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-e958f819f37720acaec3f9d5">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.CatalogSyncCheckpoint/unit">export</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="packages/riverhog-protocol/src/riverhog_protocol/__init__.py">packages/riverhog-protocol/src/riverhog_protocol/__init__.py</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

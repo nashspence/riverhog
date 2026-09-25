@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>stove0_protocol.CoordinationChildSettlementRef · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-78e637d51ea8a0647a012267.html">stove0-protocol · Python</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>stove0_protocol.CoordinationChildSettlementRef</h1>
+<section id="contract" data-contract="python:stove0-protocol:stove0-protocol-coordinationchildsettlementref:7e90e7527f">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/python/stove0_protocol.CoordinationChildSettlementRef</code>
+</h3>
+<table id="v-76d31e65e98f0670d04b0430">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-5f37398935e2682e15a942ec">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-ab1955912aa405866d20b698">
+<code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationChildSettlementRef/contract/kind">class</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-3bb007e3e486164397982b90">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-5fd4ec00d4d9ff6eaad6a57d">
+<code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationChildSettlementRef/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-da0555af1fc504f467a2122f">
+<tbody>
+<tr>
+<th scope="row">
+<code>branch_id</code>
+</th>
+<td>
+<table id="v-9770e1598c031b9e61eb547c">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-7f11524251341406f5eb85a1">
+<code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationChildSettlementRef/contract/schema/properties/branch_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3a00a422a7f99c54661dc9f8">
+<code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationChildSettlementRef/contract/schema/properties/branch_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<table id="v-d2c17491ef117a795fd75a60">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-a958033b09b7503f4530bfe5">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-ab37ad24bc77a5e68ecdc0de">
+<code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationChildSettlementRef/contract/schema/properties/kind/enum/0">collection</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-4654e1d32984dac078bf2b6e">
+<code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationChildSettlementRef/contract/schema/properties/kind/enum/1">external-effect</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-0b192dcb8d0d5c09cda690ee">
+<code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationChildSettlementRef/contract/schema/properties/kind/enum/2">coordination</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-870cb7753d0673740bd981e1">
+<code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationChildSettlementRef/contract/schema/properties/kind/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>settlement_sha256</code>
+</th>
+<td>
+<table id="v-57e5fc45beb358bef20fe69b">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-d8b31cef311518d595f72c9d">
+<code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationChildSettlementRef/contract/schema/properties/settlement_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1dfd5c05c35a4d0cdf1b9cae">
+<code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationChildSettlementRef/contract/schema/properties/settlement_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-9bc85af11b7acca4bf7fc686">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-7bdba8100e6a945fbe42eb59">
+<code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationChildSettlementRef/contract/schema/required/0">branch_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-2fb10c95f13482d230403147">
+<code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationChildSettlementRef/contract/schema/required/1">kind</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-86d1cb2dd83e665d2ad7c717">
+<code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationChildSettlementRef/contract/schema/required/2">settlement_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9720e0599d995aebfb8084f0">
+<code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationChildSettlementRef/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-9fbb249525b1e1256432dc12">
+<code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationChildSettlementRef/contract/signature">&quot;(*, branch_id: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;, ascii_only=None)], kind: Literal[&#x27;collection&#x27;, &#x27;external-effect&#x27;, &#x27;coordination&#x27;], settlement_sha256: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]) -&gt; None&quot;</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-5c837da6263673cf4c6daa1d">
+<code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationChildSettlementRef/distribution">stove0-protocol</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-036e387cb35e7de01d06dbc4">
+<code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationChildSettlementRef/module">stove0_protocol</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-ed6d230550b885db8ebbeb5b">
+<code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationChildSettlementRef/name">CoordinationChildSettlementRef</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-4e938f4980f9365cccd8443f">
+<code data-value-pointer="/external_contract/python/stove0_protocol.CoordinationChildSettlementRef/unit">export</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="some-implementations/stove0/packages/protocol/src/stove0_protocol/__init__.py">some-implementations/stove0/packages/protocol/src/stove0_protocol/__init__.py</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>stove0-control: ix_stove0_selection_members_order · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-f719c12ce8e20d60041be220.html">stove0-control · Durable State</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>stove0-control: ix_stove0_selection_members_order</h1>
+<section id="contract" data-contract="durable-state:stove0-control:stove0-control-ix-stove0-selection-members-order:11c4595754">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/durable_state/owners/5/structure/unique_indexes/1</code>
+</h3>
+<table id="v-9cc2c01729fb17e492913f5b">
+<tbody>
+<tr>
+<th scope="row">
+<code>columns</code>
+</th>
+<td>
+<table id="v-b00488cc1e03d9f2363b901e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-e7236f090546f99eea085527">
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/unique_indexes/1/columns/0">selection_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-4b2e429da2926bb8d6630d45">
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/unique_indexes/1/columns/1">artifact_order</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>definition</code>
+</th>
+<td>
+<span id="v-c9217f65d9d698c49d94f02d">
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/unique_indexes/1/definition">CREATE UNIQUE INDEX ix_stove0_selection_members_order ON stove0_artifact_selection_members (selection_sha256, artifact_order)</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-fd0e319bf77f2aa8287c9884">
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/unique_indexes/1/name">ix_stove0_selection_members_order</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>table</code>
+</th>
+<td>
+<span id="v-ab8aa1db80f00a73970e9117">
+<code data-value-pointer="/external_contract/durable_state/owners/5/structure/unique_indexes/1/table">stove0_artifact_selection_members</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code>state:stove0-control</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make release-check</code>
+</li>
+<li>
+<code>make database-qualification</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

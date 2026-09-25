@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>stove0_core.EvaluationChild · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-6c0c68dab977066c2d607683.html">stove0-server · Python</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>stove0_core.EvaluationChild</h1>
+<section id="contract" data-contract="python:stove0-server:stove0-core-evaluationchild:a4ecbd76ce">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/python/stove0_core.EvaluationChild</code>
+</h3>
+<table id="v-9dec0e35082db2857c333087">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-fb7272c0b58af24f2eba6722">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-93d38cd0b0fba5d8202d8340">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/kind">class</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-dfc1fb9df4aa08528d961f06">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-1b245cd35cdb032fcd07bf6c">
+<tbody>
+<tr>
+<th scope="row">
+<code>CollectionId</code>
+</th>
+<td>
+<table id="v-2e65c4ee9eb4d1032f160441">
+<tbody>
+<tr>
+<th scope="row">
+<code>allOf</code>
+</th>
+<td>
+<table id="v-ab162f8d7d67275fce4da8b4">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-e861ffc8f7c84a6b1641bf15">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-4524ac4b9c95a4680e965a09">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/CollectionId/allOf/0/pattern">^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-11afb35cbc12347f89bacaae">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/CollectionId/allOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-7fc89f5c599f6933f08abde2">
+<tbody>
+<tr>
+<th scope="row">
+<code>not</code>
+</th>
+<td>
+<table id="v-1129f743e39eb888b70509c7">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-d7bcb08939d8848db10f94b7">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/CollectionId/allOf/1/not/const">0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>OutputCollectionRef</code>
+</th>
+<td>
+<table id="v-e9b72407fed41e03850f96ec">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-97cad6d2d6eee25b59c2b22d">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/OutputCollectionRef/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-c46d2cb2703a00180c4c0c1c">
+<tbody>
+<tr>
+<th scope="row">
+<code>archive_root_sha256</code>
+</th>
+<td>
+<table id="v-59479bae395ad46d9a7ace75">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a8ea4c198ddb0188593a0758">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/OutputCollectionRef/properties/archive_root_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4c6aa0c1a13f3ebb50da069b">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/OutputCollectionRef/properties/archive_root_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>collection_id</code>
+</th>
+<td>
+<table id="v-7b01ac91892662c4f56666ce">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-530d6a4c9e55e1c39217a33b">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/OutputCollectionRef/properties/collection_id/$ref">#/$defs/CollectionId</code>
+<span class="kind">string</span> <a href="e-cb7a70035ce73850ae8bb134.html#v-2e65c4ee9eb4d1032f160441">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>content_identity</code>
+</th>
+<td>
+<table id="v-290555e3cdfa3745b1636d74">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-c9946c9583f9c79fa0e716c3">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/OutputCollectionRef/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ea876ee6dc61d9af01db4b5d">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/OutputCollectionRef/properties/content_identity/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>derivation_sha256</code>
+</th>
+<td>
+<table id="v-59c175fd641dda1c1c63ae4e">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-9b871f6340d3ea00a9f96c97">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/OutputCollectionRef/properties/derivation_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-42dc26cb95bdce5f25995740">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/OutputCollectionRef/properties/derivation_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-48f99be769c6f6cc6433c8de">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-4b2517dc714a0a3d3cdef282">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/OutputCollectionRef/required/0">collection_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-c0dbac6180b47e44f65eb3bd">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/OutputCollectionRef/required/1">archive_root_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-6774f076fdba9205c55e7dd4">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/OutputCollectionRef/required/2">content_identity</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-7c02a039f5a5324f81a815fd">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/OutputCollectionRef/required/3">derivation_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a4240b6be719cd333ef05cd9">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/$defs/OutputCollectionRef/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-5a1ae6b1159f0a0510ed2d65">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-a0f0229b1a01cbef6e341ab7">
+<tbody>
+<tr>
+<th scope="row">
+<code>output</code>
+</th>
+<td>
+<table id="v-6391915fed0a3eb61592f6fe">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-a49a4b4a56f55cc1505ba601">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-63e0532d71877482a3e6c28d">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-63fb1d5f126b893f55b989d4">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/properties/output/anyOf/0/$ref">#/$defs/OutputCollectionRef</code>
+<span class="kind">string</span> <a href="e-cb7a70035ce73850ae8bb134.html#v-e9b72407fed41e03850f96ec">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-6eed4e23fb2d6c5ba6bed043">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bf9efc963684d8db9b49a0ad">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/properties/output/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-ec6ad26a53456302da56a738">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/properties/output/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>state</code>
+</th>
+<td>
+<table id="v-61acf207cefb6adbac5a99ee">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-3d114247e876a7075259a8c7">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/properties/state/default">pending</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-829a9355469f400d02cf3de2">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-df7a73ff94879bc6cfdd3b1d">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/properties/state/enum/0">pending</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-0d608705afd52ad25b000fa0">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/properties/state/enum/1">active</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-b4fffbf5a98f73925c8c7f64">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/properties/state/enum/2">complete</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-450d0f13dd240e95f51fba3c">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/properties/state/enum/3">inapplicable</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-e8bd346f599d5834bbe488e9">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/properties/state/enum/4">failed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-8837a0c75153d5af31ad3ec9">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/properties/state/enum/5">canceled</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a350d40514b40c7d36dfd464">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/properties/state/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>variant_id</code>
+</th>
+<td>
+<table id="v-e87ab2d54d50e68bc43242b5">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-248f5497b80536f330903ff5">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/properties/variant_id/maxLength">160</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-5254a2ed8d6560799d207635">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/properties/variant_id/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-79dd91c9da2255b3198d47f7">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/properties/variant_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>work_id</code>
+</th>
+<td>
+<table id="v-d54cafd58377a794e0f8fd70">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-3ce0a00ec4f4b6fd6aa56a42">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/properties/work_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ce821e4c4a23014f9a773680">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/properties/work_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-5496397e420f583fc9a99379">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-aa53f0f29d4b96874d3551f5">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/required/0">variant_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-292335747f6ef593ef9c8781">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/required/1">work_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3eb81de4072119bb588c9881">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-e4eb2802c52bc5eeebcfe14c">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/contract/signature">&quot;(*, variant_id: Annotated[str, MinLen(min_length=1), MaxLen(max_length=160)], work_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], state: Literal[&#x27;pending&#x27;, &#x27;active&#x27;, &#x27;complete&#x27;, &#x27;inapplicable&#x27;, &#x27;failed&#x27;, &#x27;canceled&#x27;] = &#x27;pending&#x27;, output: stove0_target_protocol.protocol.OutputCollectionRef | None = None) -&gt; None&quot;</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-974333000cb86b8cb1d17c2f">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/distribution">stove0-server</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-22cc7567026d204d05b13442">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/module">stove0_core</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-d93d9fefffddf8565703cd67">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/name">EvaluationChild</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-57ff8401195887de8ec2386b">
+<code data-value-pointer="/external_contract/python/stove0_core.EvaluationChild/unit">export</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="some-implementations/stove0/application/server/src/stove0_core/__init__.py">some-implementations/stove0/application/server/src/stove0_core/__init__.py</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

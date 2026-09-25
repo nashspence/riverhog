@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: WorkCreatedEvent · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: WorkCreatedEvent</h1>
+<section id="contract" data-contract="http-schemas:stove0:schemas-workcreatedevent:a1cf592468">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent</code>
+</h3>
+<table id="v-31286c7a2168d3a4f712ec2b">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-9bdeceda257feb0cbb1fbdd4">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-cdccf229a807722100203e94">
+<tbody>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-c328ad7c51ababb732da15f0">
+<tbody>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-d237fb86a43164f03a5d7418">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/properties/id/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-fadb16227a6e9cfbdb14e2a9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/properties/id/title">Id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7618c34616638ea23741c0ac">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/properties/id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>occurred_at</code>
+</th>
+<td>
+<table id="v-77a4766214480a369cbedec4">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-741becfafc3ccb4abd00959b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/properties/occurred_at/maxLength">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-80c490cf86452413bb14c7da">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/properties/occurred_at/minLength">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-e5f04b9490c374e9b03959a4">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/properties/occurred_at/pattern">^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-824e8e6561e11a58fdf65ca8">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/properties/occurred_at/title">Occurred At</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-95ad408ed36d1fe82e20b30a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/properties/occurred_at/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>payload</code>
+</th>
+<td>
+<table id="v-fc04f8569c8cdfa10090d0cd">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-09b22eb7db4764c52af92f0e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/properties/payload/$ref">#/components/schemas/WorkCreatedEventData</code>
+<span class="kind">string</span> <a href="e-c9e32db2af4a0b240b4c5ebc.html#v-9af115887bd0f9a903f26002">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>subject</code>
+</th>
+<td>
+<table id="v-c5c0e7e820113bd168e359d6">
+<tbody>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-875de96db10f03f1fc0949b6">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/properties/subject/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-625726008c33c150a1c1e532">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/properties/subject/title">Subject</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7bae6ec3cfbf8b717e952ec7">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/properties/subject/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<table id="v-0bf2ceef7591793dd338309a">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-12e3f59f65e1627fe2ce4284">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/properties/type/const">io.riverhog.stove0.work.created</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-da8afde810f9c718b6485340">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/properties/type/title">Type</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e4e23522509162fc6ee076d9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/properties/type/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-c7bfcac709c9d8b06bd326f4">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-aadcdd70c462552eebdd0dd3">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/required/0">id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-ba9baa848bb839b0568d1ce7">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/required/1">type</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-e3401f44c341a8e49145a2bf">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/required/2">subject</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-841e2d214887a00f5c29ab1e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/required/3">occurred_at</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-a1dcfc4227bee10b4a2c6cff">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/required/4">payload</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-3599038fecd9b44bdaf35e1a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/title">WorkCreatedEvent</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a5fac1868fd4a895e3325312">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<p>These records index source constraints; they do not add limits or progression promises.</p>
+<ul>
+<li>
+<code>http:stove0:components:/schemas/WorkCreatedEvent/properties/occurred_at:length</code>
+<table id="v-24c09f4894d98f33164eed2a">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-4ee60b2e0e1dd3a761e23441">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkCreatedEvent~1properties~1occurred_at:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-c08dbd34a64eba921fc74193">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkCreatedEvent~1properties~1occurred_at:length/id">http:stove0:components:/schemas/WorkCreatedEvent/properties/occurred_at:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-98e019311786fbc0dc48af6b">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkCreatedEvent~1properties~1occurred_at:length/maximum">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-fc4d40544deda98bf8ecbfc8">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkCreatedEvent~1properties~1occurred_at:length/minimum">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-364c9995a271468ab41eb33e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkCreatedEvent~1properties~1occurred_at:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-8f4bc3adef4bf4a257d29d6e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkCreatedEvent~1properties~1occurred_at:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-1332b3e7c77b863852a0f5f3">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkCreatedEvent~1properties~1occurred_at:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-8ef95ec17f160b7040b5c245">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkCreatedEvent~1properties~1occurred_at:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-a55addcb3638a4438f464dea">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkCreatedEvent~1properties~1occurred_at:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/WorkCreatedEvent/properties/occurred_at</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-8d0df02410e8cd1961ac003a">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkCreatedEvent~1properties~1occurred_at:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

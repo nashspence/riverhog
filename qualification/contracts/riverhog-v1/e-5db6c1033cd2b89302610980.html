@@ -1,0 +1,1023 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: BranchEffectSettlement · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: BranchEffectSettlement</h1>
+<section id="contract" data-contract="http-schemas:stove0:schemas-brancheffectsettlement:6a88b5333b">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement</code>
+</h3>
+<table id="v-8c1e5f0939632a7ed9ab5569">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-4dbd09cc6c0d338f49b2e85f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-0814e85c2af9efe3aa4e8707">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/description">Success-only receipt identity for one required external-effect branch.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-44b1eae82bb904b9c381da0e">
+<tbody>
+<tr>
+<th scope="row">
+<code>branch_id</code>
+</th>
+<td>
+<table id="v-864c5c9db0365489f900120b">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-d592c65d6e6c504da3c4f9bd">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/branch_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-cbd456a61b76dedfcea06c67">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/branch_id/title">Branch Id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9a8838dd0bf2cc81744d1614">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/branch_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>effect_receipt_sha256</code>
+</th>
+<td>
+<table id="v-3316e047b76e87751056e6ef">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-7f1001e9e0b65c4baad835a9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/effect_receipt_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-f9c1057dc7d4c64874b2d20a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/effect_receipt_sha256/title">Effect Receipt Sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c30a4f7a41707cbf3b82b3d7">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/effect_receipt_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<table id="v-a8662c1dfd19bb0d42b3de92">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-7236731489a5d0600f3ab78e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/format/const">stove0-branch-effect-settlement/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-e86e1379228019e4c9d8b161">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/format/default">stove0-branch-effect-settlement/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-db4896b2360be0fa15cd9f45">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/format/title">Format</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9f501284f7a8ca96fc328c77">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/format/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>settlement_sha256</code>
+</th>
+<td>
+<table id="v-c9cc6c58a218bdcee5124868">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-3b39e384f4cbbbd6111538b3">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/settlement_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-63c33a6f736836802d4fed39">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/settlement_sha256/title">Settlement Sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-014253c678e87acc59232f55">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/settlement_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>work_id</code>
+</th>
+<td>
+<table id="v-c1a292eac60b1edd5c889eae">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-4b6d98a2014f1aa9c3a03413">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/work_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-79db15f6e594bbafa4289c6a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/work_id/title">Work Id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-50a6d90b9669de10f1bf7dd7">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/work_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>workflow_plan_sha256</code>
+</th>
+<td>
+<table id="v-7b654d920ae207f8ed002427">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-0ef2e42b33ee8314c8ddcb82">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/workflow_plan_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-6db1e89bd0cfe31d40c39027">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/workflow_plan_sha256/title">Workflow Plan Sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7416052938d26e81c62024b5">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/workflow_plan_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-ab761040b7b51547afeddd11">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-7974d7fd9eb8d580ed181a63">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/required/0">branch_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-4b598c8fe1e138b7343ce92b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/required/1">work_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-805c1a15dbeb511ac8413047">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/required/2">workflow_plan_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-2dee8c214107f3f9c384befe">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/required/3">effect_receipt_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-d2d9a8f9e3c7704e1e984e6f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/required/4">settlement_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-2a67007b4a13cfc276d4e860">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/title">BranchEffectSettlement</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-11150d17c0bbf9c92e7dd20c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<p>These records index source constraints; they do not add limits or progression promises.</p>
+<ul>
+<li>
+<code>http:stove0:components:/schemas/BranchEffectSettlement/properties/effect_receipt_sha256:length</code>
+<table id="v-ef69c472f3fa09c021daf8e8">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-c88be123cdaaabe435ca6e6c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1effect_receipt_sha256:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-fd7f7d820c06f89acf1fef2b">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1effect_receipt_sha256:length/id">http:stove0:components:/schemas/BranchEffectSettlement/properties/effect_receipt_sha256:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-24b909ced32e379a00c5a05d">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1effect_receipt_sha256:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-f47954e88d5f5cfb98ac534e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1effect_receipt_sha256:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-7551f127da7defd67ef8fb85">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1effect_receipt_sha256:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-3b320192942457c4159a7c12">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1effect_receipt_sha256:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-75adbc74603d17cbe368f127">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1effect_receipt_sha256:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-2deb67894a8abd2ca57b24f7">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1effect_receipt_sha256:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-2d668e6fa207eb7fca442308">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-ba5654fded0d4d5f4a6175f0">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1effect_receipt_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-946291b57cd38479ba2597d1">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1effect_receipt_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/effect_receipt_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-9688f656fc8111a5fb2295d6">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1effect_receipt_sha256:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/BranchEffectSettlement/properties/settlement_sha256:length</code>
+<table id="v-99efb29ec74780e182252968">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-0ebaf228ea62457311018c33">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1settlement_sha256:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-c28494ad0ed9795cd959765e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1settlement_sha256:length/id">http:stove0:components:/schemas/BranchEffectSettlement/properties/settlement_sha256:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-594b4babc8b33bfe7b1eb160">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1settlement_sha256:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-bef4a03bb066ad9ba41fe741">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1settlement_sha256:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-4e36b32d909e0982f4d18b3e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1settlement_sha256:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-1f8652dcadf0052cba197f7c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1settlement_sha256:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-3689bd538847fb86203458c0">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1settlement_sha256:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-5f3f9cff8a72fe661166cc04">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1settlement_sha256:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-95e5f77839163f55e27ab972">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-5c23969c81557bc54b6d9414">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1settlement_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-59000f007f227701d71a3b86">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1settlement_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/settlement_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-32a0693bffcd1ef5bf86a100">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1settlement_sha256:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/BranchEffectSettlement/properties/work_id:length</code>
+<table id="v-d31c1eee94b673f89a417bed">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-e2e2916295d6b20c2a9c2170">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1work_id:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-6b60df8e9bac309cb23cb2d3">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1work_id:length/id">http:stove0:components:/schemas/BranchEffectSettlement/properties/work_id:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-0b0657395e51496cce4bf820">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1work_id:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-ecdbde6f4b38c1a69a28905a">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1work_id:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-7daab63275a212e7d8a72df3">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1work_id:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-d667b7499deb9ed94a21d894">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1work_id:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-1d293fc026dec8c25c3e03eb">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1work_id:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-3cab4f7cbd456a644f558492">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1work_id:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-3610b0613ecef88355c176bb">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-d9ad75e66da18821c339cca8">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1work_id:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-21a88b5846f0a2254b3af1c8">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1work_id:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/work_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-eaf6d18ebaf9756504f5bdc6">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1work_id:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/BranchEffectSettlement/properties/workflow_plan_sha256:length</code>
+<table id="v-96669f53478f5de1681788ac">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-7d56224e6a89668a77b5a5b7">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1workflow_plan_sha256:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-1cb28b0e3f50d88888c71083">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1workflow_plan_sha256:length/id">http:stove0:components:/schemas/BranchEffectSettlement/properties/workflow_plan_sha256:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-18975b2014aeb590cfb240b9">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1workflow_plan_sha256:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-968462e64b9ac7435851059f">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1workflow_plan_sha256:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-d38c31eaa74c324ee6965cb1">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1workflow_plan_sha256:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-b357f7ca85b65d951794193e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1workflow_plan_sha256:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-5feffa68ebf01d2d68b0ad34">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1workflow_plan_sha256:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-343e078d4ac926d06c0c3313">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1workflow_plan_sha256:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-c85214936b8bec3726a17dab">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-1c4c38075c7d702ac28c94c7">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1workflow_plan_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-f52ec138d2eb9508ccd93a12">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1workflow_plan_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchEffectSettlement/properties/workflow_plan_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-df8c680cb0a985b654a85de4">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchEffectSettlement~1properties~1workflow_plan_sha256:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

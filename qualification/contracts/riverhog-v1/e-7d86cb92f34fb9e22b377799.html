@@ -1,0 +1,3083 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Riverhog v1 bounded immutable archive-volume metadata · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-bd5b0a946527b4c47b3664f6.html">riverhog-archive-contracts · Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>Riverhog v1 bounded immutable archive-volume metadata</h1>
+<section id="contract" data-contract="schema:riverhog-archive-contracts:riverhog-v1-bounded-immutable-archive-vol-a08fdea82e:d34e83129d">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json</code>
+</h3>
+<table id="v-ce2cf87e5742af8e598b1dab">
+<tbody>
+<tr>
+<th scope="row">
+<code>$comment</code>
+</th>
+<td>
+<span id="v-a46346786476be6d7cd98c55">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$comment">This schema is the structural projection. riverhog_archive_contracts.CollectionArchiveVolumeDocument is the canonical semantic, identity, and canonical-JSON authority.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-6c35f6182efb50b97995f4dd">
+<tbody>
+<tr>
+<th scope="row">
+<code>age_state</code>
+</th>
+<td>
+<table id="v-a24d2b35e2ddc810b9e1e8ac">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-9bf2cbf4f25d67109a67560d">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/age_state/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-214ec6bdd29521c10215eaa8">
+<tbody>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<table id="v-0dc8d691c1c122155debbf4e">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-9e81018dbef783ab1ca9a464">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/age_state/properties/format/const">age-v1-scrypt-resumable</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>header_b64</code>
+</th>
+<td>
+<table id="v-e0b7bf1db434362cc02f5f90">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-019af601b454ee97d9556729">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/age_state/properties/header_b64/pattern">^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}|[A-Za-z0-9+/]{3})$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-dc021b5b5d5d5fb4725bde85">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/age_state/properties/header_b64/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>payload_nonce_b64</code>
+</th>
+<td>
+<table id="v-d97100a2c220977eb3f2981a">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-436f0214bd85b4da4f74f0a1">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/age_state/properties/payload_nonce_b64/pattern">^[A-Za-z0-9+/]{21}[AQgw]$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-31e7881c089280c840a228c5">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/age_state/properties/payload_nonce_b64/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>plaintext_size</code>
+</th>
+<td>
+<table id="v-b2649969b16e6a4093c39ad6">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c7bd28cef1eb6706bc424109">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/age_state/properties/plaintext_size/$ref">#/$defs/nonnegative_count</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-0c8f80a93d796b8f052fcbce">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-4718b88609f557c475801a1b">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-d3d0176c34864d0217ac755b">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/age_state/required/0">format</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-d0e8c4db940025dfbf10b8a8">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/age_state/required/1">header_b64</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-b92074262f4d5697ec2a97a5">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/age_state/required/2">payload_nonce_b64</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-410a551bf4f24a5430c82c9c">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/age_state/required/3">plaintext_size</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-56166ac4db660702bc4c2d68">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/age_state/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>nonnegative_count</code>
+</th>
+<td>
+<table id="v-0c8f80a93d796b8f052fcbce">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-2ed5220f6606efb1c2c5c7d1">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/nonnegative_count/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e16594b11f0c9f22b53d3bc6">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/nonnegative_count/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pack</code>
+</th>
+<td>
+<table id="v-c6222c661b2c83ba9280e79d">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-2949a9b4190feead3d9bec64">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-e1b72bf3e8a50a6561be41de">
+<tbody>
+<tr>
+<th scope="row">
+<code>age_state</code>
+</th>
+<td>
+<table id="v-62a8734524469620d5380539">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-a8be47c82fce9b34e801e814">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/age_state/$ref">#/$defs/age_state</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-a24d2b35e2ddc810b9e1e8ac">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>files</code>
+</th>
+<td>
+<table id="v-a00b69b25682fca81cf7a345">
+<tbody>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-6efe08d953b13acb1dfc7ba5">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/files/maximum">50000</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-647173f8994f29c7c5380fed">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/files/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-214de0d4856528e509f3c036">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/files/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-b631d1dd5c0f42c0277db1e9">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-e1c626daa703c1c6534629fd">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/id/pattern">^pack-[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5fc113c58a219c695cc64dea">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>index_sha256</code>
+</th>
+<td>
+<table id="v-70c7682c1223fc93580d847f">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-bb3e52514e7ac29e79049189">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/index_sha256/$ref">#/$defs/sha256</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-ddfc70e9874dfa69465514d5">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<table id="v-166de2d7218f8a607cdf190a">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-1befd8eceb910e82cc931dfb">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/kind/const">pack</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>parts</code>
+</th>
+<td>
+<table id="v-441b6efdf7377f6dea334474">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-c17ad55d320207d96d804989">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-244c472068829b5aa0f4c4bb">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/parts/items/$ref">#/$defs/part</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-014f1ca7cda40d5472349b75">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maxItems</code>
+</th>
+<td>
+<span id="v-600f3f1a4a04fa051838e101">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/parts/maxItems">1024</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-7da9110265ecd4231f8d6af4">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/parts/minItems">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-44bd38845a63f9b725c4ab8f">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/parts/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-extent</code>
+</th>
+<td>
+<table id="v-943485fa31b392eefcec72dd">
+<tbody>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-dc5884ee891d6047f7a0f1ae">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/parts/x-riverhog-extent/policy">segmented_no_total_max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>progression</code>
+</th>
+<td>
+<span id="v-fd9b1beb1a31faf1d4a426a5">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/parts/x-riverhog-extent/progression">ordered-archive-volume-sequence</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-d78a48c05fa97ec8ab80e67c">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/parts/x-riverhog-extent/reason">bounded-archive-volume-parts</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<table id="v-490785bc3240bdbfc362bfa4">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-9c1ebfe212513a3299037b31">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/path/pattern">^volumes/pack-[0-9a-f]{64}\.tar\.age$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5a1e327e2c34e720bbf2e8bc">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/path/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>plaintext_bytes</code>
+</th>
+<td>
+<table id="v-8ea23828264f893820ddc8a6">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-f22a27066fc764f7e5362f32">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/plaintext_bytes/$ref">#/$defs/nonnegative_count</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-0c8f80a93d796b8f052fcbce">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>plan_sha256</code>
+</th>
+<td>
+<table id="v-32da7b7d17aff36c256146b1">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-6b15056693aaa2301c0e4c4c">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/plan_sha256/$ref">#/$defs/sha256</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-ddfc70e9874dfa69465514d5">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>sequence</code>
+</th>
+<td>
+<table id="v-174438574345e7cece92ac39">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-2c6048db28403abad0918a76">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/sequence/$ref">#/$defs/sequence</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-b18c6e158b8baad39b0b53ce">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_bytes</code>
+</th>
+<td>
+<table id="v-b77a5632ca22f588b2a33def">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-31e4f343ff37c498256cf9f4">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/source_bytes/$ref">#/$defs/nonnegative_count</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-0c8f80a93d796b8f052fcbce">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-de56e4a3291365baf48b0316">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-cf99fa7aa0009d5942a85a0d">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/required/0">id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-1be634b24484662eb2feba55">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/required/1">sequence</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-f71cd9561e24464eab94024a">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/required/2">kind</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-9e432aee60179716bcaaddec">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/required/3">path</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-e1fa8ba5c32f1335d19f7eba">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/required/4">files</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-5c6e02bb85738866b5a659b9">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/required/5">source_bytes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-9a910ff555ee290e147077fd">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/required/6">plaintext_bytes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-e7838501b9d07ff3fa6217c1">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/required/7">age_state</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>8</code>
+</th>
+<td>
+<span id="v-18c6db26f6b0502995ef094d">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/required/8">index_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>9</code>
+</th>
+<td>
+<span id="v-e1e741a495ca9b1283d64a4d">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/required/9">plan_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>10</code>
+</th>
+<td>
+<span id="v-57035f8a184c044d8f2cff3b">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/required/10">parts</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b01a7cdada8d3477e211746b">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>part</code>
+</th>
+<td>
+<table id="v-014f1ca7cda40d5472349b75">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-36d46b588fdf26884a5887b1">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/part/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-c255804a33acfbbc464593bd">
+<tbody>
+<tr>
+<th scope="row">
+<code>number</code>
+</th>
+<td>
+<table id="v-83390965df50f2dc45608a69">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-188e88e0edee5336d9c0ac43">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/part/properties/number/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2ee17a88deb4759e247ea683">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/part/properties/number/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>plaintext_bytes</code>
+</th>
+<td>
+<table id="v-42f53b0221a069fbcf4f821f">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-04de994e5673265454f9ac45">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/part/properties/plaintext_bytes/$ref">#/$defs/nonnegative_count</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-0c8f80a93d796b8f052fcbce">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>plaintext_sha256</code>
+</th>
+<td>
+<table id="v-f67630bc79f23acb2406334d">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-589658ed3972bff0f0e132dc">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/part/properties/plaintext_sha256/$ref">#/$defs/sha256</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-ddfc70e9874dfa69465514d5">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>plaintext_start</code>
+</th>
+<td>
+<table id="v-fb9a0deae3812ba11edd5ec6">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c914175d9aa9769508667206">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/part/properties/plaintext_start/$ref">#/$defs/nonnegative_count</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-0c8f80a93d796b8f052fcbce">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>stored_bytes</code>
+</th>
+<td>
+<table id="v-b2f19d26568aeda618c54d98">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-36dab63ca81958e1206a725d">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/part/properties/stored_bytes/$ref">#/$defs/positive_count</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-40b2b9990292a9910db9d478">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>stored_sha256</code>
+</th>
+<td>
+<table id="v-8c4daa8978700441d89a458a">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-7da70ac642c97e998943de02">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/part/properties/stored_sha256/$ref">#/$defs/sha256</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-ddfc70e9874dfa69465514d5">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-3f71b4f56fe06c00eb78ca0f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-e4ab639d08038846bb3516fb">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/part/required/0">number</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-d77680f0f64d4f5f4ff4ea39">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/part/required/1">plaintext_start</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-d1a55220454218dd742466ff">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/part/required/2">plaintext_bytes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-c8c63d494fba8837c511b966">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/part/required/3">plaintext_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-ead15cb5d1dc3be8ef653f44">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/part/required/4">stored_bytes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-95fbd831687506ea32e30c60">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/part/required/5">stored_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-12530de2529126d575798078">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/part/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>positive_count</code>
+</th>
+<td>
+<table id="v-40b2b9990292a9910db9d478">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-695084a2cfd58bff530541fc">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/positive_count/pattern">^[1-9][0-9]*(?![\s\S])</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ecf072baf6acfb708c841b1f">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/positive_count/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>segment</code>
+</th>
+<td>
+<table id="v-ebbbf2c54616a096bea3425e">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-842ffb9e53503a0ae74dcd3d">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-5616b0c8a612e6c4217a9b52">
+<tbody>
+<tr>
+<th scope="row">
+<code>age_state</code>
+</th>
+<td>
+<table id="v-53030700e84986d3714b8b7e">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-666625ccaaace99906161dbb">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/properties/age_state/$ref">#/$defs/age_state</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-a24d2b35e2ddc810b9e1e8ac">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>file</code>
+</th>
+<td>
+<table id="v-be6bf5af63f1f7cce74381f0">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-16e4bd4eaf83ec06f7f3088b">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/properties/file/$ref">#/$defs/segment_file</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-e6e7129d1bb54638624d3608">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-e13ae5b696673b54571f3b96">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-facde7bb187368b9bcfe40ae">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/properties/id/pattern">^segment-[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6437d147b8a787522d624d1e">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/properties/id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<table id="v-454da2ad8e152742d25766d2">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-1c2c8ca36d912422143ff2ea">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/properties/kind/const">segment</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>parts</code>
+</th>
+<td>
+<table id="v-a600910b2040c42c2c2ae2e4">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-ff3cea8978f78e353f7681cf">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-1359ecfe109b128f57be2539">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/properties/parts/items/$ref">#/$defs/part</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-014f1ca7cda40d5472349b75">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maxItems</code>
+</th>
+<td>
+<span id="v-37468dbebf41e970e115dc70">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/properties/parts/maxItems">1024</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-8bb00a85ed4563917170bb8a">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/properties/parts/minItems">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d101d5c1fd94be0f44026ca9">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/properties/parts/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-extent</code>
+</th>
+<td>
+<table id="v-844d52e0aba98669df3aad73">
+<tbody>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-22293727266c1c20c63df4e3">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/properties/parts/x-riverhog-extent/policy">segmented_no_total_max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>progression</code>
+</th>
+<td>
+<span id="v-12a006a69e94ec64f854e12d">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/properties/parts/x-riverhog-extent/progression">ordered-archive-volume-sequence</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-a08a3e075b5513e78a4b0ffb">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/properties/parts/x-riverhog-extent/reason">bounded-archive-volume-parts</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<table id="v-57e799246e82c91a783cd075">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-cf137578ea9c7ac2a683ffbb">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/properties/path/pattern">^volumes/segment-[0-9a-f]{64}\.bin\.age$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8ded3b0546c8115829039063">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/properties/path/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>plaintext_bytes</code>
+</th>
+<td>
+<table id="v-bc57786779e4084e764429b9">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-97a0244cd7579d13d3450cfa">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/properties/plaintext_bytes/$ref">#/$defs/nonnegative_count</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-0c8f80a93d796b8f052fcbce">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>sequence</code>
+</th>
+<td>
+<table id="v-2d8923bce54051656e93f472">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c44d680f69a9530a13812687">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/properties/sequence/$ref">#/$defs/sequence</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-b18c6e158b8baad39b0b53ce">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-2902825e7a959f9502f87f3a">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-aa860ad11966bdff99fb8d62">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/required/0">id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-98c451b44af696fd04a8731b">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/required/1">sequence</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-872b710cae321538c699b79f">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/required/2">kind</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-fca8c6018bca043dbf36e4ac">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/required/3">path</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-d81ea557d4c4af00239c0064">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/required/4">plaintext_bytes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-6a8693a57c2e7880c98cfc7e">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/required/5">age_state</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-49d252ccd3cfb41242051081">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/required/6">file</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-35e3bbf9b2e8f36424adf435">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/required/7">parts</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-892d3d77c498506d08f538e6">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>segment_file</code>
+</th>
+<td>
+<table id="v-e6e7129d1bb54638624d3608">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-3460a5c53100c8ab85988808">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-dbcdca508a93c4024344fbe2">
+<tbody>
+<tr>
+<th scope="row">
+<code>bytes</code>
+</th>
+<td>
+<table id="v-bffb1edd6d6578544513bd87">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-51359ddb3eec1d1913896b0f">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/bytes/$ref">#/$defs/nonnegative_count</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-0c8f80a93d796b8f052fcbce">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>file_bytes</code>
+</th>
+<td>
+<table id="v-dd97b15ddc2de0e4be6da91c">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-5678f31b9f16018e21530771">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/file_bytes/$ref">#/$defs/nonnegative_count</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-0c8f80a93d796b8f052fcbce">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>offset</code>
+</th>
+<td>
+<table id="v-bccb340a336e96b145fd9a1b">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-b306b0ec912895a9d1f97a13">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/offset/$ref">#/$defs/nonnegative_count</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-0c8f80a93d796b8f052fcbce">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<table id="v-ff0c8b1f5259fb06c86d9643">
+<tbody>
+<tr>
+<th scope="row">
+<code>allOf</code>
+</th>
+<td>
+<table id="v-cdae34def8f8ee5bcb152281">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-a00e76d4437d76841bbf8bca">
+<tbody>
+<tr>
+<th scope="row">
+<code>not</code>
+</th>
+<td>
+<table id="v-07432745ab35f7e54fa55889">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-4ed09d557195b9053dfdd811">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/path/allOf/0/not/pattern">^\s|\s$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-9ef96da024597f6af4f8d57c">
+<tbody>
+<tr>
+<th scope="row">
+<code>not</code>
+</th>
+<td>
+<table id="v-a41956810cab1dce95dc50af">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-223079b8611c144dbcfc14e8">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/path/allOf/1/not/pattern">\u0000</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-2269fcd532870410cf352934">
+<tbody>
+<tr>
+<th scope="row">
+<code>not</code>
+</th>
+<td>
+<table id="v-bf35a903bd8333fac531461b">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-7e97f6222884e324435c172d">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/path/allOf/2/not/pattern">[\ud800-\udfff]</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<span id="v-fe6032fa1d8ec44334980c14">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/path/format">riverhog-canonical-relpath-v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-c91f2fd89e21ba0bb546783e">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/path/maxLength">4096</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-4f8a4b77fc3988a293bae497">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/path/pattern">^(?!/)(?!\.riverhog/)(?!.*\\)(?!.*(?:^|/)\.\.?(?:/|$))[^/]+(?:/[^/]+)*$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7fea62184c9c4ea154f0bcc8">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/path/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-unicode-normalization</code>
+</th>
+<td>
+<span id="v-53ce49d4c9337809e3247e80">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/path/x-unicode-normalization">NFC</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>sha256</code>
+</th>
+<td>
+<table id="v-2862954f72f9a09d24c552b3">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-d6bd820976f5b7fce5b2c848">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/sha256/$ref">#/$defs/sha256</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-ddfc70e9874dfa69465514d5">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-08eeb70537c7b93498300237">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-3711c953453b3bc4d2fd8e12">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/required/0">path</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-9ccf308d8b9be8806295a808">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/required/1">offset</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-a21c6e55424d5689b2e19c19">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/required/2">bytes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-344e070a34b3a63fb679b9a0">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/required/3">file_bytes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-2f117bde6bcc47eac8c21967">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/required/4">sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-615b559bc88ef242742cc221">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>sequence</code>
+</th>
+<td>
+<table id="v-b18c6e158b8baad39b0b53ce">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-81e41a8de54a94a13045ca10">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/sequence/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b9cc90cffaf52d37f58c206a">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/sequence/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>sha256</code>
+</th>
+<td>
+<table id="v-ddfc70e9874dfa69465514d5">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-10dff615fad8cb02dc112f23">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-961ad6d906b2aada826d353a">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>$id</code>
+</th>
+<td>
+<span id="v-bc2f6d661f59e68abf0610ce">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$id">https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>$schema</code>
+</th>
+<td>
+<span id="v-b4f04bc7aa008d7ee48746a6">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$schema">https://json-schema.org/draft/2020-12/schema</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-80e67f1916011e7af58baf96">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-8bb7bbb2112ad057ac90337a">
+<tbody>
+<tr>
+<th scope="row">
+<code>archive_generation</code>
+</th>
+<td>
+<table id="v-de6b8071efc3f320f293d3d2">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-80226158fe5e14a3e03376d2">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/properties/archive_generation/$ref">#/$defs/sha256</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-ddfc70e9874dfa69465514d5">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>archive_tree_sha256</code>
+</th>
+<td>
+<table id="v-2b2ac22425070493aca97e2a">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-9180ea0ee60d7424c5a7ade7">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/properties/archive_tree_sha256/$ref">#/$defs/sha256</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-ddfc70e9874dfa69465514d5">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<table id="v-6552fe9c6bca4018e311c034">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-4f14fe81f372699cff8f1575">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/properties/format/const">collection-archive-volume/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>volume</code>
+</th>
+<td>
+<table id="v-80ca7325286753fa4502eddb">
+<tbody>
+<tr>
+<th scope="row">
+<code>oneOf</code>
+</th>
+<td>
+<table id="v-8cc5dc0c6b06894af3d4229d">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-e43a911a9adbbd912774c523">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-7414e195e02c2a6b72247b7d">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/properties/volume/oneOf/0/$ref">#/$defs/pack</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-c6222c661b2c83ba9280e79d">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-b8396f2249cdddc744f3afdb">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-3f5df04af7788fce21f1bcd3">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/properties/volume/oneOf/1/$ref">#/$defs/segment</code>
+<span class="kind">string</span> <a href="e-7d86cb92f34fb9e22b377799.html#v-ebbbf2c54616a096bea3425e">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-6681c0593bb121e94e45252f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-02ae6f1f42d3eaca3d51910e">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/required/0">format</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-4a43980979d2ba1b6d600017">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/required/1">archive_generation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-54dc738aab28bba999ce8584">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/required/2">archive_tree_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-f23ab3b4bd2d09950c48031f">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/required/3">volume</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-2f76d289d3b609c061f2fad2">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/title">Riverhog v1 bounded immutable archive-volume metadata</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-60d42bdc3cfb0d264e0b37a5">
+<code data-value-pointer="/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="packages/riverhog-archive-contracts/schemas/collection-archive-volume-v1.schema.json">packages/riverhog-archive-contracts/schemas/collection-archive-volume-v1.schema.json</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<p>These records index source constraints; they do not add limits or progression promises.</p>
+<ul>
+<li>
+<code>protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json:/$defs/pack/properties/files:value</code>
+<table id="v-be180ad5d029e9821f827c20">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-8495eaf672e4ff93ab516e44">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1pack~1properties~1files:value/dimension">value</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-fc7e015c2ba9902f60fefece">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1pack~1properties~1files:value/id">protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json:/$defs/pack/properties/files:value</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-59a3019d52fe25ef31abd78c">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1pack~1properties~1files:value/maximum">50000</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-bae6db4f36dc5080026804d5">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1pack~1properties~1files:value/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-18ee2eb938753820f979d5cf">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1pack~1properties~1files:value/owner">https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-fb6822ca016a842d6e264031">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1pack~1properties~1files:value/policy">contract_max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-fdd261fa7a68821532f0e3bd">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1pack~1properties~1files:value/reason">schema-maximum</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-5c3721f9c3e50dd8bbe75da3">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1pack~1properties~1files:value/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-266d48744e7ee4fe1a1cba08">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1pack~1properties~1files:value/source_pointer">/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/files</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-52d76e18c95aad712ce81ce3">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1pack~1properties~1files:value/unit">schema-value</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json:/$defs/pack/properties/parts:cardinality</code>
+<table id="v-cef5069b41a3d5ef270e4f85">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-2931be91b2b4b4621c406aa8">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1pack~1properties~1parts:cardinality/dimension">cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-eafe586a057b8e38aeb0b7ac">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1pack~1properties~1parts:cardinality/id">protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json:/$defs/pack/properties/parts:cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-9f3eb0dd338351b16616215b">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1pack~1properties~1parts:cardinality/maximum">1024</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-9fa911dbaa7b9478e84221b6">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1pack~1properties~1parts:cardinality/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-c87e81a9021c20dcfc57c9a0">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1pack~1properties~1parts:cardinality/owner">https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-44b87e5e465982e9c21e675d">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1pack~1properties~1parts:cardinality/policy">segmented_no_total_max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>progression</code>
+</th>
+<td>
+<table id="v-3c684111ced145e39c578e31">
+<tbody>
+<tr>
+<th scope="row">
+<code>progression</code>
+</th>
+<td>
+<span id="v-c77e5f6b6bcfa5eb111bd1cb">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1pack~1properties~1parts:cardinality/progression/progression">ordered-archive-volume-sequence</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-5a91f488beb050052d0a1bfd">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1pack~1properties~1parts:cardinality/reason">bounded-archive-volume-parts</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-9c07fbb43e6aaabacf880e7d">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1pack~1properties~1parts:cardinality/rule">bounded-segment/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-b8661dc064b9d8fd3250a625">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1pack~1properties~1parts:cardinality/source_pointer">/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/pack/properties/parts</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-c084f7d395936843fd66cd3e">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1pack~1properties~1parts:cardinality/unit">items</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json:/$defs/segment/properties/parts:cardinality</code>
+<table id="v-2ae2fcd9689e1f9416c31dce">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-2240ba76c708ded1c4e4e9d9">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1segment~1properties~1parts:cardinality/dimension">cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-82f0424f55ace23703768e58">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1segment~1properties~1parts:cardinality/id">protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json:/$defs/segment/properties/parts:cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-a94f5a2fc51a298c3f665aab">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1segment~1properties~1parts:cardinality/maximum">1024</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-045f49c2c57b878f6ffeb1c6">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1segment~1properties~1parts:cardinality/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-41c8273afe3d9db2b9bb498d">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1segment~1properties~1parts:cardinality/owner">https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-d69d39f963584aaf94ac69e2">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1segment~1properties~1parts:cardinality/policy">segmented_no_total_max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>progression</code>
+</th>
+<td>
+<table id="v-c18eaf093ea6df50c1fbf2ac">
+<tbody>
+<tr>
+<th scope="row">
+<code>progression</code>
+</th>
+<td>
+<span id="v-fa4e7f800a452acb9a178f94">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1segment~1properties~1parts:cardinality/progression/progression">ordered-archive-volume-sequence</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-de4af5a6aa1dedf958a76f08">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1segment~1properties~1parts:cardinality/reason">bounded-archive-volume-parts</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-ac78196b4aae4fd0bb0ffb97">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1segment~1properties~1parts:cardinality/rule">bounded-segment/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-f83387673561563ef188e835">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1segment~1properties~1parts:cardinality/source_pointer">/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment/properties/parts</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-3ae2fee97b365001b0c04253">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1segment~1properties~1parts:cardinality/unit">items</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json:/$defs/segment_file/properties/path:length</code>
+<table id="v-cd2d74924552a4f5245fe799">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-76df5d03aa264088a46b8dfe">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1segment_file~1properties~1path:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-245fd52c5ce264dd807668ab">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1segment_file~1properties~1path:length/id">protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json:/$defs/segment_file/properties/path:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-80ede439ea33d5f7c5f96349">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1segment_file~1properties~1path:length/maximum">4096</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-91513033ebb2f61ffcc1ae9c">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1segment_file~1properties~1path:length/owner">https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-f55585f9aac2bb19b25adfab">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1segment_file~1properties~1path:length/policy">contract_max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-5b051ab3b347090e1f5ea315">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1segment_file~1properties~1path:length/reason">schema-maximum</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-89d9439aaf9dcbe06c61210f">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1segment_file~1properties~1path:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-f105d7eb28ebe7e1da2e9523">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1segment_file~1properties~1path:length/source_pointer">/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/segment_file/properties/path</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-5afc2d7c8a5329e41fbc6b26">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1segment_file~1properties~1path:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json:/$defs/sequence:length</code>
+<table id="v-3428863d64a3d2c967fbb459">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-a50c5d922eefbb7de57d8028">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sequence:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-94cb11ae2adafa69043d29a4">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sequence:length/id">protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json:/$defs/sequence:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-08c5e675f88078fa035a3886">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sequence:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-a27b7615e5f291898082dff9">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sequence:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-f4c36cbb63e563ab3a30bd19">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sequence:length/owner">https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-c8cfca978733b4f6142a712f">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sequence:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-32bc269b8ff3daaced468eef">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sequence:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-9dbc96ca05110774d68e1f51">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sequence:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-4dfc7f3f898fa8ebba454f29">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-12055b7384c788dd504b823e">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sequence:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-c25b38e044fd1b9a3de40554">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sequence:length/source_pointer">/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/sequence</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-049e52d6358d7ef7e7e399b9">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sequence:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json:/$defs/sha256:length</code>
+<table id="v-c9a8f56560cdfad22f819745">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-b7c69e7456baf2ce3e02419c">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sha256:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-1d10f530e88e070294318099">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sha256:length/id">protocol:https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json:/$defs/sha256:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-674d5dadcf1e254e7a1b6656">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sha256:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-aff6bca64954c2a4670f2b33">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sha256:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-d46b797f18e48a83ef66e95f">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sha256:length/owner">https://nashspence.github.io/riverhog/v1/schemas/collection-archive-volume-v1.schema.json</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-75aaf0e53c14bf3b1c318770">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sha256:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-96c70e932fc5e81caaeff720">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sha256:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-60a1cc2a69edb03e1ed8526b">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sha256:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-6eb8b281be6861b0f9d36938">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-83f9be0d02b3d719cde4610b">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-0a4b47066e72093181899e6d">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sha256:length/source_pointer">/external_contract/protocol_schemas/https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json/$defs/sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-a61dbaa823872db4771961d3">
+<code data-value-pointer="/audit/decisions/protocol:https:~1~1nashspence.github.io~1riverhog~1v1~1schemas~1collection-archive-volume-v1.schema.json:~1$defs~1sha256:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

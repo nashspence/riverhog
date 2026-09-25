@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>riverhog_protocol.ProcessingOutcomeBindingDocument · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-99b3d079e6c87a1dff566c19.html">riverhog-protocol · Python</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>riverhog_protocol.ProcessingOutcomeBindingDocument</h1>
+<section id="contract" data-contract="python:riverhog-protocol:riverhog-protocol-processingoutcomebindingdocument:c6ec8a4c02">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/python/riverhog_protocol.ProcessingOutcomeBindingDocument</code>
+</h3>
+<table id="v-036f962df38870507cfe454b">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-6fecdc83cc6873fd37141161">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-8eea9d483e54005cfd0331b5">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeBindingDocument/contract/kind">class</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-a5785b1757fdbdbe31d34042">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-af822b2cef4bd3fcef06ff4f">
+<tbody>
+<tr>
+<th scope="row">
+<code>NonnegativeDecimal</code>
+</th>
+<td>
+<table id="v-efbcc3db614766490fc959a1">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-7d34424e3d0dd8d273cf2c0b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeBindingDocument/contract/schema/$defs/NonnegativeDecimal/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7cdc3cbe347a63b1c89acbb7">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeBindingDocument/contract/schema/$defs/NonnegativeDecimal/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-0269c1866139f2457378fae3">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeBindingDocument/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-185f958a5d0d984538d2759b">
+<tbody>
+<tr>
+<th scope="row">
+<code>claim_id</code>
+</th>
+<td>
+<table id="v-cc2bff4b338ad5f9d15c9362">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-69290246a1ab54068ff25425">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeBindingDocument/contract/schema/properties/claim_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8ea8df2a00cdad24afc73c97">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeBindingDocument/contract/schema/properties/claim_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>fence</code>
+</th>
+<td>
+<table id="v-78fcecbf52944e145ed7fcb9">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-ebe73bcee060bceb77775e61">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeBindingDocument/contract/schema/properties/fence/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-d6a0c30923490df71f0aebc9.html#v-efbcc3db614766490fc959a1">Definition</a>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-855d370442aaec3109cbff04">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeBindingDocument/contract/schema/properties/fence/ge">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>outcome_id</code>
+</th>
+<td>
+<table id="v-280acd085f8140bf63bf4bf5">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-4c6e8fb7b5eff5e63f9d6db9">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeBindingDocument/contract/schema/properties/outcome_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8f375cb43a2ff7d2aff0ed08">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeBindingDocument/contract/schema/properties/outcome_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-1e340df44154a6ad17cbddc0">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-81de3b876a81ea5053975211">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeBindingDocument/contract/schema/required/0">claim_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-7932c9f0de3d5594f9c849fa">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeBindingDocument/contract/schema/required/1">fence</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-630671002b763c9d2ce84da8">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeBindingDocument/contract/schema/required/2">outcome_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-20e2ed49f4b6c1a3962fa91a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeBindingDocument/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-7d1b4e0abb6b0f206bba54f8">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeBindingDocument/contract/signature">&quot;(*, claim_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[0-9a-f]{64}$&#x27;)], fence: Annotated[NonnegativeDecimal, Ge(ge=1)], outcome_id: Annotated[str, _PydanticGeneralMetadata(pattern=&#x27;^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$&#x27;)]) -&gt; None&quot;</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-70a71c9379eee371a365b7b3">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeBindingDocument/distribution">riverhog-protocol</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-6609b9748370764e5e89ac1c">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeBindingDocument/module">riverhog_protocol</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-c868405ca9844673be2d681b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeBindingDocument/name">ProcessingOutcomeBindingDocument</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-2f9ad98ba9156ac4175ff49a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingOutcomeBindingDocument/unit">export</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="packages/riverhog-protocol/src/riverhog_protocol/__init__.py">packages/riverhog-protocol/src/riverhog_protocol/__init__.py</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

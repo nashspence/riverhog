@@ -1,0 +1,1283 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: BranchSettlement · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: BranchSettlement</h1>
+<section id="contract" data-contract="http-schemas:stove0:schemas-branchsettlement:dd12ad1a2e">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/stove0/components/schemas/BranchSettlement</code>
+</h3>
+<table id="v-408a56022c8d33cad48d3148">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-49ac7a3c9ef398e5a2b54046">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-9b0d642fa213bb01d8ac083a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/description">Success-only, Riverhog-verified result of one branch workflow plan.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-45914280ae683a83388dd3ee">
+<tbody>
+<tr>
+<th scope="row">
+<code>branch_id</code>
+</th>
+<td>
+<table id="v-d14fc4aaa1125047b8c1dcb0">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-b817b591bca5664611b6110b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/branch_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-fec1867234cb602691084e5e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/branch_id/title">Branch Id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9a270df4f1f732841cb877a9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/branch_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>derivation_sha256</code>
+</th>
+<td>
+<table id="v-b122415c3eee25204b2226ea">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-c2e0515864a8f0a47c952e9e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/derivation_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-f306ddf9988daa2bd2504626">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/derivation_sha256/title">Derivation Sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3eb9f27a141ccda634a70253">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/derivation_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<table id="v-8cc42659eb3bfef99d0dfdbe">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-c717745154a4ad88754842e6">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/format/const">stove0-branch-settlement/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-63e9cb7457f85b7a80382c8c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/format/default">stove0-branch-settlement/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-dd7e6681cd26a239527b8b53">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/format/title">Format</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-30be361754f4409eb805da6a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/format/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>output_collection</code>
+</th>
+<td>
+<table id="v-9a2f0035d40a10dc13c48724">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-a096fbf95a8d6aeb5e781063">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/output_collection/$ref">#/components/schemas/CollectionRootIdentityRef</code>
+<span class="kind">string</span> <a href="e-f59482ac758a3f12f61aa401.html#v-871a4641f417c0b1f5f3f0b6">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>output_selection</code>
+</th>
+<td>
+<table id="v-3523e63710885ab1947b5174">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-063d9f7c445dc218a7748507">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/output_selection/$ref">#/components/schemas/ArtifactSelectionRef</code>
+<span class="kind">string</span> <a href="e-d0ddf7c7a04ac3bd6c4ff651.html#v-bd12209c434d86438c5c5efb">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>producer_settlement_sha256</code>
+</th>
+<td>
+<table id="v-3aa87a4f91d8a8048091828c">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-24ba4601f725557ed9a3bccd">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/producer_settlement_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-1c22533edec3c38a8c9f5372">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/producer_settlement_sha256/title">Producer Settlement Sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c9ecbdca0d7576fb27bbd23f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/producer_settlement_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>settlement_sha256</code>
+</th>
+<td>
+<table id="v-786e03f38862711c329be26e">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-2affc00b88efa7be230fa4c1">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/settlement_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-143459b82fe79dd127567cd6">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/settlement_sha256/title">Settlement Sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-39f201e8908a64f26dfb360a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/settlement_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>work_id</code>
+</th>
+<td>
+<table id="v-047c17c06f58c1962e545bf5">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-d2d325f6f6bb3e5ef8b2a05e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/work_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-b0fdf516b59bc1379ebe7d63">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/work_id/title">Work Id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-016e84edc4e231eac3dc2183">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/work_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>workflow_plan_sha256</code>
+</th>
+<td>
+<table id="v-0e747befdd3ac9fe3fa675b1">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-57312683ead10bfb1e9ecd12">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/workflow_plan_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-bd6c81e55616326ec4efdc45">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/workflow_plan_sha256/title">Workflow Plan Sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a36f7466b1507d566c8d7470">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/workflow_plan_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-670b7e2ea8c9f62a4a05b1f4">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-703f58e40ede98cf123473d7">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/required/0">branch_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-1da18d40dc4411ab6be7450c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/required/1">work_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-41b86ac42221db92bc0a8827">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/required/2">workflow_plan_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-a34a3819d405f680375923ca">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/required/3">derivation_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-53e6ae73e519c5fdfb3a4b4b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/required/4">producer_settlement_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-dcf7a9cc1f3dddee90b3b2d2">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/required/5">output_collection</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-a511ced8749eb9f3ede2a029">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/required/6">output_selection</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-05d0cf47b2f9683de7f71854">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/required/7">settlement_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-d7c8b30fe840a6df86742825">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/title">BranchSettlement</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-320b6230bf9dfea548238fb4">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<p>These records index source constraints; they do not add limits or progression promises.</p>
+<ul>
+<li>
+<code>http:stove0:components:/schemas/BranchSettlement/properties/derivation_sha256:length</code>
+<table id="v-ac6c999a3ac36602b7a9db15">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-2738d89dbf80898b4c64a32c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1derivation_sha256:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-e7f9350fc7eaf6404d803989">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1derivation_sha256:length/id">http:stove0:components:/schemas/BranchSettlement/properties/derivation_sha256:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-80c1c5ad7cecda351e0a5f35">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1derivation_sha256:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-3570d3715a9367196fa2e8a7">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1derivation_sha256:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-275d455e6be3a588aab5e14b">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1derivation_sha256:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-da2761a5f1779f2ea639f1d0">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1derivation_sha256:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-aba8da94f6ef68f1bf0a98dd">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1derivation_sha256:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-4fe6b5cb181a1f2e58dea75b">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1derivation_sha256:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-0d65cd1a041676965f78b5e6">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-2ee70dd7721187817396f37a">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1derivation_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-e8f02462cc224e148a6c10bb">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1derivation_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/derivation_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-f9adc34f03566c9e183c2b62">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1derivation_sha256:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/BranchSettlement/properties/producer_settlement_sha256:length</code>
+<table id="v-288ac1f010fdbf5e482b4cf0">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-9cddcc451d3484197fdb0a12">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1producer_settlement_sha256:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-708ccd18ddd5621c72dbff73">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1producer_settlement_sha256:length/id">http:stove0:components:/schemas/BranchSettlement/properties/producer_settlement_sha256:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-341645cca37bcb6f122ff0de">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1producer_settlement_sha256:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-dcb2900d7114af93b04f3c1c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1producer_settlement_sha256:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-692af4c22562ff8692e86dbe">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1producer_settlement_sha256:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-716076a6bf494c6c63ce731a">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1producer_settlement_sha256:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-9dfa0f900d1efc4ac75bb25b">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1producer_settlement_sha256:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-736aa8b3245e64649ef33ab3">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1producer_settlement_sha256:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-f2781aaca5533ad46feda6d0">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-1f3ae7546d315ccbf6b93bf9">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1producer_settlement_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-6d3515c80ad3320156bd206a">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1producer_settlement_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/producer_settlement_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-386301aae53c83feb07bb030">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1producer_settlement_sha256:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/BranchSettlement/properties/settlement_sha256:length</code>
+<table id="v-bbdbba9802daebd661dd3dd8">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-12321ed94a50c9d9d152ad01">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1settlement_sha256:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-66a39b422d9e537585a8598c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1settlement_sha256:length/id">http:stove0:components:/schemas/BranchSettlement/properties/settlement_sha256:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-dfaf318c200222cb999671f6">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1settlement_sha256:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-cbea04281623c26ab98887e4">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1settlement_sha256:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-5c8d1f453fe47b7507c3b823">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1settlement_sha256:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-8429415292b1893320bbc8b4">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1settlement_sha256:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-b9505dcf88e57d19e57386b1">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1settlement_sha256:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-68a6970f3b08c8d6a342f931">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1settlement_sha256:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-bde43c4c383f40f020debd33">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-ab06421f4f4a68a6b27824ed">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1settlement_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-485e612c71faa3f598d86351">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1settlement_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/settlement_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-db747c92baec9f3018a59e67">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1settlement_sha256:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/BranchSettlement/properties/work_id:length</code>
+<table id="v-691b37e15ec5343895c0aeda">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-13eea29198d1e6fcb99fede8">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1work_id:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-01669ad03f1362e088552ac7">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1work_id:length/id">http:stove0:components:/schemas/BranchSettlement/properties/work_id:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-b043f8a89f35e37302172571">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1work_id:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-7b1652e1af4b70328ff64b50">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1work_id:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-73b9b21f4f1ae7589dad52b1">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1work_id:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-1739306758858fb690f5fe6d">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1work_id:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-06a0da10d350fb114e15ce3e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1work_id:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-7c6ce0a9c7cd575b20ae220f">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1work_id:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-221c3386c9d12960789b5ba3">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-e8d4caf90de96907cc08b774">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1work_id:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-c3ba85635352ce91f3ae961f">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1work_id:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/work_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-ce0bdeb0e51b5a3c5b1bc11b">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1work_id:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/BranchSettlement/properties/workflow_plan_sha256:length</code>
+<table id="v-426bbd0fd0ca3caf1c61811a">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-ea9863d08731a8b1db2f3f04">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1workflow_plan_sha256:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-49a0ca7c923c2dc0a8588652">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1workflow_plan_sha256:length/id">http:stove0:components:/schemas/BranchSettlement/properties/workflow_plan_sha256:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-ceb21fb2e53764b975b88517">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1workflow_plan_sha256:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-bbad410653133fa725fcd20d">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1workflow_plan_sha256:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-be8b8a1ec8bef6288b88e455">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1workflow_plan_sha256:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-eb00817be8852b578a8e49e0">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1workflow_plan_sha256:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-81a59154fd95f482c5b87934">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1workflow_plan_sha256:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-8d92281ed847d1ec86966f99">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1workflow_plan_sha256:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-3bbc9f193faab1397d433140">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-44fda4251e1def7c446968c6">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1workflow_plan_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-1742928edc88bcd2a61afa38">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1workflow_plan_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/BranchSettlement/properties/workflow_plan_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-d8c5b8a14c79edc3e087f660">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1BranchSettlement~1properties~1workflow_plan_sha256:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

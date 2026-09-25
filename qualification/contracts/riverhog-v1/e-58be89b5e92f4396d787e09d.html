@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>POST /v1/departure-policies/{policy_id}:rebaseline · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-ebb825f7ec999f00a9d2c150.html">stove0 · HTTP Operations</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>POST /v1/departure-policies/{policy_id}:rebaseline</h1>
+<section id="contract" data-contract="http-operations:stove0:post-v1-departure-policies-policy-id-rebaseline:40b4897508">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post</code>
+</h3>
+<table id="v-d1d1388766ec53017c765358">
+<tbody>
+<tr>
+<th scope="row">
+<code>operationId</code>
+</th>
+<td>
+<span id="v-8079e2e2f29280599112c843">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/operationId">rebaseline_departure_policy</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>parameters</code>
+</th>
+<td>
+<table id="v-40f082e3a3aafbb6bba9c17c">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-024f425a8b245f43456b2c37">
+<tbody>
+<tr>
+<th scope="row">
+<code>in</code>
+</th>
+<td>
+<span id="v-b9df62fababb48c2ba61b62d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/parameters/0/in">path</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-2bfdefb93b4548376d38317d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/parameters/0/name">policy_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<span id="v-f171ea649c14715833ecb088">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/parameters/0/required">true</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-510948ad65b4d81f2266d4a1">
+<tbody>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-e589530ccdeb90a84ad81411">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/parameters/0/schema/title">Policy Id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-10c0fe5917de1211501372d7">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/parameters/0/schema/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>responses</code>
+</th>
+<td>
+<table id="v-c686964ee9285db1583f9dbe">
+<tbody>
+<tr>
+<th scope="row">
+<code>200</code>
+</th>
+<td>
+<table id="v-6600a6f1e715effe47d67b7f">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-7140f08d70db0a60cccf6610">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-3a2639aa3276efcf94d0a941">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-9ddc1d287efeaa4a6fd6172e">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-b2119eb25a6fc8bd6b91e37c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/responses/200/content/application~1json/schema/$ref">#/components/schemas/DeparturePolicyStatus</code>
+<span class="kind">string</span> <a href="e-2f77017a5caf8deca60c8bff.html#v-e562ebeb869641f697dbbf80">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-d3fae06ab3b7425a9f489ee1">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/responses/200/description">Successful Response</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>400</code>
+</th>
+<td>
+<table id="v-18d180890bfeceb23412264b">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-be93f4a1d10c76b78c8028a9">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-52f4aac921b88a06c5947a18">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-dcac4b6c1ee37ccb4c3064cd">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-7827d2333ffa49f9dad9874b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/responses/400/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-78212cb6c7e476e1c318ce38">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/responses/400/description">Bad Request</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-b7b44cb827913ea4b834d4a3">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-50972fb4ba641c638cf94234">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/responses/400/x-riverhog-error-codes/0">bad_request</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>401</code>
+</th>
+<td>
+<table id="v-827a34d8743a177a0a2d0c8d">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-eff335ebf002ad65d74334fa">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-c490455a0d4151954f2f5fe4">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-8dd78b205cc514b570bd76d3">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-e2d982472e461b8795e8f1d5">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/responses/401/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-806429cdf9847202d5e19bc3">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/responses/401/description">Unauthorized</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-6278e2590eddb4976e40cfd7">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-538cd9d2c9ffb802e4f9f127">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/responses/401/x-riverhog-error-codes/0">unauthorized</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>403</code>
+</th>
+<td>
+<table id="v-cf7ff1ac9abd2893a412abb5">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-3e7ddd2c752ef08a7d4f8bfa">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-8343e9a383e4ce6bf0594a31">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-993aa76fbe8189734a31bcc1">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-ead845290b05230b85fb687d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/responses/403/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-44b3e74aaac87b9fb79be211">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/responses/403/description">Forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-a3375e7405539e202664718a">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-9433bf37adabf2058f39903a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/responses/403/x-riverhog-error-codes/0">forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>500</code>
+</th>
+<td>
+<table id="v-175e7b07877fe141ac458fd3">
+<tbody>
+<tr>
+<th scope="row">
+<code>content</code>
+</th>
+<td>
+<table id="v-d948e6be4d2947c073685d5b">
+<tbody>
+<tr>
+<th scope="row">
+<code>application/json</code>
+</th>
+<td>
+<table id="v-201be51d9ac04f61a7040742">
+<tbody>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-9d3e9bf747942e88cea7a779">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-610d68817d7cb4d9202ff608">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/responses/500/content/application~1json/schema/$ref">#/components/schemas/ErrorOut</code>
+<span class="kind">string</span> <a href="e-3996d556f14dd1eee3bfeddd.html#v-7b12dd68009bb01281d3324c">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-a30c41929930ffd18e1a308b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/responses/500/description">Internal Server Error</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-error-codes</code>
+</th>
+<td>
+<table id="v-d6d86f0af7ee2c42851d5b12">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-ab396aacd3e65c08eb0c1040">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/responses/500/x-riverhog-error-codes/0">internal_error</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>summary</code>
+</th>
+<td>
+<span id="v-ade27e1a888bbaf50ccd4ab0">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/summary">Rebaseline Departure Policy</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>tags</code>
+</th>
+<td>
+<table id="v-bb2151479753d0022d401d1d">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-e443bc2cb552984b0da897ad">
+<code data-value-pointer="/external_contract/http_openapi/stove0/paths/~1v1~1departure-policies~1{policy_id}:rebaseline/post/tags/0">departures</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py">scripts/operation_qualification.py::operation_matrix</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

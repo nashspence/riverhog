@@ -82,6 +82,7 @@ stove0-target-support = { workspace = true }
 time-formats = { workspace = true }
 
 [dependency-groups]
+browser = ["playwright==1.63.0"]
 dev = [
   "boto3-stubs[s3]>=1.43.59,<2.0",
   "httpx2>=2,<3",

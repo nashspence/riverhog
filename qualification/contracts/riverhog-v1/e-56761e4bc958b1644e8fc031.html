@@ -1,0 +1,1101 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>riverhog_application_access.ApplicationAccessGrant · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-202cf5cb7c2bdfac89d3c725.html">riverhog-application-access · Python</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>riverhog_application_access.ApplicationAccessGrant</h1>
+<section id="contract" data-contract="python:riverhog-application-access:riverhog-application-access-applicationaccessgrant:fbd0a6fd2d">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/python/riverhog_application_access.ApplicationAccessGrant</code>
+</h3>
+<table id="v-487340b28451878bb1598c80">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-6653322379ccb7dad50f8b74">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-cd3899efb1846dd6b7063a14">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/kind">class</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-2f97f3665f113e975c108f6b">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-f03042e53b53165d5feb5d61">
+<tbody>
+<tr>
+<th scope="row">
+<code>ApplicationPermission</code>
+</th>
+<td>
+<table id="v-95da86e4fe208f2a812ef756">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-233b95f6a54210956e88f7b6">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-45e88e113755253fbee923a0">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/$defs/ApplicationPermission/enum/0">*</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-227b8f8bd170159ccaddf2fc">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/$defs/ApplicationPermission/enum/1">catalog:read</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-ac77ff27c375ac8dcc78e52e">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/$defs/ApplicationPermission/enum/2">retrieval:manage</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-e3fdb053613b952b8c55bcfe">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/$defs/ApplicationPermission/enum/3">collections:create</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-f9f26e9c0a2a8a2769664acc">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/$defs/ApplicationPermission/enum/4">collection-descriptions:manage</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-e36320777e793feb1286fdc3">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/$defs/ApplicationPermission/enum/5">collection-processing:control</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-0a649e24c1fc90a3fd06396c">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/$defs/ApplicationPermission/enum/6">collection-processing:execute</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-9e81afcd051a67fa9d304a37">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/$defs/ApplicationPermission/enum/7">collection-tags:manage</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>8</code>
+</th>
+<td>
+<span id="v-6b424d5c797676c84fd7b65d">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/$defs/ApplicationPermission/enum/8">collections:delete</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>9</code>
+</th>
+<td>
+<span id="v-c7b24ae5c2bd5bc542695f63">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/$defs/ApplicationPermission/enum/9">archives:read</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>10</code>
+</th>
+<td>
+<span id="v-070760743f406044c6d71604">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/$defs/ApplicationPermission/enum/10">archives:manage</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>11</code>
+</th>
+<td>
+<span id="v-a9dd2afaa26dca07a004557e">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/$defs/ApplicationPermission/enum/11">keys:manage</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>12</code>
+</th>
+<td>
+<span id="v-f0fabe9cf42fc3ee7c85f0a8">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/$defs/ApplicationPermission/enum/12">quotas:manage</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>13</code>
+</th>
+<td>
+<span id="v-934d6fb03b6208d4290e3983">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/$defs/ApplicationPermission/enum/13">events:read</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>14</code>
+</th>
+<td>
+<span id="v-6f78181cb9a7ab0cbbab2001">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/$defs/ApplicationPermission/enum/14">events:read_all</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>15</code>
+</th>
+<td>
+<span id="v-ca29c676d7712bdaafa820d9">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/$defs/ApplicationPermission/enum/15">provenance:read</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>16</code>
+</th>
+<td>
+<span id="v-adcf2358937dcf7fa6ff4bcf">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/$defs/ApplicationPermission/enum/16">provenance:export</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f3bef043e6c07b2d707a4923">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/$defs/ApplicationPermission/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ApplicationResource</code>
+</th>
+<td>
+<table id="v-1bf3d3f588054731cd1e0058">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a5cb46c8231d5fa3a05d96a6">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/$defs/ApplicationResource/pattern">^(?:\*|tag:.+|collection:[1-9][0-9]*)$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c0fcacb434a08051feb1ca59">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/$defs/ApplicationResource/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-e87c9f73b7bac72939f886fd">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>allOf</code>
+</th>
+<td>
+<table id="v-ba16262501e029ae4d2828cc">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-28f68c3e3cf0c5bb8140be5d">
+<tbody>
+<tr>
+<th scope="row">
+<code>oneOf</code>
+</th>
+<td>
+<table id="v-d185532a88aa1d37727d3bf8">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-53a64992c8aeec5c7e133042">
+<tbody>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-1a21098b9583d4f977755366">
+<tbody>
+<tr>
+<th scope="row">
+<code>permission</code>
+</th>
+<td>
+<table id="v-91e42ab37c3ab3d899c71d34">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-eea354ff626ad3e575410e05">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/0/properties/permission/const">*</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>resource</code>
+</th>
+<td>
+<table id="v-a21cbeb5557920a628c28967">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-d90cb99a490cfb9555819084">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/0/properties/resource/const">*</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-f9a03274be974eabb2734248">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-f1d9e5decd4168632b149f97">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/0/required/0">permission</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-b108ef462f2ef08315309dbd">
+<tbody>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-8f8f53f9f6d5fe03d19ce42c">
+<tbody>
+<tr>
+<th scope="row">
+<code>permission</code>
+</th>
+<td>
+<table id="v-b5c2c14e3a43a010f3b1773a">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-2ace80a6265c6ed4ce0fc335">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/1/properties/permission/const">collections:create</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>resource</code>
+</th>
+<td>
+<table id="v-1aa433d478d9edb4c1b445dd">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-687d6f2456234fb8389865ae">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/1/properties/resource/pattern">^(?:\*|tag:.+)$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7a346a81d3020dcdbc0a2e28">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/1/properties/resource/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-c41dfa12d0921eba75541296">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-6b1b00feffc98210b84947c2">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/1/required/0">permission</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-2a64f7dca1e4cc1d5a19c70a">
+<tbody>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-8bb271fcd81abfe8e0e8daa9">
+<tbody>
+<tr>
+<th scope="row">
+<code>permission</code>
+</th>
+<td>
+<table id="v-26226fddd5774dee1780c157">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-42cb6292c51cde18bf4e21e3">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-29ae0e54b81904b28aff7fd3">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/2/properties/permission/enum/0">archives:manage</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-7ff65378cba8063da6caf06f">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/2/properties/permission/enum/1">archives:read</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-fb5f615d4c91ff05c5072bde">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/2/properties/permission/enum/2">catalog:read</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-114e43ea1a2ac3a0b1987aed">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/2/properties/permission/enum/3">collection-descriptions:manage</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-446452bd956086c00f690e6b">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/2/properties/permission/enum/4">collection-tags:manage</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-6bd1046cf06211f17f98bc36">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/2/properties/permission/enum/5">collections:delete</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-8423b7ab432891ad98ce14e8">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/2/properties/permission/enum/6">provenance:export</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-c0a9a5a789c89ce6bb945cc3">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/2/properties/permission/enum/7">provenance:read</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>8</code>
+</th>
+<td>
+<span id="v-4cd4ef231ed084dd4c551d64">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/2/properties/permission/enum/8">retrieval:manage</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>resource</code>
+</th>
+<td>
+<table id="v-48c37fb9d11d2e01f12edd5a">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-d6051e375449a2542cc2492e">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/2/properties/resource/pattern">^(?:\*|tag:.+|collection:[1-9][0-9]*)$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8d3436ae0394edb2da5a7a52">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/2/properties/resource/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-a13b889bca89771bf60d1057">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-f6946e7b08938680fbdcf245">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/2/required/0">permission</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<table id="v-e79aeca70db2fea86c045ef2">
+<tbody>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-fd3ff20fbe5db31f45cbcff9">
+<tbody>
+<tr>
+<th scope="row">
+<code>permission</code>
+</th>
+<td>
+<table id="v-433202c11e187f268fd9cd67">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-7005fc8565fb8b773517f706">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-77e16ee2d197df3ee04f1270">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/3/properties/permission/enum/0">collection-processing:control</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-68fdf25ba0d85a4a47dc7cfb">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/3/properties/permission/enum/1">collection-processing:execute</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-53ca939ad4b19769dcb7fdd3">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/3/properties/permission/enum/2">events:read</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-f510bc8e4dda792e269029f2">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/3/properties/permission/enum/3">events:read_all</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-e9bf1f924d99cad20824b5a3">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/3/properties/permission/enum/4">keys:manage</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-d4acb2a31010a372155ceda4">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/3/properties/permission/enum/5">quotas:manage</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>resource</code>
+</th>
+<td>
+<table id="v-cd48ffb6abbf56cc78821bd0">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-047270afa15587619c5b05e2">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/3/properties/resource/const">*</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-2b7345e0346370b03fc7a797">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-095c5e3f2a424aac8d0a8d6b">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/allOf/0/oneOf/3/required/0">permission</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-c313068cedd0621519a513bf">
+<tbody>
+<tr>
+<th scope="row">
+<code>permission</code>
+</th>
+<td>
+<table id="v-35340f1f8db7805f7d236e65">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-b9aefd19d6cfba5b68bb846b">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/properties/permission/$ref">#/$defs/ApplicationPermission</code>
+<span class="kind">string</span> <a href="e-56761e4bc958b1644e8fc031.html#v-95da86e4fe208f2a812ef756">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>resource</code>
+</th>
+<td>
+<table id="v-d717c2ef66a43908899c4b8f">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-5ac08d94294e3ce5ab54ca9c">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/properties/resource/$ref">#/$defs/ApplicationResource</code>
+<span class="kind">string</span> <a href="e-56761e4bc958b1644e8fc031.html#v-1bf3d3f588054731cd1e0058">Definition</a>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-d590a8a3663ce3b72dcb4242">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/properties/resource/default">*</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-e7a42c1f7e11f658d862f2e0">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-dcdf6d28ef5fc0da0100d648">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/required/0">permission</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2bc5cade12af6135f2580742">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-6e15bb70eb8e951f281300c0">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/contract/signature">&quot;(*, permission: ApplicationPermission, resource: ApplicationResource = &#x27;*&#x27;) -&gt; None&quot;</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-e4911eddeae10321f198b56d">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/distribution">riverhog-application-access</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-24030189366b01e71c94ed78">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/module">riverhog_application_access</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-f25a65db4c4069e78e04378c">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/name">ApplicationAccessGrant</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-e84cd86f89ac57457dc76e5d">
+<code data-value-pointer="/external_contract/python/riverhog_application_access.ApplicationAccessGrant/unit">export</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="packages/riverhog-application-access/src/riverhog_application_access/__init__.py">packages/riverhog-application-access/src/riverhog_application_access/__init__.py</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

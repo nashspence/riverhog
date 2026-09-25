@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: HTTPValidationError · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-9f6785dfbc677f0f451484fd.html">a-riverhog-ftp-spool · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: HTTPValidationError</h1>
+<section id="contract" data-contract="http-schemas:a-riverhog-ftp-spool:schemas-httpvalidationerror:d6a56de7df">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/HTTPValidationError</code>
+</h3>
+<table id="v-cfae4441baae2b1deb9ed35f">
+<tbody>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-a0a7d3ca4f5c7727740fd2e6">
+<tbody>
+<tr>
+<th scope="row">
+<code>detail</code>
+</th>
+<td>
+<table id="v-5383432a3ce905ade9ec36f9">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-ba9df086cff3dba213cd0ae6">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-78d8d888db060a86b1748627">
+<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/HTTPValidationError/properties/detail/items/$ref">#/components/schemas/ValidationError</code>
+<span class="kind">string</span> <a href="e-fe19d7f6a31116b42d382bf8.html#v-0740d6ae9eacd458f050dc3a">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-d35abdc56dbcc85a35dc7861">
+<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/HTTPValidationError/properties/detail/title">Detail</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-67557a8b6a65baf17ace2a80">
+<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/HTTPValidationError/properties/detail/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-e6fc0714f1fa7786541e5c30">
+<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/HTTPValidationError/title">HTTPValidationError</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-24474be541ec45a819cd7d71">
+<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/HTTPValidationError/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<p>These records index source constraints; they do not add limits or progression promises.</p>
+<ul>
+<li>
+<code>http:a-riverhog-ftp-spool:components:/schemas/HTTPValidationError/properties/detail:cardinality</code>
+<table id="v-8292c29e5da87e0684bf8257">
+<tbody>
+<tr>
+<th scope="row">
+<code>capacity_authority</code>
+</th>
+<td>
+<table id="v-d92fd4ecde766a6e86abbaf3">
+<tbody>
+<tr>
+<th scope="row">
+<code>declared_maximum</code>
+</th>
+<td>
+<span id="v-ec723376b639672e1d7492b4">
+<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/capacity_authority/declared_maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>hidden_maximum</code>
+</th>
+<td>
+<span id="v-1ca5849189ea77f1f03434ec">
+<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/capacity_authority/hidden_maximum">forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-9bc41fa69fae2e66754999eb">
+<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/capacity_authority/owner">a-riverhog-ftp-spool</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-844041fbdd2dd21d058ad552">
+<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/dimension">cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-5220c146c2f2ff5ced22fa22">
+<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/id">http:a-riverhog-ftp-spool:components:/schemas/HTTPValidationError/properties/detail:cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-5b6ba66e51f1c72ec34d7b18">
+<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-b9add9e4e43dd5b04370e98d">
+<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/owner">a-riverhog-ftp-spool</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-c351d7cd08af03f321b642c6">
+<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/policy">operational_policy</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-4d1a6536a7e0b45171fe60bf">
+<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/reason">no-declared-semantic-maximum</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-8ea7575ade8097a7248068d0">
+<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/rule">no-semantic-maximum/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-c92a3921aeeec32aa70d8e2c">
+<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/source_pointer">/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/HTTPValidationError/properties/detail</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-164bfb3e9398211b0ad5a9fd">
+<code data-value-pointer="/audit/decisions/http:a-riverhog-ftp-spool:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/unit">items</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

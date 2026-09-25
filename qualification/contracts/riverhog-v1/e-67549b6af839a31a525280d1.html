@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>riverhog_provenance_contracts.ProvenanceJournalStateReference · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-b80e39fba8b99cdeef1b5e39.html">riverhog-provenance-contracts · Python</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>riverhog_provenance_contracts.ProvenanceJournalStateReference</h1>
+<section id="contract" data-contract="python:riverhog-provenance-contracts:riverhog-provenance-contracts-provenancej-0e2a1b02ae:f871a851d3">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/python/riverhog_provenance_contracts.ProvenanceJournalStateReference</code>
+</h3>
+<table id="v-4b0964df261731e179d26e10">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-bf572ea86b8776c4e588f54b">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-d080ef4cecec43971423e19c">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.ProvenanceJournalStateReference/contract/kind">class</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-17b24caaf520134515f3b510">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-fc9b7f32b394e848f6eb9746">
+<tbody>
+<tr>
+<th scope="row">
+<code>ProvenanceJournalId</code>
+</th>
+<td>
+<table id="v-647d53bd23deeb95b2880351">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-db6dd0951931f508dee14228">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.ProvenanceJournalStateReference/contract/schema/$defs/ProvenanceJournalId/pattern">^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5bf5818779a40f3a69e07bc5">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.ProvenanceJournalStateReference/contract/schema/$defs/ProvenanceJournalId/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ProvenanceStateId</code>
+</th>
+<td>
+<table id="v-b300ca59b77781dde65947a0">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-db01f5d7a2a79a69084339c2">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.ProvenanceJournalStateReference/contract/schema/$defs/ProvenanceStateId/pattern">^urn:uuid:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6df5827f619e2ace31aa4cc1">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.ProvenanceJournalStateReference/contract/schema/$defs/ProvenanceStateId/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-d3ff5b398a56edef95415da2">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.ProvenanceJournalStateReference/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-a9a8fdb12192816b41686981">
+<tbody>
+<tr>
+<th scope="row">
+<code>current_state_id</code>
+</th>
+<td>
+<table id="v-bbe83a98ba921d473351401f">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-98538d93c1cb676c58ee24de">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.ProvenanceJournalStateReference/contract/schema/properties/current_state_id/$ref">#/$defs/ProvenanceStateId</code>
+<span class="kind">string</span> <a href="e-67549b6af839a31a525280d1.html#v-b300ca59b77781dde65947a0">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>journal_id</code>
+</th>
+<td>
+<table id="v-22d8155f9c22857c044d484d">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-3d5e7018d612981e8e51d79c">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.ProvenanceJournalStateReference/contract/schema/properties/journal_id/$ref">#/$defs/ProvenanceJournalId</code>
+<span class="kind">string</span> <a href="e-67549b6af839a31a525280d1.html#v-647d53bd23deeb95b2880351">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-4a5d49abaea480a964651afa">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-f491c89f228b9c31b7e8804e">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.ProvenanceJournalStateReference/contract/schema/required/0">journal_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-03eb32d79ee77fb70485043e">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.ProvenanceJournalStateReference/contract/schema/required/1">current_state_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-65e243e3dc0f28ba8220df99">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.ProvenanceJournalStateReference/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-be36c935c8d6e8015aa74aab">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.ProvenanceJournalStateReference/contract/signature">&#x27;(*, journal_id: ProvenanceJournalId, current_state_id: ProvenanceStateId) -&gt; None&#x27;</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-0f5d21e7dcf73b9494f892d4">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.ProvenanceJournalStateReference/distribution">riverhog-provenance-contracts</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-78eb5c924498ec0ed21dac72">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.ProvenanceJournalStateReference/module">riverhog_provenance_contracts</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-ea793469699b34fbddf596ed">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.ProvenanceJournalStateReference/name">ProvenanceJournalStateReference</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-5bb7c3be3360ef0aa30f8d76">
+<code data-value-pointer="/external_contract/python/riverhog_provenance_contracts.ProvenanceJournalStateReference/unit">export</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/__init__.py">packages/riverhog-provenance-contracts/src/riverhog_provenance_contracts/__init__.py</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

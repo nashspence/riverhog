@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: FtpLifecycleEvent · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-9f6785dfbc677f0f451484fd.html">a-riverhog-ftp-spool · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: FtpLifecycleEvent</h1>
+<section id="contract" data-contract="http-schemas:a-riverhog-ftp-spool:schemas-ftplifecycleevent:821e6c3163">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/FtpLifecycleEvent</code>
+</h3>
+<table id="v-23cf774263fe9b3bd381530a">
+<tbody>
+<tr>
+<th scope="row">
+<code>discriminator</code>
+</th>
+<td>
+<table id="v-ef3b056414b90bcbce723250">
+<tbody>
+<tr>
+<th scope="row">
+<code>mapping</code>
+</th>
+<td>
+<table id="v-243d95f765967bbf67caecf8">
+<tbody>
+<tr>
+<th scope="row">
+<code>io.riverhog.ftp_spool.claim.attempt_failed</code>
+</th>
+<td>
+<span id="v-3ff05b31e81c4c92c855dce3">
+<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/FtpLifecycleEvent/discriminator/mapping/io.riverhog.ftp_spool.claim.attempt_failed">#/components/schemas/AttemptFailedEvent</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>io.riverhog.ftp_spool.claim.custody_ready</code>
+</th>
+<td>
+<span id="v-0793ef3b6d7e53267dfa5251">
+<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/FtpLifecycleEvent/discriminator/mapping/io.riverhog.ftp_spool.claim.custody_ready">#/components/schemas/CustodyReadyEvent</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>io.riverhog.ftp_spool.claim.published</code>
+</th>
+<td>
+<span id="v-a0292b1f465bb6a1c7b4bee2">
+<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/FtpLifecycleEvent/discriminator/mapping/io.riverhog.ftp_spool.claim.published">#/components/schemas/ClaimPublishedEvent</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>io.riverhog.ftp_spool.claim.registered</code>
+</th>
+<td>
+<span id="v-4e694429fac7e3371f45d91b">
+<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/FtpLifecycleEvent/discriminator/mapping/io.riverhog.ftp_spool.claim.registered">#/components/schemas/ClaimRegisteredEvent</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>propertyName</code>
+</th>
+<td>
+<span id="v-ca1b61260e47437cdff4abc6">
+<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/FtpLifecycleEvent/discriminator/propertyName">type</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>oneOf</code>
+</th>
+<td>
+<table id="v-3b364c869a88ef3a7b147f70">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-e8616386c2f30f5d7f1a415f">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-73f6a4c69dcf095a3bc72888">
+<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/FtpLifecycleEvent/oneOf/0/$ref">#/components/schemas/ClaimRegisteredEvent</code>
+<span class="kind">string</span> <a href="e-e9f1f0ae3871914006ea6db7.html#v-2976c793d2216507b0998a36">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-e49963992d5e4d60ce3c6e33">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-967ff9c3db92660a9c4fbcc4">
+<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/FtpLifecycleEvent/oneOf/1/$ref">#/components/schemas/CustodyReadyEvent</code>
+<span class="kind">string</span> <a href="e-7672b0239535d1c3839b9478.html#v-b27f7d7e2069001a3a98c310">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-e67d5ae075a9f9a00f8fc412">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-29b3bdf51674970d32770c77">
+<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/FtpLifecycleEvent/oneOf/2/$ref">#/components/schemas/AttemptFailedEvent</code>
+<span class="kind">string</span> <a href="e-87b2c74ee72b694fa1e3ecef.html#v-e88e6b8c619bc8eaebb2c52d">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<table id="v-9edcf49c4157e855717070cb">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-403e4836c9037b96070ed2a6">
+<code data-value-pointer="/external_contract/http_openapi/a-riverhog-ftp-spool/components/schemas/FtpLifecycleEvent/oneOf/3/$ref">#/components/schemas/ClaimPublishedEvent</code>
+<span class="kind">string</span> <a href="e-5476cf39a6abfbf71c6af4a7.html#v-d666367f0c47901a7a7ce527">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

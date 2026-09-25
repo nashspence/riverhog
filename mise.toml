@@ -6,6 +6,9 @@ python = "3.12.3"
 rclone = "1.75.0"
 uv = "0.11.24"
 
+[bootstrap.packages]
+"apt:libasound2t64" = "latest"
+
 [settings]
 http_retries = 5
 lockfile = true

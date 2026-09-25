@@ -1,0 +1,1992 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>riverhog_protocol.ProcessingClaimSettleDocument · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-99b3d079e6c87a1dff566c19.html">riverhog-protocol · Python</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>riverhog_protocol.ProcessingClaimSettleDocument</h1>
+<section id="contract" data-contract="python:riverhog-protocol:riverhog-protocol-processingclaimsettledocument:fa97ca06cb">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument</code>
+</h3>
+<table id="v-730bdee45f21332e2ec5ca13">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-2b6a341d87e5dc343a0d562b">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-8a2f15880b14af83178b9791">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/kind">class</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-3b78000f999574960cf591f2">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-b64b2b373222357eec4af58d">
+<tbody>
+<tr>
+<th scope="row">
+<code>ArtifactDispositionSetIdentityDocument</code>
+</th>
+<td>
+<table id="v-bcbe294d6893ceec7de8164b">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-f99a4692f882665b122f0e99">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-aa7e04f16f88777826a12e0e">
+<tbody>
+<tr>
+<th scope="row">
+<code>disposition_count</code>
+</th>
+<td>
+<table id="v-6ebf0c72988a51a7759e7483">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-a1cc43417ac91f7ef0cdb2b8">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/disposition_count/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-057d1ac7e7c5b453bc77fef0.html#v-6685cd38c37806e05b4249f7">Definition</a>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-e19b3845f63a8af2421734d1">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/disposition_count/ge">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>output_artifact_count</code>
+</th>
+<td>
+<table id="v-729ed387ef71160778145e1d">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-bcbda03c37aca3fef1b7e130">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/output_artifact_count/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-057d1ac7e7c5b453bc77fef0.html#v-6685cd38c37806e05b4249f7">Definition</a>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-1099b935cc045c2ed3d82a2c">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/output_artifact_count/ge">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>output_edge_count</code>
+</th>
+<td>
+<table id="v-c9ad170317c64b4e6d361bf8">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-1414406bf5d58f11579b58ac">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/output_edge_count/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-057d1ac7e7c5b453bc77fef0.html#v-6685cd38c37806e05b4249f7">Definition</a>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-1a4f27b3f988f4bf29fb3aea">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/output_edge_count/ge">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>sha256</code>
+</th>
+<td>
+<table id="v-330f18cf95e81a790780b2cc">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-6136a22cf0ce07b558912240">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d08ece3079b7bc9e2c25e679">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/properties/sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-e47a5f4018aeb707718b95a6">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-dcc4fcc9550bb6b627e86ce7">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/required/0">disposition_count</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-c7ec4c3e7258a0cf8fa291de">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/required/1">output_edge_count</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-2a43a41331d400b16d28519f">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/required/2">output_artifact_count</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-f08c958f48243fc01c0637a2">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/required/3">sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6b761da8f8585f2202427085">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ArtifactDispositionSetIdentityDocument/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ClaimFenceDocument</code>
+</th>
+<td>
+<table id="v-adf64e03c7f2193d3f924222">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-dbc0f03a9243ebc74e163925">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ClaimFenceDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-d6d2f7c9703c071c4fecbce6">
+<tbody>
+<tr>
+<th scope="row">
+<code>fence</code>
+</th>
+<td>
+<table id="v-504601e9c3b3cb26264385c0">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-fab16859c6396c74d037c2e6">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ClaimFenceDocument/properties/fence/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-057d1ac7e7c5b453bc77fef0.html#v-6685cd38c37806e05b4249f7">Definition</a>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-1c27e336b37d0b1751e84ef6">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ClaimFenceDocument/properties/fence/ge">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-f57273e0120d3deaaa5d1799">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-fbcb012b0a0f1b6b258e7951">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ClaimFenceDocument/properties/id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-84a2c2dd004b5129e6bc8efd">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ClaimFenceDocument/properties/id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-dbc13f21352719b103cc010c">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-6703aff842d943cf49a3b191">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ClaimFenceDocument/required/0">id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-c5a7cfb65a06f1a1f3c2df3a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ClaimFenceDocument/required/1">fence</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8cf805c957e837c9b235be0a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ClaimFenceDocument/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>CollectionDerivationDocument</code>
+</th>
+<td>
+<table id="v-2bd8d628939d64a50560b125">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-d31d199a165a16a4b0f6b9b0">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-ec9fbc796c2faa82a4f2c5f3">
+<tbody>
+<tr>
+<th scope="row">
+<code>artifact_set_sha256</code>
+</th>
+<td>
+<table id="v-46c59448a73e11ade61b695b">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-4c52567fbd13a465b804afe8">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/artifact_set_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a07c64f8d94f0caeda78e349">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/artifact_set_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>claim</code>
+</th>
+<td>
+<table id="v-1f59ed16bc7e787dcca861d2">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-38162f430888c30a8bc6d793">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/claim/$ref">#/$defs/ClaimFenceDocument</code>
+<span class="kind">string</span> <a href="e-057d1ac7e7c5b453bc77fef0.html#v-adf64e03c7f2193d3f924222">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>controller_evidence</code>
+</th>
+<td>
+<table id="v-67d62ddd8037e9ebe692963e">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-a873109b061ebc39cfb38834">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/controller_evidence/additionalProperties">true</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a80d157f42f8f128eccf0d6b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/controller_evidence/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-encoded-bytes-max</code>
+</th>
+<td>
+<span id="v-6ca38c06a39adf505db3ed2a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/controller_evidence/x-riverhog-encoded-bytes-max">16777216</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-extent</code>
+</th>
+<td>
+<table id="v-80918483a6516ec071c92bcb">
+<tbody>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-13c7a9ae5057564d26248e62">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/controller_evidence/x-riverhog-extent/policy">contract_max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-63be38c99d14862e64a0e626">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/controller_evidence/x-riverhog-extent/reason">bounded-controller-evidence-envelope</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>controller_evidence_sha256</code>
+</th>
+<td>
+<table id="v-04e53674389757871a64acf0">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-b7e59f9d32521d8f8a6e2118">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/controller_evidence_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-efda1196b26a35fabfbbd7d3">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/controller_evidence_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition_set</code>
+</th>
+<td>
+<table id="v-34f68255960540b11059edaf">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-e022849ae9b6645670e748cc">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/disposition_set/$ref">#/$defs/ArtifactDispositionSetIdentityDocument</code>
+<span class="kind">string</span> <a href="e-057d1ac7e7c5b453bc77fef0.html#v-bcbe294d6893ceec7de8164b">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>execution_envelope_sha256</code>
+</th>
+<td>
+<table id="v-54a4d89179ef16d625eefe97">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-07c5e93ad292e7fa9ce4abf8">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/execution_envelope_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6b9d93ca3fa8b3cb3c9d2223">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/execution_envelope_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>execution_id</code>
+</th>
+<td>
+<table id="v-aa12042477aeeada0c9a99be">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-d6fb8bf4419de1d565677c33">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/execution_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-713c4189f4077c13a792e860">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/execution_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>execution_sha256</code>
+</th>
+<td>
+<table id="v-f4d91f287ce8e7cacdae0034">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-28d87debacac91c58dd38b37">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/execution_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c3e5b1c73477e3dab02d5b48">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/execution_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<table id="v-e09d612a64421b986dd12ca7">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-38508cd527b3c37ec5a0613c">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/format/const">riverhog-collection-derivation/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fd92d50374d8722866506213">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/format/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>input_set_sha256</code>
+</th>
+<td>
+<table id="v-7d7236241f50c3537f50ce73">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-abe1503550320035e03e3c93">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/input_set_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-880e62876616a6ece0cdcc23">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/input_set_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>operation</code>
+</th>
+<td>
+<table id="v-527987acc0ac93213c89795e">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-89b01c608e1919eef6dd37d4">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/operation/$ref">#/$defs/OperationIdentityDocument</code>
+<span class="kind">string</span> <a href="e-057d1ac7e7c5b453bc77fef0.html#v-769008a64e91e80cbea06704">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>recipe</code>
+</th>
+<td>
+<table id="v-aba4688a1824efe35603c49b">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c8dee3ad3a496cab1fda741a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/properties/recipe/$ref">#/$defs/RecipeIdentityDocument</code>
+<span class="kind">string</span> <a href="e-057d1ac7e7c5b453bc77fef0.html#v-7b57800bfcd15e6f8dfc4042">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-87ee6836b0e77f44981a386e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-f04ebffc438762717a48401e">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/required/0">format</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-5de0c37c6919f2726b2e8bb0">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/required/1">execution_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-17b2177eb4b4c2419c1aa5e9">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/required/2">claim</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-e8dafb2af88a82122c74eac4">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/required/3">recipe</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-ef8594d90c65ff694e9d4d2e">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/required/4">operation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-c8604ea0da97fadd744c9323">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/required/5">input_set_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-6f48f8f87826b50a90328fc5">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/required/6">artifact_set_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-a1d3dbe7f9a7f4409524f0b1">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/required/7">execution_envelope_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>8</code>
+</th>
+<td>
+<span id="v-3f50d9fbe76282cc9f514944">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/required/8">execution_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>9</code>
+</th>
+<td>
+<span id="v-78f99b03d3a295c2ba07639a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/required/9">controller_evidence</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>10</code>
+</th>
+<td>
+<span id="v-30ca19ce7f8b14571e8950b4">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/required/10">controller_evidence_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>11</code>
+</th>
+<td>
+<span id="v-fa117c9aa0707d6635353763">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/required/11">disposition_set</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ea81121cc80214ccc3d1f42c">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionDerivationDocument/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>CollectionId</code>
+</th>
+<td>
+<table id="v-e37ce6215f5973db1fec2eee">
+<tbody>
+<tr>
+<th scope="row">
+<code>allOf</code>
+</th>
+<td>
+<table id="v-7654edb0556d7fc41ef0f387">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-0ffda7b8b2f36b5123b4da85">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-69bbe673b014d713f44a38e8">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionId/allOf/0/pattern">^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8030125270a16542a2343c5e">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionId/allOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-09f433d518083760fec8af53">
+<tbody>
+<tr>
+<th scope="row">
+<code>not</code>
+</th>
+<td>
+<table id="v-60a2752f3d84095093c91a53">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-013a1c9a60d8588738e48856">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/CollectionId/allOf/1/not/const">0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>NonnegativeDecimal</code>
+</th>
+<td>
+<table id="v-6685cd38c37806e05b4249f7">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-3bc385e8b20e67ec33a98b77">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/NonnegativeDecimal/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9bfdbae07b3062dccfd38f9e">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/NonnegativeDecimal/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>OperationIdentityDocument</code>
+</th>
+<td>
+<table id="v-769008a64e91e80cbea06704">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-830f7b22772923ca5c2726a4">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/OperationIdentityDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-3b7e96446a9c1164e239f453">
+<tbody>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-3d6b19a771dc505f9163e712">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-7540065f489b32ab0311e582">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/OperationIdentityDocument/properties/id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-66a1340d36a2b2273125e95b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/OperationIdentityDocument/properties/id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>sha256</code>
+</th>
+<td>
+<table id="v-3e461d4d0591004d2c8fe72c">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-cfedab042fa135115e268a4e">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/OperationIdentityDocument/properties/sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0acc874f6940158fbe52fd4c">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/OperationIdentityDocument/properties/sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-a35cfc2308dc55cc44678435">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-aec59ed0cf4eaaff926802a3">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/OperationIdentityDocument/required/0">id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-31ce05c01f8f2d8c6fc97913">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/OperationIdentityDocument/required/1">sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-06eed4e563a7a5fe0486d4fa">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/OperationIdentityDocument/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ProcessingOutcomeBindingDocument</code>
+</th>
+<td>
+<table id="v-c7e96fccf8925a9c07fdda55">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-b43dc586db3f78d0eb3a9c96">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ProcessingOutcomeBindingDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-db54b4152ce57fd8a84432c5">
+<tbody>
+<tr>
+<th scope="row">
+<code>claim_id</code>
+</th>
+<td>
+<table id="v-aee45cd2fae587801bc0bc68">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-496c06933889e731007c15c1">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ProcessingOutcomeBindingDocument/properties/claim_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-13de495d98d74be4872bd78c">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ProcessingOutcomeBindingDocument/properties/claim_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>fence</code>
+</th>
+<td>
+<table id="v-e5b7c1ecfea66abff10394f1">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-06d18ed2c6e570ca2553732d">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ProcessingOutcomeBindingDocument/properties/fence/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-057d1ac7e7c5b453bc77fef0.html#v-6685cd38c37806e05b4249f7">Definition</a>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-d4ead675f3aeeff80d3cb465">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ProcessingOutcomeBindingDocument/properties/fence/ge">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>outcome_id</code>
+</th>
+<td>
+<table id="v-f13c90ff3a52eb92deffd0a3">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-0c3df573741649a247e6edcb">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ProcessingOutcomeBindingDocument/properties/outcome_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f2c3b0b3830386c85913546d">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ProcessingOutcomeBindingDocument/properties/outcome_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-62c9e1e6a1f931cdc0fb27d5">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-096da3db4d7133b5c159bb2b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ProcessingOutcomeBindingDocument/required/0">claim_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-c10ef910f902bca36f753b11">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ProcessingOutcomeBindingDocument/required/1">fence</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-1c309af27dd4c4c2d26a5e72">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ProcessingOutcomeBindingDocument/required/2">outcome_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-20e5693d6a39e247042eaf8b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/ProcessingOutcomeBindingDocument/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>RecipeIdentityDocument</code>
+</th>
+<td>
+<table id="v-7b57800bfcd15e6f8dfc4042">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-2e8ca6b20125aaa8ba25748a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/RecipeIdentityDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-c03e1a14255bb2cb99f0b2b1">
+<tbody>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-7a850eb03a2be6eb3ddc4ff1">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-9ccc786a8a7aba01f55e97c8">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/RecipeIdentityDocument/properties/id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9c09c367ce718d3d84369ab1">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/RecipeIdentityDocument/properties/id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>revision</code>
+</th>
+<td>
+<table id="v-74b5c5fe679dd729df5712c2">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-62d3a60c5ebce2ab8c264816">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/RecipeIdentityDocument/properties/revision/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-057d1ac7e7c5b453bc77fef0.html#v-6685cd38c37806e05b4249f7">Definition</a>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-5771e511fd23d16a10140bf1">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/RecipeIdentityDocument/properties/revision/ge">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>sha256</code>
+</th>
+<td>
+<table id="v-ccde48c2394673c289ff9f44">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-81e8247b798a80e45fefb11a">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/RecipeIdentityDocument/properties/sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3d3035f8908d0fab5ef318d7">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/RecipeIdentityDocument/properties/sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-4a8a0781066d164bfcf8e0dd">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-2b3b92e3b4714307107f5691">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/RecipeIdentityDocument/required/0">id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-d85cc523d3683a7c5df71778">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/RecipeIdentityDocument/required/1">revision</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-311d7c90fc1f0499a4486139">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/RecipeIdentityDocument/required/2">sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a069a3d0f62f66ce9108a0be">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/$defs/RecipeIdentityDocument/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-8ab96069ad5ed18678058e2c">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-1bed8d18aa981b1ea086a734">
+<tbody>
+<tr>
+<th scope="row">
+<code>derivation</code>
+</th>
+<td>
+<table id="v-dd4b96785f46e9426a4a1450">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-fb021152505401b07867d277">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/properties/derivation/$ref">#/$defs/CollectionDerivationDocument</code>
+<span class="kind">string</span> <a href="e-057d1ac7e7c5b453bc77fef0.html#v-2bd8d628939d64a50560b125">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>fence</code>
+</th>
+<td>
+<table id="v-011a82f45629ca93592bbb8d">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-5991d18942feb393c2394f8d">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/properties/fence/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-057d1ac7e7c5b453bc77fef0.html#v-6685cd38c37806e05b4249f7">Definition</a>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-dc09fe4c9fd3ebe7c3b62307">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/properties/fence/ge">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>outcome</code>
+</th>
+<td>
+<table id="v-84a0f0c6d49e4d4ffd7cab49">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-ae11c3bc0e3fb096c55088b4">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-349a4b377243f11016ec4195">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-de12e49aa90f85338d52518e">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/properties/outcome/anyOf/0/$ref">#/$defs/ProcessingOutcomeBindingDocument</code>
+<span class="kind">string</span> <a href="e-057d1ac7e7c5b453bc77fef0.html#v-c7e96fccf8925a9c07fdda55">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-261c45b5ff640ea11f704d12">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2a3e36c425d57709399769a4">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/properties/outcome/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-04f8fb39c77978970c58e9f2">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/properties/outcome/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>output_collection_id</code>
+</th>
+<td>
+<table id="v-67ff0b4dc2ed5f7218c3a240">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-a07e946f5bcb3bc678474333">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/properties/output_collection_id/$ref">#/$defs/CollectionId</code>
+<span class="kind">string</span> <a href="e-057d1ac7e7c5b453bc77fef0.html#v-e37ce6215f5973db1fec2eee">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-5423aafed70520ba4e5b1728">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-5f20cf7fb14ceecb7a328992">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/required/0">fence</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-d15a349b0d6980a8db42499e">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/required/1">output_collection_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-528c0489e5c4f1dd69b086d0">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/required/2">derivation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-01be60b2780c464584b5764f">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-15b08e67cd3d3b3645a9f64f">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/contract/signature">&#x27;(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], output_collection_id: CollectionId, derivation: riverhog_protocol.collection_workflow_transport.CollectionDerivationDocument, outcome: riverhog_protocol.collection_workflow_transport.ProcessingOutcomeBindingDocument | None = None) -&gt; None&#x27;</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-983c6203e048d6bed79e1c91">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/distribution">riverhog-protocol</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-620de56e1d9f427d99eb7426">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/module">riverhog_protocol</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-5c92771092c37a1310d1d866">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/name">ProcessingClaimSettleDocument</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-bc6159f138fa2d0e8e2a3f3c">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimSettleDocument/unit">export</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="packages/riverhog-protocol/src/riverhog_protocol/__init__.py">packages/riverhog-protocol/src/riverhog_protocol/__init__.py</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

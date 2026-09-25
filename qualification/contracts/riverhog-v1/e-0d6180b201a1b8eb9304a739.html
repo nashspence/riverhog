@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>generated:riverhog-storage-adapter: ObjectReadRequest · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-4cb6451250139576fc538025.html">riverhog-storage-adapter-support · Process Protocol Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>generated:riverhog-storage-adapter: ObjectReadRequest</h1>
+<section id="contract" data-contract="process-protocol-schemas:riverhog-storage-adapter-support:generated-riverhog-storage-adapter-objectreadrequest:713962a39d">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest</code>
+</h3>
+<table id="v-081aefc53c9602e597f47e97">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-41bade4edb4ed0886eacbc57">
+<tbody>
+<tr>
+<th scope="row">
+<code>NonnegativeDecimal</code>
+</th>
+<td>
+<table id="v-7e0a34ce1fc18ee0c6274e21">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-302da974e85c0bd6f4f4f406">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/$defs/NonnegativeDecimal/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9673f50c44ccf54b4c252a39">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/$defs/NonnegativeDecimal/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ObjectLocator</code>
+</th>
+<td>
+<table id="v-a35c176f55afb18776288276">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-764452a881a97351acd0efc3">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/$defs/ObjectLocator/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-40d229a03fdc28a91b45754e">
+<tbody>
+<tr>
+<th scope="row">
+<code>object_path</code>
+</th>
+<td>
+<table id="v-4dfbf936c2856fa06d199b17">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-ad95f8ed35e5a74c08b3bc3c">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/$defs/ObjectLocator/properties/object_path/maxLength">4096</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-9ef476e0cba413e823db58e6">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/$defs/ObjectLocator/properties/object_path/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-0e78a2f20419854dc2d61a20">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/$defs/ObjectLocator/properties/object_path/title">Object Path</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0b2b3555f3e95bd1317cf642">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/$defs/ObjectLocator/properties/object_path/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>revision</code>
+</th>
+<td>
+<table id="v-ca9b9d8e31167e36a9f23be0">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-54c7fd822b7eae82dd433d93">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-deb100255f322154c3464f31">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-6256afe1df5a5da0d74015d4">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/$defs/ObjectLocator/properties/revision/anyOf/0/maxLength">2000</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-e3277a141dc34b3d57d6d2e6">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/$defs/ObjectLocator/properties/revision/anyOf/0/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9b4e7494422c62b3adcb2393">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/$defs/ObjectLocator/properties/revision/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-282354f006ea1cdf7cd4022b">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b92d26e927a12ad78904d90f">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/$defs/ObjectLocator/properties/revision/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-86b219553278f833a0b12cb5">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/$defs/ObjectLocator/properties/revision/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-6937e5135725e71acdbeb293">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/$defs/ObjectLocator/properties/revision/title">Revision</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-94b8b90e99405b125446bf87">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-560e6e9ac679fc89647897f4">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/$defs/ObjectLocator/required/0">object_path</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-578d80a9271f354943a61627">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/$defs/ObjectLocator/title">ObjectLocator</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-40ee57316284c092ce4f9632">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/$defs/ObjectLocator/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-9c7759bc68a9ffef89582448">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-6f689453e7c1028ecca26415">
+<tbody>
+<tr>
+<th scope="row">
+<code>expected_bytes</code>
+</th>
+<td>
+<table id="v-debcf1b15e62856337d0d7b9">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-0b5dc56398b1a4fde22e7d5b">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/properties/expected_bytes/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-0d6180b201a1b8eb9304a739.html#v-7e0a34ce1fc18ee0c6274e21">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>object</code>
+</th>
+<td>
+<table id="v-6d80e36046d009ce7eb25fe2">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-27f6bd208a89af5172914571">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/properties/object/$ref">#/$defs/ObjectLocator</code>
+<span class="kind">string</span> <a href="e-0d6180b201a1b8eb9304a739.html#v-a35c176f55afb18776288276">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>offset</code>
+</th>
+<td>
+<table id="v-57ba00ac3d59d039d563a013">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-f5ccec1bb1ebf9211c2e9bf6">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-93f5bf5e3253ceef02f0c84b">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-45879a13ae8f367ce36100d3">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/properties/offset/anyOf/0/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-0d6180b201a1b8eb9304a739.html#v-7e0a34ce1fc18ee0c6274e21">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-df3675d81c8d3104fb4f7bb7">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9c0849d1bcde084946972208">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/properties/offset/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-410ae8a8576b79ddfd20e9e5">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/properties/offset/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>size</code>
+</th>
+<td>
+<table id="v-56c4609936691ed789f5fc3a">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-3fd53eb78f4999c406f5e97e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-e387721f091d5c3a7969690c">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-3b3a5580aed1f16ade17bad7">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/properties/size/anyOf/0/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-0d6180b201a1b8eb9304a739.html#v-7e0a34ce1fc18ee0c6274e21">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-b3e7fb80a1602bd923549112">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bb63c532e535fe75288465a8">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/properties/size/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-5910dd52aeef9325bb29ef99">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/properties/size/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-a2c4ba497208c7f1013563b3">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-0b245d1e08c9a706dcfb51a6">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/required/0">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-baf728212db723ebc31d9287">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/required/1">expected_bytes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-2ef1a56d86dc908a41aab18d">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/title">ObjectReadRequest</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9ff82f8017e865e1f3b1f424">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/ObjectReadRequest/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py">packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

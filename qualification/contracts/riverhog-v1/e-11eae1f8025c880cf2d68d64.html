@@ -1,0 +1,1035 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>stove0_operator_contracts.WorkCreatedEvent · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-4014113053127b8b1eb889a0.html">stove0-operator-contracts · Python</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>stove0_operator_contracts.WorkCreatedEvent</h1>
+<section id="contract" data-contract="python:stove0-operator-contracts:stove0-operator-contracts-workcreatedevent:bb663f2571">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/python/stove0_operator_contracts.WorkCreatedEvent</code>
+</h3>
+<table id="v-3b09e77382d04bfb3e8fb3cc">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-4468de22d440a4f7e7c24051">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-f6c2162c8cdb8c74c255f394">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/kind">class</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-8371a97cbe5803a0cb16eae3">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-82888337faa71894101df432">
+<tbody>
+<tr>
+<th scope="row">
+<code>WorkCreatedEventData</code>
+</th>
+<td>
+<table id="v-6085de5cba7a4eca852786e3">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-037b2a079add899be6c0089c">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-a6012c9064c186f9e07b53fc">
+<tbody>
+<tr>
+<th scope="row">
+<code>branch_set_sha256</code>
+</th>
+<td>
+<table id="v-cdec4e381b89f38464e7abdb">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-fc22b71eddc2cb36ffe2836e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-26a1b99dc1654cb3f33d8e6b">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-43fafd18cf467deea984ece7">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/branch_set_sha256/anyOf/0/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b03e645b2b9003c5de760588">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/branch_set_sha256/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-003949883ba18747498fbaa4">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-cb4ab430dc44e0566389495a">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/branch_set_sha256/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-69a9d7f812af66917a046ef4">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/branch_set_sha256/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>join_plan_sha256</code>
+</th>
+<td>
+<table id="v-6c55526b86aaf55dc90f6b84">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-712400822a1a75ef7f3be78b">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-626db418dfbc89fc40f93f4b">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-ab10730c39564559bb295ed6">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/join_plan_sha256/anyOf/0/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e5e3b5121aa7fe9964b6adf1">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/join_plan_sha256/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-e1955f89eccfc4e658570e87">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-47a8664b1151d14812779276">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/join_plan_sha256/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-037b6a86d4a3add0797d7454">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/join_plan_sha256/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>parent_work_id</code>
+</th>
+<td>
+<table id="v-eba0cb267a95eeae7cfee65c">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-c0f8abafafb13a0f98c6c518">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-a9235fbda984cab509819e64">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-6bbb5ab6256d9effeb2a2bf5">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/parent_work_id/anyOf/0/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-efd459ae4b8aa91da0520cd8">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/parent_work_id/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-a1a27e3cdf5b759f5f67b951">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-56102169dcf94c5e9ced20f4">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/parent_work_id/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-6b636e1b150991a15ea7eba6">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/parent_work_id/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>phase</code>
+</th>
+<td>
+<table id="v-5ad7514f0bfebf027b159856">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-eb061f9cb2de289ead38372b">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-0c675e465956c35d6b78b449">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/0">eligible</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-c627b76394e634d6e772b6b8">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/1">claimed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-85cc85f6397e0f75c4afd882">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/2">observing</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-544dc56887831671bb50bdc8">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/3">planning</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-e6a2027066d7298cb50dfc11">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/4">target_preflight</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-d0796f92d493e244b418b458">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/5">queued</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-bcb590650787b58e131de07b">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/6">executing</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-f01010a25ced12a5bb46d82e">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/7">output_finalizing</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>8</code>
+</th>
+<td>
+<span id="v-fc573f14955225f4bc18bf96">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/8">verifying</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>9</code>
+</th>
+<td>
+<span id="v-0f4f093c8563e23b25f3dcc2">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/9">settled</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>10</code>
+</th>
+<td>
+<span id="v-4b9ba63391656562aaccfde6">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/10">source_collection_retirement_pending</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>11</code>
+</th>
+<td>
+<span id="v-598189ee2feba3ff434f1fde">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/11">coordinating</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>12</code>
+</th>
+<td>
+<span id="v-57ae59f445e9c46770dab71d">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/12">abandon_pending</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>13</code>
+</th>
+<td>
+<span id="v-7a52d8b258a489849b4cfe55">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/13">complete</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>14</code>
+</th>
+<td>
+<span id="v-b1e8f9bb3ef4fb39f95d2389">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/14">inapplicable</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>15</code>
+</th>
+<td>
+<span id="v-54170cb0a39090518043fa42">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/15">failed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>16</code>
+</th>
+<td>
+<span id="v-b4d274f74a9e4a5fb666ee9b">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/enum/16">canceled</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b1326688f26540680c58bb5f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/phase/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>work_id</code>
+</th>
+<td>
+<table id="v-2819be973f5cf2c40e4472a5">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-9da27a0ee6166e709a7d66d9">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/work_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4a25fa82656fd74eb705760a">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/properties/work_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-ca374a66edcc23e6fe2c17be">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-baca3d349211b699ae93ab57">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/required/0">work_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-bb8de5ce810c29e1828aac73">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/required/1">phase</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-83fc9713cce8a245f4efe5e3">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/$defs/WorkCreatedEventData/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-3474d9162d9572197f2e739f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-92b19a4c3cdab00ce70fae52">
+<tbody>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-2007241504d4105f3f0cb3c1">
+<tbody>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-6f9728cf9417d87116516290">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/properties/id/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-dcbbb453be92229f7d50a15e">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/properties/id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>occurred_at</code>
+</th>
+<td>
+<table id="v-abaa04e89b013225bace07fd">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-3473fcaf671901574144b674">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/properties/occurred_at/maxLength">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-ce724dc4cd598f4db358b3ae">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/properties/occurred_at/minLength">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-e6258830b0e53332f0718200">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/properties/occurred_at/pattern">^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-442ffbe8e11287c37b1b7cf8">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/properties/occurred_at/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>payload</code>
+</th>
+<td>
+<table id="v-a1f7a142e26d6ac24964bc55">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-be2cc3002c68d759e7f4e101">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/properties/payload/$ref">#/$defs/WorkCreatedEventData</code>
+<span class="kind">string</span> <a href="e-11eae1f8025c880cf2d68d64.html#v-6085de5cba7a4eca852786e3">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>subject</code>
+</th>
+<td>
+<table id="v-0fa46ef090e908ebd18f25c7">
+<tbody>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-30af2c340a429725de77532e">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/properties/subject/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-991f0c4d9f090b75cae66d54">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/properties/subject/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<table id="v-18839a3c6a30053d478b2c53">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-8eba58ab93215b619c382be1">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/properties/type/const">io.riverhog.stove0.work.created</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-10a782e90aa1c5c4eb4ae6f7">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/properties/type/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-e1b5134f5981b9b9b368f1e3">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-30fef6857b19fb70e764d2d6">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/required/0">id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-71abfc47bfdb906826b40775">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/required/1">type</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-3d7371e09d527e5cc7d291e5">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/required/2">subject</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-fc56a72f674f654b06a98fa5">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/required/3">occurred_at</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-398fe974ab5281ba6595e743">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/required/4">payload</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c2445c347d3bbcf8011ff758">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-7e91262c9b2d84c05aad647e">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/contract/signature">&quot;(*, id: Annotated[str, MinLen(min_length=1)], type: Literal[&#x27;io.riverhog.stove0.work.created&#x27;], subject: Annotated[str, MinLen(min_length=1)], occurred_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern=&#x27;^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\.[0-9]{9}Z$&#x27;, ascii_only=None), AfterValidator(func=&lt;function require_canonical_utc_timestamp&gt;)], payload: stove0_operator_contracts.WorkCreatedEventData) -&gt; None&quot;</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-e7ae0e2909af90929ad428a7">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/distribution">stove0-operator-contracts</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-6df2c46ea2688aaf877ede9c">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/module">stove0_operator_contracts</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-dfe6c0a4e6fc1ceeea979a45">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/name">WorkCreatedEvent</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-423b9c3071e802e0ad436c3e">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.WorkCreatedEvent/unit">export</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py">some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

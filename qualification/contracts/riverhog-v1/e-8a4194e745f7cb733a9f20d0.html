@@ -1,0 +1,1748 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: DepartureEffectIntent · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: DepartureEffectIntent</h1>
+<section id="contract" data-contract="http-schemas:stove0:schemas-departureeffectintent:a50d83b1ea">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent</code>
+</h3>
+<table id="v-7549e868283c3b5bc0f39df6">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-7b868268b3ef0171d88c9cd0">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-76a71071afa7e10f7d2d3ae6">
+<tbody>
+<tr>
+<th scope="row">
+<code>authorization_view_identity</code>
+</th>
+<td>
+<table id="v-f3a1964d8b66828633fe8eab">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-1af0a2ea94066ac1afe98c36">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/authorization_view_identity/maxLength">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-eb37f8f057780a21bdec4c81">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/authorization_view_identity/minLength">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-48e7033d76aad720f6bdbee4">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/authorization_view_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-030b65b855dc2cfa0a14498f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/authorization_view_identity/title">Authorization View Identity</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e6768322ccedafa4692554e2">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/authorization_view_identity/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>departure_cause</code>
+</th>
+<td>
+<table id="v-b1583ef7a627bbfee6d9c20e">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-b4eacdaf434ad061cbdb4395">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-04b91b6e03965d63826b2ef1">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_cause/enum/0">collection_deleted</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-ff9474b78548dffce57e08d1">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_cause/enum/1">visibility_lost</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-5a1ed9595e782e03d590bbec">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_cause/title">Departure Cause</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e9300eed913d927d6de8e9e0">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_cause/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>departure_id</code>
+</th>
+<td>
+<table id="v-88e16a20b25ddb0b0c9e0a8b">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-7fc485907058c86a1d46b370">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-2c6c1c43c47c4866433db18d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_id/title">Departure Id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e630ce14fb150ca8b436b3c4">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>departure_revision</code>
+</th>
+<td>
+<table id="v-8ebd9ba1c479560edbb0b6bd">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-c3113299e377c10477314779">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_revision/maxLength">19</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-b669281fdc071e2f7e5bcd50">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_revision/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-e54204cb9f7814a54bf0eaf3">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_revision/pattern">^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-bbc29a9048341b62b5df610c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_revision/title">Departure Revision</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-15ea43650a8b633cdf1ed070">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_revision/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<table id="v-a89fd19d5812d561db4a086e">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-c18e3af920505a29c5b6e304">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/format/const">stove0-departure-effect-intent/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-658492ab9505c42b3f1db5af">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/format/default">stove0-departure-effect-intent/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-46017a814b6503e0412a5792">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/format/title">Format</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-35a3ffc13b598bb37220c9f5">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/format/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>last_collection</code>
+</th>
+<td>
+<table id="v-2bc04be8273b5e0747719187">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-81367fc687e0564725cc3fb1">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/last_collection/$ref">#/components/schemas/CatalogSyncDescriptor</code>
+<span class="kind">string</span> <a href="e-547139d2872135e77a4b6d1d.html#v-f02e615f06a79d6543743044">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<table id="v-bb76f2cec4b4bcf8df607177">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-bcec3d382fc0484714a2b370">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/policy_id/pattern">^[a-z0-9](?:[a-z0-9._-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-538e17ed7f4a04fbecf6e83d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/policy_id/title">Policy Id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fd4cd934f99574ee7414a641">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/policy_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_revision</code>
+</th>
+<td>
+<table id="v-53bd3673e7e240793ad1794d">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-95a395a821f3ec4e5c978e8b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/policy_revision/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-7139285be3d6944ee46ac978">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/policy_revision/title">Policy Revision</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bf8d08f23e5785fc16d072f2">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/policy_revision/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_sha256</code>
+</th>
+<td>
+<table id="v-def32f1a61f94c703ed13c8c">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-85ef4cf35c59ba627c220505">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/policy_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-8f111c6373ed86f0e583be5a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/policy_sha256/title">Policy Sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c428946b5add7129c0255439">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/policy_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_identity</code>
+</th>
+<td>
+<table id="v-139c1177f15738e676a6f815">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-8e7d7df99115e84d306f7d12">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/source_identity/maxLength">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-f9deb03ca749aeb53f4dd4ba">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/source_identity/minLength">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-ed43fc61ff5a4f28bd94d0b2">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/source_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-918db9456d8e05b990dfb0bd">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/source_identity/title">Source Identity</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1a715d3e61189671fc917a4c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/source_identity/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>target_identity</code>
+</th>
+<td>
+<table id="v-be3bc5e8a72053d97b5b2008">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-5ae0144cc44404b2a5c247d9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/target_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-033ba6ff392f213b7d68b4e4">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/target_identity/title">Target Identity</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-97205dba21bd2e0b8079f22b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/target_identity/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>target_registration_id</code>
+</th>
+<td>
+<table id="v-741b879108bc89067017a50c">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-15c871024e2cb213d25d7a0c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/target_registration_id/maxLength">160</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-8d7fd3d857bed382ed99a46a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/target_registration_id/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-b04bb7c06aa769b66c3afa6a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/target_registration_id/title">Target Registration Id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-178fa79eb1c5f7ade46a141f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/target_registration_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-5506973758dc3fcc06ed496a">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-80b44efb06e2b9362649d94e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/0">policy_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-a908384962db1fce5dbd91ec">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/1">policy_revision</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-5bb531cccb260eb4903949ad">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/2">policy_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-e8d159d2ad4536630a785040">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/3">target_registration_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-db2574c382b738326a3d0ede">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/4">target_identity</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-ccdb7adee8f1edbb3e272a09">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/5">source_identity</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-d3c6566c92b120ddbb8e51b7">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/6">authorization_view_identity</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-ff11c4c48828d3787aa88fad">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/7">last_collection</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>8</code>
+</th>
+<td>
+<span id="v-ee7816764fd9fc9ca44316f3">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/8">departure_cause</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>9</code>
+</th>
+<td>
+<span id="v-f883e4d780f8c66032031b48">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/9">departure_revision</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>10</code>
+</th>
+<td>
+<span id="v-b2243fe6e3e3bda0b20d5ee4">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/required/10">departure_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-59209907e57926ef9551ab6b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/title">DepartureEffectIntent</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-926d395db29e658c80005237">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<p>These records index source constraints; they do not add limits or progression promises.</p>
+<ul>
+<li>
+<code>http:stove0:components:/schemas/DepartureEffectIntent/properties/authorization_view_identity:length</code>
+<table id="v-c47ef1eba5dffb69ee5e1fff">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-5cf7c7eaac946251690fa22b">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1authorization_view_identity:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-3993fd2e6d514eef555412d1">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1authorization_view_identity:length/id">http:stove0:components:/schemas/DepartureEffectIntent/properties/authorization_view_identity:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-d8fd5e3fde020b6b1bc04ee0">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1authorization_view_identity:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-3d8b6077e63f3e7dbea90d2c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1authorization_view_identity:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-4aea53f628c6597f111e09a6">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1authorization_view_identity:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-8c922d5e9d355a977e7fb309">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1authorization_view_identity:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-0ec4b57f4a8d74af0e90d76e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1authorization_view_identity:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-f9ab1b49c33a5979ac64ba90">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1authorization_view_identity:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-0f22a5b589bd6497f4651cb7">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1authorization_view_identity:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/authorization_view_identity</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-5fe1f19bd4f25f2aec9b2288">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1authorization_view_identity:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/DepartureEffectIntent/properties/departure_id:length</code>
+<table id="v-b8e26aac5e6bb3fb77939471">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-a477ef02bafa105ff156cd31">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1departure_id:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-b733c986253fcd3c22c3d268">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1departure_id:length/id">http:stove0:components:/schemas/DepartureEffectIntent/properties/departure_id:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-6d34ca80608681a3229f383f">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1departure_id:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-59ff2542b967bb36b23ab5f4">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1departure_id:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-3554f6bf4ce0754adc36cf92">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1departure_id:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-1f6dce68d2f14614db5e915c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1departure_id:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-a6e8b36f28ba4b6e02206602">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1departure_id:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-8f22b3837ed4cbdb73d6d205">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1departure_id:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-9116d9883186962dd0db0429">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-1b2749668bc3cde3451981b4">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1departure_id:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-4346bf9a43a1fca4af980d3c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1departure_id:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-15c5cd9fad6427137545b405">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1departure_id:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/DepartureEffectIntent/properties/departure_revision:length</code>
+<table id="v-68ced8a6f4410a4264c042d4">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-0ac1ec88dfc8574aef3d031f">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1departure_revision:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-6a6ca09eb8d5fdadb9ec61d6">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1departure_revision:length/id">http:stove0:components:/schemas/DepartureEffectIntent/properties/departure_revision:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-f648aafa636919e0344ba16d">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1departure_revision:length/maximum">19</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-3f1b5f98a388662e7c8842cf">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1departure_revision:length/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-768a4f85000569b3ded3bb69">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1departure_revision:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-5181dd37b6fa872a192f156b">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1departure_revision:length/policy">contract_max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-a4c3e39792f4962a7228c141">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1departure_revision:length/reason">schema-maximum</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-0211c49d898fd953348b1d8e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1departure_revision:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-3622efaaa5847115270d2feb">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1departure_revision:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/departure_revision</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-5ab23253a789561e755dbb22">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1departure_revision:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/DepartureEffectIntent/properties/policy_sha256:length</code>
+<table id="v-34810bd65af417813c0a6885">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-4c8882b9388b86d94cba9a43">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1policy_sha256:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-c0d8d63d56e61dc03d6cf465">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1policy_sha256:length/id">http:stove0:components:/schemas/DepartureEffectIntent/properties/policy_sha256:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-c5eb37dc02a31115ea333f8a">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1policy_sha256:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-8abca7d4f6991d2e514fc280">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1policy_sha256:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-34b0970e9d982eeccddc110c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1policy_sha256:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-3a3d40182db28fce73372dab">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1policy_sha256:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-981e27bf2acb4692e1d58286">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1policy_sha256:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-a4e776faf321aef8d5daf908">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1policy_sha256:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-729561c2b4294bfbd3606d68">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-f1dc0596f43bc161e85f655c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1policy_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-16185a7e0702ddf1fb1b3118">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1policy_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/policy_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-3dc6e07b54bb0b10babd077c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1policy_sha256:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/DepartureEffectIntent/properties/source_identity:length</code>
+<table id="v-2940b6cc63af79888c96ba09">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-41c98454d1d75b67f56ac351">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1source_identity:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-20015a237024b50a1e1c16ce">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1source_identity:length/id">http:stove0:components:/schemas/DepartureEffectIntent/properties/source_identity:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-532dade9694a880d9a1dd137">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1source_identity:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-fab4cb606356e09bf7f572b6">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1source_identity:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-53abe40ecd7ce0b537ac16f9">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1source_identity:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-cfca3f421cc34a8e11ec1f35">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1source_identity:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-c6a998c9aa6edc84d89ab94e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1source_identity:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-db8edf7f1efc8b037a792f1f">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1source_identity:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-0f4cb95ca2ba7339561996f0">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1source_identity:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/source_identity</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-548eda2a027cdf8cff80df55">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1source_identity:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/DepartureEffectIntent/properties/target_identity:length</code>
+<table id="v-be469d3bdeefe5d93cf269fc">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-05f9f159a6b66fe307d17f66">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1target_identity:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-df0ed008664a3b806d8067b5">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1target_identity:length/id">http:stove0:components:/schemas/DepartureEffectIntent/properties/target_identity:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-0ec2e340a1d372e540e0d0c0">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1target_identity:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-d58e8ece0771d542ebaab4cd">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1target_identity:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-a05e1c29c341c8d9cfcecd5a">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1target_identity:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-0db6e1b9be98e18539267a49">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1target_identity:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-fe9c8d29d3a42d56499e1d4f">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1target_identity:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-0263d30e4c0ed28d2dfdd181">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1target_identity:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-9a72d36d0af3dcf5556e98c7">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-12e2e4fc9f556b91c739bae4">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1target_identity:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-462ca517be581e0590f2f57f">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1target_identity:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/target_identity</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-57fec6dce28b415adf52213b">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1target_identity:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/DepartureEffectIntent/properties/target_registration_id:length</code>
+<table id="v-4104af358525f696e8c21863">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-37fe63f98daa339ad1b12456">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1target_registration_id:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-46e8cb95f351099af0ecd969">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1target_registration_id:length/id">http:stove0:components:/schemas/DepartureEffectIntent/properties/target_registration_id:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-99d2cd377afdf9c1e1766cfa">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1target_registration_id:length/maximum">160</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-17f902e4bb2ad6620d1fa44e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1target_registration_id:length/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-15a3b1129e86e4b25e1ff7b2">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1target_registration_id:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-c0af0b9c7d8faa44a13d43af">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1target_registration_id:length/policy">contract_max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-70869a793346f177f3ea89a5">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1target_registration_id:length/reason">schema-maximum</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-19ae1f97f0274e58b21de337">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1target_registration_id:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-74d4a6759e202d4f325e523a">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1target_registration_id:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/DepartureEffectIntent/properties/target_registration_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-f8dc8c855e048d0c554098f8">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DepartureEffectIntent~1properties~1target_registration_id:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

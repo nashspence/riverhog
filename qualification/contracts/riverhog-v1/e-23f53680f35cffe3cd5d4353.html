@@ -1,0 +1,6821 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>stove0_core.RecipeCatalog · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-6c0c68dab977066c2d607683.html">stove0-server · Python</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>stove0_core.RecipeCatalog</h1>
+<section id="contract" data-contract="python:stove0-server:stove0-core-recipecatalog:212333cc41">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/python/stove0_core.RecipeCatalog</code>
+</h3>
+<table id="v-ac1bf7f77237145c57fd4fc1">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-453c673117380c8028e79cc4">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-dd349184882ae234a9dc3409">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/kind">class</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-7eab2c5d80ad8f27e0626061">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-01969710dfbe7caa698f0327">
+<tbody>
+<tr>
+<th scope="row">
+<code>ArtifactAssociation</code>
+</th>
+<td>
+<table id="v-4ea94d6958ced02d5b86317b">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-2a480b162d5f00fb4b12b56c">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactAssociation/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-f4e5c08ed31605dcaf9966db">
+<tbody>
+<tr>
+<th scope="row">
+<code>associated_roles</code>
+</th>
+<td>
+<table id="v-2a54a855b3860754d496fb3f">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-420d75b084c9e33455db0100">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-ff781a37449433e886b6f5df">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactAssociation/properties/associated_roles/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2365e15226d1aaa976befedf">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactAssociation/properties/associated_roles/items/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-3c275594d10baa11e4a73652">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactAssociation/properties/associated_roles/minItems">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-536b0775dc6cd6b05b4ae4d0">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactAssociation/properties/associated_roles/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path_identity</code>
+</th>
+<td>
+<table id="v-52d9e084199eefe4489c92cb">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-a0e48d1a016e313d899a62af">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactAssociation/properties/path_identity/const">same-parent-stem</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-9560939d90c9fc2046dbbfcf">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactAssociation/properties/path_identity/default">same-parent-stem</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b70c0dcc41ff14d4bf510736">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactAssociation/properties/path_identity/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>primary_role</code>
+</th>
+<td>
+<table id="v-f8820f76539e7e25a737db36">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-7019eb1efa32e04069a8e91a">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactAssociation/properties/primary_role/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-51fd172ad1422b4fbad0880a">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactAssociation/properties/primary_role/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-032b536606e33d6c327cde4a">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-31a7138cb8b810fb1d852e06">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactAssociation/required/0">primary_role</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-9370eb5665af9841fbaddb94">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactAssociation/required/1">associated_roles</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1c496a2b545670caaacff4f7">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactAssociation/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ArtifactFactBinding</code>
+</th>
+<td>
+<table id="v-f35ed8e977a1256f2964ae33">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-c22010a26ae0dda72cdffc15">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactFactBinding/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-47410d1ee5d412fe80720958">
+<tbody>
+<tr>
+<th scope="row">
+<code>artifact_id_pointer</code>
+</th>
+<td>
+<table id="v-df5f2151b9f45144030fb7bb">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-4916c1d2631fc455cac31847">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactFactBinding/properties/artifact_id_pointer/default">/artifact_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-533ae8ffe95d5e8fdb001533">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactFactBinding/properties/artifact_id_pointer/pattern">^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b66b8c671ff0a1478d68f4d4">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactFactBinding/properties/artifact_id_pointer/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>records_pointer</code>
+</th>
+<td>
+<table id="v-1faa5ec7f0723ed5630fbe78">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-fcbc85a720c961146d252969">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactFactBinding/properties/records_pointer/pattern">^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8e10b3aa26ab3f1a80a49efd">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactFactBinding/properties/records_pointer/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-5f5208eeca5997acc716fef3">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-fe85ecc401998e0f1887a7bb">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactFactBinding/required/0">records_pointer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-05de6157c88606a83f3b7068">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactFactBinding/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ArtifactRule</code>
+</th>
+<td>
+<table id="v-321bcd01813c063f94108622">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-1bd1d66fb0c3dd71ba4c2e63">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactRule/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-4c22de89ee985aaa75ebbb7f">
+<tbody>
+<tr>
+<th scope="row">
+<code>glob</code>
+</th>
+<td>
+<table id="v-b71e9f755419bf06a1f3d549">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-3912aa31fb917b49c46dd3ba">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactRule/properties/glob/default">*</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-dd512f392f2e976af5112670">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactRule/properties/glob/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>media_type</code>
+</th>
+<td>
+<table id="v-5976115f870e9d56496d66f6">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-4269ad5f9b4a59de2e11a91c">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-1f2aabd2325c8a7681f305b1">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9ac1020886bf3372a6c6826b">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactRule/properties/media_type/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-414c750ed2d192e1aa6538bf">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-64b75547be46a9d02e57ba18">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactRule/properties/media_type/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-746a1a22bb3248566ce018ed">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactRule/properties/media_type/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>role</code>
+</th>
+<td>
+<table id="v-6b9ee6c6d7c0482f6cf8c895">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-fc58acaed1d643a6f9086756">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactRule/properties/role/default">stove0.source/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-0939a37635189b25414da0d1">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactRule/properties/role/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ea7e3a5f134c6099d6a48319">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactRule/properties/role/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6bdc28415e8d9c2d24fd2361">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ArtifactRule/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>FactPredicate</code>
+</th>
+<td>
+<table id="v-faa5d4d6cc4b82cca8135f54">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-7d6bfaf7e7532db57545e003">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-e6dfb9025998064772140a39">
+<tbody>
+<tr>
+<th scope="row">
+<code>artifact_facts</code>
+</th>
+<td>
+<table id="v-38c4e17d27ba12940fb415b0">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-f8e0ec491c0617fc4119659e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-f9d13fff4c1e43a7357de705">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-13258d18d58e29cdb08d17d3">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/properties/artifact_facts/anyOf/0/$ref">#/$defs/ArtifactFactBinding</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-f35ed8e977a1256f2964ae33">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-604a77ea8cae59ec25dab367">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b4340bdc335a0967c5603947">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/properties/artifact_facts/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-581ac96f7539ca19052dc1ae">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/properties/artifact_facts/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>artifact_roles</code>
+</th>
+<td>
+<table id="v-dc2e7337db5d06300f6de5d1">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-577442e66463e529fb52b577">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/properties/artifact_roles/default">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-0d72e4b1293529aabf6f5c99">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-2c1506dfd2518116ceb958ec">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/properties/artifact_roles/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5a7c4204ec340e792f8db378">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/properties/artifact_roles/items/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d23dce0581c6e1b9ca3cac1b">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/properties/artifact_roles/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>observation_contract_id</code>
+</th>
+<td>
+<table id="v-afd2363b60474889076ac906">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-069035399b85745d66b7a71c">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/properties/observation_contract_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-18f670d96147e5cfe12821c9">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/properties/observation_contract_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>operator</code>
+</th>
+<td>
+<table id="v-37e1788109f4c9841d5ee6cb">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-01965dcdae77b763091d6716">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/properties/operator/default">equals</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-faba9462a7f7acdc32926614">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-20621433e3978ea471924421">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/properties/operator/enum/0">equals</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-ec2add296593924ec1cc2194">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/properties/operator/enum/1">not-equals</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-b6dc90e40efd4c6b03ead9b8">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/properties/operator/enum/2">contains</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-f4c6a96a60ef76c5b764d260">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/properties/operator/enum/3">exists</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0893721dc42c54e18ed466b0">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/properties/operator/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pointer</code>
+</th>
+<td>
+<table id="v-7ae3fe0408284b41dce62229">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-70f4e95194716fdf0a5012ba">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/properties/pointer/pattern">^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2c8d2bb05d5e8beb54f3146a">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/properties/pointer/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>value</code>
+</th>
+<td>
+<table id="v-6ddcfe2337c669301ff0bc6d">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-a0cf5121d9ce19d64df05b80">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/properties/value/$ref">#/$defs/JsonValue</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">Definition</a>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-bad234b6cb90f2969c6b20f9">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/properties/value/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-2aa9986485f2b0861b005f58">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-60d225b29954a8e58a1addc2">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/required/0">observation_contract_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-e41c0a7e8dfa225a34184ae8">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/required/1">pointer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-cadb9b4f08e667704c5dc99b">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/FactPredicate/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>InputArtifactContract</code>
+</th>
+<td>
+<table id="v-893e7a1885869f14029e7aab">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-0f3292cbb51682a4330f14d5">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/InputArtifactContract/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-7574fb49cc385ab68e597f28">
+<tbody>
+<tr>
+<th scope="row">
+<code>allowed_dispositions</code>
+</th>
+<td>
+<table id="v-feac620b6f105c67c283f936">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-58e2e636c31040b72e40688b">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-c1eb5cbea8b2b73ab0291085">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-e011d0c80e128fa0fa867a32">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-1aa5559f15afbfd42110d8ef">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-ea3599cc6e82383536d9c52b">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/allowed_dispositions/anyOf/0/items/enum/0">transformed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-970c84a51cf844c744e94112">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/allowed_dispositions/anyOf/0/items/enum/1">preserved</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-3f80b1e5fa764cdfa813e591">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/allowed_dispositions/anyOf/0/items/enum/2">omitted</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-c66d7ce7f78f3fc1c70fcd25">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/allowed_dispositions/anyOf/0/items/enum/3">rejected</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d843fe5ef6aad091445a6280">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/allowed_dispositions/anyOf/0/items/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-66e091ed7108669841d92a4c">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/allowed_dispositions/anyOf/0/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-9b26528a32f893bae1f782c6">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6edba68c222b809efaef66d6">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/allowed_dispositions/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-8f4b59be0b811f81f29e1e4e">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/allowed_dispositions/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<table id="v-57da8275577076fc13761103">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-153a6f32d1f7169be28af369">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-96cea7bccda839165e747840">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-c3a1a9c2948b0a85d48f9268">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/maximum/anyOf/0/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-91540bc55fedd67463f52a1b">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/maximum/anyOf/0/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-b212f8975189baafbfd7d894">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-33d54c9be51f463aeaa47141">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/maximum/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-5249d303b287a6907e2f5a04">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/maximum/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<table id="v-e0c3ac6573a8c044d92322ab">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-e344d9939a21c52f0e3e7d58">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/minimum/default">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-2eae27b0a1f17f0bd78b51fd">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/minimum/minimum">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bc8630d9967cb7ad07200a0d">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/minimum/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>role</code>
+</th>
+<td>
+<table id="v-80105dd7866b38b9c948ca42">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-6209ee09729f85ab352bcc19">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/role/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6d319be7d0c0d3dd3b714d0f">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/InputArtifactContract/properties/role/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-54a938d562ba340a7d180f3f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-44238a8f3548c37dbe0e8bc9">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/InputArtifactContract/required/0">role</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-def7db480ff3436ea9e55b14">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/InputArtifactContract/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>JsonSchemaValidationProfile</code>
+</th>
+<td>
+<table id="v-aabf2229991b76740ffb4c91">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-bdae2d5387c46a87e6c64bf7">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/JsonSchemaValidationProfile/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-f8c3a93dc15d493addd37949">
+<tbody>
+<tr>
+<th scope="row">
+<code>dialect</code>
+</th>
+<td>
+<table id="v-d715c7a4d926491c6c304994">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-28d9e3f309626f550e4d05d1">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/JsonSchemaValidationProfile/properties/dialect/const">https://json-schema.org/draft/2020-12/schema</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-41e5c050b66c29bbb8d6c310">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/JsonSchemaValidationProfile/properties/dialect/default">https://json-schema.org/draft/2020-12/schema</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-eb3e7f155c0ae8bad43fd178">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/JsonSchemaValidationProfile/properties/dialect/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>format_policy</code>
+</th>
+<td>
+<table id="v-8f3b1260fb25ff2f4461956c">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-40fec4bcca4a86ff10f7a3d3">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/JsonSchemaValidationProfile/properties/format_policy/const">annotation-only</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-5071b17de9ee3389a5f08f01">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/JsonSchemaValidationProfile/properties/format_policy/default">annotation-only</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-35b233eabf9b39e04d028524">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/JsonSchemaValidationProfile/properties/format_policy/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-c070004279f49ca80afa9436">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-77b8ff619bc623fe8b6baebe">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/JsonSchemaValidationProfile/properties/id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-38c2b1abd9d6532519bf1df1">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/JsonSchemaValidationProfile/properties/id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>profile_sha256</code>
+</th>
+<td>
+<table id="v-74f92323c3701cc42b25de92">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a7a0f5ab1762ce908ab62dee">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/JsonSchemaValidationProfile/properties/profile_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e81707f76c6851610fff1073">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/JsonSchemaValidationProfile/properties/profile_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-4673823f157d41f37674961e">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-bbbaecc8976cf319b8cc73b2">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-2bf8e665ddb60553538dc118">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/JsonSchemaValidationProfile/properties/schema/additionalProperties/$ref">#/$defs/JsonValue</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8a8643e8197b4c0d76182a58">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/JsonSchemaValidationProfile/properties/schema/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-07b0979c138f89c8e38d0779">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-4f13441c03f0c9aa2752b642">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/JsonSchemaValidationProfile/required/0">id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-a84853cf4de25fc8710fcf01">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/JsonSchemaValidationProfile/required/1">profile_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-c5ee83800870d69119b16f77">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/JsonSchemaValidationProfile/required/2">schema</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c9625a9d00878054f931e7b6">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/JsonSchemaValidationProfile/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>JsonValue</code>
+</th>
+<td>
+<span id="v-655fdbe95a30ab0911b78f60">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/JsonValue">{}</code>
+<span class="kind">object</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>NonnegativeDecimal</code>
+</th>
+<td>
+<table id="v-10c577a5e3109830bff120af">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a1e148f3515a4229ad5ba0ec">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/NonnegativeDecimal/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c6d6be166c279935bdb9fe18">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/NonnegativeDecimal/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ObserverUse</code>
+</th>
+<td>
+<table id="v-ead92c6441a2dff0233b2c4b">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-230d29f6659213d227eebf25">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-7ce604820f47b60528a1ca06">
+<tbody>
+<tr>
+<th scope="row">
+<code>artifact_rules</code>
+</th>
+<td>
+<table id="v-2912a35e6540ba472c7aef97">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<table id="v-d4aef6cf5dd453508b9d3082">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-c5985568da731952fde21dba">
+<tbody>
+<tr>
+<th scope="row">
+<code>glob</code>
+</th>
+<td>
+<span id="v-b08f3de0cf0c92f5274aef6e">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/artifact_rules/default/0/glob">*</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>media_type</code>
+</th>
+<td>
+<span id="v-0580cc991b3fd484558724e2">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/artifact_rules/default/0/media_type">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>role</code>
+</th>
+<td>
+<span id="v-1187505fc7cacf6a0c0753ff">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/artifact_rules/default/0/role">stove0.source/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-7611618d768feb14169f74ea">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-25864c742ec8bff3e4fb1810">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/artifact_rules/items/$ref">#/$defs/ArtifactRule</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-321bcd01813c063f94108622">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-877ce96b66596f32fcddfb70">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/artifact_rules/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>contract_id</code>
+</th>
+<td>
+<table id="v-c867e6e90501e329a1c7fa40">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-37fa2ca53fc0b80cd1e19f9a">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/contract_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5f60cb9f18eebf6d9a685775">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/contract_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>contract_sha256</code>
+</th>
+<td>
+<table id="v-7b854043028fcafecf17244e">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-c38bd63c51eba17f53741d31">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/contract_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5f90e335c10ddb5e52560b66">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/contract_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum_result_bytes</code>
+</th>
+<td>
+<table id="v-ef3cc259b3516ecff76e2a74">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-652b20bef57519cdd6ab536c">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/maximum_result_bytes/default">1048576</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-b6393c93199a759185deab5a">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/maximum_result_bytes/maximum">67108864</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-8d545c2ec15c1c84be381f48">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/maximum_result_bytes/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4d915513e3d4a830733ea8cc">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/maximum_result_bytes/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>options</code>
+</th>
+<td>
+<table id="v-5f6bc3b49357d25869f95e0c">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-c32af38a5dbaffdf9213a5cb">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-eb6d4f7ff59f6e3b1fad4482">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/options/additionalProperties/$ref">#/$defs/JsonValue</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d6fd2980f47ba4620634ee0b">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/options/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>registration_id</code>
+</th>
+<td>
+<table id="v-71012c599753b1811b609a5a">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a9836d85159ca7e935dbee0f">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/registration_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>retrieval_policy</code>
+</th>
+<td>
+<table id="v-ad835fb64986643d4f3625c4">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-dd012a612faf5ac3f1a9401c">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/retrieval_policy/default">available-only</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-2ba6d15b2b5d026b443e07b6">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-d0790aeaeafd2766fe98ddf0">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/retrieval_policy/enum/0">available-only</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-7f7e9118725ced1e69bcdcf1">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/retrieval_policy/enum/1">allow</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8ffaad346780a7151e107ea6">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/retrieval_policy/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>timeout_seconds</code>
+</th>
+<td>
+<table id="v-3661a19a33def56f584b039c">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-3f71f7e2e568276b837b3ed0">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/timeout_seconds/default">300</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-e50a9527a58e33e7c906ba61">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/timeout_seconds/maximum">86400</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-dc5d7ec7f78981986204ee28">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/timeout_seconds/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e217d76bd577966b85538c5a">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/properties/timeout_seconds/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-5259367846579d5ad1e0cd3d">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-d6e7fd0def8d13d163560023">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/required/0">registration_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-f2faa7ccc46992bf6364d387">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/required/1">contract_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-dcdbe58bd14af870e8e4f6a9">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/required/2">contract_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a73c7d537ccef4adc56e301d">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/ObserverUse/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>OperationContract</code>
+</th>
+<td>
+<table id="v-42d3f33c91e2c5ac2d25616f">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-5d8d0790dfa934ae1a58d6bd">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-4e2a3e32143ebd5039fa43f3">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract_sha256</code>
+</th>
+<td>
+<table id="v-65cbffa857c9c3a348b5c529">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-40e7618ae9076c794470d406">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/properties/contract_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9c5b695e1a76dd37603f384f">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/properties/contract_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>effect_receipt_schema</code>
+</th>
+<td>
+<table id="v-a75ce4856f3be81ed2bd9e61">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-3db9aad65a5fe0621806f0b1">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-911bb88672b70cf0f79809b4">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-3c7888f04e001d88913c4663">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/properties/effect_receipt_schema/anyOf/0/$ref">#/$defs/JsonSchemaValidationProfile</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-aabf2229991b76740ffb4c91">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-2bafd9ad27700bfcefb6646f">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9ab58b0e4f6a65287f056c99">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/properties/effect_receipt_schema/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-edd0822c6d75bf55ac916abe">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/properties/effect_receipt_schema/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-37654f4f87552bdb785d1f9c">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-b77eef3ee4d232ba84adfbe5">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/properties/id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-cb10dc96a23b7be365ad8038">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/properties/id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>inputs</code>
+</th>
+<td>
+<table id="v-fe1578028d1608b362fba1e2">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-a9fcffd7ad77851fc3210b02">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-137afc3dc48ba94ceed93753">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/properties/inputs/items/$ref">#/$defs/InputArtifactContract</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-893e7a1885869f14029e7aab">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-ac3e00eb2ff69e7d335066da">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/properties/inputs/minItems">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e9d7eda7d2820bbdb4ada640">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/properties/inputs/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>intent_schema</code>
+</th>
+<td>
+<table id="v-fc7522a43820a192dfdc7cd7">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-a9beda6ae3ec619a766c15fc">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/properties/intent_schema/$ref">#/$defs/JsonSchemaValidationProfile</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-aabf2229991b76740ffb4c91">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>intent_semantics</code>
+</th>
+<td>
+<table id="v-249f692d350568c177b49bad">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-217892a724c38e63b48a6df7">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/properties/intent_semantics/$ref">#/$defs/SemanticValidationProfile</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-467a54d0560a0c35da8a8fbd">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>outputs</code>
+</th>
+<td>
+<table id="v-fde04495463cd889e0f13e72">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-418e03c054c2fcbfde7ac538">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/properties/outputs/default">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-e50a41911b6c3f98e43924c5">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c8a486d8a5797db4031b2a04">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/properties/outputs/items/$ref">#/$defs/OutputArtifactContract</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-4ebe2c544b63d19a498abb45">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bbcd7285054a73a5cb4f7830">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/properties/outputs/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>result_kind</code>
+</th>
+<td>
+<table id="v-70a075cf49464a39b2c271ad">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-816a02afd3e54f0ae52f4be3">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/properties/result_kind/default">collection</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-fb9908ec4ded5c12b4091c85">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-469c4c05522d77debe33819f">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/properties/result_kind/enum/0">collection</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-e2ecf623fbddbc63499321f4">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/properties/result_kind/enum/1">external-effect</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-58ecbaad9165d73090271996">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/properties/result_kind/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_collection_retirement_permitted</code>
+</th>
+<td>
+<table id="v-bd0d23046b99430e15f218bd">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-e6486dc6a945f896987ea5ae">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/properties/source_collection_retirement_permitted/default">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d9627aea6033bb7c0529c60e">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/properties/source_collection_retirement_permitted/type">boolean</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-f99cfd4c9e05c6821408f58a">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-ee0cbc686874612a75b21e7e">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/required/0">id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-7bb24814536cbaaf0403cd6b">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/required/1">intent_schema</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-907bb449ddcb1f57dd480186">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/required/2">intent_semantics</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-c9b8de9d3303e8d001903e66">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/required/3">inputs</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-6911c94511ab2e8e7773e1fb">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/required/4">contract_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e28b4812bf0f0f2f33e46376">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationContract/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>OperationProjection</code>
+</th>
+<td>
+<table id="v-bd29d8e8f0f9c091d7140b92">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-6c4ae4b6d836ee32aaca5eaf">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationProjection/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-74522735a937ad3c2ac24c32">
+<tbody>
+<tr>
+<th scope="row">
+<code>destination</code>
+</th>
+<td>
+<table id="v-616c4172f2adf9fd49474b44">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-4d4ac18f912c11bf98e2f6ac">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-87c81c8cadbf2ec7035106e7">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationProjection/properties/destination/enum/0">intent</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-a883e1782b0e6e169ffc40c7">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationProjection/properties/destination/enum/1">target-options</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-26f651c8f2bde4a057aa2328">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationProjection/properties/destination/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>destination_pointer</code>
+</th>
+<td>
+<table id="v-f1bd03dc9653d474b1d2a606">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a4e3b7c75e2bbb8c9056eecf">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationProjection/properties/destination_pointer/pattern">^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7da7f617bad8e1bc75b34fe8">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationProjection/properties/destination_pointer/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source</code>
+</th>
+<td>
+<table id="v-8cd8e9d6f0c3c4d0a18a6475">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-97052a1d0354ca6d12d6a384">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-c7b8b2493e4b1a566d577743">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationProjection/properties/source/enum/0">work-effective-intent</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-d8cc0b23a6495bd23e50f0fe">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationProjection/properties/source/enum/1">work-evaluation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-710ff5e4a0c2cf0008f6b0ad">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationProjection/properties/source/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<table id="v-1c0d7d0e009c9c85d29e6a9e">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a53e754b97fdcc126fc81a7f">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationProjection/properties/source_pointer/pattern">^(?:|/(?:[^~/]|~[01])*(?:/(?:[^~/]|~[01])*)*)$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a30e36ea3166e17ee737b076">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationProjection/properties/source_pointer/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-10c99afdfd03446a6152e409">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-637e6dbf58245b30e42e213e">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationProjection/required/0">source</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-fd17b3ac9c4842fd73c44258">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationProjection/required/1">source_pointer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-ee20a0f9cada8b54a2c31261">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationProjection/required/2">destination</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-f1422bda812b2e526de648dd">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationProjection/required/3">destination_pointer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-442bc55b70665ee74c6b06ec">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OperationProjection/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>OutputArtifactContract</code>
+</th>
+<td>
+<table id="v-4ebe2c544b63d19a498abb45">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-ff795babbc2ac1df87e2614a">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OutputArtifactContract/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-eba3d74bdbf504a45e07f6a3">
+<tbody>
+<tr>
+<th scope="row">
+<code>derived_from_roles</code>
+</th>
+<td>
+<table id="v-20259edb5c1dfecf66d2198d">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-374447f819d2fdd70233af66">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-5436d7bb99fab4590e890362">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OutputArtifactContract/properties/derived_from_roles/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7a06c962d988c29354915cd5">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OutputArtifactContract/properties/derived_from_roles/items/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-d577b72bc8ed25ef0ac0a54b">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OutputArtifactContract/properties/derived_from_roles/minItems">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9c2de6ea4d2c5a7fc9109259">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OutputArtifactContract/properties/derived_from_roles/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<table id="v-f6400a52fed698589bc0be39">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-7b6a9d395efa3d0361f1db61">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-be63f2c3ff2ed45084780bde">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-2989b347155b5d492c33d6e6">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OutputArtifactContract/properties/maximum/anyOf/0/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-dd707ea62c3d083173a55389">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OutputArtifactContract/properties/maximum/anyOf/0/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-ea9f2cefbd45896176fbbd45">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fd569df2774e84d9c3c41406">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OutputArtifactContract/properties/maximum/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-463c4f624caf3d656cfbbf76">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OutputArtifactContract/properties/maximum/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<table id="v-3f2b668258b96c24010dd587">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-3af0f3f589614836aad14566">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OutputArtifactContract/properties/minimum/default">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-1a2a1a1cf2c0084abfb580a5">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OutputArtifactContract/properties/minimum/minimum">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-02d71ee9bc5905e1f51d4aa2">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OutputArtifactContract/properties/minimum/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>role</code>
+</th>
+<td>
+<table id="v-e56480d27b6d6fb1deb18001">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-724349b4efb8603e120f683f">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OutputArtifactContract/properties/role/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b8d30528b0c1af1602e23cc6">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OutputArtifactContract/properties/role/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-539e5f68d852ac00516c1b4f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-345d1bd7863c9c35c722981f">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OutputArtifactContract/required/0">role</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-bcd748847dc1998c35fd4010">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OutputArtifactContract/required/1">derived_from_roles</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e749847a59d39bb9af182c8c">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/OutputArtifactContract/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>RecipeCoordinationRoute</code>
+</th>
+<td>
+<table id="v-0e7e1d36890d3f354398e24f">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-8119382c97f486846e53e78f">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-44d38c69631ec3d56f5b81dd">
+<tbody>
+<tr>
+<th scope="row">
+<code>artifact_rules</code>
+</th>
+<td>
+<table id="v-b279e9b936e26cc3271127d6">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<table id="v-971ff863aab46790718c7edd">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-b2e0d9d857b3934ea012aa4e">
+<tbody>
+<tr>
+<th scope="row">
+<code>glob</code>
+</th>
+<td>
+<span id="v-644fa0aaffa03c9e1a2b3057">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/artifact_rules/default/0/glob">*</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>media_type</code>
+</th>
+<td>
+<span id="v-4a168e83f41c948ac073f625">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/artifact_rules/default/0/media_type">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>role</code>
+</th>
+<td>
+<span id="v-481d3dcd92e02ec73c43ab53">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/artifact_rules/default/0/role">stove0.source/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-457f0b173201894a1e4e3cbb">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-b662deca9de0bb6da3c78fac">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/artifact_rules/items/$ref">#/$defs/ArtifactRule</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-321bcd01813c063f94108622">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8c6ca537a63a280f9a6457af">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/artifact_rules/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>associated_roles</code>
+</th>
+<td>
+<table id="v-d36cc8ed497cdc958502fcbd">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-e81058dcbd9f9077d0da62c0">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/associated_roles/default">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-a7c55773be4cc8ab2e93cdf9">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-4756f3886a4704d3a37bcedf">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/associated_roles/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bc03682fb824dd648cd2876e">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/associated_roles/items/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d7ef68bcf468e251fa7d77c3">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/associated_roles/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-f902f4af2c5309b95229eb55">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-495dd58ef24b04fcc6720559">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d936a8e87ebd140a159cedf4">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>intent</code>
+</th>
+<td>
+<table id="v-99fd8ad45eb8735990227205">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-d80365b26017e32aed86dcd2">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-d770d9dedf85f609242b6680">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/intent/additionalProperties/$ref">#/$defs/JsonValue</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a4ffb9a02ddf04f604655a90">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/intent/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<table id="v-25a8ca70d9fda9bc5a00c182">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-3cd62054e7450a3a60f17f2d">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/kind/const">coordination</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-dbaa2cd48caf69a3586ec399">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/kind/default">coordination</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b349166e98c865ffadd89de9">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/kind/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>primary_role</code>
+</th>
+<td>
+<table id="v-ba1aa0ba3d528faa0cf1effc">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-4bd70ad2c425766890a29689">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-9fed8d6eb7b923284556c174">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-bd6c042986c45cad87d94ad8">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/primary_role/anyOf/0/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c1fcbf980aea75be6ac3c298">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/primary_role/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-1690f4f221afea3966b175c6">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e3570ea2fce8bf3ce15d7735">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/primary_role/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-5b3820b42b759401dd02f61d">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/primary_role/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>projections</code>
+</th>
+<td>
+<table id="v-60b49858f4042ddffc93ce69">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-23d086652e73556cdb9f2d63">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/projections/default">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-37f1010fde67febf0fda7c07">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-7c6f728b3627d9ef8a6be00f">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/projections/items/$ref">#/$defs/OperationProjection</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-bd29d8e8f0f9c091d7140b92">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-10fafa624bfffe334c7f9d13">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/projections/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>recipe</code>
+</th>
+<td>
+<table id="v-1e2cfb480204c264613fe052">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-2ee4f4a948f3bc43126e6b4d">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/recipe/$ref">#/$defs/RecipeIdentityRef</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-01617b07dfe4d3a7633ecc51">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>when</code>
+</th>
+<td>
+<table id="v-88a0355e0efa4e85f9e22ab3">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-97c3151988da698cac8a3f6c">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/when/default">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-e4f879556b3dd25243fd788b">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-66a740aec7e86bf2e078c90c">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/when/items/$ref">#/$defs/FactPredicate</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-faa5d4d6cc4b82cca8135f54">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5626190da6201b6768c94bd8">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/properties/when/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-3f3ca6c3f49a9338d744bec8">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-b1c7fd113432428da4b2cf81">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/required/0">id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-345b4a555b6fb00dd24b0266">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/required/1">recipe</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e739b635cd58a7b0c89f5b72">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeCoordinationRoute/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>RecipeDefinition</code>
+</th>
+<td>
+<table id="v-d7a456910cb562f5c9ce1113">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-7194194354c15f63d3d3db49">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-8a868b84739fd9cb0cf20a0f">
+<tbody>
+<tr>
+<th scope="row">
+<code>allow_derived_inputs</code>
+</th>
+<td>
+<table id="v-33934f5939e435da446dfbae">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-dcc9ce834446fb8fddb7f661">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/allow_derived_inputs/default">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ddc8aff5934ad1359f6c241a">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/allow_derived_inputs/type">boolean</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>artifact_associations</code>
+</th>
+<td>
+<table id="v-65623ccf0770f47595f0db3a">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-3bef9f13d3872f1fd0b1f9b6">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/artifact_associations/default">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-331a7ac2fb82aa3372721882">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-928b42b1d69c3abbba1dee5d">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/artifact_associations/items/$ref">#/$defs/ArtifactAssociation</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-4ea94d6958ced02d5b86317b">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a29268946b93c8301af96d41">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/artifact_associations/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>event_input_closure</code>
+</th>
+<td>
+<table id="v-7ae6d978c66fb17dfdeef3e3">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-a6afe23d7be72ddcf35eecfb">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/event_input_closure/const">single-finalized-collection</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-fa0eebf99e0022e6ac023b75">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/event_input_closure/default">single-finalized-collection</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8b44022dfe584cb4a6f6c5b7">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/event_input_closure/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-8b7c8a0bd67d55a1d6c2fa91">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-7fe241aa6ad98cd985072770">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6092d9742352830df81e2995">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>join</code>
+</th>
+<td>
+<table id="v-89f735570e799b0ee4d9fba3">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-c03dc7f7219bf1419d7732bd">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-dd7eb40707ea465722f37920">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-b56de4e4a086dadda09037fe">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/join/anyOf/0/$ref">#/$defs/RecipeJoin</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-ffedb1726b00f71066a33840">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-6bd2e19f66e25cbddf697648">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b77f7360da00e795ba076458">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/join/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-5f538fc11f53fef50af04428">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/join/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>observers</code>
+</th>
+<td>
+<table id="v-dc666d1ddd1f25910925bcfe">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-0f6624f7af074ef3e0c23bae">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/observers/default">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-e4a7d05756b1e18aa2ccc2b6">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-3e47c65dcee81f6a750480fe">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/observers/items/$ref">#/$defs/ObserverUse</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-ead92c6441a2dff0233b2c4b">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-954501c80bd1542b005a2529">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/observers/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>revision</code>
+</th>
+<td>
+<table id="v-b91532e55d4fa5431db23019">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-0e267598ee84039a5ccfb0a6">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/revision/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-10c577a5e3109830bff120af">Definition</a>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-832e18741e9c2660db20d974">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/revision/ge">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>routes</code>
+</th>
+<td>
+<table id="v-3e17379ac432bd1e4811f215">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-8e67f6e22534d2d8ed9277a2">
+<tbody>
+<tr>
+<th scope="row">
+<code>discriminator</code>
+</th>
+<td>
+<table id="v-edc265d9fdf8ece797566882">
+<tbody>
+<tr>
+<th scope="row">
+<code>mapping</code>
+</th>
+<td>
+<table id="v-50c2f433c16030ce41ed060d">
+<tbody>
+<tr>
+<th scope="row">
+<code>coordination</code>
+</th>
+<td>
+<span id="v-4ffdf299a57daddaf7b976ff">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/routes/items/discriminator/mapping/coordination">#/$defs/RecipeCoordinationRoute</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>operation</code>
+</th>
+<td>
+<span id="v-5bd02a1c92b76c56d070439b">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/routes/items/discriminator/mapping/operation">#/$defs/RecipeRoute</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>propertyName</code>
+</th>
+<td>
+<span id="v-7dfdd73b038344fd46c84745">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/routes/items/discriminator/propertyName">kind</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>oneOf</code>
+</th>
+<td>
+<table id="v-72439d8e41fc8f34377c4a8f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-1dda5eef3aec752d20c7d2b8">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-8a8f9a0941b783bcf5c384c4">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/routes/items/oneOf/0/$ref">#/$defs/RecipeRoute</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-e0a28488455f13f0de3fbd3e">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-c2b9ab4baff4a18cabd9ebff">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-97488909561219dbaf361d46">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/routes/items/oneOf/1/$ref">#/$defs/RecipeCoordinationRoute</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-0e7e1d36890d3f354398e24f">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-2104733e62d9d01fe01c8eba">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/routes/minItems">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a6a175ae057f624d545dd993">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/routes/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_collection_retirement_grace_seconds</code>
+</th>
+<td>
+<table id="v-75e0010448811086ae2d7179">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-1f29cdd93911a7f7cdfb127a">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/source_collection_retirement_grace_seconds/default">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-f7d780223bfaba9965fa1df0">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/source_collection_retirement_grace_seconds/minimum">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-314979d53e7bdbaec2418e73">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/source_collection_retirement_grace_seconds/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_collection_retirement_policy</code>
+</th>
+<td>
+<table id="v-1026cdea7ae5c78f20e7613b">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-8abf644fc1888fde6400b163">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/source_collection_retirement_policy/default">retain</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-3b72b9e6fad798dc4a54251e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-c419c6611ff5c67032e6bee5">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/source_collection_retirement_policy/enum/0">retain</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-e607add7fb894f66cf18593e">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/source_collection_retirement_policy/enum/1">retire-after-verified-output</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d568e7b29b45beb613e6f05f">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/source_collection_retirement_policy/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unmatched_artifact_disposition</code>
+</th>
+<td>
+<table id="v-7f714f0108652f4a3ca469e6">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-86354988fc032dd1b24bc5ac">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-a18019074728cfc38ef7166d">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/unmatched_artifact_disposition/enum/0">retain-in-source</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-83fbd739315548c5b9e3d662">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/unmatched_artifact_disposition/enum/1">reject-work</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4ffacb74a08a147d9da14504">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/properties/unmatched_artifact_disposition/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-5f300dd0d1897fea80c352a4">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-8b8f446d5462c2166f2c8be0">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/required/0">id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-dc364cdb674f906c6e03e8aa">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/required/1">revision</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-84829e5987436d267abff11a">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/required/2">routes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-065db755eadcc259b58cc8ac">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/required/3">unmatched_artifact_disposition</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e5b2dafcf667da32a1bd814d">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeDefinition/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>RecipeIdentityRef</code>
+</th>
+<td>
+<table id="v-01617b07dfe4d3a7633ecc51">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-d76c33f63580c6887e315d73">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeIdentityRef/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-546eee048e273a95a2fd926f">
+<tbody>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-ac7f4d77f45abb70fa538238">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-b636b724b0f4e265a34f8a0d">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeIdentityRef/properties/id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ca56bb758685e37d484c4cfe">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeIdentityRef/properties/id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>revision</code>
+</th>
+<td>
+<table id="v-c831c643e9ce79bc44e24913">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-f1c9b978a9ba4d95026c852c">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeIdentityRef/properties/revision/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-10c577a5e3109830bff120af">Definition</a>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-f6852a51501307117d172161">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeIdentityRef/properties/revision/ge">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>sha256</code>
+</th>
+<td>
+<table id="v-91fcfd7aa5b7c20cc8fb4242">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-10f3faf987f2293c79ab8c12">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeIdentityRef/properties/sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a2ee8a5dd21d779629fae01c">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeIdentityRef/properties/sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-37aaf4d3171c1d00d66f0410">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-1be2bfe5d11c103ee532f9a6">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeIdentityRef/required/0">id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-0704fe142e5d84389f367b52">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeIdentityRef/required/1">revision</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-a5f139f93489a2a95f01fb36">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeIdentityRef/required/2">sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e7c2fa05a7ce3177a9a9ba94">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeIdentityRef/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>RecipeJoin</code>
+</th>
+<td>
+<table id="v-ffedb1726b00f71066a33840">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-f3a27c108f3f291d8784db95">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-54579f07c7deefae97b04225">
+<tbody>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-28a9ff7668bd26cff5de679f">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-acdefaa4913d37f8b937c5f6">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/properties/id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-594e3c267d1d787516e2dd17">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/properties/id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>input_retrieval_policy</code>
+</th>
+<td>
+<table id="v-a153b2f717ed5c1e3208f073">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-e4c4d839681fce02d83064cf">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/properties/input_retrieval_policy/default">available-only</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-c413505d4e4da60618ba69ea">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-fff2e117d69e4ad7e9c3e7c0">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/properties/input_retrieval_policy/enum/0">available-only</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-6fb353c3c3605954fc7aa67b">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/properties/input_retrieval_policy/enum/1">allow</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4a04cc4890113cbc69f19fc4">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/properties/input_retrieval_policy/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>intent</code>
+</th>
+<td>
+<table id="v-08b03466f3b4817230a5b9d6">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-51276fc7dfdf4499ec7882ff">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-7c2e6f66fecf1e81849580ed">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/properties/intent/additionalProperties/$ref">#/$defs/JsonValue</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7807cf63aa80d55220f71b3e">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/properties/intent/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>members</code>
+</th>
+<td>
+<table id="v-4fd77e151a3e7d99a6e5a40e">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-12d086e7eb0b8d89b4600b9a">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-3752cae47d13c85e2d86d301">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/properties/members/items/$ref">#/$defs/RecipeJoinMember</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-33c0aa00c7af9d9b723805f4">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-942851a7075ff69e190ac5b0">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/properties/members/minItems">2</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-07ae7bf47318e78c54da5ebc">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/properties/members/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>operation_id</code>
+</th>
+<td>
+<table id="v-b69fc30ff87f06dbd6265712">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-da35951efdb5d7d88a135229">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/properties/operation_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2aec7c3b34931f396d304849">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/properties/operation_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>projections</code>
+</th>
+<td>
+<table id="v-010de498d86304b345ec68d7">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-809ea0552d0ca11b4c55854e">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/properties/projections/default">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-34c32add5b0272b549c3aeb3">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-afde45bc99ee7869f9e6d18f">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/properties/projections/items/$ref">#/$defs/OperationProjection</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-bd29d8e8f0f9c091d7140b92">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fb7924abef8eecb51a9cddc2">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/properties/projections/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>target_options</code>
+</th>
+<td>
+<table id="v-3d7fc994fad6c5dc035fc90f">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-c4ba09be9d9f70b53227d797">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-58341d3bc7c39d0f85f006fd">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/properties/target_options/additionalProperties/$ref">#/$defs/JsonValue</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e7479df67b595f75a34436f5">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/properties/target_options/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>target_registration_id</code>
+</th>
+<td>
+<table id="v-f152e3be83bc746916ae29db">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-57ab95d279cdee5da38bd77a">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/properties/target_registration_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-bf53875a72a06a780407a2e0">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-324e1db6f79c970a24221360">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/required/0">id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-c1435cdc822b134511e05cac">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/required/1">members</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-9f2c634f8ef4c9af7e31daec">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/required/2">operation_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-d456ca9b5946603f5df34913">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/required/3">target_registration_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-163f4cc2af1b4f823366011d">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoin/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>RecipeJoinMember</code>
+</th>
+<td>
+<table id="v-33c0aa00c7af9d9b723805f4">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-f36cb8cc0ea34ffd43f9c880">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoinMember/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-6aa989da7007808bb17d0acc">
+<tbody>
+<tr>
+<th scope="row">
+<code>branch_id</code>
+</th>
+<td>
+<table id="v-8f9cae0ecd9ca4be28edd1cc">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-cfb9a930ceddd86e737e2a3d">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoinMember/properties/branch_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-93f0769fd837df4265c40041">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoinMember/properties/branch_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>output_roles</code>
+</th>
+<td>
+<table id="v-f68f27a2a4bd0a5ee0db25a6">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-fb798faa234150efbb49ce4e">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-140b1d4e678785d30dca9bbe">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoinMember/properties/output_roles/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f1e6c29f3665ea7f80a6d189">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoinMember/properties/output_roles/items/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-5b35eadf4540cbc2a3dbc2f0">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoinMember/properties/output_roles/minItems">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8c375d94e124325cd36c4100">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoinMember/properties/output_roles/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-44ce7d316942ed2645495d2e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-2c1a78372c5b154acf24cb80">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoinMember/required/0">branch_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-7d584ba850c5aac754d49264">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoinMember/required/1">output_roles</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f60fa18721420403394861e6">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeJoinMember/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>RecipeRoute</code>
+</th>
+<td>
+<table id="v-e0a28488455f13f0de3fbd3e">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-45acb7f12020dc81eb231c27">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-890f393ad62af6a9cd5b7faf">
+<tbody>
+<tr>
+<th scope="row">
+<code>artifact_rules</code>
+</th>
+<td>
+<table id="v-0c43da5ed456c49d5ff35c28">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<table id="v-093df5a21f77f14db3dd583c">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-4a7dd82ba10eb03483dfa95b">
+<tbody>
+<tr>
+<th scope="row">
+<code>glob</code>
+</th>
+<td>
+<span id="v-2d21018d6a360ecf95c438ea">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/artifact_rules/default/0/glob">*</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>media_type</code>
+</th>
+<td>
+<span id="v-65275ef14a246776d8b06e97">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/artifact_rules/default/0/media_type">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>role</code>
+</th>
+<td>
+<span id="v-dc340e677606132cab33de98">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/artifact_rules/default/0/role">stove0.source/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-613d6d542da5060d502f4e8e">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-e0706b652af46912856b8a07">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/artifact_rules/items/$ref">#/$defs/ArtifactRule</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-321bcd01813c063f94108622">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a82b373da8e85f7299d14d7c">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/artifact_rules/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>associated_roles</code>
+</th>
+<td>
+<table id="v-504400fb315fce3d4f7a6fe7">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-aee5d3cf740a1f9d3a154609">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/associated_roles/default">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-b7a6eeb43658915e7da960e9">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-504ba73cb80ad377a1b00ade">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/associated_roles/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c1b1bfb5d789cfa9368f3e9f">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/associated_roles/items/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-cf786ef76846e78a6265a95d">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/associated_roles/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-608b94d18add715cfeb71cb7">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-8da7f2a6cb1d9bdc894310b0">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-370ad90f2f835ffeb5aa4467">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>input_retrieval_policy</code>
+</th>
+<td>
+<table id="v-21089d313d638abfa6f04f45">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-223e2db55336aa6d98662caa">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/input_retrieval_policy/default">available-only</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-b87e7fa4ffced5c539e5ee6a">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-6e559b0bedf13ac0e5380b53">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/input_retrieval_policy/enum/0">available-only</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-e4e746f401e60926c48f2992">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/input_retrieval_policy/enum/1">allow</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-82a2cb2f0d2cbb457daf7dac">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/input_retrieval_policy/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>intent</code>
+</th>
+<td>
+<table id="v-cdd0082ecb39ecffd7fba6e3">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-90283ec15b8f6a00dfda8825">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-e32c0968147b4cd8b2e02df7">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/intent/additionalProperties/$ref">#/$defs/JsonValue</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e9f54a4be24c9ffe0dae4226">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/intent/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<table id="v-f9899b24b7c02f983515e872">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-0d3923be2164a8b0287c66a2">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/kind/const">operation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-569c3d2d426375d35e964baf">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/kind/default">operation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7510629e6a22bc2d71de4e88">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/kind/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>operation_id</code>
+</th>
+<td>
+<table id="v-4f73dc96cecdc4eacae468a8">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-4f979df0e4fa16af8c1569ba">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/operation_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8204faa0748ad832276a9856">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/operation_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>primary_role</code>
+</th>
+<td>
+<table id="v-fbc54fb1910bc90513cff422">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-5b16baccedc4d36177a8f955">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-59a7e91c087d7c9cece36f66">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-331b78dde873f59ccd84a30b">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/primary_role/anyOf/0/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a1e5a17eb0098a429d2694f3">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/primary_role/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-6febc2934b082a9c7ac2e3ed">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-67db36fa0ca8c814b11286df">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/primary_role/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-133f4f83df6187df98c50d28">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/primary_role/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>projections</code>
+</th>
+<td>
+<table id="v-984029fbc35e944482cccfb1">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-9a76c1addf31dd9100850e2d">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/projections/default">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-5dd9029160ec027b276b5b5b">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-1a4cbeb0c557cb07e998a5b6">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/projections/items/$ref">#/$defs/OperationProjection</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-bd29d8e8f0f9c091d7140b92">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-92c4c0a371b603977f9f848c">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/projections/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>target_options</code>
+</th>
+<td>
+<table id="v-f3684b5aa65859af2c54b736">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-db9916372686ef50cd41eb98">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-caceb378813e2113a9389801">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/target_options/additionalProperties/$ref">#/$defs/JsonValue</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-655fdbe95a30ab0911b78f60">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-765c04a646d0d07788dbb1bd">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/target_options/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>target_registration_id</code>
+</th>
+<td>
+<table id="v-546a2e17d5f5dc67f1dd22d8">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d449a9383cb415b59a46a6de">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/target_registration_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>when</code>
+</th>
+<td>
+<table id="v-e4e093f3bcc916c795dc53bb">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-cf3befc5487a3e9f7f94c137">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/when/default">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-8dd1c9ce9fcd63e85f728568">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-5dc69a43f2eb2276010ada3b">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/when/items/$ref">#/$defs/FactPredicate</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-faa5d4d6cc4b82cca8135f54">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-668137cab1db27570bd143fb">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/properties/when/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-2886b1d2463e217decaf822a">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-18f38d5ec9c658b73276709a">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/required/0">id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-c6b784c7c9fd89013ea30634">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/required/1">operation_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-b8571a5e8dc5b597404781f7">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/required/2">target_registration_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3d00f1299b227c06f175b665">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/RecipeRoute/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>SemanticValidationProfile</code>
+</th>
+<td>
+<table id="v-467a54d0560a0c35da8a8fbd">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-8c770e8eb01883ce09e90d6e">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/SemanticValidationProfile/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-8ae5a5931013cb4f9028b4c2">
+<tbody>
+<tr>
+<th scope="row">
+<code>conformance_vectors_sha256</code>
+</th>
+<td>
+<table id="v-3874a76fdb72e66511e87468">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-054c91d3ddfa9d82f1befecb">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-202d43ce5dbb2b3522e33c7a">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-c9330e1e40cdd9281ff33993">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/SemanticValidationProfile/properties/conformance_vectors_sha256/anyOf/0/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0ce20b549c862f6f887ee7da">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/SemanticValidationProfile/properties/conformance_vectors_sha256/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-3ff00fef142396e59cdc1f3d">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-99676257469d32626f50e7ae">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/SemanticValidationProfile/properties/conformance_vectors_sha256/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-8d8e9145e5565e331db36f94">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/SemanticValidationProfile/properties/conformance_vectors_sha256/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<table id="v-a262f66ffaa37befa4360b5f">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-cdb9c66a7d6b94058959c019">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/SemanticValidationProfile/properties/id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f20034accb992153657996ca">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/SemanticValidationProfile/properties/id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>profile_sha256</code>
+</th>
+<td>
+<table id="v-e58dd09b395ad932741ff495">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-be5d431aed59b8c62f4d82a7">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/SemanticValidationProfile/properties/profile_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4438943b3de2abe9e59eed52">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/SemanticValidationProfile/properties/profile_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rules</code>
+</th>
+<td>
+<table id="v-54b05c56e9e1ccd286a4506a">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-e2b6ab36a93577eb55f8d81e">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-368188e59535bae95e1d13d0">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/SemanticValidationProfile/properties/rules/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0dc1b4facf346879c76a3241">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/SemanticValidationProfile/properties/rules/items/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-43160d364d619ac7643ec9d1">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/SemanticValidationProfile/properties/rules/minItems">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f1e000974ac8d3aa9f4754e3">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/SemanticValidationProfile/properties/rules/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-c1d7de8e8fbe9c206463c323">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-a8ca9df7db1289dedb02311b">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/SemanticValidationProfile/required/0">id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-e302704006cedb455d89446e">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/SemanticValidationProfile/required/1">rules</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-21925c95c50c1e123ae5fafd">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/SemanticValidationProfile/required/2">profile_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-493f352f777c381b7c6f4665">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/$defs/SemanticValidationProfile/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-1aa54382f6410b9cf9ab42a7">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-eaecc1360c7371580d3aa173">
+<tbody>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<table id="v-4c73cd46111c4f74995f9dfd">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-dda73632af25c945c766ca5d">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/properties/format/const">stove0-recipes/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-51f011929995f6802da10b5d">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/properties/format/default">stove0-recipes/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-31a333baf85341ceb78624f7">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/properties/format/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>operations</code>
+</th>
+<td>
+<table id="v-e8c4db3c48d3f66ae3b4ea5b">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-b8aaf0e9bc4bd7bf6d24d846">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-2d8e8bf9ae9ceaea2dbd04e0">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/properties/operations/items/$ref">#/$defs/OperationContract</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-42d3f33c91e2c5ac2d25616f">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7346bd2c1090b73fb99fdaee">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/properties/operations/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>recipes</code>
+</th>
+<td>
+<table id="v-d2dd1a7761e4dbdaad777f40">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-4f13e1bf541130119dd48ee5">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-44eb1b8bf97b02b1bf4255b0">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/properties/recipes/items/$ref">#/$defs/RecipeDefinition</code>
+<span class="kind">string</span> <a href="e-23f53680f35cffe3cd5d4353.html#v-d7a456910cb562f5c9ce1113">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-dbee1c981d2191d7dcc443b5">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/properties/recipes/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-72495cd0d12491779055ecb1">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-879fffda46ce110676d86725">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/required/0">operations</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-f1dc005fc5e8e0131b28998b">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/required/1">recipes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b6f14aa630631fb663f2ad95">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-f47e6b3ead812088db4561d0">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/contract/signature">&quot;(*, format: Literal[&#x27;stove0-recipes/v1&#x27;] = &#x27;stove0-recipes/v1&#x27;, operations: tuple[stove0_target_protocol.protocol.OperationContract, ...], recipes: tuple[stove0_recipe_config.models.RecipeDefinition, ...]) -&gt; None&quot;</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-9a95dda91fe138a319d9e856">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/distribution">stove0-server</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-e81443c24c90a54ede988f32">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/module">stove0_core</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-71d5956b6bb0c8aff3512451">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/name">RecipeCatalog</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-1b9a890ee0c540f6e6914dfe">
+<code data-value-pointer="/external_contract/python/stove0_core.RecipeCatalog/unit">export</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="some-implementations/stove0/application/server/src/stove0_core/__init__.py">some-implementations/stove0/application/server/src/stove0_core/__init__.py</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

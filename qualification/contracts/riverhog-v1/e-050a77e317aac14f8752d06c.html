@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: ListProvenanceJournalAgentsOut · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-09dc1e38a978cb3e071a9885.html">riverhog · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: ListProvenanceJournalAgentsOut</h1>
+<section id="contract" data-contract="http-schemas:riverhog:schemas-listprovenancejournalagentsout:243dd922af">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut</code>
+</h3>
+<table id="v-075160555b6c88d9036d8a4f">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-9c9c731840c59a0bd711a352">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-53d2b0520786ccc128e48ea4">
+<tbody>
+<tr>
+<th scope="row">
+<code>agents</code>
+</th>
+<td>
+<table id="v-fb3f42ae3aecfc7db15abb3a">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-0fb8332c9b0bf1711c230a9f">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-56df706bd5ea8d16ebd276cb">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/properties/agents/items/$ref">#/components/schemas/ProvenanceJournalAgentOut</code>
+<span class="kind">string</span> <a href="e-9e5d37a145284877ec701816.html#v-929c31d6128b7c6388afd1d9">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-6bf85f789238ad998d2d1667">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/properties/agents/title">Agents</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ff1a8610733a787c786120cb">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/properties/agents/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>collection_id</code>
+</th>
+<td>
+<table id="v-5581dca06ee98a8e45118ee8">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-f8f053f4f6e08bc10f2b630e">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/properties/collection_id/$ref">#/components/schemas/CollectionId</code>
+<span class="kind">string</span> <a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>journal_id</code>
+</th>
+<td>
+<table id="v-3d10db7781c680d0e23855c4">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-9ad0cec0867d3aae1422c918">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/properties/journal_id/$ref">#/components/schemas/ProvenanceJournalId</code>
+<span class="kind">string</span> <a href="e-895cd7cf122a356f51657a5e.html#v-68931de5ffa142ea7d6e282f">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>next_page_token</code>
+</th>
+<td>
+<table id="v-6b783e5aaeb5c2dc033a6a4f">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-8168125e83981b2128059b32">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-8e4c54809e83b016f8cda15d">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-73de7e17cb3aad8e254cc6bf">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/properties/next_page_token/anyOf/0/$ref">#/components/schemas/BrowsePageToken</code>
+<span class="kind">string</span> <a href="e-7250b6e6ba91c3387623e0ca.html#v-3eaf6f921e858d0a97c6c9bb">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-4a16e300cc6e15e05debddc4">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c03bd78a574225091e49b04a">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/properties/next_page_token/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>page_size</code>
+</th>
+<td>
+<table id="v-f140b2678f9a8310da19a9ec">
+<tbody>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-ab9515dbe81a70f6d8f23632">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/properties/page_size/maximum">100</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-996d082a49dc213e0f6a9fb7">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/properties/page_size/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-663712ed6f3a8e2dfe9e0331">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/properties/page_size/title">Page Size</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-cd77cc6769807874789304cc">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/properties/page_size/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-be4daab0c2c6832b630c9e6e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-6fb0068fd131b1e25330def6">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/required/0">collection_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-71492ef6f5f0c4ebea4d1dc3">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/required/1">journal_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-4075b1c70cef2bf6c22fd6ad">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/required/2">page_size</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-b2b92e4a92166667a2c53075">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/required/3">next_page_token</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-3d4da44194a52be2b2186ed8">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/required/4">agents</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-516e64b134d079904d0eea91">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/title">ListProvenanceJournalAgentsOut</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2cd6985303a3136bdfff8bba">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<p>These records index source constraints; they do not add limits or progression promises.</p>
+<ul>
+<li>
+<code>http:riverhog:components:/schemas/ListProvenanceJournalAgentsOut/properties/agents:cardinality</code>
+<table id="v-e5cda6dbdc7522f1bd749157">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-6c2a70d24a7b2a52eeeefc13">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1agents:cardinality/dimension">cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-fa43d94a09c2109be252192b">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1agents:cardinality/id">http:riverhog:components:/schemas/ListProvenanceJournalAgentsOut/properties/agents:cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-e73983197dbf95227af635f3">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1agents:cardinality/owner">riverhog</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-03c7777eda25971852e99662">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1agents:cardinality/policy">segmented_no_total_max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>progression</code>
+</th>
+<td>
+<table id="v-1b17a8a503f3449ea3f0b90d">
+<tbody>
+<tr>
+<th scope="row">
+<code>default_page_size</code>
+</th>
+<td>
+<span id="v-0bbb8c8c3b281f9952a35d40">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1agents:cardinality/progression/default_page_size">25</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-4292c791cb46c952e856d61d">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1agents:cardinality/progression/kind">mutable-browse</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum_page_size</code>
+</th>
+<td>
+<span id="v-3ecf5b87ad458d8e1219232f">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1agents:cardinality/progression/maximum_page_size">100</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>next_page_token_field</code>
+</th>
+<td>
+<span id="v-24222a6005299606f9124588">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1agents:cardinality/progression/next_page_token_field">next_page_token</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>page_size_parameter</code>
+</th>
+<td>
+<span id="v-7735cbbe79c2b957c5807955">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1agents:cardinality/progression/page_size_parameter">page_size</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>page_token_parameter</code>
+</th>
+<td>
+<span id="v-16623ca3cf39ec26625f89eb">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1agents:cardinality/progression/page_token_parameter">page_token</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-da179c847a640f6ae60be93e">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1agents:cardinality/reason">bounded-route-page</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-634015214dad9950ab715d24">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1agents:cardinality/rule">route-progression/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-26692bf3d9a983d20ef9fcc3">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1agents:cardinality/source_pointer">/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/properties/agents</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-e59197051a3280261b3ba157">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1agents:cardinality/unit">items</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:riverhog:components:/schemas/ListProvenanceJournalAgentsOut/properties/page_size:value</code>
+<table id="v-5141e323cd01ece7cbb71b15">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-9a1e416b0abf7d79135b8d31">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1page_size:value/dimension">value</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-7b43e5fa7860f243137e302a">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1page_size:value/id">http:riverhog:components:/schemas/ListProvenanceJournalAgentsOut/properties/page_size:value</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-9a8bd60098118010bfedc52c">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1page_size:value/maximum">100</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-dc469aa79be22c4fdaae72dd">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1page_size:value/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-17f46818fb2373dc72ba2209">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1page_size:value/owner">riverhog</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-6c3aaf9e20f65687e9bb52d0">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1page_size:value/policy">contract_max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-1d9d31f1798b9d0caf80e215">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1page_size:value/reason">schema-maximum</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-286f9cf6fef94a5c0873d076">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1page_size:value/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-3ce84ab6367c2003ca965e6b">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1page_size:value/source_pointer">/external_contract/http_openapi/riverhog/components/schemas/ListProvenanceJournalAgentsOut/properties/page_size</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-3e412580ed72dc85463e7513">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1ListProvenanceJournalAgentsOut~1properties~1page_size:value/unit">schema-value</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

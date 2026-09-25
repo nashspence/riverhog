@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: ArchiveCopyOut · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-09dc1e38a978cb3e071a9885.html">riverhog · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: ArchiveCopyOut</h1>
+<section id="contract" data-contract="http-schemas:riverhog:schemas-archivecopyout:de6f1bf56f">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut</code>
+</h3>
+<table id="v-b315c612f6317ffa3b01ce45">
+<tbody>
+<tr>
+<th scope="row">
+<code>discriminator</code>
+</th>
+<td>
+<table id="v-c6659fc9ec49f3e1a5210d25">
+<tbody>
+<tr>
+<th scope="row">
+<code>mapping</code>
+</th>
+<td>
+<table id="v-0ce61ade81e15afb81ab209e">
+<tbody>
+<tr>
+<th scope="row">
+<code>failed</code>
+</th>
+<td>
+<span id="v-c435c4b741645bf6a60866bc">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut/discriminator/mapping/failed">#/components/schemas/FailedArchiveCopyOut</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pending</code>
+</th>
+<td>
+<span id="v-9348a952f3259097e4d3adcd">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut/discriminator/mapping/pending">#/components/schemas/IncompleteArchiveCopyOut</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>retrying</code>
+</th>
+<td>
+<span id="v-d512e2dbdad89a9d42a06886">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut/discriminator/mapping/retrying">#/components/schemas/IncompleteArchiveCopyOut</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>uploaded</code>
+</th>
+<td>
+<span id="v-1cc65ac7634c4c952175e4aa">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut/discriminator/mapping/uploaded">#/components/schemas/UploadedArchiveCopyOut</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>uploading</code>
+</th>
+<td>
+<span id="v-b23406376569a0f6eadd7f4a">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut/discriminator/mapping/uploading">#/components/schemas/IncompleteArchiveCopyOut</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>propertyName</code>
+</th>
+<td>
+<span id="v-fa8f55386b06389deef2145f">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut/discriminator/propertyName">state</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>oneOf</code>
+</th>
+<td>
+<table id="v-ee270840d15b5b883dfe3779">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-c23c3acf2ffd9dac8804ad7c">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-e9366516186144126c453f9f">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut/oneOf/0/$ref">#/components/schemas/IncompleteArchiveCopyOut</code>
+<span class="kind">string</span> <a href="e-8c8ca4ac70f0d62b796074c9.html#v-f610daf7ae1311041a406cd6">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-ce48c6598917f09db4e5f0bd">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-3c148bfa68ca44b81336894f">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut/oneOf/1/$ref">#/components/schemas/UploadedArchiveCopyOut</code>
+<span class="kind">string</span> <a href="e-2383b81b78e902c849fe7c40.html#v-1ee1a5065635f40906aebbe0">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-801c95d81d983053e9620856">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-f763c2a24660d13c34b79776">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut/oneOf/2/$ref">#/components/schemas/FailedArchiveCopyOut</code>
+<span class="kind">string</span> <a href="e-a29ec3ebfa057894d8b3f41b.html#v-a43ee22d2ffcb16dfb227977">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-ef910131ef2d60a5c8e048d5">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ArchiveCopyOut/title">ArchiveCopyOut</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

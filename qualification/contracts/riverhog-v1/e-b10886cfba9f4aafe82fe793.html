@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: DiscardCollectionUploadRequest · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-09dc1e38a978cb3e071a9885.html">riverhog · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: DiscardCollectionUploadRequest</h1>
+<section id="contract" data-contract="http-schemas:riverhog:schemas-discardcollectionuploadrequest:570915097c">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/riverhog/components/schemas/DiscardCollectionUploadRequest</code>
+</h3>
+<table id="v-8f24d030c0d3eaba0a1902e7">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-0e6ededd2d0ce266c3e8f8f7">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/DiscardCollectionUploadRequest/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-4dd19e62615809768693f338">
+<tbody>
+<tr>
+<th scope="row">
+<code>challenge</code>
+</th>
+<td>
+<table id="v-60f0a9dd51d1750185fe93c1">
+<tbody>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-f724af751a92ceb0f71fe387">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/DiscardCollectionUploadRequest/properties/challenge/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-236881c066a6d98796cefa42">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/DiscardCollectionUploadRequest/properties/challenge/pattern">^\S(?:[\s\S]*\S)?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-48abe788cb79bcc9b847172c">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/DiscardCollectionUploadRequest/properties/challenge/title">Challenge</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fa634e4aa6669afccdb3a994">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/DiscardCollectionUploadRequest/properties/challenge/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-7232eae58013cd5347fe5d88">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-d28432d411cbc2e2b31c8b21">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/DiscardCollectionUploadRequest/required/0">challenge</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-c390fe52ba22e429038bc0e6">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/DiscardCollectionUploadRequest/title">DiscardCollectionUploadRequest</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8b77b67f572e99ccb7321d7a">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/DiscardCollectionUploadRequest/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

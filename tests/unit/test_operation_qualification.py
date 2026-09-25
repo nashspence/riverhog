@@ -182,13 +182,15 @@ def test_exact_sha_evidence_contains_only_generated_current_rows(
     assert len(payload["performance"]["local_api"]["operations"]) > sum(
         item.provider_evidence is None for item in matrix
     )
-    extent = payload["qualification"]["extent_contract"]
-    assert extent["status"] == "passed"
-    assert extent["format"] == "riverhog-contract-machine-closure/v1"
-    assert extent["extent_format"] == "riverhog-extent-contract/v1"
-    assert extent["extent_decisions"] > 0
-    assert len(extent["projection_sha256"]) == 64
-    assert len(extent["extent_sha256"]) == 64
+    contract = payload["qualification"]["contract_inputs"]
+    assert contract["status"] == "validated"
+    assert contract["format"] == "riverhog-contract-closure/v1"
+    assert contract["audit_format"] == "riverhog-contract-audit-record/v1"
+    assert contract["extent_analysis_format"] == "riverhog-extent-contract/v1"
+    assert contract["extent_decisions"] > 0
+    assert len(contract["closure_sha256"]) == 64
+    assert len(contract["audit_sha256"]) == 64
+    assert len(contract["extent_analysis_sha256"]) == 64
     assert payload["qualification"]["cli_human_json_projection"]["status"] == "not_established"
     assert payload["qualification"]["bounded_state_access"]["status"] == "not_established"
     assert payload["qualification"]["event_cursor_restart_resume"]["status"] == "not_established"
@@ -436,6 +438,8 @@ def test_release_operation_predicate_consumes_current_evidence_and_rejects_missi
     artifact = tmp_path / "qualification/contracts/riverhog-v1.json"
     artifact.parent.mkdir(parents=True)
     shutil.copyfile(module.CONTRACT_FREEZE, artifact)
+    audit = artifact.with_name("riverhog-v1-audit.json")
+    shutil.copyfile(module.CONTRACT_FREEZE.with_name(audit.name), audit)
     evidence_path = tmp_path / "operations.json"
     step = _release_qualification_step("Verify exact-SHA operation evidence")
 
@@ -476,8 +480,9 @@ def test_release_operation_predicate_consumes_current_evidence_and_rejects_missi
     mutations = [
         (("source_sha",), "b" * 40),
         (("performance", "local_api", "source_sha"), "b" * 40),
-        (("qualification", "extent_contract", "projection_sha256"), "0" * 64),
-        (("qualification", "extent_contract", "extent_sha256"), "0" * 64),
+        (("qualification", "contract_inputs", "closure_sha256"), "0" * 64),
+        (("qualification", "contract_inputs", "audit_sha256"), "0" * 64),
+        (("qualification", "contract_inputs", "extent_analysis_sha256"), "0" * 64),
         (("summary", "operations"), len(observed["operations"]) + 1),
         (("summary", "applications"), {"unexpected-application": 1}),
         (("summary", "classifications"), {"unexpected-classification": 1}),
@@ -497,13 +502,13 @@ def test_release_operation_predicate_consumes_current_evidence_and_rejects_missi
         assert rejected.returncode == 1, (path, value, rejected.stdout, rejected.stderr)
         assert rejected.stdout.strip() == "false", path
 
-    frozen = json.loads(artifact.read_bytes())
-    del frozen["projection"]["external_contract"]["extents"]["sha256"]
-    artifact.write_text(json.dumps(frozen))
+    frozen = json.loads(audit.read_bytes())
+    del frozen["extent_analysis"]["source_sha256"]
+    audit.write_text(json.dumps(frozen))
     invalid = deepcopy(qualified)
-    invalid["qualification"]["extent_contract"].update(
-        projection_sha256=hashlib.sha256(artifact.read_bytes()).hexdigest(),
-        extent_sha256=None,
+    invalid["qualification"]["contract_inputs"].update(
+        audit_sha256=hashlib.sha256(audit.read_bytes()).hexdigest(),
+        extent_analysis_sha256=None,
     )
     assert verify(invalid).returncode != 0
 
@@ -512,7 +517,9 @@ def test_release_qualification_record_uses_current_artifact_identities(tmp_path:
     artifact = tmp_path / "qualification/contracts/riverhog-v1.json"
     artifact.parent.mkdir(parents=True)
     shutil.copyfile(REPO_ROOT / "qualification/contracts/riverhog-v1.json", artifact)
-    frozen = json.loads(artifact.read_bytes())
+    audit = artifact.with_name("riverhog-v1-audit.json")
+    shutil.copyfile(REPO_ROOT / "qualification/contracts/riverhog-v1-audit.json", audit)
+    frozen = json.loads(audit.read_bytes())
     summaries = {}
     for name in ("operations", "database", "release"):
         summary = tmp_path / f"{name}.json"
@@ -544,14 +551,12 @@ def test_release_qualification_record_uses_current_artifact_identities(tmp_path:
     output = tmp_path / "qualification.json"
     qualification = json.loads(output.read_text())
     assert (
-        qualification["contract_projection_sha256"]
+        qualification["contract_closure_sha256"]
         == hashlib.sha256(artifact.read_bytes()).hexdigest()
     )
-    assert qualification["contract_trace_sha256"] == frozen["identities"]["trace_sha256"]
-    assert (
-        qualification["extent_contract_sha256"]
-        == frozen["projection"]["external_contract"]["extents"]["sha256"]
-    )
+    assert qualification["contract_audit_sha256"] == hashlib.sha256(audit.read_bytes()).hexdigest()
+    assert qualification["contract_trace_sha256"] == frozen["source_identities"]["trace_sha256"]
+    assert qualification["extent_analysis_sha256"] == frozen["extent_analysis"]["source_sha256"]
     assert qualification["source_sha"] == environment["SOURCE_SHA"]
     assert qualification["published"] is False
     for name, path in summaries.items():
@@ -561,15 +566,15 @@ def test_release_qualification_record_uses_current_artifact_identities(tmp_path:
         )
 
     for identity_path in (
-        ("identities", "trace_sha256"),
-        ("projection", "external_contract", "extents", "sha256"),
+        ("source_identities", "trace_sha256"),
+        ("extent_analysis", "source_sha256"),
     ):
         invalid = deepcopy(frozen)
         target = invalid
         for key in identity_path[:-1]:
             target = target[key]
         del target[identity_path[-1]]
-        artifact.write_text(json.dumps(invalid))
+        audit.write_text(json.dumps(invalid))
         assert record().returncode != 0, identity_path
         assert output.read_text() == "", identity_path
 
@@ -580,8 +585,7 @@ def test_operation_evidence_rejects_an_incomplete_extent_authority(tmp_path: Pat
     authority.write_text(
         json.dumps(
             {
-                "format": "riverhog-contract-machine-closure/v1",
-                "atlas": {"directory": "riverhog-v1", "documents": []},
+                "format": "riverhog-contract-closure/v1",
             }
         )
     )
@@ -589,7 +593,7 @@ def test_operation_evidence_rejects_an_incomplete_extent_authority(tmp_path: Pat
     try:
         module._contract_freeze_identity(authority)
     except module.QualificationError as exc:
-        assert "extent authority is unavailable" in str(exc)
+        assert "Closure and Audit Record are unavailable" in str(exc)
     else:
         raise AssertionError("incomplete extent authority must fail runtime qualification")
 

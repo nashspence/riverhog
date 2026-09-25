@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>riverhog_protocol.ProcessingClaimRenewDocument · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-99b3d079e6c87a1dff566c19.html">riverhog-protocol · Python</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>riverhog_protocol.ProcessingClaimRenewDocument</h1>
+<section id="contract" data-contract="python:riverhog-protocol:riverhog-protocol-processingclaimrenewdocument:55743c6830">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/python/riverhog_protocol.ProcessingClaimRenewDocument</code>
+</h3>
+<table id="v-67d82902708dedeb67562183">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-83488c7314050ae0a779ad92">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-8620053107b127134b9f41fc">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimRenewDocument/contract/kind">class</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-0e65013f9045d7e515ecd64d">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-3820564f19d9b68276c6fc06">
+<tbody>
+<tr>
+<th scope="row">
+<code>NonnegativeDecimal</code>
+</th>
+<td>
+<table id="v-4e37479e1d3295300a2ed59d">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-e9ceb88bdfa53f62a65d6f26">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimRenewDocument/contract/schema/$defs/NonnegativeDecimal/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f7e692f58ee7937839f690c6">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimRenewDocument/contract/schema/$defs/NonnegativeDecimal/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-97774f793c96714e80118524">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimRenewDocument/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-f5a818820f9ed8c6ea1b889c">
+<tbody>
+<tr>
+<th scope="row">
+<code>fence</code>
+</th>
+<td>
+<table id="v-c6ad8973f0c7f57801004062">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-d4f60385fa073d79bfbba111">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimRenewDocument/contract/schema/properties/fence/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-ed834d3b1b4db700cdf36543.html#v-4e37479e1d3295300a2ed59d">Definition</a>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-49be71ea2f34f8a5b40e0ff3">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimRenewDocument/contract/schema/properties/fence/ge">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>lease_seconds</code>
+</th>
+<td>
+<table id="v-c75d18c697b7e0934bdc6a26">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-7e07ebb8577f4271bad13b17">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimRenewDocument/contract/schema/properties/lease_seconds/default">1800</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-77126f9c63ed9ce2f3f0224e">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimRenewDocument/contract/schema/properties/lease_seconds/maximum">86400</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-9622be4e6a791cdd4ee2b9e9">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimRenewDocument/contract/schema/properties/lease_seconds/minimum">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a4bd1e1c1805444289f0e564">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimRenewDocument/contract/schema/properties/lease_seconds/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-b9adf706594aeadbb9c6be94">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-20fae9e1da21ab73a3dd5909">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimRenewDocument/contract/schema/required/0">fence</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0095a52f9ffea72a370655c6">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimRenewDocument/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-c69303d0eea1107598f1da87">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimRenewDocument/contract/signature">&#x27;(*, fence: Annotated[NonnegativeDecimal, Ge(ge=1)], lease_seconds: Annotated[int, Ge(ge=30), Le(le=86400)] = 1800) -&gt; None&#x27;</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-409aa45f28a14db004c12849">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimRenewDocument/distribution">riverhog-protocol</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-ae7fd162eaefa582e0482c0b">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimRenewDocument/module">riverhog_protocol</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-a6c8ba6b1359de321c47a3db">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimRenewDocument/name">ProcessingClaimRenewDocument</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-e58af8205b8ce23e1000ae99">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ProcessingClaimRenewDocument/unit">export</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="packages/riverhog-protocol/src/riverhog_protocol/__init__.py">packages/riverhog-protocol/src/riverhog_protocol/__init__.py</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

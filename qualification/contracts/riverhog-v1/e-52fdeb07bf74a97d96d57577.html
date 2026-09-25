@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>generated:riverhog-storage-adapter: WriteSession · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-4cb6451250139576fc538025.html">riverhog-storage-adapter-support · Process Protocol Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>generated:riverhog-storage-adapter: WriteSession</h1>
+<section id="contract" data-contract="process-protocol-schemas:riverhog-storage-adapter-support:generated-riverhog-storage-adapter-writesession:54ab7331ec">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession</code>
+</h3>
+<table id="v-5d276c77f516d5794eadbdb8">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-6064293bff378f6217b21fc6">
+<tbody>
+<tr>
+<th scope="row">
+<code>PositiveDecimal</code>
+</th>
+<td>
+<table id="v-6d84db3c977da2cd5e72c08b">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-e9e157f7322948f89d9a8a07">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession/$defs/PositiveDecimal/pattern">^[1-9][0-9]*(?![\s\S])</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-57c6d9f62d89ebddfa41656a">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession/$defs/PositiveDecimal/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-bee685210f8628a4ba3126aa">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-09807592e3b26bfe448c169c">
+<tbody>
+<tr>
+<th scope="row">
+<code>expected_bytes</code>
+</th>
+<td>
+<table id="v-b573b398f3370d677b2ca430">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-23ad7cbe39d327fbc95de9cf">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession/properties/expected_bytes/$ref">#/$defs/PositiveDecimal</code>
+<span class="kind">string</span> <a href="e-52fdeb07bf74a97d96d57577.html#v-6d84db3c977da2cd5e72c08b">Definition</a>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-f29d9c3d1686c4b7ce66c3aa">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession/properties/expected_bytes/description">Exact immutable-object byte length admitted by this write session. The value remains fixed until the write becomes terminal.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>object_path</code>
+</th>
+<td>
+<table id="v-f382e94026830b535a73c924">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-2f4089f443df9f3a24c47244">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession/properties/object_path/maxLength">4096</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-3e0baac00ac27c927865757a">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession/properties/object_path/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-8643d759cc88507280729ac6">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession/properties/object_path/title">Object Path</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4877bb3b68ac53b1e0cd5ac9">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession/properties/object_path/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>write_token</code>
+</th>
+<td>
+<table id="v-bb12b9b0065de24b0b65ee96">
+<tbody>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-f1ab71b9cecdf072f207a61a">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession/properties/write_token/description">Opaque adapter-owned persistable continuation handle. For the same configured adapter it remains replayable across client, transport, Riverhog, and adapter process restarts until completion, explicit abort, or caller-authorized incomplete-write reclamation makes the write terminal.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-e2a53802090b7e6a3dbe14e2">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession/properties/write_token/maxLength">4000</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-1b394ee8a6d79c51225c86bf">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession/properties/write_token/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-bdac07fd3e97516c9ddfac03">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession/properties/write_token/title">Write Token</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0543eb1c860f34244efe1d13">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession/properties/write_token/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-80cb8c0bdabe4a04d85b6ee7">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-858290355aae4eed916cda0f">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession/required/0">object_path</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-a30014eb05fee229498b3042">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession/required/1">expected_bytes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-b12cc1e78c8eb69bb273975b">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession/required/2">write_token</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-9a6acf1beedf5fa31a001114">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession/title">WriteSession</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-514d7def0ee5c67f02c384c7">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py">packages/riverhog-storage-adapter-support/src/riverhog_storage_adapter_support/schemas.py::storage_adapter_schema_bundle</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<p>These records index source constraints; they do not add limits or progression promises.</p>
+<ul>
+<li>
+<code>protocol:generated:riverhog-storage-adapter:/schemas/WriteSession/properties/object_path:length</code>
+<table id="v-0659201e714e8fc9996b36dc">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-097a10f50baa01d4e63e63d8">
+<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1WriteSession~1properties~1object_path:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-3d85f47d8691947ec75bc8e6">
+<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1WriteSession~1properties~1object_path:length/id">protocol:generated:riverhog-storage-adapter:/schemas/WriteSession/properties/object_path:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-3ad3b2c5d0e6a061dcff78da">
+<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1WriteSession~1properties~1object_path:length/maximum">4096</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-047a9b210365f2b32198276c">
+<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1WriteSession~1properties~1object_path:length/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-425ecb7d79a1cdfb470ca9b1">
+<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1WriteSession~1properties~1object_path:length/owner">riverhog-storage-adapter-protocol</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-fce2e1e6d29891075b2e79c8">
+<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1WriteSession~1properties~1object_path:length/policy">contract_max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-b989ac9e21b002f745e51e80">
+<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1WriteSession~1properties~1object_path:length/reason">schema-maximum</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-aee6c385e70fb7e831a227d7">
+<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1WriteSession~1properties~1object_path:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-6885739b4c01d097cffe81d1">
+<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1WriteSession~1properties~1object_path:length/source_pointer">/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession/properties/object_path</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-973ffbf15f69a712468292d6">
+<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1WriteSession~1properties~1object_path:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>protocol:generated:riverhog-storage-adapter:/schemas/WriteSession/properties/write_token:length</code>
+<table id="v-5e79999b7480379ad2e0fba7">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-306ecdaab27ec54ff48a5256">
+<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1WriteSession~1properties~1write_token:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-fb2ed94b2b64d5ed29041e3d">
+<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1WriteSession~1properties~1write_token:length/id">protocol:generated:riverhog-storage-adapter:/schemas/WriteSession/properties/write_token:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-4f3f8612787a74c6d2c596c4">
+<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1WriteSession~1properties~1write_token:length/maximum">4000</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-061898affe915a2b916ce375">
+<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1WriteSession~1properties~1write_token:length/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-3b40c7edd8c434d6bbf4ba9e">
+<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1WriteSession~1properties~1write_token:length/owner">riverhog-storage-adapter-protocol</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-3dc09210e831c9d454bac42c">
+<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1WriteSession~1properties~1write_token:length/policy">contract_max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-5c12ed1c9cf29195bd8ec979">
+<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1WriteSession~1properties~1write_token:length/reason">schema-maximum</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-04b3bdcb38dafd5fa691d964">
+<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1WriteSession~1properties~1write_token:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-bff7b1160ba2b90e9af46821">
+<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1WriteSession~1properties~1write_token:length/source_pointer">/external_contract/protocol_schemas/generated:riverhog-storage-adapter/schemas/WriteSession/properties/write_token</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-5fdf5d64a90d46ef402cf1bb">
+<code data-value-pointer="/audit/decisions/protocol:generated:riverhog-storage-adapter:~1schemas~1WriteSession~1properties~1write_token:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: CoordinationBranchPlan · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: CoordinationBranchPlan</h1>
+<section id="contract" data-contract="http-schemas:stove0:schemas-coordinationbranchplan:6cd5d5c6dc">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan</code>
+</h3>
+<table id="v-88cc4139d6a81c2e0d45c35f">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-886480f4fb3836535374bdef">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-83a52d4c7d76c65742f53914">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/description">One named required branch-bound child coordinator.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-e214ac351dfc3b3441d70952">
+<tbody>
+<tr>
+<th scope="row">
+<code>artifact_selection</code>
+</th>
+<td>
+<table id="v-bba86c9b0ff50244b5d3a59d">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-e09fa7ec6ab2b040c7eb3b39">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/properties/artifact_selection/$ref">#/components/schemas/ArtifactSelectionRef</code>
+<span class="kind">string</span> <a href="e-d0ddf7c7a04ac3bd6c4ff651.html#v-bd12209c434d86438c5c5efb">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>branch_id</code>
+</th>
+<td>
+<table id="v-7754ad69f6c7403969b6313a">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-40e01db764f3cfca6f2aaa48">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/properties/branch_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-4199baf4ae6d730848be768e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/properties/branch_id/title">Branch Id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-87a9620138ea180f91e2abc0">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/properties/branch_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>branch_set_sha256</code>
+</th>
+<td>
+<table id="v-42606304691b9a1f11a4d42c">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-bf00d5a841dbb79a02bdaa0b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/properties/branch_set_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-38c15a846572b6da06aada69">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/properties/branch_set_sha256/title">Branch Set Sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-011f68e5abfefadacd3e136c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/properties/branch_set_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<table id="v-329b8ba6f968adcb10080a89">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-c6534996f29c290449e6994b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/properties/kind/const">coordination</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-76e70d2107560d61de870e03">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/properties/kind/default">coordination</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-e436a5e2a2b0f97f0ae422a5">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/properties/kind/title">Kind</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-38d0ab99588c548453cc9fe2">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/properties/kind/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>work</code>
+</th>
+<td>
+<table id="v-fcffcaa804b3ba855d3db6c5">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-d0f7065c153e45c928f24d74">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/properties/work/$ref">#/components/schemas/WorkIdentity</code>
+<span class="kind">string</span> <a href="e-1110829e373d996c619f19a2.html#v-4f74f11a9ba26db932e44a71">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-04d356bcb3dbe6f469ed7167">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-2af1a9b03e6eccbf069fe38a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/required/0">branch_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-f333692ca74b3be5310b904b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/required/1">artifact_selection</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-4cf007a6978b3f10a525559c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/required/2">work</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-8064219b89337eebc049c821">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/required/3">branch_set_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-4ea2e8050070902760d57d3f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/title">CoordinationBranchPlan</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-36097ac18fbb731b2b149a7c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<p>These records index source constraints; they do not add limits or progression promises.</p>
+<ul>
+<li>
+<code>http:stove0:components:/schemas/CoordinationBranchPlan/properties/branch_set_sha256:length</code>
+<table id="v-1b46ac0db4da2f69040ec7a5">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-01dc9a541f1f90d2ff012d9e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-d0114dcc9bc7890c89d67e26">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/id">http:stove0:components:/schemas/CoordinationBranchPlan/properties/branch_set_sha256:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-c95e382a407cd7d9730314f0">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-61a2b2cf6bcdad54efac7312">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-3bb389ef9550dcbaae8c7c7d">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-e2e62a1722e1b73937279f3b">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-6b5412aa5a2666149e6efb04">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-cf1cc43956704b4aa66c95c9">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-366e7d158396747b7f98bba9">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-29f2e00ddb4c12aa2137fce8">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-48d24ad87248c7e00217408a">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/CoordinationBranchPlan/properties/branch_set_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-32de9c343ed9430c581589a8">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1CoordinationBranchPlan~1properties~1branch_set_sha256:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

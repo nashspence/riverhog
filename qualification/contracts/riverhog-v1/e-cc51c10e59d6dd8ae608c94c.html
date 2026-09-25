@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GET /v1/jobs/{job_id} · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-1d055379ac0c86b137cd0691.html">stove0-target-support · Process Protocol Operations</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>GET /v1/jobs/{job_id}</h1>
+<section id="contract" data-contract="process-protocol-operations:stove0-target-support:get-v1-jobs-job-id:f1533c5339">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/3</code>
+</h3>
+<table id="v-bc8de15cff507e7b7241d7d0">
+<tbody>
+<tr>
+<th scope="row">
+<code>error_schema</code>
+</th>
+<td>
+<span id="v-395852106cf41672f0c781f8">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/3/error_schema">ErrorOut</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>errors</code>
+</th>
+<td>
+<table id="v-4d97d84a6b334d64e546e2e3">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-4a9b933a1e43d196546f9a5a">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-1796d875f386b73cf89c6d03">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/3/errors/0/code">bad_request</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-29e860f255a6901bcd52aec3">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/3/errors/0/status">400</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-1da6e16868e3cfe37ce212ce">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-7c7a07100e905defea99a1c5">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/3/errors/1/code">unauthorized</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-d572301430679a81b0d4effa">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/3/errors/1/status">401</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-3d2fbd907bd51cd3c1f23b06">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-8caf8571df48a412548748ea">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/3/errors/2/code">job_not_found</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-4e786984367af42b4476c6c5">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/3/errors/2/status">404</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<table id="v-3d1c1de27731b7caa1fafabf">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-4a71e1818136624d31d8f534">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/3/errors/3/code">target_failed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-077d2589b918a508a91dc862">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/3/errors/3/status">500</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>method</code>
+</th>
+<td>
+<span id="v-aaadd92710e1db00dc5d5f92">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/3/method">GET</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<span id="v-73ee0503359a164757ad94a8">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/3/path">/v1/jobs/{job_id}</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path_parameters</code>
+</th>
+<td>
+<table id="v-dc07d67b9f89d95ea1edb7da">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-b5311e63899e2c857e27a013">
+<tbody>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-26e15790067bd6d199fa51e6">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/3/path_parameters/0/name">job_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-83fdfd204b38943c82cad2d0">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-9ecb2b7f0b3c47a3c741968d">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/3/path_parameters/0/schema/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d56731bc1b3a488969a52876">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/3/path_parameters/0/schema/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>request</code>
+</th>
+<td>
+<table id="v-eefa80c70075d2f8c8c9a9b2">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-1065242f0d27e7aa59b049b5">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/3/request/kind">none</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<span id="v-237a23fa10bd1d6a34736a7e">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/3/request/schema">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>response</code>
+</th>
+<td>
+<table id="v-5099fa7ca84d82d0345fde95">
+<tbody>
+<tr>
+<th scope="row">
+<code>headers</code>
+</th>
+<td>
+<span id="v-adbb2906cea8a9a2b43308d6">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/3/response/headers">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-f23c70f16cc37f5d5da0c92b">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/3/response/kind">json</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<span id="v-1d4e8a034d19715f0a2642cd">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/3/response/schema">TargetJobStatus</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>statuses</code>
+</th>
+<td>
+<table id="v-dbae86c05f7f9310377d45e5">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-66275def57db715a4706e751">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/3/response/statuses/0">200</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="some-implementations/stove0/packages/target-support/src/stove0_target_support/schemas.py">some-implementations/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,1133 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: CollectionFinalizedData · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-09dc1e38a978cb3e071a9885.html">riverhog · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: CollectionFinalizedData</h1>
+<section id="contract" data-contract="http-schemas:riverhog:schemas-collectionfinalizeddata:62b28ef6ec">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData</code>
+</h3>
+<table id="v-99b0948ee4f11c481d2ccb94">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-08da378d20428fcc4c865827">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-f18272fc55b58bbf905f273c">
+<tbody>
+<tr>
+<th scope="row">
+<code>actor</code>
+</th>
+<td>
+<table id="v-10253e13a401f8993a207cc8">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-0df3f64050ef96422cacb403">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/actor/$ref">#/components/schemas/RiverhogActor</code>
+<span class="kind">string</span> <a href="e-a101b66244bc484bbb59fd90.html#v-dfa081e99d379a32b5a26a6e">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>archive_root_sha256</code>
+</th>
+<td>
+<table id="v-943808cecba92dc150ed839c">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-460844b3c05a7238f7acf921">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/archive_root_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-e7cf7b7ecd95552e33805976">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/archive_root_sha256/title">Archive Root Sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a312202b1fbe0e45e4cfefb3">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/archive_root_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>bytes_total</code>
+</th>
+<td>
+<table id="v-0f4ed7f4152c70f9be5044f5">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-9ce07fad943b23168c7fbb9e">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/bytes_total/minimum">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-db82bc97831f7723688f2940">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/bytes_total/title">Bytes Total</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-17b80a705621b673937f687f">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/bytes_total/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>collection_created_at</code>
+</th>
+<td>
+<table id="v-072c25f017a40b82a078da5d">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-401e01bd31b7f197dab3d864">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/collection_created_at/maxLength">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-dce527c309793ba7b261a032">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/collection_created_at/minLength">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-2358469a71a4c6d60b6c2cc4">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/collection_created_at/pattern">^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-22cbed4f4e7a3dca7e66eb45">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/collection_created_at/title">Collection Created At</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4856d65a0c6e44d6f872f09c">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/collection_created_at/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>collection_id</code>
+</th>
+<td>
+<table id="v-b9b9559b23162d3627e71eed">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-546afa7eb6ad622d03e2b156">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/collection_id/$ref">#/components/schemas/CollectionId</code>
+<span class="kind">string</span> <a href="e-f313cce11055dc4c6fad0fe7.html#v-9d2f364b3d3860be04f82801">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>context</code>
+</th>
+<td>
+<table id="v-634b16fda52c1a167d737df2">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-b04e4d3b80bda1c29fcedb5d">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-3361a1cab5568b15bc0f758e">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-e6a79c2dd064e5e251e54dcf">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/context/anyOf/0/additionalProperties">true</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-876491c35cc9ecfab29cb334">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/context/anyOf/0/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-encoded-bytes-max</code>
+</th>
+<td>
+<span id="v-6ebbdd44819ae2706acb7abf">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/context/anyOf/0/x-riverhog-encoded-bytes-max">4096</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-extent</code>
+</th>
+<td>
+<table id="v-389100ce14a06ad2e21a232e">
+<tbody>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-94acc62fbbfc4b582088f1da">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/context/anyOf/0/x-riverhog-extent/policy">contract_max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-321bc1ab1095459255367568">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/context/anyOf/0/x-riverhog-extent/reason">bounded-lifecycle-event-context</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-28ff7b988ecc45a83f9bc12a">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-80c99077fb53b6c9de1df646">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/context/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-f3f484d75309a512c13feb9b">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/context/title">Context</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>files_total</code>
+</th>
+<td>
+<table id="v-1b21fd8bfc96c454cb2a787d">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-f3ea202cbbdcf9351d867353">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/files_total/minimum">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-fa115982dfd858eff51dce48">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/files_total/title">Files Total</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2aff7cf513fb9efd06ae8cf2">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/files_total/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>initiator</code>
+</th>
+<td>
+<table id="v-881387cb4589588f60f5908b">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-a57e80cd67b5b5496cb21742">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/initiator/$ref">#/components/schemas/RiverhogActor</code>
+<span class="kind">string</span> <a href="e-a101b66244bc484bbb59fd90.html#v-dfa081e99d379a32b5a26a6e">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-3354223e6268aafb7bc6b19e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-86927b4d7b2ca2da8165bcfb">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/required/0">actor</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-c03d1745df11a6217c982a79">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/required/1">initiator</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-ac8dd5350876ce4171b5e034">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/required/2">collection_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-4d1d06740a7ee3bdf6f686f8">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/required/3">collection_created_at</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-0855ecd0f7ed901d404b894d">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/required/4">files_total</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-7e2e449acca89d3d360af872">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/required/5">bytes_total</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-354de3d9711064c0482d0631">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/required/6">archive_root_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-9d44dee5db54f18f6f112579">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/title">CollectionFinalizedData</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0b32ac852c12ebcf3aa4faac">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<p>These records index source constraints; they do not add limits or progression promises.</p>
+<ul>
+<li>
+<code>http:riverhog:components:/schemas/CollectionFinalizedData/properties/archive_root_sha256:length</code>
+<table id="v-9382ef2a59ce5a4b49443994">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-86fc930c33643c72fa1b4057">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1archive_root_sha256:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-10a64f58a1c83210991614a1">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1archive_root_sha256:length/id">http:riverhog:components:/schemas/CollectionFinalizedData/properties/archive_root_sha256:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-1421ce1db0632b5469c0671c">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1archive_root_sha256:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-a361e6d2d01276cfec0736e4">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1archive_root_sha256:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-82e531f5c8c046c098c8b0f9">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1archive_root_sha256:length/owner">riverhog</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-568de9406d53b727062aa928">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1archive_root_sha256:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-9252713f2d8f322845056ac3">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1archive_root_sha256:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-986a347286e3911d32194f9f">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1archive_root_sha256:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-29b4b38291200b9e79cb152d">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-d3fc9562c662a4a0c533c194">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1archive_root_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-4ad904efd3cf450c227d1a63">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1archive_root_sha256:length/source_pointer">/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/archive_root_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-53f09bf88abbe8d69478b039">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1archive_root_sha256:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:riverhog:components:/schemas/CollectionFinalizedData/properties/collection_created_at:length</code>
+<table id="v-d8136954b4bb69ad3e199907">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-088375f102ee8ddb4af1e05a">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1collection_created_at:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-5a51b0694be7a11eb298162d">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1collection_created_at:length/id">http:riverhog:components:/schemas/CollectionFinalizedData/properties/collection_created_at:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-5e35befc159add8e4b134b41">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1collection_created_at:length/maximum">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-723b5b27335e1435458a2e4c">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1collection_created_at:length/minimum">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-f4fbb9bd0605d1970dc25e73">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1collection_created_at:length/owner">riverhog</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-c322347dabd422b8d608145c">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1collection_created_at:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-2e17e946bdcffcf866fd6cfb">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1collection_created_at:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-28e9b9e47d57da9f6d24572a">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1collection_created_at:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-ae03e7726b71da065b90500f">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1collection_created_at:length/source_pointer">/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/collection_created_at</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-b98a5767b981494bb9714715">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1collection_created_at:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:riverhog:components:/schemas/CollectionFinalizedData/properties/context/anyOf/0:encoded-bytes</code>
+<table id="v-3d908f02fff5f23f766368da">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-ca519d05cf936b3eef1ed839">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:encoded-bytes/dimension">encoded-size</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-e5bfbe5b53c047853308331f">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:encoded-bytes/id">http:riverhog:components:/schemas/CollectionFinalizedData/properties/context/anyOf/0:encoded-bytes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-5a34fece9f2f6b08f201ff1f">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:encoded-bytes/maximum">4096</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-07d50d3bc805ea5620374aa4">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:encoded-bytes/owner">riverhog</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-86dc4086494e87b77dda8c8f">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:encoded-bytes/policy">contract_max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-c803d79362823842c31a7c50">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:encoded-bytes/reason">bounded-lifecycle-event-context</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-83beb512ea4e814675e11d36">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:encoded-bytes/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-ac8d8ebc88d4d9710f301498">
+<tbody>
+<tr>
+<th scope="row">
+<code>field</code>
+</th>
+<td>
+<span id="v-673f971756989837f83228d4">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:encoded-bytes/source_constraint/field">x-riverhog-encoded-bytes-max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-f611c9837ad9b6f8bfffd30c">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:encoded-bytes/source_pointer">/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/context/anyOf/0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-2b96c2b9bdb9984949f1176e">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:encoded-bytes/unit">bytes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:riverhog:components:/schemas/CollectionFinalizedData/properties/context/anyOf/0:map-cardinality</code>
+<table id="v-6adee584eccb43274f040e10">
+<tbody>
+<tr>
+<th scope="row">
+<code>capacity_authority</code>
+</th>
+<td>
+<table id="v-6aeb695d18d54b664481a692">
+<tbody>
+<tr>
+<th scope="row">
+<code>declared_maximum</code>
+</th>
+<td>
+<span id="v-980bc791c95b4368208169be">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:map-cardinality/capacity_authority/declared_maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>hidden_maximum</code>
+</th>
+<td>
+<span id="v-68fee1963ded6fbc92062cb5">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:map-cardinality/capacity_authority/hidden_maximum">forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-6a0fb80cf2b4b04e86ea0e5b">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:map-cardinality/capacity_authority/owner">riverhog</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-4c53729114e6dfa329210e77">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:map-cardinality/dimension">cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-a7bc8e9919ece4220bf94d1d">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:map-cardinality/id">http:riverhog:components:/schemas/CollectionFinalizedData/properties/context/anyOf/0:map-cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-1445f40c940378f164fcd907">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:map-cardinality/maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-90a3aeaf466ad05f191f5a78">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:map-cardinality/owner">riverhog</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-a3a1a601ae3b6f14801dde20">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:map-cardinality/policy">operational_policy</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-6d250e2972b4a5ac0435dc23">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:map-cardinality/reason">no-declared-semantic-maximum</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-e5f5cbeae73b11d6491904c9">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:map-cardinality/rule">no-semantic-maximum/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-a86f1504dd77ad4e07ba151b">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:map-cardinality/source_pointer">/external_contract/http_openapi/riverhog/components/schemas/CollectionFinalizedData/properties/context/anyOf/0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-d281104ad0c0634a5384fe10">
+<code data-value-pointer="/audit/decisions/http:riverhog:components:~1schemas~1CollectionFinalizedData~1properties~1context~1anyOf~10:map-cardinality/unit">entries</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

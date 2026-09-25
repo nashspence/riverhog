@@ -1,0 +1,2762 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>stove0_operator_contracts.AdmissionView · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-4014113053127b8b1eb889a0.html">stove0-operator-contracts · Python</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>stove0_operator_contracts.AdmissionView</h1>
+<section id="contract" data-contract="python:stove0-operator-contracts:stove0-operator-contracts-admissionview:33b0586c5a">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/python/stove0_operator_contracts.AdmissionView</code>
+</h3>
+<table id="v-c22c4d33135270f17fe5270d">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-bf3daf2abb4a3c082c2ce106">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-d8475ceac3501bac609b984a">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/kind">class</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-bebd933f68089b68ffc18406">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-d792a64b650c353c6e3eb002">
+<tbody>
+<tr>
+<th scope="row">
+<code>AdmissionIntent</code>
+</th>
+<td>
+<table id="v-990313fa6e9551b9b81e4d35">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-a5fbe8cd1a63d260a101e773">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-62bf793bf15493fb4d6710c0">
+<tbody>
+<tr>
+<th scope="row">
+<code>admission_id</code>
+</th>
+<td>
+<table id="v-b20df1840ff9b9ea7c4576ea">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-0ec2391dea8001494b5c3204">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/admission_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9a35f305183aa59a5d0b394f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/admission_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>collection</code>
+</th>
+<td>
+<table id="v-3d8673135fedcae79c7b4ea0">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c7c3d59220a7beb8421680e9">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/collection/$ref">#/$defs/CatalogSyncDescriptor</code>
+<span class="kind">string</span> <a href="e-3bf60f0af41b6d6fab10aaea.html#v-227a91807864a6237eee916e">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>effective_intent</code>
+</th>
+<td>
+<table id="v-1d0e47f6b157e4a454a6ae0a">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<table id="v-8f0f225bb48e5d37b7263565">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-e1f0e8eacd9729f7a65ac2a9">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/effective_intent/additionalProperties/$ref">#/$defs/JsonValue</code>
+<span class="kind">string</span> <a href="e-3bf60f0af41b6d6fab10aaea.html#v-1179c2102762c4234a2c6ddb">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-1b867296938c24aa20923f08">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/effective_intent/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<table id="v-6462558fe0471f42165efa95">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-ac191c5af8abfcda63f5721f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/format/const">stove0-admission-intent/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-3d5771fb5963b767573908cd">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/format/default">stove0-admission-intent/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-90900c3237d7e8bd3bb28852">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/format/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<table id="v-b8f0ac2ea26fc251f087d2eb">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-f49d3ecf43160d6a2904575f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/policy_id/maxLength">160</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-4e25dd18c308389dd0d7d014">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/policy_id/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-152ef2f77094263f7967fb3b">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/policy_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_revision</code>
+</th>
+<td>
+<table id="v-7e8bf505fe3c55d5ac9c97db">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-d9fec4d48aeef37257128f13">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/policy_revision/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fa6c07b30fa4a642eb43e0b6">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/policy_revision/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_sha256</code>
+</th>
+<td>
+<table id="v-0cdb0cd389b6e963651a5a8a">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-6a33b6d6582a4ae405195d3e">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/policy_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-14f51419d2e4ba8e78f58249">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/policy_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>recipe_id</code>
+</th>
+<td>
+<table id="v-55425f61f0440497e5def8ed">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-bd7450e8670d4cb2063833c3">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/recipe_id/maxLength">160</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-f95a83f84fd320f0f11e1da7">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/recipe_id/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-86d0765b2ff35686ee1f9986">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/recipe_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>recipe_revision</code>
+</th>
+<td>
+<table id="v-0c8c8de17881efa219e56d91">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-87982496afb43918d12921c0">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/recipe_revision/$ref">#/$defs/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-3bf60f0af41b6d6fab10aaea.html#v-30294c68188a0463c5d1caf3">Definition</a>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-83ae2b9166ace5b940660419">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/recipe_revision/ge">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>recipe_sha256</code>
+</th>
+<td>
+<table id="v-fa9d66ea436f077ed5b47eb3">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-88b579266a8ef3447c1e2a33">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/recipe_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4277c3998bafc9b58deee825">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/recipe_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>selector</code>
+</th>
+<td>
+<table id="v-daf710036f26e857e73d624e">
+<tbody>
+<tr>
+<th scope="row">
+<code>discriminator</code>
+</th>
+<td>
+<table id="v-395f7964b6d4474e8125ee34">
+<tbody>
+<tr>
+<th scope="row">
+<code>mapping</code>
+</th>
+<td>
+<table id="v-f08f5f0c9e576959884650c4">
+<tbody>
+<tr>
+<th scope="row">
+<code>all</code>
+</th>
+<td>
+<span id="v-eefbae16b780c01d5a69a642">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/selector/discriminator/mapping/all">#/$defs/AllVisibleAdmissionSelector</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>tags</code>
+</th>
+<td>
+<span id="v-74668efadc3fb9ca0fa12f04">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/selector/discriminator/mapping/tags">#/$defs/TaggedAdmissionSelector</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>propertyName</code>
+</th>
+<td>
+<span id="v-4b2226f08e047278020e476d">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/selector/discriminator/propertyName">kind</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>oneOf</code>
+</th>
+<td>
+<table id="v-5370617d87ca54f90ccfc687">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-ab2ddf50d163f89393222f41">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-d057d0e9a2ef9d53917f86c4">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/selector/oneOf/0/$ref">#/$defs/AllVisibleAdmissionSelector</code>
+<span class="kind">string</span> <a href="e-3bf60f0af41b6d6fab10aaea.html#v-6c43ba699e071e8447e62a41">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-4b861dc59ef25a2c6532775f">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-bea149661bc3a21f23da0d3d">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/properties/selector/oneOf/1/$ref">#/$defs/TaggedAdmissionSelector</code>
+<span class="kind">string</span> <a href="e-3bf60f0af41b6d6fab10aaea.html#v-f9a9e5695367753be763c1d1">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-ba834e2eab59e57c77141bba">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-dc55f18f469f8d64374ed243">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/required/0">admission_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-a840b3105d5e972b16b92778">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/required/1">policy_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-21c1d270bb178c835079524d">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/required/2">policy_revision</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-f85d22ba38dbbf70938f9e59">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/required/3">policy_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-f2700feea0579b6ea5b36469">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/required/4">selector</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-824e036f944e716ae4d6e297">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/required/5">collection</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-18e24af568ade967c63402b6">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/required/6">recipe_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-17d54398c4feb9587af6bffe">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/required/7">recipe_revision</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>8</code>
+</th>
+<td>
+<span id="v-ff3c88a982144c661b1771e7">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/required/8">recipe_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>9</code>
+</th>
+<td>
+<span id="v-8d7a2fd662d3be46ff6b73d0">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/required/9">effective_intent</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bf5e8e4c58ae2fffc3b043f5">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AdmissionIntent/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>AllVisibleAdmissionSelector</code>
+</th>
+<td>
+<table id="v-6c43ba699e071e8447e62a41">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-290adc3803e3a9c429ac724e">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AllVisibleAdmissionSelector/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-3df7fb9ea9373971841200b0">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<table id="v-d79e839e64e9ac1ca93aee9b">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-9637fb66f413aeae42e6517e">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AllVisibleAdmissionSelector/properties/kind/const">all</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-4e5a1e6727bb54d24fce42d0">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AllVisibleAdmissionSelector/properties/kind/default">all</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2e58e8ada5cd8f542ed2e2f2">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AllVisibleAdmissionSelector/properties/kind/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-36f5541b8bea4e447787993f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/AllVisibleAdmissionSelector/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>CatalogSyncDescriptor</code>
+</th>
+<td>
+<table id="v-227a91807864a6237eee916e">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-1abbe16f99527021c86c9fb7">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-2e6dd32a0c82fdd65d11ac6c">
+<tbody>
+<tr>
+<th scope="row">
+<code>archive_root_sha256</code>
+</th>
+<td>
+<table id="v-bdeebe9cd5b0ff3fc0dede90">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-05a64b9d52e7e0d909c3016f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/archive_root_sha256/maxLength">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-c1c971825081c44cf3d79c67">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/archive_root_sha256/minLength">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-089d5fbed6465c197f92c5bd">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/archive_root_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-572429c908416672cbbe1dcc">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/archive_root_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>collection_id</code>
+</th>
+<td>
+<table id="v-dbe44beb2b9a49360144d69c">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-72fcbeac7993e70f4099f915">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/collection_id/$ref">#/$defs/CollectionId</code>
+<span class="kind">string</span> <a href="e-3bf60f0af41b6d6fab10aaea.html#v-8c5a60017fe7ea09d7d8745e">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>content_identity</code>
+</th>
+<td>
+<table id="v-eb6b0bdebb0221e5be5d746f">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-44edd4ebe25b7993bf329918">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/content_identity/maxLength">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-b09a8ecbd28fb0b7ca641fd0">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/content_identity/minLength">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-6aba752c5c9c49dc63c7ca14">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/content_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-03830298a2ffbabe6bf262b4">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/content_identity/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<table id="v-989289d089dd46751ef88001">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-c85def13b4b544b07123be28">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-495fb057becc0c0cb4db43c1">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-9cac056a8a24a8bfb3473417">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/description/anyOf/0/$ref">#/$defs/CollectionDescription</code>
+<span class="kind">string</span> <a href="e-3bf60f0af41b6d6fab10aaea.html#v-c7eddb0819428b25977eff72">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-2f32ff5520458dd814a95407">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-dacb70931daed5dd212e9847">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/description/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description_identity</code>
+</th>
+<td>
+<table id="v-8e1c472a59e90d1c5019917b">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-4042510c61064d7d20fa2829">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/description_identity/maxLength">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-cf0ff979d3ac0bbb6a9d9e68">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/description_identity/minLength">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-7ae1d575cf7bfad7ba16bbc6">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/description_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6978a7753277bd129d99cb86">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/description_identity/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description_revision</code>
+</th>
+<td>
+<table id="v-69796ee4ebc6264d49c85e3e">
+<tbody>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-2e05ed27282be0a20631c42d">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/description_revision/maximum">9007199254740991</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-b87becc26f56851e4e74998d">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/description_revision/minimum">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-bbb718296f35a0e649319d57">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/description_revision/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>revision</code>
+</th>
+<td>
+<table id="v-c6593baf9d28828f426fb391">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-1857d0bbe89e4d93756062a6">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/revision/maxLength">19</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-7f3cb606a82ef4753d3ee79b">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/revision/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-fa4124e3f78bbe4eb7aadb47">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/revision/pattern">^(?:[1-9][0-9]{0,17}|[1-8][0-9]{18})$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9075b0bfe15e4a9c10a2b1e6">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/revision/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>tag_revision</code>
+</th>
+<td>
+<table id="v-2cc2df7ecd80adffc1705c37">
+<tbody>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-c3022b07a31f930b27967b50">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/tag_revision/maximum">9007199254740991</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-0624b7bb931d535b24e8558e">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/tag_revision/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-eaca7d2876b43019930eb90a">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/tag_revision/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>tag_set_identity</code>
+</th>
+<td>
+<table id="v-767ba3ce65e6523ad96b83f1">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-d5908386d1df29994e316d07">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/tag_set_identity/maxLength">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-b0041a2ea4721e907a16d963">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/tag_set_identity/minLength">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-29f1ad48f22abbc95e3bed4d">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/tag_set_identity/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9e12d43e604c44eeeecf116d">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/properties/tag_set_identity/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-125323132e4032e052ac3c3d">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-dae31e9496413cf08c7488d6">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/required/0">collection_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-7f9cebf25219accbf32ed10c">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/required/1">archive_root_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-b6cbf3f04453c09ef93a6f6b">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/required/2">content_identity</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-bd2d0fce3971a3839049dfc2">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/required/3">description</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-02404386c098ee47c600c433">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/required/4">description_revision</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-1df8bdad5029a1dc469d43fb">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/required/5">description_identity</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-d6322ce203f86433d5cf7bc2">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/required/6">tag_revision</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-f90fdf23232c60383b865939">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/required/7">tag_set_identity</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>8</code>
+</th>
+<td>
+<span id="v-29f5fbe3a31eb069fd940d64">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/required/8">revision</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9c54ec58587db22571c0a9bf">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CatalogSyncDescriptor/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>CollectionDescription</code>
+</th>
+<td>
+<table id="v-c7eddb0819428b25977eff72">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-50bd9b8ee132d76c9d775215">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CollectionDescription/maxLength">32768</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-1e8ed05a17770f7bc555b315">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CollectionDescription/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d9032ec900ea607da109fa17">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CollectionDescription/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-encoded-bytes-max</code>
+</th>
+<td>
+<span id="v-a03d48e048febd8711753080">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CollectionDescription/x-riverhog-encoded-bytes-max">32768</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-extent</code>
+</th>
+<td>
+<table id="v-e2bf8addb97e73357c1960ae">
+<tbody>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-34b8838a93b40e9f1aaf2880">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CollectionDescription/x-riverhog-extent/policy">contract_max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-0fb5a4704fb383ed163e6874">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CollectionDescription/x-riverhog-extent/reason">bounded-human-authored-catalog-description</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-unicode-normalization</code>
+</th>
+<td>
+<span id="v-9112819a971699d7c27be713">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CollectionDescription/x-unicode-normalization">NFC</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>CollectionId</code>
+</th>
+<td>
+<table id="v-8c5a60017fe7ea09d7d8745e">
+<tbody>
+<tr>
+<th scope="row">
+<code>allOf</code>
+</th>
+<td>
+<table id="v-946a9a44fb8bee911363d538">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-8b07b4875e2c3700d81dd036">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-21d741706b0cb20dbdd30fd8">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CollectionId/allOf/0/pattern">^(?:0|[1-9][0-9]{0,17}|[1-8][0-9]{18}|9[0-1][0-9]{17}|92[0-1][0-9]{16}|922[0-2][0-9]{15}|9223[0-2][0-9]{14}|92233[0-6][0-9]{13}|922337[0-1][0-9]{12}|92233720[0-2][0-9]{10}|922337203[0-5][0-9]{9}|9223372036[0-7][0-9]{8}|92233720368[0-4][0-9]{7}|922337203685[0-3][0-9]{6}|9223372036854[0-6][0-9]{5}|92233720368547[0-6][0-9]{4}|922337203685477[0-4][0-9]{3}|9223372036854775[0-7][0-9]{2}|922337203685477580[0-6][0-9]{0}|9223372036854775807)(?![\s\S])</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0b02213936de60173b3ca084">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CollectionId/allOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-0dd58b7ebbdd0800c9079359">
+<tbody>
+<tr>
+<th scope="row">
+<code>not</code>
+</th>
+<td>
+<table id="v-17cfd578c9ef15a22b014da3">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-091243c81f2d5002000c3d98">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CollectionId/allOf/1/not/const">0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>CollectionTag</code>
+</th>
+<td>
+<table id="v-7119e58bd01db416032382d6">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-05ef11ccb634f28e5e7fd0e9">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CollectionTag/maxLength">65536</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-5f6fdbd8eec40e1ad18d0566">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CollectionTag/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f7fd35e3fb9d452717161098">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CollectionTag/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-encoded-bytes-max</code>
+</th>
+<td>
+<span id="v-6a427d87e1b97c90b706e7f1">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CollectionTag/x-riverhog-encoded-bytes-max">65536</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-extent</code>
+</th>
+<td>
+<table id="v-91c16a8e3e0292df9ec81d71">
+<tbody>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-d314c10919908f0754bb2177">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CollectionTag/x-riverhog-extent/policy">contract_max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-8311bdfa61f87e68e39611cd">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CollectionTag/x-riverhog-extent/reason">bounded-human-authored-collection-tag</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-unicode-normalization</code>
+</th>
+<td>
+<span id="v-0a776e8fb8fa7bc273b156f1">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/CollectionTag/x-unicode-normalization">NFC</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>JsonValue</code>
+</th>
+<td>
+<span id="v-1179c2102762c4234a2c6ddb">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/JsonValue">{}</code>
+<span class="kind">object</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>NonnegativeDecimal</code>
+</th>
+<td>
+<table id="v-30294c68188a0463c5d1caf3">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-28333e148152461fc311fdb2">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/NonnegativeDecimal/pattern">^(?:0|[1-9][0-9]*)(?![\s\S])</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-cd2719c7e3ba1cc1e3b5467a">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/NonnegativeDecimal/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>TaggedAdmissionSelector</code>
+</th>
+<td>
+<table id="v-f9a9e5695367753be763c1d1">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-85701eea50733597fa45731d">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/TaggedAdmissionSelector/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-59a93e8d6e380229728ad4b0">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<table id="v-b52606030c7b2d59e0bfb529">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-01af4530191ee9c640464d8f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/TaggedAdmissionSelector/properties/kind/const">tags</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-983ef27abbc8d5547e5f9196">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/TaggedAdmissionSelector/properties/kind/default">tags</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ee187727bcc4bfd4ff0ce708">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/TaggedAdmissionSelector/properties/kind/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-008da7aa6009c0cde499deeb">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-90d02d699547800c72d722bb">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-b64436941400ad352c79946f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/TaggedAdmissionSelector/properties/required/items/$ref">#/$defs/CollectionTag</code>
+<span class="kind">string</span> <a href="e-3bf60f0af41b6d6fab10aaea.html#v-7119e58bd01db416032382d6">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maxItems</code>
+</th>
+<td>
+<span id="v-bd367fde2b3fd954238bcc49">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/TaggedAdmissionSelector/properties/required/maxItems">100</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-fdd04d47270e7cd085ef7447">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/TaggedAdmissionSelector/properties/required/minItems">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-056b4929e0bc03b0ee2b75a3">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/TaggedAdmissionSelector/properties/required/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>x-riverhog-extent</code>
+</th>
+<td>
+<table id="v-ae09a27387cfbb3b4636fb7f">
+<tbody>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-7a1db33e9d51a53607d2c059">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/TaggedAdmissionSelector/properties/required/x-riverhog-extent/policy">contract_max</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-6a746503eb27f7703e84954a">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/TaggedAdmissionSelector/properties/required/x-riverhog-extent/reason">bounded-exact-classification-admission-predicate</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-7e25d98e435721a23d322199">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-b54ef6e8c5fe7c52b28f66b8">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/TaggedAdmissionSelector/required/0">required</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4e37abc96255a00ccc61a29b">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/$defs/TaggedAdmissionSelector/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-edede9e696bcbc7db2b03ba9">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-e3522040a2f59af45e8d46bf">
+<tbody>
+<tr>
+<th scope="row">
+<code>attempt_count</code>
+</th>
+<td>
+<table id="v-39f4aa867f7b4583881a5164">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-f7f2575e696de890ce2546c0">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/attempt_count/minimum">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-fdda4018b3c553946fe9e249">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/attempt_count/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>created_at</code>
+</th>
+<td>
+<table id="v-ec2e41e1e4283bc04360dd91">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-64774c1b90ba5cbc2e5fad26">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/created_at/maxLength">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-486a2d67bc0bf996cd0bfec6">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/created_at/minLength">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-18633d78dc8e9347d9acbc17">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/created_at/pattern">^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a7e329d1b9e233e448068a28">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/created_at/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>failure</code>
+</th>
+<td>
+<table id="v-cc2e78584a452732ad08e3df">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-07e2cf6549c3d83449a782de">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-22c961586589a238152031be">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-e0d5478174c1585650dbadd5">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/failure/anyOf/0/maxLength">1000</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-ed25f1c97772c2c5c4b36ed7">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/failure/anyOf/0/minLength">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-02a79c73130aec40ec5b3922">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/failure/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-3a332169095363d56aabb891">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c05c3fd512a54163d1010158">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/failure/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-d780ee01ab824646ed4e198f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/failure/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>intent</code>
+</th>
+<td>
+<table id="v-24dc183dec468c47e014c4ef">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-3641af2320767f39b98663a0">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/intent/$ref">#/$defs/AdmissionIntent</code>
+<span class="kind">string</span> <a href="e-3bf60f0af41b6d6fab10aaea.html#v-990313fa6e9551b9b81e4d35">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>next_attempt_at</code>
+</th>
+<td>
+<table id="v-771f563f3147d98fc1d3a2c2">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-30f32e68624afeac1b60e341">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-7fa2f55a6b63f413b4c93991">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-c8f4f4a35b5c5dcc9a082db8">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/next_attempt_at/anyOf/0/maxLength">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-c9a6d41cd8da148fd8c09299">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/next_attempt_at/anyOf/0/minLength">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-1e072b7ee8ac5399b0993c8e">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/next_attempt_at/anyOf/0/pattern">^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-2cb76be0f0d897ee4a6695f5">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/next_attempt_at/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-a4a045830c9c7d8576c3a4d0">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-438446a59b0a8f6115fddca1">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/next_attempt_at/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-28bbc2ffbbbb2b9c68ef30c1">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/next_attempt_at/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>preview_sha256</code>
+</th>
+<td>
+<table id="v-6fdb4daaf76dc4e61a7da159">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-1f5cf22e51d6e20cfd99389d">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-91bc42561af8aa844d731fc5">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-7ebd95eb9787ad0fc3f898d3">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/preview_sha256/anyOf/0/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-54b70c59f2e6bcdf26c72fe0">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/preview_sha256/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-d655e4d4e23599250e7c7d20">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c6ca05daab959f3305e6a87a">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/preview_sha256/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-65feccfc53a8039def8c14c9">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/preview_sha256/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>state</code>
+</th>
+<td>
+<table id="v-e916cc4872e39e19494e3dae">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-251e3c4fca98b15f1c1f2158">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-963e96ade57a25aecff92f1f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/state/enum/0">intent</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-d1c9dbb54d99b7ea7d54112e">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/state/enum/1">previewed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-67871050837294197ff3149f">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/state/enum/2">work_bound</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-059cd87dc5610b4a1a6d7ee9">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/state/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>updated_at</code>
+</th>
+<td>
+<table id="v-918983d3cd8ef435376a42d4">
+<tbody>
+<tr>
+<th scope="row">
+<code>maxLength</code>
+</th>
+<td>
+<span id="v-5b53434456bb7db104835954">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/updated_at/maxLength">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minLength</code>
+</th>
+<td>
+<span id="v-8229b9185a5356212ac60d20">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/updated_at/minLength">30</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-20b2f9b447cd63d666566be1">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/updated_at/pattern">^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]{9}Z$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8d3d2f4ff43d75327ba86281">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/updated_at/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>work_id</code>
+</th>
+<td>
+<table id="v-280f1abd95f625b82fe83550">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-0c491b5e52c28fd89fd5a85a">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-5d04d4b7e1bcaaead7bce651">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-780a4d19746a88b4dba191c3">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/work_id/anyOf/0/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-5f8ff34e8f7cfbc8c25c86c6">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/work_id/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-52bf03b176f263b703502900">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-3ffec1ae9a45da82ea0e254a">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/work_id/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-e053a9f2a5f57ec472a71e77">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/properties/work_id/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-a0b03e351401ab351f3fe7bf">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-13260268c5545a461904a7d7">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/required/0">intent</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-e7cf6c67a56b6b82db8f5466">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/required/1">state</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-b8353cb2e905118c6c2c0c17">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/required/2">attempt_count</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-49cab2e140233c022270e28c">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/required/3">created_at</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-b521a1dfb68b4b1560e16977">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/required/4">updated_at</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-a19015f9c433d9b4629317c8">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-cb4c1bf6ee1215e1c4dd8ce3">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/contract/signature">&quot;(*, intent: stove0_operator_contracts.AdmissionIntent, state: Literal[&#x27;intent&#x27;, &#x27;previewed&#x27;, &#x27;work_bound&#x27;], preview_sha256: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, work_id: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=None, max_length=None, pattern=&#x27;^[0-9a-f]{64}$&#x27;, ascii_only=None)]] = None, attempt_count: Annotated[int, Ge(ge=0)], next_attempt_at: Optional[Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern=&#x27;^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\.[0-9]{9}Z$&#x27;, ascii_only=None), AfterValidator(func=&lt;function require_canonical_utc_timestamp&gt;)]] = None, failure: Annotated[str | None, MinLen(min_length=1), MaxLen(max_length=1000)] = None, created_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern=&#x27;^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\.[0-9]{9}Z$&#x27;, ascii_only=None), AfterValidator(func=&lt;function require_canonical_utc_timestamp&gt;)], updated_at: Annotated[str, StringConstraints(strip_whitespace=None, to_upper=None, to_lower=None, strict=None, min_length=30, max_length=30, pattern=&#x27;^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}\\\\.[0-9]{9}Z$&#x27;, ascii_only=None), AfterValidator(func=&lt;function require_canonical_utc_timestamp&gt;)]) -&gt; None&quot;</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-584c6f5337d6440c6176cbe5">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/distribution">stove0-operator-contracts</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-b38e807287b1c38a8ab83673">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/module">stove0_operator_contracts</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-498b858bfe46bfd5391dc221">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/name">AdmissionView</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-94c1485c5c47c2633736ef26">
+<code data-value-pointer="/external_contract/python/stove0_operator_contracts.AdmissionView/unit">export</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py">some-implementations/stove0/packages/operator-contracts/src/stove0_operator_contracts/__init__.py</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

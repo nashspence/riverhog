@@ -1,0 +1,884 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: SchedulerWorkBatch · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: SchedulerWorkBatch</h1>
+<section id="contract" data-contract="http-schemas:stove0:schemas-schedulerworkbatch:d408216246">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch</code>
+</h3>
+<table id="v-91b2b76dcb782a5afe908ec4">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-b1faad51778560c85cd4dfb9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-1b97b6770ba0c48e1f098629">
+<tbody>
+<tr>
+<th scope="row">
+<code>cursor</code>
+</th>
+<td>
+<table id="v-b980481048e85eb5ca9549d7">
+<tbody>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-0c3f0adc08e49610d594076f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/cursor/title">Cursor</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c7f78e3c327372c7241ee3d1">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/cursor/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>failures</code>
+</th>
+<td>
+<table id="v-d6d47a1ee9053dbf0ee301ee">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-ea2d59d21566581c35a58c78">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-960e48b9058df0ca84428d81">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/failures/items/$ref">#/components/schemas/SchedulerFailure</code>
+<span class="kind">string</span> <a href="e-5d29d6b6758ba600b41f9882.html#v-b7d5d741d5c07e496c9eef4c">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-e5dcf3a6d892fb8c5b4856b0">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/failures/title">Failures</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b6228cc8d43be816de22b5e4">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/failures/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>next_cursor</code>
+</th>
+<td>
+<table id="v-09d7eabe63a85315984902ce">
+<tbody>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-ab1a47c48638ca9bde95a34a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/next_cursor/title">Next Cursor</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-48dcec15ca02a08dc8d1703f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/next_cursor/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>progressed</code>
+</th>
+<td>
+<table id="v-66986d978d4ba26d66f9330b">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-8a9208b69af31bfd0b251483">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-41b22b4c1d6a719f222d5b0d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/progressed/items/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-67a4b781a24c30755bd5faf8">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/progressed/items/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-fb9b6c40a1fea633045fa7d3">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/progressed/title">Progressed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-02dfa00ffa6306aea4d7d65d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/progressed/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>role</code>
+</th>
+<td>
+<table id="v-257ee67e97d3221b1a1a2faf">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-006b2fcc02cc2ca6442591ef">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-d214224a30012b2dda56ce9a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/role/enum/0">controller</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-7c1cf0c3e0b33908098644a8">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/role/enum/1">worker</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-922d6c042ccdceaa3a808b1f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/role/enum/2">combined</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-ad501044b81b4e2491c3dbd9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/role/title">Role</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-eb4f9b81716895e9c1b29e00">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/role/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-1da29cd7daeeb503b36dbe23">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-38995c383046d1575147a900">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/required/0">role</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-163bb51f3123cc3b5449c1f7">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/required/1">cursor</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-3c2202c0399fcc4b9433653d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/required/2">next_cursor</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-1fca76522c3ae9cc06ede94b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/required/3">progressed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-51c2d44c212842658f6e58a8">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/required/4">failures</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-722e47111c1edebe12c6224f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/title">SchedulerWorkBatch</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-264d2157f8b8cd2e62011974">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<p>These records index source constraints; they do not add limits or progression promises.</p>
+<ul>
+<li>
+<code>http:stove0:components:/schemas/SchedulerWorkBatch/properties/failures:cardinality</code>
+<table id="v-48478ce179d62802dc8cfe1d">
+<tbody>
+<tr>
+<th scope="row">
+<code>capacity_authority</code>
+</th>
+<td>
+<table id="v-91866ec1b37981b3631b69de">
+<tbody>
+<tr>
+<th scope="row">
+<code>declared_maximum</code>
+</th>
+<td>
+<span id="v-9040aa088bc90d12d33fb3f0">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/capacity_authority/declared_maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>hidden_maximum</code>
+</th>
+<td>
+<span id="v-181e43cf8afe5d59f298ccb9">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/capacity_authority/hidden_maximum">forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-e914e153e1bfd299b22dead0">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/capacity_authority/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-d0359a39d4aff5cca619907b">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/dimension">cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-61a1d673d8803b260142a889">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/id">http:stove0:components:/schemas/SchedulerWorkBatch/properties/failures:cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-3cb316064292aff6c325b892">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-4d49dce9944782f73e54f5ad">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-ffcd1fb5100568902e1b2b82">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/policy">operational_policy</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-61452fd638d860cd75fe6af1">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/reason">no-declared-semantic-maximum</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-c08e32ba66d19096c339a64d">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/rule">no-semantic-maximum/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-b041b9b6d62e0b3b096d528c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/failures</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-6334c4a782419c0cc629df91">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1failures:cardinality/unit">items</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/SchedulerWorkBatch/properties/progressed/items:length</code>
+<table id="v-bd6687bb81c94d5d2759166f">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-f7dd37bbe73fbf705484e45e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-af0453ae4d418fbc2c0537ec">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/id">http:stove0:components:/schemas/SchedulerWorkBatch/properties/progressed/items:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-adbe6e3aa450db3761fc4f63">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-78bd99271b5bd4642e9bfa9d">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-696fc26b9021ea720057335c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-e199988b26fd870cf57fde61">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-cdf069ceed770b46edcdbdba">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-9aedc7eeb4874614f692ae96">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-76d1185cd6441af1b49b766d">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-774687b956f1e5f3a25164f1">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-ec6ca0db79af8f0e8b34e952">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/progressed/items</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-20f74d0ce2bbdd97862ff11b">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed~1items:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/SchedulerWorkBatch/properties/progressed:cardinality</code>
+<table id="v-565a3153ecb753411ff21f12">
+<tbody>
+<tr>
+<th scope="row">
+<code>capacity_authority</code>
+</th>
+<td>
+<table id="v-09e07e2f5b3fb94ca27959c9">
+<tbody>
+<tr>
+<th scope="row">
+<code>declared_maximum</code>
+</th>
+<td>
+<span id="v-632de51921329941d45c83d4">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/capacity_authority/declared_maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>hidden_maximum</code>
+</th>
+<td>
+<span id="v-be4d2622b2dc102b0a4ad59c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/capacity_authority/hidden_maximum">forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-e4f7013255ed8fb22de84e2d">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/capacity_authority/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-c0082d749518acca7f591a9f">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/dimension">cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-e28af67f47e0309cc0926659">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/id">http:stove0:components:/schemas/SchedulerWorkBatch/properties/progressed:cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-4565730f8220a9c349b419e2">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-2b64f12341e12d9706b71d6c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-aa04aac0506786d7e2a7f150">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/policy">operational_policy</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-6e4daa2b7f2d78f744c8c453">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/reason">no-declared-semantic-maximum</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-cb8a0ef094fe9f01319683b1">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/rule">no-semantic-maximum/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-1d6a3809d022ac3f23e38219">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/SchedulerWorkBatch/properties/progressed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-1e4ce2b96f8cb1179bb8df38">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1SchedulerWorkBatch~1properties~1progressed:cardinality/unit">items</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

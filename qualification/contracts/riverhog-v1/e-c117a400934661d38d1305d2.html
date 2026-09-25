@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: DeparturePolicyCatalogView · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: DeparturePolicyCatalogView</h1>
+<section id="contract" data-contract="http-schemas:stove0:schemas-departurepolicycatalogview:b972dad11d">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/stove0/components/schemas/DeparturePolicyCatalogView</code>
+</h3>
+<table id="v-862f8cbfd050596ca9e162ab">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-e0ee8f167fd66a903b33edd8">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DeparturePolicyCatalogView/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-22c917a49624b9ed7c70f554">
+<tbody>
+<tr>
+<th scope="row">
+<code>catalog_sha256</code>
+</th>
+<td>
+<table id="v-4cd7e7cb09ae5e12043b2f68">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-00d003dd838bc2be6b17fdf7">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DeparturePolicyCatalogView/properties/catalog_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-274a3a7517949d5a4d9dd52c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DeparturePolicyCatalogView/properties/catalog_sha256/title">Catalog Sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-06e8591347e8bd53fc6380d3">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DeparturePolicyCatalogView/properties/catalog_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policies</code>
+</th>
+<td>
+<table id="v-7c8cbf704820e9c55d1e603d">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-18fd9a207bd45905aafe00f0">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-9947be5e273d5525aee5b801">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DeparturePolicyCatalogView/properties/policies/items/$ref">#/components/schemas/DeparturePolicyStatus</code>
+<span class="kind">string</span> <a href="e-2f77017a5caf8deca60c8bff.html#v-e562ebeb869641f697dbbf80">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-687897a36bad02a18ff91f6a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DeparturePolicyCatalogView/properties/policies/title">Policies</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-164aefc3aab9c0df6dd8f4b0">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DeparturePolicyCatalogView/properties/policies/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-69b141250ed9da5833e58c86">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-e4d926032ce4a4f48882ef3c">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DeparturePolicyCatalogView/required/0">catalog_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-c108319cb771aac8b6c11ab9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DeparturePolicyCatalogView/required/1">policies</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-f7608e97bdafe1e5bc39c62e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DeparturePolicyCatalogView/title">DeparturePolicyCatalogView</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-6dcfae1683fad7abeb78e706">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/DeparturePolicyCatalogView/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<p>These records index source constraints; they do not add limits or progression promises.</p>
+<ul>
+<li>
+<code>http:stove0:components:/schemas/DeparturePolicyCatalogView/properties/catalog_sha256:length</code>
+<table id="v-6b5c83e964fe2b9c252ad0d6">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-789b1c838407cf21176ae03b">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1catalog_sha256:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-817e08f3f39f0dec59bbaf2a">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1catalog_sha256:length/id">http:stove0:components:/schemas/DeparturePolicyCatalogView/properties/catalog_sha256:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-66b23f6ec67c2823cc78e6d8">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1catalog_sha256:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-0104251423ce6ecf78584bfb">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1catalog_sha256:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-cc3f826f1d4149df141340d7">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1catalog_sha256:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-973e92a1a69ac804b171754b">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1catalog_sha256:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-980ab9fcceb77cf117b00bfd">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1catalog_sha256:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-27f54df44b9d07dfd8fd3296">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1catalog_sha256:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-9a32b0a760ef1cf31e3fdf29">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-02a49aba13f4877fc00db3cf">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1catalog_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-9d125664807d9b8f2018d6cc">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1catalog_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/DeparturePolicyCatalogView/properties/catalog_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-1a2f0d8993beb6bdc873cf20">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1catalog_sha256:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/DeparturePolicyCatalogView/properties/policies:cardinality</code>
+<table id="v-83a29cd03efdcdf6e1e7493c">
+<tbody>
+<tr>
+<th scope="row">
+<code>capacity_authority</code>
+</th>
+<td>
+<table id="v-f2e0bb3ef59a129a149ad796">
+<tbody>
+<tr>
+<th scope="row">
+<code>declared_maximum</code>
+</th>
+<td>
+<span id="v-127fb17fcc9fc6fcc2855105">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1policies:cardinality/capacity_authority/declared_maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>hidden_maximum</code>
+</th>
+<td>
+<span id="v-a0fb0c087f3426709f2b4913">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1policies:cardinality/capacity_authority/hidden_maximum">forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-88db8bb94f3bfcfb5ae3e451">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1policies:cardinality/capacity_authority/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-bb8f99d4321cb55e8ec5f14f">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1policies:cardinality/dimension">cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-00f2d21dba087e397f7aa56c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1policies:cardinality/id">http:stove0:components:/schemas/DeparturePolicyCatalogView/properties/policies:cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-9ce94efec63ef6c56973e0ce">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1policies:cardinality/maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-5966f6e88ce147ea8ea2313f">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1policies:cardinality/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-fa9109b06287a4693cf447cc">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1policies:cardinality/policy">operational_policy</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-b644b516638528d769a1ce18">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1policies:cardinality/reason">no-declared-semantic-maximum</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-c0373901450b99b817c21bb4">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1policies:cardinality/rule">no-semantic-maximum/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-a7bcd191229d51e74b89c56a">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1policies:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/DeparturePolicyCatalogView/properties/policies</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-c31461630cdd60242fe4671a">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1DeparturePolicyCatalogView~1properties~1policies:cardinality/unit">items</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

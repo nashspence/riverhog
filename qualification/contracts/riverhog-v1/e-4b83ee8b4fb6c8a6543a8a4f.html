@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: HTTPValidationError · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: HTTPValidationError</h1>
+<section id="contract" data-contract="http-schemas:stove0:schemas-httpvalidationerror:c5f78f0d5b">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/stove0/components/schemas/HTTPValidationError</code>
+</h3>
+<table id="v-eee5ba4cdf937adf7100cfdd">
+<tbody>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-553d2af3cc415a7358931a76">
+<tbody>
+<tr>
+<th scope="row">
+<code>detail</code>
+</th>
+<td>
+<table id="v-abba003882fa44718bddcbce">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-5643a57a1b61ff23affe1fd5">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-8af5f8b51f362cb1a70e9aa7">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/HTTPValidationError/properties/detail/items/$ref">#/components/schemas/ValidationError</code>
+<span class="kind">string</span> <a href="e-5ef8b9ea5dcbb62d3c1dde0b.html#v-f4abc188b94d3c0489ae353d">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-64e95a70cec6a95985ae8269">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/HTTPValidationError/properties/detail/title">Detail</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8406fcaa89d96fbac7ca92ea">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/HTTPValidationError/properties/detail/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-76c5dbe044d675ab15baa702">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/HTTPValidationError/title">HTTPValidationError</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c04821b1cefba7291d299bbd">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/HTTPValidationError/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<p>These records index source constraints; they do not add limits or progression promises.</p>
+<ul>
+<li>
+<code>http:stove0:components:/schemas/HTTPValidationError/properties/detail:cardinality</code>
+<table id="v-5d458e28eaff46ebb5fbb7d8">
+<tbody>
+<tr>
+<th scope="row">
+<code>capacity_authority</code>
+</th>
+<td>
+<table id="v-498a75b1cb2678f81debd4c3">
+<tbody>
+<tr>
+<th scope="row">
+<code>declared_maximum</code>
+</th>
+<td>
+<span id="v-8c5a076c3e8df439185c608a">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/capacity_authority/declared_maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>hidden_maximum</code>
+</th>
+<td>
+<span id="v-94f86e46af79ea3f87f5a1e8">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/capacity_authority/hidden_maximum">forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-6e83e39dcbddc0f5ffa7f9d8">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/capacity_authority/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-27e925824cb423cac199b6bc">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/dimension">cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-f270acfebe536071ac1bbc56">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/id">http:stove0:components:/schemas/HTTPValidationError/properties/detail:cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-7c80ecaf44812477aca57131">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-354ef74c8691067a0f2e3894">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-0ac567d90d789ae186d5bf45">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/policy">operational_policy</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-6b7592a99ce82b4d40583b34">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/reason">no-declared-semantic-maximum</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-06bc2c5de6720a1b125ab29d">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/rule">no-semantic-maximum/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-c399a4641c57007dbbaa1bae">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/HTTPValidationError/properties/detail</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-ec1d908eb6a00411498c0e57">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1HTTPValidationError~1properties~1detail:cardinality/unit">items</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

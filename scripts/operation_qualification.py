@@ -58,6 +58,7 @@ _SCRIPT_DIRECTORY = Path(__file__).resolve().parent
 if str(_SCRIPT_DIRECTORY) not in sys.path:
     sys.path.insert(0, str(_SCRIPT_DIRECTORY))
 contract_atlas = importlib.import_module("contract_atlas")
+contract_records = importlib.import_module("contract_atlas.records")
 qualification_source = importlib.import_module("qualification_source")
 
 FORMAT = "riverhog-operation-qualification/v1"
@@ -810,15 +811,16 @@ def _source_sha(value: str) -> str:
 
 
 def _contract_freeze_identity(path: Path = CONTRACT_FREEZE) -> dict[str, object]:
-    """Bind runtime evidence to the exact checked-in semantic extent authority."""
+    """Bind qualification evidence to the checked Closure and Audit Record."""
 
     try:
-        content = path.read_bytes()
-        atlas = contract_atlas.load_atlas(path)
-        payload = contract_atlas.reassemble_projection(atlas)
-        external = cast(dict[str, object], payload["external_contract"])
-        extents = cast(dict[str, object], external["extents"])
-        coverage = cast(dict[str, object], extents["coverage"])
+        bundle = contract_records.load_bundle(path)
+        extents = cast(
+            dict[str, object],
+            cast(dict[str, object], bundle.closure["external_contract"])["extents"],
+        )
+        analysis = cast(dict[str, object], bundle.audit["extent_analysis"])
+        coverage = cast(dict[str, object], analysis["coverage"])
     except (
         KeyError,
         OSError,
@@ -826,21 +828,26 @@ def _contract_freeze_identity(path: Path = CONTRACT_FREEZE) -> dict[str, object]
         json.JSONDecodeError,
         contract_atlas.ContractAtlasError,
     ) as exc:
-        raise QualificationError("contract-freeze extent authority is unavailable") from exc
+        raise QualificationError("contract Closure and Audit Record are unavailable") from exc
     if (
-        atlas.root.get("format") != contract_atlas.ROOT_FORMAT
-        or extents.get("format") != "riverhog-extent-contract/v1"
+        bundle.closure.get("format") != contract_records.CLOSURE_FORMAT
+        or bundle.audit.get("format") != contract_records.AUDIT_FORMAT
+        or extents.get("format") != "riverhog-extent-declarations/v1"
+        or analysis.get("format") != "riverhog-extent-contract/v1"
         or any(coverage.get(key) != 0 for key in ("missing", "duplicate", "stale", "undecided"))
         or coverage.get("classified") != coverage.get("discovered")
-        or not isinstance(extents.get("sha256"), str)
+        or not isinstance(analysis.get("source_sha256"), str)
     ):
-        raise QualificationError("contract-freeze extent authority is incomplete")
+        raise QualificationError("contract Audit Record extent accounting is incomplete")
     return {
-        "format": atlas.root["format"],
-        "projection_sha256": hashlib.sha256(content).hexdigest(),
-        "extent_format": extents["format"],
-        "extent_sha256": extents["sha256"],
+        "format": bundle.closure["format"],
+        "audit_format": bundle.audit["format"],
+        "closure_sha256": contract_atlas.canonical_sha256(bundle.closure),
+        "audit_sha256": contract_atlas.canonical_sha256(bundle.audit),
+        "extent_analysis_format": analysis["format"],
+        "extent_analysis_sha256": analysis["source_sha256"],
         "extent_decisions": coverage["classified"],
+        "scope": "Exact input and extent-accounting validation; no behavior result is inferred.",
     }
 
 
@@ -1085,8 +1092,8 @@ def evidence(*, source_sha: str, timings: Path) -> dict[str, object]:
         "generated_at": utc_timestamp_now(),
         "summary": _summary(matrix),
         "qualification": {
-            "extent_contract": {
-                "status": "passed",
+            "contract_inputs": {
+                "status": "validated",
                 **_contract_freeze_identity(),
             },
             "positive_local_lifecycles": {
@@ -1172,7 +1179,7 @@ def evidence_markdown(payload: dict[str, Any]) -> str:
         "| --- | --- | --- |",
     ]
     for name, claim in claims.items():
-        if name in {"extent_contract", "provider_backed_lifecycles"}:
+        if name in {"contract_inputs", "provider_backed_lifecycles"}:
             continue
         lines.append(
             f"| {name.replace('_', ' ')} | **{claim['status'].replace('_', ' ')}** "

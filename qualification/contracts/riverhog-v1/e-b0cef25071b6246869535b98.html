@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: RecipeCatalogView · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: RecipeCatalogView</h1>
+<section id="contract" data-contract="http-schemas:stove0:schemas-recipecatalogview:c530328ebb">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/stove0/components/schemas/RecipeCatalogView</code>
+</h3>
+<table id="v-5e95a96bcea55d51c574de70">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-0206f8342ca474d5a22a0a06">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeCatalogView/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-9f66f0950322d8cc75369359">
+<tbody>
+<tr>
+<th scope="row">
+<code>catalog_sha256</code>
+</th>
+<td>
+<table id="v-701d54ed955a30eb26599b9c">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-5cf91f129e78d4a388401246">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeCatalogView/properties/catalog_sha256/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-d334eb6b0b6d523c42f28cb1">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeCatalogView/properties/catalog_sha256/title">Catalog Sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-db33a57086317f3a0a71e922">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeCatalogView/properties/catalog_sha256/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>recipes</code>
+</th>
+<td>
+<table id="v-d36c79e33267aa420c4219ae">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-dadf318652a37e1dca6d5c72">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-f03f0554138ffb3c14481ff3">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeCatalogView/properties/recipes/items/$ref">#/components/schemas/RecipeView</code>
+<span class="kind">string</span> <a href="e-ddd49605a340c27a8f422367.html#v-a03e326ae153dfad190097ae">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-2b6676ec4de260474dee6108">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeCatalogView/properties/recipes/title">Recipes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-056b16a97a553126105b9ef0">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeCatalogView/properties/recipes/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-972b2d9356f9e1ab30bf0833">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-ff616b7f159c25fe1e3ba1f2">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeCatalogView/required/0">catalog_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-ecfb63a8a06a924af07988b8">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeCatalogView/required/1">recipes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-334b25320890d96295936807">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeCatalogView/title">RecipeCatalogView</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-db8bd342c43fe2ea8a7b603e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/RecipeCatalogView/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<p>These records index source constraints; they do not add limits or progression promises.</p>
+<ul>
+<li>
+<code>http:stove0:components:/schemas/RecipeCatalogView/properties/catalog_sha256:length</code>
+<table id="v-220b51f262436c4b61cde3d4">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-a36248c58884756b104fc5b1">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1catalog_sha256:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-307f91b5470ae32de835daf4">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1catalog_sha256:length/id">http:stove0:components:/schemas/RecipeCatalogView/properties/catalog_sha256:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-7e3189f4a4899144862316a2">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1catalog_sha256:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-a3f4b36c24cd285bbe37eb43">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1catalog_sha256:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-4e049929b03a83980505adcc">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1catalog_sha256:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-92ad1a42246b56f772a85c44">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1catalog_sha256:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-f4a239051c999c0363a8138e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1catalog_sha256:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-9602b2e2d9d44367272844ca">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1catalog_sha256:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-7229e5f6b527b2ad4ba5129f">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-c47c05f79c8c3a1ba221fa1a">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1catalog_sha256:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-6b41d0245f912b49172ed61f">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1catalog_sha256:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/RecipeCatalogView/properties/catalog_sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-ff9e73fb2743fa22ae1099f8">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1catalog_sha256:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/RecipeCatalogView/properties/recipes:cardinality</code>
+<table id="v-b59cb43d75076ba37d2a5448">
+<tbody>
+<tr>
+<th scope="row">
+<code>capacity_authority</code>
+</th>
+<td>
+<table id="v-e60f9068404760683a9e55b7">
+<tbody>
+<tr>
+<th scope="row">
+<code>declared_maximum</code>
+</th>
+<td>
+<span id="v-66f05b6682fb959093abe0f8">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1recipes:cardinality/capacity_authority/declared_maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>hidden_maximum</code>
+</th>
+<td>
+<span id="v-b3be7fb4101bd8b81a58ae14">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1recipes:cardinality/capacity_authority/hidden_maximum">forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-d2d9c5f36aa0f9b317e98b93">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1recipes:cardinality/capacity_authority/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-d16eb64e4e615eb8dfb1d4f2">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1recipes:cardinality/dimension">cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-56b912a922510c6aa0f5ce37">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1recipes:cardinality/id">http:stove0:components:/schemas/RecipeCatalogView/properties/recipes:cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-42ced16472c3560f4581cbba">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1recipes:cardinality/maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-597374c7596afb73c16f25f9">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1recipes:cardinality/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-d1cdb251b037a0d0b848a8f6">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1recipes:cardinality/policy">operational_policy</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-b9b90af5ca5d781a3babfe01">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1recipes:cardinality/reason">no-declared-semantic-maximum</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-c08f1f997f373f888685eee7">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1recipes:cardinality/rule">no-semantic-maximum/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-c82dd07dbb5c14e264431adc">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1recipes:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/RecipeCatalogView/properties/recipes</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-07a2144574d0250ade18b72f">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1RecipeCatalogView~1properties~1recipes:cardinality/unit">items</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

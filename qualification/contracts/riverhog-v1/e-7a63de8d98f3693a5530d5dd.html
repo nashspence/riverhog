@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: JoinMemberDeclaration · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: JoinMemberDeclaration</h1>
+<section id="contract" data-contract="http-schemas:stove0:schemas-joinmemberdeclaration:1e8fe748cb">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/stove0/components/schemas/JoinMemberDeclaration</code>
+</h3>
+<table id="v-1fcec863de02e1c12b2d4569">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-a4722b4040cb314799657c0b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinMemberDeclaration/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-acd5756001c9ba32ae5f0b20">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinMemberDeclaration/description">Exact named branch and opaque output roles required by the join.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-b8622fec0eab8711a8d823a8">
+<tbody>
+<tr>
+<th scope="row">
+<code>branch_id</code>
+</th>
+<td>
+<table id="v-966acc4a4bdd7a020b140e2b">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-37d986cf93274b6b7ea6fa40">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinMemberDeclaration/properties/branch_id/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-9cc06699ca8077d14d96f779">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinMemberDeclaration/properties/branch_id/title">Branch Id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-aba63a9775ba906addf29069">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinMemberDeclaration/properties/branch_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>output_roles</code>
+</th>
+<td>
+<table id="v-3a68a48782c747b3e462b474">
+<tbody>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-21c5495d8e837bd40799f8c8">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-742f1349e2d819e57377fce5">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinMemberDeclaration/properties/output_roles/items/pattern">^[a-z0-9](?:[a-z0-9._/-]{0,158}[a-z0-9])?$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c624d995657725795c993f2f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinMemberDeclaration/properties/output_roles/items/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minItems</code>
+</th>
+<td>
+<span id="v-c1e3908bcbf0e2c5bcc21b46">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinMemberDeclaration/properties/output_roles/minItems">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-b15569347e6a1b84e18e51a7">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinMemberDeclaration/properties/output_roles/title">Output Roles</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d88eec0404982d1c48efb03b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinMemberDeclaration/properties/output_roles/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-3323972c1fe8e02c093314f1">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-6d5b9ca0891619d97fa85e6a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinMemberDeclaration/required/0">branch_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-b50d9c929e08192034ee07fe">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinMemberDeclaration/required/1">output_roles</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-1bfc0751bb75d98ec0533c3b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinMemberDeclaration/title">JoinMemberDeclaration</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-0e833bfd3e72df95e46b2a7a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/JoinMemberDeclaration/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<p>These records index source constraints; they do not add limits or progression promises.</p>
+<ul>
+<li>
+<code>http:stove0:components:/schemas/JoinMemberDeclaration/properties/output_roles:cardinality</code>
+<table id="v-47af31e65539f699f0c5fe08">
+<tbody>
+<tr>
+<th scope="row">
+<code>capacity_authority</code>
+</th>
+<td>
+<table id="v-2f7509396166cdcd6e6544cb">
+<tbody>
+<tr>
+<th scope="row">
+<code>declared_maximum</code>
+</th>
+<td>
+<span id="v-83a0f80098b8790b86b775eb">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinMemberDeclaration~1properties~1output_roles:cardinality/capacity_authority/declared_maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>hidden_maximum</code>
+</th>
+<td>
+<span id="v-5f1df31f5e6ecc255b68b64c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinMemberDeclaration~1properties~1output_roles:cardinality/capacity_authority/hidden_maximum">forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-c9f7c5f2c458c80bce812c2b">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinMemberDeclaration~1properties~1output_roles:cardinality/capacity_authority/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-49d67bc651a8f76b6431f160">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinMemberDeclaration~1properties~1output_roles:cardinality/dimension">cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-fb111ea35efe4eff84832d49">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinMemberDeclaration~1properties~1output_roles:cardinality/id">http:stove0:components:/schemas/JoinMemberDeclaration/properties/output_roles:cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-81834066c5b62dd1b0119af5">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinMemberDeclaration~1properties~1output_roles:cardinality/maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-744aba0938110ec59e54b5ed">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinMemberDeclaration~1properties~1output_roles:cardinality/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-58648f95779f9a9c236e66a5">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinMemberDeclaration~1properties~1output_roles:cardinality/policy">operational_policy</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-32a44fe49a570c9604a0b3d6">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinMemberDeclaration~1properties~1output_roles:cardinality/reason">no-declared-semantic-maximum</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-46d2bc7d65ba920e41c46304">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinMemberDeclaration~1properties~1output_roles:cardinality/rule">no-semantic-maximum/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-ae3a89bc81df5a43c2ea86c9">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinMemberDeclaration~1properties~1output_roles:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/JoinMemberDeclaration/properties/output_roles</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-8b5b4e8ffd4605a030bf199a">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1JoinMemberDeclaration~1properties~1output_roles:cardinality/unit">items</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

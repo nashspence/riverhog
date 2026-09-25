@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>POST /v1/preflight · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-1d055379ac0c86b137cd0691.html">stove0-target-support · Process Protocol Operations</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>POST /v1/preflight</h1>
+<section id="contract" data-contract="process-protocol-operations:stove0-target-support:post-v1-preflight:4cfc599ca3">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1</code>
+</h3>
+<table id="v-d8e30bacd5ba9bdd8f4b1183">
+<tbody>
+<tr>
+<th scope="row">
+<code>error_schema</code>
+</th>
+<td>
+<span id="v-c865aaa6786a67976a69121a">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/error_schema">ErrorOut</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>errors</code>
+</th>
+<td>
+<table id="v-ad6fd2053f3a179df604ef25">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-7e66364e12a4ad19635f5135">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-f7b243fd617b5e2407f378f2">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/errors/0/code">invalid_target_request</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-7f2e08099c24880a304e9911">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/errors/0/status">400</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-17f420448cce96ec83022697">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-6f0254dba99a147ccb015ad6">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/errors/1/code">unauthorized</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-b575546796822e9338e4dc5d">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/errors/1/status">401</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-305817e5a3ff2510f20f5a2f">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-7238a9d9921dcde91dc1e6f8">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/errors/2/code">request_too_large</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-050fe324c1e6e200e223db0d">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/errors/2/status">413</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<table id="v-dbcaa98eee9e20207fa5ec1e">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-026d8be31d7d66a2cd40f5d5">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/errors/3/code">target_protocol_mismatch</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-dcf05f2ac35bbe496161d447">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/errors/3/status">409</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<table id="v-98e863cc2df853138baf3d8e">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-5a9403d807bb839e1512976d">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/errors/4/code">operation_contract_mismatch</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-61db4a766fa356524e5ce962">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/errors/4/status">409</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<table id="v-ee652a356feed95b4ee2f90c">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-a72a18a4c5edf0859c30f580">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/errors/5/code">unsupported_operation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-7365d40f7fe14c2316150b4b">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/errors/5/status">400</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<table id="v-cdf3e44a44c8511d72a40c3d">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-dc48c2aa6e8693041282a4b9">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/errors/6/code">target_failed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-f3f749eed616edab9f54f613">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/errors/6/status">500</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>method</code>
+</th>
+<td>
+<span id="v-2eb91589222cc275441fd4fe">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/method">POST</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<span id="v-53efa987ed7bd896547a1251">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/path">/v1/preflight</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path_parameters</code>
+</th>
+<td>
+<span id="v-190bb132dc1db9690ccebb98">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/path_parameters">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>request</code>
+</th>
+<td>
+<table id="v-2ea0e5fe15443f9e6df88447">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-d23a22710ac17890faa8be04">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/request/kind">json</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<span id="v-f3310e269666024bcda7bf0f">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/request/schema">TargetPreflightRequest</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>response</code>
+</th>
+<td>
+<table id="v-05bb75ce64d109379f50aec1">
+<tbody>
+<tr>
+<th scope="row">
+<code>headers</code>
+</th>
+<td>
+<span id="v-5238c6f0813833c5eb4db498">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/response/headers">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-3d821ac10a677bf0e5c58631">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/response/kind">json</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<span id="v-d66f3946d83b85ec4606b0b0">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/response/schema">TargetPreflightResponse</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>statuses</code>
+</th>
+<td>
+<table id="v-c90b24dc4b806c09accb4001">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-b77a6de7060426545f3b89ef">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:stove0-target/http_binding/operations/1/response/statuses/0">200</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="some-implementations/stove0/packages/target-support/src/stove0_target_support/schemas.py">some-implementations/stove0/packages/target-support/src/stove0_target_support/schemas.py::target_schema_bundle</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

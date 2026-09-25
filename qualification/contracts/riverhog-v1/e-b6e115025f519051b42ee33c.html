@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>stove0-server scheduler · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-d761c9ab2b0b2a08662ba379.html">stove0-server · CLI</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>stove0-server scheduler</h1>
+<section id="contract" data-contract="cli:stove0-server:stove0-server-scheduler:214121ca44">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/cli/stove0-server/commands/scheduler/allow_abbrev</code>
+</h3>
+<span id="v-83e8b98c6658a728fd62de1c">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/allow_abbrev">true</code>
+<span class="kind">boolean</span>
+</span>
+</section>
+<section>
+<h3>
+<code>/external_contract/cli/stove0-server/commands/scheduler/name</code>
+</h3>
+<span id="v-83576939412a4850f112aada">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/name">scheduler</code>
+<span class="kind">string</span>
+</span>
+</section>
+<section>
+<h3>
+<code>/external_contract/cli/stove0-server/commands/scheduler/parameters</code>
+</h3>
+<table id="v-0f3e846650dcdf8e1720a084">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-a539a6a1df5672f2801adac7">
+<tbody>
+<tr>
+<th scope="row">
+<code>choices</code>
+</th>
+<td>
+<table id="v-0ab8faaf97a953b864ad7760">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-70070b4ed681ca5326fcc0ea">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/parameters/0/choices/0">controller</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-0d0935799906a65c38ea0d0a">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/parameters/0/choices/1">worker</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-576e921858fa42f78129d1fa">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/parameters/0/choices/2">combined</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-1db4340f0ef68c25878d19bd">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/parameters/0/default">combined</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>dest</code>
+</th>
+<td>
+<span id="v-018361dcd1dbebed92e45bac">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/parameters/0/dest">role</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-b1e3e36a3babcfe25f299347">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/parameters/0/kind">_StoreAction</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>nargs</code>
+</th>
+<td>
+<span id="v-91053df5f12f320642cde7d8">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/parameters/0/nargs">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>options</code>
+</th>
+<td>
+<table id="v-b6d3db043482c346a483f695">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-22afd6a2abc699668388d461">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/parameters/0/options/0">--role</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<span id="v-dd269def01fdece2bb9da868">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/parameters/0/required">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section>
+<h3>
+<code>/external_contract/cli/stove0-server/commands/scheduler/result_contract</code>
+</h3>
+<table id="v-f6daff3b661c9394182a75d6">
+<tbody>
+<tr>
+<th scope="row">
+<code>failures</code>
+</th>
+<td>
+<table id="v-ea4bf587fef8879868c8a0f3">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-0c8f684cb6cfd4396868e005">
+<tbody>
+<tr>
+<th scope="row">
+<code>exit_status</code>
+</th>
+<td>
+<span id="v-e7a4376602b97819fe4136ab">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/result_contract/failures/0/exit_status">2</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-628ab273bee5b8ec26dd6311">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/result_contract/failures/0/id">usage</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>selected_by</code>
+</th>
+<td>
+<table id="v-5adabd4e42f05f88578ebdf9">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-b3db1af94d034eaec88fb2fe">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/result_contract/failures/0/selected_by/kind">parser-rejected-invocation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>stderr</code>
+</th>
+<td>
+<table id="v-026dd4a5a823740da63542a1">
+<tbody>
+<tr>
+<th scope="row">
+<code>all</code>
+</th>
+<td>
+<span id="v-aacefe1e54c726c18288e367">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/result_contract/failures/0/stderr/all">noncontractual-usage-diagnostic</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>stdout</code>
+</th>
+<td>
+<table id="v-219d9f27edb822eaf59b44f7">
+<tbody>
+<tr>
+<th scope="row">
+<code>all</code>
+</th>
+<td>
+<span id="v-5fd8ab22a8fb323664890b56">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/result_contract/failures/0/stdout/all">empty</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>human_json_relationship</code>
+</th>
+<td>
+<span id="v-92458bc6ab63914ab921b647">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/result_contract/human_json_relationship">not-applicable</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>identity</code>
+</th>
+<td>
+<span id="v-ce7a1715cfc5163f5372b2b4">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/result_contract/identity">stove0-server-cli-result/scheduler/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>profile_id</code>
+</th>
+<td>
+<span id="v-23c0b03d87ae6c9fc2ee1ac7">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/result_contract/profile_id">stove0-server-cli-runtime/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>structured_output</code>
+</th>
+<td>
+<span id="v-52632257fe497d32df2adddb">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/result_contract/structured_output">none</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>success</code>
+</th>
+<td>
+<table id="v-b1c21b136c388d23dd2d98b0">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-4ba764a50535de5fbccc18ad">
+<tbody>
+<tr>
+<th scope="row">
+<code>exit_status</code>
+</th>
+<td>
+<span id="v-b98f7bdd3c737a4d258cbc63">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/result_contract/success/0/exit_status">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-41193471de4cc7869be8a731">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/result_contract/success/0/id">stopped</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>selected_by</code>
+</th>
+<td>
+<table id="v-f63ed2e5ae4779f712ddc259">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-db38c521a9010f505c1fabae">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/result_contract/success/0/selected_by/kind">service-runtime-returned</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>stderr</code>
+</th>
+<td>
+<table id="v-8c7fc6d87f775c54bd1b8ae6">
+<tbody>
+<tr>
+<th scope="row">
+<code>all</code>
+</th>
+<td>
+<span id="v-f5bc5259e3ccaab82dba4c84">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/result_contract/success/0/stderr/all">noncontractual-runtime-log</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>stdout</code>
+</th>
+<td>
+<table id="v-3bcdb86595d608ee05f40ce7">
+<tbody>
+<tr>
+<th scope="row">
+<code>all</code>
+</th>
+<td>
+<span id="v-d4b99bdc46347becdeaf65fc">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/result_contract/success/0/stdout/all">no-command-result</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section>
+<h3>
+<code>/external_contract/cli/stove0-server/commands/scheduler/terminating_controls</code>
+</h3>
+<table id="v-f2a0ce86a631f246d04186cc">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-4ae425d3cb00c940e45b7034">
+<tbody>
+<tr>
+<th scope="row">
+<code>exit_status</code>
+</th>
+<td>
+<span id="v-462582402d3e91fa8d81ee30">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/terminating_controls/0/exit_status">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-7a5901ca9c0a6e28b811b7bc">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/terminating_controls/0/id">help</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>stderr</code>
+</th>
+<td>
+<span id="v-b4989d2fc537b4ce8d2eb2a4">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/terminating_controls/0/stderr">empty</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>stdout</code>
+</th>
+<td>
+<span id="v-562e893ae5f295a12ee8cc99">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/terminating_controls/0/stdout">noncontractual-framework-help</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>trigger</code>
+</th>
+<td>
+<table id="v-c514a5810a93b3df0401cf2b">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-f2972b1a96ae62a27394186d">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/terminating_controls/0/trigger/kind">option-present</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>options</code>
+</th>
+<td>
+<table id="v-66396e7238b176e73073e77d">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-f0426641ada8358666fdb81b">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/terminating_controls/0/trigger/options/0">-h</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-04fa9f86e2c92ac34ca39e22">
+<code data-value-pointer="/external_contract/cli/stove0-server/commands/scheduler/terminating_controls/0/trigger/options/1">--help</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="some-implementations/stove0/application/server/src/stove0_api/app.py">some-implementations/stove0/application/server/src/stove0_api/app.py::&lt;module&gt;</code>
+</li>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make operation-qualification</code>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<p>These records index source constraints; they do not add limits or progression promises.</p>
+<ul>
+<li>
+<code>cli:stove0-server:stove0-server:scheduler:parameter:0:values-per-occurrence</code>
+<table id="v-a6d9a7c9d1840b24935de37c">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-ddc39cca39998c4113c70d47">
+<code data-value-pointer="/audit/decisions/cli:stove0-server:stove0-server:scheduler:parameter:0:values-per-occurrence/dimension">cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-0de8b4949894d324f2b1ced4">
+<code data-value-pointer="/audit/decisions/cli:stove0-server:stove0-server:scheduler:parameter:0:values-per-occurrence/id">cli:stove0-server:stove0-server:scheduler:parameter:0:values-per-occurrence</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-8c8be0cae6f49de69147525f">
+<code data-value-pointer="/audit/decisions/cli:stove0-server:stove0-server:scheduler:parameter:0:values-per-occurrence/maximum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-38e8a5ebfa71cb71f0da4f40">
+<code data-value-pointer="/audit/decisions/cli:stove0-server:stove0-server:scheduler:parameter:0:values-per-occurrence/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-c37deffa80a383ee16fc9443">
+<code data-value-pointer="/audit/decisions/cli:stove0-server:stove0-server:scheduler:parameter:0:values-per-occurrence/owner">stove0-server</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-b046bea531ce75de6790eb29">
+<code data-value-pointer="/audit/decisions/cli:stove0-server:stove0-server:scheduler:parameter:0:values-per-occurrence/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-a71c977e358c91a8a7fecc83">
+<code data-value-pointer="/audit/decisions/cli:stove0-server:stove0-server:scheduler:parameter:0:values-per-occurrence/reason">fixed-command-argument-arity</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-b5b1bf4111e82c6b5cdb7e7c">
+<code data-value-pointer="/audit/decisions/cli:stove0-server:stove0-server:scheduler:parameter:0:values-per-occurrence/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-d352a45875ce2173b648a833">
+<tbody>
+<tr>
+<th scope="row">
+<code>field</code>
+</th>
+<td>
+<span id="v-d9c996b9a50fe68483ab228e">
+<code data-value-pointer="/audit/decisions/cli:stove0-server:stove0-server:scheduler:parameter:0:values-per-occurrence/source_constraint/field">nargs</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-5155fbddc3c1882a66df87c8">
+<code data-value-pointer="/audit/decisions/cli:stove0-server:stove0-server:scheduler:parameter:0:values-per-occurrence/source_pointer">/external_contract/cli/stove0-server/commands/scheduler/parameters/0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-a976eccc1a00f0fa1c109e1d">
+<code data-value-pointer="/audit/decisions/cli:stove0-server:stove0-server:scheduler:parameter:0:values-per-occurrence/unit">values-per-occurrence</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

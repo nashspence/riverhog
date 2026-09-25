@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: ListCollectionFileProvenanceOut · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-09dc1e38a978cb3e071a9885.html">riverhog · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: ListCollectionFileProvenanceOut</h1>
+<section id="contract" data-contract="http-schemas:riverhog:schemas-listcollectionfileprovenanceout:c53aa37ebf">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ListCollectionFileProvenanceOut</code>
+</h3>
+<table id="v-fd798adc6b48a43bbd93391b">
+<tbody>
+<tr>
+<th scope="row">
+<code>discriminator</code>
+</th>
+<td>
+<table id="v-9f911aa0e39cac5c16b56416">
+<tbody>
+<tr>
+<th scope="row">
+<code>mapping</code>
+</th>
+<td>
+<table id="v-499a1f59e1a1d59f6dd513c3">
+<tbody>
+<tr>
+<th scope="row">
+<code>captured</code>
+</th>
+<td>
+<span id="v-c8054dbf7c320c19f850822d">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionFileProvenanceOut/discriminator/mapping/captured">#/components/schemas/CapturedCollectionFileProvenancePage</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>mixed</code>
+</th>
+<td>
+<span id="v-267dd45e9eaadb57d458f677">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionFileProvenanceOut/discriminator/mapping/mixed">#/components/schemas/MixedCollectionFileProvenancePage</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>omitted</code>
+</th>
+<td>
+<span id="v-aac3d891220cc47a2fbb2af9">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionFileProvenanceOut/discriminator/mapping/omitted">#/components/schemas/OmittedCollectionFileProvenancePage</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>propertyName</code>
+</th>
+<td>
+<span id="v-2e244256ab1e9550e1dcdbce">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionFileProvenanceOut/discriminator/propertyName">provenance_mode</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>oneOf</code>
+</th>
+<td>
+<table id="v-ccae5bf4dfa1373168a3ea63">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-fe5eed434a38412024428bcc">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-3fc6c2771491b80a7d76ff91">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionFileProvenanceOut/oneOf/0/$ref">#/components/schemas/CapturedCollectionFileProvenancePage</code>
+<span class="kind">string</span> <a href="e-9d8379125f4c60ae6389eefa.html#v-38985fdc8243bdd693457513">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-0c42532448dd2c04b988ccd5">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-ddd48b0f8cfd2386222303ec">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionFileProvenanceOut/oneOf/1/$ref">#/components/schemas/MixedCollectionFileProvenancePage</code>
+<span class="kind">string</span> <a href="e-6481a47500dea9c41248f5bd.html#v-f293d0881c7ad1458ceb2418">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-09d0091400cfc91870bd51ec">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-4b5cb74ed7c731dda1e710f5">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionFileProvenanceOut/oneOf/2/$ref">#/components/schemas/OmittedCollectionFileProvenancePage</code>
+<span class="kind">string</span> <a href="e-006f0d5fe497feeecc13d88b.html#v-7f7d0e998221aeda0e83e041">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-323f8c0d91b5687545c2eddc">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ListCollectionFileProvenanceOut/title">ListCollectionFileProvenanceOut</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

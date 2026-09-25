@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>POST /v1/sample · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-1819470ef776ba441ac46ae3.html">review0-sampler-lib · Process Protocol Operations</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>POST /v1/sample</h1>
+<section id="contract" data-contract="process-protocol-operations:review0-sampler-lib:post-v1-sample:59d4da735f">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/1</code>
+</h3>
+<table id="v-fabb69fb87222b32cfce3964">
+<tbody>
+<tr>
+<th scope="row">
+<code>error_schema</code>
+</th>
+<td>
+<span id="v-ccb5b0fe41f57bab484283a0">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/1/error_schema">ErrorOut</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>errors</code>
+</th>
+<td>
+<table id="v-3896d94b126d96f618e5df10">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-38ec95a0b9ea0d69a53d9d20">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-d5a139cf6d3b109f1240ca93">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/1/errors/0/code">invalid_sampler_request</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-1593b59577bb6fc03327939d">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/1/errors/0/status">400</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-c0564ead082af47759c6fac9">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-5c8a72f169c9e2b64713d8c2">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/1/errors/1/code">unauthorized</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-5a79a9e212f8978722884cd6">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/1/errors/1/status">401</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<table id="v-c28f4298affdb97f580037d0">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-35a5b0d1385f665d3fa12d7d">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/1/errors/2/code">sampler_changed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-c349b3a1b9dba244864a6e7a">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/1/errors/2/status">409</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<table id="v-c318ece05fc8fa54738bf1e2">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-b7e5cd9abb868441df901a79">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/1/errors/3/code">request_too_large</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-1c538456422cad614721701e">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/1/errors/3/status">413</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<table id="v-debfb0299ae94217ef9931b4">
+<tbody>
+<tr>
+<th scope="row">
+<code>code</code>
+</th>
+<td>
+<span id="v-4cd4fed32a7246a746ad6cda">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/1/errors/4/code">sampler_failed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>status</code>
+</th>
+<td>
+<span id="v-31f7d8602d0165c18e54004c">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/1/errors/4/status">500</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>method</code>
+</th>
+<td>
+<span id="v-ffe2729598749474b5d99a21">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/1/method">POST</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path</code>
+</th>
+<td>
+<span id="v-25024c3b1b20f3e62ada5987">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/1/path">/v1/sample</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>path_parameters</code>
+</th>
+<td>
+<span id="v-6d8070ab0783c85e46e89cb2">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/1/path_parameters">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>request</code>
+</th>
+<td>
+<table id="v-064c090d3554d404927a9627">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-377cc3789d4f6db61d715b5f">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/1/request/kind">json</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<span id="v-d9d6c6f1a22dc849cf772506">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/1/request/schema">SamplerRequest</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>response</code>
+</th>
+<td>
+<table id="v-73d2d6046a1813777c17c44a">
+<tbody>
+<tr>
+<th scope="row">
+<code>headers</code>
+</th>
+<td>
+<span id="v-ee34daea887ea924334826c3">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/1/response/headers">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-e7ca681803e7bf3309529f92">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/1/response/kind">json</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<span id="v-e03eca98adafcc4858ae986c">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/1/response/schema">SamplerResult</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>statuses</code>
+</th>
+<td>
+<table id="v-959b6272cf24ae08c6e4eb4b">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-7a6d6929b6f9d9955dd181a5">
+<code data-value-pointer="/external_contract/protocol_schemas/generated:review0-sampler/http_binding/operations/1/response/statuses/0">200</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="some-implementations/stove0/review0/sampler/support/src/review0_sampler_lib/schemas.py">some-implementations/stove0/review0/sampler/support/src/review0_sampler_lib/schemas.py::sampler_schema_bundle</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

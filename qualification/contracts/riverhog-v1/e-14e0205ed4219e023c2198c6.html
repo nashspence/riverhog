@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>riverhog_protocol.ArchiveCopyStoreSelectionDocument · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-99b3d079e6c87a1dff566c19.html">riverhog-protocol · Python</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>riverhog_protocol.ArchiveCopyStoreSelectionDocument</h1>
+<section id="contract" data-contract="python:riverhog-protocol:riverhog-protocol-archivecopystoreselectiondocument:2bbb4b7c7f">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/python/riverhog_protocol.ArchiveCopyStoreSelectionDocument</code>
+</h3>
+<table id="v-30c690a6e00525d7505864e7">
+<tbody>
+<tr>
+<th scope="row">
+<code>contract</code>
+</th>
+<td>
+<table id="v-d046463cacff24abab85660a">
+<tbody>
+<tr>
+<th scope="row">
+<code>kind</code>
+</th>
+<td>
+<span id="v-f3c6168d364a207ff18e019c">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArchiveCopyStoreSelectionDocument/contract/kind">class</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>schema</code>
+</th>
+<td>
+<table id="v-81572973e433f710deb365d6">
+<tbody>
+<tr>
+<th scope="row">
+<code>$defs</code>
+</th>
+<td>
+<table id="v-b6e00e61be2a71227ea3b6b1">
+<tbody>
+<tr>
+<th scope="row">
+<code>ArchiveStoreName</code>
+</th>
+<td>
+<table id="v-49e2d5d755af57e988c5e853">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-08866f5eb0bc79cd86d4b219">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArchiveCopyStoreSelectionDocument/contract/schema/$defs/ArchiveStoreName/pattern">^[a-z0-9]+(?:-[a-z0-9]+)*$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-966172016a6e6a7e2ecf0021">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArchiveCopyStoreSelectionDocument/contract/schema/$defs/ArchiveStoreName/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-ea271148df9d3ab5605d6d32">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArchiveCopyStoreSelectionDocument/contract/schema/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-5a79169b76a4cca20b01c9ee">
+<tbody>
+<tr>
+<th scope="row">
+<code>destination_store</code>
+</th>
+<td>
+<table id="v-95af62768396a9e8ae79e1a9">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-a2297e4cef33b2b418cc73a7">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArchiveCopyStoreSelectionDocument/contract/schema/properties/destination_store/$ref">#/$defs/ArchiveStoreName</code>
+<span class="kind">string</span> <a href="e-14e0205ed4219e023c2198c6.html#v-49e2d5d755af57e988c5e853">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_store</code>
+</th>
+<td>
+<table id="v-3ebeef1a2b5c545239abb75a">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-b0d75b452b43a9cc7e4fe430">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-3ae7bd26596fd912ba0a3114">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-53ceedbe67379e5a6fba1eb2">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArchiveCopyStoreSelectionDocument/contract/schema/properties/source_store/anyOf/0/$ref">#/$defs/ArchiveStoreName</code>
+<span class="kind">string</span> <a href="e-14e0205ed4219e023c2198c6.html#v-49e2d5d755af57e988c5e853">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-def79dcba52c61e578e4005b">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c6356d8f2908e18a7a55b178">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArchiveCopyStoreSelectionDocument/contract/schema/properties/source_store/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-d162199f79c6a17708712997">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArchiveCopyStoreSelectionDocument/contract/schema/properties/source_store/default">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-ae6031100ac0b0333ace9070">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-f5b2966a89e88077851598c6">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArchiveCopyStoreSelectionDocument/contract/schema/required/0">destination_store</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ceffc5fb57533b8d78a12971">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArchiveCopyStoreSelectionDocument/contract/schema/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>signature</code>
+</th>
+<td>
+<span id="v-07649ea83be26596e3872385">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArchiveCopyStoreSelectionDocument/contract/signature">&#x27;(*, destination_store: ArchiveStoreName, source_store: ArchiveStoreName | None = None) -&gt; None&#x27;</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>distribution</code>
+</th>
+<td>
+<span id="v-e3c19e20cdfc7dc868fd4ec9">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArchiveCopyStoreSelectionDocument/distribution">riverhog-protocol</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>module</code>
+</th>
+<td>
+<span id="v-70ce0116059efc8f5767048d">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArchiveCopyStoreSelectionDocument/module">riverhog_protocol</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-5943d1a0e0587198be2e1710">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArchiveCopyStoreSelectionDocument/name">ArchiveCopyStoreSelectionDocument</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-f6a197f9d5ab376752102d26">
+<code data-value-pointer="/external_contract/python/riverhog_protocol.ArchiveCopyStoreSelectionDocument/unit">export</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="packages/riverhog-protocol/src/riverhog_protocol/__init__.py">packages/riverhog-protocol/src/riverhog_protocol/__init__.py</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make dist-smoke</code>
+</li>
+<li>
+<code>make build</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

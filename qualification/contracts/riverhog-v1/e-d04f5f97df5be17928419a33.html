@@ -1,0 +1,2940 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: WorkView · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-4b5441a2eda171b97ddce431.html">stove0 · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: WorkView</h1>
+<section id="contract" data-contract="http-schemas:stove0:schemas-workview:3ad4605a3d">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/stove0/components/schemas/WorkView</code>
+</h3>
+<table id="v-69e6f54265d8c97a84d69daa">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-3a52f1ffd684478ee497e9ed">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-073263515f5633762e8fa7e4">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/description">Operator projection of mutable work; never an execution identity.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-a361cd3270ba24cb786dc956">
+<tbody>
+<tr>
+<th scope="row">
+<code>abandon_outcome</code>
+</th>
+<td>
+<table id="v-c69239134c8fdce690921d79">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-7781dc56699e85784b150ee9">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-499b38f11ddb083163716361">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-ccadd979de02e2c3965bb7f3">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-e50a62c6d0a06a07eb8f84e9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/abandon_outcome/anyOf/0/enum/0">inapplicable</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-18180324bf847f589c0be99a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/abandon_outcome/anyOf/0/enum/1">failed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-40ae97b0f3b6d28d25a74696">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/abandon_outcome/anyOf/0/enum/2">canceled</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e8b65e164a208a3da1cfad05">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/abandon_outcome/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-d4b7f19c8c5592bf9d2df2bc">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c1219c6f58a37647cd8c4428">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/abandon_outcome/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-6cbc44f413081d02eff1e157">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/abandon_outcome/title">Abandon Outcome</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>branch_set_plan</code>
+</th>
+<td>
+<table id="v-d9d46d49c05d69977a9e3550">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-1aa2992c95eab6f07089f905">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-074e64f2cc16d6798939346b">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-391521bccda3f111d083806e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/branch_set_plan/anyOf/0/$ref">#/components/schemas/BranchSetPlan</code>
+<span class="kind">string</span> <a href="e-78b930518b66483f2e529fcd.html#v-df3b3ca9c285a5b49bbc97ba">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-00e8b5c41d151b39fd5f1544">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-9493332f9093d02674266bfc">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/branch_set_plan/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>claim</code>
+</th>
+<td>
+<table id="v-08fea03bf8e00f65289b5dfa">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-863fdf1a306d4177b7837b01">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-5de1f30b46b29a535d3f0f5e">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-5bf2c6cf2268358a0576b0d3">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/claim/anyOf/0/$ref">#/components/schemas/WorkClaimView</code>
+<span class="kind">string</span> <a href="e-11d5fc82cf602c2cb41a52b0.html#v-9ac59618b0a3baca4707a236">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-08defa771e5ce3fc7dd07299">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-704520a2c0e3c1adbeb1e6d0">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/claim/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>controller_evidence</code>
+</th>
+<td>
+<table id="v-42584f4aa149e788a4921802">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-31fa39ca18bd42a54d61f958">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-2189f55ad6fdf8cc4f834ff0">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-e1f67aa1dd7ef432a5d83e1f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/controller_evidence/anyOf/0/$ref">#/components/schemas/ControllerEvidence</code>
+<span class="kind">string</span> <a href="e-9e64c2c72dbe00b1cabfef22.html#v-d61f5ac1c77da06450a983ea">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-0947a8cd6201ef03a110f764">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7118753d4761a006acdd1d7e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/controller_evidence/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>coordination_cancel_requested</code>
+</th>
+<td>
+<table id="v-99a30a713ac7df972610285f">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-1876fc06a8f89946769820a3">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/coordination_cancel_requested/default">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-72ba477674752dee0077ba62">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/coordination_cancel_requested/title">Coordination Cancel Requested</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-7c931f0f26a929027a8ac917">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/coordination_cancel_requested/type">boolean</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>coordination_settlement</code>
+</th>
+<td>
+<table id="v-f050d1c3645e3f8209f7f726">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-f2bbc5000422973503747d7d">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-500477e8c74ea6564c2ff811">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-faaac696aed99cc3ca181a0e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/coordination_settlement/anyOf/0/$ref">#/components/schemas/CoordinationSettlement</code>
+<span class="kind">string</span> <a href="e-62dfab236553a68accf2bfdd.html#v-d0ceeae9784f3f1290c2d9fa">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-fcdb6631e7b2a1383f0968d9">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-b1d4ba928c979d05d8daf98e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/coordination_settlement/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>expected_target_plan_sha256</code>
+</th>
+<td>
+<table id="v-3e04aba9106c893990c8f8fe">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-4f95a77c7dab1e6d0dd5ca08">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-c521ae1f95016e6baccd712b">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-5617f154dd180760f380d57b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/expected_target_plan_sha256/anyOf/0/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-8d96b1b5ad839f9215117990">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/expected_target_plan_sha256/anyOf/0/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-80a4c3be2783010218928e0c">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-88a147ba2b0c7c7bb7b1ef3b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/expected_target_plan_sha256/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-6a1ce05442f15a9083155d56">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/expected_target_plan_sha256/title">Expected Target Plan Sha256</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>failure</code>
+</th>
+<td>
+<table id="v-47052796f8f9cac1ca190102">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-4a8d512f0c7eb955eed965a1">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-24a236eafba3d6e31abd8945">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-4081f92eab2dd4b3452bc178">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/failure/anyOf/0/$ref">#/components/schemas/WorkFailureView</code>
+<span class="kind">string</span> <a href="e-9522e8f79a56a0b9b42bf31b.html#v-b4761108c004232b9c9251f6">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-5fa1b6283a5fb432e3dd66a3">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-cac2f32712b948647d8b7d02">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/failure/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>format</code>
+</th>
+<td>
+<table id="v-4c1ffdf0d3f3400538c49797">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-a5bc850c9014e76990a77c77">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/format/const">stove0-work-view/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-cdf3ee653b8523a70663f0aa">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/format/default">stove0-work-view/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-36778f66f39949450804b1c7">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/format/title">Format</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-70c5ec28c2a576dcf7726d30">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/format/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>inapplicable</code>
+</th>
+<td>
+<table id="v-ad37985d9052b22cf0abed20">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-a7771edbfa50dbe5477c4bfa">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-a715e93c336c4f3e97b3a324">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-23b8cb81b1181acb90b0c4ed">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/inapplicable/anyOf/0/$ref">#/components/schemas/WorkInapplicableView</code>
+<span class="kind">string</span> <a href="e-084e1404c6e9b274d256241e.html#v-8f187600fb2227c3ad142c1c">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-bf7c3b7fdec1f3fda6e8dc4a">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f4733535bfd7798f82d367c0">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/inapplicable/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>join_plan</code>
+</th>
+<td>
+<table id="v-9ab84bc2ad88b02db133a470">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-7fa49109b80850fca654fdc9">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-73ebfd4a08dc1fc727a8e7f7">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-44bfa0e4c5aacf684e4766cb">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/join_plan/anyOf/0/$ref">#/components/schemas/JoinPlan</code>
+<span class="kind">string</span> <a href="e-6c6ed2bb2f6c13766c78b118.html#v-e8e5828f9d085c65808bdfe9">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-cf1553593bb3c8ee3876310f">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c4046a681d19cf2797e59590">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/join_plan/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>observation_requests</code>
+</th>
+<td>
+<table id="v-0d80f7addf4684eb489237c1">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-ecdd4f564d94defc939039d1">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/observation_requests/default">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-96c6e6f7dc33e52f22f2582a">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-cbfdd89083c4ee1dcab984db">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/observation_requests/items/$ref">#/components/schemas/ContentObservationRequest</code>
+<span class="kind">string</span> <a href="e-e6d7ca8c5cb0c0ee648e374e.html#v-e8a64064b5b38371cd76e8b5">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-28a380d12f551d74cabdff88">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/observation_requests/title">Observation Requests</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-52cd4e7f356c5f16144524a9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/observation_requests/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>observation_results</code>
+</th>
+<td>
+<table id="v-33173849b484a7ebed6753e8">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-f09721c2a842fb769a2e8135">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/observation_results/default">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-e0b2a2a58d80f2e50addd7e1">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c44a97dad6eb5a13970862a2">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/observation_results/items/$ref">#/components/schemas/ContentObservationResult</code>
+<span class="kind">string</span> <a href="e-a3c195d1dbe35710d74d5ff3.html#v-3f53e497280d3ea22f40fab1">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-8d218442becb5ab2fdf4787d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/observation_results/title">Observation Results</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d4995c1046f0035bc3ad1bea">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/observation_results/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>output</code>
+</th>
+<td>
+<table id="v-7cd6caa0b272f00880e0832f">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-097924ad6d9f93fe0c56da2f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-962645400f4a7b6b25b22a84">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-e48531a4610676e4daf69b81">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/output/anyOf/0/$ref">#/components/schemas/OutputCollectionRef</code>
+<span class="kind">string</span> <a href="e-9549feba06191baae907a2b3.html#v-8d9795f165226fb63dacf89a">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-dc4021abf39bc8f343e8f7c7">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-df23f9959ca4f7016352468e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/output/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>phase</code>
+</th>
+<td>
+<table id="v-426ffe9458245fcc4c24d5be">
+<tbody>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-7e25dcac04fc9186c9a71a17">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-6137f947facbf9e101bbf8a1">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/0">eligible</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-0ccc5e4b2f29e8ed56765eed">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/1">claimed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-2e6170a382e514872429bd94">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/2">observing</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-b9061fa2279ab518af59fe2f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/3">planning</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>4</code>
+</th>
+<td>
+<span id="v-17ec8abfaa847104df13ab6d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/4">target_preflight</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>5</code>
+</th>
+<td>
+<span id="v-e87b6f665481916d58c13198">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/5">queued</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>6</code>
+</th>
+<td>
+<span id="v-be69d355455de47c14b5e89f">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/6">executing</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>7</code>
+</th>
+<td>
+<span id="v-078602f2562e41b59dddb57a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/7">output_finalizing</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>8</code>
+</th>
+<td>
+<span id="v-b627a23c2989bd4d2dacd22e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/8">verifying</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>9</code>
+</th>
+<td>
+<span id="v-50ce5102a129523e3312596a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/9">settled</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>10</code>
+</th>
+<td>
+<span id="v-53e4b1df133fde00b513f1ae">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/10">source_collection_retirement_pending</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>11</code>
+</th>
+<td>
+<span id="v-00e4e4b8a84ef15843c18b20">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/11">coordinating</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>12</code>
+</th>
+<td>
+<span id="v-263d2ef1f5139b7d19be9e5a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/12">abandon_pending</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>13</code>
+</th>
+<td>
+<span id="v-d99f2a58fa1339ac7597274e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/13">complete</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>14</code>
+</th>
+<td>
+<span id="v-9ad15d6e0678f42ae6b1363b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/14">inapplicable</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>15</code>
+</th>
+<td>
+<span id="v-a79908f26d682b46ca57c218">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/15">failed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>16</code>
+</th>
+<td>
+<span id="v-3c7d15f6f76c82d13179dea3">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/enum/16">canceled</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-0f00cd62a9bff97da162820a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/title">Phase</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-f9cd9871e022c6008bf469dd">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/phase/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>preview_acceptance</code>
+</th>
+<td>
+<table id="v-46d5cbd75361275aa230470f">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-4c23f2ce317b45e771d53cc3">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-a04fa8b25cb91126953ba1c9">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-cfa3fcd2d13eff4008f4ba7b">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/preview_acceptance/anyOf/0/$ref">#/components/schemas/PreviewAcceptanceView</code>
+<span class="kind">string</span> <a href="e-f93b90d0bd878f8982669187.html#v-e57385ebd58feb1f558361f9">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-64b84729af1714612d1fbc46">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d12f0852b1d51a4dd53f7680">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/preview_acceptance/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>revision</code>
+</th>
+<td>
+<table id="v-59b5cf38e78fdcccaa0788d2">
+<tbody>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-954fa6ae1fe37c05c95fa0c5">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/revision/minimum">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-828cd5fb87254002ed579459">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/revision/title">Revision</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4d2319ff5876a4f7e5b18c38">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/revision/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_collection_retirement_remaining</code>
+</th>
+<td>
+<table id="v-030dd823a6dc33fad32fc835">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-29821a20937031a760f1d799">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/source_collection_retirement_remaining/default">[]</code>
+<span class="kind">array</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>items</code>
+</th>
+<td>
+<table id="v-20214febf1cd29e0a16ec18c">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e0045bcd716629250a84d915">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/source_collection_retirement_remaining/items/type">integer</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-8195c427cfb7d29b2269c16e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/source_collection_retirement_remaining/title">Source Collection Retirement Remaining</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-12653aee73e0d285d6d22a07">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/source_collection_retirement_remaining/type">array</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>target_plan</code>
+</th>
+<td>
+<table id="v-089cf1887399465e003a318f">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-9c5d1cc187d88718e44245a7">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-d32379b0e0ae464df8a7c642">
+<tbody>
+<tr>
+<th scope="row">
+<code>discriminator</code>
+</th>
+<td>
+<table id="v-8e992d979746f65ed7d8df21">
+<tbody>
+<tr>
+<th scope="row">
+<code>mapping</code>
+</th>
+<td>
+<table id="v-e8d22ce968111ea6581acb91">
+<tbody>
+<tr>
+<th scope="row">
+<code>stove0-effect-target/v1</code>
+</th>
+<td>
+<span id="v-9acd98dd34dab0967711dc27">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/target_plan/anyOf/0/discriminator/mapping/stove0-effect-target~1v1">#/components/schemas/EffectPlan</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>stove0-transform-target/v1</code>
+</th>
+<td>
+<span id="v-ef17017bb3539ec844149f50">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/target_plan/anyOf/0/discriminator/mapping/stove0-transform-target~1v1">#/components/schemas/TransformPlan</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>propertyName</code>
+</th>
+<td>
+<span id="v-c6ee8c153698db0dfb2b3e0a">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/target_plan/anyOf/0/discriminator/propertyName">protocol</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>oneOf</code>
+</th>
+<td>
+<table id="v-0ef5ef76026e473e5b46c012">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-15a094609fa339427f1370eb">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-7e4ec00527076556c2dfaa78">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/target_plan/anyOf/0/oneOf/0/$ref">#/components/schemas/TransformPlan</code>
+<span class="kind">string</span> <a href="e-e0141d6b0dab4ffd4540dc75.html#v-4939cc6f45aab7330d619492">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-e80fec7ad17569d6d2b6636d">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-76d6bec89eb06baa889b9441">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/target_plan/anyOf/0/oneOf/1/$ref">#/components/schemas/EffectPlan</code>
+<span class="kind">string</span> <a href="e-ec0bb23284aefdb95f25dd15.html#v-8485814f8e4e0ecd19dd3c73">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-0589d389b8a38d794d634366">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-4033532e9685616b7b385575">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/target_plan/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-f95c0492e284f499f72bd663">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/target_plan/title">Target Plan</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>target_request</code>
+</th>
+<td>
+<table id="v-323850693481074fce656b46">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-1537c7f1d76f5ca90b079c76">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-98884eec1b8b6382cbe0d02b">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-29e81be565e0cccd9fbdee06">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/target_request/anyOf/0/$ref">#/components/schemas/AcceptedTargetJob</code>
+<span class="kind">string</span> <a href="e-183af6b736b4a3c77328b760.html#v-0b3d1b3480bc5573077e730e">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-811bfdbbf3670c7ba647f843">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-d30a4648cc883b98bd4130fa">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/target_request/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>target_settlement</code>
+</th>
+<td>
+<table id="v-47c9f56e772044bba845622c">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-f97ca3c8afc9b482b3e4d04d">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-d7bcb8d3fcab322b0087d0fd">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-8f23021ba3c1a1362014e3f9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/target_settlement/anyOf/0/$ref">#/components/schemas/TargetSettlementAuthority</code>
+<span class="kind">string</span> <a href="e-24c6681de45c15a0ff8734ef.html#v-428567adad46140c419a2542">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-32447adf485fddb3faed1fa5">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-603e26d7f562b22477efca15">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/target_settlement/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>target_status</code>
+</th>
+<td>
+<table id="v-191b9a3de7d4d45ea917b8cf">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-8053febfea791797b0efc0d3">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-e62deee8924a88e4a2419589">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-69dd7a963560abd19a2009aa">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/target_status/anyOf/0/$ref">#/components/schemas/TargetJobStatus</code>
+<span class="kind">string</span> <a href="e-e8c87e4159b5fdcf82d64ce5.html#v-5b62e18de1162859678a69c7">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-c1943f4f037e74beaac67ed0">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-ddab610ff250d36ba17b7e4e">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/target_status/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>work</code>
+</th>
+<td>
+<table id="v-7fdbb2aaa6e89b8e2ee6057b">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-e6bfc2497c88891636e49f83">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/work/$ref">#/components/schemas/WorkIdentity</code>
+<span class="kind">string</span> <a href="e-1110829e373d996c619f19a2.html#v-4f74f11a9ba26db932e44a71">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>work_id</code>
+</th>
+<td>
+<table id="v-6b0ef08835daaa05cef19de2">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-c8c8da091aa70aa62a8002d0">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/work_id/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-ce94f1cc8d303338b5ae8394">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/work_id/title">Work Id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-727a16911d216e8ebc96a519">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/work_id/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>workflow_plan</code>
+</th>
+<td>
+<table id="v-b23ed55dc5546ee316e8f320">
+<tbody>
+<tr>
+<th scope="row">
+<code>anyOf</code>
+</th>
+<td>
+<table id="v-f7a4610bb24e9da67f82ddba">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<table id="v-4a45271774d9edc6fd0ab1a4">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-c55640bd877cb224b92e1976">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/workflow_plan/anyOf/0/$ref">#/components/schemas/WorkflowPlan</code>
+<span class="kind">string</span> <a href="e-388703e9571e262f2a281259.html#v-5da2fc67106f39adf6babb86">Definition</a>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<table id="v-e3deb9bb3bf4e90476392747">
+<tbody>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-e7542af94f69338c545432e9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/workflow_plan/anyOf/1/type">null</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-c19140c483b00fb53e00ece4">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-3de77b8183dbe416de545735">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/required/0">work_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-68f57deac74ffe1899fbe644">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/required/1">work</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>2</code>
+</th>
+<td>
+<span id="v-cb53c54edbf7baaefea47fb9">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/required/2">phase</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>3</code>
+</th>
+<td>
+<span id="v-46e32636ec55bbac14d7407d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/required/3">revision</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-04d9fb929b5ea34da019d0f3">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/title">WorkView</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-c46c0a68b2ce8143423a214d">
+<code data-value-pointer="/external_contract/http_openapi/stove0/components/schemas/WorkView/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+<h3>Generated extent analysis</h3>
+<p>These records index source constraints; they do not add limits or progression promises.</p>
+<ul>
+<li>
+<code>http:stove0:components:/schemas/WorkView/properties/expected_target_plan_sha256/anyOf/0:length</code>
+<table id="v-517e46250e6d5bec4579ff39">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-aae1d30d974b2f5083231946">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1expected_target_plan_sha256~1anyOf~10:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-a45ca2eea0aec2c9f15095b4">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1expected_target_plan_sha256~1anyOf~10:length/id">http:stove0:components:/schemas/WorkView/properties/expected_target_plan_sha256/anyOf/0:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-5f7ec317838cc1695116c8cf">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1expected_target_plan_sha256~1anyOf~10:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-c9912f9947770927e0a19248">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1expected_target_plan_sha256~1anyOf~10:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-ea92c21c808190d0ab6f398e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1expected_target_plan_sha256~1anyOf~10:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-e1dca0d70c11baea5e66998c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1expected_target_plan_sha256~1anyOf~10:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-ccae64e570482e2d57d46f1f">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1expected_target_plan_sha256~1anyOf~10:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-782d6beb29b096255a52f3b2">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1expected_target_plan_sha256~1anyOf~10:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-11a6f7da4d15a739e70a6c1a">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-49743f39c1bc807ab7fa66d6">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1expected_target_plan_sha256~1anyOf~10:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-c7512a13766fdb02466015b6">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1expected_target_plan_sha256~1anyOf~10:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/expected_target_plan_sha256/anyOf/0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-390bddcf58bcef1df5cf5f30">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1expected_target_plan_sha256~1anyOf~10:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/WorkView/properties/observation_requests:cardinality</code>
+<table id="v-d0a88e1fb6baf07e8ecbef4b">
+<tbody>
+<tr>
+<th scope="row">
+<code>capacity_authority</code>
+</th>
+<td>
+<table id="v-87f31f7c0b29e70a0352d1fa">
+<tbody>
+<tr>
+<th scope="row">
+<code>declared_maximum</code>
+</th>
+<td>
+<span id="v-40d6ef92a48ec39b63bfb18f">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_requests:cardinality/capacity_authority/declared_maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>hidden_maximum</code>
+</th>
+<td>
+<span id="v-2dcc294348848f3e93baf5bd">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_requests:cardinality/capacity_authority/hidden_maximum">forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-43a7b5f57c134b4a952d5193">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_requests:cardinality/capacity_authority/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-47ec5c80fa3ddda1b055d432">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_requests:cardinality/dimension">cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-7b214305474d2382db1389c5">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_requests:cardinality/id">http:stove0:components:/schemas/WorkView/properties/observation_requests:cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-8d70c0f455187e8b63bb08a8">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_requests:cardinality/maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-9f4593e5ee43d1d159eed366">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_requests:cardinality/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-d88860b66ebb7e60c9ff834f">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_requests:cardinality/policy">operational_policy</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-34ce61899f060956a1fce7e9">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_requests:cardinality/reason">no-declared-semantic-maximum</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-e10a7028f2b6a5d84b97fae0">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_requests:cardinality/rule">no-semantic-maximum/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-2410b87072f82434b9db8050">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_requests:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/observation_requests</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-ce5fc07348892b4cf66d021a">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_requests:cardinality/unit">items</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/WorkView/properties/observation_results:cardinality</code>
+<table id="v-d7475be11b09e31062e7db32">
+<tbody>
+<tr>
+<th scope="row">
+<code>capacity_authority</code>
+</th>
+<td>
+<table id="v-46f3d614b409c31631fe1c52">
+<tbody>
+<tr>
+<th scope="row">
+<code>declared_maximum</code>
+</th>
+<td>
+<span id="v-07e8eea62a4b62bf8d50a87b">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_results:cardinality/capacity_authority/declared_maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>hidden_maximum</code>
+</th>
+<td>
+<span id="v-0807421aaa391f75a1f670b6">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_results:cardinality/capacity_authority/hidden_maximum">forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-162386da0f466f88fd18c3ae">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_results:cardinality/capacity_authority/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-be3990c03b4c8311254dcf38">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_results:cardinality/dimension">cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-008a1397ec578f3291992492">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_results:cardinality/id">http:stove0:components:/schemas/WorkView/properties/observation_results:cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-22016eab665c636aec3e740b">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_results:cardinality/maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-e8906e9b62ebf345065d5c48">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_results:cardinality/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-e02ea29400d3a4b8daf1297a">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_results:cardinality/policy">operational_policy</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-81907b2eb9b5afcf258a6bdf">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_results:cardinality/reason">no-declared-semantic-maximum</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-a7881de630ef973bd56491d1">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_results:cardinality/rule">no-semantic-maximum/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-f9c727d7bcf093317fc024eb">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_results:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/observation_results</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-f45ab5d179846ca5fb69a5bd">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1observation_results:cardinality/unit">items</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/WorkView/properties/source_collection_retirement_remaining/items:open-value</code>
+<table id="v-5b0b19ba7fed1fd3047ff28c">
+<tbody>
+<tr>
+<th scope="row">
+<code>capacity_authority</code>
+</th>
+<td>
+<table id="v-cb139e76178f858c69318a3c">
+<tbody>
+<tr>
+<th scope="row">
+<code>declared_maximum</code>
+</th>
+<td>
+<span id="v-a1e85beb44fbfac1c0ffb650">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining~1items:open-value/capacity_authority/declared_maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>hidden_maximum</code>
+</th>
+<td>
+<span id="v-ad28d51359d8aa3d5bf5325b">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining~1items:open-value/capacity_authority/hidden_maximum">forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-c0d6634d9609a00c6a5a4b35">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining~1items:open-value/capacity_authority/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-f29cab56bf5008b04201f160">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining~1items:open-value/dimension">value</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-600f9a1c95ede6ade4196987">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining~1items:open-value/id">http:stove0:components:/schemas/WorkView/properties/source_collection_retirement_remaining/items:open-value</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-cb5dede8ccd36007dbdea79e">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining~1items:open-value/maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-a33386dd7a76457d227fa9dd">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining~1items:open-value/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-6984bc5caad58fdee2fab774">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining~1items:open-value/policy">operational_policy</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-18e0710842c8ad9f168fe6d0">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining~1items:open-value/reason">no-declared-semantic-maximum</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-66c11fb2c742e734c9b7a8bf">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining~1items:open-value/rule">no-semantic-maximum/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-e44fd908bda4342a9a02c315">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining~1items:open-value/source_pointer">/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/source_collection_retirement_remaining/items</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-c10c9bfe8312e726296db382">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining~1items:open-value/unit">schema-value</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/WorkView/properties/source_collection_retirement_remaining:cardinality</code>
+<table id="v-6ea75729ca7ee0a8121594b3">
+<tbody>
+<tr>
+<th scope="row">
+<code>capacity_authority</code>
+</th>
+<td>
+<table id="v-2789a601ccec9efc9a2e2755">
+<tbody>
+<tr>
+<th scope="row">
+<code>declared_maximum</code>
+</th>
+<td>
+<span id="v-d2f3a490b95ae0f7d3defe4c">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining:cardinality/capacity_authority/declared_maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>hidden_maximum</code>
+</th>
+<td>
+<span id="v-3e487840eb76c11f89a965ff">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining:cardinality/capacity_authority/hidden_maximum">forbidden</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-9c0164ae490c9fa29366bed2">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining:cardinality/capacity_authority/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-54d647a11c1f5abf476b59bc">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining:cardinality/dimension">cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-fd2e8ca75a4d07b7fa5e8e43">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining:cardinality/id">http:stove0:components:/schemas/WorkView/properties/source_collection_retirement_remaining:cardinality</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-45666ad27ce7658732c4dfc7">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining:cardinality/maximum">null</code>
+<span class="kind">null</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-502fbd4a425ac5af39e91843">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining:cardinality/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-4caf4eba7548a7c9add74b21">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining:cardinality/policy">operational_policy</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-81a22d611d266612383f873a">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining:cardinality/reason">no-declared-semantic-maximum</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-fcff73aa3ec1c853b9e7e94d">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining:cardinality/rule">no-semantic-maximum/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-25f6716ceacb91169ef6d189">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining:cardinality/source_pointer">/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/source_collection_retirement_remaining</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-eb045837a3e6ec1e1959cfc3">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1source_collection_retirement_remaining:cardinality/unit">items</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<code>http:stove0:components:/schemas/WorkView/properties/work_id:length</code>
+<table id="v-b98eff27f9c9e1dfec29a773">
+<tbody>
+<tr>
+<th scope="row">
+<code>dimension</code>
+</th>
+<td>
+<span id="v-9f4a5deb92b7ac9255b2d6e9">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1work_id:length/dimension">length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-97b8a7c7fe027956d87e10f2">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1work_id:length/id">http:stove0:components:/schemas/WorkView/properties/work_id:length</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>maximum</code>
+</th>
+<td>
+<span id="v-184879b1ccfa1f86d51f2880">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1work_id:length/maximum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>minimum</code>
+</th>
+<td>
+<span id="v-390496d7ae06e00d3afb7fef">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1work_id:length/minimum">64</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-87d68d7da8e79cf4d0027dd6">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1work_id:length/owner">stove0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy</code>
+</th>
+<td>
+<span id="v-4ed3c0abce5e33736ce43862">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1work_id:length/policy">fixed</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-27059b98fd1e86beb4140816">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1work_id:length/reason">fixed-public-representation</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>rule</code>
+</th>
+<td>
+<span id="v-a3c30712b44f29f8ff0188f5">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1work_id:length/rule">schema-bound/v1</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_constraint</code>
+</th>
+<td>
+<table id="v-3eb56072bf57e5e0a3f7c0a5">
+<tbody>
+<tr>
+<th scope="row">
+<code>pattern</code>
+</th>
+<td>
+<span id="v-a743587ef861306e6cb80982">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1work_id:length/source_constraint/pattern">^[0-9a-f]{64}$</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_pointer</code>
+</th>
+<td>
+<span id="v-73d2ed1cfcc86f73ebd213ad">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1work_id:length/source_pointer">/external_contract/http_openapi/stove0/components/schemas/WorkView/properties/work_id</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>unit</code>
+</th>
+<td>
+<span id="v-1f9bfa0f3a97802ad345afc2">
+<code data-value-pointer="/audit/decisions/http:stove0:components:~1schemas~1WorkView~1properties~1work_id:length/unit">characters</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>

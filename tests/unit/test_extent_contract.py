@@ -640,14 +640,19 @@ def test_trace_index_covers_every_extent_and_only_current_source_paths() -> None
     assert {
         witness_id for link in linked_segmented for witness_id in link["segmented_extent_witnesses"]
     } == set(witnesses)
+    decision_pointers = {decision["id"]: decision["source_pointer"] for decision in segmented}
     for witness in witnesses.values():
-        assert set(witness["unestablished_claims"]) == {
-            "bounded_step",
-            "forward_progress",
-            "multiple_segments",
-            "no_silent_truncation",
-            "restart",
-        }
+        assert witness["association_status"] == "candidate"
+        assert witness["result_reference"] is None
+        assert witness["audit_scope"]
+        assert _resolve_pointer(projection, witness["rule_pointer"])
+        assert witness["subject_pointers"] == sorted(
+            decision_pointers[link["id"]]
+            for link in linked_segmented
+            if witness["id"] in link["segmented_extent_witnesses"]
+        )
+        for pointer in witness["subject_pointers"]:
+            assert _resolve_pointer(projection, pointer)
         assert witness["gates"]
         assert witness["test_node_ids"]
         if witness["test_scopes"]:
@@ -668,6 +673,23 @@ def test_trace_index_covers_every_extent_and_only_current_source_paths() -> None
             assert (REPO_ROOT / fixture["path"]).exists()
         for binding in source.get("bindings", []):
             assert (REPO_ROOT / binding["path"]).exists()
+
+
+def test_extent_witness_rationale_does_not_determine_applicability() -> None:
+    module = load_script()
+    decisions = _checked_projection()["external_contract"]["extents"]["decisions"]
+    changed = copy.deepcopy(decisions)
+    for decision in changed:
+        if decision["policy"] == "segmented_no_total_max":
+            decision["reason"] = "edited rationale with no change to declaration"
+    original_records, original_links = module.extent_witnesses.bind_segmented_decisions(
+        REPO_ROOT, decisions
+    )
+    changed_records, changed_links = module.extent_witnesses.bind_segmented_decisions(
+        REPO_ROOT, changed
+    )
+    assert changed_records == original_records
+    assert changed_links == original_links
 
 
 def test_semantic_protocol_and_state_authorities_do_not_freeze_source_layout() -> None:

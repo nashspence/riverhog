@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>schemas: ProcessingClaimOutcomesSettleDocument · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="i-09dc1e38a978cb3e071a9885.html">riverhog · HTTP Schemas</a>
+</p>
+<p class="meta">Generated v1 candidate; no freeze or qualification acceptance is claimed.</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox" disabled> Documentation Mode</label>
+<noscript>
+<p>Contract-only reading remains available without JavaScript.</p>
+</noscript>
+</header>
+<h1>schemas: ProcessingClaimOutcomesSettleDocument</h1>
+<section id="contract" data-contract="http-schemas:riverhog:schemas-processingclaimoutcomessettledocument:2844c60457">
+<h2>Contract</h2>
+<section>
+<h3>
+<code>/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument</code>
+</h3>
+<table id="v-7ba16e93012882c21df1e851">
+<tbody>
+<tr>
+<th scope="row">
+<code>additionalProperties</code>
+</th>
+<td>
+<span id="v-39d310e232f782fa99383b23">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/additionalProperties">false</code>
+<span class="kind">boolean</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>if</code>
+</th>
+<td>
+<table id="v-097084343c7f5b40531a4330">
+<tbody>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-37c253a96ec18db409bacecb">
+<tbody>
+<tr>
+<th scope="row">
+<code>source_collection_retirement_policy</code>
+</th>
+<td>
+<table id="v-23835994ec374334426e5cdb">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-552b447450bef15d468e9baa">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/if/properties/source_collection_retirement_policy/const">retain</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-557df223f6bcc3347c25319a">
+<tbody>
+<tr>
+<th scope="row">
+<code>fence</code>
+</th>
+<td>
+<table id="v-f42f23efd41680bf8a6cfda5">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-be9345ee65a8a19c3fb52b7c">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/properties/fence/$ref">#/components/schemas/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">Definition</a>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-3b84ddb6b93aa66066aa26e4">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/properties/fence/ge">1</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_collection_retirement_grace_seconds</code>
+</th>
+<td>
+<table id="v-513af7c9a5f807a290f848c9">
+<tbody>
+<tr>
+<th scope="row">
+<code>$ref</code>
+</th>
+<td>
+<span id="v-382568f6bdbcc66772efe6af">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/properties/source_collection_retirement_grace_seconds/$ref">#/components/schemas/NonnegativeDecimal</code>
+<span class="kind">string</span> <a href="e-25c0d3b3dabdede3bc0558bc.html#v-8ce236b9b7aba1f3e7bddf99">Definition</a>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>ge</code>
+</th>
+<td>
+<span id="v-b5f6211eb7e336d4a6db3db6">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/properties/source_collection_retirement_grace_seconds/ge">0</code>
+<span class="kind">number</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>source_collection_retirement_policy</code>
+</th>
+<td>
+<table id="v-cc980295cc51c5e0f1bfdc5f">
+<tbody>
+<tr>
+<th scope="row">
+<code>default</code>
+</th>
+<td>
+<span id="v-79c864529c5715afba164e7c">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/properties/source_collection_retirement_policy/default">retain</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>description</code>
+</th>
+<td>
+<span id="v-04c8d4144bdbe8dcb208e8d4">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/properties/source_collection_retirement_policy/description">Retain source collections, or permit their permanent deletion after verified output, the grace period, and collection deletion checks.</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>enum</code>
+</th>
+<td>
+<table id="v-095287b8e2cacf6a4312b80d">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-6815f6957e95f477b1131a0a">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/properties/source_collection_retirement_policy/enum/0">retain</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>1</code>
+</th>
+<td>
+<span id="v-d7d0bad6f05df90d10aadf85">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/properties/source_collection_retirement_policy/enum/1">retire-after-verified-output</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-be88c2e9389b3680d2af0686">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/properties/source_collection_retirement_policy/title">Source Collection Retirement Policy</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-808e27e9229a4aa2a7a0fe5f">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/properties/source_collection_retirement_policy/type">string</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>required</code>
+</th>
+<td>
+<table id="v-6ce96fb5780133f5703f119f">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-7aa574d6f4ff60da82072e05">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/required/0">fence</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>then</code>
+</th>
+<td>
+<table id="v-e69183022b14afe71b7e5910">
+<tbody>
+<tr>
+<th scope="row">
+<code>properties</code>
+</th>
+<td>
+<table id="v-f352798e4b52045d2594c4b5">
+<tbody>
+<tr>
+<th scope="row">
+<code>source_collection_retirement_grace_seconds</code>
+</th>
+<td>
+<table id="v-48aa47e4d8e47d94560a3c81">
+<tbody>
+<tr>
+<th scope="row">
+<code>const</code>
+</th>
+<td>
+<span id="v-915896d884b19d44bb44f0fd">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/then/properties/source_collection_retirement_grace_seconds/const">0</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+</tbody>
+</table>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>title</code>
+</th>
+<td>
+<span id="v-0275659017dbc6d25db6a20e">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/title">ProcessingClaimOutcomesSettleDocument</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<code>type</code>
+</th>
+<td>
+<span id="v-be047dc0690efef598d2fc75">
+<code data-value-pointer="/external_contract/http_openapi/riverhog/components/schemas/ProcessingClaimOutcomesSettleDocument/type">object</code>
+<span class="kind">string</span>
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Source associations</h3>
+<ul>
+<li>
+<code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+<li>
+<code data-source-path="scripts/operation_qualification.py" data-source-line="350">scripts/operation_qualification.py::application_surfaces</code>
+</li>
+</ul>
+<h3>Candidate validation routes, not execution results</h3>
+<ul>
+<li>
+<code>make operation-qualification</code>
+</li>
+<li>
+<code>make compose-smoke</code>
+</li>
+</ul>
+</aside>
+<footer>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>34f230a568dc45d789ba21eba05f405e8bf32b4bdc32d316fe54ca0111ee78a0</code>
+</p>
+</footer>
+</main>
+</body>
+</html>
