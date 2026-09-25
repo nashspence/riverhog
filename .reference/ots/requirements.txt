@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Reference-only pins, deliberately outside Riverhog's workspace/lock/publication set.
+opentimestamps==0.4.5
+python-bitcoinlib==0.12.2
+pycryptodomex==3.23.0
+pytest==8.3.5

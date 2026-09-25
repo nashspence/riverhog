@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: Apache-2.0
+[tool.pytest.ini_options]
+addopts = "-ra --strict-markers"
+testpaths = ["."]
+pythonpath = ["."]
+filterwarnings = ["error"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
