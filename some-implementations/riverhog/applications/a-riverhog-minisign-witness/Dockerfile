@@ -41,6 +41,15 @@ FROM python:3.12-slim@sha256:090ba77e2958f6af52a5341f788b50b032dd4ca28377d2893dc
 ENV PATH=/opt/venv/bin:$PATH \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
+COPY LICENSES/Apache-2.0.txt /usr/share/licenses/riverhog/Apache-2.0.txt
+COPY LICENSES/CAL-1.0.txt /usr/share/licenses/riverhog/CAL-1.0.txt
+COPY THIRD_PARTY_NOTICES.md /usr/share/doc/riverhog/THIRD_PARTY_NOTICES.md
+COPY --from=locked-tools /opt/riverhog-tools/licenses/minisign/0.12/LICENSE /usr/share/licenses/riverhog-third-party/minisign/0.12/LICENSE
+RUN install -d -o 65532 -g 65532 -m 0700 /state && ! command -v mise
+COPY --from=build /opt/venv /opt/venv
+COPY --from=locked-tools /opt/riverhog-tools/bin/minisign /usr/local/bin/minisign
+RUN minisign -v
+
 ARG BUILD_CREATED=1970-01-01T00:00:00Z
 ARG RELEASE_VERSION=development
 ARG SOURCE_REVISION=unknown
@@ -53,13 +62,6 @@ LABEL org.opencontainers.image.title="Riverhog Minisign collection witness" \
       org.opencontainers.image.created="${BUILD_CREATED}" \
       io.github.nashspence.riverhog.release-role="application" \
       org.opencontainers.image.documentation="https://nashspence.github.io/riverhog/v1/"
-COPY LICENSES/Apache-2.0.txt /usr/share/licenses/riverhog/Apache-2.0.txt
-COPY LICENSES/CAL-1.0.txt /usr/share/licenses/riverhog/CAL-1.0.txt
-COPY THIRD_PARTY_NOTICES.md /usr/share/doc/riverhog/THIRD_PARTY_NOTICES.md
-COPY --from=locked-tools /opt/riverhog-tools/licenses/minisign/0.12/LICENSE /usr/share/licenses/riverhog-third-party/minisign/0.12/LICENSE
-RUN install -d -o 65532 -g 65532 -m 0700 /state && ! command -v mise
-COPY --from=build /opt/venv /opt/venv
-COPY --from=locked-tools /opt/riverhog-tools/bin/minisign /usr/local/bin/minisign
-RUN minisign -v
+
 USER 65532:65532
 ENTRYPOINT ["a-riverhog-minisign-witness"]

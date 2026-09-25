@@ -118,11 +118,10 @@ endef
 define BAKE_IMAGE
 	@revision="$$(git rev-parse --verify HEAD)"; \
 	created="$$(git show -s --format=%cI HEAD)"; \
-	epoch="$$(git show -s --format=%ct HEAD)"; \
 	docker buildx bake --file "$(BAKE_FILE)" --load \
 		--set "$(1).args.SOURCE_REVISION=$$revision" \
 		--set "$(1).args.BUILD_CREATED=$$created" \
-		--set "$(1).args.SOURCE_DATE_EPOCH=$$epoch" \
+		--set "$(1).args.SOURCE_DATE_EPOCH=0" \
 		--set "$(1).args.RELEASE_VERSION=development" "$(1)"
 endef
 

@@ -335,6 +335,50 @@ def test_bake_graph_is_the_canonical_image_build_contract() -> None:
             )
 
 
+def test_commit_metadata_cannot_invalidate_stable_image_build_steps() -> None:
+    for name, contract in IMAGE_CONTRACTS.items():
+        dockerfile = (REPO_ROOT / contract["dockerfile"]).read_text(encoding="utf-8")
+        stages = re.split(r"(?=^FROM )", dockerfile, flags=re.MULTILINE)
+        for stage in stages:
+            if "ARG BUILD_CREATED=" not in stage:
+                continue
+            lines = stage.splitlines()
+            last_material_step = max(
+                index
+                for index, line in enumerate(lines)
+                if line.startswith(("RUN ", "COPY ", "ADD "))
+            )
+            metadata_start = next(
+                index for index, line in enumerate(lines) if line.startswith("ARG BUILD_CREATED=")
+            )
+            assert metadata_start > last_material_step, name
+            assert any(
+                'org.opencontainers.image.revision="${SOURCE_REVISION}"' in line
+                for line in lines[metadata_start:]
+            ), name
+            assert any(
+                'org.opencontainers.image.created="${BUILD_CREATED}"' in line
+                for line in lines[metadata_start:]
+            ), name
+
+    for path in (
+        REPO_ROOT / "Makefile",
+        REPO_ROOT / ".github/workflows/ci.yml",
+        REPO_ROOT / ".github/workflows/provider-qualification.yml",
+        REPO_ROOT / "scripts/release.py",
+    ):
+        text = path.read_text(encoding="utf-8")
+        assert re.search(r"args\.SOURCE_DATE_EPOCH=0", text), path
+        assert not re.search(r"args\.SOURCE_DATE_EPOCH=(?!0(?:[\"'\\\n]|$))", text), path
+
+    ci = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+    provider = (REPO_ROOT / ".github/workflows/provider-qualification.yml").read_text(
+        encoding="utf-8"
+    )
+    for workflow in (ci, provider):
+        assert ",mode=max,ignore-error=true" in workflow
+
+
 def test_every_external_image_input_is_versioned_and_digest_pinned() -> None:
     observed: set[str] = set()
     for contract in IMAGE_CONTRACTS.values():
@@ -549,10 +593,7 @@ def test_github_image_matrix_uses_bounded_per_image_bake_caches() -> None:
     assert steps["Resolve image metadata"] == {
         "name": "Resolve image metadata",
         "id": "image-metadata",
-        "run": (
-            'echo "created=$(git show -s --format=%cI HEAD)" >> "$GITHUB_OUTPUT"\n'
-            'echo "epoch=$(git show -s --format=%ct HEAD)" >> "$GITHUB_OUTPUT"\n'
-        ),
+        "run": 'echo "created=$(git show -s --format=%cI HEAD)" >> "$GITHUB_OUTPUT"\n',
     }
     assert steps["Build image"] == {
         "name": "Build image",
@@ -565,10 +606,10 @@ def test_github_image_matrix_uses_bounded_per_image_bake_caches() -> None:
             "set": (
                 "*.args.SOURCE_REVISION=${{ inputs.ref || github.sha }}\n"
                 "*.args.BUILD_CREATED=${{ steps.image-metadata.outputs.created }}\n"
-                "*.args.SOURCE_DATE_EPOCH=${{ steps.image-metadata.outputs.epoch }}\n"
+                "*.args.SOURCE_DATE_EPOCH=0\n"
                 "*.args.RELEASE_VERSION=development\n"
                 "*.cache-from=type=gha,scope=${{ matrix.target }}\n"
-                "*.cache-to=type=gha,scope=${{ matrix.target }},mode=min,ignore-error=true\n"
+                "*.cache-to=type=gha,scope=${{ matrix.target }},mode=max,ignore-error=true\n"
             ),
         },
     }

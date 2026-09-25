@@ -329,8 +329,7 @@ jobs:
       - name: Resolve image metadata
         id: image-metadata
         run: |
-          printf 'created=%s\nepoch=%s\n' \
-            "$(git show -s --format=%cI HEAD)" "$(git show -s --format=%ct HEAD)" >> "$GITHUB_OUTPUT"
+          printf 'created=%s\n' "$(git show -s --format=%cI HEAD)" >> "$GITHUB_OUTPUT"
       - name: Build the disposable Riverhog storage boundary
         uses: docker/bake-action@d3418bd7d0e9324001bca92fa8ba175ea7e6dc9b # v7.3.0
         with:
@@ -345,10 +344,10 @@ jobs:
           set: |
             *.args.SOURCE_REVISION=${{ needs.resolve.outputs.source_sha }}
             *.args.BUILD_CREATED=${{ steps.image-metadata.outputs.created }}
-            *.args.SOURCE_DATE_EPOCH=${{ steps.image-metadata.outputs.epoch }}
+            *.args.SOURCE_DATE_EPOCH=0
             *.args.RELEASE_VERSION=development
             *.cache-from=type=gha,scope=provider-qualification-storage-boundary
-            *.cache-to=type=gha,scope=provider-qualification-storage-boundary,mode=min,ignore-error=true
+            *.cache-to=type=gha,scope=provider-qualification-storage-boundary,mode=max,ignore-error=true
       - name: Materialize adapter authentication and CloudFront signing keys
         env:
           CLOUDFRONT_PRIVATE_KEY: ${{ secrets.RIVERHOG_QUALIFICATION_CLOUDFRONT_PRIVATE_KEY }}

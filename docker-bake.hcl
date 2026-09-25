@@ -22,6 +22,7 @@ group "default" {
 // Update a readable image version and its digest together, then run `make build`.
 target "image-common" {
   platforms = ["linux/amd64"]
+  // Image layer/config timestamps are stable; commit time is recorded in OCI labels.
   args = {
     SOURCE_DATE_EPOCH = "0"
   }

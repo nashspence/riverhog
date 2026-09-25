@@ -32,18 +32,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
     UV_LINK_MODE=copy \
     SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH}
 
-ARG BUILD_CREATED=1970-01-01T00:00:00Z
-ARG RELEASE_VERSION=development
-ARG SOURCE_REVISION=unknown
-
-LABEL org.opencontainers.image.title="Riverhog Test Suite" \
-      org.opencontainers.image.licenses="CAL-1.0 AND Apache-2.0" \
-      org.opencontainers.image.source="https://github.com/nashspence/riverhog" \
-      org.opencontainers.image.revision="${SOURCE_REVISION}" \
-      org.opencontainers.image.version="${RELEASE_VERSION}" \
-      org.opencontainers.image.created="${BUILD_CREATED}" \
-      org.opencontainers.image.documentation="https://nashspence.github.io/riverhog/v1/"
-
 COPY LICENSES/Apache-2.0.txt /usr/share/licenses/riverhog/Apache-2.0.txt
 COPY LICENSES/CAL-1.0.txt /usr/share/licenses/riverhog/CAL-1.0.txt
 COPY THIRD_PARTY_NOTICES.md /usr/share/doc/riverhog/THIRD_PARTY_NOTICES.md
@@ -72,6 +60,19 @@ RUN uv sync --frozen --all-packages --group dev --no-editable
 
 COPY scripts scripts
 COPY tests tests
+
+ARG BUILD_CREATED=1970-01-01T00:00:00Z
+ARG RELEASE_VERSION=development
+ARG SOURCE_REVISION=unknown
+
+LABEL org.opencontainers.image.title="Riverhog Test Suite" \
+      org.opencontainers.image.licenses="CAL-1.0 AND Apache-2.0" \
+      org.opencontainers.image.source="https://github.com/nashspence/riverhog" \
+      org.opencontainers.image.revision="${SOURCE_REVISION}" \
+      org.opencontainers.image.version="${RELEASE_VERSION}" \
+      org.opencontainers.image.created="${BUILD_CREATED}" \
+      org.opencontainers.image.documentation="https://nashspence.github.io/riverhog/v1/"
+
 
 ENTRYPOINT ["python", "-m", "pytest"]
 CMD ["-q"]

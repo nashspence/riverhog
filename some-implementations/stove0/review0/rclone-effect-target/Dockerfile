@@ -56,19 +56,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-ARG BUILD_CREATED=1970-01-01T00:00:00Z
-ARG RELEASE_VERSION=development
-ARG SOURCE_REVISION=unknown
-LABEL org.opencontainers.image.title="Review0 rclone target" \
-      org.opencontainers.image.description="Review0 rclone delivery target for Stove0." \
-      org.opencontainers.image.licenses="CAL-1.0" \
-      org.opencontainers.image.source="https://github.com/nashspence/riverhog" \
-      org.opencontainers.image.revision="${SOURCE_REVISION}" \
-      org.opencontainers.image.version="${RELEASE_VERSION}" \
-      org.opencontainers.image.created="${BUILD_CREATED}" \
-      io.github.nashspence.riverhog.release-role="component" \
-      org.opencontainers.image.documentation="https://nashspence.github.io/riverhog/v1/"
-
 COPY LICENSES/Apache-2.0.txt /usr/share/licenses/riverhog/Apache-2.0.txt
 COPY LICENSES/CAL-1.0.txt /usr/share/licenses/riverhog/CAL-1.0.txt
 COPY THIRD_PARTY_NOTICES.md /usr/share/doc/riverhog/THIRD_PARTY_NOTICES.md
@@ -87,6 +74,20 @@ COPY --from=locked-tools /opt/riverhog-tools/bin/rclone /usr/local/bin/rclone
 RUN rclone version \
     && ! command -v mise \
     && ! command -v ffmpeg
+
+ARG BUILD_CREATED=1970-01-01T00:00:00Z
+ARG RELEASE_VERSION=development
+ARG SOURCE_REVISION=unknown
+LABEL org.opencontainers.image.title="Review0 rclone target" \
+      org.opencontainers.image.description="Review0 rclone delivery target for Stove0." \
+      org.opencontainers.image.licenses="CAL-1.0" \
+      org.opencontainers.image.source="https://github.com/nashspence/riverhog" \
+      org.opencontainers.image.revision="${SOURCE_REVISION}" \
+      org.opencontainers.image.version="${RELEASE_VERSION}" \
+      org.opencontainers.image.created="${BUILD_CREATED}" \
+      io.github.nashspence.riverhog.release-role="component" \
+      org.opencontainers.image.documentation="https://nashspence.github.io/riverhog/v1/"
+
 
 USER 65532:65532
 EXPOSE 8080
