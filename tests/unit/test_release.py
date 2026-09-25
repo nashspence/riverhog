@@ -74,13 +74,13 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
 
     projects = module.validate_release_contract(REPO_ROOT)
 
-    assert len(projects) == 72
+    assert len(projects) == 75
     assert {project.version for project in projects} == {"0.1.0"}
     assert Counter(project.role for project in projects) == {
         "deployed_implementation": 1,
-        "application": 6,
+        "application": 8,
         "component": 29,
-        "reusable_library": 34,
+        "reusable_library": 35,
         "internal_build_unit": 2,
     }
     assert {project.name for project in projects} >= {
@@ -88,6 +88,9 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
         "riverhog-application-access",
         "a-riverhog-ftp-spool",
         "a-riverhog-ftp-spool-client",
+        "a-riverhog-witness-contract-lib",
+        "a-riverhog-minisign-witness",
+        "a-riverhog-opentimestamps-witness",
         "a-riverhog-recovery-tool",
         "riverhog-server",
         "a-riverhog-cli",
@@ -134,6 +137,8 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
     assert {project.name for project in projects if project.role == "application"} == {
         "gogurt",
         "a-riverhog-event-relay",
+        "a-riverhog-minisign-witness",
+        "a-riverhog-opentimestamps-witness",
         "a-riverhog-cli",
         "a-riverhog-recovery-tool",
         "a-stove0-cli",
@@ -147,6 +152,8 @@ def test_release_contract_classifies_every_coordinated_distribution() -> None:
     assert {owner["id"] for owner in release["state"]["owners"]} == {
         "gogurt-listener",
         "a-riverhog-event-relay-cursor",
+        "a-riverhog-minisign-witness-ledger",
+        "a-riverhog-opentimestamps-witness-ledger",
         "riverhog-catalog",
         "a-riverhog-ftp-spool-custody",
         "a-riverhog-cli-local",
@@ -587,7 +594,7 @@ def test_release_plan_is_exact_sha_bound_and_excludes_the_test_image() -> None:
     assert plan["tag"] == "v1.0.0"
     assert len(plan["source_sha"]) == 40
     assert all(character in "0123456789abcdef" for character in plan["source_sha"])
-    assert len(plan["python"]) == 72
+    assert len(plan["python"]) == 75
     assert all(len(project["artifacts"]) == 2 for project in plan["python"])
     publication = module.publication_contract(REPO_ROOT)
     assert plan["publication"] == publication

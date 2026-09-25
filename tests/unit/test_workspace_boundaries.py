@@ -104,6 +104,14 @@ IMPLEMENTATION_OWNERS = {
         REPO / "some-implementations/riverhog/applications/a-riverhog-event-relay/src",
         {"a_riverhog_event_relay"},
     ),
+    "a-riverhog-minisign-witness": (
+        REPO / "some-implementations/riverhog/applications/a-riverhog-minisign-witness/src",
+        {"a_riverhog_minisign_witness"},
+    ),
+    "a-riverhog-opentimestamps-witness": (
+        REPO / "some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/src",
+        {"a_riverhog_opentimestamps_witness"},
+    ),
     "gogurt": (REPO / "some-implementations/gogurt/application/src", {"gogurt"}),
     "a-gogurt-linux-listener": (
         REPO / "some-implementations/gogurt/listener-host/linux/src",
@@ -164,10 +172,13 @@ EXTERNAL_DISTRIBUTION_MODULES = {
     "httpx": {"httpx"},
     "ijson": {"ijson"},
     "jsonschema": {"jsonschema"},
+    "opentimestamps": {"opentimestamps"},
     "psycopg": set(),
     "pydantic": {"pydantic"},
+    "pycryptodomex": {"Cryptodome"},
     "pyftpdlib": {"pyftpdlib"},
     "pyyaml": {"yaml"},
+    "python-bitcoinlib": {"bitcoin"},
     "referencing": {"referencing"},
     "rfc8785": {"rfc8785"},
     "rich": {"rich"},
@@ -179,6 +190,7 @@ EXTERNAL_DISTRIBUTION_MODULES = {
 RUNTIME_ONLY_DEPENDENCIES = {
     "riverhog-server": {"psycopg"},
     "stove0-server": {"psycopg"},
+    "a-riverhog-opentimestamps-witness": {"pycryptodomex"},
 }
 
 

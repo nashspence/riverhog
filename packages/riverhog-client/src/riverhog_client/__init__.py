@@ -33,6 +33,14 @@ from riverhog_client.downloads import (
     configured_download_window,
     download_retrieval_files,
 )
+from riverhog_client.following import (
+    CatalogFollowApi,
+    CatalogFollowBatch,
+    CatalogFollower,
+    CatalogFollowKind,
+    CatalogFollowPhase,
+    CatalogFollowPosition,
+)
 from riverhog_client.initial_tags import create_or_resume_with_initial_collection_tags
 from riverhog_client.source_hashing import RawSourceHash, hash_raw_source_chunks
 from riverhog_client.uploads import (
@@ -46,6 +54,12 @@ __all__ = [
     "ApiClient",
     "CatalogReplica",
     "CatalogSyncApi",
+    "CatalogFollowApi",
+    "CatalogFollowBatch",
+    "CatalogFollowKind",
+    "CatalogFollowPhase",
+    "CatalogFollowPosition",
+    "CatalogFollower",
     "ApplicationPermission",
     "ApplicationResource",
     "CollectionUploadIdempotencyKey",

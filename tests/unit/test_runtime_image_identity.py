@@ -185,7 +185,7 @@ def test_release_resolver_covers_inventory_and_writes_pins(
     monkeypatch.setattr(module, "resolve_image", resolve)
     result = module.resolve_release_images(ROOT / "release.toml", "1.0.0")
     assert result["format"] == "riverhog-runtime-image-identities/v1"
-    assert len(result["images"]) == len(seen) == 13
+    assert len(result["images"]) == len(seen) == 15
     env = module.compose_env(result)
     assert (
         "A_STOVE0_OPUS_TARGET_IMAGE_REF="

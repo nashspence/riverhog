@@ -133,7 +133,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
         "runtime_images",
     }
     components = boundaries["components"]
-    assert len(components) == 72
+    assert len(components) == 75
     roles = {component["distribution"]: component["role"] for component in components}
     extension_points = boundaries["entry_point_extensions"]
     assert {point["group"] for point in extension_points} == {
@@ -174,6 +174,8 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     assert set(external["cli"]) == {
         "gogurt",
         "a-riverhog-event-relay",
+        "a-riverhog-minisign-witness",
+        "a-riverhog-opentimestamps-witness",
         "a-riverhog-cli",
         "riverhog-api",
         "a-riverhog-ftp-spool",
@@ -219,7 +221,7 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     assert isinstance(external["python"], dict)
     assert len(external["python"]) == trace["python_registry"]["coverage"]["protected"]
     assert len(external["python"]) > len(trace["python_registry"]["detections"])
-    assert len(external["durable_state"]["owners"]) == 8
+    assert len(external["durable_state"]["owners"]) == 10
     assert all(
         "structure" in owner and "fixture_sha256s" not in owner
         for owner in external["durable_state"]["owners"]
@@ -228,8 +230,8 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     assert set(release) == {"compatibility", "publication"}
     publication = release["publication"]
     assert publication["format"] == "riverhog-release-publication/v1"
-    assert len(publication["distributions"]) == 72
-    assert len(publication["runtime_images"]) == 13
+    assert len(publication["distributions"]) == 75
+    assert len(publication["runtime_images"]) == 15
     assert len(publication["installation_roots"]) == 4
     assert "test" not in publication["runtime_images"]
     assert all(
@@ -250,24 +252,24 @@ def test_checked_contract_freeze_matches_every_executable_authority(
     assert trace["format"] == "riverhog-contract-trace/v1"
     assert trace["coverage"]["source_kinds"] == {
         "audit": 1,
-        "cli": 29,
+        "cli": 31,
         "configuration": 8,
         "configuration-environment": 251,
         "configuration-environment-pattern": 2,
         "openapi": 3,
         "protocol": 35,
-        "python": 64,
+        "python": 65,
         "release": 1,
-        "release-distribution": 72,
+        "release-distribution": 75,
         "release-images": 1,
         "release-installation": 1,
         "release-publication": 1,
-        "state": 8,
+        "state": 10,
     }
     assert trace["coverage"]["extent_decisions"] == len(extents["decisions"])
     assert trace["coverage"]["operation_qualification_records"] == 153
     assert trace["python_registry"]["coverage"] == {
-        "detected": 64,
+        "detected": 65,
         "resolved": len(trace["python_registry"]["resolutions"]),
         "protected": len(external["python"]),
         "unresolved": 0,

@@ -179,6 +179,8 @@ def test_every_first_party_image_build_requests_an_sbom_attestation() -> None:
         "a-review0-materializer",
         "a-review0-rclone-target",
         "a-riverhog-event-relay",
+        "a-riverhog-minisign-witness",
+        "a-riverhog-opentimestamps-witness",
         "test",
     ]
     sbom_generator = (

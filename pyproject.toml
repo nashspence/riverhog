@@ -6,6 +6,7 @@ members = [
   "some-implementations/gogurt/mounted-volume/*",
   "some-implementations/gogurt/packages/*",
   "some-implementations/riverhog/applications/*",
+  "some-implementations/riverhog/packages/*",
   "some-implementations/riverhog/ingress/*",
   "some-implementations/riverhog/provenance/contracts/*",
   "some-implementations/riverhog/provenance/observers/*",
@@ -40,6 +41,7 @@ a-gogurt-macos-volume = { workspace = true }
 a-gogurt-windows-listener = { workspace = true }
 a-gogurt-windows-volume = { workspace = true }
 a-riverhog-ftp-spool-client = { workspace = true }
+a-riverhog-witness-contract-lib = { workspace = true }
 riverhog-archive-contracts = { workspace = true }
 riverhog-canonical-json = { workspace = true }
 riverhog-provenance = { workspace = true }

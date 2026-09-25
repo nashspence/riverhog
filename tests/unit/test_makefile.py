@@ -676,6 +676,8 @@ def test_build_targets_use_the_canonical_bake_graph(tmp_path: Path) -> None:
         "a-review0-materializer",
         "a-review0-rclone-target",
         "a-riverhog-event-relay",
+        "a-riverhog-minisign-witness",
+        "a-riverhog-opentimestamps-witness",
         "test",
     )
     assert _read_log_lines(docker_log_path) == [

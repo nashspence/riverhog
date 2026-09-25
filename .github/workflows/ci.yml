@@ -142,6 +142,8 @@ jobs:
           - a-review0-materializer
           - a-review0-rclone-target
           - a-riverhog-event-relay
+          - a-riverhog-minisign-witness
+          - a-riverhog-opentimestamps-witness
           - test
     steps:
       - name: Check out repository
@@ -191,6 +193,11 @@ jobs:
       - name: Smoke Riverhog event relay image
         if: matrix.target == 'a-riverhog-event-relay'
         run: make a-riverhog-event-relay-smoke
+      - name: Smoke independent witness image
+        if: matrix.target == 'a-riverhog-minisign-witness' || matrix.target == 'a-riverhog-opentimestamps-witness'
+        env:
+          IMAGE_TARGET: ${{ matrix.target }}
+        run: python3 scripts/test_witness_image.py "$IMAGE_TARGET"
       - name: Verify runtime image isolation
         if: matrix.target != 'test'
         env:

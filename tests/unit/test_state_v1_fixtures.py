@@ -12,6 +12,8 @@ from a_riverhog_cli.local_state import state_schema as local_state_schema
 from a_riverhog_event_relay.relay import CursorState
 from a_riverhog_event_relay.schema import state_schema as a_riverhog_event_relay_state_schema
 from a_riverhog_ftp_spool.state_contract import FTP_OPERATIONAL_STATE_DDL
+from a_riverhog_minisign_witness.schema import state_schema as minisign_witness_schema
+from a_riverhog_opentimestamps_witness.schema import state_schema as ots_witness_schema
 from gogurt_listener_runtime import ListenerStore
 from riverhog_core.state_migrations.v1_ddl import POSTGRESQL_DDL
 from riverhog_provenance import load_or_create_installation_id
@@ -49,6 +51,14 @@ MIGRATION_BASELINES = {
         "alembic",
         "a_riverhog_event_relay.state_migrations.v1_ddl",
     ),
+    (
+        "some-implementations/riverhog/applications/a-riverhog-minisign-witness/src/"
+        "a_riverhog_minisign_witness/state_migrations/versions/v1_0001.py"
+    ): ("alembic", "a_riverhog_minisign_witness.state_migrations.v1_ddl"),
+    (
+        "some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/src/"
+        "a_riverhog_opentimestamps_witness/state_migrations/versions/v1_0001.py"
+    ): ("alembic", "a_riverhog_opentimestamps_witness.state_migrations.v1_ddl"),
 }
 
 
@@ -109,6 +119,21 @@ def test_a_riverhog_event_relay_current_v1_fixture_restarts_with_source_cursor(
 
     assert status.condition == "current"
     assert cursor_state.cursor("stove0") == "23"
+
+
+@pytest.mark.parametrize(
+    ("name", "schema"),
+    [
+        ("a-riverhog-minisign-witness", minisign_witness_schema),
+        ("a-riverhog-opentimestamps-witness", ots_witness_schema),
+    ],
+)
+def test_witness_v1_fixture_reopens_at_current_schema(
+    tmp_path: Path, name: str, schema: object
+) -> None:
+    database = tmp_path / f"{name}.sqlite3"
+    _restore_sqlite(FIXTURES / f"{name}.sqlite.sql", database)
+    assert schema(database).validate().condition == "current"
 
 
 def test_gogurt_listener_v1_fixture_preserves_uncertain_dispatch_custody(

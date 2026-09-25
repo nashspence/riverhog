@@ -31,6 +31,8 @@ MISE_CONTAINER_TOOLS = {
     "a-review0-materializer": {"uv"},
     "a-review0-rclone-target": {"rclone", "uv"},
     "a-riverhog-event-relay": {"uv"},
+    "a-riverhog-minisign-witness": {"minisign", "uv"},
+    "a-riverhog-opentimestamps-witness": {"uv"},
     "test": {"age", "http:exiftool", "minisign", "uv"},
 }
 NON_ROOT_RUNTIME_IMAGES = set(MISE_CONTAINER_TOOLS) - {"test"}
@@ -158,6 +160,24 @@ IMAGE_CONTRACTS = {
         ),
         "tag": "a-riverhog-event-relay:dev",
         "title": "Riverhog event relay",
+        "license": "Apache-2.0",
+        "compose": (),
+    },
+    "a-riverhog-minisign-witness": {
+        "dockerfile": (
+            "some-implementations/riverhog/applications/a-riverhog-minisign-witness/Dockerfile"
+        ),
+        "tag": "a-riverhog-minisign-witness:dev",
+        "title": "Riverhog Minisign collection witness",
+        "license": "Apache-2.0",
+        "compose": (),
+    },
+    "a-riverhog-opentimestamps-witness": {
+        "dockerfile": (
+            "some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/Dockerfile"
+        ),
+        "tag": "a-riverhog-opentimestamps-witness:dev",
+        "title": "Riverhog OpenTimestamps collection witness",
         "license": "Apache-2.0",
         "compose": (),
     },

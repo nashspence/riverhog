@@ -75,6 +75,7 @@ def test_repo_owns_toolchain_python_lock_and_runtime_exports() -> None:
         "some-implementations/gogurt/mounted-volume/*",
         "some-implementations/gogurt/packages/*",
         "some-implementations/riverhog/applications/*",
+        "some-implementations/riverhog/packages/*",
         "some-implementations/riverhog/ingress/*",
         "some-implementations/riverhog/provenance/contracts/*",
         "some-implementations/riverhog/provenance/observers/*",

@@ -803,6 +803,8 @@ CLI_MODULES = {
     "stove0-server": "stove0_api.app",
     "gogurt": "gogurt.cli",
     "a-riverhog-event-relay": "a_riverhog_event_relay.cli",
+    "a-riverhog-minisign-witness": "a_riverhog_minisign_witness.cli",
+    "a-riverhog-opentimestamps-witness": "a_riverhog_opentimestamps_witness.cli",
     "a-riverhog-cli": "a_riverhog_cli.main",
     "a-riverhog-ftp-spool": "a_riverhog_ftp_spool.app",
     "a-riverhog-recovery-tool": "a_riverhog_recovery_tool.cli",

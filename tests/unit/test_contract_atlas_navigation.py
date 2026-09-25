@@ -155,12 +155,12 @@ def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None
         "compatibility-guarantees": 9,
         "installation-roots": 4,
         "publication-locations": 2,
-        "python-distributions": 72,
+        "python-distributions": 75,
         "release-artifacts": 12,
-        "runtime-images": 13,
+        "runtime-images": 15,
         "versioning-tags": 5,
     }
-    assert len(release_elements) == 120
+    assert len(release_elements) == 125
     assert Counter(item["interface"] for item in release_elements) == expected_interfaces
     assert "release" not in {item["interface"] for item in release_elements}
     assert "riverhog-v1/authorities/release/release/index.md" not in checked.files
@@ -183,9 +183,9 @@ def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None
 
     publication_policies = {item["id"]: item for item in root["policies"]["publication"]}
     assert {key: len(value["applies_to"]) for key, value in publication_policies.items()} == {
-        "publication/image-identity-scope/v1": 13,
-        "publication/platform-scope/v1": 17,
-        "publication/role-retention/v1": 89,
+        "publication/image-identity-scope/v1": 15,
+        "publication/platform-scope/v1": 19,
+        "publication/role-retention/v1": 94,
     }
     policy_counts = Counter(
         policy
@@ -194,9 +194,9 @@ def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None
         if policy.startswith("publication/")
     )
     assert policy_counts == {
-        "publication/image-identity-scope/v1": 13,
-        "publication/platform-scope/v1": 17,
-        "publication/role-retention/v1": 89,
+        "publication/image-identity-scope/v1": 15,
+        "publication/platform-scope/v1": 19,
+        "publication/role-retention/v1": 94,
     }
     assert "`release-publication-envelope`" in authority_inventory
 
@@ -301,7 +301,7 @@ def test_cli_dossiers_expose_exact_result_and_failure_contracts() -> None:
     cli_elements = [item for item in checked.root["elements"] if item["interface"] == "cli"]
     executable = [item for item in cli_elements if item.get("details", {}).get("executable")]
 
-    assert len(executable) == 158
+    assert len(executable) == 176
     assert len({item["details"]["result_identity"] for item in executable}) == len(executable)
     assert {
         tuple(item["details"]["command_path"])

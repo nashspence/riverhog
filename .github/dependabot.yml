@@ -61,6 +61,8 @@ updates:
       - /some-implementations/riverhog/storage/filesystem
       - /tests
       - /some-implementations/riverhog/applications/a-riverhog-event-relay
+      - /some-implementations/riverhog/applications/a-riverhog-minisign-witness
+      - /some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness
     schedule:
       interval: weekly
       day: monday

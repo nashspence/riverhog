@@ -13,6 +13,8 @@ group "default" {
     "a-review0-materializer",
     "a-review0-rclone-target",
     "a-riverhog-event-relay",
+    "a-riverhog-minisign-witness",
+    "a-riverhog-opentimestamps-witness",
     "test",
   ]
 }
@@ -129,6 +131,22 @@ target "a-riverhog-event-relay" {
   context    = "."
   dockerfile = "some-implementations/riverhog/applications/a-riverhog-event-relay/Dockerfile"
   tags       = ["a-riverhog-event-relay:dev"]
+  args       = { SOURCE_REVISION = "unknown" }
+}
+
+target "a-riverhog-minisign-witness" {
+  inherits   = ["image-common"]
+  context    = "."
+  dockerfile = "some-implementations/riverhog/applications/a-riverhog-minisign-witness/Dockerfile"
+  tags       = ["a-riverhog-minisign-witness:dev"]
+  args       = { SOURCE_REVISION = "unknown" }
+}
+
+target "a-riverhog-opentimestamps-witness" {
+  inherits   = ["image-common"]
+  context    = "."
+  dockerfile = "some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/Dockerfile"
+  tags       = ["a-riverhog-opentimestamps-witness:dev"]
   args       = { SOURCE_REVISION = "unknown" }
 }
 
