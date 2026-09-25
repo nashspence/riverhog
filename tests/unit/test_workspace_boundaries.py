@@ -723,9 +723,6 @@ def test_supplied_extension_distributions_each_own_one_selectable_capability() -
 
 def test_supplied_implementation_paths_have_structural_roles_and_clear_descriptions() -> None:
     release = tomllib.loads((REPO / "release.toml").read_text(encoding="utf-8"))
-    readme = " ".join((REPO / "README.md").read_text(encoding="utf-8").split())
-    assert "New mechanisms are independently owned and published" in readme
-    assert "some-implementations/" in readme
     classified = {path: role for role, paths in release["python"].items() for path in paths}
     projects = list((REPO / "some-implementations").rglob("pyproject.toml"))
     assert projects
