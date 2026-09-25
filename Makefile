@@ -87,6 +87,7 @@ MYPY_SOURCES = \
 	some-implementations/riverhog/storage/backblaze/src \
 	some-implementations/riverhog/storage/filesystem/src \
 	scripts/guidance.py \
+	scripts/transfer_profile.py \
 	scripts/operation_qualification.py \
 	scripts/contract_atlas \
 	scripts/contract_freeze.py \
@@ -104,7 +105,7 @@ MYPY_SOURCES = \
 	some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/src
 args ?=
 
-.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit dependency-readiness operation-qualification database-qualification contract-freeze contract-freeze-update guidance guidance-update provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke filesystem-recovery-qualification stove0-scale-qualification a-riverhog-event-relay-smoke transfer-profile dist dist-smoke build build-riverhog build-a-riverhog-ftp-spool build-a-riverhog-aws-store build-a-riverhog-b2-store build-a-riverhog-filesystem-store build-stove0 build-a-stove0-exiftool-observer build-a-stove0-ffprobe-sampling-observer build-a-stove0-nvenc-av1-opus-target build-a-stove0-opus-target build-a-review0-materializer build-a-review0-rclone-target build-a-riverhog-event-relay build-a-riverhog-minisign-witness build-a-riverhog-opentimestamps-witness build-test bootstrap-garage down test
+.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit dependency-readiness operation-qualification database-qualification contract-freeze contract-freeze-update guidance guidance-update performance-objectives performance-objectives-update provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke filesystem-recovery-qualification stove0-scale-qualification a-riverhog-event-relay-smoke transfer-profile dist dist-smoke build build-riverhog build-a-riverhog-ftp-spool build-a-riverhog-aws-store build-a-riverhog-b2-store build-a-riverhog-filesystem-store build-stove0 build-a-stove0-exiftool-observer build-a-stove0-ffprobe-sampling-observer build-a-stove0-nvenc-av1-opus-target build-a-stove0-opus-target build-a-review0-materializer build-a-review0-rclone-target build-a-riverhog-event-relay build-a-riverhog-minisign-witness build-a-riverhog-opentimestamps-witness build-test bootstrap-garage down test
 
 define UV_CMD
 	@if ! command -v "$(MISE_BIN)" >/dev/null 2>&1; then \
@@ -145,6 +146,8 @@ help:
 		'  make contract-freeze-update Regenerate that contract for semantic review.' \
 		'  make guidance          Verify the nonbinding guidance registry and rendered view.' \
 		'  make guidance-update   Regenerate the guidance view after registry review.' \
+		'  make performance-objectives Verify noncontractual objectives and their rendered view.' \
+		'  make performance-objectives-update Regenerate the performance view.' \
 		'  make provider-qualification Run the operator/provider qualification command.' \
 		'  make installation-qualification Stage and qualify independent uv-tool installs.' \
 		'  make release-check     Validate the coordinated release-unit contract.' \
@@ -250,6 +253,12 @@ guidance:
 
 guidance-update:
 	$(call UV_CMD,python scripts/guidance.py update)
+
+performance-objectives:
+	$(call UV_CMD,python scripts/performance_objectives.py check)
+
+performance-objectives-update:
+	$(call UV_CMD,python scripts/performance_objectives.py update)
 
 provider-qualification:
 	$(call UV_CMD,python scripts/provider_qualification.py $(args))

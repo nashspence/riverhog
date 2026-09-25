@@ -7,7 +7,7 @@ import hashlib
 import json
 import time
 import uuid
-from collections.abc import Iterator, Sequence
+from collections.abc import Iterator, Mapping, Sequence
 from pathlib import Path
 
 from riverhog_storage_adapter_protocol import (
@@ -21,8 +21,9 @@ from riverhog_storage_adapter_protocol import (
 )
 from riverhog_storage_adapter_support import StorageAdapterClient
 
+from scripts import performance_objectives as performance
+
 _MIB = 1024 * 1024
-_ONE_GBPS_MIB_PER_SECOND = 1_000_000_000 / 8 / _MIB
 
 
 def _chunks(byte_count: int, *, value: int) -> Iterator[bytes]:
@@ -39,12 +40,27 @@ def run(
     base_url: str,
     token_file: Path,
     payload_bytes: int,
-    baseline_mib_per_second: float,
+    context: Mapping[str, object] | None = None,
+    reference: Mapping[str, object] | None = None,
 ) -> dict[str, object]:
-    if payload_bytes < 1:
+    if type(payload_bytes) is not int or payload_bytes < 1:
         raise ValueError("payload bytes must be positive")
-    if baseline_mib_per_second <= 0:
-        raise ValueError("baseline must be positive")
+    if context is not None:
+        context = performance.validate_context(context)
+        if (
+            context["byte_domain"] != "stored-payload"
+            or context["cache_state"] != "read-after-write"
+            or context["concurrency"] != 1
+            or context["completion_boundary"] != "adapter-complete-and-verified-readback"
+        ):
+            raise performance.PerformanceError("storage probe comparison context is incompatible")
+    if reference is not None:
+        if context is None:
+            raise performance.PerformanceError("a measured reference requires comparison context")
+        if reference.get("format") != "riverhog-storage-adapter-goodput/v2" or not isinstance(
+            reference.get("samples"), Mapping
+        ):
+            raise performance.PerformanceError("storage probe reference format is incompatible")
     client = StorageAdapterClient.from_token_file(
         base_url,
         token_file=token_file,
@@ -56,6 +72,8 @@ def run(
     try:
         descriptor = client.descriptor()
         segment_bytes = descriptor.maximum_segment_bytes
+        if type(segment_bytes) is not int or segment_bytes < 1:
+            raise performance.PerformanceError("adapter segment maximum is invalid")
         request = WriteStartRequest(
             object_path=object_path,
             expected_bytes=payload_bytes,
@@ -124,6 +142,7 @@ def run(
         upload_seconds = completed_at - upload_started
 
         observed = hashlib.sha256()
+        observed_bytes = 0
         read_started = time.perf_counter()
         with client.read_object(
             ObjectReadRequest(
@@ -136,31 +155,49 @@ def run(
         ) as stream:
             for chunk in stream.content:
                 observed.update(chunk)
+                observed_bytes += len(chunk)
         read_seconds = time.perf_counter() - read_started
-        if observed.digest() != expected.digest():
+        if observed_bytes != payload_bytes or observed.digest() != expected.digest():
             raise RuntimeError("storage-adapter goodput probe changed the payload")
 
         upload_rate = payload_bytes / _MIB / upload_seconds
         read_rate = payload_bytes / _MIB / read_seconds
+        samples: dict[str, dict[str, object]] = {}
+        evaluations: dict[str, dict[str, object]] = {}
+        reference_samples = reference["samples"] if reference is not None else None
+        for direction, seconds in (("upload", upload_seconds), ("read", read_seconds)):
+            measured = performance.sample(
+                objective_id=f"storage-{direction}-goodput",
+                scenario=f"storage-adapter-sequential-segment-{segment_bytes}",
+                workload="synthetic-one-object-read-after-write",
+                context=context,
+                completed_bytes=payload_bytes,
+                elapsed_seconds=seconds,
+                completion_verified=True,
+                run_id=str(uuid.uuid4()),
+            )
+            samples[direction] = measured
+            prior = reference_samples.get(direction) if reference_samples is not None else None
+            evaluations[direction] = performance.evaluate_sample(measured, prior)
         return {
-            "format": "riverhog-storage-adapter-goodput/v1",
+            "format": "riverhog-storage-adapter-goodput/v2",
             "admission_seconds": round(admitted - upload_started, 6),
-            "baseline_mib_per_second": baseline_mib_per_second,
             "completion_seconds": round(completed_at - written, 6),
             "payload_bytes": payload_bytes,
+            "segment_bytes": segment_bytes,
             "read_seconds": round(read_seconds, 6),
-            "read_mib_per_second": round(read_rate, 3),
-            "read_target_met": read_rate / baseline_mib_per_second >= 0.9,
-            "read_utilization": round(read_rate / baseline_mib_per_second, 4),
-            "target_utilization": 0.9,
-            "upload_mib_per_second": round(upload_rate, 3),
-            "upload_target_met": upload_rate / baseline_mib_per_second >= 0.9,
-            "upload_utilization": round(upload_rate / baseline_mib_per_second, 4),
+            "read_mib_per_second": read_rate,
+            "upload_seconds": round(upload_seconds, 6),
+            "upload_mib_per_second": upload_rate,
             "write_seconds": round(written - admitted, 6),
+            "samples": samples,
+            "evaluations": evaluations,
         }
     finally:
-        client.delete_prefix(DeletePrefixRequest(object_prefix=f"{prefix}/"))
-        client.close()
+        try:
+            client.delete_prefix(DeletePrefixRequest(object_prefix=f"{prefix}/"))
+        finally:
+            client.close()
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -168,11 +205,8 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--base-url", required=True)
     parser.add_argument("--token-file", required=True, type=Path)
     parser.add_argument("--payload-bytes", type=int, default=128 * _MIB)
-    parser.add_argument(
-        "--baseline-mib-per-second",
-        type=float,
-        default=_ONE_GBPS_MIB_PER_SECOND,
-    )
+    parser.add_argument("--context", type=Path, help="safe measured-comparison context JSON")
+    parser.add_argument("--reference", type=Path, help="matching measured v2 probe result")
     return parser
 
 
@@ -184,7 +218,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                 base_url=args.base_url,
                 token_file=args.token_file,
                 payload_bytes=args.payload_bytes,
-                baseline_mib_per_second=args.baseline_mib_per_second,
+                context=performance.read_json(args.context) if args.context else None,
+                reference=performance.read_json(args.reference) if args.reference else None,
             ),
             sort_keys=True,
         )

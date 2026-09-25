@@ -34,6 +34,7 @@ jobs:
           - target: compile
           - target: unit
           - target: guidance
+          - target: performance-objectives
           - target: c2sp-vectors
           - target: postgres-concurrency
             docker: true

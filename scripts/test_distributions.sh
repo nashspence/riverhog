@@ -76,6 +76,28 @@ single_wheel() {
   printf '%s' "${wheels[0]}"
 }
 
+assert_qualification_support_excluded_from_all_wheels() {
+  run_uv run --locked --all-packages --group dev python -I - "${DIST_DIR}" <<'PY'
+import sys
+import zipfile
+from pathlib import Path, PurePosixPath
+
+wheels = sorted(Path(sys.argv[1]).glob("*.whl"))
+if not wheels:
+    raise SystemExit("distribution smoke found no built wheels")
+for wheel in wheels:
+    with zipfile.ZipFile(wheel) as archive:
+        for member in archive.namelist():
+            parts = PurePosixPath(member).parts
+            if any(
+                parts[index : index + 3] == ("tests", "support", "qualification")
+                for index in range(len(parts) - 2)
+            ):
+                raise SystemExit(f"repository-only qualification support entered {wheel.name}")
+print(f"Repository-only qualification support absent from {len(wheels)} built wheels.")
+PY
+}
+
 smoke_workspace_distribution() {
   local name="$1"
   local pattern="$2"
@@ -133,6 +155,7 @@ assert_cli_usage_failure() {
 
 recovery_wheel="$(single_wheel 'a_riverhog_recovery_tool-*.whl')"
 server_wheel="$(single_wheel 'riverhog_server-*.whl')"
+assert_qualification_support_excluded_from_all_wheels
 
 smoke_workspace_distribution \
   riverhog-client \

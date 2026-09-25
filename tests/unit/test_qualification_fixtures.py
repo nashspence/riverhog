@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import ast
 import importlib.util
 import json
 import sys
 import tomllib
 from pathlib import Path
 
+import pytest
 import yaml
 from a_review0_materializer.app import load_config as load_materializer_config
 from a_review0_rclone_target.app import load_config as load_rclone_config
@@ -43,31 +45,141 @@ QUALIFICATION_INPUTS = {
 }
 
 
-def test_shared_qualification_support_is_owned_outside_test_modules() -> None:
-    database_runner = (REPO_ROOT / "scripts/database_qualification.py").read_text(encoding="utf-8")
-    database_test = (
-        REPO_ROOT / "tests/integration/test_public_selector_plans_postgres.py"
-    ).read_text(encoding="utf-8")
-    installation_runner = (REPO_ROOT / "scripts/qualify_installation.py").read_text(
-        encoding="utf-8"
-    )
-    recovery_test = (
-        REPO_ROOT / "some-implementations/riverhog/recovery/tests/test_recovery.py"
-    ).read_text(encoding="utf-8")
-    recovery_materialization = (
-        REPO_ROOT / "tests/harness/filesystem_recovery_materialization.py"
-    ).read_text(encoding="utf-8")
+DATABASE_AUTHORITY = "tests.support.qualification.database_selector_plans"
+RECOVERY_AUTHORITY = "tests.support.qualification.recovery_archive"
+DATABASE_RUNNER_SYMBOLS = {
+    "DATABASE_PLAN_OPERATIONS",
+    "PlanCase",
+    "catalog_sync_plan_cases",
+    "index_names",
+    "node_types",
+    "plan_cases",
+    "seed_selector_relations",
+    "seed_stove0_selector_relations",
+}
+DATABASE_TEST_SYMBOLS = DATABASE_RUNNER_SYMBOLS | {
+    "DATABASE_FILTER_SELECTORS",
+    "NON_PLAN_QUERY_OPERATIONS",
+    "riverhog_plan_statement",
+}
+RECOVERY_SYMBOLS = {"PASSPHRASE", "PASSPHRASE_ID", "write_archive"}
+QUALIFICATION_CONSUMERS = {
+    "scripts/database_qualification.py": (DATABASE_AUTHORITY, DATABASE_RUNNER_SYMBOLS),
+    "tests/integration/test_public_selector_plans_postgres.py": (
+        DATABASE_AUTHORITY,
+        DATABASE_TEST_SYMBOLS,
+    ),
+    "scripts/qualify_installation.py": (RECOVERY_AUTHORITY, RECOVERY_SYMBOLS),
+    "some-implementations/riverhog/recovery/tests/test_recovery.py": (
+        RECOVERY_AUTHORITY,
+        RECOVERY_SYMBOLS,
+    ),
+    "tests/harness/filesystem_recovery_materialization.py": (RECOVERY_AUTHORITY, RECOVERY_SYMBOLS),
+}
+FORMER_AUTHORITIES = {
+    "tests.integration.test_public_selector_plans_postgres",
+    "reference.riverhog.recovery.tests.test_recovery",
+    "some-implementations.riverhog.recovery.tests.test_recovery",
+}
+LOADER_NAMES = {
+    "spec_from_file_location",
+    "SourceFileLoader",
+    "run_path",
+    "import_module",
+    "__import__",
+    "open",
+    "read_text",
+}
 
-    database_owner = "tests.support.qualification.database_selector_plans"
-    recovery_owner = "tests.support.qualification.recovery_archive"
-    assert database_owner in database_runner
-    assert database_owner in database_test
-    assert recovery_owner in installation_runner
-    assert recovery_owner in recovery_test
-    assert recovery_owner in recovery_materialization
-    assert "tests.integration.test_public_selector_plans_postgres" not in database_runner
-    assert "reference.riverhog.recovery.tests.test_recovery" not in installation_runner
-    assert "reference.riverhog.recovery.tests.test_recovery" not in recovery_materialization
+
+def _check_qualification_import_edges(source: str, *, authority: str, symbols: set[str]) -> None:
+    tree = ast.parse(source)
+    owned_imports: set[str] = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom):
+            module = node.module or ""
+            assert node.level == 0 or not module.startswith("tests"), (
+                "qualification authority must use an absolute repository import"
+            )
+            assert not any(
+                module == old or module.startswith(old + ".") for old in FORMER_AUTHORITIES
+            )
+            names = {alias.name for alias in node.names}
+            if module == authority and node.level == 0:
+                assert "*" not in names
+                owned_imports.update(names)
+            else:
+                assert not names.intersection(symbols), (
+                    f"qualification symbols imported from another module: {module}"
+                )
+        elif isinstance(node, ast.Import):
+            assert not any(
+                alias.name == old or alias.name.startswith(old + ".")
+                for alias in node.names
+                for old in FORMER_AUTHORITIES
+            )
+        elif isinstance(node, ast.Call):
+            callable_name = (
+                node.func.attr
+                if isinstance(node.func, ast.Attribute)
+                else node.func.id
+                if isinstance(node.func, ast.Name)
+                else ""
+            )
+            if callable_name not in LOADER_NAMES:
+                continue
+            literals = {
+                part.value
+                for part in ast.walk(node)
+                if isinstance(part, ast.Constant) and isinstance(part.value, str)
+            }
+            assert not any(
+                "test_public_selector_plans_postgres" in literal
+                or "test_recovery.py" in literal
+                or "reference.riverhog.recovery.tests.test_recovery" in literal
+                for literal in literals
+            ), "qualification authority dynamically loaded from a test file"
+    assert owned_imports == symbols, (
+        f"qualification owner {authority} imports {sorted(owned_imports)}, "
+        f"expected {sorted(symbols)}"
+    )
+
+
+def test_qualification_support_import_edges_use_repository_owned_modules() -> None:
+    for authority in {item[0] for item in QUALIFICATION_CONSUMERS.values()}:
+        spec = importlib.util.find_spec(authority)
+        assert spec is not None and spec.origin is not None
+        assert Path(spec.origin).resolve() == (
+            REPO_ROOT / "tests/support/qualification" / f"{authority.rsplit('.', 1)[-1]}.py"
+        )
+    for relative, (authority, symbols) in QUALIFICATION_CONSUMERS.items():
+        _check_qualification_import_edges(
+            (REPO_ROOT / relative).read_text(encoding="utf-8"),
+            authority=authority,
+            symbols=symbols,
+        )
+
+
+@pytest.mark.parametrize(
+    "other_import",
+    [
+        "from tests.integration.test_public_selector_plans_postgres import plan_cases",
+        "from tests.unit.test_other import plan_cases",
+        "import tests.integration.test_public_selector_plans_postgres",
+        'importlib.import_module("tests.integration.test_public_selector_plans_postgres")',
+        'importlib.util.spec_from_file_location("old", Path("tests") / "integration" / '
+        '"test_public_selector_plans_postgres.py")',
+        'Path("tests/integration/test_public_selector_plans_postgres.py").read_text()',
+        'importlib.import_module("reference.riverhog.recovery.tests.test_recovery")',
+        'runpy.run_path("some-implementations/riverhog/recovery/tests/test_recovery.py")',
+    ],
+)
+def test_qualification_owner_witness_rejects_test_module_reuse(other_import: str) -> None:
+    source = f"from {DATABASE_AUTHORITY} import plan_cases\n{other_import}\n"
+    with pytest.raises(AssertionError):
+        _check_qualification_import_edges(
+            source, authority=DATABASE_AUTHORITY, symbols={"plan_cases"}
+        )
 
 
 def test_every_checked_qualification_input_runs_through_its_real_consumer(

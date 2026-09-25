@@ -7,11 +7,28 @@ import subprocess
 import sys
 from pathlib import Path
 from types import ModuleType
+from uuid import uuid4
 
 import pytest
 
+from scripts import performance_objectives as performance
+
 REPO = Path(__file__).resolve().parents[2]
 SCRIPT = REPO / "scripts" / "transfer_profile.py"
+
+
+def comparison_context() -> dict[str, object]:
+    return {
+        "format": performance.CONTEXT_FORMAT,
+        "comparison_id": str(uuid4()),
+        "workload_sha256": "a" * 64,
+        "environment_sha256": "b" * 64,
+        "path_sha256": "c" * 64,
+        "byte_domain": "logical-payload",
+        "completion_boundary": "verified-command-completion",
+        "cache_state": "cold",
+        "concurrency": 1,
+    }
 
 
 def load_script() -> ModuleType:
@@ -75,6 +92,24 @@ def test_transfer_profile_runs_without_echoing_command(
         encoding="utf-8",
     )
     commands: list[list[str]] = []
+    context = comparison_context()
+    context_path = tmp_path / "context.json"
+    context_path.write_text(json.dumps(context), encoding="utf-8")
+    reference = performance.sample(
+        objective_id="transfer-goodput",
+        scenario="riverhog-ingress",
+        workload="large-file",
+        context=context,
+        completed_bytes=200 * module.MIB,
+        elapsed_seconds=1.6,
+        completion_verified=True,
+        run_id=str(uuid4()),
+    )
+    reference_path = tmp_path / "reference.json"
+    reference_path.write_text(
+        json.dumps({"format": "riverhog-transfer-profile/v2", "sample": reference}),
+        encoding="utf-8",
+    )
 
     def run(
         command: list[str],
@@ -82,11 +117,24 @@ def test_transfer_profile_runs_without_echoing_command(
         check: bool,
         stdout: int,
         stderr: int,
+        env: dict[str, str],
     ) -> subprocess.CompletedProcess[str]:
         assert not check
         assert stdout == subprocess.DEVNULL
         assert stderr == subprocess.DEVNULL
         commands.append(command)
+        Path(env["RIVERHOG_PERFORMANCE_RECEIPT"]).write_text(
+            json.dumps(
+                {
+                    "format": "riverhog-performance-completion/v1",
+                    "run_id": env["RIVERHOG_PERFORMANCE_RUN_ID"],
+                    "completed_bytes": 200 * module.MIB,
+                    "completed_items": 1,
+                    "verified": True,
+                }
+            ),
+            encoding="utf-8",
+        )
         return subprocess.CompletedProcess(command, 0)
 
     monkeypatch.setattr(module.subprocess, "run", run)
@@ -102,8 +150,10 @@ def test_transfer_profile_runs_without_echoing_command(
                 "large-file",
                 "--payload-bytes",
                 str(200 * module.MIB),
-                "--baseline-mib-per-second",
-                "125",
+                "--context",
+                str(context_path),
+                "--reference",
+                str(reference_path),
                 "--transfer-log",
                 str(log),
                 "--",
@@ -118,15 +168,18 @@ def test_transfer_profile_runs_without_echoing_command(
     result = json.loads(capsys.readouterr().out)
     assert commands == [["riverhog", "upload", "/private/input"]]
     assert result["mib_per_second"] == 100.0
-    assert result["utilization"] == 0.8
-    assert result["target_utilization"] == 0.9
+    assert result["evaluation"]["status"] == "missed"
+    assert result["evaluation"]["reference_ratio"] == 0.8
+    assert result["evaluation"]["candidate_bytes_per_second"] == 100 * module.MIB
+    assert result["evaluation"]["reference_bytes_per_second"] == 125 * module.MIB
+    assert result["rate_basis"] == "receipt-verified"
     assert result["items_per_second"] == 0.5
     assert result["seconds_per_item"] == 2.0
     assert result["transfer_log"]["operations"] == {"raw_write_segment": 1}
     assert "/private/input" not in json.dumps(result)
 
 
-def test_network_profile_requires_a_raw_baseline() -> None:
+def test_measured_reference_requires_context() -> None:
     module = load_script()
 
     with pytest.raises(SystemExit):
@@ -138,6 +191,8 @@ def test_network_profile_requires_a_raw_baseline() -> None:
                 "resume",
                 "--payload-bytes",
                 "1",
+                "--reference",
+                "reference.json",
                 "--",
                 "true",
             ]
@@ -177,8 +232,10 @@ def test_recovery_tool_profile_does_not_require_network_baseline(
         == 0
     )
     result = json.loads(capsys.readouterr().out)
-    assert result["baseline_mib_per_second"] is None
-    assert result["target_utilization"] is None
+    assert result["sample"]["objective_id"] is None
+    assert result["evaluation"]["status"] == "not-evaluated"
+    assert result["evaluation"]["reason"] == "no-objective"
+    assert result["rate_basis"] == "declared-workload-unverified"
     assert result["items"] == 20
     assert result["items_per_second"] == 20.0
     assert result["seconds_per_item"] == 0.05

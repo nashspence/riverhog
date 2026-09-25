@@ -36,6 +36,9 @@ shape comes from real parsers and checked executable examples. Do not add hand-m
 inventories of those surfaces to `main`; release reference is generated from a tag.
 Nonbinding design guidance lives in `guidance/heuristics.toml`; its generated view and related
 test references do not establish, interpret, or change an external contract.
+Noncontractual performance accounting lives in `scripts/performance_objectives.py`; its
+generated view records objectives, observations, and independent bounds without creating a
+release gate or external commitment.
 
 GitHub issue bodies own durable scope, decisions, and issue-local acceptance. Use native
 sub-issues for decomposition, dependencies for hard prerequisites, and milestones for release
