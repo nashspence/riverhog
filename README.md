@@ -26,8 +26,9 @@ document at `/openapi.json`.
 
 - [Architecture](docs/architecture.md) explains authority, component boundaries, and the
   repository layout.
-- [V1 contract atlas](qualification/contracts/riverhog-v1/index.md) provides the generated,
-  human-routable view of the exact checked external contract.
+- [V1 contract candidate](https://nashspence.github.io/riverhog/contract-candidate/riverhog-v1/)
+  presents the checked Contract Closure with an optional Audit Mode. Its
+  [source files](qualification/contracts/riverhog-v1/index.html) are reviewed on `main`.
 - [Guiding heuristics](guidance/README.md) records nonbinding, noncontractual design guidance.
 - [Performance accounting](qualification/performance/README.md) records noncontractual
   objectives, observations, and independently owned bounds.

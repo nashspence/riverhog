@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import ast
 import importlib.util
-import json
 import sys
 import tomllib
 from pathlib import Path
@@ -25,7 +24,7 @@ from tests.gogurt_provider import path_mounted_volume_provider
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_ROOT = REPO_ROOT / "qualification/contracts/riverhog-v1.json"
-CONTRACT_FILES = {CONTRACT_ROOT}
+CONTRACT_FILES = {CONTRACT_ROOT, CONTRACT_ROOT.with_name("riverhog-v1-audit.json")}
 QUALIFICATION_INPUTS = {
     REPO_ROOT / "qualification/contract-freeze-exceptions.toml",
     REPO_ROOT / "qualification/fixtures/gogurt/gogurt-routes.yaml",
@@ -189,7 +188,10 @@ def test_every_checked_qualification_input_runs_through_its_real_consumer(
     checked_inputs = {
         path
         for path in (REPO_ROOT / "qualification").rglob("*")
-        if path.is_file() and path.suffix != ".md" and "__pycache__" not in path.parts
+        if path.is_file()
+        and path.suffix != ".md"
+        and "riverhog-v1" not in path.parts
+        and "__pycache__" not in path.parts
     }
     assert checked_inputs == QUALIFICATION_INPUTS
 
@@ -321,6 +323,7 @@ def test_every_checked_qualification_input_runs_through_its_real_consumer(
     contract_spec.loader.exec_module(contract_module)
     projection = checked_contract_closure["projection"]
     trace = checked_contract_closure["trace"]
-    checked = checked_contract_closure["atlas"]
-    assert contract_module.reassemble_projection(checked) == json.loads(json.dumps(projection))
-    assert contract_module.reassemble_trace(checked) == json.loads(json.dumps(trace))
+    checked = contract_module.load_bundle(CONTRACT_ROOT)
+    assert checked == checked_contract_closure["bundle"]
+    assert checked.closure["series"] == projection["series"]
+    assert checked.audit["trace"]["format"] == trace["format"]

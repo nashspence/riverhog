@@ -83,6 +83,17 @@ RULES: dict[str, dict[str, object]] = {
         "silent_truncation": "forbidden",
     },
 }
+# These definitions have declaration authority independent of generated extent
+# decisions. The other rules describe analysis of absent bounds or configured
+# capacity and cannot create a contract promise by being discovered.
+DECLARED_RULE_IDS = frozenset(
+    {
+        "schema-bound/v1",
+        "bounded-segment/v1",
+        "route-progression/v1",
+        "extension-contract/v1",
+    }
+)
 POLICIES = frozenset(
     {
         "fixed",
@@ -126,6 +137,25 @@ _GENERATED_PROTOCOL_OWNERS = {
 
 class ExtentContractError(RuntimeError):
     """The generated extent decision surface is incomplete or contradictory."""
+
+
+def normative_extent_declarations() -> dict[str, object]:
+    """Return only shared extent commitments with independent declaration authority.
+
+    Bounds and scoped promises remain at their owning schema, CLI, or route
+    subject. Generated decisions, analysis coverage, and authoring requirements
+    have no place in this normative value.
+    """
+
+    rules = {
+        identity: {key: value for key, value in RULES[identity].items() if key != "requirement"}
+        for identity in sorted(DECLARED_RULE_IDS)
+    }
+    return {
+        "format": "riverhog-extent-declarations/v1",
+        "principles": dict(PRINCIPLES),
+        "rules": rules,
+    }
 
 
 def _escape(value: str) -> str:

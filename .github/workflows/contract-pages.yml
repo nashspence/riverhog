@@ -1,0 +1,88 @@
+name: Contract candidate Pages
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact green main commit to publish as a candidate preview.
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: contract-candidate-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Verify and package checked candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ inputs.source_sha }}
+      - name: Require a green commit on main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          if [[ ! "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ || "$(git rev-parse HEAD)" != "$SOURCE_SHA" ]]; then
+            printf 'Candidate source must be the exact checked-out commit SHA.\n' >&2
+            exit 2
+          fi
+          git fetch --no-tags origin main
+          git merge-base --is-ancestor "$SOURCE_SHA" origin/main
+          for workflow in ci.yml codeql.yml; do
+            gh api "repos/${{ github.repository }}/actions/workflows/$workflow/runs?head_sha=$SOURCE_SHA&per_page=100" \
+              | jq --exit-status --arg sha "$SOURCE_SHA" \
+                'any(.workflow_runs[]; .event == "push" and .head_sha == $sha and .conclusion == "success")'
+          done
+      - name: Install repository toolchain
+        uses: jdx/mise-action@9e7f7633ff6f6d6048a9418a68d48f288f50eb14 # v4.2.3
+      - name: Bootstrap browser host libraries
+        env:
+          MISE_EXPERIMENTAL: "1"
+        run: mise bootstrap --yes
+      - name: Verify checked Closure, Audit Record, and Contract Render
+        run: make contract-freeze
+      - name: Install Chromium headless shell
+        run: mise x -- uv run --locked --group browser python -m playwright install --only-shell chromium
+      - name: Exercise candidate in Chromium
+        run: make contract-browser
+      - name: Package exact checked candidate for project Pages
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+        run: |
+          mise x -- uv run --locked --group dev python scripts/contract_pages.py \
+            --source-sha "$SOURCE_SHA" --output "$RUNNER_TEMP/riverhog-pages"
+      - name: Configure Pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+      - name: Upload candidate Pages artifact
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        with:
+          path: ${{ runner.temp }}/riverhog-pages
+
+  deploy:
+    name: Publish reviewed candidate
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: https://nashspence.github.io/riverhog/contract-candidate/riverhog-v1/
+    steps:
+      - name: Deploy approved candidate
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

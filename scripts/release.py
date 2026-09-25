@@ -3193,6 +3193,7 @@ def _generate_release_evidence(
     contract_name = str(_load_config(root)["artifacts"]["contract"])
     contract_files = [
         root / "qualification/contracts/riverhog-v1.json",
+        root / "qualification/contracts/riverhog-v1-audit.json",
         *sorted(
             path
             for path in (root / "qualification/contracts/riverhog-v1").rglob("*")

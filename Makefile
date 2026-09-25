@@ -105,7 +105,7 @@ MYPY_SOURCES = \
 	some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/src
 args ?=
 
-.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit dependency-readiness operation-qualification database-qualification contract-freeze contract-freeze-update guidance guidance-update performance-objectives performance-objectives-update provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke filesystem-recovery-qualification stove0-scale-qualification a-riverhog-event-relay-smoke transfer-profile dist dist-smoke build build-riverhog build-a-riverhog-ftp-spool build-a-riverhog-aws-store build-a-riverhog-b2-store build-a-riverhog-filesystem-store build-stove0 build-a-stove0-exiftool-observer build-a-stove0-ffprobe-sampling-observer build-a-stove0-nvenc-av1-opus-target build-a-stove0-opus-target build-a-review0-materializer build-a-review0-rclone-target build-a-riverhog-event-relay build-a-riverhog-minisign-witness build-a-riverhog-opentimestamps-witness build-test bootstrap-garage down test
+.PHONY: help license ruff ruff-fix format format-check fix mypy lint compile unit dependency-readiness operation-qualification database-qualification contract-freeze contract-freeze-update contract-browser guidance guidance-update performance-objectives performance-objectives-update provider-qualification installation-qualification release-check release-plan release-dry-run release-governance-check release-evidence release-verify c2sp-vectors postgres-concurrency compose-smoke filesystem-recovery-qualification stove0-scale-qualification a-riverhog-event-relay-smoke transfer-profile dist dist-smoke build build-riverhog build-a-riverhog-ftp-spool build-a-riverhog-aws-store build-a-riverhog-b2-store build-a-riverhog-filesystem-store build-stove0 build-a-stove0-exiftool-observer build-a-stove0-ffprobe-sampling-observer build-a-stove0-nvenc-av1-opus-target build-a-stove0-opus-target build-a-review0-materializer build-a-review0-rclone-target build-a-riverhog-event-relay build-a-riverhog-minisign-witness build-a-riverhog-opentimestamps-witness build-test bootstrap-garage down test
 
 define UV_CMD
 	@if ! command -v "$(MISE_BIN)" >/dev/null 2>&1; then \
@@ -144,6 +144,7 @@ help:
 		'  make database-qualification Record exact-SHA database scale evidence.' \
 		'  make contract-freeze   Verify the checked-in v1 boundary and external contract.' \
 		'  make contract-freeze-update Regenerate that contract for semantic review.' \
+		'  make contract-browser  Exercise the checked candidate in Chromium (run MISE_EXPERIMENTAL=1 mise bootstrap --yes, then Playwright install --only-shell chromium).' \
 		'  make guidance          Verify the nonbinding guidance registry and rendered view.' \
 		'  make guidance-update   Regenerate the guidance view after registry review.' \
 		'  make performance-objectives Verify noncontractual objectives and their rendered view.' \
@@ -247,6 +248,10 @@ contract-freeze:
 
 contract-freeze-update:
 	$(call UV_CMD,python scripts/contract_freeze.py update)
+
+contract-browser:
+	"$(MISE_BIN)" x -- uv run --locked --all-packages --group dev --group browser \
+		python -m pytest -q tests/browser
 
 guidance:
 	$(call UV_CMD,python scripts/guidance.py check)

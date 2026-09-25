@@ -1288,6 +1288,7 @@ def test_release_evidence_is_complete_and_minisign_verified(
         contract_members = {member.name for member in archive.getmembers() if member.isfile()}
     assert contract_members == {
         "riverhog-v1.json",
+        "riverhog-v1-audit.json",
         *(
             path.relative_to(REPO_ROOT / "qualification/contracts").as_posix()
             for path in (REPO_ROOT / "qualification/contracts/riverhog-v1").rglob("*")

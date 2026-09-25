@@ -13,17 +13,10 @@ from typing import cast
 from riverhog_canonical_json import CanonicalJsonError
 from riverhog_canonical_json import canonical_json_bytes as jcs_bytes
 
-ROOT_FORMAT = "riverhog-contract-machine-closure/v1"
-ATLAS_FORMAT = "riverhog-contract-human-atlas/v1"
-CONTRACT_IDENTITY_FORMAT = "riverhog-v1-semantic-contract/v1"
+ROOT_FORMAT = "riverhog-contract-discovery/v1"
 COVERAGE_IDENTITY_FORMAT = "riverhog-v1-discovery-coverage/v1"
 TRACE_IDENTITY_FORMAT = "riverhog-v1-source-proof-trace/v1"
-REPRESENTATION_IDENTITY_FORMAT = "riverhog-v1-human-atlas-representation/v1"
 DETECTOR_CLOSURE_FORMAT = "riverhog-contract-detector-closure/v1"
-ATLAS_DIRECTORY = "riverhog-v1"
-# Reading-size target before the collapsed exact-JSON fallback, not a v1 contract extent.
-AUDIT_PRIMARY_CONTENT_TARGET_BYTES = 128 * 1024
-RELATIONSHIP_FORMAT = "riverhog-contract-human-relationships/v1"
 
 _SCHEMA_MAPPING_KEYWORDS = frozenset(
     {"$defs", "definitions", "dependentSchemas", "patternProperties", "properties"}
@@ -52,11 +45,10 @@ class ContractAtlasError(RuntimeError):
 
 
 @dataclass(frozen=True)
-class ContractAtlas:
-    """One monolithic machine closure and its exact generated Markdown atlas."""
+class DiscoveredContract:
+    """Internal source-derived contract candidates and audit associations."""
 
     root: dict[str, object]
-    files: dict[str, bytes]
 
 
 @dataclass(frozen=True)
@@ -91,43 +83,6 @@ class ContractElement:
             title=str(value["title"]),
             pointers=tuple(str(item) for item in cast(Sequence[object], value["pointers"])),
         )
-
-
-@dataclass(frozen=True)
-class RelationshipNode:
-    """Typed stable identity for a relationship-model node."""
-
-    identity: str
-    kind: str
-    name: str
-
-
-@dataclass(frozen=True)
-class RelationshipEdge:
-    """Typed stable identity for a relationship-model edge."""
-
-    kind: str
-    source: str
-    target: str
-
-
-@dataclass(frozen=True)
-class GeneratedDocument:
-    """Typed stable identity and digest for one generated atlas document."""
-
-    path: str
-    sha256: str
-    bytes: int
-
-
-@dataclass(frozen=True)
-class NavigationIdentity:
-    """Representation-only structural identity for one navigation link."""
-
-    components: tuple[str, ...]
-    context: tuple[str, ...] = ()
-    separator: str = ": "
-    kind: str | None = None
 
 
 def structural_json_schema(schema: object) -> object:
@@ -184,24 +139,6 @@ def canonical_bytes(value: object) -> bytes:
 
 def canonical_sha256(value: object) -> str:
     return hashlib.sha256(canonical_bytes(value)).hexdigest()
-
-
-def _semantic_identity(
-    projection: Mapping[str, object],
-    policies: Mapping[str, object],
-    unsafe_integer_paths: Sequence[str],
-) -> dict[str, object]:
-    """Return semantic contract identity without boundary-governance evidence."""
-
-    return {
-        "format": CONTRACT_IDENTITY_FORMAT,
-        "series": projection["series"],
-        "external_contract": projection["external_contract"],
-        "policies": policies,
-        "unsafe_integer_paths": [
-            path for path in unsafe_integer_paths if path.startswith("/external_contract/")
-        ],
-    }
 
 
 def _encoded_json(value: object) -> tuple[object, list[str]]:
@@ -296,17 +233,6 @@ def _slug(value: str, *, limit: int = 88) -> str:
     suffix = hashlib.sha256(value.encode()).hexdigest()[:10]
     return f"{rendered[: limit - 11].rstrip('-')}-{suffix}"
 
-
-RELEASE_INTERFACES = (
-    "runtime-images",
-    "python-distributions",
-    "installation-roots",
-    "release-artifacts",
-    "publication-locations",
-    "artifact-verification",
-    "versioning-tags",
-    "compatibility-guarantees",
-)
 
 _INTERFACE_DESCRIPTORS = (
     InterfaceDescriptor(
@@ -513,29 +439,26 @@ _INTERFACE_DESCRIPTORS = (
 INTERFACE_REGISTRY = {item.identity: item for item in _INTERFACE_DESCRIPTORS}
 if len(INTERFACE_REGISTRY) != len(_INTERFACE_DESCRIPTORS):
     raise RuntimeError("contract-atlas interface descriptors repeat an identity")
-INTERFACE_LABELS = {key: value.label for key, value in INTERFACE_REGISTRY.items()}
-INTERFACE_PURPOSES = {key: value.purpose for key, value in INTERFACE_REGISTRY.items()}
-INTERFACE_ORDER = {key: value.order for key, value in INTERFACE_REGISTRY.items()}
 QUALIFICATION_ROUTES = {
     key: value.qualification_routes for key, value in INTERFACE_REGISTRY.items()
 }
 
 
-def reassemble_projection(atlas: ContractAtlas) -> dict[str, object]:
+def reassemble_projection(discovered: DiscoveredContract) -> dict[str, object]:
     return cast(
         dict[str, object],
         _decode_unsafe_integers(
-            atlas.root["projection"],
-            cast(Sequence[str], atlas.root["projection_unsafe_integer_paths"]),
+            discovered.root["projection"],
+            cast(Sequence[str], discovered.root["projection_unsafe_integer_paths"]),
         ),
     )
 
 
-def reassemble_trace(atlas: ContractAtlas) -> dict[str, object]:
+def reassemble_trace(discovered: DiscoveredContract) -> dict[str, object]:
     return cast(
         dict[str, object],
         _decode_unsafe_integers(
-            atlas.root["trace"],
-            cast(Sequence[str], atlas.root["trace_unsafe_integer_paths"]),
+            discovered.root["trace"],
+            cast(Sequence[str], discovered.root["trace_unsafe_integer_paths"]),
         ),
     )

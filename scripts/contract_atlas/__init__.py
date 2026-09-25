@@ -1,10 +1,8 @@
-"""Repo-internal Riverhog contract-atlas construction and validation package."""
+"""Discover the exact Riverhog contract and its audit associations."""
 
 from __future__ import annotations
 
-import json
 from collections.abc import Mapping, Sequence
-from pathlib import Path
 from typing import cast
 
 from .discovery import (
@@ -18,26 +16,19 @@ from .discovery import (
     _projection_coverage,
     _source_index,
     _validate_authority_registry,
+    _validate_process_protocol_units,
+    _validate_python_units,
+    _validate_release_units,
 )
-from .dossier_rendering import _cli_authority_reference, _pretty_json
 from .model import (
-    ATLAS_DIRECTORY,
-    ATLAS_FORMAT,
-    AUDIT_PRIMARY_CONTENT_TARGET_BYTES,
     COVERAGE_IDENTITY_FORMAT,
-    INTERFACE_LABELS,
     INTERFACE_REGISTRY,
     QUALIFICATION_ROUTES,
-    RELATIONSHIP_FORMAT,
-    REPRESENTATION_IDENTITY_FORMAT,
     ROOT_FORMAT,
     TRACE_IDENTITY_FORMAT,
-    GeneratedDocument,
-    NavigationIdentity,
+    DiscoveredContract,
     _decode_unsafe_integers,
     _encoded_json,
-    _escape_pointer,
-    _semantic_identity,
     canonical_bytes,
     canonical_sha256,
     normalized_json,
@@ -47,57 +38,14 @@ from .model import (
     structural_json_schema,
 )
 from .model import (
-    ContractAtlas as ContractAtlas,
-)
-from .model import (
     ContractAtlasError as ContractAtlasError,
 )
-from .navigation import (
-    _anchor_id,
-    _assign_dossiers,
-    _contextual_labels,
-    _dossier_navigation_labels,
-    _extension_context_path,
-    _interface_index_path,
-    _interface_navigation_labels,
-    _md,
-    _policy_anchor,
-    _relationship_edge_anchor,
-    _relationship_node_anchor,
-    _relative_link,
-    _source_anchor,
-    _subject_anchor,
-)
-from .relationships import _relationship_model
-from .rendering import _render_atlas
-from .validation import _atlas_paths, _reachable_atlas_documents, validate_atlas
 
 __all__ = [
-    "AUDIT_PRIMARY_CONTENT_TARGET_BYTES",
-    "INTERFACE_LABELS",
     "INTERFACE_REGISTRY",
-    "RELATIONSHIP_FORMAT",
-    "NavigationIdentity",
-    "_anchor_id",
-    "_cli_authority_reference",
-    "_contextual_labels",
     "_decode_unsafe_integers",
-    "_dossier_navigation_labels",
-    "_escape_pointer",
-    "_extension_context_path",
-    "_interface_index_path",
-    "_interface_navigation_labels",
-    "_md",
-    "_policy_anchor",
-    "_pretty_json",
-    "_reachable_atlas_documents",
-    "_relationship_edge_anchor",
-    "_relationship_model",
-    "_relationship_node_anchor",
-    "_relative_link",
-    "_source_anchor",
-    "_subject_anchor",
     "canonical_bytes",
+    "canonical_sha256",
     "normalized_json",
     "pointer_value",
     "reassemble_projection",
@@ -106,13 +54,11 @@ __all__ = [
 ]
 
 
-def build_atlas(
+def build_discovered_contract(
     projection: Mapping[str, object],
     trace: Mapping[str, object],
-    *,
-    component_descriptions: Mapping[str, str],
-) -> ContractAtlas:
-    """Build one exact machine closure and its generated human navigation."""
+) -> DiscoveredContract:
+    """Discover contractual candidates and account for the full source projection."""
 
     encoded_projection, projection_integer_paths = _encoded_json(projection)
     encoded_trace, trace_integer_paths = _encoded_json(trace)
@@ -127,7 +73,6 @@ def build_atlas(
     ids = [str(item["id"]) for item in elements]
     if len(ids) != len(set(ids)):
         raise ContractAtlasError("semantic contract element identities are not unique")
-    _assign_dossiers(elements)
     elements.sort(key=lambda item: str(item["id"]))
     source_index = _source_index(normalized_trace)
     for item in elements:
@@ -215,9 +160,9 @@ def build_atlas(
         raise ContractAtlasError(
             f"semantic atlas does not exactly own the machine projection: {discovery['anomalies']}"
         )
-    semantic_identity = _semantic_identity(
-        normalized_projection, policies, projection_integer_paths
-    )
+    _validate_process_protocol_units(elements, normalized_projection)
+    _validate_python_units(elements, normalized_projection, normalized_trace)
+    _validate_release_units(elements, normalized_projection)
     coverage_identity = {
         "format": COVERAGE_IDENTITY_FORMAT,
         "discovery": discovery,
@@ -235,36 +180,12 @@ def build_atlas(
     boundaries = cast(Mapping[str, object], normalized_projection["boundaries"])
     identities: dict[str, object] = {
         "boundary_canonical_sha256": canonical_sha256(boundaries),
-        "external_contract_sha256": canonical_sha256(normalized_projection["external_contract"]),
-        "semantic_contract_sha256": canonical_sha256(semantic_identity),
+        "source_projection_sha256": canonical_sha256(normalized_projection),
         "coverage_sha256": canonical_sha256(coverage_identity),
         "trace_sha256": canonical_sha256(trace_identity),
     }
-    files, documents, relationship = _render_atlas(
-        elements,
-        policies,
-        normalized_projection,
-        normalized_trace,
-        identities,
-        discovery,
-        component_descriptions,
-        projection_integer_paths=projection_integer_paths,
-    )
-    for document in documents:
-        GeneratedDocument(
-            path=str(document["path"]),
-            sha256=str(document["sha256"]),
-            bytes=cast(int, document["bytes"]),
-        )
-    representation_identity = {
-        "format": REPRESENTATION_IDENTITY_FORMAT,
-        "documents": documents,
-        "relationships": relationship,
-    }
-    identities["atlas_representation_sha256"] = canonical_sha256(representation_identity)
     counts = _counts(elements)
     counts["source_authorities"] = len(source_index)
-    counts["atlas_documents"] = len(documents)
     root: dict[str, object] = {
         "format": ROOT_FORMAT,
         "series": normalized_projection["series"],
@@ -279,54 +200,5 @@ def build_atlas(
         "discovery": discovery,
         "counts": counts,
         "identities": identities,
-        "atlas": {
-            "format": ATLAS_FORMAT,
-            "directory": ATLAS_DIRECTORY,
-            "root": f"{ATLAS_DIRECTORY}/index.md",
-            "documents": documents,
-            "relationships": relationship,
-        },
     }
-    atlas = ContractAtlas(root=root, files=files)
-    validate_atlas(
-        atlas,
-        projection=projection,
-        trace=trace,
-        component_descriptions=component_descriptions,
-    )
-    return atlas
-
-
-def load_atlas(path: Path) -> ContractAtlas:
-    try:
-        root = cast(dict[str, object], json.loads(path.read_bytes()))
-    except (OSError, json.JSONDecodeError) as exc:
-        raise ContractAtlasError(f"machine closure is unavailable: {path}") from exc
-    if root.get("format") != ROOT_FORMAT:
-        raise ContractAtlasError(f"unexpected machine closure format: {root.get('format')}")
-    files: dict[str, bytes] = {}
-    for relative in _atlas_paths(root):
-        try:
-            files[relative] = (path.parent / relative).read_bytes()
-        except OSError as exc:
-            raise ContractAtlasError(f"atlas document is unavailable: {relative}") from exc
-    directory = path.parent / str(cast(Mapping[str, object], root["atlas"])["directory"])
-    actual = (
-        {
-            candidate.relative_to(path.parent).as_posix()
-            for candidate in directory.rglob("*")
-            if candidate.is_file()
-        }
-        if directory.is_dir()
-        else set()
-    )
-    if actual != set(files):
-        raise ContractAtlasError("atlas directory contains stale or unreferenced files")
-    atlas = ContractAtlas(root=root, files=files)
-    validate_atlas(atlas)
-    return atlas
-
-
-def checked_file_set(path: Path) -> set[Path]:
-    atlas = load_atlas(path)
-    return {path, *(path.parent / relative for relative in atlas.files)}
+    return DiscoveredContract(root=root)

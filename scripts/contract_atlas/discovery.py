@@ -7,6 +7,8 @@ from collections.abc import Iterable, Mapping, Sequence
 from pathlib import PurePosixPath
 from typing import cast
 
+import extent_contract
+
 from .model import (
     DETECTOR_CLOSURE_FORMAT,
     QUALIFICATION_ROUTES,
@@ -138,9 +140,13 @@ def _policy_registry(projection: Mapping[str, object]) -> dict[str, object]:
                 "id": f"extent-rule/{key}",
                 "meaning": value,
                 "definition_pointer": f"/external_contract/extents/rules/{_escape_pointer(key)}",
-                "applies_to": ["/external_contract/extents/decisions"],
+                "applies_to": ["/external_contract/extents"],
             }
-            for key, value in sorted(cast(Mapping[str, object], extents["rules"]).items())
+            for key, value in sorted(
+                cast(
+                    Mapping[str, object], extent_contract.normative_extent_declarations()["rules"]
+                ).items()
+            )
         ],
     }
 
@@ -896,7 +902,9 @@ def _external_elements(
             detector="extent",
             source_ids=["extent:extent-contract"],
         )
-    for key in sorted(cast(Mapping[str, object], extents["rules"])):
+    for key in sorted(
+        cast(Mapping[str, object], extent_contract.normative_extent_declarations()["rules"])
+    ):
         _add_element(
             elements,
             authority="extent-contract",
@@ -922,8 +930,8 @@ def _attach_extent_decisions(
         if element["interface"] != "extent"
         for pointer in cast(Sequence[str], element["pointers"])
     ]
-    unbound: dict[str, list[tuple[int, Mapping[str, object]]]] = defaultdict(list)
-    for index, decision in enumerate(decisions):
+    unbound: list[str] = []
+    for decision in decisions:
         source_pointer = str(decision["source_pointer"])
         matching = [
             (len(pointer), element)
@@ -933,23 +941,10 @@ def _attach_extent_decisions(
         if matching:
             _, element = max(matching, key=lambda item: item[0])
             cast(list[str], element["extent_decision_ids"]).append(str(decision["id"]))
-            cast(list[str], element["policy_ids"]).append(f"extent-rule/{decision['rule']}")
         else:
-            unbound[str(decision["owner"])].append((index, decision))
-    for owner, values in sorted(unbound.items()):
-        element = _add_element(
-            elements,
-            authority=owner,
-            interface="extent",
-            title=f"{owner} extent decisions",
-            pointers=[f"/external_contract/extents/decisions/{index}" for index, _ in values],
-            detector="extent",
-            source_ids=["extent:extent-contract"],
-        )
-        element["extent_decision_ids"] = [str(value["id"]) for _, value in values]
-        cast(list[str], element["policy_ids"]).extend(
-            f"extent-rule/{value['rule']}" for _, value in values
-        )
+            unbound.append(str(decision["id"]))
+    if unbound:
+        raise ContractAtlasError(f"extent analysis has unresolved subject associations: {unbound}")
     for element in elements:
         element["extent_decision_ids"] = sorted(
             set(cast(Sequence[str], element["extent_decision_ids"]))

@@ -1,4 +1,4 @@
-"""Nonnormative test bindings and open obligations for segmented v1 extents."""
+"""Nonnormative candidate test associations for declared segmented extents."""
 
 from __future__ import annotations
 
@@ -7,15 +7,14 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
-PROGRESSION_OBLIGATIONS = frozenset(
-    {
-        "bounded_step",
-        "forward_progress",
-        "multiple_segments",
-        "no_silent_truncation",
-        "restart",
-    }
-)
+
+def _http_subject(owner: str, schema: str, field: str) -> str:
+    return f"/external_contract/http_openapi/{owner}/components/schemas/{schema}/properties/{field}"
+
+
+def _protocol_subject(owner: str, suffix: str) -> str:
+    escaped_owner = owner.replace("~", "~0").replace("/", "~1")
+    return f"/external_contract/protocol_schemas/{escaped_owner}/{suffix}"
 
 
 @dataclass(frozen=True, slots=True)
@@ -24,9 +23,11 @@ class SegmentedExtentWitness:
 
     id: str
     owner: str
-    reasons: tuple[str, ...]
+    rule_id: str
+    source_pointers: tuple[str, ...]
     test_node_ids: tuple[str, ...]
     gates: tuple[str, ...]
+    audit_scope: str = "Exact declared subjects; candidate test association only."
     test_scopes: tuple[str, ...] = ()
 
 
@@ -34,7 +35,8 @@ WITNESSES = (
     SegmentedExtentWitness(
         id="riverhog-upload-work-progression/v1",
         owner="riverhog",
-        reasons=("bounded-actionable-work-acquisition",),
+        rule_id="bounded-segment/v1",
+        source_pointers=(_http_subject("riverhog", "CollectionUploadWorkBatchDocument", "work"),),
         test_node_ids=(
             "packages/riverhog-protocol/tests/test_collection_upload_transport.py::"
             "test_bounded_upload_work_batch_binds_assignment_and_checkpoint_state",
@@ -51,7 +53,19 @@ WITNESSES = (
             "https://nashspence.github.io/riverhog/v1/schemas/"
             "collection-archive-volume-v1.schema.json"
         ),
-        reasons=("bounded-archive-volume-parts",),
+        rule_id="bounded-segment/v1",
+        source_pointers=(
+            _protocol_subject(
+                "https://nashspence.github.io/riverhog/v1/schemas/"
+                "collection-archive-volume-v1.schema.json",
+                "$defs/pack/properties/parts",
+            ),
+            _protocol_subject(
+                "https://nashspence.github.io/riverhog/v1/schemas/"
+                "collection-archive-volume-v1.schema.json",
+                "$defs/segment/properties/parts",
+            ),
+        ),
         test_node_ids=(
             "tests/unit/test_incremental_plan.py::"
             "test_artifact_at_a_time_construction_seals_the_exact_one_shot_v1_plans",
@@ -65,7 +79,12 @@ WITNESSES = (
     SegmentedExtentWitness(
         id="riverhog-storage-write-segment-progression/v1",
         owner="riverhog-storage-adapter-protocol",
-        reasons=("bounded-storage-write-segment-page",),
+        rule_id="bounded-segment/v1",
+        source_pointers=(
+            _protocol_subject(
+                "generated:riverhog-storage-adapter", "schemas/WriteSegmentPage/properties/segments"
+            ),
+        ),
         test_node_ids=(
             "packages/riverhog-storage-adapter-support/tests/"
             "test_storage_adapter_support.py::"
@@ -82,7 +101,11 @@ WITNESSES = (
     SegmentedExtentWitness(
         id="riverhog-work-set-append/v1",
         owner="riverhog",
-        reasons=("bounded-set-append",),
+        rule_id="bounded-segment/v1",
+        source_pointers=(
+            _http_subject("riverhog", "CollectionArtifactBatchDocument", "artifacts"),
+            _http_subject("riverhog", "CollectionRootBatchDocument", "inputs"),
+        ),
         test_node_ids=(
             "some-implementations/stove0/application/tests/test_riverhog_adapter.py::"
             "test_post_root_settlement_restarts_from_bounded_portable_inventory_progress",
@@ -94,7 +117,11 @@ WITNESSES = (
     SegmentedExtentWitness(
         id="riverhog-work-disposition-append/v1",
         owner="riverhog",
-        reasons=("bounded-disposition-append",),
+        rule_id="bounded-segment/v1",
+        source_pointers=(
+            _http_subject("riverhog", "ArtifactDispositionBatchDocument", "dispositions"),
+            _http_subject("riverhog", "ArtifactDispositionOutputBatchDocument", "outputs"),
+        ),
         test_node_ids=(
             "some-implementations/stove0/application/tests/test_riverhog_adapter.py::"
             "test_post_root_settlement_restarts_from_bounded_portable_inventory_progress",
@@ -109,7 +136,14 @@ WITNESSES = (
             "https://nashspence.github.io/riverhog/v1/schemas/"
             "riverhog-provenance-bindings-v1.schema.json"
         ),
-        reasons=("bounded-provenance-binding-volume",),
+        rule_id="bounded-segment/v1",
+        source_pointers=(
+            _protocol_subject(
+                "https://nashspence.github.io/riverhog/v1/schemas/"
+                "riverhog-provenance-bindings-v1.schema.json",
+                "properties/files",
+            ),
+        ),
         test_node_ids=(
             "packages/riverhog-provenance/tests/test_segmented_archive.py::"
             "test_ordered_segmented_provenance_authority_round_trips",
@@ -123,7 +157,10 @@ WITNESSES = (
     SegmentedExtentWitness(
         id="riverhog-raw-digest-progression/v1",
         owner="riverhog",
-        reasons=("bounded-raw-digest-append",),
+        rule_id="bounded-segment/v1",
+        source_pointers=(
+            _http_subject("riverhog", "CollectionUploadRawDigestBatchDocument", "sha256s"),
+        ),
         test_node_ids=(
             "tests/unit/test_raw_ingress_manifest.py::"
             "test_raw_source_is_hashed_once_into_small_authority_and_bounded_batches",
@@ -135,7 +172,8 @@ WITNESSES = (
     SegmentedExtentWitness(
         id="riverhog-retrieval-work-progression/v1",
         owner="riverhog",
-        reasons=("bounded-retrieval-work-request",),
+        rule_id="bounded-segment/v1",
+        source_pointers=(_http_subject("riverhog", "RetrievalPlanRequest", "files"),),
         test_node_ids=(
             "tests/unit/test_retrieval_service.py::"
             "test_retrieval_plan_resumes_across_more_than_two_internal_segment_pages",
@@ -147,7 +185,11 @@ WITNESSES = (
     SegmentedExtentWitness(
         id="riverhog-read-collection-progression/v1",
         owner="riverhog",
-        reasons=("bounded-route-page", "bounded-route-progression"),
+        rule_id="route-progression/v1",
+        source_pointers=(),
+        audit_scope=(
+            "All current riverhog route-progression declarations; no traversal result implied."
+        ),
         test_node_ids=(
             "tests/unit/test_public_interface_parity.py::"
             "test_public_read_collection_selectors_are_bounded_and_frozen",
@@ -191,7 +233,11 @@ WITNESSES = (
     SegmentedExtentWitness(
         id="stove0-read-collection-progression/v1",
         owner="stove0",
-        reasons=("bounded-route-page", "bounded-route-progression"),
+        rule_id="route-progression/v1",
+        source_pointers=(),
+        audit_scope=(
+            "All current stove0 route-progression declarations; no traversal result implied."
+        ),
         test_node_ids=(
             "tests/unit/test_public_interface_parity.py::"
             "test_public_read_collection_selectors_are_bounded_and_frozen",
@@ -205,7 +251,12 @@ WITNESSES = (
     SegmentedExtentWitness(
         id="a-riverhog-ftp-spool-read-collection-progression/v1",
         owner="a-riverhog-ftp-spool",
-        reasons=("bounded-route-page", "bounded-route-progression"),
+        rule_id="route-progression/v1",
+        source_pointers=(),
+        audit_scope=(
+            "All current a-riverhog-ftp-spool route-progression declarations; "
+            "no traversal result implied."
+        ),
         test_node_ids=(
             "tests/unit/test_public_interface_parity.py::"
             "test_public_read_collection_selectors_are_bounded_and_frozen",
@@ -255,7 +306,10 @@ WITNESSES = (
     SegmentedExtentWitness(
         id="riverhog-upload-registration-progression/v1",
         owner="riverhog",
-        reasons=("bounded-upload-registration",),
+        rule_id="bounded-segment/v1",
+        source_pointers=(
+            _http_subject("riverhog", "RegisterCollectionUploadSessionFilesRequest", "files"),
+        ),
         test_node_ids=(
             "packages/riverhog-client/tests/test_transform.py::"
             "test_producer_streams_bounded_batches_without_limiting_collection_size",
@@ -267,7 +321,11 @@ WITNESSES = (
     SegmentedExtentWitness(
         id="riverhog-upload-tag-staging-progression/v1",
         owner="riverhog",
-        reasons=("bounded-upload-staging-step; collection-tag-set-is-unbounded",),
+        rule_id="bounded-segment/v1",
+        source_pointers=(
+            _http_subject("riverhog", "AddCollectionUploadTagsRequest", "tags"),
+            _http_subject("riverhog", "CreateOrResumeCollectionUploadSessionRequest", "tags"),
+        ),
         test_node_ids=(
             "tests/unit/test_incremental_collection_producer.py::"
             "test_incremental_producer_stages_unbounded_logical_tags_in_bounded_requests",
@@ -291,7 +349,8 @@ WITNESSES = (
     SegmentedExtentWitness(
         id="riverhog-upload-unit-source-progression/v1",
         owner="riverhog",
-        reasons=("bounded-upload-unit-source-map",),
+        rule_id="bounded-segment/v1",
+        source_pointers=(_http_subject("riverhog", "CollectionUploadUnitWorkDocument", "sources"),),
         test_node_ids=(
             "tests/unit/test_incremental_collection_producer.py::"
             "test_many_artifact_publication_retains_only_the_unsealed_pack_window",
@@ -348,23 +407,31 @@ def bind_segmented_decisions(
             )
 
     used: set[str] = set()
+    bound_pointers: dict[str, set[str]] = {witness.id: set() for witness in WITNESSES}
     links: list[dict[str, object]] = []
     for decision in decisions:
         if decision.get("policy") != "segmented_no_total_max":
             continue
         owner = str(decision.get("owner"))
-        reason = str(decision.get("reason"))
+        rule_id = str(decision.get("rule"))
+        source_pointer = str(decision.get("source_pointer"))
         matched = [
             witness.id
             for witness in WITNESSES
-            if witness.owner == owner and reason in witness.reasons
+            if witness.owner == owner
+            and witness.rule_id == rule_id
+            and (
+                source_pointer in witness.source_pointers
+                or (rule_id == "route-progression/v1" and not witness.source_pointers)
+            )
         ]
-        if not matched:
+        if len(matched) != 1:
             raise ExtentWitnessError(
-                "segmented extent has no candidate test binding: "
-                f"{decision.get('id')} ({owner}; {reason})"
+                "segmented extent requires exactly one candidate test binding: "
+                f"{decision.get('id')} ({owner}; {rule_id}; {source_pointer}): {matched}"
             )
         used.update(matched)
+        bound_pointers[matched[0]].add(source_pointer)
         links.append(
             {
                 "id": decision["id"],
@@ -376,14 +443,28 @@ def bind_segmented_decisions(
         raise ExtentWitnessError(
             f"segmented extent witnesses have no contract decision owner: {unused}"
         )
+    for witness in WITNESSES:
+        expected = set(witness.source_pointers)
+        if expected and bound_pointers[witness.id] != expected:
+            raise ExtentWitnessError(
+                f"segmented extent witness declaration mismatch: {witness.id}: "
+                f"expected {sorted(expected)}, bound {sorted(bound_pointers[witness.id])}"
+            )
     records: list[dict[str, object]] = [
         {
             "id": witness.id,
             "owner": witness.owner,
-            "reasons": list(witness.reasons),
+            "rule_id": witness.rule_id,
+            "rule_pointer": (
+                "/external_contract/extents/rules/"
+                + witness.rule_id.replace("~", "~0").replace("/", "~1")
+            ),
+            "subject_pointers": sorted(bound_pointers[witness.id]),
+            "audit_scope": witness.audit_scope,
+            "association_status": "candidate",
+            "result_reference": None,
             "test_node_ids": list(witness.test_node_ids),
             "gates": list(witness.gates),
-            "unestablished_claims": sorted(PROGRESSION_OBLIGATIONS),
             "test_scopes": [
                 {"node_id": node_id, "scope": scope, "source": _test_source(root, node_id)}
                 for node_id, scope in zip(witness.test_node_ids, witness.test_scopes, strict=True)
@@ -400,7 +481,6 @@ def bind_segmented_decisions(
 __all__ = [
     "SegmentedExtentWitness",
     "ExtentWitnessError",
-    "PROGRESSION_OBLIGATIONS",
     "WITNESSES",
     "bind_segmented_decisions",
 ]

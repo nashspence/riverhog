@@ -317,18 +317,21 @@ jobs:
           jq --exit-status \
             --arg sha "$SOURCE_SHA" \
             --arg contract "$(sha256sum qualification/contracts/riverhog-v1.json | cut -d ' ' -f 1)" \
-            --slurpfile freeze qualification/contracts/riverhog-v1.json '
-            $freeze[0].projection.external_contract.extents.sha256 as $extent
+            --arg audit "$(sha256sum qualification/contracts/riverhog-v1-audit.json | cut -d ' ' -f 1)" \
+            --slurpfile record qualification/contracts/riverhog-v1-audit.json '
+            $record[0].extent_analysis.source_sha256 as $extent
             | ($extent | test("^[0-9a-f]{64}$"))
             and .format == "riverhog-operation-qualification/v1"
             and .source_sha == $sha
             and .summary.operations == (.operations | length)
-            and .qualification.extent_contract.status == "passed"
-            and .qualification.extent_contract.format == "riverhog-contract-machine-closure/v1"
-            and .qualification.extent_contract.extent_format == "riverhog-extent-contract/v1"
-            and .qualification.extent_contract.extent_decisions > 0
-            and .qualification.extent_contract.projection_sha256 == $contract
-            and .qualification.extent_contract.extent_sha256 == $extent
+            and .qualification.contract_inputs.status == "validated"
+            and .qualification.contract_inputs.format == "riverhog-contract-closure/v1"
+            and .qualification.contract_inputs.audit_format == "riverhog-contract-audit-record/v1"
+            and .qualification.contract_inputs.extent_analysis_format == "riverhog-extent-contract/v1"
+            and .qualification.contract_inputs.extent_decisions > 0
+            and .qualification.contract_inputs.closure_sha256 == $contract
+            and .qualification.contract_inputs.audit_sha256 == $audit
+            and .qualification.contract_inputs.extent_analysis_sha256 == $extent
             and .qualification.positive_local_lifecycles.status == "passed"
             and .qualification.cli_human_json_projection.status == "passed"
             and .qualification.bounded_state_access.status == "passed"
@@ -429,12 +432,13 @@ jobs:
       - name: Record the completed qualification
         run: |
           jq --exit-status --null-input \
-            --slurpfile freeze qualification/contracts/riverhog-v1.json \
+            --slurpfile audit qualification/contracts/riverhog-v1-audit.json \
             --arg ref "$SOURCE_REF" \
             --arg qualification_mode "$QUALIFICATION_MODE" \
             --arg sha "$SOURCE_SHA" \
             --arg version "$RELEASE_VERSION" \
-            --arg contract_projection_sha256 "$(sha256sum qualification/contracts/riverhog-v1.json | cut -d ' ' -f 1)" \
+            --arg contract_closure_sha256 "$(sha256sum qualification/contracts/riverhog-v1.json | cut -d ' ' -f 1)" \
+            --arg contract_audit_sha256 "$(sha256sum qualification/contracts/riverhog-v1-audit.json | cut -d ' ' -f 1)" \
             --arg operation_evidence_sha256 "$(sha256sum "$OPERATIONS_SUMMARY" | cut -d ' ' -f 1)" \
             --arg database_evidence_sha256 "$(sha256sum "$DATABASE_SUMMARY" | cut -d ' ' -f 1)" \
             --arg release_evidence_sha256 "$(sha256sum "$RELEASE_SUMMARY" | cut -d ' ' -f 1)" \
@@ -444,9 +448,10 @@ jobs:
               qualification_mode: $qualification_mode,
               source_sha: $sha,
               version: $version,
-              contract_projection_sha256: $contract_projection_sha256,
-              contract_trace_sha256: $freeze[0].identities.trace_sha256,
-              extent_contract_sha256: $freeze[0].projection.external_contract.extents.sha256,
+              contract_closure_sha256: $contract_closure_sha256,
+              contract_audit_sha256: $contract_audit_sha256,
+              contract_trace_sha256: $audit[0].source_identities.trace_sha256,
+              extent_analysis_sha256: $audit[0].extent_analysis.source_sha256,
               operation_evidence_sha256: $operation_evidence_sha256,
               database_evidence_sha256: $database_evidence_sha256,
               release_evidence_sha256: $release_evidence_sha256,
@@ -458,7 +463,7 @@ jobs:
               published: false
             }
             | select(.contract_trace_sha256 | test("^[0-9a-f]{64}$"))
-            | select(.extent_contract_sha256 | test("^[0-9a-f]{64}$"))
+            | select(.extent_analysis_sha256 | test("^[0-9a-f]{64}$"))
             ' > "$QUALIFICATION_DIR/qualification.json"
       - name: Upload SHA-bound summaries
         if: always()

@@ -154,8 +154,9 @@ def test_readme_states_archive_and_adapter_authority() -> None:
         REPO / "docs/architecture.md",
         GENERATED_GUIDANCE,
         GENERATED_PERFORMANCE,
-        REPO / "qualification/contracts/riverhog-v1/index.md",
+        REPO / "qualification/contracts/riverhog-v1/index.html",
     }
+    assert "https://nashspence.github.io/riverhog/contract-candidate/riverhog-v1/" in readme
 
 
 def test_agents_requires_post_push_github_validation() -> None:

@@ -13,9 +13,30 @@ CI_WORKFLOW = REPO_ROOT / ".github/workflows/ci.yml"
 CODEQL_WORKFLOW = REPO_ROOT / ".github/workflows/codeql.yml"
 QUALIFICATION_WORKFLOW = REPO_ROOT / ".github/workflows/release-qualification.yml"
 PROVIDER_QUALIFICATION_WORKFLOW = REPO_ROOT / ".github/workflows/provider-qualification.yml"
+CONTRACT_PAGES_WORKFLOW = REPO_ROOT / ".github/workflows/contract-pages.yml"
 PROVIDER_QUALIFICATION_COMPOSE = REPO_ROOT / "tests/harness/provider-qualification.compose.yaml"
 MISE_LOCK = REPO_ROOT / "mise.lock"
 DATABASE_QUALIFICATION_SCRIPT = REPO_ROOT / "scripts/database_qualification.py"
+
+
+def test_contract_candidate_pages_uses_exact_green_main_and_protected_deployment() -> None:
+    workflow = yaml.load(CONTRACT_PAGES_WORKFLOW.read_text(), Loader=yaml.BaseLoader)
+    assert set(workflow["on"]) == {"workflow_dispatch"}
+    assert workflow["jobs"]["build"]["permissions"] == {"actions": "read", "contents": "read"}
+    build = workflow["jobs"]["build"]["steps"]
+    assert all(
+        re.fullmatch(r"[^@]+@[0-9a-f]{40}", step["uses"]) for step in build if "uses" in step
+    )
+    gate = next(step for step in build if step["name"] == "Require a green commit on main")
+    assert "git merge-base --is-ancestor" in gate["run"]
+    assert "ci.yml codeql.yml" in gate["run"]
+    assert "make contract-freeze" in next(
+        step["run"] for step in build if step["name"].startswith("Verify checked Closure")
+    )
+    deploy = workflow["jobs"]["deploy"]
+    assert deploy["needs"] == "build"
+    assert deploy["environment"]["name"] == "github-pages"
+    assert deploy["permissions"] == {"pages": "write", "id-token": "write"}
 
 
 def test_every_buildx_setup_uses_the_pinned_docker_engine() -> None:
@@ -344,10 +365,11 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
     assert "riverhog-operation-qualification/v1" in verify_operations["run"]
     assert ".source_sha == $sha" in verify_operations["run"]
     assert "positive_local_lifecycles.status" in verify_operations["run"]
-    assert "extent_contract.status" in verify_operations["run"]
+    assert "contract_inputs.status" in verify_operations["run"]
     assert "riverhog-extent-contract/v1" in verify_operations["run"]
-    assert "extent_contract.projection_sha256 == $contract" in verify_operations["run"]
-    assert "extent_contract.extent_sha256 == $extent" in verify_operations["run"]
+    assert "contract_inputs.closure_sha256 == $contract" in verify_operations["run"]
+    assert "contract_inputs.audit_sha256 == $audit" in verify_operations["run"]
+    assert "contract_inputs.extent_analysis_sha256 == $extent" in verify_operations["run"]
     assert "cli_human_json_projection.status" in verify_operations["run"]
     assert "bounded_state_access.status" in verify_operations["run"]
     assert "event_cursor_restart_resume.status" in verify_operations["run"]
@@ -440,10 +462,11 @@ def test_release_qualification_reuses_ci_and_publishes_only_sha_bound_summaries(
         step for step in audit["steps"] if step["name"] == "Record the completed qualification"
     )
     assert '> "$QUALIFICATION_DIR/qualification.json"' in record["run"]
-    assert "contract_projection_sha256" in record["run"]
+    assert "contract_closure_sha256" in record["run"]
+    assert "contract_audit_sha256" in record["run"]
     assert "qualification_mode" in record["run"]
     assert "contract_trace_sha256" in record["run"]
-    assert "extent_contract_sha256" in record["run"]
+    assert "extent_analysis_sha256" in record["run"]
     assert "operation_evidence_sha256" in record["run"]
     assert "database_evidence_sha256" in record["run"]
     assert "release_evidence_sha256" in record["run"]
