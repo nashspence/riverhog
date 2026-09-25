@@ -1,0 +1,103 @@
+{
+  "status": "non-authoritative reference, not accepted implementation",
+  "base": "d4f944ca350810dfb14377ffd9cf77dcd06468f0",
+  "python": "3.13.5",
+  "unit_tests": {
+    "passed": 27,
+    "scope": "selected-module harness; final run uses exact source dependencies verified against Git blobs; not the full workspace"
+  },
+  "inspected_value_hashes_matched": 5,
+  "selected_records": 15,
+  "preview_closure_sha256": "a1b427f1dc21a870179de74e4838a325785999cd83fe97407ab2b1a2269d799a",
+  "preview_audit_sha256": "e449823386aacd45c4c2c7ed69ae1af22741677aeb9793fe76637de01855417a",
+  "browser": {
+    "scope": "non-authoritative reference; actual Chromium DOM with inlined identical assets; URL/history NOT tested",
+    "browser": "144.0.7559.96",
+    "dom_only": true,
+    "results": [
+      {
+        "check": "layout",
+        "width": 1280,
+        "page": "index.html",
+        "result": "pass"
+      },
+      {
+        "check": "layout",
+        "width": 1280,
+        "page": "i-202cf5cb7c2bdfac89d3c72566fcb19da13f83f48fe9267e2de0f67b98dda6bd.html",
+        "result": "pass"
+      },
+      {
+        "check": "layout",
+        "width": 1280,
+        "page": "i-4287b32e1049bfc58bd146746fa59e62af3f72009cea3798d19bf19a82ef9f20.html",
+        "result": "pass"
+      },
+      {
+        "check": "layout",
+        "width": 1280,
+        "page": "e-316ae16ec3501423153cebfa52b85341b4b38256c9b01272a353aff93e30a54e.html",
+        "result": "pass"
+      },
+      {
+        "check": "layout",
+        "width": 640,
+        "page": "index.html",
+        "result": "pass"
+      },
+      {
+        "check": "layout",
+        "width": 640,
+        "page": "i-202cf5cb7c2bdfac89d3c72566fcb19da13f83f48fe9267e2de0f67b98dda6bd.html",
+        "result": "pass"
+      },
+      {
+        "check": "layout",
+        "width": 640,
+        "page": "i-4287b32e1049bfc58bd146746fa59e62af3f72009cea3798d19bf19a82ef9f20.html",
+        "result": "pass"
+      },
+      {
+        "check": "layout",
+        "width": 640,
+        "page": "e-316ae16ec3501423153cebfa52b85341b4b38256c9b01272a353aff93e30a54e.html",
+        "result": "pass"
+      },
+      {
+        "check": "mode-display-function-and-body-invariance",
+        "result": "pass",
+        "not_tested": "URL transitions, history and click navigation"
+      },
+      {
+        "check": "comparison-facts-from-source",
+        "result": "pass"
+      },
+      {
+        "check": "difficult-literal-mutations-visible-in-chromium",
+        "cases": 6,
+        "result": "pass"
+      },
+      {
+        "check": "no-javascript-contract-fallback",
+        "result": "pass"
+      }
+    ],
+    "javascript_errors": []
+  },
+  "not_run": [
+    "full checkout and full closure",
+    "normal make validation suite",
+    "URL/history/deep-link/browser origin route checks",
+    "live Pages",
+    "human 200% zoom",
+    "maintainer acceptance",
+    "Documentation Record authoring/implementation",
+    "release packaging/publication",
+    "full locked workspace environment"
+  ],
+  "dependency_blobs": {
+    "riverhog_canonical_json/__init__.py": "8c25c884c893134d57cfb1db7795bcc5867240d3",
+    "rfc8785_v0.1.4/_impl.py": "3137d3326b98938affadb1be711ee411eb2ab86e",
+    "rfc8785_v0.1.4/__init__.py": "5a1f9d919643fa3bcaa0999ea66d9c535568c42a"
+  }
+}

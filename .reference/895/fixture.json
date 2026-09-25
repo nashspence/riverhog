@@ -1,0 +1,369 @@
+{
+  "notice": "Inspected source-value fixture; not the whole closure. fixture:* IDs and analysis IDs are adapter test identities, not discovered production element IDs. No behavioral witness/result is invented. Full legacy adapter uses actual discovered identities.",
+  "base_revision": "d4f944ca350810dfb14377ffd9cf77dcd06468f0",
+  "verified_exact_owned_json": [
+    {
+      "name": "riverhog_application_access.access_covers",
+      "exact_owned_json_sha256": "acb02dcfab70072ff7b369a84afccca28cd49c26ead8ee982f7462e489319603"
+    },
+    {
+      "name": "riverhog_application_access.ApplicationAccess",
+      "exact_owned_json_sha256": "34333ff922d759bdb77e9f7019ec742d26af492f1567a71caff3b94df935f4c1"
+    },
+    {
+      "name": "riverhog_application_access.MonthlyDownloadQuotaBytes",
+      "exact_owned_json_sha256": "a33d0ac599fa6294cd33c5a2a60573a9f3c6cd949ee150f56d44abb6742745fc"
+    },
+    {
+      "name": "gogurt_core.GOGURT_ROUTE_PATTERN",
+      "exact_owned_json_sha256": "6855169333d8e1b5b5ed964d388b55b73a7a8d65a6600fa4ab8feb415f724bd5"
+    },
+    {
+      "name": "CollectionTag",
+      "exact_owned_json_sha256": "5b6917e633cfcae1991f58fecc90c7c91406e442bcbfea53917a973300b49dc7"
+    }
+  ],
+  "source": {
+    "series": "v1",
+    "source_revision": "d4f944ca350810dfb14377ffd9cf77dcd06468f0",
+    "records": [
+      {
+        "id": "python:riverhog-application-access:riverhog-application-access-access-covers:bae25f8a81",
+        "authority": "riverhog-application-access",
+        "interface": "python",
+        "name": "riverhog_application_access.access_covers",
+        "pointer": "/external_contract/python/riverhog_application_access.access_covers",
+        "value": {
+          "contract": {
+            "kind": "function",
+            "signature": "\"(grantor: 'ApplicationAccess', requested: 'ApplicationAccess') -> 'bool'\""
+          },
+          "distribution": "riverhog-application-access",
+          "module": "riverhog_application_access",
+          "name": "access_covers",
+          "unit": "export"
+        },
+        "sources": [
+          {
+            "id": "packages/riverhog-application-access/src/riverhog_application_access/__init__.py",
+            "source": {
+              "path": "packages/riverhog-application-access/src/riverhog_application_access/__init__.py"
+            }
+          }
+        ]
+      },
+      {
+        "id": "python:riverhog-application-access:riverhog-application-access-applicationaccess:579bcdc0a1",
+        "authority": "riverhog-application-access",
+        "interface": "python",
+        "name": "riverhog_application_access.ApplicationAccess",
+        "pointer": "/external_contract/python/riverhog_application_access.ApplicationAccess",
+        "value": {
+          "contract": {
+            "fields": [
+              {
+                "default": "required",
+                "name": "permission",
+                "type": "'ApplicationPermission'"
+              },
+              {
+                "default": "'*'",
+                "name": "resource",
+                "type": "'ApplicationResource'"
+              }
+            ],
+            "kind": "class",
+            "signature": "\"(permission: 'ApplicationPermission', resource: 'ApplicationResource' = '*') -> None\""
+          },
+          "distribution": "riverhog-application-access",
+          "module": "riverhog_application_access",
+          "name": "ApplicationAccess",
+          "unit": "export"
+        },
+        "sources": [
+          {
+            "id": "packages/riverhog-application-access/src/riverhog_application_access/__init__.py",
+            "source": {
+              "path": "packages/riverhog-application-access/src/riverhog_application_access/__init__.py"
+            }
+          }
+        ]
+      },
+      {
+        "id": "python:riverhog-application-access:riverhog-application-access-monthlydownlo-cbd505bca9:2812dcc6f9",
+        "authority": "riverhog-application-access",
+        "interface": "python",
+        "name": "riverhog_application_access.MonthlyDownloadQuotaBytes",
+        "pointer": "/external_contract/python/riverhog_application_access.MonthlyDownloadQuotaBytes",
+        "value": {
+          "contract": {
+            "kind": "type-alias",
+            "value": "typing.Annotated[int, FieldInfo(annotation=NoneType, required=True, metadata=[Ge(ge=0)]), BeforeValidator(func=<function validate_monthly_download_quota_bytes>, json_schema_input_type=PydanticUndefined)]"
+          },
+          "distribution": "riverhog-application-access",
+          "module": "riverhog_application_access",
+          "name": "MonthlyDownloadQuotaBytes",
+          "unit": "export"
+        },
+        "sources": [
+          {
+            "id": "packages/riverhog-application-access/src/riverhog_application_access/__init__.py",
+            "source": {
+              "path": "packages/riverhog-application-access/src/riverhog_application_access/__init__.py"
+            }
+          }
+        ]
+      },
+      {
+        "id": "python:gogurt-core:gogurt-core-gogurt-route-pattern:7b767a293d",
+        "authority": "gogurt-core",
+        "interface": "python",
+        "name": "gogurt_core.GOGURT_ROUTE_PATTERN",
+        "pointer": "/external_contract/python/gogurt_core.GOGURT_ROUTE_PATTERN",
+        "value": {
+          "contract": {
+            "kind": "constant",
+            "value": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?$"
+          },
+          "distribution": "gogurt-core",
+          "module": "gogurt_core",
+          "name": "GOGURT_ROUTE_PATTERN",
+          "unit": "export"
+        },
+        "sources": [
+          {
+            "id": "some-implementations/gogurt/packages/core/src/gogurt_core/__init__.py",
+            "source": {
+              "path": "some-implementations/gogurt/packages/core/src/gogurt_core/__init__.py"
+            }
+          }
+        ]
+      },
+      {
+        "id": "http-schemas:riverhog:schemas-collectiontag:bc15f44db5",
+        "authority": "riverhog",
+        "interface": "http-schemas",
+        "name": "CollectionTag",
+        "pointer": "/external_contract/http_openapi/riverhog/components/schemas/CollectionTag",
+        "value": {
+          "maxLength": 65536,
+          "minLength": 1,
+          "type": "string",
+          "x-riverhog-encoded-bytes-max": 65536,
+          "x-riverhog-extent": {
+            "policy": "contract_max",
+            "reason": "bounded-human-authored-collection-tag"
+          },
+          "x-unicode-normalization": "NFC"
+        },
+        "sources": [
+          {
+            "id": "scripts/operation_qualification.py",
+            "source": {
+              "path": "scripts/operation_qualification.py"
+            }
+          }
+        ]
+      },
+      {
+        "id": "fixture:compatibility:components",
+        "authority": "release",
+        "interface": "compatibility-guarantees",
+        "name": "components",
+        "pointer": "/external_contract/release/compatibility/components",
+        "value": "A supported deployment runs components from one coordinated product version.",
+        "sources": [
+          {
+            "id": "release.toml",
+            "source": {
+              "path": "release.toml"
+            }
+          }
+        ]
+      },
+      {
+        "id": "fixture:compatibility:http_api",
+        "authority": "release",
+        "interface": "compatibility-guarantees",
+        "name": "http_api",
+        "pointer": "/external_contract/release/compatibility/http_api",
+        "value": "Published v1 HTTP and native lifecycle-event contracts remain backward compatible throughout v1.",
+        "sources": [
+          {
+            "id": "release.toml",
+            "source": {
+              "path": "release.toml"
+            }
+          }
+        ]
+      },
+      {
+        "id": "fixture:compatibility:cli",
+        "authority": "release",
+        "interface": "compatibility-guarantees",
+        "name": "cli",
+        "pointer": "/external_contract/release/compatibility/cli",
+        "value": "Command names, options, exit status, and structured output remain backward compatible throughout v1; prose output is for people.",
+        "sources": [
+          {
+            "id": "release.toml",
+            "source": {
+              "path": "release.toml"
+            }
+          }
+        ]
+      },
+      {
+        "id": "fixture:compatibility:python_api",
+        "authority": "release",
+        "interface": "compatibility-guarantees",
+        "name": "python_api",
+        "pointer": "/external_contract/release/compatibility/python_api",
+        "value": "Freeze-protected declared public-module exports, callable signatures, selected constants, enum members and values, and selected public model and dataclass structures remain backward compatible throughout v1.",
+        "sources": [
+          {
+            "id": "release.toml",
+            "source": {
+              "path": "release.toml"
+            }
+          }
+        ]
+      },
+      {
+        "id": "fixture:compatibility:durable_state",
+        "authority": "release",
+        "interface": "compatibility-guarantees",
+        "name": "durable_state",
+        "pointer": "/external_contract/release/compatibility/durable_state",
+        "value": "Every later v1 release applies each durable-state authority's declared transition rule to state created by every earlier v1 release; this does not promise downgrade support or earlier software reading later state.",
+        "sources": [
+          {
+            "id": "release.toml",
+            "source": {
+              "path": "release.toml"
+            }
+          }
+        ]
+      },
+      {
+        "id": "fixture:compatibility:archive",
+        "authority": "release",
+        "interface": "compatibility-guarantees",
+        "name": "archive",
+        "pointer": "/external_contract/release/compatibility/archive",
+        "value": "A valid v1 archive remains independently recoverable throughout the supported v1 lifetime. Pack construction, ingress checkpointing, and resumable-write strategies are not archive-format compatibility promises.",
+        "sources": [
+          {
+            "id": "release.toml",
+            "source": {
+              "path": "release.toml"
+            }
+          }
+        ]
+      },
+      {
+        "id": "fixture:compatibility:recovery",
+        "authority": "release",
+        "interface": "compatibility-guarantees",
+        "name": "recovery",
+        "pointer": "/external_contract/release/compatibility/recovery",
+        "value": "Every later v1 recovery release reads every valid earlier v1 archive and provenance set.",
+        "sources": [
+          {
+            "id": "release.toml",
+            "source": {
+              "path": "release.toml"
+            }
+          }
+        ]
+      },
+      {
+        "id": "fixture:compatibility:configuration",
+        "authority": "release",
+        "interface": "compatibility-guarantees",
+        "name": "configuration",
+        "pointer": "/external_contract/release/compatibility/configuration",
+        "value": "Accepted v1 configuration remains valid throughout v1 unless an unsafe value must be rejected.",
+        "sources": [
+          {
+            "id": "release.toml",
+            "source": {
+              "path": "release.toml"
+            }
+          }
+        ]
+      },
+      {
+        "id": "fixture:compatibility:licensing",
+        "authority": "release",
+        "interface": "compatibility-guarantees",
+        "name": "licensing",
+        "pointer": "/external_contract/release/compatibility/licensing",
+        "value": "Each continuing first-party Python distribution and OCI repository published in v1 retains every SPDX license alternative granted when that coordinate first shipped in v1; withdrawing a baseline grant requires a new major version.",
+        "sources": [
+          {
+            "id": "release.toml",
+            "source": {
+              "path": "release.toml"
+            }
+          }
+        ]
+      },
+      {
+        "id": "fixture:extent:schema-bound/v1",
+        "authority": "extent-contract",
+        "interface": "extent",
+        "name": "schema-bound/v1",
+        "pointer": "/external_contract/extents/rules/schema-bound~1v1",
+        "value": {
+          "policy": "fixed-or-contract-max",
+          "authority": "the projected JSON Schema constraint",
+          "exceeded": "schema-validation-error",
+          "requirement": "a non-fixed set maximum carries an owning reason declaration"
+        },
+        "sources": [
+          {
+            "id": "scripts/extent_contract.py",
+            "source": {
+              "path": "scripts/extent_contract.py"
+            }
+          }
+        ]
+      }
+    ],
+    "extent_analysis": [
+      {
+        "id": "fixture:CollectionTag:length",
+        "owner": "riverhog",
+        "source_pointer": "/external_contract/http_openapi/riverhog/components/schemas/CollectionTag",
+        "dimension": "length",
+        "unit": "characters",
+        "policy": "contract_max",
+        "rule": "schema-bound/v1",
+        "reason": "schema-maximum",
+        "minimum": 1,
+        "maximum": 65536
+      },
+      {
+        "id": "fixture:CollectionTag:encoded-bytes",
+        "owner": "riverhog",
+        "source_pointer": "/external_contract/http_openapi/riverhog/components/schemas/CollectionTag",
+        "dimension": "encoded-size",
+        "unit": "bytes",
+        "policy": "contract_max",
+        "rule": "schema-bound/v1",
+        "reason": "bounded-human-authored-collection-tag",
+        "maximum": 65536,
+        "source_constraint": {
+          "field": "x-riverhog-encoded-bytes-max"
+        }
+      }
+    ],
+    "witnesses": [],
+    "discovery_accounting": {
+      "selection_only": true,
+      "selected_elements": 15,
+      "whole_repository_accounting": "not run"
+    }
+  }
+}
