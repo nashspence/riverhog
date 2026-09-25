@@ -30,7 +30,7 @@ def test_historical_name_is_reserved_across_removal_and_rebinding(tmp_path) -> N
     }
     reconcile_storage_incarnations(factory, {})
     with session_scope(factory) as session:
-        row = session.get(StorageIncarnationRecord, _FIRST)
+        row = session.get(StorageIncarnationRecord, ("archive", "primary"))
         assert row is not None and row.state == "disabled"
         with pytest.raises(ServiceUnavailable, match="unavailable"):
             require_storage_incarnation(session, "archive", "primary")
@@ -43,8 +43,24 @@ def test_historical_name_is_reserved_across_removal_and_rebinding(tmp_path) -> N
         == _FIRST
     )
     with session_scope(factory) as session:
-        row = session.get(StorageIncarnationRecord, _FIRST)
+        row = session.get(StorageIncarnationRecord, ("archive", "primary"))
         assert row is not None and row.state == "bound" and row.binding_generation == 3
+
+
+def test_one_physical_incarnation_may_serve_archive_and_cache_roles(tmp_path) -> None:
+    database_url = sqlite_url(tmp_path / "catalog.sqlite3")
+    initialize_db(database_url)
+    factory = make_session_factory(database_url)
+
+    bindings = reconcile_storage_incarnations(
+        factory,
+        {("archive", "archive"): _FIRST, ("cache", "local"): _FIRST},
+    )
+
+    assert bindings == {("archive", "archive"): _FIRST, ("cache", "local"): _FIRST}
+    with session_scope(factory) as session:
+        assert require_storage_incarnation(session, "archive", "archive") == _FIRST
+        assert require_storage_incarnation(session, "cache", "local") == _FIRST
 
 
 def test_unreachable_binding_does_not_disable_other_storage(tmp_path) -> None:

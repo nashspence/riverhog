@@ -34,14 +34,13 @@ Exact externally visible contract owned by this contract element.
 
 | Kind | Name | Exact definition |
 |---|---|---|
-| <a id="s-3250a87917"></a>`primary-key` | `—` | `PRIMARY KEY (id)` |
-| <a id="s-8d6e1f6ff9"></a>`unique` | `uq_storage_incarnations_reserved_name` | `CONSTRAINT uq_storage_incarnations_reserved_name UNIQUE (kind, name)` |
-| <a id="s-0c0b741b50"></a>`unique` | `uq_storage_incarnations_id_name` | `CONSTRAINT uq_storage_incarnations_id_name UNIQUE (id, name)` |
-| <a id="s-9ac08b25f4"></a>`check` | `ck_storage_incarnations_kind` | `CONSTRAINT ck_storage_incarnations_kind CHECK (kind IN ('archive','cache'))` |
-| <a id="s-10c8373969"></a>`check` | `ck_storage_incarnations_state` | `CONSTRAINT ck_storage_incarnations_state CHECK (state IN ('bound','disabled','retired'))` |
-| <a id="s-18579fadba"></a>`check` | `ck_storage_incarnations_generation` | `CONSTRAINT ck_storage_incarnations_generation CHECK (binding_generation >= 1)` |
-| <a id="s-ebb9833020"></a>`check` | `ck_storage_incarnations_read_mode` | `CONSTRAINT ck_storage_incarnations_read_mode CHECK (last_read_mode IS NULL OR last_read_mode IN ('immediate','restore_required'))` |
-| <a id="s-3579bd9d68"></a>`check` | `ck_storage_incarnations_uuid4` | `CONSTRAINT ck_storage_incarnations_uuid4 CHECK (length(id) = 36 AND substr(id, 9, 1) = '-' AND substr(id, 14, 1) = '-' AND substr(id, 19, 1) = '-' AND substr(id, 24, 1) = '-' AND substr(id, 15, 1) = '4' AND substr(id, 20, 1) >= '8' AND substr(id, 20, 1) <= 'b' AND length(replace(id, '-', '')) = 32 AND lower(replace(id, '-', '')) = replace(id, '-', '') AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '-', ''), '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
+| <a id="s-3250a87917"></a>`primary-key` | `—` | `PRIMARY KEY (kind, name)` |
+| <a id="s-8d6e1f6ff9"></a>`unique` | `uq_storage_incarnations_id_name` | `CONSTRAINT uq_storage_incarnations_id_name UNIQUE (id, name)` |
+| <a id="s-0c0b741b50"></a>`check` | `ck_storage_incarnations_kind` | `CONSTRAINT ck_storage_incarnations_kind CHECK (kind IN ('archive','cache'))` |
+| <a id="s-9ac08b25f4"></a>`check` | `ck_storage_incarnations_state` | `CONSTRAINT ck_storage_incarnations_state CHECK (state IN ('bound','disabled','retired'))` |
+| <a id="s-10c8373969"></a>`check` | `ck_storage_incarnations_generation` | `CONSTRAINT ck_storage_incarnations_generation CHECK (binding_generation >= 1)` |
+| <a id="s-18579fadba"></a>`check` | `ck_storage_incarnations_read_mode` | `CONSTRAINT ck_storage_incarnations_read_mode CHECK (last_read_mode IS NULL OR last_read_mode IN ('immediate','restore_required'))` |
+| <a id="s-ebb9833020"></a>`check` | `ck_storage_incarnations_uuid4` | `CONSTRAINT ck_storage_incarnations_uuid4 CHECK (length(id) = 36 AND substr(id, 9, 1) = '-' AND substr(id, 14, 1) = '-' AND substr(id, 19, 1) = '-' AND substr(id, 24, 1) = '-' AND substr(id, 15, 1) = '4' AND substr(id, 20, 1) >= '8' AND substr(id, 20, 1) <= 'b' AND length(replace(id, '-', '')) = 32 AND lower(replace(id, '-', '')) = replace(id, '-', '') AND length(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(replace(id, '-', ''), '0', ''), '1', ''), '2', ''), '3', ''), '4', ''), '5', ''), '6', ''), '7', ''), '8', ''), '9', ''), 'a', ''), 'b', ''), 'c', ''), 'd', ''), 'e', ''), 'f', '')) = 0)` |
 
 ## Maintained corroboration
 
@@ -76,7 +75,7 @@ Exact externally visible contract owned by this contract element.
 
 The following JSON is the complete value owned at each machine-authority pointer. No contractual fields are summarized away.
 
-<!-- exact-contract-value: 7f3719ad6bef48cf34d252d41e0fb4b95fc9c768e9ab203025691b6e10b23953 -->
+<!-- exact-contract-value: 9469dc574f3452c5e4d38220fb3fa787949833f9d5965cf2434200ce6680deeb -->
 
 ```json
 {
@@ -133,19 +132,11 @@ The following JSON is the complete value owned at each machine-authority pointer
   "constraints": [
     {
       "columns": [
-        "id"
-      ],
-      "definition": "PRIMARY KEY (id)",
-      "kind": "primary-key"
-    },
-    {
-      "columns": [
         "kind",
         "name"
       ],
-      "definition": "CONSTRAINT uq_storage_incarnations_reserved_name UNIQUE (kind, name)",
-      "kind": "unique",
-      "name": "uq_storage_incarnations_reserved_name"
+      "definition": "PRIMARY KEY (kind, name)",
+      "kind": "primary-key"
     },
     {
       "columns": [

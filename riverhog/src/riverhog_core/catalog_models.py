@@ -56,9 +56,9 @@ class StorageIncarnationRecord(Base):
 
     __tablename__ = "storage_incarnations"
 
-    id: Mapped[str] = mapped_column(String(36), primary_key=True)
-    kind: Mapped[str] = mapped_column(String, nullable=False)
-    name: Mapped[str] = mapped_column(String, nullable=False)
+    id: Mapped[str] = mapped_column(String(36), nullable=False)
+    kind: Mapped[str] = mapped_column(String, primary_key=True)
+    name: Mapped[str] = mapped_column(String, primary_key=True)
     state: Mapped[str] = mapped_column(String, nullable=False)
     binding_generation: Mapped[int] = mapped_column(BigInteger, nullable=False, default=1)
     created_at: Mapped[str] = mapped_column(String, nullable=False)
@@ -66,7 +66,6 @@ class StorageIncarnationRecord(Base):
     last_read_mode: Mapped[str | None] = mapped_column(String, nullable=True)
 
     __table_args__ = (
-        UniqueConstraint("kind", "name", name="uq_storage_incarnations_reserved_name"),
         UniqueConstraint("id", "name", name="uq_storage_incarnations_id_name"),
         CheckConstraint("kind IN ('archive','cache')", name="ck_storage_incarnations_kind"),
         CheckConstraint(
