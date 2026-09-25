@@ -24,7 +24,7 @@ The exact GitHub reference commit recorded in the owning issue is the durable ha
 - Python 3.13.5: 27 focused unittest cases pass using byte-verified exact source modules; source compiles. Cases include explicit field roles, exact restoration, deterministic generation, stale/ambiguous targets, references and recursion, unsafe integer envelopes, unsupported roles, evidence isolation, Python member ownership, visible literals and real HTML links.
 - Five inspected source values reproduce their existing generated canonical hashes. The other fixture declarations were transcribed from the exact base release/extent source and are labelled as a selected fixture, not a regenerated whole closure.
 - Chromium 144.0.7559.96 with Playwright: actual visible difficult literals, comparison facts, contract-body invariance under the mode display function, no-JavaScript base, and layout at 1280/640 CSS-pixel widths pass. No script injection or JavaScript errors observed. Representative compatibility and regex/audit captures visually inspected.
-- A deterministic selected preview is generated with 15 records and 4 interface inventories. Its manifest checks output bytes without hashing itself. `validation.json` records the preview identities and executed-check scope.
+- A deterministic selected preview is generated with 15 records across 4 interface types (5 authority/interface inventories). Its manifest checks output bytes without hashing itself. `validation.json` records the preview identities and executed-check scope.
 
 ## Validation not performed / limitations
 
