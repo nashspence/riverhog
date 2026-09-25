@@ -556,20 +556,20 @@ def test_extent_relevant_deployment_configuration_is_source_linked() -> None:
         for decision in projection["external_contract"]["extents"]["decisions"]
     }
 
-    cache_lease = decisions[
-        "configuration-environment:riverhog-server:RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_LEASE:value"
+    upload_concurrency = decisions[
+        "configuration-environment:riverhog-client:RIVERHOG_UPLOAD_FILE_CONCURRENCY:value"
     ]
-    assert cache_lease["policy"] == "operational_policy"
-    assert cache_lease["configuration"] == "RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_LEASE"
-    source = _resolve_pointer(projection, cache_lease["source_pointer"])
-    assert "riverhog-server" in source["consumers"]
+    assert upload_concurrency["policy"] == "operational_policy"
+    assert upload_concurrency["configuration"] == "RIVERHOG_UPLOAD_FILE_CONCURRENCY"
+    source = _resolve_pointer(projection, upload_concurrency["source_pointer"])
+    assert "riverhog-client" in source["consumers"]
     trace = _checked_trace()
     trace_sources = {item["id"]: item for item in trace["sources"]}
-    cache_lease_trace = trace_sources[
-        "configuration-environment:riverhog-server:RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_LEASE"
+    upload_trace = trace_sources[
+        "configuration-environment:riverhog-client:RIVERHOG_UPLOAD_FILE_CONCURRENCY"
     ]
-    assert cache_lease_trace["bindings"]
-    assert all((REPO_ROOT / binding["path"]).exists() for binding in cache_lease_trace["bindings"])
+    assert upload_trace["bindings"]
+    assert all((REPO_ROOT / binding["path"]).exists() for binding in upload_trace["bindings"])
 
     configuration_decisions = [
         decision

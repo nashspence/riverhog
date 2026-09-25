@@ -17,6 +17,7 @@ from a_riverhog_event_relay.relay import (
     SourceConfig,
     SourceRelayError,
     cloud_event_document,
+    generated_config_schema,
     load_config,
 )
 from a_riverhog_event_relay.schema import upgrade_state
@@ -56,17 +57,34 @@ def _write_config(
     sources: tuple[tuple[str, str, str, str], ...],
 ) -> None:
     lines = [f"state_path: {state_path}", "sources:"]
-    for name, events_url, token_env, webhook_url_env in sources:
+    secret_values = {
+        "EVENT_TOKEN": "token",
+        "HA_WEBHOOK": "https://ha.test/hook",
+        "ALPHA_TOKEN": "alpha-token",
+        "ALPHA_WEBHOOK": "https://alpha-hook.test/hooks/super-secret?token=credential",
+        "BETA_TOKEN": "beta-token",
+        "BETA_WEBHOOK": "https://beta-hook.test/hook",
+    }
+    config_path.parent.mkdir(parents=True, exist_ok=True)
+    for name, events_url, token_name, webhook_name in sources:
+        token_file = config_path.parent / token_name
+        webhook_file = config_path.parent / webhook_name
+        token_file.write_text(secret_values[token_name] + "\n", encoding="utf-8")
+        webhook_file.write_text(secret_values[webhook_name] + "\n", encoding="utf-8")
         lines.extend(
             (
                 f"  - name: {name}",
                 f"    events_url: {events_url}",
-                f"    token_env: {token_env}",
-                f"    webhook_url_env: {webhook_url_env}",
+                f"    token_file: {token_file}",
+                f"    webhook_url_file: {webhook_file}",
             )
         )
-    config_path.parent.mkdir(parents=True, exist_ok=True)
     config_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def test_published_config_schema_matches_parser() -> None:
+    schema = Path(relay_module.__file__).with_name("config.schema.json")
+    assert json.loads(schema.read_text(encoding="utf-8")) == generated_config_schema()
 
 
 def _use_mock_transport(
@@ -87,17 +105,11 @@ def test_a_riverhog_event_relay_state_commands_report_and_verify_the_current_rev
     capsys: pytest.CaptureFixture[str],
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("EVENT_TOKEN", "token")
-    monkeypatch.setenv("HA_WEBHOOK", "https://ha.test/hook")
     config_path = tmp_path / "a-riverhog-event-relay.yaml"
-    config_path.write_text(
-        "state_path: " + str(tmp_path / "a-riverhog-event-relay.sqlite3") + "\n"
-        "sources:\n"
-        "  - name: stove0\n"
-        "    events_url: https://stove0.test/v1/events\n"
-        "    token_env: EVENT_TOKEN\n"
-        "    webhook_url_env: HA_WEBHOOK\n",
-        encoding="utf-8",
+    _write_config(
+        config_path,
+        state_path=str(tmp_path / "a-riverhog-event-relay.sqlite3"),
+        sources=(("stove0", "https://stove0.test/v1/events", "EVENT_TOKEN", "HA_WEBHOOK"),),
     )
     prefix = ["--config", str(config_path), "state"]
 
@@ -118,8 +130,6 @@ def test_relative_state_path_is_resolved_from_config_for_every_command(
     capsys: pytest.CaptureFixture[str],
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("EVENT_TOKEN", "token")
-    monkeypatch.setenv("HA_WEBHOOK", "https://ha.test/hook")
     config_path = tmp_path / "configuration" / "a-riverhog-event-relay.yaml"
     _write_config(
         config_path,
@@ -164,12 +174,6 @@ def test_one_shot_partial_failure_is_visible_and_does_not_block_other_sources(
             ("beta", "https://beta.test/v1/events", "BETA_TOKEN", "BETA_WEBHOOK"),
         ),
     )
-    monkeypatch.setenv("ALPHA_TOKEN", "alpha-token")
-    monkeypatch.setenv(
-        "ALPHA_WEBHOOK", "https://alpha-hook.test/hooks/super-secret?token=credential"
-    )
-    monkeypatch.setenv("BETA_TOKEN", "beta-token")
-    monkeypatch.setenv("BETA_WEBHOOK", "https://beta-hook.test/hook")
     upgrade_state(state_path)
     event = lifecycle_event(type="io.riverhog.test")
     fetched: list[str] = []
@@ -220,9 +224,6 @@ def test_one_shot_complete_failure_attempts_every_source(
             ("beta", "https://beta.test/v1/events", "BETA_TOKEN", "BETA_WEBHOOK"),
         ),
     )
-    for name in ("ALPHA", "BETA"):
-        monkeypatch.setenv(f"{name}_TOKEN", "token")
-        monkeypatch.setenv(f"{name}_WEBHOOK", "https://hook.test/path")
     upgrade_state(state_path)
     fetched: list[str] = []
 
@@ -250,8 +251,6 @@ def test_one_shot_empty_pages_succeed(
         state_path=str(state_path),
         sources=(("stove0", "https://stove0.test/v1/events", "EVENT_TOKEN", "HA_WEBHOOK"),),
     )
-    monkeypatch.setenv("EVENT_TOKEN", "token")
-    monkeypatch.setenv("HA_WEBHOOK", "https://ha.test/hook")
     upgrade_state(state_path)
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -265,8 +264,8 @@ def test_nonadvancing_page_is_rejected_before_webhook_delivery(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("EVENT_TOKEN", "token")
-    monkeypatch.setenv("HA_WEBHOOK", "https://ha.test/hook")
+    (tmp_path / "EVENT_TOKEN").write_text("token\n", encoding="utf-8")
+    (tmp_path / "HA_WEBHOOK").write_text("https://ha.test/hook\n", encoding="utf-8")
     event = lifecycle_event(type="io.riverhog.stove0.attempt.issue")
     config = EventRelayConfig(
         state_path=tmp_path / "a-riverhog-event-relay.sqlite3",
@@ -274,8 +273,8 @@ def test_nonadvancing_page_is_rejected_before_webhook_delivery(
             SourceConfig(
                 name="stove0",
                 events_url="https://stove0.test/v1/events",
-                token_env="EVENT_TOKEN",
-                webhook_url_env="HA_WEBHOOK",
+                token_file=tmp_path / "EVENT_TOKEN",
+                webhook_url_file=tmp_path / "HA_WEBHOOK",
             ),
         ),
     )
@@ -305,8 +304,8 @@ def test_a_riverhog_event_relay_advances_only_after_the_complete_page_is_deliver
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("EVENT_TOKEN", "token")
-    monkeypatch.setenv("HA_WEBHOOK", "https://ha.test/hook")
+    (tmp_path / "EVENT_TOKEN").write_text("token\n", encoding="utf-8")
+    (tmp_path / "HA_WEBHOOK").write_text("https://ha.test/hook\n", encoding="utf-8")
     events = [
         lifecycle_event(type="io.riverhog.stove0.attempt.issue", subject="a"),
         lifecycle_event(type="io.riverhog.stove0.attempt.issue", subject="b"),
@@ -339,8 +338,8 @@ def test_a_riverhog_event_relay_advances_only_after_the_complete_page_is_deliver
             SourceConfig(
                 name="stove0",
                 events_url="https://stove0.test/v1/events",
-                token_env="EVENT_TOKEN",
-                webhook_url_env="HA_WEBHOOK",
+                token_file=tmp_path / "EVENT_TOKEN",
+                webhook_url_file=tmp_path / "HA_WEBHOOK",
             ),
         ),
     )

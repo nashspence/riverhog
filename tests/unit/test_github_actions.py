@@ -50,25 +50,41 @@ def test_provider_qualification_runs_isolated_storage_adapter_images() -> None:
         "b2-retrieval-cache-adapter",
         "qualification-filesystem-cache-adapter",
     }
-    for name in (
-        "aws-deep-archive-adapter",
-        "b2-archive-adapter",
-        "b2-retrieval-cache-adapter",
+    for name, config_setting, config_host_path, secret_host_path in (
+        (
+            "aws-deep-archive-adapter",
+            "A_RIVERHOG_AWS_STORE_CONFIG",
+            "A_RIVERHOG_AWS_STORE_CONFIG_HOST_PATH",
+            "A_RIVERHOG_AWS_STORE_ACCESS_KEY_ID_HOST_PATH",
+        ),
+        (
+            "b2-archive-adapter",
+            "A_RIVERHOG_B2_STORE_CONFIG",
+            "A_RIVERHOG_B2_ARCHIVE_CONFIG_HOST_PATH",
+            "A_RIVERHOG_B2_ARCHIVE_ACCESS_KEY_ID_HOST_PATH",
+        ),
+        (
+            "b2-retrieval-cache-adapter",
+            "A_RIVERHOG_B2_STORE_CONFIG",
+            "A_RIVERHOG_B2_CACHE_CONFIG_HOST_PATH",
+            "A_RIVERHOG_B2_CACHE_ACCESS_KEY_ID_HOST_PATH",
+        ),
     ):
         service = services[name]
-        assert "environment" not in service
-        assert service["env_file"] == [
-            {
-                "path": {
-                    "aws-deep-archive-adapter": ("${RIVERHOG_QUALIFICATION_AWS_ADAPTER_ENV_FILE}"),
-                    "b2-archive-adapter": ("${RIVERHOG_QUALIFICATION_B2_ARCHIVE_ADAPTER_ENV_FILE}"),
-                    "b2-retrieval-cache-adapter": (
-                        "${RIVERHOG_QUALIFICATION_B2_CACHE_ADAPTER_ENV_FILE}"
-                    ),
-                }[name],
-                "required": True,
-            }
-        ]
+        assert service["environment"] == {
+            config_setting: "/etc/riverhog/"
+            + ("aws-store.yaml" if name == "aws-deep-archive-adapter" else "b2-store.yaml")
+        }
+        assert "env_file" not in service
+        assert (
+            f"${{{config_host_path}}}:{service['environment'][config_setting]}:ro"
+            in service["volumes"]
+        )
+        assert any(
+            str(volume).startswith(f"${{{secret_host_path}}}:/run/secrets/")
+            and str(volume).endswith(":ro")
+            for volume in service["volumes"]
+        )
 
 
 def test_codeql_covers_every_governed_branch_with_stable_checks() -> None:

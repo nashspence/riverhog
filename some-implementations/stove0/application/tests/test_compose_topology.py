@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import yaml
 
 REPO_ROOT = Path(__file__).parents[4]
 COMPOSE = REPO_ROOT / "some-implementations/stove0/application/compose.yaml"
+CONFIG = REPO_ROOT / "qualification/fixtures/stove0/config.yaml"
 
 
 def test_supplied_topology_uses_one_postgres_authority_and_distinct_roles() -> None:
@@ -29,35 +29,27 @@ def test_supplied_topology_uses_one_postgres_authority_and_distinct_roles() -> N
     }
     assert services["controller"]["command"][-1] == "controller"
     assert services["worker"]["command"][-1] == "worker"
-    assert (
-        services["controller"]["environment"]["STOVE0_DATABASE_URL_FILE"]
-        == services["worker"]["environment"]["STOVE0_DATABASE_URL_FILE"]
-    )
-    assert (
-        services["controller"]["environment"]["RIVERHOG_TOKEN_FILE"]
-        != services["worker"]["environment"]["RIVERHOG_TOKEN_FILE"]
-    )
-    assert "STOVE0_API_TOKEN_FILE" not in services["controller"]["environment"]
-    assert "STOVE0_API_TOKEN_FILE" not in services["worker"]["environment"]
-    configuration_mounts = services["api"]["volumes"][:2]
+    for name in ("state", "api", "controller", "worker"):
+        assert services[name]["environment"]["STOVE0_CONFIG"] == "/etc/stove0/config.yaml"
+    assert services["controller"]["secrets"][-1] == {
+        "source": "stove0_controller_riverhog_token",
+        "target": "stove0_riverhog_token",
+    }
+    assert services["worker"]["secrets"][-1] == {
+        "source": "stove0_worker_riverhog_token",
+        "target": "stove0_riverhog_token",
+    }
+    assert "stove0_api_token" not in services["controller"]["secrets"]
+    assert "stove0_api_token" not in services["worker"]["secrets"]
+    configuration_mounts = services["api"]["volumes"]
     assert configuration_mounts == [
         {
             "type": "bind",
-            "source": "${STOVE0_RECIPES_HOST_PATH:?STOVE0_RECIPES_HOST_PATH is required}",
-            "target": "/etc/stove0/recipes.yaml",
-            "read_only": True,
-        },
-        {
-            "type": "bind",
-            "source": "${STOVE0_ADMISSIONS_HOST_PATH:?STOVE0_ADMISSIONS_HOST_PATH is required}",
-            "target": "/etc/stove0/admissions.json",
+            "source": "${STOVE0_CONFIG_HOST_PATH:?STOVE0_CONFIG_HOST_PATH is required}",
+            "target": "/etc/stove0/config.yaml",
             "read_only": True,
         },
     ]
-    for name in ("api", "controller", "worker"):
-        assert services[name]["environment"]["STOVE0_ADMISSIONS_PATH"] == (
-            "/etc/stove0/admissions.json"
-        )
 
 
 def test_supplied_topology_keeps_payload_scratch_ephemeral_and_roles_private() -> None:
@@ -193,16 +185,22 @@ def test_paired_target_and_sampler_roles_bind_the_same_manifest_and_image_id() -
 def test_supplied_topology_uses_secret_files_and_explicit_lan_http_opt_in() -> None:
     payload = yaml.safe_load(COMPOSE.read_text(encoding="utf-8"))
     services = payload["services"]
+    config = yaml.safe_load(CONFIG.read_text(encoding="utf-8"))
+    assert config["riverhog_allow_insecure_http"] is True
+    assert config["target_callback_base_url"] == "http://api:8080"
+    assert config["target_callback_allow_insecure_http"] is True
+    assert config["target_callback_signing_key_file"] == (
+        "/run/secrets/stove0_target_callback_signing_key"
+    )
+    assert config["riverhog_token_file"] == "/run/secrets/stove0_riverhog_token"
     for name in ("api", "controller", "worker"):
         environment = services[name]["environment"]
-        assert environment["RIVERHOG_ALLOW_INSECURE_HTTP"] == "true"
-        assert environment["STOVE0_TARGET_CALLBACK_BASE_URL"] == "http://api:8080"
-        assert environment["STOVE0_TARGET_CALLBACK_ALLOW_INSECURE_HTTP"] == "true"
-        assert environment["STOVE0_TARGET_CALLBACK_SIGNING_KEY_FILE"] == (
-            "/run/secrets/stove0_target_callback_signing_key"
-        )
+        assert environment["STOVE0_CONFIG"] == "/etc/stove0/config.yaml"
         assert "stove0_target_callback_signing_key" in services[name]["secrets"]
-        assert environment["RIVERHOG_TOKEN_FILE"].startswith("/run/secrets/")
+        assert any(
+            isinstance(secret, dict) and secret["target"] == "stove0_riverhog_token"
+            for secret in services[name]["secrets"]
+        )
         assert "RIVERHOG_TOKEN" not in environment
     text = COMPOSE.read_text(encoding="utf-8")
     assert "STOVE0_API_TOKEN=" not in text
@@ -212,51 +210,49 @@ def test_supplied_topology_uses_secret_files_and_explicit_lan_http_opt_in() -> N
 def test_supplied_observer_registrations_connect_exact_one_role_services() -> None:
     payload = yaml.safe_load(COMPOSE.read_text(encoding="utf-8"))
     services = payload["services"]
+    registrations = yaml.safe_load(CONFIG.read_text(encoding="utf-8"))["observers"]
     expected = {
         "exiftool": (
             "http://a-stove0-exiftool-observer:8080",
-            "A_STOVE0_EXIFTOOL_OBSERVER_TOKEN",
             "a_stove0_exiftool_observer_token",
             ["media-metadata"],
         ),
         "ffprobe-sampling": (
             "http://a-stove0-ffprobe-sampling-observer:8080",
-            "A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN",
             "a_stove0_ffprobe_sampling_observer_token",
             ["media-sampling"],
         ),
     }
+    assert set(registrations) == set(expected)
+    for registration, (base_url, secret, providers) in expected.items():
+        assert registrations[registration] == {
+            "base_url": base_url,
+            "token_file": f"/run/secrets/{secret}",
+            "allow_insecure_http": True,
+            "semantic_validator_providers": providers,
+        }
     for role in ("api", "controller", "worker"):
         service = services[role]
-        registrations = json.loads(service["environment"]["STOVE0_OBSERVERS_JSON"])
-        assert set(registrations) == set(expected)
-        for registration, (base_url, token_env, secret, providers) in expected.items():
-            assert registrations[registration] == {
-                "base_url": base_url,
-                "token_env": token_env,
-                "allow_insecure_http": True,
-                "semantic_validator_providers": providers,
-            }
-            assert service["environment"][f"{token_env}_FILE"] == f"/run/secrets/{secret}"
+        for _, (_, secret, _) in expected.items():
             assert secret in service["secrets"]
 
 
 def test_supplied_target_registrations_bind_fixed_review_result_modes() -> None:
     payload = yaml.safe_load(COMPOSE.read_text(encoding="utf-8"))
     services = payload["services"]
+    registrations = yaml.safe_load(CONFIG.read_text(encoding="utf-8"))["targets"]
+    assert registrations["review"] == {
+        "base_url": "http://a-review0-materializer:8080",
+        "token_file": "/run/secrets/a_review0_materializer_token",
+        "allow_insecure_http": True,
+    }
+    assert registrations["review-effect"] == {
+        "base_url": "http://a-review0-rclone-target:8080",
+        "token_file": "/run/secrets/a_review0_rclone_target_token",
+        "allow_insecure_http": True,
+    }
     for role in ("api", "controller", "worker"):
         service = services[role]
-        registrations = json.loads(service["environment"]["STOVE0_TARGETS_JSON"])
-        assert registrations["review"] == {
-            "base_url": "http://a-review0-materializer:8080",
-            "token_env": "A_REVIEW0_MATERIALIZER_TOKEN",
-            "allow_insecure_http": True,
-        }
-        assert registrations["review-effect"] == {
-            "base_url": "http://a-review0-rclone-target:8080",
-            "token_env": "A_REVIEW0_RCLONE_TARGET_TOKEN",
-            "allow_insecure_http": True,
-        }
         assert "a_review0_materializer_token" in service["secrets"]
         assert "a_review0_rclone_target_token" in service["secrets"]
 
@@ -264,11 +260,9 @@ def test_supplied_target_registrations_bind_fixed_review_result_modes() -> None:
 def test_supplied_topology_connects_bounded_operational_state_retention() -> None:
     payload = yaml.safe_load(COMPOSE.read_text(encoding="utf-8"))
     services = payload["services"]
-    for name in ("api", "controller", "worker"):
-        assert (
-            services[name]["environment"]["STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS"]
-            == "${STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS:-2592000}"
-        )
+    from stove0_core.runtime_config import Stove0Document
+
+    assert Stove0Document.model_fields["operational_state_retention_seconds"].default == 2592000
     for name in (
         "a-stove0-opus-target",
         "a-stove0-nvenc-av1-opus-target",

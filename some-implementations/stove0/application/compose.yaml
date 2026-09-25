@@ -9,29 +9,7 @@ x-stove0-image: &stove0-image
 
 x-stove0-environment: &stove0-environment
   TZ: ${TZ:-UTC}
-  STOVE0_DATABASE_URL_FILE: /run/secrets/stove0_database_url
-  STOVE0_RECIPES_PATH: /etc/stove0/recipes.yaml
-  STOVE0_ADMISSIONS_PATH: /etc/stove0/admissions.json
-  # tmpfs requires disabled or encrypted host swap to protect workspace plaintext.
-  STOVE0_DECLARED_WORKSPACE_PROTECTION: memory-backed
-  STOVE0_CLAIM_LEASE_SECONDS: ${STOVE0_CLAIM_LEASE_SECONDS:-1800}
-  STOVE0_CAPABILITY_TTL_SECONDS: ${STOVE0_CAPABILITY_TTL_SECONDS:-900}
-  STOVE0_SCHEDULER_INTERVAL_SECONDS: ${STOVE0_SCHEDULER_INTERVAL_SECONDS:-5}
-  STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS: ${STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS:-2592000}
-  RIVERHOG_BASE_URL: ${STOVE0_RIVERHOG_BASE_URL:-http://app:8000}
-  RIVERHOG_ALLOW_INSECURE_HTTP: "true"
-  STOVE0_OBSERVERS_JSON: '{"exiftool":{"base_url":"http://a-stove0-exiftool-observer:8080","token_env":"A_STOVE0_EXIFTOOL_OBSERVER_TOKEN","allow_insecure_http":true,"semantic_validator_providers":["media-metadata"]},"ffprobe-sampling":{"base_url":"http://a-stove0-ffprobe-sampling-observer:8080","token_env":"A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN","allow_insecure_http":true,"semantic_validator_providers":["media-sampling"]}}'
-  STOVE0_TARGETS_JSON: '{"nvenc-av1-opus":{"base_url":"http://a-stove0-nvenc-av1-opus-target:8080","token_env":"A_STOVE0_NVENC_AV1_OPUS_TARGET_TOKEN","allow_insecure_http":true},"opus":{"base_url":"http://a-stove0-opus-target:8080","token_env":"A_STOVE0_OPUS_TARGET_TOKEN","allow_insecure_http":true},"review":{"base_url":"http://a-review0-materializer:8080","token_env":"A_REVIEW0_MATERIALIZER_TOKEN","allow_insecure_http":true},"review-effect":{"base_url":"http://a-review0-rclone-target:8080","token_env":"A_REVIEW0_RCLONE_TARGET_TOKEN","allow_insecure_http":true}}'
-  STOVE0_TARGET_CALLBACK_BASE_URL: http://api:8080
-  STOVE0_TARGET_CALLBACK_ALLOW_INSECURE_HTTP: "true"
-  STOVE0_TARGET_CALLBACK_SIGNING_KEY_FILE: /run/secrets/stove0_target_callback_signing_key
-  STOVE0_BROWSE_TOKEN_SIGNING_KEY_FILE: /run/secrets/stove0_browse_token_signing_key
-  A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN_FILE: /run/secrets/a_stove0_ffprobe_sampling_observer_token
-  A_STOVE0_EXIFTOOL_OBSERVER_TOKEN_FILE: /run/secrets/a_stove0_exiftool_observer_token
-  A_STOVE0_NVENC_AV1_OPUS_TARGET_TOKEN_FILE: /run/secrets/a_stove0_nvenc_av1_opus_target_token
-  A_STOVE0_OPUS_TARGET_TOKEN_FILE: /run/secrets/a_stove0_opus_target_token
-  A_REVIEW0_MATERIALIZER_TOKEN_FILE: /run/secrets/a_review0_materializer_token
-  A_REVIEW0_RCLONE_TARGET_TOKEN_FILE: /run/secrets/a_review0_rclone_target_token
+  STOVE0_CONFIG: /etc/stove0/config.yaml
 
 x-hardening: &hardening
   restart: unless-stopped
@@ -46,12 +24,8 @@ x-stove0-common: &stove0-common
   <<: [*stove0-image, *hardening]
   volumes:
     - type: bind
-      source: ${STOVE0_RECIPES_HOST_PATH:?STOVE0_RECIPES_HOST_PATH is required}
-      target: /etc/stove0/recipes.yaml
-      read_only: true
-    - type: bind
-      source: ${STOVE0_ADMISSIONS_HOST_PATH:?STOVE0_ADMISSIONS_HOST_PATH is required}
-      target: /etc/stove0/admissions.json
+      source: ${STOVE0_CONFIG_HOST_PATH:?STOVE0_CONFIG_HOST_PATH is required}
+      target: /etc/stove0/config.yaml
       read_only: true
   tmpfs:
     - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532
@@ -63,8 +37,7 @@ services:
     restart: "no"
     command: ["stove0-server", "state", "upgrade"]
     environment:
-      TZ: ${TZ:-UTC}
-      STOVE0_DATABASE_URL_FILE: /run/secrets/stove0_database_url
+      <<: *stove0-environment
     secrets: ["stove0_database_url"]
 
   api:
@@ -74,8 +47,6 @@ services:
         condition: service_completed_successfully
     environment:
       <<: *stove0-environment
-      STOVE0_API_TOKEN_FILE: /run/secrets/stove0_api_token
-      RIVERHOG_TOKEN_FILE: /run/secrets/stove0_api_riverhog_token
     secrets:
       - stove0_database_url
       - stove0_target_callback_signing_key
@@ -87,7 +58,8 @@ services:
       - a_review0_materializer_token
       - a_review0_rclone_target_token
       - stove0_api_token
-      - stove0_api_riverhog_token
+      - source: stove0_api_riverhog_token
+        target: stove0_riverhog_token
     ports:
       - "${STOVE0_API_BIND_ADDR:-127.0.0.1}:${STOVE0_API_PORT:-8094}:8080"
     healthcheck:
@@ -112,7 +84,6 @@ services:
     command: ["stove0-server", "scheduler", "--role", "controller"]
     environment:
       <<: *stove0-environment
-      RIVERHOG_TOKEN_FILE: /run/secrets/stove0_controller_riverhog_token
     secrets:
       - stove0_database_url
       - stove0_target_callback_signing_key
@@ -123,7 +94,8 @@ services:
       - a_stove0_opus_target_token
       - a_review0_materializer_token
       - a_review0_rclone_target_token
-      - stove0_controller_riverhog_token
+      - source: stove0_controller_riverhog_token
+        target: stove0_riverhog_token
 
   worker:
     <<: *stove0-common
@@ -133,7 +105,6 @@ services:
     command: ["stove0-server", "scheduler", "--role", "worker"]
     environment:
       <<: *stove0-environment
-      RIVERHOG_TOKEN_FILE: /run/secrets/stove0_worker_riverhog_token
     secrets:
       - stove0_database_url
       - stove0_target_callback_signing_key
@@ -144,7 +115,8 @@ services:
       - a_stove0_opus_target_token
       - a_review0_materializer_token
       - a_review0_rclone_target_token
-      - stove0_worker_riverhog_token
+      - source: stove0_worker_riverhog_token
+        target: stove0_riverhog_token
 
   a-stove0-ffprobe-sampling-observer:
     <<: *hardening
@@ -258,13 +230,12 @@ services:
     command: ["a-review0-materializer", "--host", "0.0.0.0", "--port", "8080"]
     environment:
       TZ: ${TZ:-UTC}
-      A_REVIEW0_MATERIALIZER_TOKEN_FILE: /run/secrets/a_review0_materializer_token
+      A_REVIEW0_MATERIALIZER_CONFIG: /etc/review0/materializer.yaml
       A_REVIEW0_MATERIALIZER_SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
       A_REVIEW0_MATERIALIZER_IMAGE_ID: ${A_REVIEW0_MATERIALIZER_IMAGE_ID:?A_REVIEW0_MATERIALIZER_IMAGE_ID is required}
       A_REVIEW0_MATERIALIZER_STATE_ROOT: /var/lib/a-review0-materializer
       A_REVIEW0_MATERIALIZER_WORKSPACE: /run/review0
       STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS: ${STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:-2592000}
-      A_REVIEW0_MATERIALIZER_SAMPLERS_JSON: '{"samplers":[{"id":"opus","base_url":"http://a-review0-opus-sampler:8080","token_file":"/run/secrets/a_review0_opus_sampler_token","allow_insecure_http":true,"descriptor_sha256":"${A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256:?A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256 is required}","image_id":"${A_STOVE0_OPUS_TARGET_IMAGE_ID:?A_STOVE0_OPUS_TARGET_IMAGE_ID is required}"}]}'
     depends_on:
       a-review0-opus-sampler:
         condition: service_healthy
@@ -273,6 +244,10 @@ services:
       - a_review0_opus_sampler_token
     networks: ["stove0-internal", "riverhog-control", "review-sampler"]
     volumes:
+      - type: bind
+        source: ${A_REVIEW0_MATERIALIZER_CONFIG_HOST_PATH:?A_REVIEW0_MATERIALIZER_CONFIG_HOST_PATH is required}
+        target: /etc/review0/materializer.yaml
+        read_only: true
       - a-review0-materializer-state:/var/lib/a-review0-materializer
       - review0-workspace:/run/review0
     tmpfs:
@@ -290,15 +265,12 @@ services:
     command: ["a-review0-rclone-target", "--host", "0.0.0.0", "--port", "8080"]
     environment:
       TZ: ${TZ:-UTC}
-      A_REVIEW0_RCLONE_TARGET_TOKEN_FILE: /run/secrets/a_review0_rclone_target_token
+      A_REVIEW0_RCLONE_TARGET_CONFIG: /etc/review0/rclone-target.yaml
       A_REVIEW0_RCLONE_TARGET_SOURCE_REVISION: ${SOURCE_REVISION:-unknown}
       A_REVIEW0_RCLONE_TARGET_IMAGE_ID: ${A_REVIEW0_RCLONE_TARGET_IMAGE_ID:?A_REVIEW0_RCLONE_TARGET_IMAGE_ID is required}
       A_REVIEW0_RCLONE_TARGET_STATE_ROOT: /var/lib/a-review0-rclone-target
       A_REVIEW0_RCLONE_TARGET_WORKSPACE: /run/review0
       STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS: ${STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS:-2592000}
-      A_REVIEW0_RCLONE_TARGET_DESTINATION_IDENTITY: ${REVIEW0_RCLONE_EFFECT_DESTINATION_IDENTITY:-bdb097e00217151eda04cc51bff5262f21aea08af4da16df5467d727570875a1}
-      A_REVIEW0_RCLONE_TARGET_RCLONE_REMOTE: /var/lib/review0-delivery
-      A_REVIEW0_RCLONE_TARGET_SAMPLERS_JSON: '{"samplers":[{"id":"opus","base_url":"http://a-review0-opus-sampler:8080","token_file":"/run/secrets/a_review0_opus_sampler_token","allow_insecure_http":true,"descriptor_sha256":"${A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256:?A_REVIEW0_OPUS_SAMPLER_DESCRIPTOR_SHA256 is required}","image_id":"${A_STOVE0_OPUS_TARGET_IMAGE_ID:?A_STOVE0_OPUS_TARGET_IMAGE_ID is required}"}]}'
     depends_on:
       a-review0-opus-sampler:
         condition: service_healthy
@@ -307,6 +279,10 @@ services:
       - a_review0_opus_sampler_token
     networks: ["stove0-internal", "riverhog-control", "review-sampler"]
     volumes:
+      - type: bind
+        source: ${A_REVIEW0_RCLONE_TARGET_CONFIG_HOST_PATH:?A_REVIEW0_RCLONE_TARGET_CONFIG_HOST_PATH is required}
+        target: /etc/review0/rclone-target.yaml
+        read_only: true
       - a-review0-rclone-target-state:/var/lib/a-review0-rclone-target
       - review0-workspace:/run/review0
       - review0-effect-delivery:/var/lib/review0-delivery

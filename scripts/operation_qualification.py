@@ -9,7 +9,6 @@ import hashlib
 import importlib
 import inspect
 import json
-import os
 import re
 import subprocess
 import sys
@@ -36,6 +35,7 @@ from fastapi.routing import APIRoute
 from pydantic import BaseModel, TypeAdapter
 from riverhog_api.app import create_app as create_riverhog_app
 from riverhog_client.client import ApiClient
+from riverhog_core.runtime_config import RuntimeConfig
 from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
 from stove0_api.app import Stove0Composition
@@ -126,7 +126,7 @@ def create_stove0_contract_app() -> FastAPI:
                 riverhog_base_url="https://riverhog.invalid",
                 riverhog_token="riverhog-qualification-token",
                 riverhog_allow_insecure_http=False,
-                recipes_path=Path("recipes.yaml"),
+                recipes=RecipeCatalog(operations=(), recipes=()),
                 observers={},
                 targets={},
                 target_callback_base_url="https://stove0.invalid",
@@ -347,16 +347,7 @@ def _argparse_commands(
 
 
 def application_surfaces() -> tuple[ApplicationSurface, ...]:
-    qualification_secrets = {
-        "RIVERHOG_ARCHIVE_PASSPHRASES_JSON": (
-            '{"operation-qualification-key-v1":"operation-qualification-archive-passphrase"}'
-        ),
-        "RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID": "operation-qualification-key-v1",
-        "RIVERHOG_BROWSE_TOKEN_SIGNING_KEY": (
-            "operation-qualification-browse-token-signing-key-v1"
-        ),
-    }
-    with patch.dict(os.environ, qualification_secrets):
+    with patch("riverhog_api.app.load_runtime_config", return_value=RuntimeConfig.for_testing()):
         riverhog_app = create_riverhog_app()
     return (
         ApplicationSurface(

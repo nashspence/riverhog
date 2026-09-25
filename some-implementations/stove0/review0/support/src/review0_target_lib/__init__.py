@@ -2,8 +2,7 @@ from review0_target_lib.app import (
     ReviewTargetConfig,
     SamplerConfig,
     create_target_app,
-    load_sampler_registrations,
-    parse_sampler_registrations,
+    sampler_registrations,
 )
 from review0_target_lib.target import (
     ReviewTargetServiceBase,
@@ -19,7 +18,6 @@ __all__ = [
     "SamplerRegistration",
     "create_target_app",
     "file_identity",
-    "load_sampler_registrations",
-    "parse_sampler_registrations",
+    "sampler_registrations",
     "review_options_schema",
 ]

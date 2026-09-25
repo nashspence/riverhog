@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import cast
 
 import pytest
+import yaml
 from a_review0_materializer import ReviewMaterializeTargetService
 from a_review0_materializer import app as materialize_app
 from a_review0_materializer.app import create_app
@@ -314,31 +315,37 @@ def test_review_execution_identity_is_the_canonical_semantic_result() -> None:
     )
 
 
-def test_review_process_environment_is_connected(
+def test_review_process_yaml_and_wiring_are_connected(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     token_file = tmp_path / "review.token"
     token_file.write_text("file-secret\n", encoding="utf-8")
-    monkeypatch.setenv("A_REVIEW0_MATERIALIZER_TOKEN_FILE", str(token_file))
-    monkeypatch.delenv("A_REVIEW0_MATERIALIZER_TOKEN", raising=False)
-    assert materialize_app._secret() == "file-secret"
-    monkeypatch.delenv("A_REVIEW0_MATERIALIZER_TOKEN_FILE")
-    monkeypatch.setenv("A_REVIEW0_MATERIALIZER_TOKEN", "direct-secret")
-
     registrations = (_sampler()[0],)
-    sampler_file = tmp_path / "samplers.json"
-    sampler_file.write_text("{}", encoding="utf-8")
-    monkeypatch.setenv("A_REVIEW0_MATERIALIZER_SAMPLERS_JSON_FILE", str(sampler_file))
-    monkeypatch.delenv("A_REVIEW0_MATERIALIZER_SAMPLERS_JSON", raising=False)
-    monkeypatch.setattr(materialize_app, "load_sampler_registrations", lambda path: registrations)
-    assert materialize_app._sampler_registrations() == registrations
-    monkeypatch.delenv("A_REVIEW0_MATERIALIZER_SAMPLERS_JSON_FILE")
-    monkeypatch.setenv("A_REVIEW0_MATERIALIZER_SAMPLERS_JSON", "{}")
-    monkeypatch.setattr(
-        materialize_app, "parse_sampler_registrations", lambda document: registrations
+    sampler_token_file = tmp_path / "sampler.token"
+    sampler_token_file.write_text("sampler-secret\n", encoding="utf-8")
+    config_path = tmp_path / "materializer.yaml"
+    config_path.write_text(
+        yaml.safe_dump(
+            {
+                "token_file": str(token_file),
+                "samplers": [
+                    {
+                        "id": "opus",
+                        "base_url": "https://sampler.invalid",
+                        "token_file": str(sampler_token_file),
+                        "descriptor_sha256": _sha("1"),
+                        "image_id": "sha256:" + _sha("2"),
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
     )
-    assert materialize_app._sampler_registrations() == registrations
+    assert materialize_app.MATERIALIZER_CONFIG_SCHEMA == ReviewTargetConfig.model_json_schema()
+    assert materialize_app.load_config(config_path).samplers[0].id == "opus"
+    monkeypatch.setenv("A_REVIEW0_MATERIALIZER_CONFIG", str(config_path))
+    monkeypatch.setattr(materialize_app, "sampler_registrations", lambda _config: registrations)
 
     monkeypatch.setenv("A_REVIEW0_MATERIALIZER_HOST", "127.0.0.8")
     monkeypatch.setenv("A_REVIEW0_MATERIALIZER_PORT", "8188")
@@ -391,7 +398,10 @@ def test_review_support_registration_count_is_defined_by_deployment(tmp_path: Pa
         for index in range(33)
     )
 
-    assert ReviewTargetConfig(samplers=samplers).samplers == samplers
+    assert (
+        ReviewTargetConfig(token_file=tmp_path / "target.token", samplers=samplers).samplers
+        == samplers
+    )
 
 
 def test_review_effect_deployment_has_one_fixed_effect_contract(tmp_path: Path) -> None:
@@ -488,17 +498,30 @@ def test_rclone_review_destination_commits_manifest_last_and_returns_opaque_rece
     assert "fixture:review" not in str(result)
 
 
-def test_review_effect_environment_binds_nonsecret_identity_and_private_destination(
+def test_review_effect_yaml_binds_destination_policy_and_process_executable(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     config = tmp_path / "rclone.conf"
-    monkeypatch.setenv("A_REVIEW0_RCLONE_TARGET_DESTINATION_IDENTITY", _sha("d"))
-    monkeypatch.setenv("A_REVIEW0_RCLONE_TARGET_RCLONE_REMOTE", "private:review")
-    monkeypatch.setenv("A_REVIEW0_RCLONE_TARGET_RCLONE_CONFIG_FILE", str(config))
-    monkeypatch.setenv("A_REVIEW0_RCLONE_TARGET_RCLONE_TIMEOUT_SECONDS", "7200")
+    target_config = effect_app.RcloneTargetConfig(
+        token_file=tmp_path / "target.token",
+        samplers=(
+            SamplerConfig(
+                id="opus",
+                base_url="https://sampler.invalid",
+                token_file=tmp_path / "sampler.token",
+                descriptor_sha256=_sha("1"),
+                image_id="sha256:" + _sha("2"),
+            ),
+        ),
+        destination_identity=_sha("d"),
+        rclone_remote="private:review",
+        rclone_config_file=config,
+        rclone_timeout_seconds=7200,
+    )
     monkeypatch.setenv("A_REVIEW0_RCLONE_TARGET_RCLONE_BIN", "/opt/tools/rclone")
-    destination = effect_app._effect_destination()
+    destination = effect_app._effect_destination(target_config)
+    assert effect_app.RCLONE_CONFIG_SCHEMA == effect_app.RcloneTargetConfig.model_json_schema()
     assert destination.identity == _sha("d")
     assert destination.remote == "private:review"
     assert destination.config_path == config

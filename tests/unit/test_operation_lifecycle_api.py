@@ -231,10 +231,9 @@ def _complete_provenance_verification(
 
 def test_riverhog_official_client_positive_disposable_lifecycle(
     tmp_path: Path,
-    monkeypatch,
 ) -> None:  # type: ignore[no-untyped-def]
-    monkeypatch.setenv("RIVERHOG_BOOTSTRAP_TOKEN", "qualification-bootstrap")
     container = _container(tmp_path)
+    container.bootstrap_token = "qualification-bootstrap"
     application = create_app(container=container)
     observer = OperationObserver.install(application, application="riverhog")
     transport = TestClient(application)

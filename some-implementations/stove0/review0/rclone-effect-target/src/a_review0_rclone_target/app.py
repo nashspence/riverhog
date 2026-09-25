@@ -3,19 +3,21 @@
 from __future__ import annotations
 
 import argparse
-import contextlib
 import importlib.metadata
+import json
 import os
 from collections.abc import Sequence
+from importlib.resources import files
 from pathlib import Path
 
 import uvicorn
+from config_validation import load_validated_yaml_config, read_secret_file
 from fastapi import FastAPI
+from pydantic import ConfigDict, Field, field_validator
 from review0_target_lib import (
-    SamplerRegistration,
+    ReviewTargetConfig,
     create_target_app,
-    load_sampler_registrations,
-    parse_sampler_registrations,
+    sampler_registrations,
 )
 from stove0_target_support import terminal_state_retention_seconds
 
@@ -28,25 +30,36 @@ SERVICE = "a-review0-rclone-target"
 PREFIX = "A_REVIEW0_RCLONE_TARGET"
 
 
-def _sampler_registrations() -> tuple[SamplerRegistration, ...]:
-    direct = os.getenv(f"{PREFIX}_SAMPLERS_JSON")
-    path = os.getenv(f"{PREFIX}_SAMPLERS_JSON_FILE")
-    if bool(direct) == bool(path):
-        raise ValueError("set exactly one Review0 rclone target sampler configuration source")
-    if direct is not None:
-        return parse_sampler_registrations(direct)
-    return load_sampler_registrations(Path(str(path)))
+class RcloneTargetConfig(ReviewTargetConfig):
+    model_config = ConfigDict(
+        extra="forbid",
+        frozen=True,
+        json_schema_extra={
+            "$id": "https://nashspence.github.io/riverhog/v1/config/a-review0-rclone-target.schema.json",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+        },
+    )
+
+    destination_identity: str = Field(pattern=r"^[0-9a-f]{64}$")
+    rclone_remote: str = Field(min_length=1)
+    rclone_config_file: Path | None = None
+    rclone_timeout_seconds: int = Field(default=86400, ge=1)
+
+    @field_validator("rclone_config_file")
+    @classmethod
+    def absolute_rclone_config_file(cls, value: Path | None) -> Path | None:
+        if value is not None and not value.is_absolute():
+            raise ValueError("rclone_config_file must be absolute")
+        return value
 
 
-def _secret() -> str:
-    direct = os.getenv(f"{PREFIX}_TOKEN")
-    path = os.getenv(f"{PREFIX}_TOKEN_FILE")
-    if bool(direct) == bool(path):
-        raise ValueError("set exactly one Review0 rclone target token source")
-    value = direct if direct is not None else Path(str(path)).read_text(encoding="utf-8")
-    if not value.strip():
-        raise ValueError("Review0 rclone target token must be nonempty")
-    return value.strip()
+RCLONE_CONFIG_SCHEMA: dict[str, object] = json.loads(
+    files("a_review0_rclone_target").joinpath("config.schema.json").read_text(encoding="utf-8")
+)
+
+
+def load_config(path: Path) -> RcloneTargetConfig:
+    return RcloneTargetConfig.model_validate(load_validated_yaml_config(path, RCLONE_CONFIG_SCHEMA))
 
 
 def _image_id() -> str:
@@ -60,19 +73,13 @@ def _image_id() -> str:
     return value
 
 
-def _effect_destination() -> RcloneReviewDestination:
-    identity = os.getenv(f"{PREFIX}_DESTINATION_IDENTITY", "").strip()
-    remote = os.getenv(f"{PREFIX}_RCLONE_REMOTE", "").strip()
-    config = os.getenv(f"{PREFIX}_RCLONE_CONFIG_FILE", "").strip()
-    if not identity or not remote:
-        raise ValueError("Review0 rclone target requires destination identity and remote")
-    timeout = int(os.getenv(f"{PREFIX}_RCLONE_TIMEOUT_SECONDS", "86400"))
+def _effect_destination(config: RcloneTargetConfig) -> RcloneReviewDestination:
     return RcloneReviewDestination(
-        identity=identity,
-        remote=remote,
-        config_path=Path(config) if config else None,
+        identity=config.destination_identity,
+        remote=config.rclone_remote,
+        config_path=config.rclone_config_file,
         executable=os.getenv(f"{PREFIX}_RCLONE_BIN", "rclone").strip(),
-        timeout_seconds=timeout,
+        timeout_seconds=config.rclone_timeout_seconds,
     )
 
 
@@ -129,25 +136,29 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--version", action="version", version=importlib.metadata.version(SERVICE))
     parser.add_argument("--host", default=os.getenv(f"{PREFIX}_HOST", "127.0.0.1"))
     parser.add_argument("--port", type=int, default=int(os.getenv(f"{PREFIX}_PORT", "8080")))
+    parser.add_argument("--config", type=Path, default=os.getenv(f"{PREFIX}_CONFIG"))
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
+    if args.config is None:
+        raise ValueError(f"{PREFIX}_CONFIG or --config is required")
+    config = load_config(args.config)
+    token = read_secret_file(config.token_file, label="token_file")
+    samplers = sampler_registrations(config)
+    destination = _effect_destination(config)
     version = importlib.metadata.version(SERVICE)
     target = ReviewRcloneEffectTargetService(
         state_root=Path(os.getenv(f"{PREFIX}_STATE_ROOT", "/var/lib/a-review0-rclone-target")),
         workspace_root=Path(os.getenv(f"{PREFIX}_WORKSPACE", "/run/review0")),
-        samplers=_sampler_registrations(),
-        destination=_effect_destination(),
+        samplers=samplers,
+        destination=destination,
         source_revision=os.getenv(f"{PREFIX}_SOURCE_REVISION", "unknown"),
         image_id=_image_id(),
         implementation_version=version,
         terminal_state_retention_seconds=terminal_state_retention_seconds(),
     )
-    token = _secret()
-    with contextlib.suppress(KeyError):
-        os.environ.pop(f"{PREFIX}_TOKEN")
     uvicorn.run(create_app(token=token, target=target), host=args.host, port=args.port)
     return 0
 
@@ -156,4 +167,4 @@ if __name__ == "__main__":
     raise SystemExit(main())
 
 
-__all__ = ["create_app", "main"]
+__all__ = ["RCLONE_CONFIG_SCHEMA", "RcloneTargetConfig", "create_app", "load_config", "main"]

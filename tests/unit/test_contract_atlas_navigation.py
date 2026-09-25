@@ -105,9 +105,9 @@ def test_human_entrypoint_exposes_complete_inclusion_and_relationships() -> None
     assert "[extent-contract](../authorities/extent-contract/index.md)" in authority_inventory
     assert "owning contract element" in configuration_inventory
     reconciliation = checked.files["riverhog-v1/evidence/configuration/reconciliation.md"].decode()
-    assert "Unique environment names: **241**" in reconciliation
-    assert "Implementation reads: **198**" in reconciliation
-    assert "Explicit ambiguity resolutions: **6**" in reconciliation
+    assert "Unique environment names: **116**" in reconciliation
+    assert "Implementation reads: **125**" in reconciliation
+    assert "Explicit ambiguity resolutions: **0**" in reconciliation
     assert "| unowned | pass |" in reconciliation
     settings = checked.files[atlas_navigation.CONFIGURATION_SETTINGS_PATH].decode()
     assert "[RIVERHOG_BASE_URL]" in settings
@@ -413,7 +413,7 @@ def test_process_protocols_own_exact_metadata_operations_and_schemas() -> None:
     assert len(by_interface["process-protocol"]) == 4
     assert len(by_interface["process-protocol-operations"]) == 24
     assert len(by_interface["process-protocol-schemas"]) == 43
-    assert len(by_interface["schema"]) == 31
+    assert len(by_interface["schema"]) == 39
     assert "protocol" not in by_interface
 
     generated = {

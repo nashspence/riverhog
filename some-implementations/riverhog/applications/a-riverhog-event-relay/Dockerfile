@@ -23,6 +23,7 @@ COPY --from=locked-tools /opt/riverhog-tools/bin/uv /usr/local/bin/uv
 WORKDIR /workspace
 
 COPY pyproject.toml uv.lock ./
+COPY packages/config-validation packages/config-validation
 COPY some-implementations/riverhog/applications/a-riverhog-event-relay/pyproject.toml some-implementations/riverhog/applications/a-riverhog-event-relay/pyproject.toml
 COPY some-implementations/riverhog/applications/a-riverhog-event-relay/src some-implementations/riverhog/applications/a-riverhog-event-relay/src
 COPY packages/lifecycle-events packages/lifecycle-events

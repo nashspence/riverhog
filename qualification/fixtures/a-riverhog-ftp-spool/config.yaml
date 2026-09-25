@@ -1,0 +1,23 @@
+host_id: urn:uuid:00000000-0000-4000-8000-000000000001
+riverhog_base_url: http://app:8000
+allow_insecure_http: true
+poll_seconds: 5
+pending_claim_capacity: 128
+claim_attempt_budget: 8
+discovery_entry_budget: 4096
+completion_failure_capacity: 128
+completion_failure_attempt_budget: 8
+sources:
+- id: ftp-intake
+  root: /intake/ftp
+  ingest_source: ftp:example-intake
+  description: Example FTP intake
+  tags:
+  - source:ftp
+  close_mode: stable
+  max_files: 1000
+  max_bytes: 107374182400
+  provenance: omit
+  provenance_omission_reason: The FTP producer cannot observe the source host filesystem.
+riverhog_token_file: /run/secrets/riverhog_token
+api_token_file: /run/secrets/api_token

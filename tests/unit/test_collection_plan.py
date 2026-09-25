@@ -57,14 +57,13 @@ def test_default_policy_preserves_retrieval_economics_boundary() -> None:
 
 
 def test_collection_policy_exposes_persisted_layout_knobs() -> None:
-    policy = CollectionVolumePolicy.from_env(
-        {
-            "RIVERHOG_PACK_SOURCE_BYTES": "48MiB",
-            "RIVERHOG_PACK_FILES": "12000",
-            "RIVERHOG_PACK_MEMBER_BYTES": "12MiB",
-            "RIVERHOG_ARCHIVE_PART_PLAINTEXT_BYTES": "96MiB",
-            "RIVERHOG_RAW_VOLUME_PLAINTEXT_BYTES": "24GiB",
-        }
+    policy = CollectionVolumePolicy(
+        pack_source_bytes=48 * 1024**2,
+        pack_files=12_000,
+        pack_member_bytes=12 * 1024**2,
+        pack_part_plaintext_bytes=96 * 1024**2,
+        raw_volume_plaintext_bytes=24 * 1024**3,
+        raw_part_plaintext_bytes=96 * 1024**2,
     )
 
     assert policy.pack_source_bytes == 48 * 1024**2

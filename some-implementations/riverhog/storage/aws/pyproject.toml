@@ -16,8 +16,10 @@ classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Langu
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
 dependencies = [
   "botocore>=1.35,<2.0",
+  "config-validation>=0.1,<0.2",
   "cryptography>=50,<51",
   "httpx>=0.27,<1.0",
+  "pydantic>=2.7,<3.0",
   "riverhog-storage-adapter-asgi-support>=0.1,<0.2",
   "riverhog-storage-adapter-protocol>=0.1,<0.2",
   "a-riverhog-s3-store-lib>=0.1,<0.2",
@@ -29,6 +31,7 @@ dependencies = [
 a-riverhog-aws-store = "a_riverhog_aws_store.app:main"
 
 [tool.uv.sources]
+config-validation = { workspace = true }
 riverhog-storage-adapter-asgi-support = { workspace = true }
 riverhog-storage-adapter-protocol = { workspace = true }
 a-riverhog-s3-store-lib = { workspace = true }

@@ -31,9 +31,7 @@ from tests.unit.db_helpers import sqlite_url
 
 def test_bootstrap_and_application_keys_enforce_permissions_immediately(
     tmp_path: Path,
-    monkeypatch,
 ) -> None:
-    monkeypatch.setenv("RIVERHOG_BOOTSTRAP_TOKEN", "bootstrap-token")
     config = RuntimeConfig.for_testing(database_url=sqlite_url(tmp_path / "catalog.sqlite3"))
     initialize_db(config.database_url)
     with session_scope(make_session_factory(config.database_url)) as session:
@@ -55,6 +53,7 @@ def test_bootstrap_and_application_keys_enforce_permissions_immediately(
     download_quotas = SqlAlchemyDownloadAllowance(config)
     container = SimpleNamespace(
         app_keys=service,
+        bootstrap_token="bootstrap-token",
         download_quotas=download_quotas,
         browse_tokens=BrowseTokenCodec(
             b"app-key-api-browse-test-signing-key-v1",

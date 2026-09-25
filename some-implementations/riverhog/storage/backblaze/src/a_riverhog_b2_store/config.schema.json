@@ -1,0 +1,116 @@
+{
+  "$id": "https://nashspence.github.io/riverhog/v1/config/a-riverhog-b2-store.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "access_key_id_file": {
+      "format": "path",
+      "title": "Access Key Id File",
+      "type": "string"
+    },
+    "bucket": {
+      "minLength": 1,
+      "title": "Bucket",
+      "type": "string"
+    },
+    "connect_timeout_seconds": {
+      "default": 10.0,
+      "exclusiveMinimum": 0,
+      "title": "Connect Timeout Seconds",
+      "type": "number"
+    },
+    "endpoint_url": {
+      "minLength": 1,
+      "title": "Endpoint Url",
+      "type": "string"
+    },
+    "force_path_style": {
+      "default": false,
+      "title": "Force Path Style",
+      "type": "boolean"
+    },
+    "max_attempts": {
+      "default": 8,
+      "maximum": 100,
+      "minimum": 1,
+      "title": "Max Attempts",
+      "type": "integer"
+    },
+    "max_pool_connections": {
+      "default": 32,
+      "maximum": 4096,
+      "minimum": 1,
+      "title": "Max Pool Connections",
+      "type": "integer"
+    },
+    "read_chunk_bytes": {
+      "default": 8388608,
+      "minimum": 65536,
+      "title": "Read Chunk Bytes",
+      "type": "integer"
+    },
+    "read_timeout_seconds": {
+      "default": 300.0,
+      "exclusiveMinimum": 0,
+      "title": "Read Timeout Seconds",
+      "type": "number"
+    },
+    "region": {
+      "minLength": 1,
+      "title": "Region",
+      "type": "string"
+    },
+    "retry_mode": {
+      "default": "standard",
+      "enum": [
+        "standard",
+        "adaptive"
+      ],
+      "title": "Retry Mode",
+      "type": "string"
+    },
+    "root_prefix": {
+      "default": "",
+      "title": "Root Prefix",
+      "type": "string"
+    },
+    "secret_access_key_file": {
+      "format": "path",
+      "title": "Secret Access Key File",
+      "type": "string"
+    },
+    "session_token_file": {
+      "anyOf": [
+        {
+          "format": "path",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Session Token File"
+    },
+    "tcp_keepalive": {
+      "default": true,
+      "title": "Tcp Keepalive",
+      "type": "boolean"
+    },
+    "token_file": {
+      "format": "path",
+      "title": "Token File",
+      "type": "string"
+    }
+  },
+  "required": [
+    "bucket",
+    "region",
+    "endpoint_url",
+    "token_file",
+    "access_key_id_file",
+    "secret_access_key_file"
+  ],
+  "title": "B2StoreDocument",
+  "type": "object"
+}

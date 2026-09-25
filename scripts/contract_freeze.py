@@ -59,12 +59,6 @@ from review0_sampler_lib import sampler_schema_bundle
 from review0_sampler_lib.conformance import _parser as sampler_conformance_parser
 from review0_sampler_lib.schemas import _parser as sampler_schemas_parser
 from riverhog_canonical_json import canonical_json_bytes as jcs_bytes
-from riverhog_core.runtime_config import (
-    ARCHIVE_STORE_ENVIRONMENT_SETTINGS,
-    ARCHIVE_STORE_ENVIRONMENT_TEMPLATE,
-    RETRIEVAL_CACHE_STORE_ENVIRONMENT_SETTINGS,
-    RETRIEVAL_CACHE_STORE_ENVIRONMENT_TEMPLATE,
-)
 from riverhog_storage_adapter_support import storage_adapter_schema_bundle
 from riverhog_storage_adapter_support.conformance import _parser as storage_conformance_parser
 from riverhog_storage_adapter_support.schemas import _parser as storage_schemas_parser
@@ -2076,39 +2070,7 @@ def _configuration_environment_patterns(
     projects: list[release_contract.Project],
 ) -> list[dict[str, object]]:
     del projects
-    definitions = (
-        (
-            ARCHIVE_STORE_ENVIRONMENT_TEMPLATE,
-            ARCHIVE_STORE_ENVIRONMENT_SETTINGS,
-            "RIVERHOG_ARCHIVE_STORES",
-            "_archive_store_environment_name",
-        ),
-        (
-            RETRIEVAL_CACHE_STORE_ENVIRONMENT_TEMPLATE,
-            RETRIEVAL_CACHE_STORE_ENVIRONMENT_SETTINGS,
-            "RIVERHOG_RETRIEVAL_CACHE_STORES",
-            "_retrieval_cache_store_environment_name",
-        ),
-    )
-    return [
-        {
-            "id": f"riverhog-server:environment-pattern:{template}",
-            "owner": "riverhog-server",
-            "consumers": ["riverhog-server"],
-            "template": template,
-            "input_shape": "environment-string",
-            "settings": list(settings),
-            "parameters": {
-                "store": {
-                    "source": source,
-                    "normalization": "uppercase-dashes-to-underscores",
-                },
-                "setting": list(settings),
-            },
-            "source_symbol": symbol,
-        }
-        for template, settings, source, symbol in definitions
-    ]
+    return []
 
 
 def _schema_documents() -> dict[str, object]:
@@ -2929,7 +2891,6 @@ def contract_projection() -> dict[str, object]:
         "http_route_supplements": _http_route_supplements(http_openapi, operations),
         "cli": cli_surfaces,
         "configuration_environment": _environment_names(projects),
-        "configuration_environment_patterns": _configuration_environment_patterns(projects),
         "configuration_documents": _configuration_documents(projects),
         "protocol_schemas": protocol_schemas,
         "python": python_surfaces,

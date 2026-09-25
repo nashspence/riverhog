@@ -9,6 +9,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Protocol
 
+from config_validation import read_secret_file
 from fastapi import Depends, FastAPI, Request, Response
 from fastapi.concurrency import run_in_threadpool
 from fastapi.security import HTTPBearer
@@ -49,9 +50,24 @@ class SamplerConfig(BaseModel):
 
 
 class ReviewTargetConfig(BaseModel):
-    model_config = ConfigDict(extra="forbid", frozen=True)
+    model_config = ConfigDict(
+        extra="forbid",
+        frozen=True,
+        json_schema_extra={
+            "$id": "https://nashspence.github.io/riverhog/v1/config/a-review0-materializer.schema.json",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+        },
+    )
 
+    token_file: Path
     samplers: tuple[SamplerConfig, ...] = Field(min_length=1)
+
+    @field_validator("token_file")
+    @classmethod
+    def absolute_target_token_file(cls, value: Path) -> Path:
+        if not value.is_absolute():
+            raise ValueError("target token file path must be absolute")
+        return value
 
     @field_validator("samplers")
     @classmethod
@@ -62,17 +78,10 @@ class ReviewTargetConfig(BaseModel):
         return value
 
 
-def load_sampler_registrations(path: Path) -> tuple[SamplerRegistration, ...]:
-    return parse_sampler_registrations(path.read_text(encoding="utf-8"))
-
-
-def parse_sampler_registrations(document: str) -> tuple[SamplerRegistration, ...]:
-    config = ReviewTargetConfig.model_validate_json(document)
+def sampler_registrations(config: ReviewTargetConfig) -> tuple[SamplerRegistration, ...]:
     registrations = []
     for item in config.samplers:
-        token = item.token_file.read_text(encoding="utf-8").strip()
-        if not token:
-            raise ValueError(f"sampler token is empty: {item.id}")
+        token = read_secret_file(item.token_file, label=f"sampler {item.id} token_file")
         registrations.append(
             SamplerRegistration(
                 id=item.id,
@@ -173,6 +182,5 @@ __all__ = [
     "ReviewTargetConfig",
     "SamplerConfig",
     "create_target_app",
-    "load_sampler_registrations",
-    "parse_sampler_registrations",
+    "sampler_registrations",
 ]

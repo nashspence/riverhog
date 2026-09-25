@@ -6,10 +6,12 @@ import contextlib
 import importlib.metadata
 import json
 import logging
+import os
 import sys
 import threading
 from collections.abc import AsyncIterator, Callable, Sequence
 from datetime import timedelta
+from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI, Request
@@ -24,7 +26,7 @@ from http_api_contracts import (
 )
 from pydantic import TypeAdapter
 from riverhog_core.catalog_db import catalog_state_schema
-from riverhog_core.runtime_config import load_runtime_config
+from riverhog_core.runtime_document import load_runtime_config
 from riverhog_protocol import RIVERHOG_HTTP_ERROR_AUTHORITY
 from riverhog_protocol.errors import RiverhogError, ServiceUnavailable
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -553,7 +555,11 @@ def _parser() -> argparse.ArgumentParser:
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     if args.command == "state":
-        schema = catalog_state_schema(load_runtime_config().database_url)
+        from riverhog_core.runtime_document import database_url_from_document
+
+        schema = catalog_state_schema(
+            database_url_from_document(Path(os.environ["RIVERHOG_CONFIG"]))
+        )
         try:
             if args.state_command == "status":
                 status = schema.status()

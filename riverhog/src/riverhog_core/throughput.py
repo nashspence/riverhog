@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import logging
-import re
 import threading
 import time
-from collections.abc import Iterator, Mapping
+from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
 
@@ -19,7 +18,6 @@ DEFAULT_RETRIEVAL_READ_CHUNK_BYTES = 8 * 1024 * 1024
 DEFAULT_SOURCE_READ_CHUNK_BYTES = 8 * 1024 * 1024
 DEFAULT_AGE_SESSION_CACHE_ENTRIES = 128
 DEFAULT_AGE_DERIVATION_CONCURRENCY = 4
-_BYTES_RE = re.compile(r"^(\d+(?:_\d+)*)([kmgt]i?b?|b)?$", re.IGNORECASE)
 _TRANSFER_LOG = logging.getLogger("riverhog.transfer")
 
 
@@ -80,63 +78,6 @@ class ArchiveThroughputTuning:
             self.age_derivation_concurrency,
             name="age derivation concurrency",
             minimum=1,
-        )
-
-    @classmethod
-    def from_env(cls, values: Mapping[str, str]) -> ArchiveThroughputTuning:
-        """Load the complete operator tuning surface from environment-like values."""
-
-        return cls(
-            upload_prepare_concurrency=_env_int(
-                values,
-                "RIVERHOG_ARCHIVE_PREPARE_CONCURRENCY",
-                DEFAULT_UPLOAD_PREPARE_CONCURRENCY,
-            ),
-            write_concurrency=_env_int(
-                values,
-                "RIVERHOG_ARCHIVE_WRITE_CONCURRENCY",
-                DEFAULT_WRITE_CONCURRENCY,
-            ),
-            upload_request_concurrency=_env_int(
-                values,
-                "RIVERHOG_ARCHIVE_UPLOAD_REQUEST_CONCURRENCY",
-                DEFAULT_UPLOAD_REQUEST_CONCURRENCY,
-            ),
-            upload_max_inflight_bytes=_env_bytes(
-                values,
-                "RIVERHOG_INGRESS_MAX_INFLIGHT_BYTES",
-                DEFAULT_UPLOAD_MAX_INFLIGHT_BYTES,
-            ),
-            source_read_chunk_bytes=_env_bytes(
-                values,
-                "RIVERHOG_INGRESS_SOURCE_READ_CHUNK_BYTES",
-                DEFAULT_SOURCE_READ_CHUNK_BYTES,
-            ),
-            retrieval_request_concurrency=_env_int(
-                values,
-                "RIVERHOG_RETRIEVAL_REQUEST_CONCURRENCY",
-                DEFAULT_RETRIEVAL_REQUEST_CONCURRENCY,
-            ),
-            retrieval_max_inflight_bytes=_env_bytes(
-                values,
-                "RIVERHOG_RETRIEVAL_MAX_INFLIGHT_BYTES",
-                DEFAULT_RETRIEVAL_MAX_INFLIGHT_BYTES,
-            ),
-            retrieval_read_chunk_bytes=_env_bytes(
-                values,
-                "RIVERHOG_RETRIEVAL_READ_CHUNK_BYTES",
-                DEFAULT_RETRIEVAL_READ_CHUNK_BYTES,
-            ),
-            age_session_cache_entries=_env_int(
-                values,
-                "RIVERHOG_AGE_SESSION_CACHE_ENTRIES",
-                DEFAULT_AGE_SESSION_CACHE_ENTRIES,
-            ),
-            age_derivation_concurrency=_env_int(
-                values,
-                "RIVERHOG_AGE_SESSION_DERIVATION_CONCURRENCY",
-                DEFAULT_AGE_DERIVATION_CONCURRENCY,
-            ),
         )
 
 
@@ -338,63 +279,3 @@ def _minimum_int(value: int, *, name: str, minimum: int) -> int:
     if isinstance(value, bool) or value < minimum:
         raise ValueError(f"{name} must be at least {minimum}")
     return value
-
-
-def _env_float(values: Mapping[str, str], name: str, default: float) -> float:
-    raw = values.get(name)
-    if raw is None or not raw.strip():
-        return default
-    try:
-        return float(raw.strip())
-    except ValueError as exc:
-        raise ValueError(f"{name} must be a number") from exc
-
-
-def _env_bool(values: Mapping[str, str], name: str, default: bool) -> bool:
-    raw = values.get(name)
-    if raw is None or not raw.strip():
-        return default
-    normalized = raw.strip().casefold()
-    if normalized in {"1", "true", "yes", "on"}:
-        return True
-    if normalized in {"0", "false", "no", "off"}:
-        return False
-    raise ValueError(f"{name} must be true or false")
-
-
-def _env_int(values: Mapping[str, str], name: str, default: int) -> int:
-    raw = values.get(name)
-    if raw is None or not raw.strip():
-        return default
-    try:
-        return int(raw.strip())
-    except ValueError as exc:
-        raise ValueError(f"{name} must be an integer") from exc
-
-
-def _env_bytes(values: Mapping[str, str], name: str, default: int) -> int:
-    raw = values.get(name)
-    if raw is None or not raw.strip():
-        return default
-    candidate = raw.strip().replace(" ", "")
-    match = _BYTES_RE.fullmatch(candidate)
-    if match is None:
-        raise ValueError(f"{name} must be a byte size such as 512MiB")
-    amount = int(match.group(1).replace("_", ""))
-    unit = (match.group(2) or "b").casefold()
-    scale = {
-        "b": 1,
-        "k": 1000,
-        "kb": 1000,
-        "m": 1000**2,
-        "mb": 1000**2,
-        "g": 1000**3,
-        "gb": 1000**3,
-        "t": 1000**4,
-        "tb": 1000**4,
-        "kib": 1024,
-        "mib": 1024**2,
-        "gib": 1024**3,
-        "tib": 1024**4,
-    }[unit]
-    return amount * scale

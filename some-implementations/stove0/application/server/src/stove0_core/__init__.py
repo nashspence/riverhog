@@ -36,7 +36,8 @@ from stove0_core.runtime_config import (
     DEFAULT_OPERATIONAL_STATE_RETENTION_SECONDS,
     EndpointRegistration,
     Stove0RuntimeConfig,
-    database_url_from_environment,
+    database_url_from_config,
+    load_stove0_config,
 )
 from stove0_core.scheduler import SchedulerRole, Stove0Scheduler, scheduler_role
 from stove0_core.target_callbacks import TargetCallbackAuthority
@@ -95,7 +96,8 @@ __all__ = [
     "SchedulerRole",
     "Stove0Coordinator",
     "Stove0RuntimeConfig",
-    "database_url_from_environment",
+    "database_url_from_config",
+    "load_stove0_config",
     "stove0_state_schema",
     "Stove0Scheduler",
     "Stove0RiverhogClient",

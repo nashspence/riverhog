@@ -624,7 +624,9 @@ def _external_elements(
         )
 
     for section in ("configuration_environment", "configuration_environment_patterns"):
-        for index, item in enumerate(cast(Sequence[Mapping[str, object]], external[section])):
+        for index, item in enumerate(
+            cast(Sequence[Mapping[str, object]], external.get(section, []))
+        ):
             name = str(item.get("name", item.get("template", f"{section}-{index}")))
             authority = str(item["owner"])
             _add_element(

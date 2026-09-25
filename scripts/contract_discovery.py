@@ -379,6 +379,13 @@ def discover_configuration_documents(
                     context = f"{module}.{scope}".casefold()
                     if not (
                         raw_authority.endswith(("Config", "Catalog"))
+                        or (
+                            raw_authority.endswith("Document")
+                            and node.args
+                            and isinstance(node.args[0], ast.Call)
+                            and _expanded_name(node.args[0].func, aliases)
+                            == "config_validation.load_validated_yaml_config"
+                        )
                         or (raw_authority in {"cls", "model", "schema"} and "config" in context)
                     ):
                         continue

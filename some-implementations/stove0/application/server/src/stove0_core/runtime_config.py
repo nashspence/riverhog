@@ -1,4 +1,4 @@
-"""Small, fully connected runtime configuration for stove0."""
+"""Schema-validated operator configuration for the Stove0 server."""
 
 from __future__ import annotations
 
@@ -7,18 +7,22 @@ import math
 import os
 from collections.abc import Mapping
 from dataclasses import dataclass, field
+from importlib import resources
 from pathlib import Path
-from typing import cast
+from typing import Literal
 
+from config_validation import load_validated_yaml_config, read_secret_file
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from riverhog_protocol.workspace_protection import DeclaredWorkspaceProtection
 from stove0_operator_contracts import AdmissionCatalog, DepartureCatalog
+from stove0_recipe_config import RecipeCatalog
 
 DEFAULT_OPERATIONAL_STATE_RETENTION_SECONDS = 30 * 24 * 60 * 60
 
 
 def _postgresql_database_url(value: str) -> str:
     if value.strip().split(":", 1)[0].split("+", 1)[0] != "postgresql":
-        raise ValueError("STOVE0_DATABASE_URL must use postgresql")
+        raise ValueError("Stove0 database URL must use postgresql")
     return value
 
 
@@ -37,7 +41,7 @@ class Stove0RuntimeConfig:
     riverhog_base_url: str
     riverhog_token: str = field(repr=False)
     riverhog_allow_insecure_http: bool
-    recipes_path: Path
+    recipes: RecipeCatalog
     observers: dict[str, EndpointRegistration]
     targets: dict[str, EndpointRegistration]
     target_callback_base_url: str
@@ -55,287 +59,176 @@ class Stove0RuntimeConfig:
     departure_targets: dict[str, EndpointRegistration] = field(default_factory=dict)
     browse_token_lifetime_seconds: int = 24 * 60 * 60
 
+
+class _Document(BaseModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+
+class EndpointDocument(_Document):
+    base_url: str = Field(min_length=1)
+    token_file: Path | None = None
+    allow_insecure_http: bool = False
+
+
+class ObserverEndpointDocument(EndpointDocument):
+    semantic_validator_providers: tuple[str, ...] = ()
+
+    @field_validator("semantic_validator_providers")
     @classmethod
-    def from_environment(
-        cls,
-        environ: Mapping[str, str] | None = None,
-        *,
-        require_api_token: bool = True,
-    ) -> Stove0RuntimeConfig:
-        values = dict(os.environ if environ is None else environ)
-        database_url = _postgresql_database_url(
-            cast(str, _secret(values, "STOVE0_DATABASE_URL", required=True))
-        )
-        api_token = (
-            _secret(values, "STOVE0_API_TOKEN", required=True)
-            if require_api_token
-            else _secret(values, "STOVE0_API_TOKEN", required=False)
-        )
-        riverhog_base_url = _required(values, "RIVERHOG_BASE_URL")
-        riverhog_token = cast(str, _secret(values, "RIVERHOG_TOKEN", required=True))
-        recipes_path = Path(_required(values, "STOVE0_RECIPES_PATH")).resolve()
-        if not recipes_path.is_file():
-            raise ValueError("STOVE0_RECIPES_PATH must name a readable recipe document")
-        protection = _required(values, "STOVE0_DECLARED_WORKSPACE_PROTECTION").casefold()
-        if protection not in {"encrypted-at-rest", "memory-backed"}:
-            raise ValueError(
-                "STOVE0_DECLARED_WORKSPACE_PROTECTION must be encrypted-at-rest or memory-backed"
-            )
-        targets = _registrations(values, "STOVE0_TARGETS_JSON")
-        callback_base_url = values.get("STOVE0_TARGET_CALLBACK_BASE_URL", "").strip()
-        if targets and not callback_base_url:
-            raise ValueError(
-                "STOVE0_TARGET_CALLBACK_BASE_URL is required when targets are configured"
-            )
-        callback_signing_key = _secret(
-            values,
-            "STOVE0_TARGET_CALLBACK_SIGNING_KEY",
-            required=bool(targets),
-        )
-        browse_token_signing_key = _secret(
-            values,
-            "STOVE0_BROWSE_TOKEN_SIGNING_KEY",
-            required=True,
-        )
-        return cls(
-            database_url=database_url,
-            api_token=api_token,
-            riverhog_base_url=riverhog_base_url,
-            riverhog_token=riverhog_token,
-            riverhog_allow_insecure_http=_boolean(
-                values,
-                "RIVERHOG_ALLOW_INSECURE_HTTP",
-                False,
-            ),
-            recipes_path=recipes_path,
-            admissions=_admissions(values),
-            departures=_departures(values),
-            departure_targets=_registrations(values, "STOVE0_DEPARTURE_TARGETS_JSON"),
-            observers=_registrations(
-                values,
-                "STOVE0_OBSERVERS_JSON",
-                semantic_validators=True,
-            ),
-            targets=targets,
-            target_callback_base_url=callback_base_url or "https://stove0.invalid",
-            target_callback_allow_insecure_http=_boolean(
-                values,
-                "STOVE0_TARGET_CALLBACK_ALLOW_INSECURE_HTTP",
-                False,
-            ),
-            target_callback_signing_key=(
-                callback_signing_key
-                if callback_signing_key is not None
-                else "unused-target-callback-signing-key"
-            ),
-            target_authority_batch_size=_integer(
-                values,
-                "STOVE0_TARGET_AUTHORITY_BATCH_SIZE",
-                100,
-                minimum=1,
-                maximum=128,
-            ),
-            browse_token_signing_key=cast(str, browse_token_signing_key),
-            browse_token_lifetime_seconds=_integer(
-                values,
-                "STOVE0_BROWSE_TOKEN_LIFETIME_SECONDS",
-                24 * 60 * 60,
-                minimum=1,
-            ),
-            declared_workspace_protection=cast(DeclaredWorkspaceProtection, protection),
-            claim_lease_seconds=_integer(
-                values,
-                "STOVE0_CLAIM_LEASE_SECONDS",
-                1800,
-                minimum=30,
-            ),
-            capability_ttl_seconds=_integer(
-                values,
-                "STOVE0_CAPABILITY_TTL_SECONDS",
-                900,
-                minimum=30,
-            ),
-            scheduler_interval_seconds=_number(
-                values,
-                "STOVE0_SCHEDULER_INTERVAL_SECONDS",
-                5.0,
-                minimum=0.1,
-            ),
-            operational_state_retention_seconds=_integer(
-                values,
-                "STOVE0_OPERATIONAL_STATE_RETENTION_SECONDS",
-                DEFAULT_OPERATIONAL_STATE_RETENTION_SECONDS,
-                minimum=1,
-            ),
-        )
+    def unique_providers(cls, value: tuple[str, ...]) -> tuple[str, ...]:
+        if any(not provider.strip() for provider in value) or len(value) != len(set(value)):
+            raise ValueError("observer semantic validator providers must be nonempty and unique")
+        return tuple(sorted(value))
 
 
-def database_url_from_environment(environ: Mapping[str, str] | None = None) -> str:
-    values = dict(os.environ if environ is None else environ)
-    return _postgresql_database_url(
-        cast(str, _secret(values, "STOVE0_DATABASE_URL", required=True))
+class Stove0Document(_Document):
+    model_config = ConfigDict(
+        extra="forbid",
+        frozen=True,
+        json_schema_extra={
+            "$id": "https://nashspence.github.io/riverhog/v1/config/stove0-server.schema.json",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+        },
     )
 
+    database_url_file: Path
+    api_token_file: Path | None = None
+    riverhog_base_url: str = Field(min_length=1)
+    riverhog_token_file: Path
+    riverhog_allow_insecure_http: bool = False
+    recipes: RecipeCatalog
+    admissions: AdmissionCatalog = Field(default_factory=AdmissionCatalog)
+    departures: DepartureCatalog = Field(default_factory=DepartureCatalog)
+    observers: dict[str, ObserverEndpointDocument] = Field(default_factory=dict)
+    targets: dict[str, EndpointDocument] = Field(default_factory=dict)
+    departure_targets: dict[str, EndpointDocument] = Field(default_factory=dict)
+    target_callback_base_url: str | None = None
+    target_callback_allow_insecure_http: bool = False
+    target_callback_signing_key_file: Path | None = None
+    target_authority_batch_size: int = Field(default=100, ge=1, le=128)
+    declared_workspace_protection: Literal["encrypted-at-rest", "memory-backed"]
+    claim_lease_seconds: int = Field(default=1800, ge=30)
+    capability_ttl_seconds: int = Field(default=900, ge=30)
+    scheduler_interval_seconds: float = Field(default=5.0, ge=0.1)
+    operational_state_retention_seconds: int = Field(
+        default=DEFAULT_OPERATIONAL_STATE_RETENTION_SECONDS, ge=1
+    )
+    browse_token_signing_key_file: Path
+    browse_token_lifetime_seconds: int = Field(default=86400, ge=1)
 
-def _required(values: Mapping[str, str], name: str) -> str:
-    value = values.get(name, "").strip()
-    if not value:
-        raise ValueError(f"{name} is required")
-    return value
-
-
-def _admissions(values: Mapping[str, str]) -> AdmissionCatalog:
-    path_value = values.get("STOVE0_ADMISSIONS_PATH", "").strip()
-    if not path_value:
-        return AdmissionCatalog()
-    path = Path(path_value).expanduser().resolve()
-    if not path.is_file():
-        raise ValueError("STOVE0_ADMISSIONS_PATH must name a readable admission document")
-    try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as exc:
-        raise ValueError("STOVE0_ADMISSIONS_PATH must contain JSON") from exc
-    return AdmissionCatalog.model_validate(payload)
-
-
-def _departures(values: Mapping[str, str]) -> DepartureCatalog:
-    path_value = values.get("STOVE0_DEPARTURES_PATH", "").strip()
-    if not path_value:
-        return DepartureCatalog()
-    path = Path(path_value).expanduser().resolve()
-    if not path.is_file():
-        raise ValueError("STOVE0_DEPARTURES_PATH must name a readable departure document")
-    try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as exc:
-        raise ValueError("STOVE0_DEPARTURES_PATH must contain JSON") from exc
-    return DepartureCatalog.model_validate(payload)
+    @field_validator("scheduler_interval_seconds")
+    @classmethod
+    def finite_interval(cls, value: float) -> float:
+        if not math.isfinite(value):
+            raise ValueError("scheduler interval must be finite")
+        return value
 
 
-def _secret(
-    values: Mapping[str, str],
-    name: str,
-    *,
-    required: bool,
-) -> str | None:
-    direct = values.get(name, "").strip()
-    file_name = values.get(f"{name}_FILE", "").strip()
-    if direct and file_name:
-        raise ValueError(f"{name} and {name}_FILE are mutually exclusive")
-    if file_name:
-        value = Path(file_name).expanduser().read_text(encoding="utf-8").strip()
-    else:
-        value = direct
-    if not value:
-        if required:
-            raise ValueError(f"{name} or {name}_FILE is required")
-        return None
-    return value
+def generated_config_schema() -> dict[str, object]:
+    return Stove0Document.model_json_schema()
 
 
-def _boolean(values: Mapping[str, str], name: str, default: bool) -> bool:
-    raw = values.get(name)
-    if raw is None or not raw.strip():
-        return default
-    normalized = raw.strip().casefold()
-    if normalized in {"1", "true", "yes", "on"}:
-        return True
-    if normalized in {"0", "false", "no", "off"}:
-        return False
-    raise ValueError(f"{name} must be true or false")
-
-
-def _integer(
-    values: Mapping[str, str],
-    name: str,
-    default: int,
-    *,
-    minimum: int,
-    maximum: int | None = None,
-) -> int:
-    try:
-        value = int(values.get(name, str(default)))
-    except ValueError as exc:
-        raise ValueError(f"{name} must be an integer") from exc
-    if value < minimum:
-        raise ValueError(f"{name} must be at least {minimum}")
-    if maximum is not None and value > maximum:
-        raise ValueError(f"{name} must be at most {maximum}")
-    return value
-
-
-def _number(
-    values: Mapping[str, str],
-    name: str,
-    default: float,
-    *,
-    minimum: float,
-) -> float:
-    try:
-        value = float(values.get(name, str(default)))
-    except ValueError as exc:
-        raise ValueError(f"{name} must be a number") from exc
-    if not math.isfinite(value) or value < minimum:
-        raise ValueError(f"{name} must be at least {minimum}")
-    return value
+def _document(path: Path) -> Stove0Document:
+    schema = json.loads(resources.files("stove0_core").joinpath("config.schema.json").read_text())
+    return Stove0Document.model_validate(load_validated_yaml_config(path, schema))
 
 
 def _registrations(
-    values: Mapping[str, str],
-    name: str,
-    *,
-    semantic_validators: bool = False,
+    documents: Mapping[str, EndpointDocument],
 ) -> dict[str, EndpointRegistration]:
-    raw = values.get(name, "{}").strip() or "{}"
-    try:
-        document = json.loads(raw)
-    except json.JSONDecodeError as exc:
-        raise ValueError(f"{name} must be a JSON object") from exc
-    if not isinstance(document, dict):
-        raise ValueError(f"{name} must be a JSON object")
-    registrations: dict[str, EndpointRegistration] = {}
-    for registration_id, value in sorted(document.items()):
-        if not isinstance(registration_id, str) or not isinstance(value, dict):
-            raise ValueError(f"{name} registrations are invalid")
-        base_url = str(value.get("base_url") or "").strip()
-        token_env = str(value.get("token_env") or "").strip()
-        if not base_url:
-            raise ValueError(f"{name} registration {registration_id} has no base_url")
-        token = _secret(values, token_env, required=True) if token_env else None
-        if token_env and not token:
-            raise ValueError(f"{name} registration {registration_id} requires secret {token_env}")
-        allow = value.get("allow_insecure_http", False)
-        if not isinstance(allow, bool):
-            raise ValueError(
-                f"{name} registration {registration_id} allow_insecure_http must be boolean"
-            )
-        raw_providers = value.get("semantic_validator_providers", [])
-        if not semantic_validators and raw_providers:
-            raise ValueError(
-                f"{name} registration {registration_id} cannot configure semantic validators"
-            )
-        if not isinstance(raw_providers, list) or any(
-            not isinstance(provider, str) or not provider.strip() for provider in raw_providers
-        ):
-            raise ValueError(
-                f"{name} registration {registration_id} semantic validator providers are invalid"
-            )
-        providers = tuple(sorted(provider.strip() for provider in raw_providers))
-        if len(providers) != len(set(providers)):
-            raise ValueError(
-                f"{name} registration {registration_id} semantic validator providers repeat"
-            )
-        registrations[registration_id] = EndpointRegistration(
-            base_url=base_url,
-            token=token,
-            allow_insecure_http=allow,
-            semantic_validator_providers=providers,
+    return {
+        name: EndpointRegistration(
+            base_url=endpoint.base_url,
+            token=(
+                read_secret_file(endpoint.token_file, label=f"registration {name} token_file")
+                if endpoint.token_file is not None
+                else None
+            ),
+            allow_insecure_http=endpoint.allow_insecure_http,
+            semantic_validator_providers=(
+                endpoint.semantic_validator_providers
+                if isinstance(endpoint, ObserverEndpointDocument)
+                else ()
+            ),
         )
-    return registrations
+        for name, endpoint in sorted(documents.items())
+    }
+
+
+def load_stove0_config(
+    path: Path | None = None,
+    *,
+    require_api_token: bool = True,
+) -> Stove0RuntimeConfig:
+    if path is None:
+        raw = os.environ.get("STOVE0_CONFIG", "").strip()
+        if not raw:
+            raise ValueError("STOVE0_CONFIG must name a YAML configuration document")
+        path = Path(raw)
+    document = _document(path)
+    if require_api_token and document.api_token_file is None:
+        raise ValueError("api_token_file is required for the API role")
+    if document.targets and not document.target_callback_base_url:
+        raise ValueError("target_callback_base_url is required when targets are configured")
+    if document.targets and document.target_callback_signing_key_file is None:
+        raise ValueError("target_callback_signing_key_file is required when targets are configured")
+    return Stove0RuntimeConfig(
+        database_url=_postgresql_database_url(
+            read_secret_file(document.database_url_file, label="database_url_file")
+        ),
+        api_token=(
+            read_secret_file(document.api_token_file, label="api_token_file")
+            if require_api_token and document.api_token_file is not None
+            else None
+        ),
+        riverhog_base_url=document.riverhog_base_url,
+        riverhog_token=read_secret_file(document.riverhog_token_file, label="riverhog_token_file"),
+        riverhog_allow_insecure_http=document.riverhog_allow_insecure_http,
+        recipes=document.recipes,
+        admissions=document.admissions,
+        departures=document.departures,
+        observers=_registrations(document.observers),
+        targets=_registrations(document.targets),
+        departure_targets=_registrations(document.departure_targets),
+        target_callback_base_url=document.target_callback_base_url or "https://stove0.invalid",
+        target_callback_allow_insecure_http=document.target_callback_allow_insecure_http,
+        target_callback_signing_key=(
+            read_secret_file(
+                document.target_callback_signing_key_file,
+                label="target_callback_signing_key_file",
+            )
+            if document.target_callback_signing_key_file is not None
+            else "unused-target-callback-signing-key"
+        ),
+        target_authority_batch_size=document.target_authority_batch_size,
+        declared_workspace_protection=document.declared_workspace_protection,
+        claim_lease_seconds=document.claim_lease_seconds,
+        capability_ttl_seconds=document.capability_ttl_seconds,
+        scheduler_interval_seconds=document.scheduler_interval_seconds,
+        operational_state_retention_seconds=document.operational_state_retention_seconds,
+        browse_token_signing_key=read_secret_file(
+            document.browse_token_signing_key_file, label="browse_token_signing_key_file"
+        ),
+        browse_token_lifetime_seconds=document.browse_token_lifetime_seconds,
+    )
+
+
+def database_url_from_config(path: Path | None = None) -> str:
+    if path is None:
+        raw = os.environ.get("STOVE0_CONFIG", "").strip()
+        if not raw:
+            raise ValueError("STOVE0_CONFIG must name a YAML configuration document")
+        path = Path(raw)
+    return _postgresql_database_url(
+        read_secret_file(_document(path).database_url_file, label="database_url_file")
+    )
 
 
 __all__ = [
     "DEFAULT_OPERATIONAL_STATE_RETENTION_SECONDS",
     "EndpointRegistration",
     "Stove0RuntimeConfig",
+    "database_url_from_config",
+    "generated_config_schema",
+    "load_stove0_config",
 ]

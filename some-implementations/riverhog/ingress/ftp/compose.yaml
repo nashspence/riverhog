@@ -36,16 +36,14 @@ services:
         condition: service_completed_successfully
     environment:
       TZ: ${TZ:-UTC}
-      A_RIVERHOG_FTP_SPOOL_CONFIG: /etc/riverhog/ftp-spool.json
-      RIVERHOG_TOKEN_FILE: /run/secrets/riverhog_token
-      A_RIVERHOG_FTP_SPOOL_API_TOKEN_FILE: /run/secrets/api_token
+      A_RIVERHOG_FTP_SPOOL_CONFIG: /etc/riverhog/ftp-spool.yaml
     secrets:
       - riverhog_token
       - api_token
     volumes:
       - type: bind
         source: ${A_RIVERHOG_FTP_SPOOL_CONFIG_HOST_PATH:?A_RIVERHOG_FTP_SPOOL_CONFIG_HOST_PATH is required}
-        target: /etc/riverhog/ftp-spool.json
+        target: /etc/riverhog/ftp-spool.yaml
         read_only: true
       - type: bind
         source: ${A_RIVERHOG_FTP_SPOOL_INTAKE_HOST_DIR:-./runtime/intake}
@@ -83,12 +81,12 @@ services:
         condition: service_completed_successfully
     environment:
       TZ: ${TZ:-UTC}
-      A_RIVERHOG_FTP_SPOOL_CONFIG: /etc/riverhog/ftp-spool.json
+      A_RIVERHOG_FTP_SPOOL_CONFIG: /etc/riverhog/ftp-spool.yaml
     secrets: ["ftp_password"]
     command:
       - a-riverhog-ftp-spool
       - --config
-      - /etc/riverhog/ftp-spool.json
+      - /etc/riverhog/ftp-spool.yaml
       - listen
       - --source
       - ${A_RIVERHOG_FTP_SPOOL_SOURCE_ID:-ftp-intake}
@@ -116,7 +114,7 @@ services:
     volumes:
       - type: bind
         source: ${A_RIVERHOG_FTP_SPOOL_CONFIG_HOST_PATH:?A_RIVERHOG_FTP_SPOOL_CONFIG_HOST_PATH is required}
-        target: /etc/riverhog/ftp-spool.json
+        target: /etc/riverhog/ftp-spool.yaml
         read_only: true
       - type: bind
         source: ${A_RIVERHOG_FTP_SPOOL_INTAKE_HOST_DIR:-./runtime/intake}

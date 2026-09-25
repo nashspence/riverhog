@@ -3,19 +3,20 @@
 from __future__ import annotations
 
 import argparse
-import contextlib
 import importlib.metadata
+import json
 import os
 from collections.abc import Sequence
+from importlib.resources import files
 from pathlib import Path
 
 import uvicorn
+from config_validation import load_validated_yaml_config, read_secret_file
 from fastapi import FastAPI
 from review0_target_lib import (
-    SamplerRegistration,
+    ReviewTargetConfig,
     create_target_app,
-    load_sampler_registrations,
-    parse_sampler_registrations,
+    sampler_registrations,
 )
 from stove0_target_support import terminal_state_retention_seconds
 
@@ -25,25 +26,15 @@ SERVICE = "a-review0-materializer"
 PREFIX = "A_REVIEW0_MATERIALIZER"
 
 
-def _sampler_registrations() -> tuple[SamplerRegistration, ...]:
-    direct = os.getenv(f"{PREFIX}_SAMPLERS_JSON")
-    path = os.getenv(f"{PREFIX}_SAMPLERS_JSON_FILE")
-    if bool(direct) == bool(path):
-        raise ValueError("set exactly one Review0 materializer sampler configuration source")
-    if direct is not None:
-        return parse_sampler_registrations(direct)
-    return load_sampler_registrations(Path(str(path)))
+MATERIALIZER_CONFIG_SCHEMA: dict[str, object] = json.loads(
+    files("a_review0_materializer").joinpath("config.schema.json").read_text(encoding="utf-8")
+)
 
 
-def _secret() -> str:
-    direct = os.getenv(f"{PREFIX}_TOKEN")
-    path = os.getenv(f"{PREFIX}_TOKEN_FILE")
-    if bool(direct) == bool(path):
-        raise ValueError("set exactly one Review0 materializer token source")
-    value = direct if direct is not None else Path(str(path)).read_text(encoding="utf-8")
-    if not value.strip():
-        raise ValueError("Review0 materializer token must be nonempty")
-    return value.strip()
+def load_config(path: Path) -> ReviewTargetConfig:
+    return ReviewTargetConfig.model_validate(
+        load_validated_yaml_config(path, MATERIALIZER_CONFIG_SCHEMA)
+    )
 
 
 def _image_id() -> str:
@@ -110,24 +101,27 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--version", action="version", version=importlib.metadata.version(SERVICE))
     parser.add_argument("--host", default=os.getenv(f"{PREFIX}_HOST", "127.0.0.1"))
     parser.add_argument("--port", type=int, default=int(os.getenv(f"{PREFIX}_PORT", "8080")))
+    parser.add_argument("--config", type=Path, default=os.getenv(f"{PREFIX}_CONFIG"))
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = _parser().parse_args(argv)
+    if args.config is None:
+        raise ValueError(f"{PREFIX}_CONFIG or --config is required")
+    config = load_config(args.config)
+    token = read_secret_file(config.token_file, label="token_file")
+    samplers = sampler_registrations(config)
     version = importlib.metadata.version(SERVICE)
     target = ReviewMaterializeTargetService(
         state_root=Path(os.getenv(f"{PREFIX}_STATE_ROOT", "/var/lib/a-review0-materializer")),
         workspace_root=Path(os.getenv(f"{PREFIX}_WORKSPACE", "/run/review0")),
-        samplers=_sampler_registrations(),
+        samplers=samplers,
         source_revision=os.getenv(f"{PREFIX}_SOURCE_REVISION", "unknown"),
         image_id=_image_id(),
         implementation_version=version,
         terminal_state_retention_seconds=terminal_state_retention_seconds(),
     )
-    token = _secret()
-    with contextlib.suppress(KeyError):
-        os.environ.pop(f"{PREFIX}_TOKEN")
     uvicorn.run(create_app(token=token, target=target), host=args.host, port=args.port)
     return 0
 
@@ -136,4 +130,4 @@ if __name__ == "__main__":
     raise SystemExit(main())
 
 
-__all__ = ["create_app", "main"]
+__all__ = ["MATERIALIZER_CONFIG_SCHEMA", "create_app", "load_config", "main"]

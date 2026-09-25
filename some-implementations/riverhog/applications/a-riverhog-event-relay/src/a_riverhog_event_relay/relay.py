@@ -2,17 +2,15 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 import sqlite3
 import threading
-from collections.abc import Mapping
 from contextlib import closing
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 import httpx
-import yaml
+from config_validation import load_validated_yaml_config, read_secret_file
 from lifecycle_events.models import EventPage, LifecycleEvent
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -103,12 +101,19 @@ class SourceConfig(BaseModel):
 
     name: str = Field(min_length=1, pattern=r"^[A-Za-z0-9._-]+$")
     events_url: str = Field(min_length=1)
-    token_env: str = Field(min_length=1)
-    webhook_url_env: str = Field(min_length=1)
+    token_file: Path
+    webhook_url_file: Path
 
 
 class EventRelayConfig(BaseModel):
-    model_config = ConfigDict(extra="forbid", frozen=True)
+    model_config = ConfigDict(
+        extra="forbid",
+        frozen=True,
+        json_schema_extra={
+            "$id": "https://nashspence.github.io/riverhog/v1/config/a-riverhog-event-relay.schema.json",
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+        },
+    )
 
     version: int = 1
     state_path: Path
@@ -135,24 +140,21 @@ class EventRelayConfig(BaseModel):
 
 def load_config(path: Path) -> EventRelayConfig:
     config_path = path.expanduser().resolve()
-    payload = yaml.safe_load(config_path.read_text(encoding="utf-8"))
-    if not isinstance(payload, Mapping):
-        raise ValueError("Riverhog event relay config must be a YAML object")
+    schema = json.loads(Path(__file__).with_name("config.schema.json").read_text(encoding="utf-8"))
+    payload = load_validated_yaml_config(config_path, schema)
     config = EventRelayConfig.model_validate(payload)
     state_path = config.state_path.expanduser()
     if not state_path.is_absolute():
         state_path = config_path.parent / state_path
     config = config.model_copy(update={"state_path": state_path.resolve()})
     for source in config.sources:
-        if not os.getenv(source.token_env, "").strip():
-            raise ValueError(
-                f"Riverhog event relay source {source.name} requires {source.token_env}"
-            )
-        if not os.getenv(source.webhook_url_env, "").strip():
-            raise ValueError(
-                f"Riverhog event relay source {source.name} requires {source.webhook_url_env}"
-            )
+        read_secret_file(source.token_file, label=f"source {source.name} token_file")
+        read_secret_file(source.webhook_url_file, label=f"source {source.name} webhook_url_file")
     return config
+
+
+def generated_config_schema() -> dict[str, object]:
+    return EventRelayConfig.model_json_schema()
 
 
 class CursorState:
@@ -211,7 +213,12 @@ class EventRelay:
                 response = http.get(
                     source.events_url,
                     params={"after": cursor, "limit": self.config.batch_size},
-                    headers={"Authorization": f"Bearer {os.environ[source.token_env]}"},
+                    headers={
+                        "Authorization": "Bearer "
+                        + read_secret_file(
+                            source.token_file, label=f"source {source.name} token_file"
+                        )
+                    },
                 )
                 response.raise_for_status()
                 page = EventPage.model_validate(response.json())
@@ -222,7 +229,10 @@ class EventRelay:
             for event in page.events:
                 try:
                     delivery = http.post(
-                        os.environ[source.webhook_url_env],
+                        read_secret_file(
+                            source.webhook_url_file,
+                            label=f"source {source.name} webhook_url_file",
+                        ),
                         content=json.dumps(
                             cloud_event_document(event, source_name=source.name),
                             sort_keys=True,

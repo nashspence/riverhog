@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import copy
 import json
 import os
+from importlib.resources import files
 from pathlib import Path
 from typing import Literal, Self
 
+from config_validation import load_validated_yaml_config, read_secret_file
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from riverhog_protocol import CollectionDescription, CollectionTag
 from riverhog_provenance.common import require_urn_uuid
@@ -103,24 +106,9 @@ def load_config(path: Path | None = None) -> FtpSpoolConfig:
     raw_path = str(path) if path is not None else os.environ.get("A_RIVERHOG_FTP_SPOOL_CONFIG", "")
     if not raw_path.strip():
         raise ValueError("A_RIVERHOG_FTP_SPOOL_CONFIG is required")
-    resolved = Path(raw_path).expanduser()
-    payload = json.loads(resolved.read_text(encoding="utf-8"))
-    if not isinstance(payload, dict):
-        raise ValueError("FTP spool configuration must be a JSON object")
-    base_url = os.environ.get("RIVERHOG_BASE_URL", "").strip()
-    if base_url:
-        payload["riverhog_base_url"] = base_url
-    for field, variable in {
-        "riverhog_token": "RIVERHOG_TOKEN",
-        "api_token": "A_RIVERHOG_FTP_SPOOL_API_TOKEN",
-    }.items():
-        value = _environment_secret(variable)
-        if value is not None:
-            payload[field] = value
-    if "allow_insecure_http" not in payload:
-        payload["allow_insecure_http"] = os.environ.get(
-            "RIVERHOG_ALLOW_INSECURE_HTTP", "false"
-        ).casefold() in {"1", "true", "yes", "on"}
+    payload = _load_document(Path(raw_path).expanduser())
+    for name in ("riverhog_token", "api_token"):
+        payload[name] = read_secret_file(str(payload.pop(f"{name}_file")), label=f"{name}_file")
     return FtpSpoolConfig.model_validate(payload)
 
 
@@ -130,8 +118,8 @@ def load_source_config(path: Path | None, source_id: str) -> SourceConfig:
     raw_path = str(path) if path is not None else os.environ.get("A_RIVERHOG_FTP_SPOOL_CONFIG", "")
     if not raw_path.strip():
         raise ValueError("A_RIVERHOG_FTP_SPOOL_CONFIG is required")
-    payload = json.loads(Path(raw_path).expanduser().read_text(encoding="utf-8"))
-    raw_sources = payload.get("sources") if isinstance(payload, dict) else None
+    payload = _load_document(Path(raw_path).expanduser())
+    raw_sources = payload.get("sources")
     if not isinstance(raw_sources, list):
         raise ValueError("FTP spool sources must be a list")
     matches = [
@@ -144,15 +132,33 @@ def load_source_config(path: Path | None, source_id: str) -> SourceConfig:
     return matches[0]
 
 
-def _environment_secret(name: str) -> str | None:
-    direct = os.environ.get(name, "").strip()
-    file_name = os.environ.get(f"{name}_FILE", "").strip()
-    if direct and file_name:
-        raise ValueError(f"{name} and {name}_FILE are mutually exclusive")
-    value = (
-        Path(file_name).expanduser().read_text(encoding="utf-8").strip() if file_name else direct
+def _load_document(path: Path) -> dict[str, object]:
+    return load_validated_yaml_config(path, FTP_SPOOL_CONFIG_SCHEMA)
+
+
+def generated_config_schema() -> dict[str, object]:
+    """Derive the published document schema from the executable typed model."""
+
+    schema = copy.deepcopy(FtpSpoolConfig.model_json_schema())
+    properties = schema["properties"]
+    required = schema["required"]
+    for name in ("riverhog_token", "api_token"):
+        properties.pop(name)
+        properties[f"{name}_file"] = {
+            "minLength": 1,
+            "type": "string",
+        }
+        required[required.index(name)] = f"{name}_file"
+    schema["$schema"] = "https://json-schema.org/draft/2020-12/schema"
+    schema["$id"] = (
+        "https://nashspence.github.io/riverhog/v1/config/a-riverhog-ftp-spool.schema.json"
     )
-    return value or None
+    return schema
+
+
+FTP_SPOOL_CONFIG_SCHEMA: dict[str, object] = json.loads(
+    files("a_riverhog_ftp_spool").joinpath("config.schema.json").read_text(encoding="utf-8")
+)
 
 
 __all__ = ["FtpSpoolConfig", "SourceConfig", "load_config", "load_source_config"]

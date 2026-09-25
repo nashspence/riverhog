@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-import json
-import os
 import re
 from collections.abc import Mapping
 from dataclasses import dataclass, field, replace
 from datetime import timedelta
-from math import isfinite
 from pathlib import Path
 from typing import Any, Self
 from urllib.parse import urlsplit
@@ -18,7 +15,10 @@ from riverhog_archive_contracts import (
     normalize_passphrase_id,
 )
 from riverhog_protocol import CATALOG_SYNC_PAGE_SIZE_MAX
-from time_formats import parse_duration
+
+from riverhog_core.collection_plan import CollectionVolumePolicy
+from riverhog_core.pack_retrieval import PackRangeRetrievalPolicy
+from riverhog_core.throughput import ArchiveThroughputTuning
 
 _BYTES_RE = re.compile(r"^(\d+(?:_\d+)*)([kmgt]i?b?|b)?$", re.IGNORECASE)
 TEST_ARCHIVE_PASSPHRASE = "riverhog-test-archive-passphrase"
@@ -30,49 +30,6 @@ DEFAULT_STORAGE_ADAPTER_MAX_CONNECTIONS = 32
 DEFAULT_STORAGE_ADAPTER_TIMEOUT_SECONDS = 300.0
 DEFAULT_ARCHIVE_SCRYPT_WORK_FACTOR = 18
 DEFAULT_LOG_LEVEL = "INFO"
-ARCHIVE_STORE_ENVIRONMENT_TEMPLATE = "RIVERHOG_ARCHIVE_STORE_{store}_{setting}"
-ARCHIVE_STORE_ENVIRONMENT_SETTINGS = (
-    "ADAPTER_URL",
-    "ADAPTER_TOKEN_FILE",
-    "ADAPTER_ALLOW_INSECURE_HTTP",
-    "ADAPTER_MAX_CONNECTIONS",
-    "ADAPTER_TIMEOUT_SECONDS",
-    "MONTHLY_DOWNLOAD_ALLOWANCE_BYTES",
-    "DOWNLOAD_SAFETY_BUFFER_BYTES",
-)
-RETRIEVAL_CACHE_STORE_ENVIRONMENT_TEMPLATE = "RIVERHOG_RETRIEVAL_CACHE_{store}_{setting}"
-RETRIEVAL_CACHE_STORE_ENVIRONMENT_SETTINGS = (
-    "ADAPTER_URL",
-    "ADAPTER_TOKEN_FILE",
-    "ADAPTER_ALLOW_INSECURE_HTTP",
-    "ADAPTER_MAX_CONNECTIONS",
-    "ADAPTER_TIMEOUT_SECONDS",
-    "ADMISSION_ENABLED",
-    "ADMISSION_BUDGET_BYTES",
-)
-
-
-def _parse_bool(value: str) -> bool:
-    normalized = value.strip().casefold()
-    if normalized in {"1", "true", "yes", "on"}:
-        return True
-    if normalized in {"0", "false", "no", "off"}:
-        return False
-    raise ValueError(f"invalid boolean {value!r}")
-
-
-def _parse_int(value: str, *, name: str, minimum: int = 0) -> int:
-    parsed = int(value.strip())
-    if parsed < minimum:
-        raise ValueError(f"invalid {name} {value!r}: expected >= {minimum}")
-    return parsed
-
-
-def _parse_float(value: str, *, name: str, minimum: float = 0.0) -> float:
-    parsed = float(value.strip())
-    if not isfinite(parsed) or parsed <= minimum:
-        raise ValueError(f"invalid {name} {value!r}: expected > {minimum}")
-    return parsed
 
 
 def _parse_bytes(value: str, *, name: str, minimum: int = 0) -> int:
@@ -110,23 +67,6 @@ def _normalize_archive_store_name(value: str) -> str:
             f"invalid archive store name {value!r}: expected lowercase letters, digits, and dashes"
         )
     return name
-
-
-def _archive_store_env_suffix(name: str) -> str:
-    return name.upper().replace("-", "_")
-
-
-def _archive_store_environment_name(name: str, setting: str) -> str:
-    if setting not in ARCHIVE_STORE_ENVIRONMENT_SETTINGS:
-        raise ValueError(f"unknown archive-store environment setting: {setting}")
-    return ARCHIVE_STORE_ENVIRONMENT_TEMPLATE.format(
-        store=_archive_store_env_suffix(name),
-        setting=setting,
-    )
-
-
-def _database_url_driver(database_url: str) -> str:
-    return database_url.strip().split(":", 1)[0].split("+", 1)[0]
 
 
 @dataclass(frozen=True, slots=True)
@@ -193,6 +133,14 @@ class RuntimeConfig:
     catalog_sync_history_retention: timedelta = field(default_factory=lambda: timedelta(days=30))
     catalog_sync_page_size_max: int = CATALOG_SYNC_PAGE_SIZE_MAX
     catalog_sync_history_reap_batch_size: int = 100
+    bootstrap_token: str = field(default="", repr=False)
+    volume_policy: CollectionVolumePolicy = field(default_factory=CollectionVolumePolicy)
+    throughput_tuning: ArchiveThroughputTuning = field(default_factory=ArchiveThroughputTuning)
+    range_policy: PackRangeRetrievalPolicy = field(default_factory=PackRangeRetrievalPolicy)
+    range_policy_by_store: Mapping[str, PackRangeRetrievalPolicy] = field(default_factory=dict)
+
+    def range_policy_for_store(self, name: str) -> PackRangeRetrievalPolicy:
+        return self.range_policy_by_store.get(name, self.range_policy)
 
     @classmethod
     def for_testing(cls, **values: Any) -> Self:
@@ -208,37 +156,35 @@ class RuntimeConfig:
 
     def __post_init__(self) -> None:
         if len(self.browse_token_signing_key.encode("utf-8")) < 32:
-            raise ValueError("RIVERHOG_BROWSE_TOKEN_SIGNING_KEY must contain at least 32 bytes")
+            raise ValueError("browse_token_signing_key_file must contain at least 32 bytes")
         if self.browse_token_lifetime.total_seconds() < 1:
-            raise ValueError("RIVERHOG_BROWSE_TOKEN_LIFETIME must be positive")
+            raise ValueError("browse_token_lifetime must be positive")
         if self.catalog_sync_history_retention.total_seconds() <= 0:
-            raise ValueError("RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION must be positive")
+            raise ValueError("catalog_sync_history_retention must be positive")
         for name, lifetime in (
-            ("RIVERHOG_BROWSE_TOKEN_LIFETIME", self.browse_token_lifetime),
-            ("RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME", self.catalog_sync_bootstrap_lifetime),
-            ("RIVERHOG_CATALOG_SYNC_CURSOR_LIFETIME", self.catalog_sync_cursor_lifetime),
+            ("browse_token_lifetime", self.browse_token_lifetime),
+            ("catalog_sync_bootstrap_lifetime", self.catalog_sync_bootstrap_lifetime),
+            ("catalog_sync_cursor_lifetime", self.catalog_sync_cursor_lifetime),
         ):
             if lifetime.total_seconds() <= 0:
                 raise ValueError(f"{name} must be positive")
             if lifetime > self.catalog_sync_history_retention:
                 raise ValueError(f"{name} must not exceed catalog synchronization retention")
         if not 1 <= self.catalog_sync_page_size_max <= CATALOG_SYNC_PAGE_SIZE_MAX:
-            raise ValueError("RIVERHOG_CATALOG_SYNC_PAGE_SIZE_MAX must be within the v1 wire bound")
+            raise ValueError("catalog_sync_page_size_max must be within the v1 wire bound")
         if self.catalog_sync_history_reap_batch_size < 1:
-            raise ValueError("RIVERHOG_CATALOG_SYNC_HISTORY_REAP_BATCH_SIZE must be positive")
+            raise ValueError("catalog_sync_history_reap_batch_size must be positive")
         if self.event_context_retention.total_seconds() <= 0:
-            raise ValueError("RIVERHOG_EVENT_CONTEXT_RETENTION must be > 0")
+            raise ValueError("event_context_retention must be > 0")
         if self.event_context_reap_batch_size < 1:
-            raise ValueError("RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE must be positive")
+            raise ValueError("event_context_reap_batch_size must be positive")
         if self.collection_upload_custody_lease.total_seconds() <= 0:
-            raise ValueError("RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE must be > 0")
+            raise ValueError("collection_upload_custody_lease must be > 0")
         if not self.database_url:
             object.__setattr__(self, "database_url", DEFAULT_DATABASE_URL)
         log_level = self.log_level.strip().upper()
         if log_level not in {"CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"}:
-            raise ValueError(
-                "RIVERHOG_LOG_LEVEL must be one of CRITICAL, ERROR, WARNING, INFO, or DEBUG"
-            )
+            raise ValueError("log_level must be one of CRITICAL, ERROR, WARNING, INFO, or DEBUG")
         object.__setattr__(self, "log_level", log_level)
         if self.public_base_url is not None:
             public_base_url = self.public_base_url.strip().rstrip("/")
@@ -252,8 +198,7 @@ class RuntimeConfig:
                 or parsed_public_base_url.fragment
             ):
                 raise ValueError(
-                    "RIVERHOG_PUBLIC_BASE_URL must be an HTTP(S) URL without "
-                    "credentials, query, or fragment"
+                    "public_base_url must be an HTTP(S) URL without credentials, query, or fragment"
                 )
             object.__setattr__(self, "public_base_url", public_base_url)
         archive_write_store = _normalize_archive_store_name(self.archive_write_store)
@@ -330,6 +275,12 @@ class RuntimeConfig:
             (*read_order, *[name for name in normalized_archive_stores if name not in read_order]),
         )
         object.__setattr__(self, "archive_stores", normalized_archive_stores)
+        unknown_range_stores = set(self.range_policy_by_store) - set(normalized_archive_stores)
+        if unknown_range_stores:
+            raise ValueError(
+                "range policy names unconfigured archive stores: "
+                + ", ".join(sorted(unknown_range_stores))
+            )
         normalized_cache_stores: dict[str, RetrievalCacheStoreRegistration] = {}
         for raw_name, registration in self.retrieval_cache_stores.items():
             name = _normalize_archive_store_name(raw_name)
@@ -366,23 +317,21 @@ class RuntimeConfig:
             normalized_cache_stores[name] = replace(registration, adapter=cache)
         object.__setattr__(self, "retrieval_cache_stores", normalized_cache_stores)
         if self.retrieval_cache_write_segment_bytes < 1:
-            raise ValueError("RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES must be >= 1")
+            raise ValueError("retrieval_cache_write_segment_bytes must be >= 1")
         if self.retrieval_cache_new_archive_lease.total_seconds() <= 0:
-            raise ValueError("RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_LEASE must be > 0")
+            raise ValueError("retrieval_cache_new_archive_lease must be > 0")
         if self.retrieval_default_lease.total_seconds() <= 0:
-            raise ValueError("RIVERHOG_RETRIEVAL_DEFAULT_LEASE must be > 0")
+            raise ValueError("retrieval_default_lease must be > 0")
         if self.retrieval_max_lease < self.retrieval_default_lease:
-            raise ValueError(
-                "RIVERHOG_RETRIEVAL_MAX_LEASE must be at least RIVERHOG_RETRIEVAL_DEFAULT_LEASE"
-            )
+            raise ValueError("retrieval_max_lease must be at least retrieval_default_lease")
         if self.retrieval_pending_timeout.total_seconds() <= 0:
-            raise ValueError("RIVERHOG_RETRIEVAL_PENDING_TIMEOUT must be > 0")
+            raise ValueError("retrieval_pending_timeout must be > 0")
         if self.retrieval_cache_sweep_interval.total_seconds() <= 0:
-            raise ValueError("RIVERHOG_RETRIEVAL_CACHE_SWEEP_INTERVAL must be > 0")
+            raise ValueError("retrieval_cache_sweep_interval must be > 0")
         if self.retrieval_restore_poll_interval.total_seconds() <= 0:
-            raise ValueError("RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL must be > 0")
+            raise ValueError("retrieval_restore_poll_interval must be > 0")
         if self.archive_scrypt_work_factor < 1 or self.archive_scrypt_work_factor > 22:
-            raise ValueError("RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR must be in 1..22")
+            raise ValueError("archive_scrypt_work_factor must be in 1..22")
         archive_passphrases: dict[str, str] = {}
         for passphrase_id, passphrase in self.archive_passphrases.items():
             try:
@@ -393,17 +342,16 @@ class RuntimeConfig:
                 raise ValueError(f"archive passphrase {normalized_id!r} must not be empty")
             archive_passphrases[normalized_id] = passphrase
         if not archive_passphrases:
-            raise ValueError("RIVERHOG_ARCHIVE_PASSPHRASES_JSON must define at least one key")
+            raise ValueError("archive_passphrase_files must define at least one key")
         if len(set(archive_passphrases.values())) != len(archive_passphrases):
             raise ValueError("archive passphrase IDs must identify distinct secrets")
         try:
             active_passphrase_id = normalize_passphrase_id(self.archive_active_passphrase_id)
         except ValueError as exc:
-            raise ValueError("RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID is invalid") from exc
+            raise ValueError("archive_active_passphrase_id is invalid") from exc
         if active_passphrase_id not in archive_passphrases:
             raise ValueError(
-                "RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID is not present in "
-                "RIVERHOG_ARCHIVE_PASSPHRASES_JSON"
+                "archive_active_passphrase_id is not present in archive_passphrase_files"
             )
         object.__setattr__(self, "archive_passphrases", archive_passphrases)
         object.__setattr__(self, "archive_active_passphrase_id", active_passphrase_id)
@@ -428,284 +376,3 @@ class RuntimeConfig:
             return self.archive_passphrases[normalized]
         except KeyError as exc:
             raise ValueError(f"archive passphrase ID is not configured: {normalized}") from exc
-
-
-def _parse_archive_stores(
-    values: Mapping[str, str],
-) -> tuple[str, tuple[str, ...], dict[str, StorageAdapterRegistration]]:
-    named_store_configuration = "RIVERHOG_ARCHIVE_STORES" in values
-    names = tuple(
-        dict.fromkeys(
-            _normalize_archive_store_name(raw)
-            for raw in values.get("RIVERHOG_ARCHIVE_STORES", "archive").split(",")
-            if raw.strip()
-        )
-    )
-    if not names:
-        raise ValueError("RIVERHOG_ARCHIVE_STORES must configure at least one store")
-    write_store = _normalize_archive_store_name(
-        values.get("RIVERHOG_ARCHIVE_WRITE_STORE", names[0])
-    )
-    stores: dict[str, StorageAdapterRegistration] = {}
-    for name in names:
-        environment_names = {
-            setting: _archive_store_environment_name(name, setting)
-            for setting in ARCHIVE_STORE_ENVIRONMENT_SETTINGS
-        }
-        configured_url = values.get(environment_names["ADAPTER_URL"], "").strip()
-        configured_token_file = values.get(environment_names["ADAPTER_TOKEN_FILE"], "").strip()
-        if named_store_configuration or configured_url or configured_token_file:
-            if not configured_url or not configured_token_file:
-                raise ValueError(f"archive store {name} adapter connection is incomplete")
-        adapter_url = configured_url or "http://127.0.0.1:9081"
-        monthly_download_allowance_raw = values.get(
-            environment_names["MONTHLY_DOWNLOAD_ALLOWANCE_BYTES"], ""
-        ).strip()
-        download_safety_buffer_raw = values.get(
-            environment_names["DOWNLOAD_SAFETY_BUFFER_BYTES"], ""
-        ).strip()
-        stores[name] = StorageAdapterRegistration(
-            name=name,
-            base_url=adapter_url.rstrip("/"),
-            token_file=Path(configured_token_file or "/run/secrets/riverhog_archive_adapter_token"),
-            allow_insecure_http=_parse_bool(
-                values.get(
-                    environment_names["ADAPTER_ALLOW_INSECURE_HTTP"],
-                    "false",
-                )
-            ),
-            maximum_connections=_parse_int(
-                values.get(
-                    environment_names["ADAPTER_MAX_CONNECTIONS"],
-                    str(DEFAULT_STORAGE_ADAPTER_MAX_CONNECTIONS),
-                ),
-                name=environment_names["ADAPTER_MAX_CONNECTIONS"],
-                minimum=1,
-            ),
-            timeout_seconds=_parse_float(
-                values.get(
-                    environment_names["ADAPTER_TIMEOUT_SECONDS"],
-                    str(DEFAULT_STORAGE_ADAPTER_TIMEOUT_SECONDS),
-                ),
-                name=environment_names["ADAPTER_TIMEOUT_SECONDS"],
-            ),
-            monthly_download_allowance_bytes=(
-                _parse_bytes(
-                    monthly_download_allowance_raw,
-                    name=environment_names["MONTHLY_DOWNLOAD_ALLOWANCE_BYTES"],
-                    minimum=1,
-                )
-                if monthly_download_allowance_raw
-                else None
-            ),
-            download_safety_buffer_bytes=(
-                _parse_bytes(
-                    download_safety_buffer_raw,
-                    name=environment_names["DOWNLOAD_SAFETY_BUFFER_BYTES"],
-                )
-                if download_safety_buffer_raw
-                else 0
-            ),
-        )
-    if write_store not in stores:
-        raise ValueError(
-            f"RIVERHOG_ARCHIVE_WRITE_STORE is not listed in RIVERHOG_ARCHIVE_STORES: {write_store}"
-        )
-    read_order = tuple(
-        dict.fromkeys(
-            _normalize_archive_store_name(raw)
-            for raw in values.get("RIVERHOG_ARCHIVE_READ_ORDER", ",".join(names)).split(",")
-            if raw.strip()
-        )
-    )
-    return write_store, read_order, stores
-
-
-def _retrieval_cache_store_environment_name(name: str, setting: str) -> str:
-    if setting not in RETRIEVAL_CACHE_STORE_ENVIRONMENT_SETTINGS:
-        raise ValueError(f"unknown retrieval-cache environment setting: {setting}")
-    return RETRIEVAL_CACHE_STORE_ENVIRONMENT_TEMPLATE.format(
-        store=_archive_store_env_suffix(name),
-        setting=setting,
-    )
-
-
-def _parse_retrieval_cache_stores(
-    values: Mapping[str, str],
-) -> dict[str, RetrievalCacheStoreRegistration]:
-    names = tuple(
-        dict.fromkeys(
-            _normalize_archive_store_name(raw)
-            for raw in values.get("RIVERHOG_RETRIEVAL_CACHE_STORES", "").split(",")
-            if raw.strip()
-        )
-    )
-    stores: dict[str, RetrievalCacheStoreRegistration] = {}
-    for name in names:
-        environment_names = {
-            setting: _retrieval_cache_store_environment_name(name, setting)
-            for setting in RETRIEVAL_CACHE_STORE_ENVIRONMENT_SETTINGS
-        }
-        adapter_url = values.get(environment_names["ADAPTER_URL"], "").strip().rstrip("/")
-        token_file = values.get(environment_names["ADAPTER_TOKEN_FILE"], "").strip()
-        if not adapter_url or not token_file:
-            raise ValueError(f"retrieval cache store {name} adapter connection is incomplete")
-        budget_raw = values.get(environment_names["ADMISSION_BUDGET_BYTES"], "").strip()
-        stores[name] = RetrievalCacheStoreRegistration(
-            name=name,
-            adapter=StorageAdapterRegistration(
-                name=name,
-                base_url=adapter_url,
-                token_file=Path(token_file),
-                allow_insecure_http=_parse_bool(
-                    values.get(environment_names["ADAPTER_ALLOW_INSECURE_HTTP"], "false")
-                ),
-                maximum_connections=_parse_int(
-                    values.get(
-                        environment_names["ADAPTER_MAX_CONNECTIONS"],
-                        str(DEFAULT_STORAGE_ADAPTER_MAX_CONNECTIONS),
-                    ),
-                    name=environment_names["ADAPTER_MAX_CONNECTIONS"],
-                    minimum=1,
-                ),
-                timeout_seconds=_parse_float(
-                    values.get(
-                        environment_names["ADAPTER_TIMEOUT_SECONDS"],
-                        str(DEFAULT_STORAGE_ADAPTER_TIMEOUT_SECONDS),
-                    ),
-                    name=environment_names["ADAPTER_TIMEOUT_SECONDS"],
-                ),
-            ),
-            admission_enabled=_parse_bool(
-                values.get(environment_names["ADMISSION_ENABLED"], "true")
-            ),
-            admission_budget_bytes=(
-                _parse_bytes(
-                    budget_raw,
-                    name=environment_names["ADMISSION_BUDGET_BYTES"],
-                    minimum=1,
-                )
-                if budget_raw
-                else None
-            ),
-        )
-    return stores
-
-
-def load_runtime_config() -> RuntimeConfig:
-    database_url_raw = os.getenv("RIVERHOG_DATABASE_URL", "").strip()
-    log_level = os.getenv("RIVERHOG_LOG_LEVEL", DEFAULT_LOG_LEVEL).strip() or DEFAULT_LOG_LEVEL
-
-    database_url = database_url_raw or DEFAULT_DATABASE_URL
-    if _database_url_driver(database_url) != "postgresql":
-        raise ValueError("RIVERHOG_DATABASE_URL must use postgresql")
-    retrieval_cache_write_segment_bytes = _parse_bytes(
-        os.getenv("RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES", "64MiB"),
-        name="RIVERHOG_RETRIEVAL_CACHE_WRITE_SEGMENT_BYTES",
-        minimum=1,
-    )
-    archive_upload_sweep_interval = parse_duration(
-        os.getenv("RIVERHOG_ARCHIVE_UPLOAD_SWEEP_INTERVAL", "30s")
-    )
-    retrieval_restore_poll_interval = parse_duration(
-        os.getenv("RIVERHOG_RETRIEVAL_RESTORE_POLL_INTERVAL", "5m")
-    )
-    retrieval_estimated_latency = parse_duration(
-        os.getenv("RIVERHOG_RETRIEVAL_ESTIMATED_LATENCY", "48h")
-    )
-    archive_write_store, archive_read_order, archive_stores = _parse_archive_stores(os.environ)
-    retrieval_cache_stores = _parse_retrieval_cache_stores(os.environ)
-    public_base_url = os.getenv("RIVERHOG_PUBLIC_BASE_URL", "").strip() or None
-    archive_passphrases_raw = os.getenv("RIVERHOG_ARCHIVE_PASSPHRASES_JSON", "").strip()
-    if not archive_passphrases_raw:
-        raise ValueError("RIVERHOG_ARCHIVE_PASSPHRASES_JSON is required")
-    try:
-        archive_passphrases_value = json.loads(archive_passphrases_raw)
-    except json.JSONDecodeError as exc:
-        raise ValueError("RIVERHOG_ARCHIVE_PASSPHRASES_JSON must be valid JSON") from exc
-    if not isinstance(archive_passphrases_value, dict) or not all(
-        isinstance(key, str) and isinstance(value, str)
-        for key, value in archive_passphrases_value.items()
-    ):
-        raise ValueError("RIVERHOG_ARCHIVE_PASSPHRASES_JSON must be a string-to-string object")
-    archive_passphrases = dict(archive_passphrases_value)
-    archive_active_passphrase_id = os.getenv("RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID", "").strip()
-    if not archive_active_passphrase_id:
-        raise ValueError("RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID is required")
-    archive_scrypt_work_factor = _parse_int(
-        os.getenv(
-            "RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR",
-            str(DEFAULT_ARCHIVE_SCRYPT_WORK_FACTOR),
-        ),
-        name="RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR",
-        minimum=1,
-    )
-    if archive_scrypt_work_factor > 22:
-        raise ValueError("RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR must be <= 22")
-    browse_token_signing_key = os.getenv("RIVERHOG_BROWSE_TOKEN_SIGNING_KEY", "").strip()
-    if not browse_token_signing_key:
-        raise ValueError("RIVERHOG_BROWSE_TOKEN_SIGNING_KEY is required")
-    return RuntimeConfig(
-        event_context_retention=parse_duration(
-            os.getenv("RIVERHOG_EVENT_CONTEXT_RETENTION", "30d")
-        ),
-        event_context_reap_batch_size=_parse_int(
-            os.getenv("RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE", "100"),
-            name="RIVERHOG_EVENT_CONTEXT_REAP_BATCH_SIZE",
-            minimum=1,
-        ),
-        browse_token_signing_key=browse_token_signing_key,
-        browse_token_lifetime=parse_duration(os.getenv("RIVERHOG_BROWSE_TOKEN_LIFETIME", "24h")),
-        catalog_sync_bootstrap_lifetime=parse_duration(
-            os.getenv("RIVERHOG_CATALOG_SYNC_BOOTSTRAP_LIFETIME", "7d")
-        ),
-        catalog_sync_cursor_lifetime=parse_duration(
-            os.getenv("RIVERHOG_CATALOG_SYNC_CURSOR_LIFETIME", "24h")
-        ),
-        catalog_sync_history_retention=parse_duration(
-            os.getenv("RIVERHOG_CATALOG_SYNC_HISTORY_RETENTION", "30d")
-        ),
-        catalog_sync_page_size_max=_parse_int(
-            os.getenv("RIVERHOG_CATALOG_SYNC_PAGE_SIZE_MAX", str(CATALOG_SYNC_PAGE_SIZE_MAX)),
-            name="RIVERHOG_CATALOG_SYNC_PAGE_SIZE_MAX",
-            minimum=1,
-        ),
-        catalog_sync_history_reap_batch_size=_parse_int(
-            os.getenv("RIVERHOG_CATALOG_SYNC_HISTORY_REAP_BATCH_SIZE", "100"),
-            name="RIVERHOG_CATALOG_SYNC_HISTORY_REAP_BATCH_SIZE",
-            minimum=1,
-        ),
-        database_url=database_url,
-        log_level=log_level,
-        archive_write_store=archive_write_store,
-        archive_read_order=archive_read_order,
-        archive_stores=archive_stores,
-        retrieval_cache_write_segment_bytes=retrieval_cache_write_segment_bytes,
-        retrieval_cache_stores=retrieval_cache_stores,
-        retrieval_cache_new_archive_enabled=_parse_bool(
-            os.getenv("RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_ENABLED", "true")
-        ),
-        retrieval_cache_new_archive_lease=parse_duration(
-            os.getenv("RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_LEASE", "72h")
-        ),
-        retrieval_default_lease=parse_duration(
-            os.getenv("RIVERHOG_RETRIEVAL_DEFAULT_LEASE", "24h")
-        ),
-        retrieval_max_lease=parse_duration(os.getenv("RIVERHOG_RETRIEVAL_MAX_LEASE", "7d")),
-        retrieval_pending_timeout=parse_duration(
-            os.getenv("RIVERHOG_RETRIEVAL_PENDING_TIMEOUT", "72h")
-        ),
-        retrieval_cache_sweep_interval=parse_duration(
-            os.getenv("RIVERHOG_RETRIEVAL_CACHE_SWEEP_INTERVAL", "5m")
-        ),
-        archive_passphrases=archive_passphrases,
-        archive_active_passphrase_id=archive_active_passphrase_id,
-        archive_scrypt_work_factor=archive_scrypt_work_factor,
-        archive_upload_sweep_interval=archive_upload_sweep_interval,
-        collection_upload_custody_lease=parse_duration(
-            os.getenv("RIVERHOG_COLLECTION_UPLOAD_CUSTODY_LEASE", "1h")
-        ),
-        retrieval_restore_poll_interval=retrieval_restore_poll_interval,
-        retrieval_estimated_latency=retrieval_estimated_latency,
-        public_base_url=public_base_url,
-    )

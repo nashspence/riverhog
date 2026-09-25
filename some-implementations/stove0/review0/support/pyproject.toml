@@ -15,6 +15,7 @@ maintainers = [{ name = "Nash Spence" }]
 classifiers = ["Programming Language :: Python :: 3 :: Only", "Programming Language :: Python :: 3.12", "Typing :: Typed"]
 urls = { Documentation = "https://nashspence.github.io/riverhog/v1/", Issues = "https://github.com/nashspence/riverhog/issues", Repository = "https://github.com/nashspence/riverhog" }
 dependencies = [
+  "config-validation>=0.1,<0.2",
   "fastapi>=0.111,<1.0",
   "http-api-contracts>=0.1,<0.2",
   "jsonschema>=4.25,<5.0",
@@ -29,6 +30,7 @@ dependencies = [
 ]
 
 [tool.uv.sources]
+config-validation = { workspace = true }
 http-api-contracts = { workspace = true }
 riverhog-client = { workspace = true }
 riverhog-protocol = { workspace = true }

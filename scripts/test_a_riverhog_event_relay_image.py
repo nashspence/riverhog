@@ -94,7 +94,7 @@ class SmokePeer:
         return Handler
 
 
-def _run_container(config: Path, state_volume: str, port: int, *args: str) -> None:
+def _run_container(config: Path, state_volume: str, *args: str) -> None:
     command = [
         "docker",
         "run",
@@ -108,13 +108,10 @@ def _run_container(config: Path, state_volume: str, port: int, *args: str) -> No
         f"{config}:/config/a-riverhog-event-relay.yaml:ro",
         "--volume",
         f"{state_volume}:/state",
-        "--env",
-        f"EVENT_TOKEN={SOURCE_TOKEN}",
-        "--env",
-        (
-            "SMOKE_WEBHOOK_URL="
-            f"http://{CONTAINER_HOST}:{port}/hooks/{WEBHOOK_SECRET}?token={WEBHOOK_SECRET}"
-        ),
+        "--volume",
+        f"{config.parent / 'token'}:/run/secrets/token:ro",
+        "--volume",
+        f"{config.parent / 'webhook-url'}:/run/secrets/webhook-url:ro",
         IMAGE,
         "--config",
         "/config/a-riverhog-event-relay.yaml",
@@ -216,6 +213,13 @@ def main() -> int:
         ) as scratch:
             root = Path(scratch)
             config = root / "a-riverhog-event-relay.yaml"
+            (root / "token").write_text(SOURCE_TOKEN + "\n", encoding="utf-8")
+            (root / "webhook-url").write_text(
+                f"http://{CONTAINER_HOST}:{port}/hooks/{WEBHOOK_SECRET}?token={WEBHOOK_SECRET}\n",
+                encoding="utf-8",
+            )
+            (root / "token").chmod(0o644)
+            (root / "webhook-url").chmod(0o644)
             config.write_text(
                 "\n".join(
                     (
@@ -227,8 +231,8 @@ def main() -> int:
                         "sources:",
                         "  - name: smoke",
                         f"    events_url: http://{CONTAINER_HOST}:{port}/events",
-                        "    token_env: EVENT_TOKEN",
-                        "    webhook_url_env: SMOKE_WEBHOOK_URL",
+                        "    token_file: /run/secrets/token",
+                        "    webhook_url_file: /run/secrets/webhook-url",
                         "",
                     )
                 ),
@@ -236,10 +240,10 @@ def main() -> int:
             )
 
             _check_runtime_contract(state_volume)
-            _run_container(config, state_volume, port, "state", "upgrade", "--json")
-            _run_container(config, state_volume, port, "--once")
-            _run_container(config, state_volume, port, "--once")
-            _run_container(config, state_volume, port, "state", "verify", "--json")
+            _run_container(config, state_volume, "state", "upgrade", "--json")
+            _run_container(config, state_volume, "--once")
+            _run_container(config, state_volume, "--once")
+            _run_container(config, state_volume, "state", "verify", "--json")
             cursor = _read_cursor(state_volume)
 
             if peer.requested_after != ["0", "1"]:

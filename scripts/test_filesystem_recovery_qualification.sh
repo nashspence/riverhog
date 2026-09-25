@@ -8,17 +8,36 @@ configure_compose_tty
 export COMPOSE_PROFILES=development
 export SOURCE_REVISION="${SOURCE_REVISION:-$(git -C "${ROOT_DIR}" rev-parse HEAD)}"
 export RIVERHOG_API_PORT=0
-export RIVERHOG_BOOTSTRAP_TOKEN="${RIVERHOG_BOOTSTRAP_TOKEN:-riverhog-filesystem-proof-bootstrap-token}"
-export RIVERHOG_ARCHIVE_STORE_ARCHIVE_ADAPTER_URL=http://filesystem-cache-adapter:8080
-export RIVERHOG_ARCHIVE_STORE_ARCHIVE_ADAPTER_ALLOW_INSECURE_HTTP=true
-export RIVERHOG_ARCHIVE_PASSPHRASES_JSON='{"filesystem-proof":"filesystem-recovery-qualification-passphrase"}'
-export RIVERHOG_ARCHIVE_ACTIVE_PASSPHRASE_ID=filesystem-proof
-export RIVERHOG_BROWSE_TOKEN_SIGNING_KEY=filesystem-recovery-qualification-browse-key
-export RIVERHOG_ARCHIVE_SCRYPT_WORK_FACTOR=10
-export RIVERHOG_RETRIEVAL_CACHE_STORES=local
-export RIVERHOG_RETRIEVAL_CACHE_NEW_ARCHIVE_ENABLED=false
-
 proof_root="$(mktemp -d "${TMPDIR:-/tmp}/riverhog-filesystem-recovery.XXXXXX")"
+export RIVERHOG_CONFIG_HOST_PATH="${proof_root}/riverhog.yaml"
+export RIVERHOG_BOOTSTRAP_TOKEN_HOST_PATH="${proof_root}/bootstrap-token"
+export RIVERHOG_BROWSE_KEY_HOST_PATH="${proof_root}/browse-key"
+export RIVERHOG_ARCHIVE_PASSPHRASE_HOST_PATH="${proof_root}/archive-passphrase"
+printf '%s\n' 'riverhog-filesystem-proof-bootstrap-token' > "${RIVERHOG_BOOTSTRAP_TOKEN_HOST_PATH}"
+printf '%s\n' 'filesystem-recovery-qualification-browse-key' > "${RIVERHOG_BROWSE_KEY_HOST_PATH}"
+printf '%s\n' 'filesystem-recovery-qualification-passphrase' > "${RIVERHOG_ARCHIVE_PASSPHRASE_HOST_PATH}"
+cat > "${RIVERHOG_CONFIG_HOST_PATH}" <<'EOF'
+database_url_file: /run/secrets/riverhog-database-url
+bootstrap_token_file: /run/secrets/riverhog-bootstrap-token
+browse_token_signing_key_file: /run/secrets/riverhog-browse-key
+archive_passphrase_files:
+  filesystem-proof: /run/secrets/riverhog-archive-passphrase
+archive_active_passphrase_id: filesystem-proof
+archive_scrypt_work_factor: 10
+archive_write_store: archive
+archive_stores:
+  archive:
+    base_url: http://filesystem-cache-adapter:8080
+    token_file: /run/secrets/riverhog-storage-adapter.token
+    allow_insecure_http: true
+retrieval_cache_stores:
+  local:
+    base_url: http://filesystem-cache-adapter:8080
+    token_file: /run/secrets/riverhog-storage-adapter.token
+    allow_insecure_http: true
+retrieval_cache_new_archive_enabled: false
+EOF
+chmod 0644 "${proof_root}"/*
 volume_name="${COMPOSE_PROJECT_NAME}_filesystem-cache-data"
 client_image="riverhog-filesystem-recovery-client:${SOURCE_REVISION}-${COMPOSE_PROJECT_NAME}"
 recovery_image="riverhog-filesystem-recovery-tool:${SOURCE_REVISION}-${COMPOSE_PROJECT_NAME}"
@@ -79,7 +98,7 @@ printf '%s' '{"filesystem-proof":"filesystem-recovery-qualification-passphrase"}
 chmod 0600 "${proof_root}/passphrases.json"
 
 compose up --detach --wait filesystem-cache-adapter postgres app
-bootstrap_token="$(compose_env_value RIVERHOG_BOOTSTRAP_TOKEN riverhog-filesystem-proof-bootstrap-token)"
+bootstrap_token="$(cat "${RIVERHOG_BOOTSTRAP_TOKEN_HOST_PATH}")"
 qualification_key_code="import json, os, urllib.request
 request = urllib.request.Request(
     'http://127.0.0.1:8000/v1/apps/filesystem-recovery-qualification/keys',
