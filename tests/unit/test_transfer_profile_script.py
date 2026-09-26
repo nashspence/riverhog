@@ -395,6 +395,50 @@ def test_absent_transfer_log_operations_do_not_gate_completed_work(
     assert result["comparison"]["status"] == "not-compared"
 
 
+@pytest.mark.parametrize("log_state", ["missing", "malformed"])
+def test_invalid_explicit_transfer_log_fails_profiling(
+    log_state: str,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    module = load_script()
+    log = tmp_path / "transfer.log"
+    if log_state == "malformed":
+        log.write_text(
+            "transfer operation=raw_write_segment plaintext_bytes=invalid stored_bytes=1",
+            encoding="utf-8",
+        )
+    monkeypatch.setattr(
+        module.subprocess,
+        "run",
+        lambda command, **_kwargs: subprocess.CompletedProcess(command, 0),
+    )
+    ticks = iter((1.0, 2.0))
+    monkeypatch.setattr(module.time, "perf_counter", lambda: next(ticks))
+
+    assert (
+        module.main(
+            [
+                "--scenario",
+                "riverhog-ingress",
+                "--workload",
+                "large-file",
+                "--payload-bytes",
+                "1024",
+                "--transfer-log",
+                str(log),
+                "--",
+                "true",
+            ]
+        )
+        == 2
+    )
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "invalid measurement input or execution" in captured.err
+
+
 @pytest.mark.parametrize("reference", ["missing", "malformed", "invalid-sample"])
 def test_explicit_invalid_reference_fails_before_running_command(
     reference: str,

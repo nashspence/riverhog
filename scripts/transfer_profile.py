@@ -63,6 +63,10 @@ class TransferLogSummary:
     stored_bytes: int
 
 
+class _NoExpectedOperations(ValueError):
+    """A readable diagnostic log has no records for the selected scenario."""
+
+
 def _positive_int(value: str) -> int:
     parsed = int(value)
     if parsed <= 0:
@@ -121,7 +125,7 @@ def summarize_transfer_log(
     records = sum(operations.values())
     if not records:
         names = ", ".join(sorted(expected_operations))
-        raise ValueError(f"transfer log contains no expected operations: {names}")
+        raise _NoExpectedOperations(f"transfer log contains no expected operations: {names}")
     return TransferLogSummary(
         bottlenecks=dict(sorted(bottlenecks.items())),
         operations=dict(sorted(operations.items())),
@@ -329,7 +333,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                         expected_operations=SCENARIO_OPERATIONS[args.scenario],
                     )
                 )
-            except (OSError, UnicodeError, ValueError):
+            except _NoExpectedOperations:
                 log_state = "unavailable-or-incomplete"
             else:
                 log_state = "summarized"
@@ -366,7 +370,15 @@ def main(argv: Sequence[str] | None = None) -> int:
         }
         print(canonical_json_bytes(result).decode(), flush=True)
         return 0
-    except (OSError, ValueError, KeyError, TypeError, OverflowError, ZeroDivisionError):
+    except (
+        OSError,
+        UnicodeError,
+        ValueError,
+        KeyError,
+        TypeError,
+        OverflowError,
+        ZeroDivisionError,
+    ):
         # Never echo the command, log, environment, or potentially private input paths.
         print("transfer profile failed: invalid measurement input or execution", file=sys.stderr)
         return 2
