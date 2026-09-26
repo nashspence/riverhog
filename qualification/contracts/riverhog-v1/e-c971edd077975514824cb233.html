@@ -16,6 +16,8 @@
 </p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
 </header>
 <h1>stove0-observer-conformance</h1>
 <p class="context">External-author protocol, runtime, and conformance support for Stove0 content observers. CLI contract owned by stove0-observer-support.</p>
@@ -1032,11 +1034,42 @@
 </table>
 </div>
 </aside>
+<aside class="documentation" id="documentation">
+<h2>CLI help · noncontractual</h2>
+<p>
+<strong>Synopsis:</strong> <code>usage: stove0-observer-conformance [-h] [--invocation INVOCATION] [--semantic-vectors SEMANTIC_VECTORS] [--semantic-validator-provider SEMANTIC_VALIDATOR_PROVIDER] base_url</code>
+</p>
+<p>Check a deployed stove0 content observer&#x27;s v1 contract.</p>
+<h3>Options and arguments</h3>
+<dl class="facts">
+<dt>
+<code>-h, --help</code>
+</dt>
+<dd>show this help message and exit</dd>
+<dt>
+<code>base_url</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>--invocation INVOCATION</code>
+</dt>
+<dd>JSON ContentObservationInvocation to exercise (repeat once per advertised contract)</dd>
+<dt>
+<code>--semantic-vectors SEMANTIC_VECTORS</code>
+</dt>
+<dd>contract-owned SemanticFactsConformanceVectors to exercise (repeatable)</dd>
+<dt>
+<code>--semantic-validator-provider SEMANTIC_VALIDATOR_PROVIDER</code>
+</dt>
+<dd>installed contract-validator provider entry point to enable (repeatable)</dd>
+</dl>
+</aside>
 <footer>
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>85376c782f32ba965877f119d2273a05859656a2de8a511c42612a22241b106b</code>
+<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
 </p>
 </details>
 </footer>

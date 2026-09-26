@@ -109,6 +109,10 @@ RELEASE_ROLES = (
     "test_only_artifact",
 )
 STATE_INVENTORY_FORMAT = "riverhog-durable-state-inventory/v1"
+STATE_CLASSIFICATIONS = frozenset(
+    {"durable-user-content", "durable-user-evidence", "operational-state", "installation-identity"}
+)
+CUSTODIAL_STATE_CLASSIFICATIONS = frozenset({"durable-user-content", "durable-user-evidence"})
 PROJECT_README_FOOTER = "\n\nSee the project URL for documentation and releases."
 PROJECT_PEOPLE = [{"name": "Nash Spence"}]
 PROJECT_CLASSIFIERS = [
@@ -955,6 +959,7 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
         if not isinstance(owner, dict) or set(owner) != {
             "id",
             "distribution",
+            "classification",
             "format",
             "head",
             "transition",
@@ -969,6 +974,8 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
             not state_id
             or state_id in state_ids
             or distribution not in seen_names
+            or not isinstance(owner["classification"], str)
+            or owner["classification"] not in STATE_CLASSIFICATIONS
             or not str(owner["format"]).strip()
             or not str(owner["head"]).strip()
             or owner["transition"]
@@ -983,6 +990,20 @@ def validate_release_contract(root: Path, *, expected_version: str | None = None
         ):
             raise ReleaseError("release.toml durable-state owner is invalid")
         state_ids.add(state_id)
+        if owner["classification"] in CUSTODIAL_STATE_CLASSIFICATIONS:
+            project = next(project for project in projects if project.name == distribution)
+            if project.license_expression != "CAL-1.0":
+                raise ReleaseError(
+                    f"custodial durable-state owner must ship under CAL-1.0: {state_id}"
+                )
+            for target, image in runtime_images.items():
+                if (
+                    distribution in image["distributions"]
+                    and _dockerfile_license_expression(_bake_dockerfile(root, target)) != "CAL-1.0"
+                ):
+                    raise ReleaseError(
+                        f"custodial durable-state image must ship under CAL-1.0: {target}"
+                    )
         for fixture in fixtures:
             fixture_path = root / str(fixture)
             if (

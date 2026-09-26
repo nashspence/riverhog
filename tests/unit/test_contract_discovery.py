@@ -24,6 +24,7 @@ def test_contract_builder_has_only_current_record_and_html_dependencies() -> Non
         "discovery": {"model"},
         "records": {"model"},
         "human_contract": {"model"},
+        "cli_documentation": {"human_contract", "model"},
         "html_rendering": {"human_contract", "model", "records"},
         "__init__": {"discovery", "model"},
     }

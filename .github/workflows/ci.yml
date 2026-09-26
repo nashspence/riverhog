@@ -160,6 +160,9 @@ jobs:
                 "containerd-snapshotter": true
               }
             }
+      - name: Install Docker Compose for deployable companion smoke
+        if: startsWith(matrix.target, 'a-riverhog-') && matrix.target != 'a-riverhog-ftp-spool'
+        uses: docker/setup-compose-action@4eb059ff7f16592f9c84d5ca339c53cb7c5064e2 # v2.3.0
       - name: Configure Docker Buildx
         uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
         with:
@@ -196,6 +199,11 @@ jobs:
         env:
           IMAGE_TARGET: ${{ matrix.target }}
         run: python3 scripts/test_witness_image.py "$IMAGE_TARGET"
+      - name: Smoke supported Compose deployment
+        if: startsWith(matrix.target, 'a-riverhog-') && matrix.target != 'a-riverhog-ftp-spool'
+        env:
+          IMAGE_TARGET: ${{ matrix.target }}
+        run: python3 scripts/test_runtime_compose.py "$IMAGE_TARGET"
       - name: Verify runtime image isolation
         if: matrix.target != 'test'
         env:

@@ -16,6 +16,8 @@
 </p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
 </header>
 <h1>gogurt write</h1>
 <p class="context">Mounted-volume ingestion application for Riverhog. CLI contract owned by gogurt.</p>
@@ -2768,11 +2770,50 @@
 </table>
 </div>
 </aside>
+<aside class="documentation" id="documentation">
+<h2>CLI help · noncontractual</h2>
+<p>
+<strong>Synopsis:</strong> <code>Usage: gogurt write [OPTIONS] ROUTE MOUNT_POINT</code>
+</p>
+<p>Publish a logical Gogurt route marker...</p>
+<p>Publish a logical Gogurt route marker through the selected provider.</p>
+<h3>Options and arguments</h3>
+<dl class="facts">
+<dt>
+<code>ROUTE</code>
+</dt>
+<dd>Configured Gogurt route key. [required]</dd>
+<dt>
+<code>MOUNT_POINT</code>
+</dt>
+<dd>Mounted volume root. [required]</dd>
+<dt>
+<code>--config PATH</code>
+</dt>
+<dd>Gogurt route YAML file. [default: gogurt-routes.yaml]</dd>
+<dt>
+<code>--force</code>
+</dt>
+<dd>Replace a different marker value.</dd>
+<dt>
+<code>--dry-run</code>
+</dt>
+<dd>Preview the marker write without changing the volume.</dd>
+<dt>
+<code>--json</code>
+</dt>
+<dd>Emit JSON.</dd>
+<dt>
+<code>--mounted-volume-provider TEXT</code>
+</dt>
+<dd>Exact installed mounted-volume provider name. [env var: GOGURT_MOUNTED_VOLUME_PROVIDER]</dd>
+</dl>
+</aside>
 <footer>
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>85376c782f32ba965877f119d2273a05859656a2de8a511c42612a22241b106b</code>
+<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
 </p>
 </details>
 </footer>

@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import json
 import re
 import shlex
 import tomllib
 from pathlib import Path
 
 import yaml
+from jsonschema import Draft202012Validator
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 BAKE_FILE = REPO_ROOT / "docker-bake.hcl"
@@ -52,7 +54,7 @@ IMAGE_CONTRACTS = {
         "dockerfile": "some-implementations/riverhog/ingress/ftp/Dockerfile",
         "tag": "a-riverhog-ftp-spool:dev",
         "title": "Riverhog FTP spool",
-        "license": "Apache-2.0",
+        "license": "CAL-1.0",
         "compose": (("some-implementations/riverhog/ingress/ftp/compose.yaml", "ftp-spool"),),
     },
     "a-riverhog-aws-store": {
@@ -60,21 +62,25 @@ IMAGE_CONTRACTS = {
         "tag": "a-riverhog-aws-store:dev",
         "title": "Riverhog AWS store",
         "license": "CAL-1.0",
-        "compose": (),
+        "compose": (("some-implementations/riverhog/storage/aws/compose.yaml", "store"),),
     },
     "a-riverhog-b2-store": {
         "dockerfile": "some-implementations/riverhog/storage/backblaze/Dockerfile",
         "tag": "a-riverhog-b2-store:dev",
         "title": "Riverhog B2 store",
         "license": "CAL-1.0",
-        "compose": (),
+        "compose": (("some-implementations/riverhog/storage/backblaze/compose.yaml", "store"),),
     },
     "a-riverhog-filesystem-store": {
         "dockerfile": "some-implementations/riverhog/storage/filesystem/Dockerfile",
         "tag": "a-riverhog-filesystem-store:dev",
         "title": "Riverhog filesystem store",
         "license": "CAL-1.0",
-        "compose": (("riverhog/compose.yaml", "filesystem-cache-adapter"),),
+        "compose": (
+            ("riverhog/compose.yaml", "filesystem-cache-adapter"),
+            ("some-implementations/riverhog/storage/filesystem/compose.yaml", "state-init"),
+            ("some-implementations/riverhog/storage/filesystem/compose.yaml", "store"),
+        ),
     },
     "stove0": {
         "dockerfile": "some-implementations/stove0/application/server/Dockerfile",
@@ -161,7 +167,16 @@ IMAGE_CONTRACTS = {
         "tag": "a-riverhog-event-relay:dev",
         "title": "Riverhog event relay",
         "license": "Apache-2.0",
-        "compose": (),
+        "compose": (
+            (
+                "some-implementations/riverhog/applications/a-riverhog-event-relay/compose.yaml",
+                "state",
+            ),
+            (
+                "some-implementations/riverhog/applications/a-riverhog-event-relay/compose.yaml",
+                "run",
+            ),
+        ),
     },
     "a-riverhog-minisign-witness": {
         "dockerfile": (
@@ -169,8 +184,17 @@ IMAGE_CONTRACTS = {
         ),
         "tag": "a-riverhog-minisign-witness:dev",
         "title": "Riverhog Minisign collection witness",
-        "license": "Apache-2.0",
-        "compose": (),
+        "license": "CAL-1.0",
+        "compose": (
+            (
+                "some-implementations/riverhog/applications/a-riverhog-minisign-witness/compose.yaml",
+                "state",
+            ),
+            (
+                "some-implementations/riverhog/applications/a-riverhog-minisign-witness/compose.yaml",
+                "run",
+            ),
+        ),
     },
     "a-riverhog-opentimestamps-witness": {
         "dockerfile": (
@@ -178,8 +202,17 @@ IMAGE_CONTRACTS = {
         ),
         "tag": "a-riverhog-opentimestamps-witness:dev",
         "title": "Riverhog OpenTimestamps collection witness",
-        "license": "Apache-2.0",
-        "compose": (),
+        "license": "CAL-1.0",
+        "compose": (
+            (
+                "some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/compose.yaml",
+                "state",
+            ),
+            (
+                "some-implementations/riverhog/applications/a-riverhog-opentimestamps-witness/compose.yaml",
+                "run",
+            ),
+        ),
     },
     "test": {
         "dockerfile": "tests/Dockerfile",
@@ -478,7 +511,9 @@ def test_production_images_use_the_common_unprivileged_runtime_identity() -> Non
     for service_name in ("state", "app"):
         service = compose["services"][service_name]
         assert service["read_only"] is True
-        assert service["tmpfs"] == ["/tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532"]
+        assert service["tmpfs"] == [
+            "/tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=64m"
+        ]
 
 
 def test_container_python_ownership_matches_the_supported_runtime_minor() -> None:
@@ -535,6 +570,96 @@ def test_compose_build_services_match_the_canonical_bake_graph() -> None:
             assert service["image"] == expected_image
             assert build["args"] == {"SOURCE_REVISION": "${SOURCE_REVISION:-unknown}"}
             assert build.get("target") == contract.get("compose_target")
+
+
+def test_every_runtime_image_has_a_hardened_supported_compose_attachment() -> None:
+    release = tomllib.loads((REPO_ROOT / "release.toml").read_text(encoding="utf-8"))
+    runtime_images = release["images"]["runtime"]
+    assert set(runtime_images) == set(IMAGE_CONTRACTS) - set(release["images"]["test_only"])
+
+    for name in runtime_images:
+        attachments = IMAGE_CONTRACTS[name]["compose"]
+        assert attachments, f"{name} has no reviewed Compose deployment decision"
+        supported = []
+        for compose_name, service_name in attachments:
+            compose = yaml.safe_load((REPO_ROOT / compose_name).read_text(encoding="utf-8"))
+            service = compose["services"][service_name]
+            if set(service.get("profiles", [])) & {"development", "qualification", "test"}:
+                continue
+            supported.append((compose_name, service_name))
+            assert service["read_only"] is True
+            assert service.get("user", "65532:65532") == "65532:65532"
+            assert service["cap_drop"] == ["ALL"]
+            assert "no-new-privileges:true" in service["security_opt"]
+            assert any("size=" in entry for entry in service["tmpfs"])
+            assert service["environment"]["TZ"] == "${TZ:-UTC}"
+        assert supported, f"{name} has only qualification or development Compose services"
+
+
+def test_companion_compose_state_and_secrets_remain_independent() -> None:
+    for name in (
+        "a-riverhog-minisign-witness",
+        "a-riverhog-opentimestamps-witness",
+        "a-riverhog-event-relay",
+    ):
+        compose_path = REPO_ROOT / f"some-implementations/riverhog/applications/{name}/compose.yaml"
+        compose = yaml.safe_load(compose_path.read_text(encoding="utf-8"))
+        assert set(compose["services"]) == {"state-init", "state", "run"}
+        assert compose["services"]["state"]["depends_on"]["state-init"] == {
+            "condition": "service_completed_successfully"
+        }
+        assert compose["services"]["run"]["depends_on"]["state"] == {
+            "condition": "service_completed_successfully"
+        }
+        volume = next(iter(compose["volumes"]))
+        assert f"{volume}:/state" in compose["services"]["run"]["volumes"]
+        assert f"{volume}:/state" in compose["services"]["state-init"]["volumes"]
+        assert compose["services"]["run"]["networks"] == ["riverhog-control"]
+        assert compose["networks"]["riverhog-control"] == {
+            "external": True,
+            "name": "${RIVERHOG_CONTROL_NETWORK:-riverhog_default}",
+        }
+        assert compose["services"]["run"]["secrets"]
+
+
+def test_runtime_compose_examples_match_parser_schemas_and_mounted_secrets() -> None:
+    examples = (
+        (
+            "storage/aws",
+            "storage/aws/src/a_riverhog_aws_store/config.schema.json",
+        ),
+        (
+            "storage/backblaze",
+            "storage/backblaze/src/a_riverhog_b2_store/config.schema.json",
+        ),
+        (
+            "applications/a-riverhog-event-relay",
+            "applications/a-riverhog-event-relay/src/a_riverhog_event_relay/config.schema.json",
+        ),
+    )
+    root = REPO_ROOT / "some-implementations/riverhog"
+    for component, schema_path in examples:
+        path = root / component
+        document = yaml.safe_load((path / "config.example.yaml").read_text(encoding="utf-8"))
+        schema = json.loads((root / schema_path).read_text(encoding="utf-8"))
+        Draft202012Validator(schema).validate(document)
+        compose = yaml.safe_load((path / "compose.yaml").read_text(encoding="utf-8"))
+        declared_secrets = set(compose["secrets"])
+        paths = (
+            [
+                document["token_file"],
+                document["access_key_id_file"],
+                document["secret_access_key_file"],
+            ]
+            if component.startswith("storage/")
+            else [
+                value
+                for source in document["sources"]
+                for key, value in source.items()
+                if key.endswith("_file")
+            ]
+        )
+        assert {Path(secret).name for secret in paths} == declared_secrets
 
 
 def test_stove0_supplied_validators_are_compose_composition_only() -> None:

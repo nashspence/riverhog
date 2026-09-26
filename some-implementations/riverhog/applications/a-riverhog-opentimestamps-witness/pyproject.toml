@@ -7,7 +7,7 @@ name = "a-riverhog-opentimestamps-witness"
 version = "0.1.0"
 description = "Independent OpenTimestamps collection witness for Riverhog."
 requires-python = ">=3.12"
-license = "Apache-2.0"
+license = "CAL-1.0"
 license-files = ["LICENSE"]
 readme = { text = "Independent OpenTimestamps collection witness for Riverhog.\n\nSee the project URL for documentation and releases.", content-type = "text/markdown" }
 authors = [{ name = "Nash Spence" }]

@@ -16,6 +16,8 @@
 </p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
 </header>
 <h1>a-riverhog-cli collection upload start</h1>
 <p class="context">Command-line client for Riverhog. CLI contract owned by a-riverhog-cli.</p>
@@ -3540,11 +3542,70 @@
 </table>
 </div>
 </aside>
+<aside class="documentation" id="documentation">
+<h2>CLI help · noncontractual</h2>
+<p>
+<strong>Synopsis:</strong> <code>Usage: a-riverhog-cli collection upload start [OPTIONS] ROOT</code>
+</p>
+<p>Upload a local directory as a collection.</p>
+<p>Upload a local directory as a collection.</p>
+<h3>Options and arguments</h3>
+<dl class="facts">
+<dt>
+<code>ROOT</code>
+</dt>
+<dd>Local collection root directory [required]</dd>
+<dt>
+<code>--idempotency-key TEXT</code>
+</dt>
+<dd>Stable retry key; defaults to a new UUID for this invocation</dd>
+<dt>
+<code>--archive-store TEXT</code>
+</dt>
+<dd>Named archive store destination</dd>
+<dt>
+<code>--use-cache / --no-use-cache</code>
+</dt>
+<dd>Override retrieval-cache placement</dd>
+<dt>
+<code>--copy-to TEXT</code>
+</dt>
+<dd>Archive copy destination; repeat as needed</dd>
+<dt>
+<code>--description TEXT</code>
+</dt>
+<dd>Mutable human description for catalog discovery</dd>
+<dt>
+<code>--tag TEXT</code>
+</dt>
+<dd>Initial collection tag; repeat as needed</dd>
+<dt>
+<code>--provenance PATH</code>
+</dt>
+<dd>Existing Riverhog provenance journal or recovered provenance set</dd>
+<dt>
+<code>--omit-provenance TEXT</code>
+</dt>
+<dd>Explicit reason to omit provenance for the whole collection</dd>
+<dt>
+<code>--provenance-observer TEXT</code>
+</dt>
+<dd>Explicit installed provenance observer provider name [env var: A_RIVERHOG_CLI_PROVENANCE_OBSERVER]</dd>
+<dt>
+<code>--json</code>
+</dt>
+<dd>Emit JSON</dd>
+<dt>
+<code>--dry-run</code>
+</dt>
+<dd>Hash and preview without creating a session or uploading bytes</dd>
+</dl>
+</aside>
 <footer>
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>85376c782f32ba965877f119d2273a05859656a2de8a511c42612a22241b106b</code>
+<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
 </p>
 </details>
 </footer>

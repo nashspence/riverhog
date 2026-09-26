@@ -45,12 +45,13 @@ def candidate_site(tmp_path_factory: pytest.TempPathFactory) -> tuple[str, str, 
     selected = copy.deepcopy(bundle.closure)
     selected["elements"] = [element]
     documentation = {
-        "format": "riverhog-contract-documentation-record/v1",
+        "format": "riverhog-contract-documentation-record/v2",
         "closure_sha256": canonical_sha256(selected),
         "release_scope": "browser fixture",
         "build_scope": "browser fixture",
         "source_revision": "browser fixture",
         "explanations": [{"element_id": element["id"], "text": "Fixture explanation."}],
+        "cli_commands": [],
         "guides": [
             {
                 "id": "fixture-guide",
@@ -209,6 +210,34 @@ def test_documentation_fixture_mode_keeps_the_contract_visible(
     assert "Fixture explanation." in page.locator("#documentation").inner_text()
     assert page.locator("#contract").inner_html() == contract_html
     assert "docs=1" in page.url
+    context.close()
+
+
+def test_published_cli_help_is_visible_only_in_documentation_mode(
+    candidate_site: tuple[str, str, str], browser: Browser
+) -> None:
+    base, _element, _literal = candidate_site
+    bundle = load_bundle(REPO_ROOT / "qualification/contracts/riverhog-v1.json")
+    root = next(
+        item
+        for item in bundle.closure["elements"]
+        if item["interface"] == "cli" and item["title"] == "a-riverhog-cli"
+    )
+    context = browser.new_context()
+    page = context.new_page()
+    page.goto(f"{base}/contract-candidate/riverhog-v1/{_element_file(root['id'])}")
+    contractual = page.locator("#contract").inner_html()
+    assert not page.locator("#documentation").is_visible()
+    page.locator("#docs-mode").check()
+    assert page.locator("#documentation").is_visible()
+    assert "Command-line client for Riverhog." in page.locator("#documentation").inner_text()
+    assert page.locator("#contract").inner_html() == contractual
+    page.goto(
+        f"{base}/contract-candidate/riverhog-v1/{_inventory_file('a-riverhog-cli', 'cli')}?docs=1"
+    )
+    assert page.locator(".command-tree .docs-cue:visible").count() > 0
+    page.locator("#docs-mode").uncheck()
+    assert page.locator(".command-tree .docs-cue:visible").count() == 0
     context.close()
 
 

@@ -40,6 +40,7 @@ from contract_atlas import (
     pointer_value,
     structural_json_schema,
 )
+from contract_atlas.cli_documentation import build_cli_documentation_record
 from contract_atlas.html_rendering import render_contract, validate_render
 from contract_atlas.records import (
     AUDIT_FILENAME,
@@ -3039,7 +3040,8 @@ def _generated_candidate() -> tuple[dict[str, object], ContractBundle, dict[str,
     trace = trace_projection(projection)
     discovered = build_discovered_contract(projection, trace)
     closure, audit = build_records(discovered)
-    files = render_contract(closure, audit)
+    documentation = build_cli_documentation_record(closure, _cli_parsers())
+    files = render_contract(closure, audit, documentation)
     validate_render(files)
     return projection, ContractBundle(closure, audit), files
 

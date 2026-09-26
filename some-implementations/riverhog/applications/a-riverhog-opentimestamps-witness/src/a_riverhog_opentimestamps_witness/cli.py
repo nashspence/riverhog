@@ -6,6 +6,7 @@ import argparse
 import base64
 import importlib.metadata
 import json
+import os
 import sys
 import time
 from dataclasses import asdict
@@ -157,18 +158,53 @@ def _progress(store: WitnessStore) -> dict[str, object]:
     }
 
 
-def _run_once(store: WitnessStore, calendar: proof.Calendar) -> dict[str, object]:
+def _api_client() -> ApiClient:
+    token_file = os.environ.get("RIVERHOG_TOKEN_FILE")
+    if token_file is None:
+        return ApiClient()
+    token = Path(token_file).read_text(encoding="utf-8").strip()
+    if not token:
+        raise ValueError("Riverhog token file is empty")
+    return ApiClient(token=token)
+
+
+def _run_once(
+    store: WitnessStore, calendar: proof.Calendar, *, announce_paused: bool = True
+) -> dict[str, object]:
     batch_kind: str | None = None
     if store.progress().position.phase == "reset_required":
-        print("witness run ingestion paused: explicit rebaseline required", file=sys.stderr)
+        if announce_paused:
+            print("witness run ingestion paused: explicit rebaseline required", file=sys.stderr)
     else:
         try:
-            batch_kind = store.ingest_once(ApiClient()).kind
+            batch = store.ingest_once(_api_client())
+            batch_kind = batch.kind
+            observed = len(batch.collections) + len(batch.changes)
+            if observed:
+                print(f"witness run retained {observed} catalog observations", file=sys.stderr)
+            if batch_kind == "reset":
+                print("witness run ingestion paused: explicit rebaseline required", file=sys.stderr)
         except (RiverhogError, httpx.HTTPError, OSError, StaleProposal) as exc:
             print(f"witness run ingestion failed: {type(exc).__name__}", file=sys.stderr)
     digest: str | None = None
     try:
         digest = store.mature_once(calendar)
+        if digest is not None:
+            evidence = store.evidence(digest)
+            assert evidence is not None
+            revisions = evidence["proof_revisions"]
+            assert isinstance(revisions, tuple)
+            job = evidence["job"]
+            assert isinstance(job, proof.Job)
+            retrying = any(work.error is not None and work.due is not None for work in job.work)
+            paused = any(work.error is not None and work.due is None for work in job.work)
+            print(
+                f"witness run calendar job advanced for {digest}; "
+                f"{len(revisions)} proof revisions retained"
+                + ("; retry scheduled" if retrying else "")
+                + ("; calendar work paused" if paused else ""),
+                file=sys.stderr,
+            )
     except (proof.CalendarError, httpx.HTTPError, OSError, StaleProposal) as exc:
         print(f"witness run maturation failed: {type(exc).__name__}", file=sys.stderr)
     return {"catalog_batch": batch_kind, "matured_statement": digest, "progress": _progress(store)}
@@ -192,7 +228,7 @@ def main(argv: list[str] | None = None) -> int:
             calendars = tuple(getattr(args, "calendar", []) or ())
             store = WitnessStore(args.state, calendars)
             if args.command == "ingest":
-                batch = store.ingest_once(ApiClient(), limit=args.limit)
+                batch = store.ingest_once(_api_client(), limit=args.limit)
                 result = {"catalog_batch": batch.kind, "progress": _progress(store)}
             elif args.command == "mature":
                 result = {"matured_statement": store.mature_once(HttpCalendar())}
@@ -200,8 +236,10 @@ def main(argv: list[str] | None = None) -> int:
                 if not 1 <= args.poll_seconds <= 3600:
                     raise ValueError("poll interval must be between 1 and 3600 seconds")
                 calendar = HttpCalendar()
+                paused_announced = False
                 while True:
-                    _run_once(store, calendar)
+                    _run_once(store, calendar, announce_paused=not paused_announced)
+                    paused_announced = store.progress().position.phase == "reset_required"
                     time.sleep(args.poll_seconds)
             elif args.command == "rebaseline":
                 store.rebaseline()

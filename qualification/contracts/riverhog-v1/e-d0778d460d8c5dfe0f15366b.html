@@ -16,6 +16,8 @@
 </p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
 </header>
 <h1>a-riverhog-cli collection provenance</h1>
 <p class="context">Command-line client for Riverhog. CLI contract owned by a-riverhog-cli.</p>
@@ -259,11 +261,54 @@
 </li>
 </ul>
 </aside>
+<aside class="documentation" id="documentation">
+<h2>CLI help · noncontractual</h2>
+<p>
+<strong>Synopsis:</strong> <code>Usage: a-riverhog-cli collection provenance [OPTIONS] COMMAND [ARGS]...</code>
+</p>
+<p>Collection file provenance.</p>
+<p>Collection file provenance.</p>
+<h3>Subcommands</h3>
+<dl class="facts">
+<dt>
+<code>agents</code>
+</dt>
+<dd>List agents asserted by one exact...</dd>
+<dt>
+<code>export</code>
+</dt>
+<dd>Export one exact canonical RFC 7464 journal.</dd>
+<dt>
+<code>list</code>
+</dt>
+<dd>List one bounded page of file provenance...</dd>
+<dt>
+<code>show</code>
+</dt>
+<dd>Show one file&#x27;s current provenance binding...</dd>
+<dt>
+<code>trace</code>
+</dt>
+<dd>Trace one file through reachable...</dd>
+<dt>
+<code>verification-cancel</code>
+</dt>
+<dd>Cancel the current server-owned provenance...</dd>
+<dt>
+<code>verification-show</code>
+</dt>
+<dd>Show the current server-owned provenance...</dd>
+<dt>
+<code>verify</code>
+</dt>
+<dd>Start verification of exact journals,...</dd>
+</dl>
+</aside>
 <footer>
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>85376c782f32ba965877f119d2273a05859656a2de8a511c42612a22241b106b</code>
+<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
 </p>
 </details>
 </footer>

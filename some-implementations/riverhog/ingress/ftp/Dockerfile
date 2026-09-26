@@ -48,6 +48,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1
 
 COPY LICENSES/Apache-2.0.txt /usr/share/licenses/riverhog/Apache-2.0.txt
+COPY LICENSES/CAL-1.0.txt /usr/share/licenses/riverhog/CAL-1.0.txt
 COPY THIRD_PARTY_NOTICES.md /usr/share/doc/riverhog/THIRD_PARTY_NOTICES.md
 
 RUN apt-get update \
@@ -63,7 +64,7 @@ ARG RELEASE_VERSION=development
 ARG SOURCE_REVISION=unknown
 LABEL org.opencontainers.image.title="Riverhog FTP spool" \
       org.opencontainers.image.description="FTP upload spool and ingestion adapter for Riverhog." \
-      org.opencontainers.image.licenses="Apache-2.0" \
+      org.opencontainers.image.licenses="CAL-1.0" \
       org.opencontainers.image.source="https://github.com/nashspence/riverhog" \
       org.opencontainers.image.revision="${SOURCE_REVISION}" \
       org.opencontainers.image.version="${RELEASE_VERSION}" \

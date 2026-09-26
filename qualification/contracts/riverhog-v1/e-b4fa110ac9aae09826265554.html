@@ -16,6 +16,8 @@
 </p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
 </header>
 <h1>a-riverhog-filesystem-store-materialize</h1>
 <p class="context">Filesystem-backed Riverhog archive and retrieval store. CLI contract owned by a-riverhog-filesystem-store.</p>
@@ -1861,11 +1863,53 @@
 </table>
 </div>
 </aside>
+<aside class="documentation" id="documentation">
+<h2>CLI help · noncontractual</h2>
+<p>
+<strong>Synopsis:</strong> <code>usage: a-riverhog-filesystem-store-materialize [-h] [--version] [--path PATH] [--prefix PREFIX] [--all] [--json] source destination</code>
+</p>
+<p>Materialize an exact committed logical-object projection from a quiesced Riverhog filesystem storage-adapter root.</p>
+<h3>Options and arguments</h3>
+<dl class="facts">
+<dt>
+<code>-h, --help</code>
+</dt>
+<dd>show this help message and exit</dd>
+<dt>
+<code>--version</code>
+</dt>
+<dd>show program&#x27;s version number and exit</dd>
+<dt>
+<code>source</code>
+</dt>
+<dd>quiesced filesystem adapter root</dd>
+<dt>
+<code>destination</code>
+</dt>
+<dd>new logical object-tree directory</dd>
+<dt>
+<code>--path PATH</code>
+</dt>
+<dd>include one exact logical object path; repeat as needed</dd>
+<dt>
+<code>--prefix PREFIX</code>
+</dt>
+<dd>include one logical object prefix; repeat as needed</dd>
+<dt>
+<code>--all</code>
+</dt>
+<dd>include every current committed object instead of path selectors</dd>
+<dt>
+<code>--json</code>
+</dt>
+<dd>emit one JSON result object</dd>
+</dl>
+</aside>
 <footer>
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>85376c782f32ba965877f119d2273a05859656a2de8a511c42612a22241b106b</code>
+<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
 </p>
 </details>
 </footer>

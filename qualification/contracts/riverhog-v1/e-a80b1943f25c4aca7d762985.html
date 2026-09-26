@@ -16,6 +16,8 @@
 </p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
 </header>
 <h1>stove0</h1>
 <p class="context">Command-line client for Stove0. CLI contract owned by a-stove0-cli.</p>
@@ -1119,11 +1121,88 @@
 </table>
 </div>
 </aside>
+<aside class="documentation" id="documentation">
+<h2>CLI help · noncontractual</h2>
+<p>
+<strong>Synopsis:</strong> <code>Usage: stove0 [OPTIONS] COMMAND [ARGS]...</code>
+</p>
+<p>Operate stove0 collection workflows.</p>
+<h3>Options and arguments</h3>
+<dl class="facts">
+<dt>
+<code>--version</code>
+</dt>
+<dd>Show the installed version and exit.</dd>
+<dt>
+<code>--base-url TEXT</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>--token TEXT</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>--json</code>
+</dt>
+<dd>Emit stable JSON.</dd>
+<dt>
+<code>--allow-insecure-http / --no-allow-insecure-http</code>
+</dt>
+<dd>Explicitly allow remote cleartext HTTP.</dd>
+</dl>
+<h3>Subcommands</h3>
+<dl class="facts">
+<dt>
+<code>admission</code>
+</dt>
+<dd>Classification admission decisions.</dd>
+<dt>
+<code>departure</code>
+</dt>
+<dd>Catalog-departure external effects.</dd>
+<dt>
+<code>evaluation</code>
+</dt>
+<dd>Materialized trials and evaluations.</dd>
+<dt>
+<code>event</code>
+</dt>
+<dd>Lifecycle events.</dd>
+<dt>
+<code>health</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>preview</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>recipe</code>
+</dt>
+<dd>Configured recipes.</dd>
+<dt>
+<code>scheduler</code>
+</dt>
+<dd>Scheduler status and execution.</dd>
+<dt>
+<code>selection</code>
+</dt>
+<dd>Exact content-addressed artifact selections.</dd>
+<dt>
+<code>work</code>
+</dt>
+<dd>Transformation work.</dd>
+</dl>
+</aside>
 <footer>
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>85376c782f32ba965877f119d2273a05859656a2de8a511c42612a22241b106b</code>
+<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
 </p>
 </details>
 </footer>

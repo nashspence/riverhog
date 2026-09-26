@@ -16,6 +16,8 @@
 </p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
 </header>
 <h1>gogurt</h1>
 <p class="context">Mounted-volume ingestion application for Riverhog. CLI contract owned by gogurt.</p>
@@ -391,11 +393,56 @@
 </li>
 </ul>
 </aside>
+<aside class="documentation" id="documentation">
+<h2>CLI help · noncontractual</h2>
+<p>
+<strong>Synopsis:</strong> <code>Usage: gogurt [OPTIONS] COMMAND [ARGS]...</code>
+</p>
+<p>Portable mounted-volume marker actions.</p>
+<h3>Options and arguments</h3>
+<dl class="facts">
+<dt>
+<code>--version</code>
+</dt>
+<dd>Show the installed Gogurt version</dd>
+</dl>
+<h3>Subcommands</h3>
+<dl class="facts">
+<dt>
+<code>list</code>
+</dt>
+<dd>List configured Gogurt routes.</dd>
+<dt>
+<code>listener</code>
+</dt>
+<dd>Install and manage the per-user Gogurt...</dd>
+<dt>
+<code>mounts</code>
+</dt>
+<dd>List mounted roots observed through the...</dd>
+<dt>
+<code>provider</code>
+</dt>
+<dd>Inspect explicitly composable host providers.</dd>
+<dt>
+<code>run</code>
+</dt>
+<dd>Run the configured action for one marked...</dd>
+<dt>
+<code>watch</code>
+</dt>
+<dd>Watch for newly mounted volumes and apply...</dd>
+<dt>
+<code>write</code>
+</dt>
+<dd>Publish a logical Gogurt route marker...</dd>
+</dl>
+</aside>
 <footer>
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>85376c782f32ba965877f119d2273a05859656a2de8a511c42612a22241b106b</code>
+<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
 </p>
 </details>
 </footer>

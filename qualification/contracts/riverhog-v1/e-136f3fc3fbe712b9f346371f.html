@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>XDG_STATE_HOME · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-81870add6571b2868fd78b0e.html">riverhog-provenance</a> / <a href="i-c8f7f17bb0fea165971f0b2a.html">Configuration Environment</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>XDG_STATE_HOME</h1>
+<p class="context">Portable Riverhog v1 per-file provenance journals and validation. Configuration Environment contract owned by riverhog-provenance.</p>
+<section id="contract" data-contract="configuration-environment:riverhog-provenance:xdg-state-home:f1fa1b8a5c">
+<h2>Contract</h2>
+<div class="human-contract">
+<h3>Environment setting</h3>
+<dl class="facts">
+<dt>name</dt>
+<dd>
+<code>XDG_STATE_HOME</code>
+</dd>
+<dt>owner</dt>
+<dd>
+<code>riverhog-provenance</code>
+</dd>
+<dt>input shape</dt>
+<dd>
+<code>environment-string</code>
+</dd>
+</dl>
+<h4>Default expressions</h4>
+<ul>
+<li>
+<code>unset</code>
+</li>
+</ul>
+<h4>Consumers</h4>
+<ul>
+<li>
+<code>riverhog-provenance</code>
+</li>
+</ul>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/configuration_environment/114</code>
+</h4>
+<table id="v-6d8ed99c258fa128e7284de7">
+<tbody>
+<tr>
+<th scope="row">
+<code>consumers</code>
+</th>
+<td>
+<table id="v-455d12eaca96d2a24c34f36e">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-af9db3d268d19e93d8eb6e44">
+<code data-value-pointer="/external_contract/configuration_environment/114/consumers/0">riverhog-provenance</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default_expressions</code>
+</th>
+<td>
+<table id="v-1072ddffa8e78f0e495c9694">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-b9008d09bbb6f2029a076339">
+<code data-value-pointer="/external_contract/configuration_environment/114/default_expressions/0">unset</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-70cf382471e6cb3b6006fca6">
+<code data-value-pointer="/external_contract/configuration_environment/114/id">riverhog-provenance:environment:XDG_STATE_HOME</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>input_shape</code>
+</th>
+<td>
+<span id="v-1b2f5581d2bc3a4d5f851122">
+<code data-value-pointer="/external_contract/configuration_environment/114/input_shape">environment-string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-1b616d0548419f44546406a7">
+<code data-value-pointer="/external_contract/configuration_environment/114/name">XDG_STATE_HOME</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-8d577f9560bc9eadcdf8af82">
+<code data-value-pointer="/external_contract/configuration_environment/114/owner">riverhog-provenance</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-15e2e266f753cb544237d6f8.html">compatibility/configuration/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-fb8d65585b742086109e606e">configuration-environment:riverhog-provenance:XDG_STATE_HOME</a> — <code data-source-path="packages/riverhog-provenance/src/riverhog_provenance/identity.py">packages/riverhog-provenance/src/riverhog_provenance/identity.py</code>
+</li>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-ce47068f504c25a93bdddb64">make unit</a>
+</li>
+<li>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
+</li>
+</ul>
+<h3>Configuration authority and bindings</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Kind</th>
+<th scope="col">Consumer</th>
+<th scope="col">Source</th>
+<th scope="col">Authority or expression</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Kind">consumer</td>
+<td data-label="Consumer">
+<code>riverhog-provenance</code></td>
+<td data-label="Source">
+<code data-source-path="packages/riverhog-provenance/src/riverhog_provenance/identity.py">packages/riverhog-provenance/src/riverhog_provenance/identity.py</code></td>
+<td data-label="Authority or expression">
+<code>os.getenv(&#x27;XDG_STATE_HOME&#x27;)</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

@@ -16,6 +16,8 @@
 </p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
 </header>
 <h1>Configuration reconciliation</h1>
 <aside class="audit">
@@ -199,6 +201,26 @@
 </tr>
 <tr>
 <th scope="row">
+<code>a-riverhog-minisign-witness</code>
+</th>
+<td>
+<span id="v-37a899b913a865568ee7c879">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/a-riverhog-minisign-witness">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>a-riverhog-opentimestamps-witness</code>
+</th>
+<td>
+<span id="v-1818a6ac65ea108e74295523">
+<code data-value-pointer="/audit/trace/configuration_registry/counts/by_owner/a-riverhog-opentimestamps-witness">1</code>
+<span class="kind">number</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
 <code>a-stove0-exiftool-observer</code>
 </th>
 <td>
@@ -306,7 +328,7 @@
 </th>
 <td>
 <span id="v-c0c3f56c31a0cc31553ad307">
-<code data-value-pointer="/audit/trace/configuration_registry/counts/contracts">121</code>
+<code data-value-pointer="/audit/trace/configuration_registry/counts/contracts">123</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -316,7 +338,7 @@
 </th>
 <td>
 <span id="v-c2a1382481d6856f3ffadf82">
-<code data-value-pointer="/audit/trace/configuration_registry/counts/detections">125</code>
+<code data-value-pointer="/audit/trace/configuration_registry/counts/detections">127</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -346,7 +368,7 @@
 </th>
 <td>
 <span id="v-02bdce3afcc06abbf1df9b43">
-<code data-value-pointer="/audit/trace/configuration_registry/counts/resolved_detections">125</code>
+<code data-value-pointer="/audit/trace/configuration_registry/counts/resolved_detections">127</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -356,7 +378,7 @@
 </th>
 <td>
 <span id="v-133211fb5fa69e8d8078a5d5">
-<code data-value-pointer="/audit/trace/configuration_registry/counts/unique_environment_names">116</code>
+<code data-value-pointer="/audit/trace/configuration_registry/counts/unique_environment_names">117</code>
 <span class="kind">number</span>
 </span></td>
 </tr>
@@ -3527,7 +3549,7 @@
 </th>
 <td>
 <span id="v-9d6b2e16a97000d8b3831deb">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/63/candidate_id">a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_HOST</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/63/candidate_id">a-riverhog-minisign-witness:environment:RIVERHOG_TOKEN_FILE</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -3577,7 +3599,7 @@
 </th>
 <td>
 <span id="v-de7aff50aebd5b1bd44fd1e9">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/64/candidate_id">a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_ID</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/64/candidate_id">a-riverhog-opentimestamps-witness:environment:RIVERHOG_TOKEN_FILE</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -3627,7 +3649,7 @@
 </th>
 <td>
 <span id="v-548959246b006506f181ba75">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/65/candidate_id">a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_PORT</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/65/candidate_id">a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_HOST</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -3677,7 +3699,7 @@
 </th>
 <td>
 <span id="v-5eedd9ea675ce705094b02a6">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/66/candidate_id">a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_SOURCE_REVISION</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/66/candidate_id">a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_IMAGE_ID</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -3727,7 +3749,7 @@
 </th>
 <td>
 <span id="v-68833d72d9ae0566d81c493e">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/67/candidate_id">a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_TOKEN</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/67/candidate_id">a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_PORT</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -3777,7 +3799,7 @@
 </th>
 <td>
 <span id="v-19853a71b1d2a35ebe6338b9">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/68/candidate_id">a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_TOKEN_FILE</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/68/candidate_id">a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_SOURCE_REVISION</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -3827,7 +3849,7 @@
 </th>
 <td>
 <span id="v-30e3b1751d09bd0dca15c725">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/69/candidate_id">a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_WORKSPACE</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/69/candidate_id">a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_TOKEN</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -3877,7 +3899,7 @@
 </th>
 <td>
 <span id="v-179ced1807f13907d3a02189">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/70/candidate_id">a-stove0-exiftool-observer:environment:STOVE0_EXIFTOOL_BIN</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/70/candidate_id">a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_TOKEN_FILE</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -3927,7 +3949,7 @@
 </th>
 <td>
 <span id="v-31fbf4e56da7212cb4ebfe70">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/71/candidate_id">a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_HOST</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/71/candidate_id">a-stove0-exiftool-observer:environment:A_STOVE0_EXIFTOOL_OBSERVER_WORKSPACE</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -3977,7 +3999,7 @@
 </th>
 <td>
 <span id="v-092531c4006715f3e857a6b1">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/72/candidate_id">a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_ID</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/72/candidate_id">a-stove0-exiftool-observer:environment:STOVE0_EXIFTOOL_BIN</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4027,7 +4049,7 @@
 </th>
 <td>
 <span id="v-4f616e1d1d9e6b55fe6efd45">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/73/candidate_id">a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_PORT</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/73/candidate_id">a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_HOST</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4077,7 +4099,7 @@
 </th>
 <td>
 <span id="v-0185a9df6a2c7ac3206b5ef2">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/74/candidate_id">a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_SOURCE_REVISION</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/74/candidate_id">a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_IMAGE_ID</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4127,7 +4149,7 @@
 </th>
 <td>
 <span id="v-64957e126e9e04200a1d29c8">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/75/candidate_id">a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/75/candidate_id">a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_PORT</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4177,7 +4199,7 @@
 </th>
 <td>
 <span id="v-52a0ac94ad3f0dcdc2449fda">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/76/candidate_id">a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN_FILE</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/76/candidate_id">a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_SOURCE_REVISION</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4227,7 +4249,7 @@
 </th>
 <td>
 <span id="v-6466d4e33fb87e02d06c27b1">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/77/candidate_id">a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_WORKSPACE</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/77/candidate_id">a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4277,7 +4299,7 @@
 </th>
 <td>
 <span id="v-b063a24fb518d20bcae47284">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/78/candidate_id">a-stove0-ffprobe-sampling-observer:environment:STOVE0_FFPROBE_BIN</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/78/candidate_id">a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_TOKEN_FILE</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4327,7 +4349,7 @@
 </th>
 <td>
 <span id="v-d326006cc387fccfc9637a75">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/79/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_HOST</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/79/candidate_id">a-stove0-ffprobe-sampling-observer:environment:A_STOVE0_FFPROBE_SAMPLING_OBSERVER_WORKSPACE</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4377,7 +4399,7 @@
 </th>
 <td>
 <span id="v-0e537a3e19ae6a26864a12fe">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/80/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_ID</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/80/candidate_id">a-stove0-ffprobe-sampling-observer:environment:STOVE0_FFPROBE_BIN</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4427,7 +4449,7 @@
 </th>
 <td>
 <span id="v-603f93fbbd038e7a3c24295a">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/81/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_PORT</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/81/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_HOST</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4477,7 +4499,7 @@
 </th>
 <td>
 <span id="v-a3b16dbcea0e32e049fe90a3">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/82/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_SOURCE_REVISION</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/82/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_IMAGE_ID</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4527,7 +4549,7 @@
 </th>
 <td>
 <span id="v-9b893c159446a1cd45a945aa">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/83/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_STATE_ROOT</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/83/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_PORT</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4577,7 +4599,7 @@
 </th>
 <td>
 <span id="v-543aab5daa44bc61aa076069">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/84/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_TOKEN</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/84/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_SOURCE_REVISION</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4627,7 +4649,7 @@
 </th>
 <td>
 <span id="v-2c8ef79e84cf8066f3228b53">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/85/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_TOKEN_FILE</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/85/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_STATE_ROOT</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4677,7 +4699,7 @@
 </th>
 <td>
 <span id="v-c8bc5bd05634039b865937bf">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/86/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_WORKSPACE</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/86/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_TOKEN</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4727,7 +4749,7 @@
 </th>
 <td>
 <span id="v-b5a46727f09c44c4964d843a">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/87/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_ZSTD</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/87/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_TOKEN_FILE</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4777,7 +4799,7 @@
 </th>
 <td>
 <span id="v-e934b8fef2abef7c349a31a3">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/88/candidate_id">a-stove0-nvenc-av1-opus-target:environment:STOVE0_FFMPEG_BIN</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/88/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_WORKSPACE</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4827,7 +4849,7 @@
 </th>
 <td>
 <span id="v-d648c968987cb35e5db4f373">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/89/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_HOST</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/89/candidate_id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_ZSTD</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4877,7 +4899,7 @@
 </th>
 <td>
 <span id="v-0cc8915ccb45b54545737a98">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/90/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_IMAGE_ID</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/90/candidate_id">a-stove0-nvenc-av1-opus-target:environment:STOVE0_FFMPEG_BIN</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4927,7 +4949,7 @@
 </th>
 <td>
 <span id="v-860c984fa9d17ee7cf990227">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/91/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_PORT</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/91/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_HOST</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -4977,7 +4999,7 @@
 </th>
 <td>
 <span id="v-0f6038a5e593094ec97b9900">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/92/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_SOURCE_REVISION</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/92/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_IMAGE_ID</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5027,7 +5049,7 @@
 </th>
 <td>
 <span id="v-7aefa716850eee7ce7477f6f">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/93/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_STATE_ROOT</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/93/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_PORT</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5077,7 +5099,7 @@
 </th>
 <td>
 <span id="v-922747e0c77b12a07cff7813">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/94/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_TOKEN</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/94/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_SOURCE_REVISION</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5127,7 +5149,7 @@
 </th>
 <td>
 <span id="v-eaeb3166ca9c4dc384eca308">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/95/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_TOKEN_FILE</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/95/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_STATE_ROOT</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5177,7 +5199,7 @@
 </th>
 <td>
 <span id="v-3e6b9d198b099daf23351c51">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/96/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_WORKSPACE</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/96/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_TOKEN</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5227,7 +5249,7 @@
 </th>
 <td>
 <span id="v-b7a2f707a4b8728f1b8a7a75">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/97/candidate_id">a-stove0-opus-target:environment:STOVE0_FFMPEG_BIN</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/97/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_TOKEN_FILE</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5277,7 +5299,7 @@
 </th>
 <td>
 <span id="v-c2afb02a03bb68350c0e81a0">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/98/candidate_id">riverhog-client:environment:RIVERHOG_ALLOW_INSECURE_HTTP</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/98/candidate_id">a-stove0-opus-target:environment:A_STOVE0_OPUS_TARGET_WORKSPACE</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5327,7 +5349,7 @@
 </th>
 <td>
 <span id="v-ce59b134d2d1358f09448d51">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/99/candidate_id">riverhog-client:environment:RIVERHOG_BASE_URL</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/99/candidate_id">a-stove0-opus-target:environment:STOVE0_FFMPEG_BIN</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5377,7 +5399,7 @@
 </th>
 <td>
 <span id="v-0b784119df3c0356e9cb929a">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/100/candidate_id">riverhog-client:environment:RIVERHOG_DOWNLOAD_FILE_CONCURRENCY</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/100/candidate_id">riverhog-client:environment:RIVERHOG_ALLOW_INSECURE_HTTP</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5427,7 +5449,7 @@
 </th>
 <td>
 <span id="v-0de15af6036b4d63a7a48e89">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/101/candidate_id">riverhog-client:environment:RIVERHOG_DOWNLOAD_FILE_WINDOW</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/101/candidate_id">riverhog-client:environment:RIVERHOG_BASE_URL</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5477,7 +5499,7 @@
 </th>
 <td>
 <span id="v-75072f7a06a6a3569acce39e">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/102/candidate_id">riverhog-client:environment:RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/102/candidate_id">riverhog-client:environment:RIVERHOG_DOWNLOAD_FILE_CONCURRENCY</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5527,7 +5549,7 @@
 </th>
 <td>
 <span id="v-49bafd1a690cbd1b6d0334b9">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/103/candidate_id">riverhog-client:environment:RIVERHOG_HOST_HEADER</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/103/candidate_id">riverhog-client:environment:RIVERHOG_DOWNLOAD_FILE_WINDOW</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5577,7 +5599,7 @@
 </th>
 <td>
 <span id="v-5b511bc423c759ec7936864e">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/104/candidate_id">riverhog-client:environment:RIVERHOG_HTTP2</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/104/candidate_id">riverhog-client:environment:RIVERHOG_DOWNLOAD_TIMEOUT_SECONDS</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5627,7 +5649,7 @@
 </th>
 <td>
 <span id="v-ad85471ed1fdee92bd3eae45">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/105/candidate_id">riverhog-client:environment:RIVERHOG_HTTP_TIMEOUT_SECONDS</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/105/candidate_id">riverhog-client:environment:RIVERHOG_HOST_HEADER</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5677,7 +5699,7 @@
 </th>
 <td>
 <span id="v-e4f18587b92debd67ec1bf91">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/106/candidate_id">riverhog-client:environment:RIVERHOG_TOKEN</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/106/candidate_id">riverhog-client:environment:RIVERHOG_HTTP2</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5727,7 +5749,7 @@
 </th>
 <td>
 <span id="v-a054c95f5b6a098dd9438252">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/107/candidate_id">riverhog-client:environment:RIVERHOG_UPLOAD_FILE_CONCURRENCY</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/107/candidate_id">riverhog-client:environment:RIVERHOG_HTTP_TIMEOUT_SECONDS</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5777,7 +5799,7 @@
 </th>
 <td>
 <span id="v-05c85fc278806a6b334984d6">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/108/candidate_id">riverhog-client:environment:RIVERHOG_UPLOAD_FILE_WINDOW</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/108/candidate_id">riverhog-client:environment:RIVERHOG_TOKEN</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5827,7 +5849,7 @@
 </th>
 <td>
 <span id="v-a9a47a18437ef450d2c2cce0">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/109/candidate_id">riverhog-client:environment:RIVERHOG_UPLOAD_TIMEOUT_SECONDS</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/109/candidate_id">riverhog-client:environment:RIVERHOG_UPLOAD_FILE_CONCURRENCY</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5877,7 +5899,7 @@
 </th>
 <td>
 <span id="v-ce7931f167daec9df63bd472">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/110/candidate_id">riverhog-provenance:environment:LOCALAPPDATA</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/110/candidate_id">riverhog-client:environment:RIVERHOG_UPLOAD_FILE_WINDOW</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5927,7 +5949,7 @@
 </th>
 <td>
 <span id="v-b0dbf43f721b5df2184aaee3">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/111/candidate_id">riverhog-provenance:environment:RIVERHOG_PROVENANCE_STATE_HOME</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/111/candidate_id">riverhog-client:environment:RIVERHOG_UPLOAD_TIMEOUT_SECONDS</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -5977,7 +5999,7 @@
 </th>
 <td>
 <span id="v-88683525b80a68e21fff76d3">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/112/candidate_id">riverhog-provenance:environment:XDG_STATE_HOME</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/112/candidate_id">riverhog-provenance:environment:LOCALAPPDATA</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -6027,7 +6049,7 @@
 </th>
 <td>
 <span id="v-4066c5cbdd53478a0a1a079e">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/113/candidate_id">riverhog-server:environment:RIVERHOG_CONFIG</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/113/candidate_id">riverhog-provenance:environment:RIVERHOG_PROVENANCE_STATE_HOME</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -6077,7 +6099,7 @@
 </th>
 <td>
 <span id="v-58ca56162bafbe8d695d56d3">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/114/candidate_id">stove0-api-client:environment:STOVE0_ALLOW_INSECURE_HTTP</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/114/candidate_id">riverhog-provenance:environment:XDG_STATE_HOME</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -6127,7 +6149,7 @@
 </th>
 <td>
 <span id="v-a3cc44a8785525f8e2bd7ea1">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/115/candidate_id">stove0-api-client:environment:STOVE0_BASE_URL</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/115/candidate_id">riverhog-server:environment:RIVERHOG_CONFIG</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -6177,7 +6199,7 @@
 </th>
 <td>
 <span id="v-d56b8885a7206c949c161fe5">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/116/candidate_id">stove0-api-client:environment:STOVE0_HTTP2</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/116/candidate_id">stove0-api-client:environment:STOVE0_ALLOW_INSECURE_HTTP</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -6227,7 +6249,7 @@
 </th>
 <td>
 <span id="v-a51a45f4d7b7e3ba1bef63f2">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/117/candidate_id">stove0-api-client:environment:STOVE0_HTTP_TIMEOUT_SECONDS</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/117/candidate_id">stove0-api-client:environment:STOVE0_BASE_URL</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -6277,7 +6299,7 @@
 </th>
 <td>
 <span id="v-d854c38752d217a256c3c396">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/118/candidate_id">stove0-api-client:environment:STOVE0_TOKEN</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/118/candidate_id">stove0-api-client:environment:STOVE0_HTTP2</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -6327,7 +6349,7 @@
 </th>
 <td>
 <span id="v-c00b2dbb272c4639216874c0">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/119/candidate_id">stove0-server:environment:STOVE0_CONFIG</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/119/candidate_id">stove0-api-client:environment:STOVE0_HTTP_TIMEOUT_SECONDS</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -6377,7 +6399,7 @@
 </th>
 <td>
 <span id="v-9036f65eeae35a181ae1b101">
-<code data-value-pointer="/audit/trace/configuration_registry/dispositions/120/candidate_id">stove0-target-support:environment:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS</code>
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/120/candidate_id">stove0-api-client:environment:STOVE0_TOKEN</code>
 <span class="kind">string</span>
 </span></td>
 </tr>
@@ -6414,6 +6436,106 @@
 </tbody>
 </table></td>
 </tr>
+<tr>
+<th scope="row">
+<code>121</code>
+</th>
+<td>
+<table id="v-25af8918b785d188cdb40370">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-33af99f0033a1c800d8d138a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/121/candidate_id">stove0-server:environment:STOVE0_CONFIG</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-7b8d1892ff24f825c7ccddc9">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/121/disposition">protected</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-4a8572726108aec0b0a4ea10">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/121/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-d2689cf81fe8027480b1c18a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/121/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>122</code>
+</th>
+<td>
+<table id="v-298944c8446b1b7b0dd7c76c">
+<tbody>
+<tr>
+<th scope="row">
+<code>candidate_id</code>
+</th>
+<td>
+<span id="v-cbf6964b4377f75958f99da9">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/122/candidate_id">stove0-target-support:environment:STOVE0_TARGET_TERMINAL_STATE_RETENTION_SECONDS</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>disposition</code>
+</th>
+<td>
+<span id="v-b98165801737edb108d6b483">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/122/disposition">protected</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>policy_id</code>
+</th>
+<td>
+<span id="v-1ccb6255aa55b6187a9102f3">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/122/policy_id">compatibility/configuration/v1</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>reason</code>
+</th>
+<td>
+<span id="v-9bedaa10e7f81ddc037b9d9a">
+<code data-value-pointer="/audit/trace/configuration_registry/dispositions/122/reason">The release-exposed implementation reads this configuration contract.</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
 </tbody>
 </table>
 </details>
@@ -6422,7 +6544,7 @@
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>85376c782f32ba965877f119d2273a05859656a2de8a511c42612a22241b106b</code>
+<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
 </p>
 </details>
 </footer>

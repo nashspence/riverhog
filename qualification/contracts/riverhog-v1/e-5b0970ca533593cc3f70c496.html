@@ -16,6 +16,8 @@
 </p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
 </header>
 <h1>a-riverhog-ftp-spool</h1>
 <p class="context">FTP upload spool and ingestion adapter for Riverhog. CLI contract owned by a-riverhog-ftp-spool.</p>
@@ -1189,11 +1191,84 @@
 </table>
 </div>
 </aside>
+<aside class="documentation" id="documentation">
+<h2>CLI help · noncontractual</h2>
+<p>
+<strong>Synopsis:</strong> <code>usage: a-riverhog-ftp-spool [-h] [--version] [--config CONFIG] [--base-url BASE_URL] [--token TOKEN] [--allow-insecure-http] [--json] {serve,listen,run,status,events,check-config,flush} ...</code>
+</p>
+<h3>Options and arguments</h3>
+<dl class="facts">
+<dt>
+<code>-h, --help</code>
+</dt>
+<dd>show this help message and exit</dd>
+<dt>
+<code>--version</code>
+</dt>
+<dd>show program&#x27;s version number and exit</dd>
+<dt>
+<code>--config CONFIG</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>--base-url BASE_URL</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>--token TOKEN</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>--allow-insecure-http</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>--json</code>
+</dt>
+<dd>
+</dd>
+</dl>
+<h3>Subcommands</h3>
+<dl class="facts">
+<dt>
+<code>check-config</code>
+</dt>
+<dd>validate connected FTP spool configuration</dd>
+<dt>
+<code>events</code>
+</dt>
+<dd>show one source&#x27;s bounded lifecycle-event feed</dd>
+<dt>
+<code>flush</code>
+</dt>
+<dd>explicitly close one source batch</dd>
+<dt>
+<code>listen</code>
+</dt>
+<dd>run the success-qualified FTP listener</dd>
+<dt>
+<code>run</code>
+</dt>
+<dd>run one landing-source pass</dd>
+<dt>
+<code>serve</code>
+</dt>
+<dd>run the adapter API and background poller</dd>
+<dt>
+<code>status</code>
+</dt>
+<dd>show one bounded page of source status</dd>
+</dl>
+</aside>
 <footer>
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>85376c782f32ba965877f119d2273a05859656a2de8a511c42612a22241b106b</code>
+<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
 </p>
 </details>
 </footer>

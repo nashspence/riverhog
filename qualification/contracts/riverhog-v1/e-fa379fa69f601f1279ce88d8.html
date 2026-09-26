@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en" data-audit="off" data-docs="off" data-audit-default="off" data-docs-default="off">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A_STOVE0_NVENC_AV1_OPUS_TARGET_WORKSPACE · Riverhog Contract Render</title>
+<link rel="stylesheet" href="style.css">
+<script src="modes.js" defer>
+</script>
+</head>
+<body>
+<main>
+<header>
+<p>
+<a href="index.html">All authorities</a> / <a href="a-e30ad50694e32ca5c8c8a945.html">a-stove0-nvenc-av1-opus-target</a> / <a href="i-a53827545e92a82d2084a1a5.html">Configuration Environment</a>
+</p>
+<label class="mode">
+<input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
+</header>
+<h1>A_STOVE0_NVENC_AV1_OPUS_TARGET_WORKSPACE</h1>
+<p class="context">NVENC AV1 and Opus transformation target for Stove0. Configuration Environment contract owned by a-stove0-nvenc-av1-opus-target.</p>
+<section id="contract" data-contract="configuration-environment:a-stove0-nvenc-av1-opus-target:a-stove0-nvenc-av1-opus-target-workspace:27e63cafd0">
+<h2>Contract</h2>
+<div class="human-contract">
+<h3>Environment setting</h3>
+<dl class="facts">
+<dt>name</dt>
+<dd>
+<code>A_STOVE0_NVENC_AV1_OPUS_TARGET_WORKSPACE</code>
+</dd>
+<dt>owner</dt>
+<dd>
+<code>a-stove0-nvenc-av1-opus-target</code>
+</dd>
+<dt>input shape</dt>
+<dd>
+<code>environment-string</code>
+</dd>
+</dl>
+<h4>Default expressions</h4>
+<ul>
+<li>
+<code>&#x27;/run/a-stove0-nvenc-av1-opus-target&#x27;</code>
+</li>
+</ul>
+<h4>Consumers</h4>
+<ul>
+<li>
+<code>a-stove0-nvenc-av1-opus-target</code>
+</li>
+</ul>
+</div>
+<details class="exact">
+<summary>Exact machine fields and pointers</summary>
+<section>
+<h4>
+<code>/external_contract/configuration_environment/88</code>
+</h4>
+<table id="v-5fe6983476493b853f4869c3">
+<tbody>
+<tr>
+<th scope="row">
+<code>consumers</code>
+</th>
+<td>
+<table id="v-939e46bead7229393dc81335">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-51ba0678a4c0e376a4cd87ea">
+<code data-value-pointer="/external_contract/configuration_environment/88/consumers/0">a-stove0-nvenc-av1-opus-target</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>default_expressions</code>
+</th>
+<td>
+<table id="v-4e50679c6794be1c0217ce89">
+<tbody>
+<tr>
+<th scope="row">
+<code>0</code>
+</th>
+<td>
+<span id="v-e8160ac2af6da969067d93bc">
+<code data-value-pointer="/external_contract/configuration_environment/88/default_expressions/0">&#x27;/run/a-stove0-nvenc-av1-opus-target&#x27;</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table></td>
+</tr>
+<tr>
+<th scope="row">
+<code>id</code>
+</th>
+<td>
+<span id="v-46a05f24bc35fad6f94dd280">
+<code data-value-pointer="/external_contract/configuration_environment/88/id">a-stove0-nvenc-av1-opus-target:environment:A_STOVE0_NVENC_AV1_OPUS_TARGET_WORKSPACE</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>input_shape</code>
+</th>
+<td>
+<span id="v-0ce1d9138972e6bbbf5e3d68">
+<code data-value-pointer="/external_contract/configuration_environment/88/input_shape">environment-string</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>name</code>
+</th>
+<td>
+<span id="v-f7d158a894b3c6dc436bd22f">
+<code data-value-pointer="/external_contract/configuration_environment/88/name">A_STOVE0_NVENC_AV1_OPUS_TARGET_WORKSPACE</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+<tr>
+<th scope="row">
+<code>owner</code>
+</th>
+<td>
+<span id="v-0050bf8e146676511f4aeee8">
+<code data-value-pointer="/external_contract/configuration_environment/88/owner">a-stove0-nvenc-av1-opus-target</code>
+<span class="kind">string</span>
+</span></td>
+</tr>
+</tbody>
+</table>
+</section>
+</details>
+</section>
+<aside class="audit" id="audit">
+<h2>Audit context · noncontractual</h2>
+<h3>Governing policies</h3>
+<ul>
+<li>
+<a href="e-15e2e266f753cb544237d6f8.html">compatibility/configuration/v1</a>
+</li>
+</ul>
+<h3>Source associations</h3>
+<ul>
+<li>
+<a href="source-authorities.html#source-8c6778cd8e70605439b89961">configuration-environment:a-stove0-nvenc-av1-opus-target:A_STOVE0_NVENC_AV1_OPUS_TARGET_WORKSPACE</a> — <code data-source-path="some-implementations/stove0/targets/nvenc-av1-opus/target/src/a_stove0_nvenc_av1_opus_target/app.py">some-implementations/stove0/targets/nvenc-av1-opus/target/src/a_stove0_nvenc_av1_opus_target/app.py</code>
+</li>
+<li>
+<a href="source-authorities.html#source-47381a6c4ffa90ed11311c88">generator:contract-projection</a> — <code data-source-path="scripts/contract_freeze.py">scripts/contract_freeze.py::contract_projection</code>
+</li>
+</ul>
+<h3>Qualification routes</h3>
+<ul>
+<li>
+<a href="source-commands.html#route-ce47068f504c25a93bdddb64">make unit</a>
+</li>
+<li>
+<a href="source-commands.html#route-413b0b241ba870e262fb82fa">make compose-smoke</a>
+</li>
+</ul>
+<h3>Configuration authority and bindings</h3>
+<div class="record-collection">
+<table>
+<thead>
+<tr>
+<th scope="col">Kind</th>
+<th scope="col">Consumer</th>
+<th scope="col">Source</th>
+<th scope="col">Authority or expression</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-label="Kind">consumer</td>
+<td data-label="Consumer">
+<code>a-stove0-nvenc-av1-opus-target</code></td>
+<td data-label="Source">
+<code data-source-path="some-implementations/stove0/targets/nvenc-av1-opus/target/src/a_stove0_nvenc_av1_opus_target/app.py">some-implementations/stove0/targets/nvenc-av1-opus/target/src/a_stove0_nvenc_av1_opus_target/app.py</code></td>
+<td data-label="Authority or expression">
+<code>os.getenv(f&#x27;{prefix}_WORKSPACE&#x27;, &#x27;/run/a-stove0-nvenc-av1-opus-target&#x27;)</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</aside>
+<footer>
+<details class="artifact-details">
+<summary>Exact artifacts</summary>
+<a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
+<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
+</p>
+</details>
+</footer>
+</main>
+</body>
+</html>

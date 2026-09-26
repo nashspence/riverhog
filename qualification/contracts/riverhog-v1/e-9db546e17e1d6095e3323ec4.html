@@ -16,6 +16,8 @@
 </p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
 </header>
 <h1>a-riverhog-cli retrieval cache list</h1>
 <p class="context">Command-line client for Riverhog. CLI contract owned by a-riverhog-cli.</p>
@@ -3714,11 +3716,79 @@
 </table>
 </div>
 </aside>
+<aside class="documentation" id="documentation">
+<h2>CLI help · noncontractual</h2>
+<p>
+<strong>Synopsis:</strong> <code>Usage: a-riverhog-cli retrieval cache list [OPTIONS]</code>
+</p>
+<p>List cache availability visible through...</p>
+<p>List cache availability visible through authorized collection access.</p>
+<h3>Options and arguments</h3>
+<dl class="facts">
+<dt>
+<code>--page-size INTEGER RANGE</code>
+</dt>
+<dd>[default: 25; 1&lt;=x&lt;=100]</dd>
+<dt>
+<code>--page-token TEXT</code>
+</dt>
+<dd>
+</dd>
+<dt>
+<code>--sort TEXT</code>
+</dt>
+<dd>Sort field [default: cached_at]</dd>
+<dt>
+<code>--order TEXT</code>
+</dt>
+<dd>Sort order [default: desc]</dd>
+<dt>
+<code>-q, --query TEXT</code>
+</dt>
+<dd>Match collection, store, or object identity</dd>
+<dt>
+<code>--collection INTEGER RANGE</code>
+</dt>
+<dd>Require one collection [x&gt;=1]</dd>
+<dt>
+<code>--source-store TEXT</code>
+</dt>
+<dd>Require one archive source store</dd>
+<dt>
+<code>--cache-store TEXT</code>
+</dt>
+<dd>Require one retrieval-cache store</dd>
+<dt>
+<code>--state TEXT</code>
+</dt>
+<dd>Require ready, delete_pending, or deleting state</dd>
+<dt>
+<code>--protection TEXT</code>
+</dt>
+<dd>Require protected or unleased objects</dd>
+<dt>
+<code>--expires-before TEXT</code>
+</dt>
+<dd>Require protection expiry at or before timestamp</dd>
+<dt>
+<code>--expires-after TEXT</code>
+</dt>
+<dd>Require protection expiry at or after timestamp</dd>
+<dt>
+<code>--selectors</code>
+</dt>
+<dd>Emit one COLLECTION_ID::SOURCE_STORE::OBJECT_ID selector per line</dd>
+<dt>
+<code>--json</code>
+</dt>
+<dd>Emit JSON</dd>
+</dl>
+</aside>
 <footer>
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>85376c782f32ba965877f119d2273a05859656a2de8a511c42612a22241b106b</code>
+<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
 </p>
 </details>
 </footer>

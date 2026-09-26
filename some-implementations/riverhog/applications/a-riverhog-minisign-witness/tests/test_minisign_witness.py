@@ -80,6 +80,24 @@ class Signer:
         return Signature(b"signed", "sha256:" + "1" * 64)
 
 
+def test_compose_token_file_is_read_without_putting_its_contents_in_environment(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    token_file = tmp_path / "riverhog-token"
+    token_file.write_text("file-backed-token\n", encoding="utf-8")
+    monkeypatch.setenv("RIVERHOG_TOKEN_FILE", str(token_file))
+    monkeypatch.delenv("RIVERHOG_TOKEN", raising=False)
+    seen: list[str] = []
+
+    def client(*, token: str) -> object:
+        seen.append(token)
+        return object()
+
+    monkeypatch.setattr(witness_cli, "ApiClient", client)
+    witness_cli._api_client()
+    assert seen == ["file-backed-token"]
+
+
 def test_schema_and_independent_evidence_survive_departure_and_view_reset(tmp_path: Path) -> None:
     path = tmp_path / "minisign.db"
     assert upgrade_state(path).condition == "current"
@@ -187,7 +205,38 @@ def test_run_signs_due_statement_when_catalog_cannot_advance(
     assert signer.calls == 1
     assert store.evidence(digest)["signature"] == b"signed"
     expected = "ingestion paused" if failure == "reset" else "ingestion failed"
-    assert expected in capsys.readouterr().err
+    diagnostics = capsys.readouterr().err
+    assert expected in diagnostics
+    assert "retained signature" in diagnostics
+    assert "signing retry scheduled" not in diagnostics
+
+
+@pytest.mark.parametrize("retryable", [True, False])
+def test_run_reports_signing_attempt_without_claiming_a_retained_signature(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    retryable: bool,
+) -> None:
+    path = tmp_path / "minisign.db"
+    upgrade_state(path)
+    store = WitnessStore(path)
+    api = Api()
+    store.ingest_once(api, now=100)
+    store.ingest_once(api, now=100)
+    monkeypatch.setattr(witness_cli, "ApiClient", lambda: api)
+
+    class FailingSigner:
+        def sign(self, statement: bytes) -> Signature:
+            raise SignerError("unavailable", retryable=retryable)
+
+    result = witness_cli._run_once(store, FailingSigner())
+    digest = result["signed_statement"]
+    assert isinstance(digest, str)
+    assert store.evidence(digest)["state"] == ("pending" if retryable else "blocked")
+    diagnostics = capsys.readouterr().err
+    assert ("retry scheduled" if retryable else "signing blocked") in diagnostics
+    assert "retained signature" not in diagnostics
 
 
 def test_real_minisign_key_signs_exact_statement(tmp_path: Path) -> None:

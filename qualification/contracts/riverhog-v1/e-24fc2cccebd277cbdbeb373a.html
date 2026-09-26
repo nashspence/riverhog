@@ -16,6 +16,8 @@
 </p>
 <label class="mode">
 <input id="audit-mode" type="checkbox"> Audit Mode</label>
+<label class="mode">
+<input id="docs-mode" type="checkbox"> Documentation Mode</label>
 </header>
 <h1>a-riverhog-cli collection provenance export</h1>
 <p class="context">Command-line client for Riverhog. CLI contract owned by a-riverhog-cli.</p>
@@ -2081,11 +2083,38 @@
 </table>
 </div>
 </aside>
+<aside class="documentation" id="documentation">
+<h2>CLI help · noncontractual</h2>
+<p>
+<strong>Synopsis:</strong> <code>Usage: a-riverhog-cli collection provenance export [OPTIONS] COLLECTION_ID JOURNAL_ID</code>
+</p>
+<p>Export one exact canonical RFC 7464 journal.</p>
+<p>Export one exact canonical RFC 7464 journal.</p>
+<h3>Options and arguments</h3>
+<dl class="facts">
+<dt>
+<code>COLLECTION_ID</code>
+</dt>
+<dd>Collection id [required]</dd>
+<dt>
+<code>JOURNAL_ID</code>
+</dt>
+<dd>Exact provenance journal id [required]</dd>
+<dt>
+<code>-o, --output PATH</code>
+</dt>
+<dd>Destination .json-seq file [required]</dd>
+<dt>
+<code>--json</code>
+</dt>
+<dd>Emit a JSON export receipt</dd>
+</dl>
+</aside>
 <footer>
 <details class="artifact-details">
 <summary>Exact artifacts</summary>
 <a href="../riverhog-v1.json">Exact Contract Closure</a> · <a href="../riverhog-v1-audit.json">Bound Audit Record</a> · <a href="manifest.json">Artifact manifest</a>
-<p>Closure SHA-256: <code>85376c782f32ba965877f119d2273a05859656a2de8a511c42612a22241b106b</code>
+<p>Closure SHA-256: <code>6adde5005685cd9d06baa00094382853d247a8f94d2616a4fb3b91ee3e945420</code>
 </p>
 </details>
 </footer>

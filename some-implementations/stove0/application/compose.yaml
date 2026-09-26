@@ -28,7 +28,7 @@ x-stove0-common: &stove0-common
       target: /etc/stove0/config.yaml
       read_only: true
   tmpfs:
-    - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532
+    - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TMPFS_SIZE:-1g}
   networks: ["stove0-internal", "riverhog-control"]
 
 services:
@@ -136,7 +136,7 @@ services:
     secrets: ["a_stove0_ffprobe_sampling_observer_token"]
     networks: ["stove0-internal", "riverhog-control"]
     tmpfs:
-      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532
+      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TMPFS_SIZE:-1g}
       - /run/a-stove0-ffprobe-sampling-observer:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_OBSERVER_TMPFS_SIZE:-8g}
     healthcheck: &ffmpeg-health
       test:
@@ -170,7 +170,7 @@ services:
     secrets: ["a_stove0_exiftool_observer_token"]
     networks: ["stove0-internal", "riverhog-control"]
     tmpfs:
-      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532
+      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TMPFS_SIZE:-1g}
       - /run/a-stove0-exiftool-observer:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_OBSERVER_TMPFS_SIZE:-8g}
     healthcheck: *ffmpeg-health
 
@@ -196,7 +196,7 @@ services:
     volumes:
       - a-stove0-opus-target-state:/var/lib/a-stove0-opus-target
     tmpfs:
-      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532
+      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TMPFS_SIZE:-1g}
       - /run/a-stove0-opus-target:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TARGET_TMPFS_SIZE:-32g}
     healthcheck: *ffmpeg-health
 
@@ -216,7 +216,7 @@ services:
     volumes:
       - review0-workspace:/run/review0
     tmpfs:
-      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532
+      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TMPFS_SIZE:-1g}
     healthcheck: *ffmpeg-health
 
   a-review0-materializer:
@@ -251,7 +251,7 @@ services:
       - a-review0-materializer-state:/var/lib/a-review0-materializer
       - review0-workspace:/run/review0
     tmpfs:
-      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532
+      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TMPFS_SIZE:-1g}
     healthcheck: *ffmpeg-health
 
   a-review0-rclone-target:
@@ -287,7 +287,7 @@ services:
       - review0-workspace:/run/review0
       - review0-effect-delivery:/var/lib/review0-delivery
     tmpfs:
-      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532
+      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TMPFS_SIZE:-1g}
     healthcheck: *ffmpeg-health
 
   a-stove0-nvenc-av1-opus-target:
@@ -314,7 +314,7 @@ services:
     volumes:
       - a-stove0-nvenc-av1-opus-target-state:/var/lib/a-stove0-nvenc-av1-opus-target
     tmpfs:
-      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532
+      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TMPFS_SIZE:-1g}
       - /run/a-stove0-nvenc-av1-opus-target:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TARGET_TMPFS_SIZE:-32g}
     healthcheck: *ffmpeg-health
 
@@ -336,7 +336,7 @@ services:
     volumes:
       - review0-workspace:/run/review0
     tmpfs:
-      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532
+      - /tmp:rw,noexec,nosuid,nodev,mode=700,uid=65532,gid=65532,size=${STOVE0_TMPFS_SIZE:-1g}
     healthcheck: *ffmpeg-health
 
 volumes:
