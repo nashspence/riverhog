@@ -1,0 +1,271 @@
+{
+  "kind": "non-authoritative-issue-local-research-map",
+  "issue": 873,
+  "convention_issue": 903,
+  "audited_source": {
+    "repository": "nashspence/riverhog",
+    "ref": "refs/heads/main",
+    "commit_sha": "18c5f287e7acb81ceaa84f5a3bf8deadbc3852e8",
+    "tree_sha": "8962d898f48401cb3107a3d7e4f2975866d4d2b8",
+    "read_date": "2026-09-26"
+  },
+  "not_a_qualification_artifact": true,
+  "out_of_scope": [
+    866
+  ],
+  "evidence": [
+    {
+      "id": "E1",
+      "kind": "existing-ci-unit-suite-and-source-selection-chain",
+      "run_id": 36223966749,
+      "run_attempt": 1,
+      "workflow": "CI",
+      "job_id": 108354319005,
+      "job_name": "make unit",
+      "head_sha": "18c5f287e7acb81ceaa84f5a3bf8deadbc3852e8",
+      "conclusion": "success",
+      "job_url": "https://github.com/nashspence/riverhog/actions/runs/36223966749/job/108354319005",
+      "observed_log": {
+        "checkout_sha_confirmed": true,
+        "summary": "2566 passed, 1 skipped in 655.39s (0:10:55)",
+        "summary_timestamp_utc": "2026-09-26T06:41:57.9587433Z",
+        "only_skip": "packages/riverhog-age/tests/test_riverhog_age_c2sp_vectors.py:25; CCTV_AGE_TESTDATA not set",
+        "selection_regression_named_in_durations": "tests/unit/test_operation_qualification.py::test_release_disposable_selection_satisfies_current_observation_requirements"
+      },
+      "artifact_listing_count": 0,
+      "per_node_result_artifact_retrieved": false,
+      "operation_report_retrieved": false,
+      "publisher_executed": false,
+      "limitations": [
+        "Quiet suite result is not a separately retained per-node attestation.",
+        "The selection regression conditionally tests clean producer acceptance or dirty-source refusal; the log does not expose the chosen branch.",
+        "Base CI is not reference-commit CI or release qualification."
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "key": "positive_local_lifecycles",
+      "producer_status": "not_established",
+      "candidate_assertions": [
+        "L1",
+        "L2",
+        "L3"
+      ],
+      "missing": "Complete, successful operation-specific lifecycle postconditions over all required local scope."
+    },
+    {
+      "key": "cli_human_json_projection",
+      "producer_status": "not_established",
+      "candidate_assertions": [
+        "C1",
+        "C2"
+      ],
+      "missing": "Successful paired invocation and explicit semantic projection attribution for every required command; negative invocation controls."
+    },
+    {
+      "key": "bounded_state_access",
+      "producer_status": "not_established",
+      "candidate_assertions": [
+        "B1"
+      ],
+      "missing": "Measured state-access bounds and concrete wiring over the full claimed operation/application scope."
+    },
+    {
+      "key": "event_cursor_restart_resume",
+      "producer_status": "not_established",
+      "candidate_assertions": [
+        "R-riverhog",
+        "R-stove0",
+        "R-ftp"
+      ],
+      "missing": "Built-service/PostgreSQL/crash, mutation-producing lifecycle, and consumer-checkpoint proof; retain the existing local subclaim only."
+    }
+  ],
+  "witnesses": [
+    {
+      "id": "R-riverhog",
+      "producer_field": "event_cursor_restart_resume.local_api_process_restart",
+      "test_nodeid": "tests/unit/test_event_cursor_restart.py::test_event_cursor_continues_across_process_restart[riverhog]",
+      "operation_scope": [
+        "riverhog:list_lifecycle_events"
+      ],
+      "route": "GET /v1/events",
+      "fixture": "File-backed SQLite catalog; owner lifecycle-event service; real API and official client.",
+      "assertions": [
+        "Both subprocesses succeed and operation identity is unchanged.",
+        "Original unread event documents/identities/order survive restart; cursors advance with correct has_more.",
+        "Post-restart append is fresh and reachable without replay; terminal empty page preserves cursor."
+      ],
+      "status_rule": "Conditional pass only with all three valid successful witnesses, successful session, and clean matching source at all producer boundaries.",
+      "execution_evidence": "E1",
+      "limitations": "Local fixture proof only; no retrieved report-level qualification artifact."
+    },
+    {
+      "id": "R-stove0",
+      "producer_field": "event_cursor_restart_resume.local_api_process_restart",
+      "test_nodeid": "tests/unit/test_event_cursor_restart.py::test_event_cursor_continues_across_process_restart[stove0]",
+      "operation_scope": [
+        "stove0:list_events"
+      ],
+      "route": "GET /v1/events",
+      "fixture": "File-backed SQLite state; work-service fixture events; real API and official client.",
+      "assertions": [
+        "Both subprocesses succeed and operation identity is unchanged.",
+        "Original unread event documents/identities/order survive restart; cursors advance with correct has_more.",
+        "Post-restart append is fresh and reachable without replay; terminal empty page preserves cursor."
+      ],
+      "status_rule": "Conditional pass only with all three valid successful witnesses, successful session, and clean matching source at all producer boundaries.",
+      "execution_evidence": "E1",
+      "limitations": "Local fixture proof only; no retrieved report-level qualification artifact."
+    },
+    {
+      "id": "R-ftp",
+      "producer_field": "event_cursor_restart_resume.local_api_process_restart",
+      "test_nodeid": "tests/unit/test_event_cursor_restart.py::test_event_cursor_continues_across_process_restart[a-riverhog-ftp-spool]",
+      "operation_scope": [
+        "a-riverhog-ftp-spool:list_ftp_spool_events"
+      ],
+      "route": "GET /v1/sources/{source_id}/events",
+      "fixture": "Actual FTP event owner with stub upstream Riverhog; direct claim-event fixture seeding; real API and official client.",
+      "assertions": [
+        "Both subprocesses succeed and operation identity is unchanged.",
+        "Original unread event documents/identities/order survive restart; cursors advance with correct has_more.",
+        "Post-restart append is fresh and reachable without replay; terminal empty page preserves cursor."
+      ],
+      "status_rule": "Conditional pass only with all three valid successful witnesses, successful session, and clean matching source at all producer boundaries.",
+      "execution_evidence": "E1",
+      "limitations": "Local fixture proof only; no retrieved report-level qualification artifact."
+    },
+    {
+      "id": "L1",
+      "producer_field": null,
+      "test_nodeid": "tests/unit/test_operation_lifecycle_api.py::test_riverhog_official_client_positive_disposable_lifecycle",
+      "operation_scope": [
+        "riverhog:create_or_resume_collection_upload_session",
+        "riverhog:get_collection_upload_session",
+        "riverhog:get_collection",
+        "riverhog:download_retrieval_file",
+        "riverhog:acknowledge_retrieval_job"
+      ],
+      "assertions": [
+        "Finalized upload state, matching collection metadata, same finalized upload after replay.",
+        "Downloaded file bytes exactly equal source; acknowledgment is completed."
+      ],
+      "status_rule": "Reusable narrow assertion only; not exported as a passed producer claim.",
+      "execution_evidence": "E1",
+      "limitations": "SQLite, in-memory archive stores, owner work driven directly; representative mapped client operations, not an exhaustive lifecycle inventory.",
+      "scope_identity_note": "Client method names; do not infer stable OpenAPI operation IDs from method names without reconciling the generated matrix."
+    },
+    {
+      "id": "L2",
+      "producer_field": null,
+      "test_nodeid": "some-implementations/stove0/application/tests/test_stove0_api_parity.py::test_stove0_official_client_positive_disposable_lifecycle",
+      "operation_scope": [
+        "stove0:create_work",
+        "stove0:get_work",
+        "stove0:step_work",
+        "stove0:retry_work",
+        "stove0:cancel_work"
+      ],
+      "assertions": [
+        "Repeated create returns the same work; fetched identity matches.",
+        "Fixture phases are claimed, eligible, canceled."
+      ],
+      "status_rule": "Reusable narrow assertion only; not exported as a passed producer claim.",
+      "execution_evidence": "E1",
+      "limitations": "Real client/API with fixture state/coordinator; no real target execution or production settlement."
+    },
+    {
+      "id": "L3",
+      "producer_field": null,
+      "test_nodeid": "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_api_parity.py::test_official_client_positive_disposable_lifecycle",
+      "operation_scope": [
+        "a-riverhog-ftp-spool:get_ftp_spool_status",
+        "a-riverhog-ftp-spool:list_ftp_spool_events",
+        "a-riverhog-ftp-spool:run_ftp_spool_pass",
+        "a-riverhog-ftp-spool:flush_ftp_spool_source"
+      ],
+      "assertions": [
+        "Fixture formats, empty events, and selected flush source match."
+      ],
+      "status_rule": "Reusable narrow assertion only; not exported as a passed producer claim.",
+      "execution_evidence": "E1",
+      "limitations": "Stub adapter/upstream; response-level fixture behavior, not durable custody or lifecycle completion."
+    },
+    {
+      "id": "C1",
+      "producer_field": null,
+      "test_nodeid": "tests/unit/test_cli_json_output.py::test_collection_list_json_emits_the_api_response_without_a_second_model",
+      "operation_scope": [
+        "riverhog:list_collections"
+      ],
+      "assertions": [
+        "Both CLI exits zero; identical client inputs; JSON equals schema-valid fixture; human description/encryption are present."
+      ],
+      "status_rule": "Reusable narrow assertion only; not exported as a passed producer claim.",
+      "execution_evidence": "E1",
+      "limitations": "Fake client, selected human fields; not all-field semantic equivalence or live server behavior."
+    },
+    {
+      "id": "C2",
+      "producer_field": null,
+      "test_nodeid": "tests/unit/test_cli_json_output.py::test_collection_show_human_and_json_use_one_identical_api_response",
+      "operation_scope": [
+        "riverhog:get_collection"
+      ],
+      "assertions": [
+        "Both CLI exits zero; calls [42,42]; JSON equals fixture; human storage/description/encryption are present."
+      ],
+      "status_rule": "Reusable narrow assertion only; not exported as a passed producer claim.",
+      "execution_evidence": "E1",
+      "limitations": "Fake client, selected human fields; not all-field semantic equivalence or live server behavior."
+    },
+    {
+      "id": "B1",
+      "producer_field": null,
+      "test_nodeid": "tests/unit/test_collection_reads.py::test_collection_list_query_count_is_independent_of_page_rows",
+      "operation_scope": [
+        "SqlAlchemyCollectionService.list"
+      ],
+      "assertions": [
+        "Equal SELECT counts for page sizes 1 and 12; twelve returned collections; each copy count one; no archive-object record materialization."
+      ],
+      "status_rule": "Reusable narrow assertion only; not exported as a passed producer claim.",
+      "execution_evidence": "E1",
+      "limitations": "Service-level SQLite twelve-collection fixture; no fixed query-count budget, scanned-row bound, or all-route/database-plan proof."
+    }
+  ],
+  "counterexample_sources": {
+    "outcomes": "tests/unit/test_operation_qualification.py::test_restart_attribution_requires_successful_test_outcome",
+    "missing_or_new_feed": "tests/unit/test_operation_qualification.py::test_release_disposable_selection_satisfies_current_observation_requirements",
+    "honest_release_refusal": "tests/unit/test_operation_qualification.py::test_release_operation_predicate_consumes_current_evidence_and_rejects_missing_proof",
+    "source_boundaries": "tests/unit/test_qualification_source.py",
+    "cli_failure_after_callback": "Proposed acceptance test only; not implemented or executed by this reference."
+  },
+  "source_blobs": {
+    "Makefile": "98309463433a157d20a7fab722bb42f0ad805ddc",
+    "scripts/operation_qualification.py": "c45874d6f96782da756acb09b866e58d0be0e42e",
+    "scripts/qualification_source.py": "addc929214e5024cfdc54c116303e19778af3079",
+    "tests/operation_observer.py": "4acabe0b0f6cdc95204cf889c7c15e5749aafd15",
+    "tests/unit/test_operation_qualification.py": "b090eba07d6e3ba4541305e57bc2d5d2190730d3",
+    "tests/unit/test_qualification_source.py": "7f9298dcd5b722a0106ca9921bc4349185551fd0",
+    "tests/unit/test_event_cursor_restart.py": "fa5db14f23af1482f8c4d7c4e61a5524f18f2a03",
+    "tests/harness/event_cursor_restart.py": "7414c6c4ae8838a1ddc15bf6780485c88b1f6355",
+    "tests/unit/test_operation_lifecycle_api.py": "fdc99fe31ac0f578d1d1f6186168fb34ffbf40c1",
+    "tests/unit/test_cli_json_output.py": "d879e3a6ee9842e9360e1ff750cbec9d7bc7735c",
+    "tests/unit/test_collection_reads.py": "177067c60f728a9abc9a541b9a9e0d8cc26da80a",
+    "some-implementations/stove0/application/tests/test_stove0_api_parity.py": "3262522274644072eaec4bce24d198294845bbd4",
+    "some-implementations/riverhog/ingress/ftp/tests/test_ftp_spool_api_parity.py": "a45022b105bf52e2dcef2101f86e736a3400f100",
+    ".github/workflows/release-qualification.yml": "1f712ee841d8b2834674db7d5b60c5a542b6b564"
+  },
+  "source_link_template": "https://github.com/nashspence/riverhog/blob/18c5f287e7acb81ceaa84f5a3bf8deadbc3852e8/{path}",
+  "current_operation_counts": null,
+  "count_note": "No current operation-report artifact retrieved. Required matrix scope, observed response rows, and successful behavioral assertions are distinct populations.",
+  "validation_by_publisher": {
+    "repository_tests_run": false,
+    "replay_executed": false,
+    "reference_json_and_links_checked": true,
+    "replay_shell_syntax_checked": true
+  }
+}
