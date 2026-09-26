@@ -41,6 +41,29 @@ def load_script() -> ModuleType:
     return module
 
 
+def test_transfer_log_parser_imports_with_only_the_standard_library() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-S",
+            "-c",
+            "import sys; "
+            + f"sys.path.insert(0, {str(REPO)!r}); "
+            + "from scripts.transfer_profile import SCENARIO_OPERATIONS, summarize_transfer_log; "
+            + "print(summarize_transfer_log('transfer operation=raw_write_segment "
+            + "plaintext_bytes=1 stored_bytes=2', "
+            + "expected_operations=SCENARIO_OPERATIONS['stove0-derived-publication']).records)",
+        ],
+        check=False,
+        cwd=REPO,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip() == "1"
+
+
 def test_transfer_log_summary_selects_scenario_and_omits_identity() -> None:
     module = load_script()
     text = (

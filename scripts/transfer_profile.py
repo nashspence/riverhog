@@ -15,8 +15,6 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from uuid import uuid4
 
-from riverhog_canonical_json import canonical_json_bytes
-
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scripts import performance_measurement as performance
@@ -192,6 +190,8 @@ def _validate_args(args: argparse.Namespace, parser: argparse.ArgumentParser) ->
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    from riverhog_canonical_json import canonical_json_bytes
+
     parser = _parser()
     args = parser.parse_args(argv)
     command = _validate_args(args, parser)
