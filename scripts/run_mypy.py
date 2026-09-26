@@ -19,7 +19,7 @@ def mypy_paths(root: Path) -> list[str]:
                 raise ValueError(f"workspace member lacks pyproject.toml: {member}")
             if (member / "src").is_dir():
                 sources.add((member / "src").relative_to(root).as_posix())
-    return [*sorted(sources), *config["tool"]["mypy"]["files"]]
+    return [*sorted(sources), *config["tool"]["riverhog"]["mypy"]["support_paths"]]
 
 
 def main(argv: list[str]) -> int:

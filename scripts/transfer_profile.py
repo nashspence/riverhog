@@ -206,16 +206,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         reference: Mapping[str, object] | None = None
         unavailable_reason = "no-measured-reference"
         if args.reference is not None:
-            try:
-                prior = performance.read_json(args.reference)
-                if prior.get("format") != "riverhog-transfer-profile/v3" or not isinstance(
-                    prior.get("sample"), Mapping
-                ):
-                    unavailable_reason = "incompatible-reference-format"
-                else:
-                    reference = prior["sample"]
-            except performance.PerformanceError:
-                unavailable_reason = "reference-unavailable-or-invalid"
+            prior = performance.read_json(args.reference)
+            if prior.get("format") != "riverhog-transfer-profile/v3":
+                raise performance.PerformanceError("reference profile format is invalid")
+            reference = performance.validate_sample(prior.get("sample"))
         run_id = str(uuid4())
         with tempfile.TemporaryDirectory(prefix="riverhog-performance-") as temporary:
             receipt_path = Path(temporary) / "completion.json"
@@ -253,6 +247,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                 except performance.PerformanceError:
                     verified = False
                 receipt_state = "verified" if verified else "invalid"
+            if receipt_state == "invalid":
+                raise performance.PerformanceError("completion receipt is invalid")
         target = {
             "scenario": args.scenario,
             "workload": args.workload,
@@ -288,7 +284,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 ).decode(),
                 flush=True,
             )
-            return 0
+            return 2
         try:
             measured = performance.sample(
                 scenario=args.scenario,
@@ -322,7 +318,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 ).decode(),
                 flush=True,
             )
-            return 0
+            return 2
         log_summary = None
         log_state = "not-supplied"
         if args.transfer_log is not None:
@@ -370,7 +366,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         }
         print(canonical_json_bytes(result).decode(), flush=True)
         return 0
-    except (OSError, ValueError, KeyError, TypeError):
+    except (OSError, ValueError, KeyError, TypeError, OverflowError, ZeroDivisionError):
         # Never echo the command, log, environment, or potentially private input paths.
         print("transfer profile failed: invalid measurement input or execution", file=sys.stderr)
         return 2

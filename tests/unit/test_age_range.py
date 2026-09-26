@@ -15,7 +15,6 @@ def _encrypted(content: bytes) -> tuple[str, bytes]:
     session = ResumableAgeScryptSession.create(
         "archive passphrase",
         log_n=1,
-        plaintext_size=len(content),
     )
     state = session.export_state(plaintext_size=len(content)).to_json_bytes().decode("utf-8")
     return state, session.encrypt_plaintext(content)

@@ -194,30 +194,19 @@ class ResumableAgeScryptSession:
         passphrase: str | bytes,
         *,
         log_n: int = DEFAULT_SCRYPT_LOG_N,
-        plaintext_size: int | None = None,
-        file_key: bytes | None = None,
-        scrypt_salt: bytes | None = None,
-        payload_nonce: bytes | None = None,
         scrypt_maxmem: int | None = None,
     ) -> ResumableAgeScryptSession:
         """
         Create a new standard age v1 passphrase-encrypted stream session.
 
-        `file_key`, `scrypt_salt`, and `payload_nonce` are injectable for tests only;
-        production callers should leave them as None.
+        Entropy for the file key, scrypt salt, and payload nonce comes from the OS.
         """
 
         _validate_log_n(log_n)
         passphrase_bytes = _passphrase_to_bytes(passphrase)
-        file_key = os.urandom(FILE_KEY_SIZE) if file_key is None else file_key
-        scrypt_salt = os.urandom(SCRYPT_SALT_SIZE) if scrypt_salt is None else scrypt_salt
-        payload_nonce = os.urandom(PAYLOAD_NONCE_SIZE) if payload_nonce is None else payload_nonce
-        if len(file_key) != FILE_KEY_SIZE:
-            raise ValueError("file_key must be 16 bytes")
-        if len(scrypt_salt) != SCRYPT_SALT_SIZE:
-            raise ValueError("scrypt_salt must be 16 bytes")
-        if len(payload_nonce) != PAYLOAD_NONCE_SIZE:
-            raise ValueError("payload_nonce must be 16 bytes")
+        file_key = os.urandom(FILE_KEY_SIZE)
+        scrypt_salt = os.urandom(SCRYPT_SALT_SIZE)
+        payload_nonce = os.urandom(PAYLOAD_NONCE_SIZE)
 
         wrap_key = _derive_scrypt_wrap_key(
             passphrase_bytes, scrypt_salt, log_n, maxmem=scrypt_maxmem

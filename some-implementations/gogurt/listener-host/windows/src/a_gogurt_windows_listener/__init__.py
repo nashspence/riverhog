@@ -29,10 +29,10 @@ WINDOWS_TASK_STATE_DISABLED = 1
 WINDOWS_TASK_STATE_RUNNING = 4
 WINDOWS_TASK_NOT_FOUND_EXIT = 3
 WINDOWS_TASK_NOT_FOUND_HRESULT = -2147024894
-WINDOWS_TASK_RESTART_COUNT = 3
-WINDOWS_TASK_RESTART_INTERVAL = "PT1M"
+_WINDOWS_TASK_RESTART_COUNT = 3
+_WINDOWS_TASK_RESTART_INTERVAL = "PT1M"
 WINDOWS_STOP_SETTLE_SECONDS = 20.0
-WINDOWS_TASK_XML_NAMESPACE = "http://schemas.microsoft.com/windows/2004/02/mit/task"
+_WINDOWS_TASK_XML_NAMESPACE = "http://schemas.microsoft.com/windows/2004/02/mit/task"
 _WINDOWS_SID_RE = re.compile(r"S-[0-9]+(?:-[0-9]+)+")
 
 
@@ -58,17 +58,17 @@ def default_listener_paths(
     )
 
 
-def windows_task_name(user_sid: str) -> str:
+def _windows_task_name(user_sid: str) -> str:
     if _WINDOWS_SID_RE.fullmatch(user_sid) is None:
         raise ListenerPlatformError("Windows returned an invalid current-user SID")
     return f"{WINDOWS_TASK_NAME_PREFIX}.{sha256(user_sid.encode('ascii')).hexdigest()}"
 
 
-def render_windows_task_xml(command: Sequence[str], *, user_sid: str) -> bytes:
+def _render_windows_task_xml(command: Sequence[str], *, user_sid: str) -> bytes:
     if not command:
         raise ListenerPlatformError("Gogurt listener command is empty")
-    windows_task_name(user_sid)
-    namespace = WINDOWS_TASK_XML_NAMESPACE
+    _windows_task_name(user_sid)
+    namespace = _WINDOWS_TASK_XML_NAMESPACE
     ET.register_namespace("", namespace)
 
     def child(parent: ET.Element, name: str, text: str | None = None) -> ET.Element:
@@ -91,8 +91,8 @@ def render_windows_task_xml(command: Sequence[str], *, user_sid: str) -> bytes:
     settings = child(task, "Settings")
     child(settings, "AllowStartOnDemand", "true")
     restart = child(settings, "RestartOnFailure")
-    child(restart, "Interval", WINDOWS_TASK_RESTART_INTERVAL)
-    child(restart, "Count", str(WINDOWS_TASK_RESTART_COUNT))
+    child(restart, "Interval", _WINDOWS_TASK_RESTART_INTERVAL)
+    child(restart, "Count", str(_WINDOWS_TASK_RESTART_COUNT))
     child(settings, "MultipleInstancesPolicy", "IgnoreNew")
     child(settings, "DisallowStartIfOnBatteries", "false")
     child(settings, "StopIfGoingOnBatteries", "false")
@@ -141,7 +141,7 @@ class TaskSchedulerUserAdapter:
 
     def _current_user_sid(self) -> str:
         user_sid = self._run(self._identity_command()).stdout.strip()
-        windows_task_name(user_sid)
+        _windows_task_name(user_sid)
         return user_sid
 
     @staticmethod
@@ -166,7 +166,7 @@ class TaskSchedulerUserAdapter:
         ]
 
     def _task_name(self) -> str:
-        return windows_task_name(self._current_user_sid())
+        return _windows_task_name(self._current_user_sid())
 
     def _query_state(self, task_name: str) -> NativeListenerStatus:
         completed = self._run(
@@ -194,11 +194,11 @@ class TaskSchedulerUserAdapter:
 
     def register(self, paths: ListenerRuntimePaths, command: Sequence[str]) -> None:
         user_sid = self._current_user_sid()
-        task_name = windows_task_name(user_sid)
+        task_name = _windows_task_name(user_sid)
         self._clear_stop_request(paths)
         temporary = stage_bytes(
             paths.state_dir / "listener-task.xml",
-            render_windows_task_xml(command, user_sid=user_sid),
+            _render_windows_task_xml(command, user_sid=user_sid),
             mode=PRIVATE_FILE_MODE,
         )
         try:
@@ -289,12 +289,7 @@ LISTENER_HOST_PROVIDER_BINDING = ListenerHostProviderBinding(
 __all__ = [
     "LISTENER_HOST_PROVIDER_BINDING",
     "TaskSchedulerUserAdapter",
-    "WINDOWS_TASK_RESTART_COUNT",
-    "WINDOWS_TASK_RESTART_INTERVAL",
-    "WINDOWS_TASK_XML_NAMESPACE",
     "default_listener_paths",
     "listener_adapter",
-    "render_windows_task_xml",
     "resolve_listener_executable",
-    "windows_task_name",
 ]

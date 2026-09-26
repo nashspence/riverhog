@@ -316,7 +316,6 @@ class PackVolumeUploader:
             session = ResumableAgeScryptSession.create(
                 self._passphrase,
                 log_n=self._scrypt_log_n,
-                plaintext_size=plan.plaintext_bytes,
             )
             crypto_seconds = time.perf_counter() - crypto_started
         age_state_json = (

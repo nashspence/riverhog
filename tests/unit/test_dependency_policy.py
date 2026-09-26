@@ -105,9 +105,12 @@ def test_every_workspace_component_enters_the_default_python_gates() -> None:
 
 
 def test_mypy_discovery_includes_new_workspace_source(tmp_path: Path) -> None:
+    current = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8"))
+    assert "files" not in current["tool"]["mypy"]
+    assert current["tool"]["riverhog"]["mypy"]["support_paths"]
     (tmp_path / "pyproject.toml").write_text(
         '[tool.uv.workspace]\nmembers = ["packages/*"]\n'
-        '[tool.mypy]\nfiles = ["scripts/support.py"]\n',
+        '[tool.riverhog.mypy]\nsupport_paths = ["scripts/support.py"]\n',
         encoding="utf-8",
     )
     new_component = tmp_path / "packages/new-component"

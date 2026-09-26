@@ -48,7 +48,7 @@ def _default_registration_file(*, home: Path | None = None) -> Path:
     return user_home / "Library" / "LaunchAgents" / f"{LISTENER_LABEL}.plist"
 
 
-def render_launchd_plist(command: Sequence[str]) -> bytes:
+def _render_launchd_plist(command: Sequence[str]) -> bytes:
     return plistlib.dumps(
         {
             "Label": LISTENER_LABEL,
@@ -122,7 +122,7 @@ class LaunchdUserAdapter:
         del paths
         registration = self.registration_file
         registration.parent.mkdir(parents=True, exist_ok=True)
-        atomic_write(registration, render_launchd_plist(command), mode=PRIVATE_FILE_MODE)
+        atomic_write(registration, _render_launchd_plist(command), mode=PRIVATE_FILE_MODE)
         self._run(["launchctl", "bootstrap", self._domain(), str(registration)])
 
     def status(self, paths: ListenerRuntimePaths) -> NativeListenerStatus:
@@ -207,6 +207,5 @@ __all__ = [
     "LaunchdUserAdapter",
     "default_listener_paths",
     "listener_adapter",
-    "render_launchd_plist",
     "resolve_listener_executable",
 ]

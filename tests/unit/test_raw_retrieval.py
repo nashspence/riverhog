@@ -56,7 +56,6 @@ def _source(content: bytes):
     session = ResumableAgeScryptSession.create(
         "archive passphrase",
         log_n=1,
-        plaintext_size=len(content),
     )
     receipts = []
     stored = []

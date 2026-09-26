@@ -12,7 +12,6 @@ import gogurt_listener_runtime.filesystem as filesystem_module
 import pytest
 from a_gogurt_linux_listener import (
     SystemdUserAdapter,
-    render_systemd_unit,
 )
 from a_gogurt_linux_listener import (
     default_listener_paths as linux_listener_paths,
@@ -23,7 +22,6 @@ from a_gogurt_linux_listener import (
 from a_gogurt_macos_listener import (
     LISTENER_LABEL,
     LaunchdUserAdapter,
-    render_launchd_plist,
 )
 from a_gogurt_macos_listener import (
     default_listener_paths as macos_listener_paths,
@@ -34,12 +32,7 @@ from a_gogurt_macos_listener import (
 from a_gogurt_windows_listener import (
     WINDOWS_TASK_NOT_FOUND_EXIT,
     WINDOWS_TASK_NOT_FOUND_HRESULT,
-    WINDOWS_TASK_RESTART_COUNT,
-    WINDOWS_TASK_RESTART_INTERVAL,
-    WINDOWS_TASK_XML_NAMESPACE,
     TaskSchedulerUserAdapter,
-    render_windows_task_xml,
-    windows_task_name,
 )
 from a_gogurt_windows_listener import (
     default_listener_paths as windows_listener_paths,
@@ -201,7 +194,7 @@ def test_windows_resolves_the_uv_console_launcher_extension(
     assert resolve_windows_listener_executable(str(tmp_path / "gogurt")) == launcher.resolve()
 
 
-def test_native_registrations_bind_only_the_absolute_installed_command() -> None:
+def test_native_registrations_bind_only_the_absolute_installed_command(tmp_path: Path) -> None:
     command = (
         "/opt/gogurt/bin/gogurt",
         "listener",
@@ -209,12 +202,17 @@ def test_native_registrations_bind_only_the_absolute_installed_command() -> None
         "--runtime-config",
         "/home/person/.local/state/gogurt/listener.json",
     )
-    unit = render_systemd_unit(command).decode()
+    paths = _paths(tmp_path)
+    systemd_registration = tmp_path / "systemd" / "gogurt-listener.service"
+    RecordingSystemdAdapter(systemd_registration).register(paths, command)
+    unit = systemd_registration.read_text(encoding="utf-8")
     assert 'ExecStart="/opt/gogurt/bin/gogurt" "listener" "_run"' in unit
     assert "WantedBy=default.target" in unit
     assert "PATH=" not in unit
 
-    plist = plistlib.loads(render_launchd_plist(command))
+    launchd_registration = tmp_path / "launchd" / f"{LISTENER_LABEL}.plist"
+    RecordingLaunchdAdapter(launchd_registration).register(paths, command)
+    plist = plistlib.loads(launchd_registration.read_bytes())
     assert plist["ProgramArguments"] == list(command)
     assert plist["RunAtLoad"] is True
     assert plist["KeepAlive"] == {"SuccessfulExit": False}
@@ -223,10 +221,13 @@ def test_native_registrations_bind_only_the_absolute_installed_command() -> None
     assert plist["StandardErrorPath"] == "/dev/null"
 
     user_sid = "S-1-5-21-101-202-303-1001"
-    rendered_task = render_windows_task_xml(command, user_sid=user_sid)
+    task_adapter = RecordingTaskAdapter()
+    task_adapter.register(paths, command)
+    rendered_task = task_adapter.task_xml
+    assert rendered_task is not None
     assert rendered_task.decode("utf-16").startswith("<?xml version='1.0' encoding='utf-16'?>")
     task = ET.fromstring(rendered_task)
-    ns = {"task": WINDOWS_TASK_XML_NAMESPACE}
+    ns = {"task": "http://schemas.microsoft.com/windows/2004/02/mit/task"}
     assert task.findtext("task:Triggers/task:LogonTrigger/task:UserId", namespaces=ns) == user_sid
     assert task.findtext("task:Principals/task:Principal/task:UserId", namespaces=ns) == user_sid
     assert (
@@ -261,8 +262,8 @@ def test_native_registrations_bind_only_the_absolute_installed_command() -> None
     } == expected_settings
     restart = settings.find("task:RestartOnFailure", ns)
     assert restart is not None
-    assert restart.findtext("task:Interval", namespaces=ns) == WINDOWS_TASK_RESTART_INTERVAL
-    assert restart.findtext("task:Count", namespaces=ns) == str(WINDOWS_TASK_RESTART_COUNT)
+    assert restart.findtext("task:Interval", namespaces=ns) == "PT1M"
+    assert restart.findtext("task:Count", namespaces=ns) == "3"
     assert task.findtext("task:Actions/task:Exec/task:Command", namespaces=ns) == command[0]
 
 
@@ -504,14 +505,15 @@ def test_task_registration_uses_current_user_onlogon_without_elevation(tmp_path:
     adapter.register(paths, command)
     assert [item[1] for item in adapter.commands] == ["/Create", "/Run"]
     create = adapter.commands[0]
-    task_name = windows_task_name(adapter._current_user_sid())
+    task_name = create[3]
+    assert task_name.startswith("Riverhog.Gogurt.")
     assert create[:4] == ["schtasks.exe", "/Create", "/TN", task_name]
     assert "/XML" in create
     assert "/RU" not in create
-    assert adapter.task_xml == render_windows_task_xml(
-        command,
-        user_sid=adapter._current_user_sid(),
-    )
+    assert adapter.task_xml is not None
+    task = ET.fromstring(adapter.task_xml)
+    namespace = {"task": "http://schemas.microsoft.com/windows/2004/02/mit/task"}
+    assert task.findtext("task:Actions/task:Exec/task:Command", namespaces=namespace) == command[0]
     running = adapter.status(paths)
     assert running == NativeListenerStatus(installed=True, enabled=True, running=True)
     state_command = adapter.commands[-1]
@@ -546,9 +548,14 @@ def test_task_registration_uses_current_user_onlogon_without_elevation(tmp_path:
     assert all("/End" not in item for item in adapter.commands)
 
 
-def test_windows_task_names_are_distinct_per_current_user() -> None:
-    first = windows_task_name("S-1-5-21-101-202-303-1001")
-    second = windows_task_name("S-1-5-21-101-202-303-1002")
+def test_windows_task_names_are_distinct_per_current_user(tmp_path: Path) -> None:
+    names = []
+    for sid in ("S-1-5-21-101-202-303-1001", "S-1-5-21-101-202-303-1002"):
+        adapter = RecordingTaskAdapter()
+        adapter._current_user_sid = lambda sid=sid: sid
+        adapter.register(_paths(tmp_path), (str(tmp_path / "gogurt.exe"), "listener", "_run"))
+        names.append(adapter.commands[0][3])
+    first, second = names
 
     assert first.startswith("Riverhog.Gogurt.")
     assert second.startswith("Riverhog.Gogurt.")

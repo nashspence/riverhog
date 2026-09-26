@@ -65,7 +65,6 @@ def _archive(
     session = ResumableAgeScryptSession.create(
         "archive passphrase",
         log_n=1,
-        plaintext_size=len(plaintext),
     )
     state = session.export_state(plaintext_size=len(plaintext)).to_json_bytes().decode("utf-8")
     ciphertext = session.encrypt_plaintext(plaintext)
